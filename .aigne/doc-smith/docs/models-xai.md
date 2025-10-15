@@ -1,102 +1,96 @@
-# @aigne/xai
+# xAI
 
-The `@aigne/xai` package provides a seamless integration between the AIGNE Framework and XAI's language models, such as Grok. It offers a standardized interface for leveraging XAI's advanced AI capabilities within your AIGNE applications, ensuring a consistent development experience.
+This guide provides instructions for configuring and using xAI's language models, specifically Grok, within the AIGNE Framework. It covers the installation of the necessary package, API key configuration, model instantiation, and examples of both standard and streaming invocations.
 
-This SDK is built on top of the OpenAI-compatible API format provided by X.AI, allowing for easy interaction with models like `grok-2-latest`.
-
-## Architecture Overview
-
-The `@aigne/xai` package acts as a connector between the core AIGNE framework and the XAI API, allowing you to incorporate XAI models into your applications with a consistent interface.
+The `@aigne/xai` package serves as a direct interface to the xAI API, allowing developers to integrate Grok's capabilities into their applications through the standardized `ChatModel` interface provided by the AIGNE Framework.
 
 ```d2
 direction: down
 
-AIGNE-Application: {
-  label: "AIGNE Application"
+Developer: {
+  shape: c4-person
+}
+
+aigne-xai: {
+  label: "@aigne/xai Package"
+  shape: rectangle
+}
+
+xAI-Platform: {
+  label: "xAI Platform"
   shape: rectangle
 
-  aigne-xai: {
-    label: "@aigne/xai SDK"
-    shape: rectangle
+  API-Key: {
+    label: "API Key"
+  }
+
+  Grok-Models: {
+    label: "Grok Models"
   }
 }
 
-XAI-API: {
-  label: "XAI API"
-  shape: rectangle
+Developer -> xAI-Platform.API-Key: "1. Obtains API Key"
+Developer -> aigne-xai: "2. Configure Package\n(API Key, Model Selection)"
+aigne-xai -> xAI-Platform.Grok-Models: "3. Sends API Request"
+xAI-Platform.Grok-Models -> aigne-xai: "4. Returns Response"
+aigne-xai -> Developer: "5. Delivers Result"
 
-  XAI-Models: {
-    label: "XAI Models\n(e.g., Grok)"
-    shape: cylinder
-  }
-}
-
-AIGNE-Application.aigne-xai -> XAI-API: "Communicates via\nOpenAI-compatible API"
-XAI-API -> XAI-API.XAI-Models: "Provides Access"
 ```
-
-## Features
-
-*   **XAI API Integration**: Direct connection to XAI's API services.
-*   **Chat Completions**: Support for XAI's chat completions API with all available models.
-*   **Function Calling**: Built-in support for function calling capabilities.
-*   **Streaming Responses**: Enables handling of streaming responses for more responsive applications.
-*   **Type-Safe**: Comes with comprehensive TypeScript typings for all APIs and models.
-*   **Consistent Interface**: Fully compatible with the AIGNE Framework's model interface.
-*   **Error Handling**: Includes robust error handling and retry mechanisms.
-*   **Full Configuration**: Provides extensive configuration options for fine-tuning model behavior.
 
 ## Installation
 
-You can install the package using npm, yarn, or pnpm.
+To begin, install the `@aigne/xai` package along with the AIGNE core library using your preferred package manager.
 
-### npm
-
-```bash
-npm install @aigne/xai @aigne/core
-```
-
-### yarn
-
-```bash
-yarn add @aigne/xai @aigne/core
-```
-
-### pnpm
-
-```bash
-pnpm add @aigne/xai @aigne/core
-```
+<x-cards data-columns="3">
+  <x-card data-title="npm" data-icon="logos:npm-icon">
+    ```bash
+    npm install @aigne/xai @aigne/core
+    ```
+  </x-card>
+  <x-card data-title="yarn" data-icon="logos:yarn">
+    ```bash
+    yarn add @aigne/xai @aigne/core
+    ```
+  </x-card>
+  <x-card data-title="pnpm" data-icon="logos:pnpm">
+    ```bash
+    pnpm add @aigne/xai @aigne/core
+    ```
+  </x-card>
+</x-cards>
 
 ## Configuration
 
-To get started, you need to configure the `XAIChatModel`. The model can be initialized with various options to customize its behavior.
+The `XAIChatModel` class is the primary interface for interacting with the xAI API. To use it, you must configure it with your xAI API key.
 
-```typescript
-import { XAIChatModel } from "@aigne/xai";
+You can provide the API key in two ways:
+1.  **Directly in the constructor**: Pass the key via the `apiKey` property.
+2.  **Environment variable**: Set the `XAI_API_KEY` environment variable. The model will automatically detect and use it.
 
-const model = new XAIChatModel({
-  // Provide API key directly or use the XAI_API_KEY environment variable
-  apiKey: "your-xai-api-key", // Optional if env var is set
+### Constructor Options
 
-  // Specify the model to use. Defaults to 'grok-2-latest'
-  model: "grok-2-latest",
+When creating an instance of `XAIChatModel`, you can provide the following options:
 
-  // Additional options to pass to the model
-  modelOptions: {
-    temperature: 0.7,
-    max_tokens: 1024,
-  },
-});
-```
-
-The `apiKey` can be passed directly to the constructor or set as an environment variable named `XAI_API_KEY`. The SDK will automatically pick it up.
+<x-field-group>
+  <x-field data-name="apiKey" data-type="string" data-required="false">
+    <x-field-desc markdown>Your xAI API key. If not provided, the system will fall back to the `XAI_API_KEY` environment variable.</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false" data-default="grok-2-latest">
+    <x-field-desc markdown>The specific xAI model to use for chat completions. Defaults to `grok-2-latest`.</x-field-desc>
+  </x-field>
+  <x-field data-name="baseURL" data-type="string" data-required="false" data-default="https://api.x.ai/v1">
+    <x-field-desc markdown>The base URL for the xAI API. This is pre-configured and typically does not need to be changed.</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>Additional options to pass to the xAI API, such as `temperature`, `topP`, etc.</x-field-desc>
+  </x-field>
+</x-field-group>
 
 ## Basic Usage
 
-The following example demonstrates how to use the `invoke` method to send a simple request to the XAI model and receive a response.
+The following example demonstrates how to instantiate the `XAIChatModel` and invoke it to get a response.
 
-```typescript
+```typescript Basic Invocation icon=logos:typescript
 import { XAIChatModel } from "@aigne/xai";
 
 const model = new XAIChatModel({
@@ -114,23 +108,28 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* Output:
-  {
-    text: "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!",
-    model: "grok-2-latest",
-    usage: {
-      inputTokens: 6,
-      outputTokens: 17
-    }
+```
+
+### Example Response
+
+The `invoke` method returns an object containing the model's response and usage metadata.
+
+```json Response Object icon=mdi:code-json
+{
+  "text": "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!",
+  "model": "grok-2-latest",
+  "usage": {
+    "inputTokens": 6,
+    "outputTokens": 17
   }
-  */
+}
 ```
 
 ## Streaming Responses
 
-For applications requiring real-time interaction, you can stream responses from the model. This is useful for creating conversational interfaces where users see the response as it's being generated.
+For real-time applications, you can stream the response from the model. Set the `streaming: true` option in the `invoke` method to receive data in chunks as it becomes available.
 
-```typescript
+```typescript Streaming Example icon=logos:typescript
 import { isAgentResponseDelta } from "@aigne/core";
 import { XAIChatModel } from "@aigne/xai";
 
@@ -157,10 +156,26 @@ for await (const chunk of stream) {
   }
 }
 
-console.log(fullText); // Output: "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!"
-console.log(json); // { model: "grok-2-latest", usage: { inputTokens: 6, outputTokens: 17 } }
+console.log(fullText);
+console.log(json);
 ```
 
-## License
+### Streaming Output
 
-This package is released under the Elastic-2.0 license.
+When iterating through the stream, you can accumulate the text delta to form the complete message and merge the JSON parts to get the final metadata.
+
+```text Text Output icon=mdi:text-box
+I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!
+```
+
+```json JSON Output icon=mdi:code-json
+{
+  "model": "grok-2-latest",
+  "usage": {
+    "inputTokens": 6,
+    "outputTokens": 17
+  }
+}
+```
+
+This concludes the guide on using the `@aigne/xai` package. For more information on other available models, please see the [Models Overview](./models-overview.md).

@@ -1,168 +1,82 @@
-本指南提供了您在幾分鐘內安裝 AIGNE 框架並執行第一個 AI 應用程式所需的一切。我們將逐步引導您設定環境、安裝必要的套件，並建立一個簡單而強大的多 Agent 工作流程。
+# 常見工作流程
 
-## 1. 先決條件
+在 AIGNE 框架中，單一 Agent 可以執行特定任務。然而，當多個 Agent 協作解決更複雜的問題時，才能真正發揮系統的強大威力。就像團隊成員一樣，Agent 可以被組織起來以結構化的方式協同工作。這些協作模式被稱為「工作流程」。
 
-在開始之前，請確保您的系統上已安裝 Node.js。AIGNE 框架需要較新版本的 Node.js 才能正常運作。
+工作流程定義了任務和資訊如何在不同的 Agent 之間流動以實現更大的目標。透過以不同的模式安排 Agent，我們可以為各種業務需求建立精密的自動化流程。
 
-*   **Node.js**：20.0 或更高版本
+下圖說明了三種基本的工作流程模式。
 
-您可以在終端機中執行以下指令來檢查您的 Node.js 版本：
+```d2
+direction: down
 
-```bash
-node -v
-```
-
-如果您尚未安裝 Node.js 或需要升級，我們建議使用版本管理器（如 `nvm`）或從 [Node.js 官方網站](https://nodejs.org/)下載。
-
-## 2. 安裝
-
-您可以使用您偏好的套件管理器將 AIGNE 框架新增至您的專案中：`npm`、`yarn` 或 `pnpm`。
-
-### 使用 npm
-
-```bash
-npm install @aigne/core
-```
-
-### 使用 yarn
-
-```bash
-yarn add @aigne/core
-```
-
-### 使用 pnpm
-
-```bash
-pnpm add @aigne/core
-```
-
-此指令會安裝核心套件，其中提供了建立 AI Agent 和工作流程所需的基本建構區塊。
-
-## 3. 您的第一個 AIGNE 應用程式
-
-讓我們來建立一個簡單的應用程式，以展示「Handoff」工作流程模式。在此範例中，`AgentA` 將接收初始提示，然後將對話交接給具有不同個性的 `AgentB`。
-
-此範例還需要一個模型提供者來驅動 Agent。本指南將使用 OpenAI。
-
-首先，安裝 OpenAI 模型套件：
-
-```bash
-npm install @aigne/openai
-```
-
-現在，建立一個新的 TypeScript 檔案（例如 `index.ts`），並新增以下程式碼：
-
-```ts
-import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-
-// 用於載入環境變數
-import * as dotenv from "dotenv";
-dotenv.config();
-
-// 1. 設定 AI 模型
-// 確保您已在 .env 檔案中設定 OPENAI_API_KEY
-const { OPENAI_API_KEY } = process.env;
-if (!OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY is not set in the environment variables.");
+Sequential-Tasks: {
+  label: "循序任務"
+  shape: rectangle
+  Agent-A: { label: "Agent A" }
+  Agent-B: { label: "Agent B" }
+  Agent-C: { label: "Agent C" }
 }
 
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-});
-
-// 2. 定義「Handoff」技能
-// 此函式定義了從 AgentA 將控制權轉移給 AgentB 的條件。
-function transferToB() {
-  return agentB;
+Parallel-Tasks: {
+  label: "平行任務"
+  shape: rectangle
+  Initial-Task: { label: "初始任務" }
+  Parallel-Agents: {
+    shape: rectangle
+    grid-columns: 3
+    Agent-A: { label: "Agent A" }
+    Agent-B: { label: "Agent B" }
+    Agent-C: { label: "Agent C" }
+  }
+  Combined-Result: { label: "合併結果" }
 }
 
-// 3. 定義您的 Agent
-const agentA = AIAgent.from({
-  name: "AgentA",
-  instructions: "You are a helpful agent. When the user asks to talk to agent b, use the transferToB skill.",
-  outputKey: "A",
-  skills: [transferToB], // 附加 handoff 技能
-  inputKey: "message",
-});
-
-const agentB = AIAgent.from({
-  name: "AgentB",
-  instructions: "Only speak in Haikus.",
-  outputKey: "B",
-  inputKey: "message",
-});
-
-// 4. 初始化 AIGNE 框架
-const aigne = new AIGNE({ model });
-
-// 執行應用程式的主函式
-async function main() {
-  // 5. 啟動與 AgentA 的會話
-  const userAgent = aigne.invoke(agentA);
-
-  // 6. 第一次互動：觸發 handoff
-  console.log("User: transfer to agent b");
-  const result1 = await userAgent.invoke({ message: "transfer to agent b" });
-  console.log("Agent:", result1);
-  // 預期輸出：
-  // {
-  //   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?",
-  // }
-
-  // 7. 第二次互動：與 AgentB 聊天
-  // 現在會話已永久交給 AgentB
-  console.log("\nUser: It's a beautiful day");
-  const result2 = await userAgent.invoke({ message: "It's a beautiful day" });
-  console.log("Agent:", result2);
-  // 預期輸出：
-  // {
-  //   B: "Sunshine warms the earth,  \nGentle breeze whispers softly,  \nNature sings with joy.  ",
-  // }
+Decision-Making: {
+  label: "決策制定"
+  shape: rectangle
+  Request: { label: "請求" }
+  Manager-Agent: {
+    label: "管理者 Agent"
+    shape: diamond
+  }
+  Specialized-Agents: {
+    shape: rectangle
+    grid-columns: 2
+    Agent-A: { label: "專業 Agent A" }
+    Agent-B: { label: "專業 Agent B" }
+  }
 }
 
-main().catch(console.error);
+Sequential-Tasks.Agent-A -> Sequential-Tasks.Agent-B: "結果"
+Sequential-Tasks.Agent-B -> Sequential-Tasks.Agent-C: "結果"
+
+Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-A
+Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-B
+Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-C
+
+Parallel-Tasks.Parallel-Agents.Agent-A -> Parallel-Tasks.Combined-Result
+Parallel-Tasks.Parallel-Agents.Agent-B -> Parallel-Tasks.Combined-Result
+Parallel-Tasks.Parallel-Agents.Agent-C -> Parallel-Tasks.Combined-Result
+
+Decision-Making.Request -> Decision-Making.Manager-Agent
+Decision-Making.Manager-Agent -> Decision-Making.Specialized-Agents.Agent-A: "任務 A"
+Decision-Making.Manager-Agent -> Decision-Making.Specialized-Agents.Agent-B: "任務 B"
 ```
 
-### 程式碼解析
+本指南介紹了您將遇到的最常見的工作流程。了解這些模式將幫助您視覺化 Agent 如何為您自動化複雜的多步驟流程。
 
-1.  **設定 AI 模型**：我們匯入 `OpenAIChatModel` 並使用 API 金鑰對其進行初始化。最佳實踐是從環境變數中載入像 API 金鑰這樣的密鑰。
-2.  **定義「Handoff」技能**：`transferToB` 函式是一個*技能*。執行時，它會返回 `agentB` 的定義，向 AIGNE 發出信號，表示應將控制權轉移給該 Agent。
-3.  **定義您的 Agent**：我們使用 `AIAgent.from()` 建立兩個不同的 Agent。
-    *   `agentA` 是初始的聯絡點。其 `skills` 陣列包含 `transferToB` 函式，使其能夠執行交接。
-    *   `agentB` 有一個特定的個性——它只用俳句說話。
-4.  **初始化 AIGNE 框架**：我們建立一個 `AIGNE` 的實例，並傳入它將用來驅動 Agent 的模型。
-5.  **啟動會話**：`aigne.invoke(agentA)` 會建立一個有狀態的使用者會話，從 `agentA` 開始。
-6.  **觸發 Handoff**：第一條訊息「transfer to agent b」符合 `agentA` 的指示，`agentA` 隨後執行 `transferToB` 技能。對話現在永久交接給 `agentB`。輸出鍵為 `B`，表示回應來自 `agentB`。
-7.  **與 AgentB 聊天**：第二條訊息被傳送到同一個 `userAgent` 會話。由於交接已經發生，`agentB` 會收到訊息並根據其指示以俳句回應。
+探索每個工作流程的詳細說明，以深入了解其具體使用案例和優點。
 
-## 4. 執行程式碼
+<x-cards data-columns="3">
+  <x-card data-title="循序任務" data-icon="lucide:list-ordered" data-href="/user-guide/common-workflows/sequential-tasks">
+    如同生產線，Agent 一個接一個地完成任務，並將其工作成果傳遞給下一個 Agent。這對於必須按特定順序執行的流程來說非常理想。
+  </x-card>
+  <x-card data-title="平行任務" data-icon="lucide:git-fork" data-href="/user-guide/common-workflows/parallel-tasks">
+    為了更快完成工作，多個 Agent 可以同時處理一個任務的不同部分。然後將它們各自的結果合併起來，形成一個完整的解決方案。
+  </x-card>
+  <x-card data-title="決策制定" data-icon="lucide:git-merge" data-href="/user-guide/common-workflows/decision-making">
+    就像一位經理，一個 Agent 可以分析傳入的請求，並智慧地將其路由到最適合的專業 Agent 來處理該項工作。
+  </x-card>
+</x-cards>
 
-若要執行此範例，請依照以下步驟操作：
-
-1.  在您專案的根目錄中**建立一個 `.env` 檔案**來儲存您的 OpenAI API 金鑰：
-    ```
-    OPENAI_API_KEY="your_openai_api_key_here"
-    ```
-
-2.  **安裝 `dotenv` 和 `ts-node`** 以管理環境變數並直接執行 TypeScript：
-    ```bash
-    npm install dotenv ts-node typescript
-    ```
-
-3.  使用 `ts-node` **執行腳本**：
-    ```bash
-    npx ts-node index.ts
-    ```
-
-您將在主控台中看到 Agent 互動並執行交接的輸出。
-
-## 後續步驟
-
-恭喜！您已成功建立並執行了您的第一個 AIGNE 應用程式。
-
-接下來，您可以探索該框架更進階的功能：
-
-*   **探索主要功能**：了解模組化設計、多模型支援和程式碼執行能力。
-*   **探索工作流程模式**：深入研究其他強大的模式，如 Sequential、Router 和 Concurrency，以建構更複雜的應用程式。
-*   **查閱 API 參考文件**：取得所有可用類別、方法和設定的詳細資訊。
+透過結合這些基本模式，您可以根據自己的特定需求建立強大且自主的系統。點擊任何卡片以深入了解每個工作流程的運作方式。

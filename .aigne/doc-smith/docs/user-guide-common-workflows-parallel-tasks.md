@@ -1,186 +1,101 @@
-# Workflow Reflection
+# Parallel Tasks
 
-The Reflection workflow pattern enables self-improvement and iterative refinement of agent outputs. In this pattern, an initial output is generated and then passed to a separate `reviewer` agent for evaluation. If the output doesn't meet the required standards, it's sent back with feedback for another iteration. This cycle continues until the output is approved or a maximum number of iterations is reached.
+In some situations, you need to perform several independent tasks at the same time to be more efficient. The parallel tasks workflow is designed for this purpose. It allows multiple AI agents to work simultaneously on the same initial information, with their individual results collected and combined at the end.
 
-This pattern is particularly effective for scenarios requiring high-quality, validated outputs, such as:
-- **Code Generation and Review**: A coder agent writes code, and a reviewer agent inspects it for correctness, efficiency, and safety.
-- **Content Quality Control**: A writer agent generates content, and an editor agent checks it for style, grammar, and accuracy.
-- **Self-Correcting Systems**: Agents can learn from feedback and iteratively improve their performance on a given task.
+This approach is like hiring a team of specialists to analyze a business proposal. One specialist might focus on financial viability, another on market trends, and a third on legal risks. They all start with the same proposal and work at the same time, and their final reports are gathered to give a complete picture. This is much faster than if they had to wait for each other to finish.
 
-## How It Works
-
-The reflection process follows a loop where one or more agents generate a solution, and a reviewer agent provides feedback. The initial agents then use this feedback to refine their next attempt.
-
-# Workflow Reflection
-
-The Reflection workflow pattern enables self-improvement and iterative refinement of agent outputs. In this pattern, an initial output is generated and then passed to a separate `reviewer` agent for evaluation. If the output doesn't meet the required standards, it's sent back with feedback for another iteration. This cycle continues until the output is approved or a maximum number of iterations is reached.
-
-This pattern is particularly effective for scenarios requiring high-quality, validated outputs, such as:
-- **Code Generation and Review**: A coder agent writes code, and a reviewer agent inspects it for correctness, efficiency, and safety.
-- **Content Quality Control**: A writer agent generates content, and an editor agent checks it for style, grammar, and accuracy.
-- **Self-Correcting Systems**: Agents can learn from feedback and iteratively improve their performance on a given task.
+This workflow is managed by an [Agent Team](./user-guide-understanding-agents-agent-teams.md) configured to operate in parallel mode. For a different approach where tasks are done one after another, see the [Sequential Tasks](./user-guide-common-workflows-sequential-tasks.md) workflow.
 
 ## How It Works
 
-The reflection process follows a loop where one or more agents generate a solution, and a reviewer agent provides feedback. The initial agents then use this feedback to refine their next attempt.
+The parallel workflow follows a clear, efficient process for handling tasks that don't depend on each other. The flow is designed to maximize speed by running all agents at once.
+
+1.  **Single Input**: The process begins with a single piece of information, like a document, a user query, or a set of data.
+2.  **Simultaneous Distribution**: The Agent Team takes this input and distributes the *exact same information* to every agent in the team.
+3.  **Independent Processing**: All agents start working at the same time. Each agent performs its specialized task based on its unique instructions, without waiting for or interacting with the other agents.
+4.  **Result Aggregation**: As each agent finishes its work, its output is collected. The Agent Team then aggregates these individual outputs into a single, combined result. If multiple agents produce an output for the same field, the system typically accepts the result from whichever agent finishes first.
+
+This structure ensures that the total time required to complete all tasks is determined by the longest-running agent, rather than the sum of all their times.
 
 ```d2
 direction: down
 
-start: { 
-  label: "Start"
-  shape: oval 
-}
-
-generator: {
-  label: "Generator Agent\nGenerates Initial Output"
+Input: {
+  label: "1. Single Input"
   shape: rectangle
 }
 
-reviewer: {
-  label: "Reviewer Agent\nEvaluates Output"
+Agent-Team: {
+  label: "Agent Team (Parallel Mode)"
+  style.stroke-dash: 4
+
+  Distribution: {
+    label: "2. Distribute Task"
+    shape: diamond
+  }
+
+  Agents: {
+    label: "3. Independent Processing"
+    style.stroke-width: 0
+    grid-columns: 3
+
+    Agent-1: { 
+      label: "Agent 1"
+      shape: rectangle 
+    }
+    Agent-2: { 
+      label: "Agent 2"
+      shape: rectangle 
+    }
+    Agent-N: {
+      label: "Agent N..."
+      shape: rectangle
+    }
+  }
+
+  Aggregation: {
+    label: "4. Aggregate Results"
+    shape: diamond
+  }
+}
+
+Output: {
+  label: "5. Combined Result"
   shape: rectangle
 }
 
-decision: {
-  label: "Output Meets\nStandards?"
-  shape: diamond
-}
+Input -> Agent-Team.Distribution
+Agent-Team.Distribution -> Agent-Team.Agents.Agent-1
+Agent-Team.Distribution -> Agent-Team.Agents.Agent-2
+Agent-Team.Distribution -> Agent-Team.Agents.Agent-N
+Agent-Team.Agents.Agent-1 -> Agent-Team.Aggregation
+Agent-Team.Agents.Agent-2 -> Agent-Team.Aggregation
+Agent-Team.Agents.Agent-N -> Agent-Team.Aggregation
+Agent-Team.Aggregation -> Output
 
-end: {
-  label: "End\n(Approved Output)"
-  shape: oval
-}
-
-start -> generator
-generator -> reviewer: "Submit for review"
-reviewer -> decision
-decision -> end: "Yes"
-decision -> generator: "No (Provide Feedback)"
 ```
 
-## Configuration
+## Common Use Cases
 
-To enable the reflection pattern, you configure the `reflection` property within the `TeamAgentOptions`. This property takes a `ReflectionMode` object that defines the review and approval process.
+The parallel workflow is best suited for scenarios where multiple, independent analyses or tasks are needed on the same piece of information, and speed is a priority.
 
-**ReflectionMode Parameters**
+<x-cards data-columns="2">
+  <x-card data-title="Multi-Perspective Content Analysis" data-icon="lucide:scan-text">
+    When analyzing a document, one agent could extract key features, another could analyze the emotional tone (sentiment), and a third could identify the target audience. All three tasks can happen at once.
+  </x-card>
+  <x-card data-title="Parallel Data Queries" data-icon="lucide:database-zap">
+    If you need to search for information across different sources (e.g., a customer database, a product catalog, and a knowledge base), you can dispatch an agent for each source to search simultaneously.
+  </x-card>
+  <x-card data-title="Competitive Analysis" data-icon="lucide:bar-chart-3">
+    To analyze a competitor's product, one agent could gather recent customer reviews, another could find pricing information, and a third could look up technical specifications, all in parallel.
+  </x-card>
+  <x-card data-title="Code Review" data-icon="lucide:code-2">
+    For a piece of code, one agent can check for security vulnerabilities while another checks for adherence to style guidelines. The feedback is then combined for the developer.
+  </x-card>
+</x-cards>
 
-<x-field-group>
-  <x-field data-name="reviewer" data-type="Agent" data-required="true" data-desc="The agent responsible for reviewing the output and providing feedback."></x-field>
-  <x-field data-name="isApproved" data-type="((output: Message) => PromiseOrValue<boolean | unknown>) | string" data-required="true" data-desc="A function or a field name in the reviewer's output that determines if the result is approved. If it's a function, it receives the reviewer's output and should return a truthy value for approval. If it's a string, the corresponding field in the output is checked for truthiness."></x-field>
-  <x-field data-name="maxIterations" data-type="number" data-required="false" data-default="3" data-desc="The maximum number of review-feedback cycles before the process is terminated. This prevents infinite loops."></x-field>
-  <x-field data-name="returnLastOnMaxIterations" data-type="boolean" data-required="false" data-default="false" data-desc="If set to `true`, the workflow returns the last generated output when `maxIterations` is reached, even if it was not approved. If `false`, it throws an error."></x-field>
-</x-field-group>
+## Summary
 
-## Example: Code Generation and Review
+The parallel tasks workflow is a powerful pattern for improving efficiency. By allowing multiple agents to work independently and simultaneously, it significantly reduces the time needed to complete complex jobs that involve several unrelated sub-tasks. This makes it a fundamental workflow for building responsive and powerful AI applications.
 
-This example demonstrates a reflection workflow where a `coder` agent writes a Python function, and a `reviewer` agent evaluates it. The process continues until the `reviewer` approves the code.
-
-### 1. Define the Coder Agent
-
-The `coder` agent is responsible for writing the initial code based on a user's request. It is designed to receive feedback from the reviewer to improve its solution in subsequent iterations.
-
-```typescript
-import { TeamAgent, AIAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-import { z } from "zod";
-
-const { OPENAI_API_KEY } = process.env;
-
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-});
-
-const coder = AIAgent.from({
-  name: "Coder",
-  instructions: `
-You are a proficient coder. You write Python code to solve problems.
-Work with the reviewer to improve your code.
-Always put all finished code in a single Markdown code block.
-
-Respond using the following format:
-Thoughts: <Your comments>
-Code: <Your code>
-
-Previous review result:
-{{feedback}}
-
-User's question:
-{{question}}
-`,
-  outputSchema: z.object({
-    code: z.string().describe("Your code"),
-  }),
-  inputKey: "question",
-});
-```
-
-### 2. Define the Reviewer Agent
-
-The `reviewer` agent evaluates the code generated by the `coder`. It checks for correctness, efficiency, and safety, and provides structured feedback. Its output includes a boolean `approval` field that controls the reflection loop.
-
-```typescript
-const reviewer = AIAgent.from({
-  name: "Reviewer",
-  instructions: `
-You are a code reviewer. You focus on correctness, efficiency and safety of the code.
-
-The problem statement is: {{question}}
-The code is:
-\`\`\`
-{{code}}
-\`\`\`
-
-Please review the code. If previous feedback was provided, see if it was addressed.
-`,
-  outputSchema: z.object({
-    approval: z.boolean().describe("Set to true to APPROVE or false to REVISE"),
-    feedback: z.object({
-      correctness: z.string().describe("Your comments on correctness"),
-      efficiency: z.string().describe("Your comments on efficiency"),
-      safety: z.string().describe("Your comments on safety"),
-      suggested_changes: z
-        .string()
-        .describe("Your comments on suggested changes"),
-    }),
-  }),
-});
-```
-
-### 3. Create and Invoke the TeamAgent
-
-A `TeamAgent` is configured to orchestrate the workflow. The `coder` is set as the primary agent (skill), and the `reviewer` is configured in the `reflection` property. The `isApproved` condition points to the `approval` field in the `reviewer`'s output.
-
-```typescript
-const reflectionTeam = TeamAgent.from({
-  skills: [coder],
-  reflection: {
-    reviewer,
-    isApproved: "approval",
-    maxIterations: 3,
-  },
-});
-
-async function run() {
-  const result = await reflectionTeam.invoke(
-    {
-      question: "Write a function to find the sum of all even numbers in a list.",
-    },
-    { model }
-  );
-  
-  console.log(JSON.stringify(result, null, 2));
-}
-
-run();
-```
-
-### Example Output
-
-After one or more iterations, the `reviewer` agent approves the code, and the final output from the `coder` agent is returned.
-
-```json
-{
-  "code": "def sum_of_even_numbers(numbers):\n    \"\"\"Function to calculate the sum of all even numbers in a list.\"\"\"\n    return sum(number for number in numbers if number % 2 == 0)"
-}
-```
+To see how agents can work together in a different way, read about the [Sequential Tasks](./user-guide-common-workflows-sequential-tasks.md) workflow next.

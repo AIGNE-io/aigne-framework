@@ -1,71 +1,91 @@
-# @aigne/ideogram SDK
+# Ideogram
 
-`@aigne/ideogram` パッケージは、AIGNE フレームワークと Ideogram の強力な画像生成モデルとのシームレスな統合を提供します。この SDK を使用することで、開発者は AIGNE アプリケーション内で Ideogram の高度な画像生成機能を簡単に活用でき、一貫性のある合理化されたインターフェースを利用できます。
+このドキュメントは、開発者が AIGNE フレームワーク内で Ideogram の画像生成機能を統合し、利用するための包括的なガイドを提供します。`@aigne/ideogram` パッケージは Ideogram の API へのシームレスなインターフェースを提供し、テキストプロンプトから高品質な画像を生成することを可能にします。
 
-このガイドでは、`@aigne/ideogram` SDK のインストールプロセス、基本的な使い方、および高度な機能について説明します。
+このガイドでは、インストール、設定、使用方法に必要な手順を、コード例と詳細なパラメータ説明とともに解説します。他のモデルに関する情報については、[モデル概要](./models-overview.md) を参照してください。
 
 ## インストール
 
-お好みのパッケージマネージャを使用してパッケージをインストールできます。
+まず、`@aigne/ideogram` パッケージをプロジェクトにインストールします。お好みのパッケージマネージャーを使用できます。
 
-### npm を使用する場合
-
-```bash
+```bash title="npm" icon=logos:npm-icon
 npm install @aigne/ideogram
 ```
 
-### yarn を使用する場合
-
-```bash
+```bash title="yarn" icon=logos:yarn
 yarn add @aigne/ideogram
 ```
 
-### pnpm を使用する場合
-
-```bash
+```bash title="pnpm" icon=logos:pnpm
 pnpm add @aigne/ideogram
 ```
 
-## 認証
+## 設定
 
-Ideogram API を使用するには、API キーが必要です。キーを提供するには 2 つの方法があります。
+Ideogram API に接続するためには、適切な設定が不可欠です。これには、API キーの設定と `IdeogramImageModel` のインスタンス化が含まれます。
 
-1.  **コンストラクタで直接指定:** オプションオブジェクトで `apiKey` を渡します。
-2.  **環境変数の使用:** SDK は `IDEOGRAM_API_KEY` 環境変数を自動的に検出します。
+### API キーの設定
 
-```bash
+モデルは認証のために Ideogram の API キーを必要とします。推奨される最も安全な方法は、環境変数を設定することです。
+
+```bash title=".env" icon=mdi:folder-key-outline
 export IDEOGRAM_API_KEY="your-ideogram-api-key"
 ```
 
-## 基本的な使い方
+あるいは、モデルのインスタンス化時に `apiKey` を直接渡すこともできますが、本番環境では安全性が低くなります。
 
-以下は、テキストプロンプトから画像を生成する簡単な例です。
+### モデルのインスタンス化
 
-```typescript
+API キーが設定されたら、`IdeogramImageModel` をインポートしてインスタンスを作成できます。
+
+```typescript Instantiating the Model icon=logos:typescript-icon
 import { IdeogramImageModel } from "@aigne/ideogram";
 
-// モデルを初期化
-const model = new IdeogramImageModel({
-  apiKey: "your-api-key", // IDEOGRAM_API_KEY が設定されている場合はオプション
-});
+// API キーは環境変数から自動的に検出されます。
+const model = new IdeogramImageModel();
 
-// 生成パラメータを定義
-const result = await model.invoke({
-  model: "ideogram-v3",
-  prompt: "A serene mountain landscape at sunset with golden light",
+// あるいは、API キーを直接指定します。
+const modelWithApiKey = new IdeogramImageModel({
+  apiKey: "your-ideogram-api-key", 
 });
-
-// 出力をログに記録
-console.log(result);
 ```
 
-### レスポンスの例
+## 基本的な使用方法
 
-```json
+画像を生成するには、`invoke` メソッドを使用します。このメソッドは、プロンプトとその他の必要なパラメータを含むオブジェクトを受け取ります。必須パラメータは `prompt` のみです。
+
+```typescript Generating an Image icon=logos:typescript-icon
+import { IdeogramImageModel } from "@aigne/ideogram";
+
+const model = new IdeogramImageModel();
+
+async function generateImage() {
+  try {
+    const result = await model.invoke({
+      model: "ideogram-v3",
+      prompt: "A serene mountain landscape at sunset with golden light",
+    });
+    
+    console.log(JSON.stringify(result, null, 2));
+  } catch (error) {
+    console.error("Error generating image:", error);
+  }
+}
+
+generateImage();
+```
+
+### レスポンスオブジェクト
+
+`invoke` メソッドは、生成された画像と使用状況のメタデータを含むオブジェクトに解決されるプロミスを返します。
+
+```json Example Response icon=material-symbols:data-object-outline
 {
   "images": [
     {
-      "url": "https://api.ideogram.ai/generation/..."
+      "type": "url",
+      "url": "https://api.ideogram.ai/generation/...",
+      "mimeType": "image/png"
     }
   ],
   "usage": {
@@ -78,73 +98,110 @@ console.log(result);
 
 ## 入力パラメータ
 
-`invoke` メソッドは、画像生成をカスタマイズするためのいくつかのパラメータを持つオブジェクトを受け入れます。
+`invoke` メソッドは、画像生成プロセスをカスタマイズするためのいくつかのパラメータを受け入れます。
 
-### 必須パラメータ
+<x-field-group>
+  <x-field data-name="prompt" data-type="string" data-required="true">
+    <x-field-desc markdown>生成したい画像のテキスト記述。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false" data-default="ideogram-v3">
+    <x-field-desc markdown>現在サポートされているのは `ideogram-v3` のみです。</x-field-desc>
+  </x-field>
+  <x-field data-name="n" data-type="number" data-required="false" data-default="1">
+    <x-field-desc markdown>生成する画像の数。有効範囲は1から8です。</x-field-desc>
+  </x-field>
+  <x-field data-name="seed" data-type="number" data-required="false">
+    <x-field-desc markdown>再現可能な画像生成のためのランダムシード。0から2147483647までの整数である必要があります。</x-field-desc>
+  </x-field>
+  <x-field data-name="resolution" data-type="string" data-required="false">
+    <x-field-desc markdown>生成される画像の解像度（例: `"1024x1024"`, `"1792x1024"`）。サポートされているすべての解像度については、Ideogram の公式 API ドキュメントを参照してください。</x-field-desc>
+  </x-field>
+  <x-field data-name="aspectRatio" data-type="string" data-required="false">
+    <x-field-desc markdown>画像のアスペクト比（例: `"1x1"`, `"16x9"`）。</x-field-desc>
+  </x-field>
+  <x-field data-name="renderingSpeed" data-type="string" data-required="false" data-default="DEFAULT">
+    <x-field-desc markdown>生成速度と品質を制御します。受け入れられる値は `"TURBO"`、`"DEFAULT"`、または `"QUALITY"` です。</x-field-desc>
+  </x-field>
+  <x-field data-name="magicPrompt" data-type="string" data-required="false" data-default="AUTO">
+    <x-field-desc markdown>プロンプトを強化するための MagicPrompt を有効または無効にします。受け入れられる値は `"AUTO"`、`"ON"`、または `"OFF"` です。</x-field-desc>
+  </x-field>
+  <x-field data-name="negativePrompt" data-type="string" data-required="false">
+    <x-field-desc markdown>生成される画像から除外する要素の記述。</x-field-desc>
+  </x-field>
+  <x-field data-name="styleType" data-type="string" data-required="false" data-default="AUTO">
+    <x-field-desc markdown>芸術的なスタイルを指定します。受け入れられる値は `"AUTO"`、`"GENERAL"`、`"REALISTIC"`、`"DESIGN"`、または `"FICTION"` です。</x-field-desc>
+  </x-field>
+  <x-field data-name="colorPalette" data-type="object" data-required="false">
+    <x-field-desc markdown>生成に使用する特定のカラーパレットを定義するオブジェクト。</x-field-desc>
+  </x-field>
+  <x-field data-name="styleCodes" data-type="string[]" data-required="false">
+    <x-field-desc markdown>特定のスタイルを表す8文字の16進数コードのリスト。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-| パラメータ | 型     | 説明                                        |
-| :------- | :----- | :------------------------------------------ |
-| `prompt` | string | 生成したい画像の説明テキスト。                |
+## 高度な使用方法
 
-### オプションのパラメータ
+出力をより詳細に制御するために、単一の `invoke` 呼び出しで複数のオプションパラメータを組み合わせることができます。
 
-| パラメータ       | 型       | 説明                                                                                                          |
-| :--------------- | :------- | :------------------------------------------------------------------------------------------------------------ |
-| `model`          | string   | 生成に使用するモデル。現在は `ideogram-v3` のみをサポートしています。                                           |
-| `n`              | number   | 生成する画像の数。1 から 8 の間でなければなりません。デフォルトは 1 です。                                      |
-| `seed`           | number   | 再現可能な結果を得るためのランダムシード。0 から 2147483647 の間でなければなりません。                          |
-| `resolution`     | string   | 生成される画像の解像度 (例: "1024x1024", "1792x1024")。                                                         |
-| `aspectRatio`    | string   | 画像のアスペクト比 (例: "1x1", "16x9")。                                                                      |
-| `renderingSpeed` | string   | 生成速度。「TURBO」、「DEFAULT」、または「QUALITY」が指定できます。                                             |
-| `magicPrompt`    | string   | MagicPrompt を有効または無効にします。「AUTO」、「ON」、または「OFF」が指定できます。                           |
-| `negativePrompt` | string   | 画像から除外したいものの説明。                                                                                |
-| `colorPalette`   | object   | 生成に影響を与えるカラーパレット。                                                                            |
-| `styleCodes`     | string[] | 8 文字の 16 進数スタイルコードのリスト。                                                                      |
-| `styleType`      | string   | 適用するスタイルタイプ。「AUTO」、「GENERAL」、「REALISTIC」、「DESIGN」、または「FICTION」が指定できます。       |
-
-すべてのパラメータの完全かつ詳細なリストについては、[Ideogram 公式 API リファレンス](https://developer.ideogram.ai/api-reference/api-reference/generate-v3) を参照してください。
-
-## 高度な使い方
-
-複数のパラメータを組み合わせて、生成される画像をより詳細に制御することができます。
-
-```typescript
+```typescript Advanced Image Generation icon=logos:typescript-icon
 import { IdeogramImageModel } from "@aigne/ideogram";
 
-const model = new IdeogramImageModel({
-  apiKey: "your-api-key",
-});
+const model = new IdeogramImageModel();
 
-const result = await model.invoke({
-  prompt: "A futuristic cityscape with neon lights and flying cars",
-  model: "ideogram-v3",
-  n: 4,
-  resolution: "1792x1024",
-  renderingSpeed: "TURBO",
-  styleType: "FICTION",
-  negativePrompt: "blurry, low quality, distorted",
-  seed: 12345
-});
+async function generateAdvancedImage() {
+  try {
+    const result = await model.invoke({
+      prompt: "A futuristic cityscape with neon lights and flying cars",
+      model: "ideogram-v3",
+      n: 4,
+      resolution: "1792x1024",
+      renderingSpeed: "TURBO",
+      styleType: "FICTION",
+      negativePrompt: "blurry, low quality, distorted",
+      seed: 12345,
+    });
+    
+    console.log(`Generated ${result.images.length} images.`);
+    result.images.forEach((image, index) => {
+      console.log(`Image ${index + 1}: ${image.url}`);
+    });
+  } catch (error) {
+    console.error("Error generating image:", error);
+  }
+}
 
-console.log(result.images);
+generateAdvancedImage();
 ```
 
 ## デフォルトのモデルオプション
 
-`IdeogramImageModel` インスタンスを作成する際にデフォルトオプションを設定すると、それ以降のすべての `invoke` 呼び出しに適用されます。これらのデフォルトは、個々の呼び出しで上書きすることができます。
+モデルのインスタンス化時に `modelOptions` プロパティを使用して、デフォルトのパラメータを設定できます。これらのオプションは、呼び出し自体のパラメータによって上書きされない限り、すべての `invoke` 呼び出しに適用されます。
 
-```typescript
+```typescript Setting Default Options icon=logos:typescript-icon
+import { IdeogramImageModel } from "@aigne/ideogram";
+
 const model = new IdeogramImageModel({
-  apiKey: "your-api-key",
   modelOptions: {
     styleType: "REALISTIC",
     renderingSpeed: "QUALITY",
-    magicPrompt: "ON"
-  }
+    magicPrompt: "ON",
+  },
 });
 
-// この呼び出しはデフォルトのモデルオプションを使用します
-const result = await model.invoke({
-  prompt: "A photorealistic portrait of an astronaut on Mars",
-});
+async function generateWithDefaults() {
+  // この呼び出しでは、上で定義されたデフォルトのオプションが使用されます。
+  const result = await model.invoke({
+    prompt: "A photorealistic portrait of an astronaut on Mars",
+  });
+  
+  console.log(result);
+}
+
+generateWithDefaults();
 ```
+
+## まとめ
+
+`@aigne/ideogram` パッケージは、Ideogram の画像生成をアプリケーションに統合するための直接的で効率的な方法を提供します。設定手順に従い、提供されているパラメータを利用することで、特定のニーズに合わせた高品質な画像を生成できます。
+
+すべてのパラメータ、サポートされている値、および高度な機能の完全かつ詳細なリストについては、公式の [Ideogram API リファレンス](https://developer.ideogram.ai/api-reference/api-reference/generate-v3) を参照してください。

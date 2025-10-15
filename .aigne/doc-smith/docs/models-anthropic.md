@@ -1,251 +1,180 @@
-# @aigne/anthropic
+# Anthropic
 
-<p align="center">
-  <picture>
-    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
-    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
-    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
-  </picture>
-</p>
+This guide provides instructions for configuring and using Anthropic's Claude models within the AIGNE Framework via the `@aigne/anthropic` package. It covers API key setup, model instantiation, and invoking the model for both standard and streaming responses.
 
-[![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
-[![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
-[![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
-[![NPM Version](https://img.shields.io/npm/v/@aigne/anthropic)](https://www.npmjs.com/package/@aigne/anthropic)
-[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/anthropic)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
-
-AIGNE Anthropic SDK for integrating with Claude AI models within the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework).
+For a general overview of how models work within the AIGNE framework, please refer to the [Models core concepts](./developer-guide-core-concepts-models.md) documentation.
 
 ## Introduction
 
-`@aigne/anthropic` provides a seamless integration between the AIGNE Framework and Anthropic's Claude language models. This package enables developers to easily leverage Anthropic's powerful models in their AIGNE applications, offering a consistent interface while harnessing Claude's advanced AI capabilities.
+The `@aigne/anthropic` package provides a direct and seamless integration between the AIGNE Framework and Anthropic's powerful Claude language models. This allows developers to leverage the advanced capabilities of models like Claude 3.5 Sonnet and Claude 3 Opus through the standardized `ChatModel` interface, ensuring consistency across your agentic applications.
 
-This diagram illustrates how the `@aigne/anthropic` package connects your AIGNE application to the Anthropic API and its underlying Claude models.
+Key features of this integration include:
 
-```d2
-direction: down
-
-AIGNE-Application: {
-  label: "AIGNE Application"
-  shape: rectangle
-
-  AIGNE-Framework: {
-    label: "AIGNE Framework"
-    icon: "https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg"
-    shape: rectangle
-
-    aigne-anthropic: {
-      label: "@aigne/anthropic"
-      shape: rectangle
-    }
-  }
-}
-
-Anthropic-Service: {
-  label: "Anthropic Service"
-  shape: rectangle
-
-  Anthropic-API: {
-    label: "Anthropic API"
-  }
-
-  Claude-Models: {
-    label: "Claude Models"
-    claude-3-haiku: "claude-3-haiku"
-    claude-3-sonnet: "claude-3-sonnet"
-  }
-}
-
-AIGNE-Application.AIGNE-Framework.aigne-anthropic -> Anthropic-Service.Anthropic-API: "Integrates via SDK"
-Anthropic-Service.Anthropic-API -> Anthropic-Service.Claude-Models: "Accesses"
-```
-
-## Features
-
-*   **Anthropic API Integration**: Direct connection to Anthropic's API services using the official SDK.
-*   **Chat Completions**: Full support for Claude's chat completions API with all available models.
-*   **Tool Calling**: Built-in support for Claude's powerful tool-calling capabilities.
-*   **Streaming Responses**: Enable streaming for more responsive and real-time applications.
-*   **Type-Safe**: Comprehensive TypeScript typings for all APIs, models, and options.
-*   **Consistent Interface**: Adheres to the AIGNE Framework's unified model interface for cross-provider compatibility.
-*   **Robust Error Handling**: Includes built-in error handling and retry mechanisms.
-*   **Full Configuration**: Extensive options for fine-tuning model behavior and client settings.
+*   **Direct API Integration**: Utilizes the official Anthropic SDK for reliable communication.
+*   **Chat Completions**: Full support for Anthropic's chat completions API.
+*   **Tool Calling**: Natively supports Claude's tool-calling functionality.
+*   **Streaming Responses**: Enables real-time, responsive applications by handling streaming outputs.
+*   **Type-Safe**: Comes with comprehensive TypeScript typings for robust development.
 
 ## Installation
 
-To get started, install the `@aigne/anthropic` and `@aigne/core` packages using your preferred package manager.
+To get started, install the `@aigne/anthropic` package along with the core AIGNE package using your preferred package manager.
 
-### npm
+<tabs>
+<tab-item title="npm">
 
 ```bash
 npm install @aigne/anthropic @aigne/core
 ```
 
-### yarn
+</tab-item>
+<tab-item title="yarn">
 
 ```bash
 yarn add @aigne/anthropic @aigne/core
 ```
 
-### pnpm
+</tab-item>
+<tab-item title="pnpm">
 
 ```bash
 pnpm add @aigne/anthropic @aigne/core
 ```
 
+</tab-item>
+</tabs>
+
 ## Configuration
 
-The `AnthropicChatModel` can be configured during instantiation.
+The `AnthropicChatModel` class is the primary entry point for interacting with Claude models. To instantiate it, you need to provide your Anthropic API key and optionally specify a model and other configurations.
 
-```typescript
+### API Key
+
+Your Anthropic API key can be configured in one of three ways, in order of precedence:
+
+1.  **Directly in the constructor**: Pass the key via the `apiKey` property.
+2.  **`ANTHROPIC_API_KEY` environment variable**: The model will automatically detect and use this variable.
+3.  **`CLAUDE_API_KEY` environment variable**: An alternative environment variable that is also supported.
+
+```typescript Instantiating the Model icon=logos:typescript
 import { AnthropicChatModel } from "@aigne/anthropic";
 
 const model = new AnthropicChatModel({
-  // API key is optional if ANTHROPIC_API_KEY or CLAUDE_API_KEY is set in your environment
-  apiKey: "your-anthropic-api-key",
-
-  // Specify the model ID. Defaults to 'claude-3-7-sonnet-latest'
-  model: "claude-3-haiku-20240307",
-
-  // Configure default model parameters
-  modelOptions: {
-    temperature: 0.7,
-    topP: 1.0,
-  },
+  // Option 1: Provide the API key directly
+  apiKey: "your-anthropic-api-key", 
   
-  // Pass custom options to the underlying Anthropic SDK client
-  clientOptions: {
-    timeout: 600000, // 10 minutes
-  }
+  // The model will automatically use ANTHROPIC_API_KEY or CLAUDE_API_KEY
+  // if they are set in your environment and apiKey is not provided.
 });
 ```
 
-### Configuration Options
+### Model Selection
 
-<x-field-group>
-    <x-field data-name="apiKey" data-type="string" data-required="false" data-desc="Your Anthropic API key. If not provided, the SDK will check for `ANTHROPIC_API_KEY` or `CLAUDE_API_KEY` environment variables."></x-field>
-    <x-field data-name="model" data-type="string" data-required="false" data-desc="The default model ID to use for requests. Defaults to `claude-3-7-sonnet-latest`."></x-field>
-    <x-field data-name="modelOptions" data-type="object" data-required="false" data-desc="Default parameters for the model.">
-        <x-field data-name="temperature" data-type="number" data-required="false" data-desc="Controls randomness. Lower values make the model more deterministic."></x-field>
-        <x-field data-name="topP" data-type="number" data-required="false" data-desc="Nucleus sampling threshold."></x-field>
-        <x-field data-name="parallelToolCalls" data-type="boolean" data-default="true" data-required="false" data-desc="Whether to allow the model to call multiple tools in parallel."></x-field>
-    </x-field>
-    <x-field data-name="clientOptions" data-type="object" data-required="false" data-desc="Advanced options to pass directly to the Anthropic SDK client, such as `timeout` or `baseURL`."></x-field>
-</x-field-group>
+You can specify which Claude model to use with the `model` property. If not specified, it defaults to `claude-3-7-sonnet-latest`. Other common model parameters like `temperature` can be set within the `modelOptions` object.
 
-## Basic Usage
+A list of commonly used models includes:
+*   `claude-3-5-sonnet-20240620`
+*   `claude-3-opus-20240229`
+*   `claude-3-sonnet-20240229`
+*   `claude-3-haiku-20240307`
 
-Here is a basic example of how to invoke the model to get a chat completion.
-
-```typescript
+```typescript Model Configuration icon=logos:typescript
 import { AnthropicChatModel } from "@aigne/anthropic";
 
 const model = new AnthropicChatModel({
-  apiKey: "your-api-key", // Or set ANTHROPIC_API_KEY in env
+  apiKey: "your-anthropic-api-key",
+  
+  // Specify the model version
+  model: "claude-3-haiku-20240307",
+
+  // Configure other model behaviors
+  modelOptions: {
+    temperature: 0.7, // Controls randomness (0.0 to 1.0)
+  },
+});
+```
+
+## Basic Usage
+
+To generate a response, use the `invoke` method. Pass a list of messages to the model to start a conversation. The method returns a promise that resolves with the model's output, including the text response and token usage statistics.
+
+```typescript Basic Chat Completion icon=logos:typescript
+import { AnthropicChatModel } from "@aigne/anthropic";
+
+const model = new AnthropicChatModel({
+  apiKey: "your-anthropic-api-key",
   model: "claude-3-haiku-20240307",
 });
 
-async function getGreeting() {
-  const result = await model.invoke({
-    messages: [{ role: "user", content: "Write a short, friendly greeting." }],
-  });
+const result = await model.invoke({
+  messages: [{ role: "user", content: "Tell me about yourself" }],
+});
 
-  console.log(result.text);
+console.log(result);
+```
+
+The `result` object contains the generated text and other metadata from the API.
+
+**Example Response**
+
+```json
+{
+  "text": "I am Claude, a large language model trained by Anthropic.",
+  "model": "claude-3-haiku-20240307",
+  "usage": {
+    "inputTokens": 8,
+    "outputTokens": 12
+  }
 }
-
-getGreeting();
-/* Output:
-Hello there! It's a pleasure to meet you. How can I help you today?
-*/
 ```
 
 ## Streaming Responses
 
-For applications requiring real-time output, you can stream the model's response. The `invoke` method returns an `AsyncGenerator` when `streaming: true` is set.
+For applications requiring real-time interaction, you can enable streaming by setting the `streaming` option to `true` in the `invoke` method. This returns an async iterator that yields response chunks as they become available.
 
-```typescript
+The `isAgentResponseDelta` utility can be used to check if a chunk contains new data.
+
+```typescript Streaming Example icon=logos:typescript
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { isAgentResponseDelta } from "@aigne/core";
 
 const model = new AnthropicChatModel({
-  apiKey: "your-api-key",
+  apiKey: "your-anthropic-api-key",
   model: "claude-3-haiku-20240307",
 });
 
-async function streamStory() {
-  const stream = await model.invoke(
-    {
-      messages: [{ role: "user", content: "Tell me a short story about a robot." }],
-    },
-    { streaming: true },
-  );
+const stream = await model.invoke(
+  {
+    messages: [{ role: "user", content: "Tell me a short story about a robot." }],
+  },
+  { streaming: true },
+);
 
-  let fullText = "";
-  process.stdout.write("Story: ");
-  for await (const chunk of stream) {
-    if (isAgentResponseDelta(chunk)) {
-      const text = chunk.delta.text?.text;
-      if (text) {
-        fullText += text;
-        process.stdout.write(text);
-      }
+let fullText = "";
+const json = {};
+
+for await (const chunk of stream) {
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) {
+      process.stdout.write(text); // Print text to the console as it arrives
+      fullText += text;
+    }
+    if (chunk.delta.json) {
+      Object.assign(json, chunk.delta.json);
     }
   }
-  console.log("\n\nFull story received.");
 }
 
-streamStory();
+console.log("\n\n--- Final Response ---");
+console.log(fullText);
+console.log(json);
 ```
 
-## Tool Calling
+This code processes the stream, printing text chunks to the console immediately and accumulating the full response and metadata.
 
-`AnthropicChatModel` supports tool calling, allowing the model to request the execution of functions you define.
+## Summary
 
-```typescript
-import { AnthropicChatModel } from "@aigne/anthropic";
-import { z } from "zod";
+You now have the necessary information to install, configure, and use Anthropic's Claude models within your AIGNE applications. You can perform basic invocations for simple tasks or use streaming for more interactive experiences.
 
-const model = new AnthropicChatModel({
-  apiKey: "your-api-key",
-  model: "claude-3-opus-20240229", // Opus is recommended for complex tool use
-});
-
-async function callWeatherTool() {
-  const result = await model.invoke({
-    messages: [{ role: "user", content: "What's the weather like in San Francisco?" }],
-    tools: [
-      {
-        type: "function",
-        function: {
-          name: "getCurrentWeather",
-          description: "Get the current weather for a specific location",
-          parameters: z.object({
-            location: z.string().describe("The city and state, e.g., San Francisco, CA"),
-          }),
-        },
-      },
-    ],
-    toolChoice: "auto", // Can be "auto", "required", "none", or a specific tool
-  });
-
-  if (result.toolCalls && result.toolCalls.length > 0) {
-    const toolCall = result.toolCalls[0];
-    console.log("Tool call requested:", toolCall.function.name);
-    console.log("Arguments:", toolCall.function.arguments);
-    // In a real application, you would execute the tool here
-  } else {
-    console.log("No tool call was made.");
-    console.log("Response:", result.text);
-  }
-}
-
-callWeatherTool();
-/* Output:
-Tool call requested: getCurrentWeather
-Arguments: { location: 'San Francisco, CA' }
-*/
-```
-
-## License
-
-This project is licensed under the [Elastic-2.0 License](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md).
+To learn more about orchestrating multiple models and agents, see the [Team Agent](./developer-guide-agents-team-agent.md) documentation. For details on other available models, visit the main [Models](./models.md) section.

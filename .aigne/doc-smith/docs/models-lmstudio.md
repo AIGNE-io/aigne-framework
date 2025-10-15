@@ -1,22 +1,20 @@
-This document provides a comprehensive guide to using the `@aigne/lmstudio` package, an AIGNE model adapter for integrating with locally hosted AI models via LM Studio.
+# LMStudio
 
-## Overview
+The `@aigne/lmstudio` package provides a model adapter for integrating AIGNE with large language models (LLMs) hosted locally via [LM Studio](https://lmstudio.ai/). This allows developers to leverage the power of local models within the AIGNE framework, offering greater privacy, control, and cost-effectiveness.
 
-The `@aigne/lmstudio` model adapter provides a seamless integration with LM Studio's OpenAI-compatible API, allowing you to run local Large Language Models (LLMs) through the AIGNE framework. LM Studio offers a user-friendly interface for downloading, managing, and running local AI models with a built-in server that mimics the OpenAI API.
-
-This adapter inherits from the `@aigne/openai` package, which means it supports the familiar OpenAI API structure for operations like chat, streaming, tool/function calling, and structured output.
+This guide covers the necessary setup for LM Studio and demonstrates how to use the `LMStudioChatModel` to interact with your local models. For information on other local model providers, see the [Ollama](./models-ollama.md) documentation.
 
 ## Prerequisites
 
 Before using this package, you must complete the following steps:
 
-1.  **Install LM Studio**: Download and install the LM Studio application from the official website: [https://lmstudio.ai/](https://lmstudio.ai/)
-2.  **Download a Model**: Use the LM Studio interface to search for and download a local model. Popular choices include Llama 3.2, Mistral, and Phi-3.
-3.  **Start the Local Server**: Navigate to the "Local Server" tab in LM Studio, select your downloaded model, and click "Start Server". This will expose a local endpoint (typically `http://localhost:1234/v1`) that the adapter will connect to.
+1.  **Install LM Studio**: Download and install the LM Studio application from the official website: [https://lmstudio.ai/](https://lmstudio.ai/).
+2.  **Download a Model**: Use the LM Studio interface to search for and download a model. Popular choices include variants of Llama 3.2, Mistral, and Phi-3.
+3.  **Start the Local Server**: Navigate to the "Local Server" tab (server icon) in LM Studio, select your downloaded model from the dropdown, and click "Start Server". This will expose an OpenAI-compatible API endpoint, typically at `http://localhost:1234/v1`.
 
 ## Installation
 
-Install the package into your project using your preferred package manager:
+To add the LMStudio package to your project, run one of the following commands in your terminal:
 
 ```bash
 npm install @aigne/lmstudio
@@ -32,118 +30,146 @@ yarn add @aigne/lmstudio
 
 ## Quick Start
 
-The following example demonstrates how to create an instance of the `LMStudioChatModel` and make a basic request.
+Once the LM Studio server is running, you can interact with your local model using the `LMStudioChatModel`. The following example demonstrates how to instantiate the model and send a simple request.
 
-```typescript
+```typescript Quick Start icon=logos:typescript
 import { LMStudioChatModel } from "@aigne/lmstudio";
 
-// 1. Create a new LM Studio chat model instance
+// 1. Instantiate the model
+// Ensure the model name matches the one loaded in LM Studio.
 const model = new LMStudioChatModel({
-  // The baseURL should match the address of your LM Studio local server
-  baseURL: "http://localhost:1234/v1",
-  // The model name must exactly match the one loaded in LM Studio
   model: "llama-3.2-3b-instruct",
-  modelOptions: {
-    temperature: 0.7,
-    maxTokens: 2048,
-  },
 });
 
-// 2. Invoke the model with a user message
-const response = await model.invoke({
-  messages: [
-    { role: "user", content: "What is the capital of France?" }
-  ],
-});
+// 2. Invoke the model
+async function main() {
+  try {
+    const response = await model.invoke({
+      messages: [
+        { role: "user", content: "What is the capital of France?" }
+      ],
+    });
 
-// 3. Print the response text
-console.log(response.text);
-// Expected output: "The capital of France is Paris."
+    console.log(response.text);
+  } catch (error) {
+    console.error("Error invoking model:", error);
+  }
+}
+
+main();
+```
+
+If the request is successful, the output will be:
+
+```text
+The capital of France is Paris.
 ```
 
 ## Configuration
 
-You can configure the `LMStudioChatModel` through its constructor or by using environment variables.
+The `LMStudioChatModel` can be configured through its constructor or with environment variables.
 
 ### Constructor Options
 
-The `LMStudioChatModel` extends the `OpenAIChatModel`, so it accepts standard OpenAI options.
+The `LMStudioChatModel` extends the standard `OpenAIChatModel` and accepts the following options:
 
-```typescript
+<x-field-group>
+  <x-field data-name="model" data-type="string" data-required="false">
+    <x-field-desc markdown>The name of the model to use, which must match the model file loaded in the LM Studio server. Defaults to `llama-3.2-3b-instruct`.</x-field-desc>
+  </x-field>
+  <x-field data-name="baseURL" data-type="string" data-required="false">
+    <x-field-desc markdown>The base URL of the LM Studio server. Defaults to `http://localhost:1234/v1`.</x-field-desc>
+  </x-field>
+  <x-field data-name="apiKey" data-type="string" data-required="false">
+    <x-field-desc markdown>An API key, if you have configured authentication on your LM Studio server. By default, LM Studio runs without authentication, and the key is set to a placeholder value of `not-required`.</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>Additional options to control model generation.</x-field-desc>
+    <x-field data-name="temperature" data-type="number" data-required="false" data-desc="Controls randomness. Lower values (e.g., 0.2) make the output more deterministic. Defaults to 0.7."></x-field>
+    <x-field data-name="maxTokens" data-type="number" data-required="false" data-desc="The maximum number of tokens to generate in the response."></x-field>
+    <x-field data-name="topP" data-type="number" data-required="false" data-desc="Nucleus sampling parameter."></x-field>
+    <x-field data-name="frequencyPenalty" data-type="number" data-required="false" data-desc="Penalizes new tokens based on their existing frequency."></x-field>
+    <x-field data-name="presencePenalty" data-type="number" data-required="false" data-desc="Penalizes new tokens based on whether they appear in the text so far."></x-field>
+  </x-field>
+</x-field-group>
+
+Here is an example with custom configuration:
+
+```typescript Configuration Example icon=logos:typescript
+import { LMStudioChatModel } from "@aigne/lmstudio";
+
 const model = new LMStudioChatModel({
-  // The base URL of the LM Studio server (defaults to http://localhost:1234/v1)
   baseURL: "http://localhost:1234/v1",
-  
-  // The model identifier, which must match the one loaded in LM Studio
-  model: "llama-3.2-3b-instruct",
-
-  // API key is not required for local LM Studio instances
-  // It defaults to "not-required"
-  // apiKey: "your-key-if-needed",
-
-  // Standard model options
+  model: "Mistral-7B-Instruct-v0.2-GGUF",
   modelOptions: {
-    temperature: 0.7,     // Controls randomness (0.0 to 2.0)
-    maxTokens: 2048,      // Maximum tokens in the response
-    topP: 0.9,            // Nucleus sampling
-    frequencyPenalty: 0,  // Penalizes new tokens based on their frequency
-    presencePenalty: 0,   // Penalizes new tokens based on their presence
+    temperature: 0.8,
+    maxTokens: 4096,
   },
 });
 ```
 
 ### Environment Variables
 
-For more flexible configuration, you can use environment variables:
+You can also configure the model by setting environment variables. The constructor options will take precedence if both are provided.
 
-```bash
-# Sets the LM Studio server URL (default: http://localhost:1234/v1)
+-   `LM_STUDIO_BASE_URL`: Sets the server's base URL. Defaults to `http://localhost:1234/v1`.
+-   `LM_STUDIO_API_KEY`: Sets the API key. Only necessary if your server requires authentication.
+
+```bash .env
 LM_STUDIO_BASE_URL=http://localhost:1234/v1
-
-# The API Key is not required by default for local LM Studio.
-# Only set this if you have configured authentication on your server.
 # LM_STUDIO_API_KEY=your-key-if-needed
 ```
 
-**Note:** LM Studio typically runs locally without authentication. The API key is set to a placeholder value `"not-required"` by default to satisfy the underlying OpenAI client.
-
 ## Features
 
-The adapter supports several advanced features, including streaming, tool calling, and structured JSON output.
+The `LMStudioChatModel` supports several advanced features, including streaming, tool calling, and structured outputs.
 
-### Streaming Support
+### Streaming
 
-For real-time responses, you can stream the output from the model. This is useful for applications like chatbots where you want to display the response as it's being generated.
+For real-time applications, you can stream the response as it's being generated. Set the `streaming: true` option in the `invoke` method.
 
-```typescript
-const model = new LMStudioChatModel();
+```typescript Streaming Example icon=logos:typescript
+import { LMStudioChatModel } from "@aigne/lmstudio";
 
-const stream = await model.invoke(
-  {
-    messages: [{ role: "user", content: "Tell me a short story about a robot who discovers music." }],
-  },
-  { streaming: true }
-);
+const model = new LMStudioChatModel({
+  model: "llama-3.2-3b-instruct",
+});
 
-for await (const chunk of stream) {
-  if (chunk.type === "delta" && chunk.delta.text) {
-    process.stdout.write(chunk.delta.text.text);
+async function streamStory() {
+  const stream = await model.invoke(
+    {
+      messages: [{ role: "user", content: "Tell me a short story about a robot who discovers music." }],
+    },
+    { streaming: true }
+  );
+
+  for await (const chunk of stream) {
+    if (chunk.type === "delta" && chunk.delta.text) {
+      process.stdout.write(chunk.delta.text.text);
+    }
   }
 }
+
+streamStory();
 ```
 
-### Tool & Function Calling
+### Tool Calling
 
-The adapter supports OpenAI-compatible function calling, allowing the model to request the invocation of external tools.
+Many local models support OpenAI-compatible tool calling (also known as function calling). You can provide a list of tools to the model, and it will generate the arguments required to call them.
 
-```typescript
-// Define the tool specification
+```typescript Tool Calling Example icon=logos:typescript
+import { LMStudioChatModel } from "@aigne/lmstudio";
+
+const model = new LMStudioChatModel({
+  model: "llama-3.2-3b-instruct",
+});
+
 const tools = [
   {
     type: "function" as const,
     function: {
       name: "get_weather",
-      description: "Get the current weather information for a specified location",
+      description: "Get the current weather for a specified location.",
       parameters: {
         type: "object",
         properties: {
@@ -158,28 +184,33 @@ const tools = [
   },
 ];
 
-// Invoke the model with the tools
-const response = await model.invoke({
-  messages: [
-    { role: "user", content: "What's the weather like in New York?" }
-  ],
-  tools,
-});
+async function checkWeather() {
+  const response = await model.invoke({
+    messages: [
+      { role: "user", content: "What's the weather like in New York?" }
+    ],
+    tools,
+  });
 
-// Check if the model requested a tool call
-if (response.toolCalls?.length) {
-  console.log("Tool calls:", response.toolCalls);
-  // Example Output:
-  // Tool calls: [ { id: '...', type: 'function', function: { name: 'get_weather', arguments: '{"location":"New York"}' } } ]
+  if (response.toolCalls?.length) {
+    console.log("Tool calls:", JSON.stringify(response.toolCalls, null, 2));
+  }
 }
+
+checkWeather();
 ```
 
-### Structured Output (JSON)
+### Structured Output
 
-You can instruct the model to generate a response that conforms to a specific JSON schema.
+To ensure the model's output conforms to a specific JSON schema, you can define a `responseFormat`. This is useful for tasks that require reliable, machine-readable data.
 
-```typescript
-// Define the desired JSON schema for the output
+```typescript Structured Output Example icon=logos:typescript
+import { LMStudioChatModel } from "@aigne/lmstudio";
+
+const model = new LMStudioChatModel({
+  model: "llama-3.2-3b-instruct",
+});
+
 const responseFormat = {
   type: "json_schema" as const,
   json_schema: {
@@ -196,58 +227,71 @@ const responseFormat = {
   },
 };
 
-// Invoke the model with the response format
-const response = await model.invoke({
-  messages: [
-    { role: "user", content: "Get the current weather for Paris in JSON format." }
-  ],
-  responseFormat,
-});
+async function getWeatherAsJson() {
+  const response = await model.invoke({
+    messages: [
+      { role: "user", content: "What is the weather in Paris? Respond in the requested JSON format." }
+    ],
+    responseFormat,
+  });
 
-// The parsed JSON object is available in the `response.json` field
-console.log(response.json);
+  console.log(response.json);
+}
+
+getWeatherAsJson();
 ```
 
 ## Supported Models
 
-LM Studio supports a wide variety of open-source models. The model name used in the configuration must exactly match what is shown in your LM Studio interface. Popular choices include:
+LM Studio supports a wide variety of GGUF-format models. The exact model name must match what is shown in the LM Studio user interface. Popular compatible models include:
 
--   **Llama 3.2** (3B, 8B, 70B variants)
--   **Llama 3.1** (8B, 70B, 405B variants)
--   **Mistral** (7B, 8x7B variants)
--   **CodeLlama** (7B, 13B, 34B variants)
--   **Qwen** (various sizes)
--   **Phi-3** (mini, small, medium variants)
+| Model Family | Variants                               |
+| :----------- | :------------------------------------- |
+| **Llama 3.2**  | 3B, 8B, 70B Instruct                   |
+| **Llama 3.1**  | 8B, 70B, 405B Instruct                 |
+| **Mistral**    | 7B, 8x7B Instruct                      |
+| **Phi-3**      | Mini, Small, Medium Instruct           |
+| **CodeLlama**  | 7B, 13B, 34B Instruct                  |
+| **Qwen**       | Various sizes                          |
 
-## Error Handling
+## Troubleshooting
 
-When interacting with a local server, it's important to handle potential connection errors. A common issue is the LM Studio server not being active.
+If you encounter issues, consult the following list of common problems and solutions.
 
-```typescript
+| Issue               | Solution                                                                                                   |
+| :------------------ | :--------------------------------------------------------------------------------------------------------- |
+| **Connection Refused** | Verify that the LM Studio local server is running and that the `baseURL` in your code is correct.        |
+| **Model Not Found**    | Ensure the `model` name in your code exactly matches the model file name loaded in the LM Studio server. |
+| **Slow Responses**     | If available, enable GPU acceleration in LM Studio's server settings. Using a smaller model can also help. |
+| **Out of Memory**      | The model may require more RAM than your system has available. Try using a smaller model or reducing the context length. |
+
+### Error Handling
+
+It is good practice to wrap your model calls in a `try...catch` block to handle potential runtime errors, such as network issues.
+
+```typescript Error Handling Example icon=logos:typescript
 import { LMStudioChatModel } from "@aigne/lmstudio";
 
 const model = new LMStudioChatModel();
 
-try {
-  const response = await model.invoke({
-    messages: [{ role: "user", content: "Hello!" }],
-  });
-  console.log(response.text);
-} catch (error) {
-  // Specifically check for a connection refused error
-  if (error.code === "ECONNREFUSED") {
-    console.error("Connection failed: The LM Studio server is not running. Please start the local server.");
-  } else {
-    console.error("An unexpected error occurred:", error.message);
+async function safeInvoke() {
+  try {
+    const response = await model.invoke({
+      messages: [{ role: "user", content: "Hello!" }],
+    });
+    console.log(response.text);
+  } catch (error) {
+    if (error.code === "ECONNREFUSED") {
+      console.error("Connection failed. Please ensure the LM Studio server is running.");
+    } else {
+      console.error("An unexpected error occurred:", error.message);
+    }
   }
 }
+
+safeInvoke();
 ```
 
-## Troubleshooting
+---
 
-Here are solutions to common issues:
-
-1.  **Connection Refused**: This error (`ECONNREFUSED`) occurs when the LM Studio local server is not running. Ensure you have started the server from the "Local Server" tab in the LM Studio application.
-2.  **Model Not Found**: If you receive a "model not found" error, verify that the `model` name in your configuration exactly matches the model file name loaded in LM Studio.
-3.  **Out of Memory**: Large models can consume significant system resources. If you experience crashes or memory issues, try using a smaller model (e.g., a 3B or 8B parameter variant) or reduce the context length (`maxTokens`).
-4.  **Slow Responses**: Response speed depends on your hardware (CPU/GPU) and the model size. For faster inference, consider using GPU acceleration if your hardware supports it and is configured correctly in LM Studio.
+For more detailed information, refer to the official [LM Studio Documentation](https://lmstudio.ai/docs). To explore other model integrations, you can proceed to the documentation for [AIGNE Hub](./models-aigne-hub.md).

@@ -1,157 +1,75 @@
-# TeamAgent
+# 循序任務
 
-## 總覽
+循序任務工作流程會按照特定、預定的順序處理一系列任務。其運作方式如同數位裝配線，前一個步驟的輸出會成為下一個步驟的輸入。這種模式非常適合多階段流程，其中每個步驟都建立在前一個步驟的基礎之上。
 
-`TeamAgent` 是一種專門的 Agent，它負責協調一組其他的 Agent（稱為「技能」）來完成複雜的任務。它扮演著管理者的角色，指導其技能 Agent 之間的工作流程和資料流。這使得創建複雜、多步驟的 AI 系統成為可能，其中每個 Agent 都可以專注於特定的專業領域。
+在 AIGNE 框架中，這是由設定為循序模式（`sequential` mode）運作的 `TeamAgent` 來管理。團隊中的每個 Agent 都會先完成其任務，然後再將結果傳遞下去，以確保從開始到結束的進程合乎邏輯且井然有序。
 
-`TeamAgent` 支援多種強大的工作流程模式：
+```d2
+direction: down
 
-*   **順序處理 (Sequential Processing)**：Agent 們一個接一個地執行，形成一個處理管線。
-*   **並行處理 (Parallel Processing)**：Agent 們同時執行，適用於可以獨立執行的任務。
-*   **反思 (Reflection)**：一個迭代過程，其中一個「審查者」Agent 提供回饋以改善輸出，直到滿足特定標準為止。
-*   **迭代 (Iteration)**：對一個項目列表進行批次處理，將相同的工作流程應用於每個項目。
+Initial-Request: {
+  label: "初始請求"
+  shape: oval
+}
 
-透過結合這些模式，您可以建構模組化、可擴展且功能強大的 AI 解決方案。
+TeamAgent: {
+  label: "TeamAgent (循序模式)"
+  shape: rectangle
+  style: {
+    stroke-dash: 2
+  }
 
-## 關鍵概念
+  Agent-1: {
+    label: "Agent 1"
+    shape: rectangle
+  }
 
-### 處理模式
+  Agent-2: {
+    label: "Agent 2"
+    shape: rectangle
+  }
 
-`TeamAgent` 可以在兩種主要模式下運作，由 `ProcessMode` 列舉定義。該模式決定了團隊中 Agent 的執行方式。
+  Final-Agent: {
+    label: "最終 Agent"
+    shape: rectangle
+  }
+}
 
-*   `ProcessMode.sequential`：在此模式下，Agent 們按順序執行。第一個 Agent 的輸出與初始輸入合併後，傳遞給第二個 Agent，依此類推。這創建了一個管線，其中每一步都建立在前一步的基礎上。它非常適合具有明確依賴關係的任務。
+Final-Result: {
+  label: "最終結果"
+  shape: oval
+}
 
-*   `ProcessMode.parallel`：在此模式下，所有 Agent 同時執行。每個 Agent 都會接收完全相同的初始輸入。然後，它們各自的輸出會被合併以形成最終結果。這對於可以同時運行的獨立子任務而言非常有效率。
+Initial-Request -> TeamAgent.Agent-1: "1. 初始輸入"
+TeamAgent.Agent-1 -> TeamAgent.Agent-2: "2. 輸出 1 + 初始輸入"
+TeamAgent.Agent-2 -> TeamAgent.Final-Agent: "3. 輸出 2 + 先前輸入"
+TeamAgent.Final-Agent -> Final-Result: "4. 最終輸出"
 
-## 建立 TeamAgent
-
-您可以透過提供一個 `skills` 列表（它將管理的 Agent）和一個處理 `mode` 來建立一個 `TeamAgent`。
-
-### 順序處理
-
-在順序模式下，Agent 們形成一個鏈。每個 Agent 的輸出都作為額外輸入傳遞給下一個 Agent，使其非常適合多階段的工作流程。
-
-**使用案例**：一個內容創作管線，其中文字首先被生成，然後被翻譯，最後進行格式審查。
-
-```typescript
-import { AIAgent, ProcessMode, TeamAgent } from "@aigne/core";
-import { z } from "zod";
-
-// Agent 1：將內容翻譯成中文
-const translatorAgent = AIAgent.from({
-  name: "translator",
-  inputSchema: z.object({
-    content: z.string().describe("The text content to translate"),
-  }),
-  instructions: "Translate the text to Chinese:\n{{content}}",
-  outputKey: "translation",
-});
-
-// Agent 2：潤飾翻譯後的文本
-const prettierAgent = AIAgent.from({
-  name: "prettier",
-  inputSchema: z.object({
-    translation: z.string().describe("The translated text"),
-  }),
-  instructions: "Prettier the following text:\n{{translation}}",
-  outputKey: "formatted",
-});
-
-// 建立一個順序執行的團隊
-const sequentialTeam = TeamAgent.from({
-  name: "sequential-team",
-  mode: ProcessMode.sequential,
-  skills: [translatorAgent, prettierAgent],
-});
 ```
 
-當這個團隊被調用時，`translatorAgent` 會首先運行。它的輸出 `{ translation: "..." }` 會與原始輸入合併，然後傳遞給 `prettierAgent`。
+## 運作方式
 
-### 並行處理
+想像一個請求進入工作流程。
 
-在並行模式下，所有 Agent 都會接收相同的輸入並同時運行。它們的輸出會被收集並合併。這非常適合需要對相同資料進行多個獨立分析的任務。
+1.  序列中的第一個 Agent 接收初始輸入並進行處理。
+2.  完成後，其輸出會與原始輸入相結合。
+3.  這個結合後的結果接著會被傳遞給序列中的第二個 Agent。
+4.  這個交接過程會沿著序列持續進行，直到最終的 Agent 完成其任務。
+5.  最後一個 Agent 的輸出即為整個工作流程的最終結果。
 
-**使用案例**：分析一個產品描述，以同時提取其主要功能和目標受眾。
+這確保了每個 Agent 都擁有所有先前 Agent 已完成工作的完整脈絡，從而能夠建立複雜且精密的管線。
 
-```typescript
-import { AIAgent, ProcessMode, TeamAgent } from "@aigne/core";
-import { z } from "zod";
+## 常見使用案例
 
-// Agent 1：提取產品功能
-const featureAnalyzer = AIAgent.from({
-  name: "feature-analyzer",
-  inputSchema: z.object({
-    product: z.string().describe("The product description to analyze"),
-  }),
-  instructions: "Identify and list the key features of the product.",
-  outputKey: "features",
-});
+對於需要結構化、逐步執行的任務，循序工作流程非常有效。
 
-// Agent 2：識別目標受眾
-const audienceAnalyzer = AIAgent.from({
-  name: "audience-analyzer",
-  inputSchema: z.object({
-    product: z.string().describe("The product description to analyze"),
-  }),
-  instructions: "Identify the target audience for this product.",
-  outputKey: "audience",
-});
+-   **內容生成管線**：由一個初始 Agent 進行主題的腦力激盪，第二個 Agent 撰寫草稿，第三個 Agent 進行校對，最後一個 Agent 將其格式化以供發布。
+-   **資料處理 (ETL)**：一個 Agent 從來源提取資料，另一個 Agent 將其轉換為標準化格式，第三個 Agent 將其載入資料庫。
+-   **客戶查詢升級**：一個前線 Agent 回答基本的客戶問題。如果問題複雜，它會將對話歷史記錄傳遞給專門的技術支援 Agent 進行解決。
+-   **報告生成**：一個 Agent 收集原始資料，第二個 Agent 進行分析並產生關鍵見解，第三個 Agent 將研究結果彙編成一份格式化的報告。
 
-// 建立一個並行執行的團隊
-const analysisTeam = TeamAgent.from({
-  name: "analysis-team",
-  skills: [featureAnalyzer, audienceAnalyzer],
-  mode: ProcessMode.parallel,
-});
-```
+## 總結
 
-當這個團隊被調用並提供一個產品描述時，`featureAnalyzer` 和 `audienceAnalyzer` 會同時運行，它們的輸出會被合併成一個單一的結果：`{ features: "...", audience: "..." }`。
+循序任務工作流程提供了一種可靠且結構化的方式來自動化複雜的多步驟流程。透過將多個 Agent 串聯起來，您可以建立強大且一致的自動化管線，其中操作順序對於達成預期結果至關重要。
 
-## 進階工作流程
-
-除了簡單的順序和並行執行外，`TeamAgent` 還為更複雜的場景提供了進階功能。
-
-### 反思模式
-
-反思模式啟用了一個迭代式的改善工作流程。團隊的輸出會由一個指定的 `reviewer` Agent 進行審查。如果輸出未被批准，該過程將會重複，並將先前的輸出和回饋作為下一次嘗試的上下文。此循環將持續進行，直到輸出被批准或達到最大迭代次數為止。
-
-這對於品質保證、自我修正以及需要高度準確性的任務非常有用。
-
-**設定 (`ReflectionMode`)**
-
-<x-field-group>
-  <x-field data-name="reviewer" data-type="Agent" data-required="true" data-desc="負責評估團隊輸出的 Agent。"></x-field>
-  <x-field data-name="isApproved" data-type="((output: Message) => PromiseOrValue<boolean>) | string" data-required="true" data-desc="一個函數或審查者輸出中的欄位名稱，用於判斷結果是否被批准。如果是一個字串，則會檢查對應欄位的真值。"></x-field>
-  <x-field data-name="maxIterations" data-type="number" data-default="3" data-required="false" data-desc="在拋出錯誤前，最大的審查週期次數。"></x-field>
-  <x-field data-name="returnLastOnMaxIterations" data-type="boolean" data-default="false" data-required="false" data-desc="若為 true，則在達到最大迭代次數時返回最後生成的輸出，而不是拋出錯誤。"></x-field>
-</x-field-group>
-
-### 迭代器模式
-
-迭代器模式專為批次處理而設計。當您使用 `iterateOn` 選項指定一個輸入欄位時，`TeamAgent` 將會對該欄位陣列中的每個項目進行迭代。整個團隊工作流程將對每個項目執行。
-
-**設定**
-
-<x-field-group>
-  <x-field data-name="iterateOn" data-type="keyof I" data-required="true" data-desc="包含要迭代陣列的輸入欄位的鍵。"></x-field>
-  <x-field data-name="concurrency" data-type="number" data-default="1" data-required="false" data-desc="可同時處理的最大項目數量。"></x-field>
-  <x-field data-name="iterateWithPreviousOutput" data-type="boolean" data-default="false" data-required="false" data-desc="若為 true，處理一個項目後的輸出會被合併回來，使其可用於陣列中的後續項目。這要求並行數為 1。"></x-field>
-</x-field-group>
-
-## API 參考
-
-### TeamAgentOptions
-
-這些是使用 `TeamAgent.from()` 建立 `TeamAgent` 時可用的設定選項。
-
-<x-field-group>
-  <x-field data-name="name" data-type="string" data-required="true" data-desc="Agent 的唯一名稱。"></x-field>
-  <x-field data-name="description" data-type="string" data-required="false" data-desc="關於 Agent 用途的描述。"></x-field>
-  <x-field data-name="skills" data-type="Agent[]" data-required="true" data-desc="組成團隊的一組 Agent 陣列。"></x-field>
-  <x-field data-name="mode" data-type="ProcessMode" data-default="ProcessMode.sequential" data-required="false" data-desc="團隊的處理模式，可以是「sequential」或「parallel」。"></x-field>
-  <x-field data-name="reflection" data-type="ReflectionMode" data-required="false" data-desc="用於啟用迭代式反思工作流程的設定。"></x-field>
-  <x-field data-name="iterateOn" data-type="keyof I" data-required="false" data-desc="用於批次處理時進行迭代的輸入欄位鍵。"></x-field>
-  <x-field data-name="concurrency" data-type="number" data-default="1" data-required="false" data-desc="迭代器模式的並行等級。"></x-field>
-  <x-field data-name="iterateWithPreviousOutput" data-type="boolean" data-default="false" data-required="false" data-desc="在批次處理期間，是否將一次迭代的輸出回饋給下一次迭代。"></x-field>
-  <x-field data-name="includeAllStepsOutput" data-type="boolean" data-default="false" data-required="false" data-desc="在順序模式下，若為 true，最終輸出將包含所有中間步驟的輸出，而不僅僅是最後一個步驟的輸出。"></x-field>
-</x-field-group>
+對於可以同時執行的任務，可以考慮使用[平行任務](./user-guide-common-workflows-parallel-tasks.md)工作流程以提高效率。

@@ -1,123 +1,120 @@
-# @aigne/ollama
+# Ollama
 
-`@aigne/ollama` SDKは、AIGNEフレームワークとOllama経由でローカルにホストされるAIモデルとのシームレスな統合を提供します。これにより、開発者はAIGNEアプリケーションでオープンソースの言語モデルを簡単に活用でき、プライバシーとAI機能へのオフラインアクセスを確保しながら、一貫したインターフェースを提供します。
+`@aigne/ollama` パッケージは、AIGNE フレームワークと [Ollama](https://ollama.ai/) を介してローカルでホストされるAIモデルとのシームレスな統合を提供します。これにより、開発者は独自のハードウェア上で実行される多種多様なオープンソース言語モデルを活用でき、プライバシーとAI機能へのオフラインアクセスを確保できます。
+
+このガイドでは、AIGNE アプリケーションで `OllamaChatModel` を設定して使用するために必要な手順を説明します。他のモデルプロバイダーに関する情報については、[モデル概要](./models-overview.md) を参照してください。
+
+次の図は、AIGNE フレームワークがローカルのOllamaインスタンスとどのように対話するかを示しています。
 
 ```d2
-direction: down
-
-AIGNE-Application: {
-  label: "あなたのAIGNEアプリケーション"
-  shape: rectangle
+direction: right
+style: {
+  font-size: 14
+  fill: "#F6F8FA"
+  stroke: "#B4B4B4"
+  stroke-width: 1
 }
 
-aigne-ollama: {
-  label: "@aigne/ollama SDK"
+AIGNE_Application: "AIGNE アプリケーション" {
   shape: rectangle
+  style.fill: "#E6F7FF"
+  style.stroke: "#91D5FF"
 }
 
-Ollama-Instance: {
-  label: "Ollamaインスタンス\n(ローカルで実行)"
+OllamaChatModel: "@aigne/ollama\nOllamaChatModel" {
   shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
+  style.fill: "#F9F0FF"
+  style.stroke: "#D3ADF7"
+}
 
-  API-Server: {
-    label: "APIサーバー\n(localhost:11434)"
-    shape: rectangle
-  }
-
-  Local-Models: {
-    label: "ローカルAIモデル"
-    shape: rectangle
-    grid-columns: 2
-
-    Llama3: { shape: rectangle }
-    Mistral: { shape: rectangle }
-    "and more...": { shape: rectangle }
+Ollama_Instance: "ローカルOllamaインスタンス" {
+  shape: cylinder
+  style.fill: "#FFF7E6"
+  style.stroke: "#FFE7BA"
+  
+  LLM: "言語モデル\n(例: Llama 3)" {
+    shape: hexagon
+    style.fill: "#F6FFED"
+    style.stroke: "#B7EB8F"
   }
 }
 
-AIGNE-Application -> aigne-ollama: "`OllamaChatModel`を使用"
-aigne-ollama -> Ollama-Instance.API-Server: "HTTP APIリクエストを送信"
-Ollama-Instance.API-Server -> Ollama-Instance.Local-Models: "モデルをロードして実行"
-Ollama-Instance.Local-Models -> Ollama-Instance.API-Server: "補完結果を返す"
+AIGNE_Application -> OllamaChatModel: "1. モデルを呼び出す"
+OllamaChatModel -> Ollama_Instance: "2. リクエストを\n   http://localhost:11434 へ送信"
+Ollama_Instance.LLM -> Ollama_Instance: "3. リクエストを処理"
+Ollama_Instance -> OllamaChatModel: "4. 応答を返す"
+OllamaChatModel -> AIGNE_Application: "5. 結果を渡す"
 ```
-
-## 機能
-
-*   **Ollamaとの直接統合**: ローカルのOllamaインスタンスに直接接続します。
-*   **ローカルモデルのサポート**: Ollama経由でホストされる多種多様なオープンソースモデルを使用します。
-*   **チャット補完**: すべての互換性のあるOllamaモデルでチャット補完APIを完全にサポートします。
-*   **ストリーミング応答**: ストリーミング応答のサポートにより、リアルタイムで応答性の高いアプリケーションを実現します。
-*   **型安全**: すべてのAPIとモデルに対する包括的なTypeScriptの型付けの恩恵を受けられます。
-*   **一貫したインターフェース**: AIGNEフレームワークのモデルインターフェースとスムーズに統合します。
-*   **プライバシー重視**: データを外部サービスに送信することなく、モデルをローカルで実行します。
-*   **完全な設定**: モデルの動作を微調整するための広範な設定オプションにアクセスできます。
 
 ## 前提条件
 
-このパッケージを使用する前に、お使いのマシンに[Ollama](https://ollama.ai/)がインストールされ、実行されている必要があります。また、少なくとも1つのモデルをプルしておく必要もあります。[Ollamaの公式サイト](https://ollama.ai/)の公式な指示に従って、セットアップを完了してください。
+このパッケージを使用する前に、ローカルマシンにOllamaをインストールして実行している必要があります。また、少なくとも1つのモデルをプルしておく必要があります。詳細な手順については、[Ollama公式サイト](https://ollama.ai/) を参照してください。
 
 ## インストール
 
-お好みのパッケージマネージャーを使用して、パッケージとそのコア依存関係をインストールします。
+始めるには、お好みのパッケージマネージャーを使用して必要なAIGNEパッケージをインストールします。
 
-### npm
-
-```bash
-npm install @aigne/ollama @aigne/core
-```
-
-### yarn
-
-```bash
-yarn add @aigne/ollama @aigne/core
-```
-
-### pnpm
-
-```bash
-pnpm add @aigne/ollama @aigne/core
-```
+<x-cards data-columns="3">
+  <x-card data-title="npm" data-icon="logos:npm-icon">
+    ```bash
+    npm install @aigne/ollama @aigne/core
+    ```
+  </x-card>
+  <x-card data-title="yarn" data-icon="logos:yarn">
+    ```bash
+    yarn add @aigne/ollama @aigne/core
+    ```
+  </x-card>
+  <x-card data-title="pnpm" data-icon="logos:pnpm">
+    ```bash
+    pnpm add @aigne/ollama @aigne/core
+    ```
+  </x-card>
+</x-cards>
 
 ## 設定
 
-プライマリエントリポイントは、ローカルのOllamaインスタンスに接続する`OllamaChatModel`クラスです。
+`OllamaChatModel` クラスは、Ollamaと対話するための主要なインターフェースです。モデルをインスタンス化する際に、その動作をカスタマイズするためのいくつかの設定オプションを指定できます。
 
-```typescript
+```typescript OllamaChatModel のインスタンス化 icon=logos:typescript-icon
 import { OllamaChatModel } from "@aigne/ollama";
 
 const model = new OllamaChatModel({
-  // OllamaインスタンスのベースURL。
-  // デフォルトは `http://localhost:11434` です。
-  baseURL: "http://localhost:11434",
-
-  // 補完に使用するOllamaモデル。
-  // デフォルトは 'llama3' です。
+  // 使用するOllamaモデルを指定
   model: "llama3",
+  
+  // ローカルOllamaインスタンスのベースURL
+  baseURL: "http://localhost:11434/v1",
 
-  // モデルに渡す追加のオプション。
+  // モデルに渡すオプションのパラメーター
   modelOptions: {
-    temperature: 0.8,
+    temperature: 0.7,
   },
 });
 ```
 
-コンストラクタは以下のオプションを受け入れます：
+コンストラクターは以下のパラメーターを受け入れます:
 
-| パラメータ | 型 | 説明 | デフォルト |
-| :--- | :--- | :--- | :--- |
-| `model` | `string` | 使用するOllamaモデルの名前。 | `llama3.2` |
-| `baseURL` | `string` | OllamaサーバーのベースURL。`OLLAMA_BASE_URL`環境変数でも設定できます。 | `http://localhost:11434/v1` |
-| `modelOptions` | `object` | `temperature`や`top_p`などのモデル固有のパラメータを含むオブジェクト。 | `{}` |
-| `apiKey` | `string` | 認証用のAPIキー。`OLLAMA_API_KEY`でも設定できます。 | `ollama` |
+<x-field-group>
+  <x-field data-name="model" data-type="string" data-default="llama3.2" data-required="false">
+    <x-field-desc markdown>使用するモデルの名前（例: `llama3`、`mistral`）。Ollamaインスタンスでモデルがプルされていることを確認してください。</x-field-desc>
+  </x-field>
+  <x-field data-name="baseURL" data-type="string" data-default="http://localhost:11434/v1" data-required="false">
+    <x-field-desc markdown>Ollama APIのベースURL。これは `OLLAMA_BASE_URL` 環境変数を使用して設定することもできます。</x-field-desc>
+  </x-field>
+  <x-field data-name="apiKey" data-type="string" data-default="ollama" data-required="false">
+    <x-field-desc markdown>プレースホルダーのAPIキー。Ollamaはデフォルトで認証を必要としませんが、AIGNEフレームワークでは空でないキーが必要です。デフォルトは `"ollama"` で、`OLLAMA_API_KEY` 環境変数で設定できます。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>`temperature`、`top_p`など、Ollama APIに渡す追加のパラメーターを含むオブジェクト。これらのオプションにより、モデルの応答生成を微調整できます。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-## 基本的な使い方
+## 基本的な使用方法
 
-応答を生成するには、`invoke`メソッドを使用します。メッセージのリストを渡すと、単一の完全な応答が返されます。
+モデルを実行するには、`invoke` メソッドを使用します。メッセージペイロードを渡してチャット補完を生成します。
 
-```typescript
+```typescript 基本的な呼び出し icon=logos:typescript-icon
 import { OllamaChatModel } from "@aigne/ollama";
 
 const model = new OllamaChatModel({
@@ -128,26 +125,27 @@ const model = new OllamaChatModel({
 });
 
 const result = await model.invoke({
-  messages: [{ role: "user", content: "Tell me what model you're using" }],
+  messages: [{ role: "user", content: "Explain the importance of local AI models." }],
 });
 
-console.log(result);
+console.log(result.text);
 ```
 
-**出力:**
+`invoke` メソッドは、モデルの応答を含むオブジェクトに解決されるPromiseを返します。
 
+**応答の例**
 ```json
 {
-  "text": "I'm an AI assistant running on Ollama with the llama3 model.",
+  "text": "ローカルAIモデルはいくつかの理由で非常に重要です。第一に、データはデバイス上で処理され、ユーザーのマシンから決して離れることがないため、プライバシーとセキュリティが強化されます...",
   "model": "llama3"
 }
 ```
 
 ## ストリーミング応答
 
-よりインタラクティブなアプリケーションのために、生成中の応答をストリーミングできます。`invoke`呼び出しで`streaming: true`オプションを設定すると、応答チャンクの非同期ストリームを受け取ることができます。
+リアルタイムの対話が必要なアプリケーションでは、モデルの応答をストリーミングできます。`invoke` メソッドで `streaming` オプションを `true` に設定します。このメソッドは、応答チャンクが利用可能になるたびにそれを生成する非同期イテレーターを返します。
 
-```typescript
+```typescript ストリーミングの例 icon=logos:typescript-icon
 import { isAgentResponseDelta } from "@aigne/core";
 import { OllamaChatModel } from "@aigne/ollama";
 
@@ -157,42 +155,35 @@ const model = new OllamaChatModel({
 
 const stream = await model.invoke(
   {
-    messages: [{ role: "user", content: "Tell me what model you're using" }],
+    messages: [{ role: "user", content: "Tell me a short story about a robot." }],
   },
   { streaming: true },
 );
 
 let fullText = "";
-const json = {};
+process.stdout.write("応答: ");
 
 for await (const chunk of stream) {
-  // isAgentResponseDelta型ガードを使用してデルタを処理します
   if (isAgentResponseDelta(chunk)) {
     const text = chunk.delta.text?.text;
     if (text) {
       fullText += text;
-      process.stdout.write(text); // テキストが届き次第出力します
-    }
-    if (chunk.delta.json) {
-      Object.assign(json, chunk.delta.json);
+      process.stdout.write(text);
     }
   }
 }
 
-console.log("\n--- Final Data ---");
-console.log("Full Text:", fullText);
-console.log("JSON:", json);
+console.log("\n\n--- ストリームの終わり ---");
+console.log("全文:", fullText);
 ```
 
-**出力:**
+この例は、ストリームを処理する方法を示しています。各チャンクは完全な応答の差分です。各チャンクからテキストを蓄積して、完全なメッセージを再構築できます。
 
-```
-I'm an AI assistant running on Ollama with the llama3 model.
---- Final Data ---
-Full Text: I'm an AI assistant running on Ollama with the llama3 model.
-JSON: { "model": "llama3" }
-```
+## まとめ
 
-## ライセンス
+`@aigne/ollama` パッケージは、ローカルのオープンソースモデルをAIGNEアプリケーションに統合するための、堅牢で簡単な方法を提供します。このガイドの手順に従うことで、`OllamaChatModel` をセットアップし、ニーズに合わせて設定し、標準補完とストリーミング補完の両方を活用できます。
 
-このパッケージは[Elastic-2.0ライセンス](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)の下でライセンスされています。
+他の利用可能なモデルに関する詳細については、以下のガイドを参照してください:
+- [OpenAI](./models-openai.md)
+- [Google Gemini](./models-gemini.md)
+- [Anthropic](./models-anthropic.md)

@@ -1,364 +1,239 @@
-本文档详细介绍了 `AIGNE` 类，它是 AIGNE 框架中的核心协调器。您将学习如何初始化、配置和使用 `AIGNE` 类来管理 Agent、处理消息传递以及执行复杂的 AI 工作流。
+# AIGNE
 
-### 系统架构
+`AIGNE` 类是框架的核心执行引擎。它通过协调多个 Agent 来构建复杂的 AI 应用程序，充当 Agent 交互、消息传递和整体执行流程的主要协调点。
 
-为了理解 `AIGNE` 类如何融入更广泛的生态系统，让我们将其核心组件及其交互可视化。`AIGNE` 类作为中心枢纽，管理 Agent、技能和通信渠道。
-
-本文档详细介绍了 `AIGNE` 类，它是 AIGNE 框架中的核心协调器。您将学习如何初始化、配置和使用 `AIGNE` 类来管理 Agent、处理消息传递以及执行复杂的 AI 工作流。
-
-### 系统架构
-
-为了理解 `AIGNE` 类如何融入更广泛的生态系统，让我们将其核心组件及其交互可视化。`AIGNE` 类作为中心枢纽，管理 Agent、技能和通信渠道。
+本指南介绍了如何实例化和配置 AIGNE，如何使用 `invoke` 方法执行 Agent，以及如何管理应用程序的生命周期。
 
 ```d2
 direction: down
 
-AIGNE-Ecosystem: {
-  label: "AIGNE 系统架构"
+Developer: {
+  shape: c4-person
+}
+
+Instantiation: {
+  label: "实例化方法"
+  shape: rectangle
+  style.stroke-dash: 2
+
+  Constructor: {
+    label: "`new AIGNE()`\n(编程方式)"
+  }
+
+  Load-Method: {
+    label: "`AIGNE.load()`\n(从目录加载)"
+  }
+}
+
+AIGNE-Engine: {
+  label: "AIGNE"
   shape: rectangle
 
-  AIGNE-Class: {
-    label: "AIGNE 类\n(协调器)"
-    icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-  }
-
-  Agents: {
-    label: "Agents"
+  Core: {
+    label: "核心职责"
     shape: rectangle
-    Agent-1: "Agent 1"
-    Agent-2: "Agent 2"
-    Agent-N: "..."
-  }
+    style.stroke-dash: 4
 
-  Skills: {
-    label: "技能"
-    shape: rectangle
-    Skill-A: "技能 A"
-    Skill-B: "技能 B"
-  }
-
-  Communication-Channels: {
-    label: "通信渠道"
-    shape: rectangle
-    Messaging: {}
-    API: {}
+    Agent-Management: {
+      label: "Agent 和技能\n管理"
+    }
+    Model-Configuration: {
+      label: "全局模型\n配置"
+    }
+    Execution-Context: {
+      label: "执行上下文"
+    }
   }
 }
 
-AIGNE-Ecosystem.AIGNE-Class <-> AIGNE-Ecosystem.Agents: "管理"
-AIGNE-Ecosystem.AIGNE-Class <-> AIGNE-Ecosystem.Skills: "利用"
-AIGNE-Ecosystem.AIGNE-Class <-> AIGNE-Ecosystem.Communication-Channels: "处理"
+Invocation-Results: {
+  label: "`invoke()` 结果"
+  shape: rectangle
+  style.stroke-dash: 2
+
+  Standard-Response: {
+    label: "标准响应\n(Promise)"
+  }
+
+  Streaming-Response: {
+    label: "流式响应\n(AgentResponseStream)"
+  }
+
+  User-Agent: {
+    label: "有状态 UserAgent\n(维护上下文)"
+  }
+}
+
+Developer -> Instantiation: "通过...初始化"
+Instantiation.Constructor -> AIGNE-Engine
+Instantiation.Load-Method -> AIGNE-Engine
+
+Developer -> AIGNE-Engine: "调用 `invoke()`"
+
+AIGNE-Engine -> Invocation-Results.Standard-Response: "返回"
+AIGNE-Engine -> Invocation-Results.Streaming-Response: "返回"
+AIGNE-Engine -> Invocation-Results.User-Agent: "返回"
+
+Invocation-Results -> Developer: "接收结果"
 
 ```
 
-## 初始化和配置
+## 概述
 
-`AIGNE` 类可以直接实例化，也可以从配置文件加载。这为编程和声明式设置提供了灵活性。
+AIGNE 充当整个 Agent 应用的容器。其主要职责包括：
 
-### 构造函数
+-   **Agent 管理**：管理所有已注册 Agent 和技能的生命周期。
+-   **模型配置**：为聊天和图像模型提供全局默认配置，该配置可被单个 Agent 继承或覆盖。
+-   **执行上下文**：为每次调用创建和管理隔离的上下文，确保并发操作互不干扰。
+-   **生命周期控制**：提供优雅地启动和停止应用程序的方法，确保所有资源都得到妥善处理。
 
-构造函数允许您使用指定的配置创建 `AIGNE` 实例。
+## 实例化
 
-**参数**
+创建 `AIGNE` 实例主要有两种方式：使用构造函数以编程方式创建，或从目录加载配置。
 
-<x-field-group>
-  <x-field data-name="options" data-type="AIGNEOptions" data-required="false" data-desc="AIGNE 实例的配置选项。"></x-field>
-</x-field-group>
+### 使用构造函数
 
-**`AIGNEOptions`**
+最直接的方法是使用 `AIGNE` 构造函数，并传入一个选项对象。这种方法非常适合在代码中动态管理配置的应用程序。
 
-<x-field-group>
-  <x-field data-name="rootDir" data-type="string" data-required="false" data-desc="用于解析 Agent 和技能相对路径的根目录。"></x-field>
-  <x-field data-name="name" data-type="string" data-required="false" data-desc="AIGNE 实例的名称。"></x-field>
-  <x-field data-name="description" data-type="string" data-required="false" data-desc="AIGNE 实例的描述。"></x-field>
-  <x-field data-name="model" data-type="ChatModel" data-required="false" data-desc="全局聊天模型，适用于未指定模型的 Agent。"></x-field>
-  <x-field data-name="imageModel" data-type="ImageModel" data-required="false" data-desc="用于图像处理任务的图像模型。"></x-field>
-  <x-field data-name="skills" data-type="Agent[]" data-required="false" data-desc="AIGNE 实例要使用的技能列表。"></x-field>
-  <x-field data-name="agents" data-type="Agent[]" data-required="false" data-desc="AIGNE 实例要使用的 Agent 列表。"></x-field>
-  <x-field data-name="limits" data-type="ContextLimits" data-required="false" data-desc="AIGNE 实例的使用限制，例如超时和令牌计数。"></x-field>
-  <x-field data-name="observer" data-type="AIGNEObserver" data-required="false" data-desc="用于监控 AIGNE 实例的观察者。"></x-field>
-</x-field-group>
-
-**示例**
-
-```typescript
-import { AIGNE, AIAgent } from '@aigne/core';
-
-const travelAgent = new AIAgent({
-  name: 'TravelAgent',
-  description: 'An agent that helps with travel planning.',
-  model: yourChatModel, // 假设 yourChatModel 是 ChatModel 的一个实例
-});
+```typescript Instantiating AIGNE icon=logos:typescript
+import { AIGNE } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const aigne = new AIGNE({
-  name: 'MyAIGNE',
-  description: 'A simple AIGNE instance.',
-  agents: [travelAgent],
+  name: "MyFirstAIGNEApp",
+  model: new OpenAIChatModel({
+    apiKey: process.env.OPENAI_API_KEY,
+    model: "gpt-4o-mini",
+  }),
 });
-
-console.log('AIGNE instance created:', aigne.name);
 ```
 
-### `load()`
+### 从配置加载
 
-静态 `load` 方法提供了一种便捷的方式，可以从包含 `aigne.yaml` 文件和 Agent 定义的目录中初始化 `AIGNE` 系统。
+对于更复杂的项目，最佳实践是在一个包含 `aigne.yaml` 文件和其他 Agent 定义的目录中定义应用程序结构。静态方法 `AIGNE.load()` 会读取此目录并构建一个完全配置的实例。这种方式促进了配置与逻辑的分离。
 
-**参数**
+```typescript Loading AIGNE from a Directory icon=logos:typescript
+import { AIGNE } from "@aigne/core";
+import { join } from "node:path";
 
-<x-field-group>
-  <x-field data-name="path" data-type="string" data-required="true" data-desc="包含 aigne.yaml 文件的目录路径。"></x-field>
-  <x-field data-name="options" data-type="Omit<AIGNEOptions, keyof LoadOptions> & LoadOptions" data-required="false" data-desc="用于覆盖已加载配置的选项。"></x-field>
-</x-field-group>
-
-**返回值**
-
-<x-field data-name="Promise<AIGNE>" data-type="Promise" data-desc="一个完全初始化的 AIGNE 实例，包含已配置的 Agent 和技能。"></x-field>
-
-**示例**
-
-```typescript
-import { AIGNE } from '@aigne/core';
-
-async function loadAIGNE() {
-  try {
-    const aigne = await AIGNE.load('./path/to/your/aigne/config');
-    console.log('AIGNE instance loaded:', aigne.name);
-  } catch (error) {
-    console.error('Error loading AIGNE instance:', error);
-  }
-}
-
-loadAIGNE();
+const configPath = join(process.cwd(), "my-aigne-project");
+const aigne = await AIGNE.load(configPath);
 ```
 
-## 核心组件
+## 配置选项
 
-`AIGNE` 类由几个关键组件组成，这些组件协同工作以创建一个强大的人工智能系统。
-
-### `agents`
-
-`agents` 属性是 `AIGNE` 实例管理的主要 Agent 的集合。它提供按 Agent 名称的索引访问。
-
-<x-field data-name="agents" data-type="AccessorArray<Agent>" data-desc="主要 Agent 的集合。"></x-field>
-
-### `skills`
-
-`skills` 属性是 `AIGNE` 实例可用的技能 Agent 的集合。它提供按技能名称的索引访问。
-
-<x-field data-name="skills" data-type="AccessorArray<Agent>" data-desc="技能 Agent 的集合。"></x-field>
-
-### `model`
-
-`model` 属性是全局聊天模型，用于所有未指定自有模型的 Agent。
-
-<x-field data-name="model" data-type="ChatModel" data-desc="全局聊天模型。"></x-field>
-
-## Agent 管理
-
-`AIGNE` 类提供了管理系统中 Agent 的方法。
-
-### `addAgent()`
-
-`addAgent` 方法允许您向 `AIGNE` 实例添加一个或多个 Agent。每个 Agent 都会附加到 `AIGNE` 实例上，从而可以访问其资源。
-
-**参数**
+`AIGNE` 构造函数接受一个 `AIGNEOptions` 对象来控制其行为。
 
 <x-field-group>
-  <x-field data-name="...agents" data-type="Agent[]" data-required="true" data-desc="要添加的一个或多个 Agent 实例。"></x-field>
+  <x-field data-name="name" data-type="string" data-required="false" data-desc="AIGNE 实例的唯一名称。"></x-field>
+  <x-field data-name="description" data-type="string" data-required="false" data-desc="实例用途的简要描述。"></x-field>
+  <x-field data-name="rootDir" data-type="string" data-required="false" data-desc="用于解析 Agent 和技能相对路径的根目录。"></x-field>
+  <x-field data-name="model" data-type="ChatModel" data-required="false">
+    <x-field-desc markdown>为所有未指定自身模型的 Agent 提供的全局默认聊天模型。更多详情请参阅[模型](./developer-guide-core-concepts-models.md)。</x-field-desc>
+  </x-field>
+  <x-field data-name="imageModel" data-type="ImageModel" data-required="false" data-desc="用于图像生成任务的全局默认图像模型。"></x-field>
+  <x-field data-name="agents" data-type="Agent[]" data-required="false" data-desc="一个 Agent 实例数组，在初始化时注册到引擎中。"></x-field>
+  <x-field data-name="skills" data-type="Agent[]" data-required="false" data-desc="一个技能 Agent 数组，供其他 Agent 使用。"></x-field>
+  <x-field data-name="limits" data-type="ContextLimits" data-required="false" data-desc="应用于所有调用的执行限制，例如超时或最大 token 数。"></x-field>
+  <x-field data-name="observer" data-type="AIGNEObserver" data-required="false" data-desc="用于监控和记录执行追踪的观察者实例。"></x-field>
 </x-field-group>
 
-**示例**
+## Agent 和生命周期管理
 
-```typescript
-import { AIGNE, AIAgent } from '@aigne/core';
+实例创建后，您可以管理 Agent 并控制应用程序的生命周期。
 
+### 添加 Agent
+
+虽然可以在构造函数中提供 Agent，但您也可以使用 `addAgent` 方法动态添加它们。每个 Agent 都会附加到 AIGNE 实例上，从而可以访问全局模型等共享资源。
+
+```typescript Dynamically Adding an Agent icon=logos:typescript
+import { AIAgent } from "@aigne/core";
+import { AIGNE } from "@aigne/core";
+
+// 假设 'aigne' 是一个已有的 AIGNE 实例
 const aigne = new AIGNE();
 
-const weatherAgent = new AIAgent({
-  name: 'WeatherAgent',
-  description: 'An agent that provides weather forecasts.',
-  model: yourChatModel, // 假设 yourChatModel 是 ChatModel 的一个实例
+const myAgent = new AIAgent({
+  instructions: "You are a helpful assistant.",
 });
 
-aigne.addAgent(weatherAgent);
-console.log('Agent added:', aigne.agents[0].name);
+aigne.addAgent(myAgent);
 ```
 
-## 调用
+### 关闭
 
-`invoke` 方法是与 Agent 交互的主要方式。它有多个重载以支持不同的调用模式。
+为确保程序干净退出并妥善清理资源，请调用 `shutdown` 方法。这对于防止长时间运行的应用程序发生资源泄漏至关重要。引擎还会自动处理如 `SIGINT` 之类的进程退出信号。
 
-### `invoke(agent)`
+```typescript Graceful Shutdown icon=logos:typescript
+// 假设 'aigne' 是一个已有的 AIGNE 实例
+await aigne.shutdown();
+```
 
-此重载会创建一个 `UserAgent`，它是对 Agent 的封装，用于重复调用。
+## 调用 Agent
 
-**参数**
+`invoke` 方法是执行 Agent 的主要入口点。它是一个重载方法，支持从简单的请求-响应到实时流的多种模式。
 
-<x-field-group>
-  <x-field data-name="agent" data-type="Agent<I, O>" data-required="true" data-desc="要封装的目标 Agent。"></x-field>
-</x-field-group>
+### 标准调用
 
-**返回值**
+最常见的用例是提供一个 Agent 和一条输入消息。此操作会返回一个 Promise，该 Promise 在解析后会返回 Agent 的最终输出。
 
-<x-field data-name="UserAgent<I, O>" data-type="UserAgent" data-desc="一个 UserAgent 实例。"></x-field>
+```typescript Standard Agent Invocation icon=logos:typescript
+// 假设 'aigne' 和 'myAgent' 已配置
+const result = await aigne.invoke(myAgent, {
+  message: "What is the AIGNE Framework?",
+});
 
-### `invoke(agent, message, options)`
+console.log(result.message);
+// 预期输出：关于该框架的描述性回答。
+```
 
-这是使用消息调用 Agent 并接收响应的标准方式。
+### 流式响应
 
-**参数**
+对于聊天机器人等交互式应用，您可以启用流式传输以增量方式接收响应。在选项中设置 `streaming: true` 会返回一个 `AgentResponseStream`。然后，您可以遍历该流来处理陆续到达的数据块。
 
-<x-field-group>
-  <x-field data-name="agent" data-type="Agent<I, O>" data-required="true" data-desc="要调用的目标 Agent。"></x-field>
-  <x-field data-name="message" data-type="I & Message" data-required="true" data-desc="发送给 Agent 的输入消息。"></x-field>
-  <x-field data-name="options" data-type="InvokeOptions<U>" data-required="false" data-desc="调用的可选配置参数。"></x-field>
-</x-field-group>
+```typescript Streaming Agent Responses icon=logos:typescript
+import { isAgentResponseDelta } from "@aigne/core";
 
-**返回值**
+// 假设 'aigne' 和 'myAgent' 已配置
+const stream = await aigne.invoke(
+  myAgent,
+  { message: "Tell me a short story." },
+  { streaming: true }
+);
 
-<x-field data-name="Promise<O>" data-type="Promise" data-desc="一个 promise，它会解析为 Agent 的完整响应。"></x-field>
-
-**示例**
-
-```typescript
-import { AIGNE, AIAgent } from '@aigne/core';
-
-async function invokeAgent() {
-  const travelAgent = new AIAgent({
-    name: 'TravelAgent',
-    description: 'An agent that helps with travel planning.',
-    model: yourChatModel, // 假设 yourChatModel 是 ChatModel 的一个实例
-  });
-
-  const aigne = new AIGNE({
-    agents: [travelAgent],
-  });
-
-  try {
-    const response = await aigne.invoke(travelAgent, { content: 'Plan a trip to Paris.' });
-    console.log('Agent response:', response.content);
-  } catch (error) {
-    console.error('Error invoking agent:', error);
+let fullResponse = "";
+for await (const chunk of stream) {
+  if (isAgentResponseDelta(chunk)) {
+    const textDelta = chunk.delta.text?.message ?? "";
+    fullResponse += textDelta;
+    process.stdout.write(textDelta);
   }
 }
 
-invokeAgent();
+console.log("\n--- End of Story ---");
 ```
 
-### 流式传输
+### 创建 User Agent
 
-`invoke` 方法还支持通过将 `streaming` 选项设置为 `true` 来实现流式响应。
+在没有消息的情况下调用 Agent 会创建一个 `UserAgent`。这是一个有状态的包装器，它能在多次调用之间保留对话上下文，因此非常适合构建会话式体验。
 
-**示例**
+```typescript Creating a Stateful UserAgent icon=logos:typescript
+// 假设 'aigne' 和 'myAgent' 已配置
 
-```typescript
-import { AIGNE, AIAgent } from '@aigne/core';
+// 创建一个 UserAgent 来维护上下文
+const userAgent = aigne.invoke(myAgent);
 
-async function invokeStreamingAgent() {
-  const travelAgent = new AIAgent({
-    name: 'TravelAgent',
-    description: 'An agent that helps with travel planning.',
-    model: yourChatModel, // 假设 yourChatModel 是 ChatModel 的一个实例
-  });
+// 第一次交互
+const response1 = await userAgent.invoke({ message: "My name is Bob." });
+console.log(response1.message); // 例如："很高兴认识你，Bob！"
 
-  const aigne = new AIGNE({
-    agents: [travelAgent],
-  });
-
-  try {
-    const stream = await aigne.invoke(travelAgent, { content: 'Plan a trip to Paris.' }, { streaming: true });
-    for await (const chunk of stream) {
-      console.log('Stream chunk:', chunk.content);
-    }
-  } catch (error) {
-    console.error('Error invoking agent:', error);
-  }
-}
-
-invokeStreamingAgent();
+// 第二次交互保留了上下文
+const response2 = await userAgent.invoke({ message: "What is my name?" });
+console.log(response2.message); // 例如："你的名字是 Bob。"
 ```
 
-## 消息传递
+`invoke` 方法还为高级场景提供了额外的重载，例如返回多 Agent 团队中最终活跃的 Agent。请参阅 API 参考以获取完整的签名列表。
 
-`AIGNE` 类为 Agent 间通信提供了一个消息队列。
+---
 
-### `publish()`
-
-`publish` 方法将消息广播到指定主题的所有订阅者。
-
-**参数**
-
-<x-field-group>
-  <x-field data-name="topic" data-type="string | string[]" data-required="true" data-desc="要将消息发布到的一个或多个主题。"></x-field>
-  <x-field data-name="payload" data-type="Omit<MessagePayload, 'context'> | Message" data-required="true" data-desc="消息负载。"></x-field>
-  <x-field data-name="options" data-type="InvokeOptions<U>" data-required="false" data-desc="可选的配置参数。"></x-field>
-</x-field-group>
-
-### `subscribe()`
-
-`subscribe` 方法允许您监听特定主题上的消息。它可以与监听器回调函数一起使用，也可以作为一个 promise 使用，该 promise 会解析为下一条消息。
-
-**参数**
-
-<x-field-group>
-  <x-field data-name="topic" data-type="string | string[]" data-required="true" data-desc="要订阅的主题。"></x-field>
-  <x-field data-name="listener" data-type="MessageQueueListener" data-required="false" data-desc="一个可选的回调函数，用于处理传入的消息。"></x-field>
-</x-field-group>
-
-**返回值**
-
-<x-field data-name="Unsubscribe | Promise<MessagePayload>" data-type="Function | Promise" data-desc="如果提供了监听器，则返回一个取消订阅的函数，否则返回一个解析为下一条消息的 promise。"></x-field>
-
-### `unsubscribe()`
-
-`unsubscribe` 方法从主题中移除先前注册的监听器。
-
-**参数**
-
-<x-field-group>
-  <x-field data-name="topic" data-type="string | string[]" data-required="true" data-desc="要取消订阅的主题。"></x-field>
-  <x-field data-name="listener" data-type="MessageQueueListener" data-required="true" data-desc="要移除的监听器函数。"></x-field>
-</x-field-group>
-
-**示例**
-
-```typescript
-import { AIGNE } from '@aigne/core';
-
-const aigne = new AIGNE();
-
-const listener = (payload) => {
-  console.log('Received message:', payload.content);
-};
-
-aigne.subscribe('news', listener);
-aigne.publish('news', { content: 'AIGNE version 2.0 released!' });
-aigne.unsubscribe('news', listener);
-```
-
-## 生命周期管理
-
-`AIGNE` 类提供了一个 `shutdown` 方法，用于平稳地终止实例及其所有的 Agent 和技能。
-
-### `shutdown()`
-
-`shutdown` 方法确保在终止前正确清理资源。
-
-**返回值**
-
-<x-field data-name="Promise<void>" data-type="Promise" data-desc="一个 promise，在关闭完成后解析。"></x-field>
-
-**示例**
-
-```typescript
-import { AIGNE } from '@aigne/core';
-
-async function shutdownAIGNE() {
-  const aigne = new AIGNE();
-  // ... 你的 AIGNE 逻辑 ...
-  await aigne.shutdown();
-  console.log('AIGNE instance shut down.');
-}
-
-shutdownAIGNE();
-```
+在清晰地了解了 AIGNE 后，你现在可以开始探索构成应用程序基础的不同类型的 [Agent](./developer-guide-core-concepts-agents.md) 了。

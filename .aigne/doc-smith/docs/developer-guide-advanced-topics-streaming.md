@@ -1,263 +1,312 @@
-# Streams
+# Streaming
 
-This section provides detailed documentation on the stream processing utilities within the AIGNE Core package. These utilities are essential for handling asynchronous data flows, particularly for managing `Agent` responses and converting data between different formats like `ReadableStream`, `AsyncGenerator`, and Server-Sent Events (SSE).
+The AIGNE Framework provides robust support for handling streaming responses from agents. This is particularly useful for applications requiring real-time data processing, such as chatbots, live data feeds, or any user interface that benefits from immediate, incremental updates. By processing data as it becomes available, you can create more responsive and interactive user experiences.
 
-## Overview
+This guide details the methodology for enabling and consuming streamed responses within the framework.
 
-The stream utilities are designed to provide a robust and flexible way to work with various stream types. Key functionalities include:
+## Enabling Streaming
 
--   **Conversion**: Seamlessly convert data between objects, arrays, strings, and different stream formats.
--   **Manipulation**: Merge multiple streams, process chunks, and handle stream lifecycle events.
--   **Event Parsing**: Parse Server-Sent Events (SSE) and transform agent response streams.
--   **Data Extraction**: Extract structured metadata from within a stream of text.
+To receive a streamed response from an agent, you must set the `stream` option to `true` in the `invoke` call. When this option is enabled, the `invoke` method returns an `AgentResponseStream`, which is a `ReadableStream` of `AgentResponseChunk` objects, instead of a fully formed response object.
 
-These tools are fundamental for building responsive, real-time applications that interact with AI agents.
+```typescript AIGNE Invoke with Streaming icon=logos:typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
 
-## Core Stream Utilities
+const llm = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  model: "gpt-4o",
+});
 
-The primary stream utilities are located in `packages/core/src/utils/stream-utils.ts`. They provide the foundation for creating, converting, and managing streams.
+const agent = new AIAgent({
+  model: llm,
+  instructions: "You are a helpful assistant.",
+});
 
-### Stream Conversion
+const aigne = new AIGNE({
+  model: llm,
+  agents: { agent },
+});
 
-These functions allow you to convert data to and from stream-based formats.
+async function run() {
+  // Enable streaming by setting the `stream` option to true
+  const stream = await aigne.invoke("agent", {
+    prompt: "Tell me a short story.",
+  }, { stream: true });
 
-#### `objectToAgentResponseStream`
+  // The 'stream' variable is now a ReadableStream
+  for await (const chunk of stream) {
+    // Process each chunk as it arrives
+    process.stdout.write(chunk.delta.text?.text || "");
+  }
+}
 
-Converts a JSON object into an `AgentResponseStream`. This is useful for returning a complete object as a single-chunk stream, conforming to the agent response format.
-
-**Example**
-
-```typescript
-import { objectToAgentResponseStream } from '@aigene/core/utils';
-
-const userMessage = { id: 'user-123', text: 'Hello, agent!' };
-const stream = objectToAgentResponseStream(userMessage);
-
-// The stream will emit one chunk containing the full object and then close.
+run();
 ```
 
-#### `agentResponseStreamToObject`
+## Consuming the Stream
 
-Aggregates all chunks from an `AgentResponseStream` or `AgentProcessAsyncGenerator` and merges them into a single object.
+The returned stream consists of `AgentResponseChunk` objects. Each chunk represents a piece of the total response. There are two primary types of data within a chunk's `delta`:
 
-**Example**
+- `delta.text`: Contains partial text content. This is used for streaming text from language models.
+- `delta.json`: Contains partial JSON data. This is used when an agent is configured to return structured output. The framework incrementally builds the final JSON object.
 
-```typescript
-import { agentResponseStreamToObject, objectToAgentResponseStream } from '@aigene/core/utils';
+### Processing Chunks
+
+You can iterate over the stream using a `for await...of` loop to process each chunk as it arrives. The following example demonstrates how to accumulate both text and the final structured JSON from a stream.
+
+```typescript Processing Stream Chunks icon=logos:typescript
+import { AIGNE, AIAgent, Message } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
+import { agentResponseStreamToObject } from "@aigne/core/utils";
+
+// Assume aigne and agent are configured as in the previous example
+
+interface StoryOutput extends Message {
+  protagonist: string;
+  setting: string;
+  plotSummary: string;
+  storyText: string;
+}
 
 async function processStream() {
-  const message = { result: 'This is the final object.' };
-  const stream = objectToAgentResponseStream(message);
+  const aigne = new AIGNE({
+    model: new OpenAI(),
+    agents: {
+      agent: new AIAgent({
+        model: new OpenAI(),
+      })
+    },
+  });
+  const stream = await aigne.invoke<StoryOutput>("agent", {
+      prompt: "Write a short story about a robot who discovers music. Return the protagonist's name, the setting, a plot summary, and the full story text.",
+      // Assuming the agent is configured for structured output
+    },
+    { stream: true }
+  );
 
-  const finalObject = await agentResponseStreamToObject(stream);
-  console.log(finalObject); // { result: 'This is the final object.' }
+  let fullText = "";
+  const finalResult: Partial<StoryOutput> = {};
+
+  for await (const chunk of stream) {
+    if (chunk.delta.text?.storyText) {
+      const partialText = chunk.delta.text.storyText;
+      fullText += partialText;
+      process.stdout.write(partialText); // Live update UI with text
+    }
+
+    if (chunk.delta.json) {
+      // The framework provides the partially-merged JSON object in each relevant chunk
+      Object.assign(finalResult, chunk.delta.json);
+    }
+  }
+
+  console.log("\n\n--- Final Structured Output ---");
+  console.log(finalResult);
+
+  // You can also use a utility to get the final object directly
+  // Note: This consumes the stream, so it should be used instead of the loop
+  // const finalObject = await agentResponseStreamToObject(stream);
+  // console.log(finalObject);
 }
 
 processStream();
 ```
 
-#### `asyncGeneratorToReadableStream`
+## Utility: `agentResponseStreamToObject`
 
-Converts an `AgentProcessAsyncGenerator` into a standard `ReadableStream` (`AgentResponseStream`).
+If you only need the final, fully-formed object and do not need to process intermediate chunks, the framework provides the `agentResponseStreamToObject` utility. This function consumes the entire stream and returns a single promise that resolves with the complete response object.
 
-**Example**
+This is useful when you want the benefits of streaming on the backend (e.g., lower time-to-first-byte from the LLM) but only need to deliver the final result to the caller.
 
-```typescript
-import { asyncGeneratorToReadableStream, type AgentProcessAsyncGenerator, type AgentResponseChunk } from '@aigene/core/utils';
+```typescript Using agentResponseStreamToObject icon=logos:typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
+import { agentResponseStreamToObject } from "@aigne/core/utils";
+// ... setup aigne and agent
 
-async function* myGenerator(): AgentProcessAsyncGenerator<{ text: string }> {
-  yield { delta: { text: { text: 'Hel' } } };
-  yield { delta: { text: { text: 'lo' } } };
-  return { text: 'Hello' };
+async function getFinalObject() {
+  const aigne = new AIGNE({
+    model: new OpenAI(),
+    agents: {
+      agent: new AIAgent({
+        model: new OpenAI(),
+      })
+    },
+  });
+  const stream = await aigne.invoke("agent", {
+    prompt: "Tell me a short story.",
+  }, { stream: true });
+
+  // Consumes the stream and returns the final aggregated object
+  const result = await agentResponseStreamToObject(stream);
+
+  console.log("--- Complete Response ---");
+  console.log(result.text);
 }
 
-const stream = asyncGeneratorToReadableStream(myGenerator());
-// This stream can now be used with other ReadableStream-compatible APIs.
+getFinalObject();
 ```
 
-#### `readableStreamToArray`
+## Streaming to the Frontend with Server-Sent Events (SSE)
 
-Reads an entire `ReadableStream` and collects all its chunks into an array. It can optionally catch and include errors in the resulting array.
+A common use case for streaming is to send real-time updates to a web frontend. The AIGNE framework simplifies this by providing an `AgentResponseStreamSSE` class, which converts an `AgentResponseStream` into a format compatible with Server-Sent Events (SSE).
 
-**Example**
+### Data Flow Diagram
 
-```typescript
-import { readableStreamToArray, arrayToReadableStream } from '@aigene/core/utils';
+The following diagram illustrates the data flow from the backend AIGNE to the frontend application when using SSE.
 
-async function streamToArrayExample() {
-  const chunks = [1, 2, 3, new Error('Stream failed')];
-  const stream = arrayToReadableStream(chunks);
+```d2
+direction: down
 
-  // Without catching errors (will throw)
-  try {
-    const result = await readableStreamToArray(stream);
-  } catch (e) {
-    console.error(e.message); // "Stream failed"
+Frontend: {
+  label: "Frontend Application"
+  shape: rectangle
+
+  EventSource-Client: {
+    label: "EventSource Client"
+    shape: rectangle
   }
 
-  // With error catching
-  const stream2 = arrayToReadableStream(chunks);
-  const resultWithErrors = await readableStreamToArray(stream2, { catchError: true });
-  console.log(resultWithErrors); // [1, 2, 3, Error: Stream failed]
+  UI-Component: {
+    label: "UI Component"
+    shape: rectangle
+  }
 }
 
-streamToArrayExample();
-```
+Backend: {
+  label: "Backend Server"
+  shape: rectangle
 
-### Stream Manipulation
+  SSE-Endpoint: {
+    label: "SSE Endpoint"
+  }
 
-These functions provide tools for modifying and combining streams.
+  AIGNE-Core: {
+    label: "AIGNE Framework"
 
-#### `mergeReadableStreams`
-
-Merges multiple `ReadableStream` instances into a single stream. The resulting stream will forward chunks from the input streams as they become available. It closes only after all input streams have closed.
-
-**Example**
-
-```typescript
-import { mergeReadableStreams, arrayToReadableStream } from '@aigene/core/utils';
-
-const stream1 = arrayToReadableStream(['A', 'B']);
-const stream2 = arrayToReadableStream([1, 2]);
-
-const mergedStream = mergeReadableStreams(stream1, stream2);
-
-// Chunks from mergedStream could be 'A', 1, 'B', 2 (order depends on timing)
-```
-
-#### `onAgentResponseStreamEnd`
-
-Attaches listeners to an `AgentResponseStream` to handle events like chunk processing, stream completion (`onResult`), and errors. This allows you to inspect or modify the final result before the stream closes.
-
-**Example**
-
-```typescript
-import { onAgentResponseStreamEnd, objectToAgentResponseStream } from '@aigene/core/utils';
-
-async function monitorStream() {
-  const stream = objectToAgentResponseStream({ count: 10 });
-
-  const monitoredStream = onAgentResponseStreamEnd(stream, {
-    onResult: (result) => {
-      console.log('Stream finished. Final result:', result);
-      // You can modify the final result if needed
-      return { ...result, status: 'completed' };
-    },
-    onChunk: (chunk) => {
-      console.log('Processing chunk...');
-    },
-    onError: (error) => {
-      console.error('An error occurred:', error);
-      return error;
+    invoke: {
+        label: "aigne.invoke(..., { stream: true })"
     }
+
+    AgentResponseStream: {
+        label: "AgentResponseStream\n(ReadableStream)"
+    }
+
+    AgentResponseStreamSSE: {
+        label: "AgentResponseStreamSSE\n(Utility)"
+    }
+  }
+}
+
+LLM: {
+  label: "LLM Service"
+  shape: cylinder
+}
+
+Frontend.EventSource-Client -> Backend.SSE-Endpoint: "1. POST /api/chat-stream"
+Backend.SSE-Endpoint -> Backend.AIGNE-Core.invoke: "2. Invoke agent"
+Backend.AIGNE-Core.invoke -> LLM: "3. Request to LLM API"
+LLM -> Backend.AIGNE-Core.invoke: "4. Streams response"
+Backend.AIGNE-Core.invoke -> Backend.AIGNE-Core.AgentResponseStream: "5. Returns stream"
+Backend.AIGNE-Core.AgentResponseStream -> Backend.AIGNE-Core.AgentResponseStreamSSE: "6. Pipe to SSE utility"
+Backend.AIGNE-Core.AgentResponseStreamSSE -> Backend.SSE-Endpoint: "7. Yields SSE-formatted chunks"
+Backend.SSE-Endpoint -> Frontend.EventSource-Client: "8. Stream response via HTTP"
+Frontend.EventSource-Client -> Frontend.UI-Component: "9. 'onmessage' event triggers UI update"
+Frontend.UI-Component -> Frontend.UI-Component: "10. Render text incrementally"
+```
+
+### Backend Implementation
+
+On your server, create an endpoint that initiates the agent `invoke` call with streaming enabled. Then, pipe the resulting `AgentResponseStream` into an `AgentResponseStreamSSE` and write its output to the HTTP response.
+
+The example below uses a generic web server structure.
+
+```typescript SSE Backend Endpoint icon=logos:typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
+import { AgentResponseStreamSSE } from "@aigne/core/utils";
+// ... setup aigne
+
+// Example using a generic server context (e.g., Express, Hono, etc.)
+async function handleSseRequest(req, res) {
+  const aigne = new AIGNE({
+    model: new OpenAI(),
+    agents: {
+      agent: new AIAgent({
+        model: new OpenAI(),
+      })
+    },
+  });
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Connection": "keep-alive",
+    "Cache-Control": "no-cache",
   });
 
-  // Consume the stream to trigger the handlers
-  for await (const chunk of monitoredStream) {
-    // ...
+  try {
+    const stream = await aigne.invoke("agent", {
+      prompt: req.body.prompt,
+    }, { stream: true });
+
+    // Convert the agent stream to an SSE stream
+    const sseStream = new AgentResponseStreamSSE(stream);
+
+    // Pipe the SSE stream to the HTTP response
+    for await (const sseChunk of sseStream) {
+      res.write(sseChunk);
+    }
+  } catch (error) {
+    console.error("SSE stream error:", error);
+    const sseError = `event: error\ndata: ${JSON.stringify({ message: error.message })}\n\n`;
+    res.write(sseError);
+  } finally {
+    res.end();
   }
 }
-
-monitorStream();
 ```
 
-## Event Stream Processing
+### Frontend Implementation
 
-Located in `packages/core/src/utils/event-stream.ts`, these classes are designed for handling Server-Sent Events (SSE) and parsing agent-specific event streams.
+On the frontend, use the native `EventSource` API to connect to your SSE endpoint. You can then listen for `message` events to receive chunks and `error` events to handle issues.
 
-### `AgentResponseStreamSSE`
+```javascript SSE Frontend Client icon=logos:javascript
+const promptInput = document.getElementById('prompt-input');
+const submitButton = document.getElementById('submit-button');
+const responseContainer = document.getElementById('response');
 
-Wraps an `AgentResponseStream` and transforms its output into a `ReadableStream` of SSE-formatted strings. This is ideal for sending agent responses directly to a web client.
+submitButton.addEventListener('click', async () => {
+  const prompt = promptInput.value;
+  responseContainer.innerHTML = ''; // Clear previous response
 
-**Example**
+  const eventSource = new EventSource('/api/chat-stream', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
+  });
 
-```typescript
-import { AgentResponseStreamSSE, objectToAgentResponseStream } from '@aigene/core/utils/event-stream';
+  eventSource.onmessage = (event) => {
+    const chunk = JSON.parse(event.data);
 
-// Assume `agentStream` is an AgentResponseStream from an agent call
-const agentStream = objectToAgentResponseStream({ delta: { text: { content: 'Live update!' } } });
+    if (chunk.delta?.text?.text) {
+      responseContainer.innerHTML += chunk.delta.text.text;
+    }
+  };
 
-const sseStream = new AgentResponseStreamSSE(agentStream);
+  eventSource.onerror = (error) => {
+    console.error('EventSource failed:', error);
+    responseContainer.innerHTML += '<p style="color: red;">Error receiving stream.</p>';
+    eventSource.close();
+  };
 
-// sseStream will now produce strings like:
-// 'data: {"delta":{"text":{"content":"Live update!"}}}\n\n'
-```
-
-### `AgentResponseStreamParser`
-
-A `TransformStream` that processes chunks from an `AgentResponseStream`. It intelligently merges deltas for `text` and `json` fields, ensuring that each downstream chunk contains the complete, accumulated state of the JSON object.
-
-**Example**
-
-```typescript
-import { AgentResponseStreamParser, arrayToReadableStream } from '@aigene/core/utils/event-stream';
-
-const sourceStream = arrayToReadableStream([
-  { delta: { json: { id: '123' } } },
-  { delta: { json: { status: 'pending' } } },
-  { delta: { text: { message: 'In progress...' } } }
-]);
-
-const parser = new AgentResponseStreamParser();
-const processedStream = sourceStream.pipeThrough(parser);
-
-// The output chunks will have the full JSON object at each step:
-// 1st chunk: { delta: { json: { id: '123' } } }
-// 2nd chunk: { delta: { json: { id: '123', status: 'pending' } } }
-// 3rd chunk: { delta: { json: { id: '123', status: 'pending' }, text: { message: '...' } } }
-```
-
-### `AgentResponseProgressStream`
-
-Creates a `ReadableStream` of `AgentResponseProgress` events by listening to lifecycle events (`agentStarted`, `agentSucceed`, `agentFailed`) on a given `Context` instance. This allows you to monitor the progress of an entire agent execution flow.
-
-**Example**
-
-```typescript
-import { AgentResponseProgressStream, Context } from '@aigene/core';
-
-// Assume `context` is an active agent execution context
-const context = new Context();
-const progressStream = new AgentResponseProgressStream(context);
-
-// You can now read from progressStream to get live updates on agent tasks.
-progressStream.on('data', (progress) => {
-  console.log(`Agent event: ${progress.event}`, progress.agent.name);
+  // The 'open' event fires when the connection is established
+  eventSource.onopen = () => {
+    console.log('Connection to server opened.');
+  };
 });
 ```
 
-## Advanced: Structured Data Extraction
+This architecture enables building highly responsive UIs where text appears word-by-word, exactly as it is generated by the AI model.
 
-The `ExtractMetadataTransform` class provides a specialized mechanism for parsing and extracting structured data (e.g., JSON metadata) embedded within a text stream.
+## Summary
 
-### `ExtractMetadataTransform`
-
-This `TransformStream` scans a text stream for start and end markers and attempts to parse the content between them as structured data. The extracted data is then emitted as a `json` delta, separate from the surrounding text.
-
-**Use Case**: An agent might output text mixed with structured metadata, like this: `Here is some text... <metadata>{"key": "value"}</metadata> ...and the text continues.` This transform stream can isolate the text from the metadata.
-
-**Example**
-
-```typescript
-import { ExtractMetadataTransform } from '@aigene/core/utils/structured-stream-extractor';
-import { arrayToReadableStream } from '@aigene/core/utils';
-
-const stream = arrayToReadableStream([
-  { delta: { text: { text: 'Some initial text ' } } },
-  { delta: { text: { text: 'START_JSON{"id":1}END_JSON' } } },
-  { delta: { text: { text: ' and some final text.' } } },
-]);
-
-const extractor = new ExtractMetadataTransform({
-  start: 'START_JSON',
-  end: 'END_JSON',
-  parse: (raw) => JSON.parse(raw),
-});
-
-const processedStream = stream.pipeThrough(extractor);
-
-// Chunks from processedStream will be:
-// 1. { delta: { text: { text: 'Some initial text' } } }
-// 2. { delta: { json: { json: { id: 1 } } } }
-// 3. { delta: { text: { text: ' and some final text.' } } }
-```
+The streaming capabilities of the AIGNE Framework are essential for building modern, real-time AI applications. By enabling the `stream` option in the `invoke` method, you can process data incrementally, improve perceived performance, and efficiently pipe agent responses to frontends using Server-Sent Events. For further details on agent invocation, refer to the [AI Agent](./developer-guide-agents-ai-agent.md) documentation.

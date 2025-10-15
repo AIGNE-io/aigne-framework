@@ -1,111 +1,236 @@
-An AI Agent is a specialized agent that utilizes a chat model to interpret user input and generate responses. It can be configured with specific instructions, tools (skills), and memory to handle a wide range of tasks. This agent is central to creating conversational AI, as it forms the bridge between the user, the language model, and any external tools you provide.
+# AI Agent
 
-The key features of the `AIAgent` include:
-- **Direct LLM Integration**: Connects to any compatible chat model to generate intelligent and context-aware responses.
-- **Customizable Instructions**: Tailor the agent's behavior, personality, and task focus using prompt templates.
-- **Tool and Function Calling**: Grant the agent skills to interact with external systems, APIs, or databases.
-- **Streaming Responses**: Enable real-time, token-by-token responses for dynamic user experiences.
-- **Router Mode**: Use the agent to intelligently delegate tasks to other specialized agents based on user input.
-- **Stateful Memory**: Equip the agent with memory to recall previous interactions and maintain context.
+The `AIAgent` is the primary component for interacting with large language models (LLMs). It serves as a direct interface to a `ChatModel`, enabling sophisticated conversational AI, function calling (tool usage), and structured data extraction. This agent handles the complexities of prompt construction, model invocation, response parsing, and tool execution loops.
 
-### Class Diagram
+This guide provides a comprehensive overview of the `AIAgent`, its configuration, and its core functionalities. For a broader understanding of how agents fit into the AIGNE framework, please refer to the [Agents core concept guide](./developer-guide-core-concepts-agents.md).
 
-The following diagram illustrates the position of `AIAgent` within the overall agent hierarchy, showing its inheritance from the base `Agent` class and its composition with the `PromptBuilder`.
+## How It Works
 
-```mermaid
-classDiagram
-    class Agent {
-        +string name
-        +string description
-        +invoke(input, context)
-        +process(input, context)
-    }
+The `AIAgent` follows a systematic process to handle user input and generate a response. This process often involves multiple interactions with an LLM, especially when tools are used.
 
-    AIAgent --|> Agent: inheritance
-    AIAgent *.. PromptBuilder: composition
-    class AIAgent {
-        +ChatModel model
-        +PromptBuilder instructions
-        +string outputKey
-        +AIAgentToolChoice toolChoice
-        +boolean catchToolsError
-    }
+```d2
+direction: right
+style {
+  stroke-width: 2
+}
 
-    class PromptBuilder {
-        +build(options) Prompt
-    }
+# Start with user input
+input: User Input
+
+# Agent components
+agent: AIAgent {
+  shape: package
+  style.fill: "#f0f4f8"
+
+  builder: PromptBuilder
+  model: ChatModel
+  tools: "Tools (Skills)"
+}
+
+# End with final output
+output: Final Response
+
+# Process Flow
+input -> agent.builder: "1. Build Prompt"
+agent.builder -> agent.model: "2. Invoke Model"
+agent.model -> agent: "3. Receive Response"
+
+subgraph "Tool Execution Loop" {
+  direction: down
+  style {
+    stroke-dash: 4
+  }
+
+  agent -> check_tool_call: "4. Parse Response" {shape: diamond}
+  check_tool_call -> output: "No"
+  check_tool_call -> agent.tools: "Yes (Tool Call Detected)"
+
+  agent.tools -> agent.builder: "5. Execute Tool & Format Result"
+}
+
+agent -> output: "6. Format Final Output"
 ```
 
-## Configuration Options (AIAgentOptions)
+The diagram above illustrates the typical lifecycle of a request:
+1.  **Prompt Construction**: The `AIAgent` uses a `PromptBuilder` to assemble the final prompt from its `instructions`, the user input, and the history of any previous tool calls.
+2.  **Model Invocation**: The fully formed prompt is sent to the configured `ChatModel`.
+3.  **Response Parsing**: The agent receives the model's raw output.
+4.  **Tool Call Detection**: It checks if the response contains a request to call a tool.
+    - If **No**, the agent formats the text response and returns it.
+    - If **Yes**, it proceeds to the tool execution loop.
+5.  **Tool Execution**: The agent identifies and invokes the requested tool (which is another agent), captures its output, and formats it into a message for the model. The process then loops back to step 1, sending the tool's result back to the model for the next generation step.
+6.  **Final Output**: Once the model generates a final text response without any tool calls, the agent formats it and streams it back to the user.
 
-When creating an `AIAgent`, you can provide an `AIAgentOptions` object to customize its behavior. This object extends the base `AgentOptions`.
+## Configuration
 
-| Parameter | Type | Description | Default |
-| --- | --- | --- | --- |
-| `instructions` | `string \| PromptBuilder` | Instructions to guide the AI model's behavior. This can be a simple string or a `PromptBuilder` instance for complex prompt templating. | |
-| `inputKey` | `string` | The key in the input message to use as the primary user message. | |
-| `outputKey` | `string` | The key to use for the main text output in the response message. | `"message"` |
-| `toolChoice` | `AIAgentToolChoice \| Agent` | Controls how the agent uses tools. Can be an enum value or another agent to act as a router. | `auto` |
-| `keepTextInToolUses` | `boolean` | If `true`, text generated by the model during tool execution is preserved in the final output. | `false` |
-| `catchToolsError` | `boolean` | If `true`, the agent will catch errors from tool execution and continue processing. If `false`, it will throw an error. | `true` |
-| `structuredStreamMode` | `boolean` | Enables a mode where the model's streaming response is parsed to extract structured metadata (e.g., JSON) enclosed in specific tags. | `false` |
-| `memoryAgentsAsTools` | `boolean` | If `true`, memory agents are exposed as tools that the model can call to explicitly retrieve or store information. | `false` |
+An `AIAgent` is configured through its constructor options. Below is a detailed breakdown of the available parameters.
 
-### Tool Choice Options
+<x-field-group>
+  <x-field data-name="instructions" data-type="string | PromptBuilder" data-required="false">
+    <x-field-desc markdown>The core directive that guides the AI model's behavior. This can be a simple string or a `PromptBuilder` instance for creating complex, dynamic prompts. See the [Prompts](./developer-guide-advanced-topics-prompts.md) guide for more details.</x-field-desc>
+  </x-field>
+  <x-field data-name="inputKey" data-type="string" data-required="false">
+    <x-field-desc markdown>Specifies which key from the input message object should be treated as the main user query. If not set, `instructions` must be provided.</x-field-desc>
+  </x-field>
+  <x-field data-name="outputKey" data-type="string" data-default="message" data-required="false">
+    <x-field-desc markdown>Defines the key under which the agent's final text response will be placed in the output object. Defaults to `message`.</x-field-desc>
+  </x-field>
+  <x-field data-name="inputFileKey" data-type="string" data-required="false">
+    <x-field-desc markdown>Specifies the key from the input message that contains file data to be sent to the model.</x-field-desc>
+  </x-field>
+  <x-field data-name="outputFileKey" data-type="string" data-default="files" data-required="false">
+    <x-field-desc markdown>Defines the key under which any files generated by the model will be placed in the output object. Defaults to `files`.</x-field-desc>
+  </x-field>
+  <x-field data-name="toolChoice" data-type="AIAgentToolChoice | Agent" data-default="auto" data-required="false">
+    <x-field-desc markdown>Controls how the agent uses its available tools (skills). See the Tool Usage section below for details.</x-field-desc>
+  </x-field>
+  <x-field data-name="toolCallsConcurrency" data-type="number" data-default="1" data-required="false">
+    <x-field-desc markdown>The maximum number of tool calls that can be executed concurrently in a single turn.</x-field-desc>
+  </x-field>
+  <x-field data-name="catchToolsError" data-type="boolean" data-default="true" data-required="false">
+    <x-field-desc markdown>If `true`, the agent will catch errors from tool executions and feed the error message back to the model. If `false`, an error will halt the entire process.</x-field-desc>
+  </x-field>
+  <x-field data-name="structuredStreamMode" data-type="boolean" data-default="false" data-required="false">
+    <x-field-desc markdown>Enables a mode for extracting structured JSON data from the model's streaming response. See the Structured Output section for more information.</x-field-desc>
+  </x-field>
+  <x-field data-name="memoryAgentsAsTools" data-type="boolean" data-default="false" data-required="false">
+    <x-field-desc markdown>When `true`, attached `MemoryAgent` instances are exposed to the model as callable tools, allowing the agent to explicitly read from or write to its memory.</x-field-desc>
+  </x-field>
+</x-field-group>
 
-The `toolChoice` property determines the strategy the agent uses for executing its assigned tools (skills).
+### Basic Example
 
-| Value | Description |
-| --- | --- |
-| `auto` | The language model decides whether to use a tool based on the conversation context. |
-| `none` | Disables all tool usage for the agent. |
-| `required` | Forces the agent to use one of the available tools. |
-| `router` | The agent selects exactly one tool and routes the input directly to it. This is useful for creating delegator agents. |
+Here is an example of a simple `AIAgent` configured to act as a helpful assistant.
 
-## Creating an AIAgent
+```javascript Basic Chat Agent icon=logos:javascript
+import { AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
 
-You can create an `AIAgent` instance using its constructor or the static `AIAgent.from()` factory method. The most common way is by defining its configuration in a YAML file and loading it.
+// Configure the model to use
+const model = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  model: "gpt-4o",
+});
 
-Here is an example of a YAML configuration for a simple chat agent:
+// Create the AI Agent
+const chatAgent = new AIAgent({
+  instructions: "You are a helpful assistant.",
+  inputKey: "question",
+  outputKey: "answer",
+});
 
-**`chat.yaml`**
-```yaml
-name: chat
-model: google/gemini-2.5-flash
-task_title: "process: {{message}}"
-alias:
-  - chat-bot
-  - bot
-description: Chat agent
-instructions: |
-  You are a helpful assistant that can answer questions and provide information on a wide range of topics.
-  Your goal is to assist users in finding the information they need and to engage in friendly conversation.
-input_key: message
-memory: true
-skills:
-  - sandbox.js
-include_input_in_output: true
+// To run the agent, you would use the AIGNE's invoke method
+// const aigne = new AIGNE({ model });
+// const response = await aigne.invoke(chatAgent, { question: "What is AIGNE?" });
+// console.log(response.answer);
 ```
 
-This configuration defines a chat agent that uses a Google Gemini model, has a clear set of instructions, and is equipped with memory and a sandboxing skill.
+This agent takes an input object with a `question` key and produces an output object with an `answer` key.
 
-## Core Concepts
+## Tool Usage
 
-### Instructions and Prompting
+A powerful feature of `AIAgent` is its ability to use other agents as tools. By providing a list of `skills` during invocation, the `AIAgent` can decide to call these tools to gather information or perform actions. The `toolChoice` option dictates this behavior.
 
-The `instructions` property is the primary way to guide the `AIAgent`. It acts as the system prompt, setting the context, personality, and goals for the language model. You can use simple strings for static instructions or leverage the `PromptBuilder` for dynamic prompts that can incorporate variables from the input or context.
+| `toolChoice` Value | Description |
+| :--- | :--- |
+| `auto` | (Default) The model decides whether to call a tool based on the context of the conversation. |
+| `none` | Disables tool usage entirely. The model will not attempt to call any tools. |
+| `required` | Forces the model to call one or more tools. |
+| `router` | A specialized mode where the model is forced to choose exactly one tool. The agent then directly routes the request to that tool and streams its response as the final output. This is highly efficient for creating dispatcher agents. |
 
-### Tool Usage and Function Calling
+### Tool Usage Example
 
-By assigning `skills` (other agents) to an `AIAgent`, you give it the ability to perform actions beyond generating text. When a user's request requires an external action, the model can initiate a "function call" to the appropriate tool. The agent executes the tool, receives the result, and uses that output to inform its final response. This allows the agent to fetch data, interact with APIs, or perform calculations.
+Imagine you have a `FunctionAgent` that can fetch weather information. You can provide this to an `AIAgent` as a skill.
 
-### Processing Workflow
+```javascript Agent with a Tool icon=logos:javascript
+import { AIAgent, FunctionAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
 
-The `AIAgent`'s internal `process` method orchestrates the interaction with the language model and tools:
-1.  **Prompt Construction**: It builds the final prompt sent to the model by combining system instructions, user input, conversation history (memory), and available tool definitions.
-2.  **Model Invocation**: It sends the request to the configured chat model.
-3.  **Response Handling**: It processes the model's output, which can be a direct text response or a request to call a tool.
-    - If a tool call is requested, the agent executes the tool.
-    - The tool's output is sent back to the model in a new request.
-    - This loop continues until the model generates a final response to the user.
-4.  **Streaming Output**: The final response is yielded as a stream of delta objects, allowing for real-time output.
+// A simple function to get the weather
+function getCurrentWeather(location) {
+  if (location.toLowerCase().includes("tokyo")) {
+    return JSON.stringify({ location: "Tokyo", temperature: "15", unit: "celsius" });
+  }
+  return JSON.stringify({ location, temperature: "unknown" });
+}
+
+// Wrap the function in a FunctionAgent to make it a tool
+const weatherTool = new FunctionAgent({
+  name: "get_current_weather",
+  description: "Get the current weather in a given location",
+  inputSchema: {
+    type: "object",
+    properties: { location: { type: "string", description: "The city and state" } },
+    required: ["location"],
+  },
+  process: ({ location }) => getCurrentWeather(location),
+});
+
+// Configure the model
+const model = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  model: "gpt-4o",
+});
+
+// Create an AI Agent that can use the weather tool
+const weatherAssistant = new AIAgent({
+  instructions: "You are a helpful assistant that can provide weather forecasts.",
+  inputKey: "query",
+  outputKey: "response",
+});
+
+// When invoking, provide the tool as a skill
+// const aigne = new AIGNE({ model, skills: [weatherTool] });
+// const result = await aigne.invoke(weatherAssistant, { query: "What's the weather like in Tokyo?" });
+// console.log(result.response); // The LLM will respond using the tool's output
+```
+
+In this scenario, the `AIAgent` will receive the query, recognize the need for weather information, call the `weatherTool`, receive its JSON output, and then use that data to formulate a natural language response.
+
+## Structured Output
+
+For tasks that require extracting specific, structured information (like sentiment analysis, classification, or entity extraction), `structuredStreamMode` is invaluable. When enabled, the agent actively parses the model's streaming output to find and extract a JSON object.
+
+By default, the model must be instructed to place its structured data inside `<metadata>...</metadata>` tags in YAML format.
+
+### Structured Output Example
+
+This example configures an agent to analyze the sentiment of a user message and return a structured JSON object.
+
+```javascript Structured Sentiment Analysis icon=logos:javascript
+import { AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
+
+const sentimentAnalyzer = new AIAgent({
+  instructions: `
+    Analyze the sentiment of the user's message.
+    Respond with a single word summary, followed by a structured analysis.
+    Place the structured analysis in YAML format inside <metadata> tags.
+    The structure should contain 'sentiment' (positive, negative, or neutral) and a 'score' from -1.0 to 1.0.
+  `,
+  inputKey: "message",
+  outputKey: "summary",
+  structuredStreamMode: true,
+});
+
+// When invoked, the output will contain both the text summary
+// and the parsed JSON object.
+// const aigne = new AIGNE({ model: new OpenAI(...) });
+// const result = await aigne.invoke(sentimentAnalyzer, { message: "AIGNE is an amazing framework!" });
+/*
+  Expected result:
+  {
+    summary: "Positive.",
+    sentiment: "positive",
+    score: 0.9
+  }
+*/
+```
+
+You can customize the parsing logic, including the start/end tags and the parsing function (e.g., to support JSON directly), using the `customStructuredStreamInstructions` option.
+
+## Summary
+
+The `AIAgent` is a foundational building block for creating advanced AI applications. It provides a robust and flexible interface to language models, complete with support for tool usage, structured data extraction, and memory integration.
+
+For more complex workflows, you may need to orchestrate multiple agents. To learn how, proceed to the [Team Agent](./developer-guide-agents-team-agent.md) documentation. For advanced prompt templating techniques, see the [Prompts](./developer-guide-advanced-topics-prompts.md) guide.

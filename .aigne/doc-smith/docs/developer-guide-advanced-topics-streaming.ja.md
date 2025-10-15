@@ -1,263 +1,312 @@
-# ストリーム
+# ストリーミング
 
-このセクションでは、AIGNE Core パッケージ内のストリーム処理ユーティリティに関する詳細なドキュメントを提供します。これらのユーティリティは、非同期データフローの処理、特に `Agent` の応答の管理や、`ReadableStream`、`AsyncGenerator`、Server-Sent Events (SSE) といった異なるフォーマット間のデータ変換に不可欠です。
+AIGNE フレームワークは、Agent からのストリーミングレスポンスを処理するための堅牢なサポートを提供します。これは、チャットボット、ライブデータフィード、または即時かつインクリメンタルな更新の恩恵を受けるあらゆるユーザーインターフェースなど、リアルタイムのデータ処理を必要とするアプリケーションに特に役立ちます。データが利用可能になった時点で処理することにより、より応答性が高くインタラクティブなユーザーエクスペリエンスを創出できます。
 
-## 概要
+このガイドでは、フレームワーク内でストリーミングレスポンスを有効化し、利用するための方法論について詳しく説明します。
 
-ストリームユーティリティは、さまざまなストリームタイプを扱うための堅牢で柔軟な方法を提供するように設計されています。主な機能は次のとおりです。
+## ストリーミングの有効化
 
--   **変換**: オブジェクト、配列、文字列、および異なるストリームフォーマット間でデータをシームレスに変換します。
--   **操作**: 複数のストリームをマージし、チャンクを処理し、ストリームのライフサイクルイベントを処理します。
--   **イベント解析**: Server-Sent Events (SSE) を解析し、Agent の応答ストリームを変換します。
--   **データ抽出**: テキストストリーム内から構造化されたメタデータを抽出します。
+Agent からストリーミングレスポンスを受け取るには、 `invoke` 呼び出しで `stream` オプションを `true` に設定する必要があります。このオプションが有効になると、 `invoke` メソッドは完全に形成されたレスポンスオブジェクトの代わりに、 `AgentResponseChunk` オブジェクトの `ReadableStream` である `AgentResponseStream` を返します。
 
-これらのツールは、AI Agent と対話するレスポンシブなリアルタイムアプリケーションを構築するための基本となります。
+```typescript ストリーミングを使用した AIGNE の呼び出し icon=logos:typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
 
-## コアストリームユーティリティ
+const llm = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  model: "gpt-4o",
+});
 
-主要なストリームユーティリティは `packages/core/src/utils/stream-utils.ts` にあります。これらは、ストリームの作成、変換、管理の基盤を提供します。
+const agent = new AIAgent({
+  model: llm,
+  instructions: "You are a helpful assistant.",
+});
 
-### ストリーム変換
+const aigne = new AIGNE({
+  model: llm,
+  agents: { agent },
+});
 
-これらの関数を使用すると、ストリームベースのフォーマットとの間でデータを変換できます。
+async function run() {
+  // `stream` オプションを true に設定してストリーミングを有効化
+  const stream = await aigne.invoke("agent", {
+    prompt: "Tell me a short story.",
+  }, { stream: true });
 
-#### `objectToAgentResponseStream`
+  // 'stream' 変数は ReadableStream になります
+  for await (const chunk of stream) {
+    // 各チャンクが到着するたびに処理します
+    process.stdout.write(chunk.delta.text?.text || "");
+  }
+}
 
-JSON オブジェクトを `AgentResponseStream` に変換します。これは、完全なオブジェクトを単一チャンクのストリームとして返し、Agent の応答フォーマットに準拠させるのに役立ちます。
-
-**例**
-
-```typescript
-import { objectToAgentResponseStream } from '@aigene/core/utils';
-
-const userMessage = { id: 'user-123', text: 'Hello, agent!' };
-const stream = objectToAgentResponseStream(userMessage);
-
-// このストリームは、完全なオブジェクトを含む1つのチャンクを発行してから閉じます。
+run();
 ```
 
-#### `agentResponseStreamToObject`
+## ストリームの利用
 
-`AgentResponseStream` または `AgentProcessAsyncGenerator` からすべてのチャンクを集約し、それらを単一のオブジェクトにマージします。
+返されるストリームは `AgentResponseChunk` オブジェクトで構成されます。各チャンクは、レスポンス全体の一部を表します。チャンクの `delta` 内には、主に2種類のデータがあります：
 
-**例**
+- `delta.text`: 部分的なテキストコンテンツを含みます。これは、言語モデルからテキストをストリーミングするために使用されます。
+- `delta.json`: 部分的な JSON データを含みます。これは、Agent が構造化された出力を返すように設定されている場合に使用されます。フレームワークは、最終的な JSON オブジェクトを段階的に構築します。
 
-```typescript
-import { agentResponseStreamToObject, objectToAgentResponseStream } from '@aigene/core/utils';
+### チャンクの処理
+
+`for await...of` ループを使用してストリームを反復処理し、各チャンクが到着するたびに処理できます。次の例は、ストリームからテキストと最終的な構造化 JSON の両方を蓄積する方法を示しています。
+
+```typescript ストリームチャンクの処理 icon=logos:typescript
+import { AIGNE, AIAgent, Message } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
+import { agentResponseStreamToObject } from "@aigne/core/utils";
+
+// aigne と agent は前の例と同様に設定されていると仮定します
+
+interface StoryOutput extends Message {
+  protagonist: string;
+  setting: string;
+  plotSummary: string;
+  storyText: string;
+}
 
 async function processStream() {
-  const message = { result: 'This is the final object.' };
-  const stream = objectToAgentResponseStream(message);
+  const aigne = new AIGNE({
+    model: new OpenAI(),
+    agents: {
+      agent: new AIAgent({
+        model: new OpenAI(),
+      })
+    },
+  });
+  const stream = await aigne.invoke<StoryOutput>("agent", {
+      prompt: "Write a short story about a robot who discovers music. Return the protagonist's name, the setting, a plot summary, and the full story text.",
+      // Agent が構造化出力用に設定されていると仮定します
+    },
+    { stream: true }
+  );
 
-  const finalObject = await agentResponseStreamToObject(stream);
-  console.log(finalObject); // { result: 'This is the final object.' }
+  let fullText = "";
+  const finalResult: Partial<StoryOutput> = {};
+
+  for await (const chunk of stream) {
+    if (chunk.delta.text?.storyText) {
+      const partialText = chunk.delta.text.storyText;
+      fullText += partialText;
+      process.stdout.write(partialText); // テキストで UI をライブ更新
+    }
+
+    if (chunk.delta.json) {
+      // フレームワークは、関連する各チャンクで部分的にマージされた JSON オブジェクトを提供します
+      Object.assign(finalResult, chunk.delta.json);
+    }
+  }
+
+  console.log("\n\n--- Final Structured Output ---");
+  console.log(finalResult);
+
+  // ユーティリティを使用して最終的なオブジェクトを直接取得することもできます
+  // 注意：これはストリームを消費するため、ループの代わりに使用する必要があります
+  // const finalObject = await agentResponseStreamToObject(stream);
+  // console.log(finalObject);
 }
 
 processStream();
 ```
 
-#### `asyncGeneratorToReadableStream`
+## ユーティリティ： `agentResponseStreamToObject`
 
-`AgentProcessAsyncGenerator` を標準の `ReadableStream` (`AgentResponseStream`) に変換します。
+中間チャンクを処理する必要がなく、最終的に完全に形成されたオブジェクトだけが必要な場合、フレームワークは `agentResponseStreamToObject` ユーティリティを提供します。この関数はストリーム全体を消費し、完全なレスポンスオブジェクトで解決される単一のプロミスを返します。
 
-**例**
+これは、バックエンドでストリーミングの利点（例：LLMからの最初のバイトまでの時間の短縮）を享受しつつ、呼び出し元には最終結果のみを配信する必要がある場合に便利です。
 
-```typescript
-import { asyncGeneratorToReadableStream, type AgentProcessAsyncGenerator, type AgentResponseChunk } from '@aigene/core/utils';
+```typescript agentResponseStreamToObject の使用 icon=logos:typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
+import { agentResponseStreamToObject } from "@aigne/core/utils";
+// ... aigne と agent のセットアップ
 
-async function* myGenerator(): AgentProcessAsyncGenerator<{ text: string }> {
-  yield { delta: { text: { text: 'Hel' } } };
-  yield { delta: { text: { text: 'lo' } } };
-  return { text: 'Hello' };
+async function getFinalObject() {
+  const aigne = new AIGNE({
+    model: new OpenAI(),
+    agents: {
+      agent: new AIAgent({
+        model: new OpenAI(),
+      })
+    },
+  });
+  const stream = await aigne.invoke("agent", {
+    prompt: "Tell me a short story.",
+  }, { stream: true });
+
+  // ストリームを消費し、最終的に集約されたオブジェクトを返します
+  const result = await agentResponseStreamToObject(stream);
+
+  console.log("--- Complete Response ---");
+  console.log(result.text);
 }
 
-const stream = asyncGeneratorToReadableStream(myGenerator());
-// このストリームは、他の ReadableStream 互換 API で使用できるようになります。
+getFinalObject();
 ```
 
-#### `readableStreamToArray`
+## Server-Sent Events (SSE) を使用したフロントエンドへのストリーミング
 
-`ReadableStream` 全体を読み取り、すべてのチャンクを配列に収集します。オプションで、結果の配列にエラーをキャッチして含めることができます。
+ストリーミングの一般的なユースケースは、Web フロントエンドにリアルタイムの更新を送信することです。AIGNE フレームワークは、 `AgentResponseStream` を Server-Sent Events (SSE) と互換性のある形式に変換する `AgentResponseStreamSSE` クラスを提供することで、これを簡素化します。
 
-**例**
+### データフロー図
 
-```typescript
-import { readableStreamToArray, arrayToReadableStream } from '@aigene/core/utils';
+以下の図は、SSE を使用する際のバックエンドの AIGNE からフロントエンドアプリケーションへのデータフローを示しています。
 
-async function streamToArrayExample() {
-  const chunks = [1, 2, 3, new Error('Stream failed')];
-  const stream = arrayToReadableStream(chunks);
+```d2
+direction: down
 
-  // エラーをキャッチしない場合 (スローされます)
-  try {
-    const result = await readableStreamToArray(stream);
-  } catch (e) {
-    console.error(e.message); // "Stream failed"
+Frontend: {
+  label: "フロントエンドアプリケーション"
+  shape: rectangle
+
+  EventSource-Client: {
+    label: "EventSource クライアント"
+    shape: rectangle
   }
 
-  // エラーキャッチあり
-  const stream2 = arrayToReadableStream(chunks);
-  const resultWithErrors = await readableStreamToArray(stream2, { catchError: true });
-  console.log(resultWithErrors); // [1, 2, 3, Error: Stream failed]
+  UI-Component: {
+    label: "UI コンポーネント"
+    shape: rectangle
+  }
 }
 
-streamToArrayExample();
-```
+Backend: {
+  label: "バックエンドサーバー"
+  shape: rectangle
 
-### ストリーム操作
+  SSE-Endpoint: {
+    label: "SSE エンドポイント"
+  }
 
-これらの関数は、ストリームを変更および結合するためのツールを提供します。
+  AIGNE-Core: {
+    label: "AIGNE フレームワーク"
 
-#### `mergeReadableStreams`
-
-複数の `ReadableStream` インスタンスを単一のストリームにマージします。結果のストリームは、入力ストリームからチャンクが利用可能になり次第、それらを転送します。すべての入力ストリームが閉じた後にのみ閉じます。
-
-**例**
-
-```typescript
-import { mergeReadableStreams, arrayToReadableStream } from '@aigene/core/utils';
-
-const stream1 = arrayToReadableStream(['A', 'B']);
-const stream2 = arrayToReadableStream([1, 2]);
-
-const mergedStream = mergeReadableStreams(stream1, stream2);
-
-// mergedStream からのチャンクは 'A', 1, 'B', 2 のようになります (順序はタイミングに依存します)
-```
-
-#### `onAgentResponseStreamEnd`
-
-`AgentResponseStream` にリスナーをアタッチして、チャンク処理、ストリーム完了 (`onResult`)、エラーなどのイベントを処理します。これにより、ストリームが閉じる前に最終結果を検査または変更できます。
-
-**例**
-
-```typescript
-import { onAgentResponseStreamEnd, objectToAgentResponseStream } from '@aigene/core/utils';
-
-async function monitorStream() {
-  const stream = objectToAgentResponseStream({ count: 10 });
-
-  const monitoredStream = onAgentResponseStreamEnd(stream, {
-    onResult: (result) => {
-      console.log('Stream finished. Final result:', result);
-      // 必要に応じて最終結果を変更できます
-      return { ...result, status: 'completed' };
-    },
-    onChunk: (chunk) => {
-      console.log('Processing chunk...');
-    },
-    onError: (error) => {
-      console.error('An error occurred:', error);
-      return error;
+    invoke: {
+        label: "aigne.invoke(..., { stream: true })"
     }
+
+    AgentResponseStream: {
+        label: "AgentResponseStream\n(ReadableStream)"
+    }
+
+    AgentResponseStreamSSE: {
+        label: "AgentResponseStreamSSE\n(ユーティリティ)"
+    }
+  }
+}
+
+LLM: {
+  label: "LLM サービス"
+  shape: cylinder
+}
+
+Frontend.EventSource-Client -> Backend.SSE-Endpoint: "1. POST /api/chat-stream"
+Backend.SSE-Endpoint -> Backend.AIGNE-Core.invoke: "2. Agent を呼び出し"
+Backend.AIGNE-Core.invoke -> LLM: "3. LLM API へリクエスト"
+LLM -> Backend.AIGNE-Core.invoke: "4. レスポンスをストリーミング"
+Backend.AIGNE-Core.invoke -> Backend.AIGNE-Core.AgentResponseStream: "5. ストリームを返す"
+Backend.AIGNE-Core.AgentResponseStream -> Backend.AIGNE-Core.AgentResponseStreamSSE: "6. SSE ユーティリティへパイプ"
+Backend.AIGNE-Core.AgentResponseStreamSSE -> Backend.SSE-Endpoint: "7. SSE 形式のチャンクを生成"
+Backend.SSE-Endpoint -> Frontend.EventSource-Client: "8. HTTP 経由でレスポンスをストリーミング"
+Frontend.EventSource-Client -> Frontend.UI-Component: "9. 'onmessage' イベントが UI 更新をトリガー"
+Frontend.UI-Component -> Frontend.UI-Component: "10. テキストを段階的にレンダリング"
+```
+
+### バックエンドの実装
+
+サーバー上で、ストリーミングを有効にして Agent の `invoke` 呼び出しを開始するエンドポイントを作成します。次に、結果の `AgentResponseStream` を `AgentResponseStreamSSE` にパイプし、その出力を HTTP レスポンスに書き込みます。
+
+以下の例では、一般的な Web サーバーの構造を使用しています。
+
+```typescript SSE バックエンドエンドポイント icon=logos:typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
+import { AgentResponseStreamSSE } from "@aigne/core/utils";
+// ... aigne のセットアップ
+
+// 汎用サーバーコンテキスト（例：Express、Hono など）を使用した例
+async function handleSseRequest(req, res) {
+  const aigne = new AIGNE({
+    model: new OpenAI(),
+    agents: {
+      agent: new AIAgent({
+        model: new OpenAI(),
+      })
+    },
+  });
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Connection": "keep-alive",
+    "Cache-Control": "no-cache",
   });
 
-  // ストリームを消費してハンドラをトリガーします
-  for await (const chunk of monitoredStream) {
-    // ...
+  try {
+    const stream = await aigne.invoke("agent", {
+      prompt: req.body.prompt,
+    }, { stream: true });
+
+    // Agent ストリームを SSE ストリームに変換
+    const sseStream = new AgentResponseStreamSSE(stream);
+
+    // SSE ストリームを HTTP レスポンスにパイプ
+    for await (const sseChunk of sseStream) {
+      res.write(sseChunk);
+    }
+  } catch (error) {
+    console.error("SSE stream error:", error);
+    const sseError = `event: error\ndata: ${JSON.stringify({ message: error.message })}\n\n`;
+    res.write(sseError);
+  } finally {
+    res.end();
   }
 }
-
-monitorStream();
 ```
 
-## イベントストリーム処理
+### フロントエンドの実装
 
-`packages/core/src/utils/event-stream.ts` にあるこれらのクラスは、Server-Sent Events (SSE) の処理と、Agent 固有のイベントストリームの解析のために設計されています。
+フロントエンドでは、ネイティブの `EventSource` API を使用して SSE エンドポイントに接続します。その後、 `message` イベントをリッスンしてチャンクを受信し、 `error` イベントをリッスンして問題を処理できます。
 
-### `AgentResponseStreamSSE`
+```javascript SSE フロントエンドクライアント icon=logos:javascript
+const promptInput = document.getElementById('prompt-input');
+const submitButton = document.getElementById('submit-button');
+const responseContainer = document.getElementById('response');
 
-`AgentResponseStream` をラップし、その出力を SSE 形式の文字列の `ReadableStream` に変換します。これは、Agent の応答を Web クライアントに直接送信するのに最適です。
+submitButton.addEventListener('click', async () => {
+  const prompt = promptInput.value;
+  responseContainer.innerHTML = ''; // 以前のレスポンスをクリア
 
-**例**
+  const eventSource = new EventSource('/api/chat-stream', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
+  });
 
-```typescript
-import { AgentResponseStreamSSE, objectToAgentResponseStream } from '@aigene/core/utils/event-stream';
+  eventSource.onmessage = (event) => {
+    const chunk = JSON.parse(event.data);
 
-// agentStream は Agent 呼び出しからの AgentResponseStream であると仮定します
-const agentStream = objectToAgentResponseStream({ delta: { text: { content: 'Live update!' } } });
+    if (chunk.delta?.text?.text) {
+      responseContainer.innerHTML += chunk.delta.text.text;
+    }
+  };
 
-const sseStream = new AgentResponseStreamSSE(agentStream);
+  eventSource.onerror = (error) => {
+    console.error('EventSource failed:', error);
+    responseContainer.innerHTML += '<p style="color: red;">Error receiving stream.</p>';
+    eventSource.close();
+  };
 
-// sseStream は次のような文字列を生成します:
-// 'data: {"delta":{"text":{"content":"Live update!"}}}\n\n'
-```
-
-### `AgentResponseStreamParser`
-
-`AgentResponseStream` からのチャンクを処理する `TransformStream` です。`text` および `json` フィールドのデルタをインテリジェントにマージし、各ダウンストリームチャンクが JSON オブジェクトの完全な累積状態を含むようにします。
-
-**例**
-
-```typescript
-import { AgentResponseStreamParser, arrayToReadableStream } from '@aigene/core/utils/event-stream';
-
-const sourceStream = arrayToReadableStream([
-  { delta: { json: { id: '123' } } },
-  { delta: { json: { status: 'pending' } } },
-  { delta: { text: { message: 'In progress...' } } }
-]);
-
-const parser = new AgentResponseStreamParser();
-const processedStream = sourceStream.pipeThrough(parser);
-
-// 出力チャンクは、各ステップで完全な JSON オブジェクトを持ちます:
-// 1st chunk: { delta: { json: { id: '123' } } }
-// 2nd chunk: { delta: { json: { id: '123', status: 'pending' } } }
-// 3rd chunk: { delta: { json: { id: '123', status: 'pending' }, text: { message: '...' } } }
-```
-
-### `AgentResponseProgressStream`
-
-指定された `Context` インスタンスのライフサイクルイベント (`agentStarted`、`agentSucceed`、`agentFailed`) をリッスンすることにより、`AgentResponseProgress` イベントの `ReadableStream` を作成します。これにより、Agent 実行フロー全体の進行状況を監視できます。
-
-**例**
-
-```typescript
-import { AgentResponseProgressStream, Context } from '@aigene/core';
-
-// context はアクティブな Agent 実行コンテキストであると仮定します
-const context = new Context();
-const progressStream = new AgentResponseProgressStream(context);
-
-// progressStream から読み取ることで、Agent タスクのライブアップデートを取得できます。
-progressStream.on('data', (progress) => {
-  console.log(`Agent event: ${progress.event}`, progress.agent.name);
+  // 'open' イベントは接続が確立されたときに発火します
+  eventSource.onopen = () => {
+    console.log('Connection to server opened.');
+  };
 });
 ```
 
-## 高度な機能: 構造化データの抽出
+このアーキテクチャにより、AI モデルによって生成されたとおりにテキストが単語単位で表示される、応答性の高い UI を構築できます。
 
-`ExtractMetadataTransform` クラスは、テキストストリーム内に埋め込まれた構造化データ (例: JSON メタデータ) を解析および抽出するための特殊なメカニズムを提供します。
+## まとめ
 
-### `ExtractMetadataTransform`
-
-この `TransformStream` は、テキストストリームを開始マーカーと終了マーカーでスキャンし、それらの間のコンテンツを構造化データとして解析しようとします。抽出されたデータは、周囲のテキストとは別に `json` デルタとして発行されます。
-
-**ユースケース**: Agent は、次のように構造化メタデータと混合されたテキストを出力する場合があります: `Here is some text... <metadata>{"key": "value"}</metadata> ...and the text continues.` この変換ストリームは、テキストをメタデータから分離できます。
-
-**例**
-
-```typescript
-import { ExtractMetadataTransform } from '@aigene/core/utils/structured-stream-extractor';
-import { arrayToReadableStream } from '@aigene/core/utils';
-
-const stream = arrayToReadableStream([
-  { delta: { text: { text: 'Some initial text ' } } },
-  { delta: { text: { text: 'START_JSON{"id":1}END_JSON' } } },
-  { delta: { text: { text: ' and some final text.' } } },
-]);
-
-const extractor = new ExtractMetadataTransform({
-  start: 'START_JSON',
-  end: 'END_JSON',
-  parse: (raw) => JSON.parse(raw),
-});
-
-const processedStream = stream.pipeThrough(extractor);
-
-// processedStream からのチャンクは次のようになります:
-// 1. { delta: { text: { text: 'Some initial text' } } }
-// 2. { delta: { json: { json: { id: 1 } } } }
-// 3. { delta: { text: { text: ' and some final text.' } } }
-```
+AIGNE フレームワークのストリーミング機能は、最新のリアルタイム AI アプリケーションを構築するために不可欠です。 `invoke` メソッドで `stream` オプションを有効にすることで、データを段階的に処理し、体感パフォーマンスを向上させ、Server-Sent Events を使用して Agent のレスポンスをフロントエンドに効率的にパイプできます。Agent の呼び出しに関する詳細は、[AI Agent](./developer-guide-agents-ai-agent.md) のドキュメントを参照してください。

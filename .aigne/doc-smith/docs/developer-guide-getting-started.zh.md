@@ -1,142 +1,135 @@
 # 快速入门
 
-本指南提供了在几分钟内安装并运行 AIGNE Framework 所需的全部内容。读完本指南后，你将构建并运行你的第一个由 AI 驱动的 Agent。
+本指南提供了设置开发环境并使用 AIGNE 框架运行您的第一个 AI Agent 所需的步骤。整个过程预计在 30 分钟内完成，通过实际操作，帮助您上手框架的基本工作流程。
 
-## 什么是 AIGNE Framework？
+我们将介绍系统先决条件、所需包的安装，并提供一个完整、可直接复制粘贴的示例，演示如何定义、配置和执行一个基本的 AI Agent。
 
-AIGNE Framework [ˈei dʒən] 是一个功能性 AI 应用开发框架，旨在简化和加速构建现代 AI 驱动的应用程序。它结合了函数式编程、强大的人工智能功能和模块化设计，可帮助你创建可扩展且可维护的解决方案。
+## 先决条件
 
-**主要特性：**
+在继续之前，请确保您的开发环境满足以下要求：
 
-*   **模块化设计**：结构清晰，可提高开发效率并简化维护。
-*   **TypeScript 支持**：全面的类型定义，提供更佳、更安全的开发体验。
-*   **支持多种 AI 模型**：内置支持 OpenAI、Gemini 和 Claude 等主流 AI 模型，并易于扩展。
-*   **灵活的工作流模式**：通过顺序、并发、路由和切换等模式简化复杂操作。
-*   **MCP 协议集成**：通过模型上下文协议（Model Context Protocol）与外部系统无缝集成。
+*   **Node.js**：需要 20.0 或更高版本。
 
-## 1. 前提条件
-
-在开始之前，请确保你的系统上已安装 Node.js。
-
-*   **Node.js**：20.0 或更高版本。
-
-你可以在终端中运行以下命令来验证你的 Node.js 版本：
+您可以通过在终端中执行以下命令来验证您的 Node.js 版本：
 
 ```bash
 node -v
 ```
 
-## 2. 安装
+## 安装
 
-你可以使用你喜欢的包管理器安装 AIGNE 核心包。
+首先，您需要安装 AIGNE 核心包和一个模型提供商包。在本指南中，我们将使用官方的 OpenAI 模型提供商。
 
-### 使用 npm
+使用您偏好的包管理器安装必要的包：
 
-```bash
-npm install @aigne/core
+<x-cards data-columns="3">
+  <x-card data-title="npm" data-icon="logos:npm-icon">
+    ```bash
+    npm install @aigne/core @aigne/openai
+    ```
+  </x-card>
+  <x-card data-title="yarn" data-icon="logos:yarn">
+    ```bash
+    yarn add @aigne/core @aigne/openai
+    ```
+  </x-card>
+  <x-card data-title="pnpm" data-icon="logos:pnpm">
+    ```bash
+    pnpm add @aigne/core @aigne/openai
+    ```
+  </x-card>
+</x-cards>
+
+此外，您还需要一个 OpenAI API 密钥。请将其设置为名为 `OPENAI_API_KEY` 的环境变量。
+
+```bash title=".env"
+OPENAI_API_KEY="sk-..."
 ```
 
-### 使用 yarn
+## 快速入门示例
 
-```bash
-yarn add @aigne/core
-```
+此示例演示了创建并运行一个简单的“助手” Agent 的完整过程。
 
-### 使用 pnpm
+1.  创建一个名为 `index.ts` 的新 TypeScript 文件。
+2.  将以下代码复制并粘贴到该文件中。
 
-```bash
-pnpm add @aigne/core
-```
-
-## 3. 你的第一个 AIGNE 应用
-
-让我们用一个乐于助人的助手 Agent 创建一个简单的 “Hello, World!” 风格的应用程序。
-
-#### 第 1 步：设置你的项目文件
-
-创建一个名为 `index.ts` 的新文件。
-
-#### 第 2 步：添加代码
-
-此示例演示了 AIGNE Framework 的三个核心组件：**模型（Model）**、**Agent** 和 **AIGNE**。
-
-*   **模型（Model）**：AI 模型的一个实例（例如 `OpenAIChatModel`），它将为你的 Agent 提供支持。
-*   **Agent**：定义 AI 的个性和指令（例如 `AIAgent`）。
-*   **AIGNE**：运行 Agent 并处理通信的主要执行器。
-
-将以下代码复制并粘贴到你的 `index.ts` 文件中：
-
-```typescript
+```typescript index.ts icon=logos:typescript-icon
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
+// 1. 实例化 AI 模型
+// 这将使用指定的模型创建与 OpenAI API 的连接。
+// API 密钥会从 OPENAI_API_KEY 环境变量中读取。
+const model = new OpenAIChatModel({
+  model: "gpt-4o-mini",
+});
+
+// 2. 定义 AI Agent
+// Agent 是一个工作单元。这个 AIAgent 配置了
+// 定义其个性和任务的指令。
+const assistantAgent = AIAgent.from({
+  name: "Assistant",
+  instructions: "You are a helpful and friendly assistant.",
+});
+
+// 3. 实例化 AIGNE
+// AIGNE 类是管理和运行 Agent 的中央协调器。
+// 它配置了其 Agent 将要使用的模型。
+const aigne = new AIGNE({ model });
+
 async function main() {
-  // 1. 创建一个 AI 模型实例
-  // 这将连接到 AI 提供商（例如 OpenAI）。
-  // 确保你已将 API 密钥设置为环境变量。
-  const model = new OpenAIChatModel({
-    apiKey: process.env.OPENAI_API_KEY,
-    model: process.env.DEFAULT_CHAT_MODEL || "gpt-4-turbo",
-  });
-
-  // 2. 创建一个 AI Agent
-  // 这定义了 Agent 的身份和目的。
-  const agent = AIAgent.from({
-    name: "Assistant",
-    instructions: "You are a helpful assistant.",
-  });
-
-  // 3. 初始化 AIGNE
-  // 这是将所有部分整合在一起的主要执行引擎。
-  const aigne = new AIGNE({ model });
-
-  // 4. 与 Agent 开始一个交互式会话
-  const userAgent = aigne.invoke(agent);
-
-  // 5. 向 Agent 发送消息并获取响应
-  const response = await userAgent.invoke(
-    "Hello, can you help me write a short article?",
+  // 4. 调用 Agent
+  // invoke 方法使用给定的输入运行 Agent。
+  // 框架会处理与模型的交互。
+  const response = await aigne.invoke(
+    assistantAgent,
+    "Why is the sky blue?"
   );
 
+  // 5. 打印响应
   console.log(response);
 }
 
 main();
 ```
 
-#### 第 3 步：设置你的 API 密钥
+### 运行示例
 
-在运行脚本之前，你需要提供你的 OpenAI API 密钥。你可以在终端中设置一个环境变量来完成此操作。
-
-```bash
-export OPENAI_API_KEY="your-api-key-here"
-```
-
-#### 第 4 步：运行应用
-
-使用像 `ts-node` 这样的 TypeScript 运行器来执行该文件。
+从您的终端执行该脚本。如果您使用的是 TypeScript，可以使用像 `ts-node` 这样的工具。
 
 ```bash
 npx ts-node index.ts
 ```
 
-你应该会在控制台中看到你的助手 Agent 打印出的有用回复！
+### 预期输出
 
-## 工作原理：简要概述
+输出将是 Agent 对问题的响应，格式为 JSON 对象。`message` 字段的内容会有所不同，因为它是由 AI 模型生成的。
 
-AIGNE Framework 设计为模块化和可扩展的。`AIGNE` 负责协调用户、Agent 和 AI 模型之间的交互。
+```json
+{
+  "message": "The sky appears blue because of a phenomenon called Rayleigh scattering..."
+}
+```
 
-<picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-dark.png" media="(prefers-color-scheme: dark)">
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne.png" alt="AIGNE Architecture Diagram" />
-</picture>
+## 代码分解
 
-## 后续步骤
+该示例由四个主要步骤组成，代表了 AIGNE 框架的核心工作流程。
 
-你已成功构建并运行了你的第一个 AIGNE 应用程序。现在你可以探索更多高级功能了。
+1.  **模型初始化**：创建了一个 `OpenAIChatModel` 的实例。该对象作为与指定的 OpenAI 模型（例如 `gpt-4o-mini`）的直接接口。它需要一个 API 密钥进行身份验证，该密钥会自动从 `OPENAI_API_KEY` 环境变量中获取。
 
-*   **深入了解核心概念**：更深入地了解 [AIGNE、Agent 和模型](./developer-guide-core-concepts.md)。
-*   **探索 Agent 类型**：在 [Agent 类型](./developer-guide-agents.md)部分，了解可以构建的不同类型的专用 Agent。
-*   **简化工作流**：通过查阅[顺序和并行](./developer-guide-agents-team-agent.md)执行等模式，了解如何编排复杂的多 Agent 任务。
-*   **浏览完整文档**：如需深入的指南和 API 参考，请访问完整的 [AIGNE Framework 文档](https://www.arcblock.io/docs/aigne-framework)。
+2.  **Agent 定义**：使用静态的 `from` 方法定义了一个 `AIAgent`。这是框架中的基本工作单元。其行为由 `instructions` 属性定义，该属性充当系统提示，指导 AI 模型的响应。
+
+3.  **AIGNE 实例化**：`AIGNE` 类被实例化。它充当所有 Agent 的执行引擎和协调器。通过将 `model` 实例传递到其构造函数中，我们为这个 AIGNE 实例管理的所有 Agent 建立了一个默认模型。
+
+4.  **Agent 调用**：调用 `aigne.invoke()` 方法来执行 `assistantAgent`。第一个参数是要运行的 Agent，第二个是输入消息。框架管理请求的完整生命周期：将提示和指令发送到模型，接收响应，并将其作为结构化输出返回。
+
+这个简单的示例说明了该框架的模块化和声明性特性，其中模型、Agent 和执行引擎被配置和组合以构建强大的 AI 驱动的应用程序。
+
+## 总结
+
+在本指南中，您已成功设置好环境，安装了必要的 AIGNE 包，并构建和运行了一个可用的 AI Agent。您已经学习了基本的工作流程：定义模型、使用特定指令创建 Agent，以及使用 AIGNE 通过用户提示调用它。
+
+有了这个基础，您现在可以探索更高级的主题了。
+
+*   要更详细地了解框架的基本构建块，请继续阅读 [核心概念](./developer-guide-core-concepts.md) 文档。
+*   要了解不同类型的专用 Agent 及其用例，请参阅 [Agent 类型](./developer-guide-agents.md) 部分。

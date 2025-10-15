@@ -1,139 +1,20 @@
-本文档为 `AIAgent` 类提供了一份详细指南，该类是在 AIGNE 框架中创建 AI Agent 的核心组件。`AIAgent` 利用大型语言模型（LLM）处理输入、执行复杂任务并生成智能响应。
+# 决策
+
+阐述了一个“管理者”Agent 分析请求并决定哪个专业化 Agent 最适合处理该任务的场景。
 
 ## 概述
 
-`AIAgent` 是一个多功能的 Agent，它连接到指定的语言模型来解释用户输入并执行操作。它为构建复杂的 AI 应用奠定了基础，并内置了对可自定义指令、工具使用（函数调用）和响应流的支持。
+在许多现实世界场景中，单个 AI Agent 是不够的。复杂问题通常需要一个由专业化 Agent 组成的团队，每个 Agent 都是特定领域的专家。决策工作流，也称为路由器或分诊模式，通过引入一个“管理者”Agent 来解决这个问题。
 
-主要功能包括：
-- **语言模型集成**：无缝连接到任何支持的聊天模型（例如 OpenAI、Gemini、Claude）。
-- **可自定义的行为**：使用强大的提示指令来定义 Agent 的个性、目标和约束。
-- **工具使用与函数调用**：通过为 Agent 提供可调用的工具（技能）来扩展其能力，以执行特定操作，例如与 API 或数据库交互。
-- **灵活的工作流模式**：支持多种执行模式，包括自动工具选择、强制工具使用以及用于将任务定向到其他 Agent 的专用“路由器”模式。
-- **流式传输支持**：能够在模型生成响应时以流式方式传输响应，从而支持实时应用。
-- **结构化数据提取**：可配置为从模型的流式输出中解析和提取结构化数据（例如 JSON、YAML）。
+管理者 Agent 的唯一职责是分析传入的请求，理解其意图，并将其路由到团队中最合适的专业化 Agent。这类似于客户服务调度员，他们听取客户的问题，然后将其连接到正确的部门——无论是技术支持、账单还是销售部门。
 
-## 核心概念
+这种模式创建了一个更高效、更智能的系统。你不再依赖一个试图处理所有事情的通用型 Agent，而是拥有一个协调的团队，其中每个成员都擅长其指定的任务。
 
-理解这些核心概念是有效使用 `AIAgent` 的关键。
+## 工作原理
 
-### 指令
+工作流始于用户提交请求。作为中央路由器的管理者 Agent 接收到此请求。它根据其指令和可用的“工具”（即专业化 Agent），决定哪个专业化 Agent 最适合处理该查询。然后，请求被移交给选定的专业化 Agent，由其处理并生成最终输出。
 
-`instructions` 属性是指导 Agent 行为的主要方式。对于更复杂的场景，它可以是一个简单的字符串或一个 `PromptBuilder` 实例。这些指令通常用于构建发送给语言模型的系统提示，为整个对话设置上下文。
-
-**示例：**
-```typescript
-const agent = AIAgent.from({
-  name: "HaikuBot",
-  instructions: "You are a poetic assistant who only responds in haikus.",
-});
-```
-
-### 输入和输出键
-
-`AIAgent` 使用键来映射输入消息、模型和输出消息之间的数据。
-- `inputKey`：指定输入消息中的哪个属性应被视为主用户文本。
-- `outputKey`：定义输出消息中放置模型最终文本响应的属性。默认为 `message`。
-
-**示例：**
-```typescript
-const agent = AIAgent.from({
-  inputKey: "question", // 期望输入格式为 { question: "..." }
-  outputKey: "answer",  // 生成输出格式为 { answer: "..." }
-  instructions: "Answer the user's question.",
-});
-```
-
-### 工具选择
-
-`toolChoice` 选项控制 Agent 如何使用其技能（工具）。这是构建面向行动的 Agent 的一项强大功能。
-
-- `AIAgentToolChoice.auto`（默认）：模型根据用户输入决定是否调用工具。
-- `AIAgentToolChoice.none`：模型不会调用任何工具。
-- `AIAgentToolChoice.required`：模型被强制调用可用工具之一。
-- `AIAgentToolChoice.router`：一种特殊模式，其中 Agent 的唯一目的是选择单个最佳工具（或其他 Agent）来处理请求，然后将输入直接路由给它。
-
-## 创建 AIAgent
-
-创建 `AIAgent` 最直接的方法是使用静态的 `AIAgent.from()` 方法。
-
-### 基本示例
-
-以下是一个 `AIAgent` 的最小示例，它使用 OpenAI 模型来响应消息。
-
-```typescript
-import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-
-// 1. 初始化模型
-const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-// 2. 创建 AIAgent 实例
-const assistantAgent = AIAgent.from({
-  name: "Assistant",
-  instructions: "You are a helpful and friendly assistant.",
-});
-
-// 3. 初始化 AIGNE 运行时
-const aigne = new AIGNE({ model });
-
-// 4. 调用 Agent
-const userAgent = aigne.invoke(assistantAgent);
-const result = await userAgent.invoke({ message: "Hello, who are you?" });
-
-console.log(result);
-// Output: { message: "I am a helpful and friendly assistant. How can I assist you today?" }
-```
-
-### 带工具的 Agent
-
-为了让 Agent 更强大，你可以为其提供 `skills`（工具）。在此示例中，我们创建了一个 `Calculator` Agent，并将其作为技能提供给一个主 `Assistant` Agent。
-
-```typescript
-import { AIAgent, AIGNE, Skill } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-import { z } from "zod";
-
-const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: "gpt-4o",
-});
-
-// 1. 定义一个用于计算的技能（工具）
-const calculatorSkill = Skill.from({
-  name: "calculator",
-  description: "A simple calculator for basic arithmetic operations.",
-  input: z.object({
-    expression: z.string().describe("The mathematical expression to evaluate, e.g., '2+2'"),
-  }),
-  func: async ({ expression }) => {
-    // 在实际场景中，应使用安全的求值库
-    return { result: eval(expression) };
-  },
-});
-
-// 2. 创建一个带有该技能的 Agent
-const assistantAgent = AIAgent.from({
-  name: "Assistant",
-  instructions: "You are a helpful assistant. Use the calculator tool for any math questions.",
-  skills: [calculatorSkill],
-  toolChoice: "auto", // 模型将决定何时使用计算器
-});
-
-const aigne = new AIGNE({ model });
-const userAgent = aigne.invoke(assistantAgent);
-
-// Agent 将自动使用计算器工具
-const result = await userAgent.invoke({ message: "What is 127 + 345?" });
-
-console.log(result);
-// Output: { message: "127 + 345 is 472." }
-```
-
-## AIAgent 工作流
-
-下图说明了 `AIAgent` 在处理请求时遵循的内部流程，包括它如何与语言模型交互以及如何执行工具。
+例如，如果用户问：“我的订单状态是什么？”，管理者 Agent 会将查询路由到“订单状态”Agent。如果用户问：“我如何重置密码？”，查询将被路由到“账户支持”Agent。
 
 ```d2
 direction: down
@@ -142,67 +23,45 @@ User: {
   shape: c4-person
 }
 
-AIAgent: {
-  label: "AIAgent 内部工作流"
+Manager-Agent: {
+  label: "管理者 Agent\n（路由器）"
+  shape: rectangle
+}
+
+Specialist-Agents: {
+  label: "专业化 Agent 团队"
   shape: rectangle
   style: {
-    stroke: "#888"
-    stroke-width: 2
     stroke-dash: 4
   }
+  grid-columns: 3
 
-  Input-Message: {
-    label: "输入消息\n{ [inputKey]: '...' }"
-    shape: rectangle
-  }
-
-  Prompt-Builder: {
-    label: "构建提示\n(输入 + 指令 + 技能)"
-    shape: rectangle
-  }
-
-  Tool-Executor: {
-    label: "执行工具"
-    shape: rectangle
-  }
-
-  Skill-Library: {
-    label: "技能库"
-    shape: cylinder
-  }
-
-  Response-Formatter: {
-    label: "格式化最终响应\n(映射到 outputKey)"
-    shape: rectangle
-  }
-
-  Output-Message: {
-    label: "输出消息\n{ [outputKey]: '...' }"
-    shape: rectangle
-  }
+  Order-Status: { label: "订单状态 Agent" }
+  Account-Support: { label: "账户支持 Agent" }
+  Technical-Support: { label: "技术支持 Agent" }
 }
 
-LLM: {
-  label: "LLM (聊天模型)"
-  shape: rectangle
-}
+User -> Manager-Agent: "1. 提交请求"
+Manager-Agent -> Specialist-Agents.Order-Status: "2. 根据意图路由\n（例如，'订单状态'）"
+Manager-Agent -> Specialist-Agents.Account-Support: "2. 根据意图路由\n（例如，'密码重置'）"
+Manager-Agent -> Specialist-Agents.Technical-Support: "2. 根据意图路由\n（例如，'技术问题'）"
 
-Tool-Decision: {
-  label: "需要调用工具吗？"
-  shape: diamond
-}
-
-User -> AIAgent.Input-Message: "1. 调用 Agent"
-AIAgent.Input-Message -> AIAgent.Prompt-Builder
-AIAgent.Prompt-Builder -> LLM: "2. 发送请求"
-LLM -> Tool-Decision: "3. 模型响应"
-Tool-Decision -> AIAgent.Tool-Executor: "是"
-AIAgent.Tool-Executor -> AIAgent.Skill-Library: "4. 查找并运行技能"
-AIAgent.Skill-Library -> AIAgent.Tool-Executor: "返回结果"
-AIAgent.Tool-Executor -> LLM: "5. 发送工具结果"
-LLM -> AIAgent.Response-Formatter: "6. 生成最终响应"
-Tool-Decision -> AIAgent.Response-Formatter: "否"
-AIAgent.Response-Formatter -> AIAgent.Output-Message: "7. 格式化输出"
-AIAgent.Output-Message -> User: "8. 返回结果"
-
+Specialist-Agents.Order-Status -> User: "3. 处理并返回输出"
+Specialist-Agents.Account-Support -> User: "3. 处理并返回输出"
+Specialist-Agents.Technical-Support -> User: "3. 处理并返回输出"
 ```
+
+## 使用场景
+
+此工作流非常适用于：
+
+- **智能客户支持：** 自动将客户查询路由到正确的部门（例如，技术支持、账单、销售）。
+- **多功能助手：** 创建一个能够将日程安排、数据分析或内容创作等任务委派给不同专业化 Agent 的单一助手。
+- **内容审核：** 对传入内容进行分类，并根据其性质（例如，垃圾邮件、仇恨言论、不当内容）将其发送到不同的审核队列。
+- **复杂查询处理：** 将复杂查询分解为子任务，并将每个子任务路由到特定的 Agent 进行处理。
+
+## 总结
+
+决策工作流是协调专业化 AI Agent 团队的强大模式。通过使用管理者 Agent 对任务进行分诊和路由，您可以构建更复杂、可扩展且高效的 AI 应用程序，充分利用各个专注 Agent 的优势。
+
+要了解有关技术实现的更多信息，请参阅 [Team Agent](./developer-guide-agents-team-agent.md) 和 [AI Agent](./developer-guide-agents-ai-agent.md) 文档。

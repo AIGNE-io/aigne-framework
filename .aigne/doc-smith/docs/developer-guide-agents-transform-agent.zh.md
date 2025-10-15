@@ -1,95 +1,157 @@
-本文档提供了 `TransformAgent` 的综合使用指南，`TransformAgent` 是一个专门用于使用 JSONata 表达式进行数据转换的 Agent。您将学习如何配置和使用此 Agent 来执行数据格式转换、字段映射和 API 响应规范化等任务。
+# 转换 Agent
 
-## 概述
+`TransformAgent` 是一种专门的 Agent，它提供了一种使用 [JSONata](https://jsonata.org/) 表达式来转换结构化数据的声明式方法。它非常适合需要将数据从一种格式映射、重构或转换为另一种格式，而无需复杂命令式逻辑的场景。
 
-`TransformAgent` 是一个专门的 Agent，它使用 [JSONata](https://jsonata.org/) 表达式将输入数据转换为所需输出格式。它提供了一种声明式且功能强大的方式来处理结构化数据操作，而无需编写复杂的自定义逻辑。
+常见用例包括：
+- 将 API 响应规范化为一致的格式。
+- 在不同数据模式之间映射字段（例如，数据库结果到应用程序模型）。
+- 重构配置数据。
+- 转换数据格式，例如将字段名从 `snake_case` 更改为 `camelCase`。
+- 对数据执行简单的聚合、计算或筛选。
 
-此 Agent 特别适用于：
-- API 响应规范化和字段映射
-- 数据库查询结果转换
-- 配置数据重构
-- 转换数据格式（例如，snake_case 到 camelCase）
-- 执行聚合和计算操作
-- 过滤和条件数据处理
-
-## 工作原理
-
-`TransformAgent` 通过应用用户定义的 JSONata 表达式来处理传入数据。其核心逻辑包括接收结构化输入消息，根据表达式对其进行评估，并返回具有转换后结构和数据的新消息。
+对于需要更复杂的自定义逻辑的转换，请考虑使用 [Function Agent](./developer-guide-agents-function-agent.md)。
 
 ```d2
 direction: down
 
-Input-Data: {
-  label: "结构化输入\n（例如，API 响应、数据库结果）"
-  shape: rectangle
+Developer: {
+  shape: c4-person
 }
 
-TransformAgent: {
-  label: "TransformAgent"
+Transform-Agent-Workflow: {
+  label: "Transform Agent 工作流"
   shape: rectangle
+  style: {
+    stroke-dash: 2
+  }
 
-  Transformation-Engine: {
-    label: "转换引擎"
+  Input-Data: {
+    label: "输入数据\n(例如 snake_case)"
     shape: rectangle
   }
 
-  JSONata-Expression: {
-    label: "JSONata 表达式\n（用户定义逻辑）"
-    shape: rectangle
-    style: {
-      stroke: "#888"
-      stroke-width: 2
-      stroke-dash: 4
+  Agent-Core: {
+    label: "转换逻辑"
+
+    Transform-Agent: {
+      label: "Transform Agent"
+      shape: rectangle
+    }
+
+    JSONata-Expression: {
+      label: "JSONata 表达式"
+      shape: rectangle
+      style: {
+        fill: "#f0f0f0"
+      }
     }
   }
+
+  Output-Data: {
+    label: "输出数据\n(例如 camelCase)"
+    shape: rectangle
+  }
 }
 
-Output-Data: {
-  label: "转换后的输出\n（规范化数据）"
-  shape: rectangle
-}
+Developer -> Transform-Agent-Workflow.Agent-Core.JSONata-Expression: "1. 定义转换"
+Transform-Agent-Workflow.Agent-Core.JSONata-Expression -> Transform-Agent-Workflow.Agent-Core.Transform-Agent: "配置"
+Developer -> Transform-Agent-Workflow.Input-Data: "2. 提供输入"
+Transform-Agent-Workflow.Input-Data -> Transform-Agent-Workflow.Agent-Core.Transform-Agent: "3. 处理"
+Transform-Agent-Workflow.Agent-Core.Transform-Agent -> Transform-Agent-Workflow.Output-Data: "4. 生成"
+Transform-Agent-Workflow.Output-Data -> Developer: "5. 返回结果"
 
-Input-Data -> TransformAgent.Transformation-Engine: "1. 接收数据"
-TransformAgent.JSONata-Expression -> TransformAgent.Transformation-Engine: "2. 应用逻辑"
-TransformAgent.Transformation-Engine -> Output-Data: "3. 返回转换后的数据"
 ```
 
 ## 配置
 
-要使用 `TransformAgent`，您需要在 YAML 文件中定义其配置。以下是关键字段：
+`TransformAgent` 使用以下选项进行配置。
 
-| 字段 | 类型 | 描述 |
-| --- | --- | --- |
-| `type` | `string` | 指定 Agent 类型。必须设置为 `transform`。 |
-| `name` | `string` | Agent 实例的唯一名称。 |
-| `description` | `string` | 对 Agent 用途的简要描述。 |
-| `input_schema` | `object` | 使用 JSON Schema 定义输入数据的预期结构。 |
-| `output_schema` | `object` | 使用 JSON Schema 定义输出数据的预期结构。 |
-| `jsonata` | `string` | 一个 [JSONata](https://jsonata.org/) 表达式，用于指定如何将输入数据转换为输出格式。这是 Agent 逻辑的核心。<br><br> **常见模式：**<ul><li>**字段映射：** `{ "newField": oldField }`</li><li>**数组转换：** `items.{ "name": product_name }`</li><li>**计算：** `$sum(items.price)`</li><li>**条件逻辑：** `condition ? value1 : value2`</li></ul> 更多详情，请参阅 [JSONata 官方文档](https://docs.jsonata.org/overview.html) 并在 [JSONata Playground](https://try.jsonata.org/) 中进行实验。 |
+<x-field-group>
+  <x-field data-name="jsonata" data-type="string" data-required="true">
+    <x-field-desc markdown>
+      一个 [JSONata](https://jsonata.org/) 表达式字符串，用于定义数据转换逻辑。JSONata 是一种用于 JSON 数据的轻量级查询和转换语言。该表达式决定了输入消息如何转换为输出消息。您可以在 [JSONata Playground](https://try.jsonata.org/) 中试验表达式。
 
-## 示例
+      **常见模式：**
+      - **字段映射：** `{ "newField": oldField }`
+      - **数组转换：** `items.{ "name": product_name, "price": price }`
+      - **计算：** `$sum(items.price)`
+      - **条件逻辑：** `condition ? value1 : value2`
+      - **字符串操作：** `$uppercase(name)`
+    </x-field-desc>
+  </x-field>
+</x-field-group>
 
-此示例演示如何配置 `TransformAgent` 以将用户数据从 `snake_case` 转换为 `camelCase`。
+## 用法
 
-### 配置 (`transform.yaml`)
+`TransformAgent` 可以通过 TypeScript 以编程方式定义，也可以通过 YAML 以声明方式定义。
 
-```yaml
+### TypeScript 示例
+
+此示例演示了如何创建一个将字段名从 snake_case 转换为 camelCase 的 `TransformAgent`。
+
+```typescript Transform Agent Example icon=logos:typescript
+import { TransformAgent } from "@aigne/core";
+
+// 1. 定义 TransformAgent
+const snakeToCamelAgent = TransformAgent.from({
+  name: "snake-to-camel-converter",
+  description: "Converts user data fields from snake_case to camelCase.",
+  jsonata: `{
+    "userId": user_id,
+    "userName": user_name,
+    "createdAt": created_at
+  }`,
+});
+
+// 2. 定义输入数据
+const inputData = {
+  user_id: "usr_12345",
+  user_name: "John Doe",
+  created_at: "2023-10-27T10:00:00Z",
+};
+
+// 3. 调用 Agent 执行转换
+async function runTransform() {
+  const result = await snakeToCamelAgent.invoke(inputData);
+  console.log(result);
+}
+
+runTransform();
+```
+
+该 Agent 将 JSONata 表达式应用于 `inputData`，并按指定重命名键。
+
+**输出**
+
+```json icon=mdi:code-json
+{
+  "userId": "usr_12345",
+  "userName": "John Doe",
+  "createdAt": "2023-10-27T10:00:00Z"
+}
+```
+
+### YAML 示例
+
+同一个 Agent 可以在 YAML 文件中以声明方式定义。这对于将 Agent 定义为更大型配置的一部分非常有用。
+
+```yaml transform.yaml icon=mdi:language-yaml
 type: transform
 name: transform-agent
 description: |
-  一个使用 JSONata 表达式处理输入数据的 Transform Agent。
+  A Transform Agent that processes input data using JSONata expressions.
 input_schema:
   type: object
   properties:
     user_id:
       type: string
-      description: 用户的 ID。
+      description: The ID of the user.
     user_name:
       type: string
-      description: 用户的姓名。
+      description: The name of the user.
     created_at:
       type: string
-      description: 用户的创建日期。
+      description: The creation date of the user.
   required:
     - user_id
     - user_name
@@ -99,13 +161,13 @@ output_schema:
   properties:
     userId:
       type: string
-      description: 用户的 ID。
+      description: The ID of the user.
     userName:
       type: string
-      description: 用户的姓名。
+      description: The name of the user.
     createdAt:
       type: string
-      description: 用户的创建日期。
+      description: The creation date of the user.
   required:
     - userId
     - userName
@@ -118,28 +180,10 @@ jsonata: |
   }
 ```
 
-### 用法
+此 YAML 定义指定了 Agent 的类型、名称、模式以及核心的 `jsonata` 转换表达式，实现了与 TypeScript 示例相同的结果。
 
-当 Agent 收到与 `input_schema` 匹配的输入消息时，它会应用 `jsonata` 表达式来转换数据。
+## 总结
 
-**输入数据：**
+`TransformAgent` 为处理结构化数据转换提供了一种强大而简洁的方法。通过利用 JSONata，它将数据映射和重构逻辑与主应用程序代码分离，从而使 Agentic 工作流更清晰、更易于维护。
 
-```json
-{
-  "user_id": "usr_12345",
-  "user_name": "John Doe",
-  "created_at": "2023-10-27T10:00:00Z"
-}
-```
-
-**输出数据：**
-
-处理后，Agent 将生成以下符合 `output_schema` 的输出：
-
-```json
-{
-  "userId": "usr_12345",
-  "userName": "John Doe",
-  "createdAt": "2023-10-27T10:00:00Z"
-}
-```
+要将此 Agent 与其他 Agent 进行编排，请参阅 [Team Agent](./developer-guide-agents-team-agent.md) 文档。

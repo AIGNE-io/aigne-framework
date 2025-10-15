@@ -1,263 +1,97 @@
-# TeamAgent
+# Agent Types
 
-TeamAgent coordinates a group of agents working together to accomplish tasks. It manages a collection of agents (its skills) and orchestrates their execution according to a specified processing mode. This allows for the creation of complex workflows where multiple agents collaborate.
+The AIGNE Framework provides a suite of specialized agent types, each designed to perform a specific function. While all agents inherit from the base `Agent` class, these specialized implementations offer pre-built capabilities for common tasks, from interacting with AI models to orchestrating complex workflows. Understanding these types is key to building robust and efficient applications.
 
-TeamAgent is particularly useful for:
-- Creating agent workflows where the output from one agent feeds into another.
-- Executing multiple agents simultaneously and combining their results.
-- Building complex agent systems with specialized components working together.
-- Implementing iterative, self-correcting workflows using reflection.
-- Batch processing data items through a defined agent pipeline.
-
-## How it Works
-
-The `TeamAgent` processes an input by routing it through its member agents (skills) based on a defined `ProcessMode`. It can operate sequentially, in parallel, or use an iterative reflection process to refine results. The diagram below illustrates the high-level processing logic.
+This section provides a high-level overview of the available agent types. For detailed implementation, configuration options, and code examples, please refer to the specific sub-document for each agent.
 
 ```d2
 direction: down
-
-Input: { shape: oval }
-
-Mode-Selection: {
-  label: "Process Mode?"
-  shape: diamond
+style: {
+  font-size: 14
+  stroke-width: 2
+  fill: "#f8f9fa"
+  stroke: "#adb5bd"
 }
 
-Sequential-Execution: {
-  label: "Sequential Execution"
-  Agent-1: "Agent 1"
-  Agent-2: "Agent 2"
-  Agent-N: "..."
-  Agent-1 -> Agent-2 -> Agent-N
+Agent: {
+  label: "Base Agent"
+  shape: class
+  style: {
+    fill: "#e9ecef"
+    stroke: "#495057"
+  }
 }
 
-Parallel-Execution: {
-  label: "Parallel Execution"
-  p-agent-1: "Agent 1"
-  p-agent-2: "Agent 2"
-  p-agent-n: "..."
+sub_agents: {
+  AIAgent: {
+    label: "AIAgent"
+    tooltip: "Interacts with language models"
+    style: { fill: "#dbe4ff" }
+  }
+  TeamAgent: {
+    label: "TeamAgent"
+    tooltip: "Orchestrates multiple agents"
+    style: { fill: "#d1e7dd" }
+  }
+  ImageAgent: {
+    label: "ImageAgent"
+    tooltip: "Generates images"
+    style: { fill: "#fff3cd" }
+  }
+  FunctionAgent: {
+    label: "FunctionAgent"
+    tooltip: "Wraps custom code"
+    style: { fill: "#f8d7da" }
+  }
+  TransformAgent: {
+    label: "TransformAgent"
+    tooltip: "Performs data mapping"
+    style: { fill: "#e2d9f3" }
+  }
+  MCPAgent: {
+    label: "MCPAgent"
+    tooltip: "Connects to external MCP systems"
+    style: { fill: "#cfe2ff" }
+  }
 }
 
-Combine-Results: "Combine Results"
-
-Reflection-Check: {
-  label: "Reflection?"
-  shape: diamond
-}
-
-Reviewer: {
-  label: "Reviewer Agent"
-}
-
-Approval-Check: {
-  label: "Approved?"
-  shape: diamond
-}
-
-Output: { shape: oval }
-
-Input -> Mode-Selection
-
-Mode-Selection -> Sequential-Execution: "sequential"
-Mode-Selection -> Parallel-Execution: "parallel"
-
-Sequential-Execution.Agent-N -> Reflection-Check
-Parallel-Execution -> Combine-Results
-Combine-Results -> Reflection-Check
-
-Reflection-Check -> Output: "No"
-Reflection-Check -> Reviewer: "Yes"
-
-Reviewer -> Approval-Check
-Approval-Check -> Output: "Yes"
-Approval-Check -> Mode-Selection: "No (Feedback & Retry)" {
-  style.stroke-dash: 2
-}
+Agent -> sub_agents.AIAgent: Inherits
+Agent -> sub_agents.TeamAgent: Inherits
+Agent -> sub_agents.ImageAgent: Inherits
+Agent -> sub_agents.FunctionAgent: Inherits
+Agent -> sub_agents.TransformAgent: Inherits
+Agent -> sub_agents.MCPAgent: Inherits
 ```
 
-## Key Concepts
+## Available Agent Types
 
-### Processing Modes
+The framework includes the following specialized agents, each tailored for a distinct purpose.
 
-The `mode` property in `TeamAgentOptions` determines how the agents in the team are executed.
+<x-cards data-columns="2">
+  <x-card data-title="AI Agent" data-icon="lucide:bot" data-href="/developer-guide/agents/ai-agent">
+    The primary agent for interacting with large language models (LLMs). It handles prompt construction, model invocation, and processing of AI-generated responses, including tool usage.
+  </x-card>
+  <x-card data-title="Team Agent" data-icon="lucide:users" data-href="/developer-guide/agents/team-agent">
+    Orchestrates a group of agents to work together. It can manage workflows in sequential or parallel modes, enabling complex, multi-step problem-solving.
+  </x-card>
+  <x-card data-title="Image Agent" data-icon="lucide:image" data-href="/developer-guide/agents/image-agent">
+    A specialized agent for interfacing with image generation models. It takes instructional prompts and generates visual content.
+  </x-card>
+  <x-card data-title="Function Agent" data-icon="lucide:function-square" data-href="/developer-guide/agents/function-agent">
+    Wraps standard TypeScript or JavaScript functions, allowing you to integrate any custom code or business logic seamlessly into an agentic workflow.
+  </x-card>
+  <x-card data-title="Transform Agent" data-icon="lucide:shuffle" data-href="/developer-guide/agents/transform-agent">
+    Performs declarative data transformations using JSONata expressions. It is ideal for mapping, restructuring, and converting data between different formats without writing procedural code.
+  </x-card>
+  <x-card data-title="MCP Agent" data-icon="lucide:plug-zap" data-href="/developer-guide/agents/mcp-agent">
+    Connects to external systems and tools via the Model Context Protocol (MCP). This agent acts as a bridge, allowing your application to leverage external resources and capabilities.
+  </x-card>
+</x-cards>
 
-- **`ProcessMode.sequential`**: Agents are processed one by one in the order they are provided. The output of each agent is merged and passed as input to the next agent in the sequence. This is useful for creating multi-step pipelines.
-- **`ProcessMode.parallel`**: All agents are processed simultaneously, each receiving the same initial input. The final output is a combination of the results from all agents. This is ideal for tasks that can be divided into independent sub-tasks.
+## Summary
 
-### Reflection Mode
+Choosing the correct agent type for a given task is a fundamental step in designing an effective AIGNE application. Each agent is a specialized tool designed for a specific job. By composing these agents, you can build sophisticated systems capable of handling a wide range of tasks.
 
-Reflection mode enables an iterative refinement and validation workflow. When configured, the team's output is passed to a `reviewer` agent. The reviewer assesses the output against a specific condition (`isApproved`). If the output is not approved, the process repeats, feeding the previous output and the reviewer's feedback back into the team for another iteration. This loop continues until the output is approved or a `maxIterations` limit is reached.
+For a deeper understanding of each agent's capabilities and configuration, please proceed to the detailed documentation for each type.
 
-This is powerful for tasks requiring quality control, self-correction, or iterative improvement.
-
-### Iterative Processing (`iterateOn`)
-
-The `iterateOn` option allows the `TeamAgent` to process arrays of items in a batch-like manner. You specify an input key that contains an array, and the team will execute its workflow for each item in that array. This is highly efficient for batch processing scenarios where the same set of operations needs to be applied to multiple data entries. You can control the level of parallelism using the `concurrency` option.
-
-## Creating a TeamAgent
-
-You can create a `TeamAgent` using the `TeamAgent.from()` static method, providing it with a set of skills (other agents) and configuration options.
-
-### Sequential Mode Example
-
-In this example, a `translator` agent's output is fed directly into a `sentiment` agent.
-
-```typescript
-import { AIAgent, TeamAgent, ProcessMode } from "@aigne/core";
-
-// Agent to translate text to English
-const translator = new AIAgent({
-  name: "Translator",
-  model,
-  instructions: "Translate the following text to English.",
-  inputKey: "text",
-  outputKey: "translated_text",
-});
-
-// Agent to analyze the sentiment of a text
-const sentiment = new AIAgent({
-  name: "SentimentAnalyzer",
-  model,
-  instructions: "Analyze the sentiment of the following text. Is it positive, negative, or neutral?",
-  inputKey: "translated_text",
-  outputKey: "sentiment",
-});
-
-// A sequential team where translation happens before sentiment analysis
-const sequentialTeam = TeamAgent.from({
-  name: "SequentialTranslatorTeam",
-
-  // The agents (skills) will run in this order
-  skills: [translator, sentiment],
-  
-  // Set the mode to sequential
-  mode: ProcessMode.sequential, 
-});
-
-const result = await sequentialTeam.invoke({
-  text: "Me encanta este producto, es fantástico.",
-});
-
-console.log(result);
-// Expected output:
-// {
-//   translated_text: "I love this product, it's fantastic.",
-//   sentiment: "positive" 
-// }
-```
-
-### Parallel Mode Example
-
-Here, two independent agents run at the same time to gather different pieces of information from the same input text.
-
-```typescript
-import { AIAgent, TeamAgent, ProcessMode } from "@aigne/core";
-
-// Agent to extract the main topic
-const topicExtractor = new AIAgent({
-  name: "TopicExtractor",
-  model,
-  instructions: "Identify the main topic of the text.",
-  inputKey: "text",
-  outputKey: "topic",
-});
-
-// Agent to summarize the text
-const summarizer = new AIAgent({
-  name: "Summarizer",
-  model,
-  instructions: "Provide a one-sentence summary of the text.",
-  inputKey: "text",
-  outputKey: "summary",
-});
-
-// A parallel team where both agents run simultaneously
-const parallelTeam = TeamAgent.from({
-  name: "ParallelAnalysisTeam",
-  skills: [topicExtractor, summarizer],
-  mode: ProcessMode.parallel, // Set the mode to parallel
-});
-
-const result = await parallelTeam.invoke({
-  text: "The new AI model shows remarkable improvements in natural language understanding and can be applied to various industries, from healthcare to finance.",
-});
-
-console.log(result);
-// Expected output:
-// {
-//   topic: "AI Model Improvements",
-//   summary: "A new AI model has significantly advanced in natural language understanding, with broad industry applications."
-// }
-```
-
-### Reflection Mode Example
-
-This example shows a `writer` agent that generates content and a `reviewer` agent that checks if the content meets a specific word count. The team will re-run until the condition is met.
-
-```typescript
-import { AIAgent, TeamAgent, FunctionAgent } from "@aigne/core";
-import { z } from "zod";
-
-const writer = new AIAgent({
-  name: "Writer",
-  model,
-  instructions: "Write a short paragraph about the benefits of teamwork. If you receive feedback, use it to revise the text.",
-  inputKey: "request",
-  outputKey: "paragraph",
-});
-
-const reviewer = new FunctionAgent({
-  name: "Reviewer",
-  inputSchema: z.object({ paragraph: z.string() }),
-  outputSchema: z.object({
-    approved: z.boolean(),
-    feedback: z.string().optional(),
-  }),
-  process: ({ paragraph }) => {
-    if (paragraph.split(" ").length >= 50) {
-      return { approved: true };
-    } else {
-      return {
-        approved: false,
-        feedback: "The paragraph is too short. Please expand it to at least 50 words.",
-      };
-    }
-  },
-});
-
-const reflectionTeam = TeamAgent.from({
-  name: "ReflectiveWriterTeam",
-  skills: [writer],
-  reflection: {
-    reviewer: reviewer,
-    isApproved: "approved", // Check the 'approved' field in the reviewer's output
-    maxIterations: 3,
-  },
-});
-
-const result = await reflectionTeam.invoke({
-  request: "Write about teamwork.",
-});
-
-console.log(result);
-// The output will be a paragraph about teamwork that is at least 50 words long.
-```
-
-## Configuration Options (`TeamAgentOptions`)
-
-The `TeamAgent` can be configured with the following options:
-
-<x-field-group>
-  <x-field data-name="mode" data-type="ProcessMode" data-required="false" data-desc="The processing mode for the agents. Can be `ProcessMode.sequential` or `ProcessMode.parallel`. Defaults to `sequential`."></x-field>
-  <x-field data-name="skills" data-type="Agent[]" data-required="true" data-desc="An array of agent instances that form the team."></x-field>
-  <x-field data-name="reflection" data-type="ReflectionMode" data-required="false" data-desc="Configuration for reflection mode, enabling iterative review and refinement.">
-    <x-field data-name="reviewer" data-type="Agent" data-required="true" data-desc="The agent responsible for reviewing the team's output."></x-field>
-    <x-field data-name="isApproved" data-type="string | (output: Message) => boolean" data-required="true" data-desc="A function or the name of a boolean field in the reviewer's output that determines if the result is approved."></x-field>
-    <x-field data-name="maxIterations" data-type="number" data-default="3" data-required="false" data-desc="The maximum number of review-refine iterations before stopping."></x-field>
-    <x-field data-name="returnLastOnMaxIterations" data-type="boolean" data-default="false" data-required="false" data-desc="If true, returns the last output when max iterations are reached, even if not approved. Otherwise, throws an error."></x-field>
-  </x-field>
-  <x-field data-name="iterateOn" data-type="string" data-required="false" data-desc="The key of an input field containing an array. The team will execute its workflow for each item in the array."></x-field>
-  <x-field data-name="concurrency" data-type="number" data-default="1" data-required="false" data-desc="The maximum number of concurrent operations when using `iterateOn`."></x-field>
-  <x-field data-name="iterateWithPreviousOutput" data-type="boolean" data-default="false" data-required="false" data-desc="If true, the output from an iteration is merged back into the item, making it available for subsequent iterations. Only works when `concurrency` is 1."></x-field>
-  <x-field data-name="includeAllStepsOutput" data-type="boolean" data-default="false" data-required="false" data-desc="In sequential mode, if true, the output stream will include chunks from all intermediate steps, not just the final one."></x-field>
-</x-field-group>
+- **Next**: Learn about the [AI Agent](./developer-guide-agents-ai-agent.md), the core component for interacting with language models.

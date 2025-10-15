@@ -1,254 +1,179 @@
 # プロンプト
 
-プロンプトの構築およびテンプレートシステムは、AI モデルとの動的で強力な対話を作成するためのコアコンポーネントです。これは主に 2 つの部分で構成されています。
+AIモデルとの効果的なコミュニケーションは、提供されるプロンプトの品質と構造に左右されます。AIGNEフレームワークは、`PromptBuilder`クラスと統合されたNunjucksテンプレートエンジンを通じて、動的で再利用可能、かつ構造化されたプロンプトを作成するための堅牢なシステムを提供します。このガイドでは、これらのコンポーネントについて体系的に説明します。
 
-1.  **プロンプトテンプレート**: 動的で再利用可能なプロンプトコンポーネントを作成するための、Nunjucks を使用した柔軟なシステム。
-2.  **プロンプトビルダー**: テンプレート、コンテキスト、メモリ、ツール、および出力スキーマを、モデルに送信する準備ができた完全な `ChatModelInput` に組み立てる高レベルのオーケストレーター。
+プロンプトがAgent内でどのように利用されるかの詳細については、[AI Agent](./developer-guide-agents-ai-agent.md)のドキュメントを参照してください。
 
-### `PromptBuilder` のワークフロー
+## Nunjucksによるプロンプトのテンプレート化
 
-`PromptBuilder` は、テンプレート、ユーザー入力、コンテキスト、メモリ、ツールといったさまざまな要素をすべて調整し、最終的なモデル対応の `ChatModelInput` オブジェクトを構築する中心的なクラスです。以下の図は、このプロセスを示しています。
+フレームワークは[Nunjucksテンプレートエンジン](https://mozilla.github.io/nunjucks/)を利用して、動的なプロンプトの作成を容易にします。これにより、変数や外部ファイルのインクルード、その他のプログラムロジックをプロンプトファイル内に直接組み込むことができます。
 
-```d2
-direction: down
+すべてのプロンプトテキストは`PromptTemplate`クラスによって処理され、Nunjucksを使用して最終的な文字列をレンダリングします。
 
-Inputs: {
-  label: "ビルダー入力"
-  shape: rectangle
-  style.stroke-dash: 2
-  grid-columns: 2
+### 変数置換
 
-  User-Input: "ユーザー入力"
-  Context: "コンテキスト"
-  Memories: "メモリ"
-  Tools: "ツール"
-  Output-Schemas: "出力スキーマ"
+`{{ variable_name }}` 構文を使用して、プロンプトにプレースホルダーを定義できます。これらのプレースホルダーは、実行時に実際の値に置き換えられます。
 
-  Templates: {
-    label: "プロンプトテンプレート"
-    shape: rectangle
+```markdown title="analyst-prompt.md" icon=mdi:text-box
+以下のデータを分析してください:
 
-    Nunjucks-Engine: {
-      label: "Nunjucks エンジン"
-      style.fill: "#f5f5f5"
-    }
-
-    PromptTemplate: {
-      label: "PromptTemplate\n(文字列フォーマット用)"
-    }
-
-    ChatMessagesTemplate: {
-      label: "ChatMessagesTemplate\n(会話用)"
-      grid-columns: 2
-      SystemMessageTemplate
-      UserMessageTemplate
-      AgentMessageTemplate
-      ToolMessageTemplate
-    }
-  }
-}
-
-PromptBuilder: {
-  label: "PromptBuilder"
-  shape: rectangle
-  style.fill: "#e6f7ff"
-}
-
-ChatModelInput: {
-  label: "ChatModelInput"
-  shape: rectangle
-  style.fill: "#d9f7be"
-}
-
-AI-Model: {
-  label: "AI モデル"
-  shape: cylinder
-}
-
-Inputs.Templates.PromptTemplate -> Inputs.Templates.Nunjucks: "使用"
-Inputs.Templates.ChatMessagesTemplate -> Inputs.Templates.Nunjucks: "使用"
-
-Inputs -> PromptBuilder: ".build() で組み立て"
-PromptBuilder -> ChatModelInput: "生成"
-ChatModelInput -> AI-Model: "送信先"
-
+{{ data }}
 ```
 
-## プロンプトテンプレート
+このプロンプトでAgentを呼び出す際には、入力メッセージで`data`変数を提供します。
 
-プロンプトテンプレートを使用すると、変数を使用したり他のファイルを含めたりしてプロンプトや会話の構造を定義し、モジュール化され保守しやすいプロンプト指示を作成できます。
+```typescript title="index.ts" icon=logos:typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAI }s from "@aigne/openai";
 
-### `PromptTemplate`
+const model = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const aigne = new AIGNE({
+  model,
+  agents: {
+    analyst: new AIAgent({
+      instructions: { path: "./analyst-prompt.md" },
+      inputKey: "data",
+    }),
+  },
+});
 
-`PromptTemplate` クラスは、Nunjucks テンプレート文字列のシンプルなラッパーです。これにより、文字列をフォーマットして変数を含めることができます。
+const result = await aigne.invoke("analyst", {
+  data: "User feedback scores: 8, 9, 7, 10, 6.",
+});
 
-**主な機能:**
-
-*   **変数置換**: 動的なデータをプロンプトに挿入します。
-*   **ファイルインクルード**: `{% raw %}{% include "path/to/file.md" %}{% endraw %}` 構文を使用して他のテンプレートファイルをインクルードし、複雑なプロンプトを構築します。
-
-**例:**
-
-2 つのテンプレートファイルがあるとします。
-
-**`./main-prompt.md`**
-```markdown
-あなたはプロのチャットボットです。
-
-{% raw %}{% include "./personality.md" %}{% endraw %}
+console.log(result);
 ```
 
-**`./personality.md`**
-```markdown
-あなたの名前は {% raw %}{{ name }}{% endraw %} です。
+### ファイルのインクルード
+
+Nunjucksでは、`{% include "path/to/file.md" %}` タグを使用して、複数のファイルからプロンプトを構成できます。これは、異なるプロンプト間で共通の指示やコンポーネントを再利用するのに非常に効果的です。パスは`include`タグを含むファイルからの相対パスで解決されます。
+
+例えば、共通の指示セットを1つのファイルで定義し、それを別のファイルにインクルードすることができます。
+
+```markdown title="common-instructions.md" icon=mdi:text-box
+常にプロフェッショナルかつ事実に基づいた方法で応答してください。
+憶測や意見の提供は避けてください。
 ```
 
-`PromptTemplate` を使用して、相対インクルードパスを解決するための `workingDir` を提供することで、この構造をレンダリングできます。
+```markdown title="main-prompt.md" icon=mdi:text-box
+あなたは熟練の金融アナリストです。
 
-```typescript
-import { PromptTemplate } from "packages/core/src/prompt/template.ts";
-import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
+{% include "./common-instructions.md" %}
 
-// メインテンプレートファイルへのパス
-const templatePath = '/path/to/your/prompts/main-prompt.md';
-const workingDir = nodejs.path.dirname(templatePath);
-
-// main-prompt.md の内容を読み取ったと仮定します
-const templateContent = 'あなたはプロのチャットボットです。\n\n{% include "./personality.md" %}';
-
-const template = PromptTemplate.from(templateContent);
-
-const formattedPrompt = await template.format(
-  { name: "Alice" },
-  { workingDir: workingDir } // インクルードのために workingDir を提供します
-);
-
-console.log(formattedPrompt);
-// 出力:
-// あなたはプロのチャットボットです。
-//
-// あなたの名前は Alice です。
+提供された四半期収益報告書を分析してください。
 ```
 
-### チャットメッセージテンプレート
+このモジュラーなアプローチにより、プロンプトの管理が簡素化され、一貫性が確保されます。
 
-チャットベースのモデル向けに、このライブラリは会話におけるさまざまな役割を表すクラスのセットを提供し、複数ターンの対話を簡単に構築できるようにします。
+## ChatMessageTemplateによるプロンプトの構造化
 
-*   `SystemMessageTemplate`: システムレベルの指示を表します。
-*   `UserMessageTemplate`: ユーザーからのメッセージを表します。
-*   `AgentMessageTemplate`: AI agent からのメッセージを表します。
-*   `ToolMessageTemplate`: ツール呼び出しの出力を表します。
-*   `ChatMessagesTemplate`: メッセージテンプレートの配列を格納するコンテナです。
+チャットベースのモデルでは、プロンプトはそれぞれが特定の役割を持つメッセージのシーケンスとして構造化されます。フレームワークは、これらのメッセージをプログラムで表現するためのクラスを提供します。
 
-**例:**
+-   **`SystemMessageTemplate`**: AIモデルのコンテキストや高レベルの指示を設定します。
+-   **`UserMessageTemplate`**: エンドユーザーからのメッセージを表します。
+-   **`AgentMessageTemplate`**: AIモデルからの以前の応答を表し、フューショットプロンプティングや会話の継続に役立ちます。
+-   **`ToolMessageTemplate`**: Agentによって行われたツール呼び出しの結果を表します。
 
-```typescript
+これらのテンプレートを`ChatMessagesTemplate`に組み合わせることで、完全な会話プロンプトを定義できます。
+
+```typescript title="structured-prompt.ts" icon=logos:typescript
 import {
   ChatMessagesTemplate,
   SystemMessageTemplate,
-  UserMessageTemplate
-} from "packages/core/src/prompt/template.ts";
+  UserMessageTemplate,
+} from "@aigne/core";
 
-const conversationTemplate = ChatMessagesTemplate.from([
-  SystemMessageTemplate.from("あなたは海賊のように話す、役立つアシスタントです。"),
-  UserMessageTemplate.from("私の名前は {% raw %}{{ name }}{% endraw %} です。私の名前は何ですか？"),
+const promptTemplate = new ChatMessagesTemplate([
+  SystemMessageTemplate.from(
+    "You are a helpful assistant that translates {{ input_language }} to {{ output_language }}."
+  ),
+  UserMessageTemplate.from("{{ text }}"),
 ]);
 
-const messages = await conversationTemplate.format({ name: "Captain Hook" });
-
-console.log(messages);
-// 出力:
-// [
-//   { role: 'system', content: 'あなたは海賊のように話す、役立つアシスタントです。' },
-//   { role: 'user', content: '私の名前は Captain Hook です。私の名前は何ですか？' }
-// ]
+// このテンプレートは、AIAgentの `instructions` で使用できます。
 ```
 
-## `PromptBuilder`
+## `PromptBuilder` クラス
 
-`PromptBuilder` は、テンプレート、ユーザー入力、コンテキスト、メモリ、ツール、スキーマなど、すべてのコンポーネントを最終的なモデル対応の `ChatModelInput` オブジェクトに組み立てる高レベルのクラスです。
+`PromptBuilder`は、言語モデルに送信される最終的で完全なプロンプトを組み立てる役割を担う中心的なコンポーネントです。これはプロセス全体を統括し、さまざまな入力を一貫した構造に統合します。
 
-### 仕組み
+次の図は、`PromptBuilder`への情報の流れを示しています。
+<d2>
+direction: right
+style {
+  stroke-width: 2
+  font-size: 14
+}
+"ユーザー入力 (メッセージ)": {
+  shape: document
+  style.fill: "#D1E7DD"
+}
+"プロンプトテンプレート (.md)": {
+  shape: document
+  style.fill: "#D1E7DD"
+}
+"Agent設定": {
+  shape: document
+  style.fill: "#D1E7DD"
+}
+コンテキスト: {
+  shape: document
+  style.fill: "#D1E7DD"
+}
+PromptBuilder: {
+  shape: hexagon
+  style.fill: "#A9CCE3"
+}
+"ChatModelInput (LLMへ)": {
+  shape: document
+  style.fill: "#FADBD8"
+}
 
-ビルダーは、`build` メソッド内にカプセル化された明確なプロセスに従います。
-1.  **指示の解決**: 文字列または `ChatMessagesTemplate` である基本の指示から開始します。
-2.  **メモリの統合**: agent がメモリを使用するように設定されている場合、ビルダーはそれらを取得し、チャットメッセージにフォーマットします。
-3.  **ユーザー入力の追加**: 現在のユーザーメッセージと添付ファイルを追加します。
-4.  **ツールの設定**: agent と現在のコンテキストから利用可能なすべてのツール（スキル）を収集し、モデル用にフォーマットして、`toolChoice` 戦略を決定します。
-5.  **レスポンス形式の設定**: `outputSchema` が提供されている場合、モデルの `responseFormat` を設定して、構造化された出力（例：JSON）を保証します。
+"ユーザー入力 (メッセージ)" -> PromptBuilder
+"プロンプトテンプレート (.md)" -> PromptBuilder
+"Agent設定" -> PromptBuilder
+コンテキスト -> PromptBuilder
 
-### 例
+PromptBuilder -> "ChatModelInput (LLMへ)"
 
-以下は、`PromptBuilder` が完全なリクエストを組み立てる方法を示す包括的な例です。
+"Agent設定".children: {
+  "スキル/ツール"
+  メモリ
+  "出力スキーマ"
+}
 
-```typescript
-import { PromptBuilder } from "packages/core/src/prompt/prompt-builder.ts";
-import { AIAgent } from "packages/core/src/agents/ai-agent.ts";
-import { z } from "zod";
+"ChatModelInput (LLMへ)".children: {
+  "レンダリング済みメッセージ"
+  "ツール定義"
+  "レスポンス形式"
+}
+</d2>
 
-// 1. 指示と出力スキーマを持つエージェントを定義します
-const myAgent = new AIAgent({
-  name: "UserExtractor",
-  description: "テキストからユーザーの詳細を抽出します。",
-  instructions: "以下のテキストからユーザーの名前と年齢を抽出してください。",
-  outputSchema: z.object({
-    name: z.string().describe("ユーザーのフルネーム"),
-    age: z.number().describe("ユーザーの年齢（年単位）"),
-  }),
-});
+`PromptBuilder`は`build`プロセス中に、以下の操作を自動的に実行します。
 
-// 2. PromptBuilder インスタンスを作成します
-const builder = new PromptBuilder();
+1.  **指示の読み込み**: 文字列、ファイルパス、またはMCP `GetPromptResult`オブジェクトからプロンプトテンプレートを読み込みます。
+2.  **テンプレートのレンダリング**: Nunjucksを使用してプロンプトテンプレートをフォーマットし、ユーザーの入力メッセージから変数を注入します。
+3.  **メモリの注入**: Agentがメモリを使用するように設定されている場合、`PromptBuilder`は関連するメモリを取得し、それらをシステム、ユーザー、またはAgentメッセージに変換して、会話のコンテキストを提供します。
+4.  **ツール（スキル）の組み込み**: 利用可能なすべてのスキル（Agent設定と呼び出しコンテキストから）を収集し、モデルの`tools`および`tool_choice`パラメータにフォーマットします。
+5.  **レスポンス形式の定義**: Agentが`outputSchema`を持っている場合、`PromptBuilder`はモデルの`responseFormat`を設定して、構造化されたJSON出力を強制します。
 
-// 3. ユーザーの入力メッセージを定義します
-const userInput = {
-  message: "私の名前は John Doe で、30歳です。",
-};
+### インスタンス化
 
-// 4. 最終的な ChatModelInput を構築します
-const chatModelInput = await builder.build({
-  agent: myAgent,
-  input: userInput,
-});
+`PromptBuilder`を作成する最も一般的な方法は、静的な`PromptBuilder.from()`メソッドを使用することです。このメソッドはさまざまなソースを受け入れることができます。
 
-console.log(JSON.stringify(chatModelInput, null, 2));
-// 出力:
-// {
-//   "messages": [
-//     {
-//       "role": "system",
-//       "content": "以下のテキストからユーザーの名前と年齢を抽出してください。"
-//     },
-//     {
-//       "role": "user",
-//       "content": [
-//         {
-//           "type": "text",
-//           "text": "私の名前は John Doe で、30歳です。"
-//         }
-//       ]
-//     }
-//   ],
-//   "responseFormat": {
-//     "type": "json_schema",
-//     "jsonSchema": {
-//       "name": "output",
-//       "schema": {
-//         "type": "object",
-//         "properties": {
-//           "name": {
-//             "type": "string",
-//             "description": "ユーザーのフルネーム"
-//           },
-//           "age": {
-//             "type": "number",
-//             "description": "ユーザーの年齢（年単位）"
-//           }
-//         },
-//         "required": ["name", "age"]
-//       },
-//       "strict": true
-//     }
-//   }
-// }
-```
+-   **文字列から**:
+    ```typescript
+    const builder = PromptBuilder.from("You are a helpful assistant.");
+    ```
+-   **ファイルパスから**:
+    ```typescript
+    const builder = PromptBuilder.from({ path: "./prompts/my-prompt.md" });
+    ```
+
+`AIAgent`が`instructions`とともに定義されると、内部で`PromptBuilder.from()`を使用してプロンプト構築プロセスを作成および管理します。
+
+## まとめ
+
+AIGNEフレームワークは、プロンプトエンジニアリングのための階層的で強力なシステムを提供します。動的コンテンツのためにNunjucksとともに`PromptTemplate`を、そして最終的な構造を編成するために`PromptBuilder`を理解し活用することで、AI Agent用の洗練された、モジュラーで効果的なプロンプトを作成できます。
+
+さらに詳しく知りたい場合は、[AIAgentドキュメント](./developer-guide-agents-ai-agent.md)を参照して、これらのプロンプトがAgentのライフサイクルにどのように統合されるかを確認してください。

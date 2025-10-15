@@ -1,236 +1,175 @@
 # Agent
 
-`Agent` クラスは AIGNE フレームワークの礎です。これはすべての Agent のベースクラスとして機能し、入出力スキーマの定義、処理ロジックの実装、Agent システム内のインタラクション管理のための堅牢なメカニズムを提供します。
+AIGNE フレームワークにおいて、**`Agent`** は作業の基本単位です。これは、すべての特殊な Agent タイプに対して標準的な契約を確立する抽象クラスです。Agent は、特定のタスクを実行し、情報を処理し、システム内の他の Agent と対話できる個別のワーカーとして概念化できます。
 
-`Agent` クラスを拡張することで、単純な関数ベースのユーティリティから複雑な AI 駆動のエンティティまで、幅広い機能を持つカスタム Agent を作成できます。Agent はモジュール式で再利用可能であり、メッセージパッシングシステムを通じて相互に通信できるように設計されています。
+AI モデルとの対話、データの変換、または他の Agent のチームの調整のために設計されたものであっても、すべての特殊な Agent は、この基本の `Agent` クラスからそのコア構造と動作を継承します。このアーキテクチャ原則により、フレームワーク全体の一貫性と予測可能性が保証されます。
+
+特殊な Agent タイプに関する詳細は、[Agent のタイプ](./developer-guide-agents.md)のセクションで確認できます。
+
+## コアコンセプト
+
+`Agent` クラスは、そのアイデンティティ、データコントラクト、および運用動作を定義するいくつかのコアコンセプトを中心に設計されています。これらは、Agent のインスタンス化中に `AgentOptions` オブジェクトを介して設定されます。
+
+### 主要なプロパティ
+
+以下のプロパティは、Agent の設定を定義します。
+
+| プロパティ | タイプ | 説明 |
+| :--- | :--- | :--- |
+| `name` | `string` | Agent の一意の識別子で、ロギングと参照に使用されます。指定されない場合、デフォルトでコンストラクタのクラス名が使用されます。 |
+| `description` | `string` | Agent の目的と能力を人間が読める形式でまとめたもので、ドキュメント作成やデバッグに役立ちます。 |
+| `inputSchema` | `ZodType` | Agent の入力データの構造と検証ルールを定義する Zod スキーマ。これにより、データの整合性が保証されます。 |
+| `outputSchema` | `ZodType` | Agent の出力データの構造と検証ルールを定義する Zod スキーマ。 |
+| `skills` | `Agent[]` | この Agent が委任されたサブタスクを実行するために呼び出すことができる他の Agent のリスト。これにより、構成的な動作が可能になります。 |
+| `memory` | `MemoryAgent` | Agent が複数の対話にわたって状態を永続化し、呼び出すことを可能にするオプションのメモリユニット。 |
+| `hooks` | `AgentHooks[]` | 実行時に Agent の動作を監視または変更するためのライフサイクルフック（例：`onStart`、`onEnd`）のセット。 |
+| `guideRails` | `GuideRailAgent[]` | Agent の入力と出力にルール、ポリシー、または制約を適用する特殊な Agent のリスト。 |
+
+### `process` メソッド
+
+`process` メソッドは、すべての Agent の中心的なコンポーネントです。これは基本の `Agent` クラスで `abstract` メソッドとして定義されており、具象 Agent クラスは実装を提供する必要があります。このメソッドには、Agent が何を行うかを定義するコアロジックが含まれています。
+
+このメソッドは、検証済みの入力メッセージと実行 `Context` を含む呼び出しオプションを受け取り、出力を生成する責任を負います。
+
+```typescript Agent.ts icon=logos:typescript
+export abstract class Agent<I extends Message = any, O extends Message = any> {
+  // ... コンストラクタおよびその他のプロパティ
+
+  /**
+   * Agent のコア処理メソッド。サブクラスで実装する必要があります
+   *
+   * @param input 入力メッセージ
+   * @param options Agent 呼び出しのオプション
+   * @returns 処理結果
+   */
+  abstract process(input: I, options: AgentInvokeOptions): PromiseOrValue<AgentProcessResult<O>>;
+
+  // ... その他のメソッド
+}
+```
+
+戻り値である `AgentProcessResult` は、直接的なオブジェクト、ストリーミングレスポンス、非同期ジェネレータ、またはタスク転送のための別の Agent インスタンスにすることができます。
+
+## Agent のライフサイクル
+
+Agent の実行は構造化されたライフサイクルに従い、フックを介した拡張のための明確なポイントを提供します。
 
 ```d2
 direction: down
 
-Input-Message: {
-  label: "入力メッセージ\n(subscribeTopic から)"
-  shape: oval
-}
-
-Output-Message: {
-  label: "出力メッセージ\n(publishTopic へ)"
-  shape: oval
-}
-
-Agent: {
-  label: "Agent インスタンス"
-  shape: rectangle
+Agent-Lifecycle: {
+  label: "Agent 実行ライフサイクル"
   style: {
-    stroke-width: 3
+    stroke-dash: 4
   }
 
-  invoke-method: {
-    label: "invoke()"
-    shape: rectangle
-    style.fill: "#d0e0f0"
+  invoke: {
+    label: "1. invoke(input)"
+    shape: oval
   }
 
-  Pre-Processing: {
-    label: "前処理"
+  on-start: {
+    label: "2. onStart フック"
     shape: rectangle
-    style.stroke-dash: 2
-
-    GuideRails-Pre: "GuideRails (事前)"
-    onStart-Hook: "onStart フック"
-    Input-Schema-Validation: {
-      label: "入力スキーマ検証\n(Zod)"
-    }
   }
 
-  process-method: {
-    label: "process()\n(カスタムコアロジック)"
-    shape: rectangle
-    style.fill: "#e0f0d0"
-
-    Skills: {
-      label: "スキル\n(他の Agent)"
-      shape: rectangle
-    }
-    Memory: {
-      label: "メモリ"
-      shape: cylinder
-    }
+  input-validation: {
+    label: "3. 入力は有効か？"
+    shape: diamond
   }
 
-  Post-Processing: {
-    label: "後処理"
+  process: {
+    label: "4. process(input)"
     shape: rectangle
-    style.stroke-dash: 2
+    style.fill: "#e6f7ff"
+  }
 
-    Output-Schema-Validation: {
-      label: "出力スキーマ検証\n(Zod)"
-    }
-    onSuccess-onError-Hooks: "onSuccess / onError フック"
-    GuideRails-Post: "GuideRails (事後)"
-    onEnd-Hook: "onEnd フック"
+  output-validation: {
+    label: "5. 出力は有効か？"
+    shape: diamond
+  }
+
+  on-end: {
+    label: "6. onEnd フック\n(成功またはエラーを処理)"
+    shape: rectangle
+  }
+
+  return-value: {
+    label: "7. 出力を返すかエラーをスロー"
+    shape: oval
   }
 }
 
-FunctionAgent: {
-  label: "FunctionAgent\n(簡易 Agent)"
-  shape: rectangle
-}
-
-Input-Message -> Agent.invoke-method: "1. 呼び出し"
-
-Agent.invoke-method -> Agent.Pre-Processing.GuideRails-Pre: "2. 事前検証"
-Agent.Pre-Processing.GuideRails-Pre -> Agent.Pre-Processing.onStart-Hook: "3. トリガー"
-Agent.Pre-Processing.onStart-Hook -> Agent.Pre-Processing.Input-Schema-Validation: "4. 入力検証"
-Agent.Pre-Processing.Input-Schema-Validation -> Agent.process-method: "5. 実行"
-
-Agent.process-method -> Agent.process-method.Skills: "委任"
-Agent.process-method <-> Agent.process-method.Memory: "アクセス"
-
-Agent.process-method -> Agent.Post-Processing.Output-Schema-Validation: "6. 出力検証"
-Agent.Post-Processing.Output-Schema-Validation -> Agent.Post-Processing.onSuccess-onError-Hooks: "7. トリガー"
-Agent.Post-Processing.onSuccess-onError-Hooks -> Agent.Post-Processing.GuideRails-Post: "8. 事後検証"
-Agent.Post-Processing.GuideRails-Post -> Agent.Post-Processing.onEnd-Hook: "9. トリガー"
-Agent.Post-Processing.onEnd-Hook -> Output-Message: "10. 結果を公開"
-
-FunctionAgent -> Agent.process-method: "関数を提供"
+Agent-Lifecycle.invoke -> Agent-Lifecycle.on-start
+Agent-Lifecycle.on-start -> Agent-Lifecycle.input-validation
+Agent-Lifecycle.input-validation -> Agent-Lifecycle.process: "はい"
+Agent-Lifecycle.process -> Agent-Lifecycle.output-validation
+Agent-Lifecycle.output-validation -> Agent-Lifecycle.on-end: "はい"
+Agent-Lifecycle.on-end -> Agent-Lifecycle.return-value
+Agent-Lifecycle.input-validation -> Agent-Lifecycle.on-end: "いいえ"
+Agent-Lifecycle.output-validation -> Agent-Lifecycle.on-end: "いいえ"
 ```
 
-## コアコンセプト
+1.  **呼び出し**: Agent の実行は、その `invoke()` メソッドを入力ペイロードで呼び出すことによって開始されます。
+2.  **`onStart` フック**: `onStart` フックがトリガーされ、ロギングや入力変換などの前処理ロジックの機会が提供されます。
+3.  **入力検証**: 入力データは Agent の `inputSchema` に対して自動的に検証されます。検証に失敗した場合、プロセスは中止されます。
+4.  **`process()` の実行**: Agent の `process()` メソッドで定義されたコアロジックが実行されます。
+5.  **出力検証**: `process()` メソッドからの結果は、Agent の `outputSchema` に対して検証されます。
+6.  **`onEnd` フック**: `onEnd` フックは、最終的な出力または発生したエラーと共にトリガーされます。これは、後処理、結果のロギング、またはカスタムの失敗処理を実装するための指定されたポイントです。
+7.  **戻り値**: 最終的に検証された出力が元の呼び出し元に返されます。
 
-- **メッセージ駆動型アーキテクチャ**: Agent は発行/購読モデルで動作します。特定のトピックを購読して入力メッセージを受信し、出力を他のトピックに発行することで、Agent 間のシームレスな通信を可能にします。
-- **入出力スキーマ**: Zod スキーマを使用して `inputSchema` と `outputSchema` を定義し、Agent に出入りするすべてのデータが検証され、事前定義された構造に準拠するようにできます。
-- **スキル**: Agent は `skills` (他の Agent や関数) を持つことができます。これにより、より専門的な Agent にタスクを委任する複雑な Agent を作成でき、モジュール式で階層的な設計を促進します。
-- **ライフサイクルフック**: Agent のライフサイクルは `hooks` (例: `onStart`、`onEnd`、`onError`) でインターセプトできます。フックは、Agent の実行のさまざまな段階で、ロギング、モニタリング、トレーシング、カスタムロジックの実装に非常に役立ちます。
-- **ストリーミング応答**: Agent はストリーミング形式で応答を返すことができます。これは、チャットボットのようなリアルタイムアプリケーションに最適で、結果が生成されると同時に段階的に表示できます。
-- **GuideRails**: `guideRails` は、他の Agent の実行に対するバリデーターまたはコントローラーとして機能する特殊な Agent です。入力と期待される出力を検査して、ルール、ポリシー、またはビジネスロジックを強制し、必要に応じてプロセスを中止することもできます。
-- **メモリ**: Agent は `memory` を備えることができ、状態を永続化し、過去のインタラクションから情報を思い出すことで、よりコンテキストを意識した振る舞いを可能にします。
+この体系的なライフサイクルにより、データが一貫して検証され、カスタムロジックのための明確で非侵入的な拡張ポイントが提供されます。
 
-## 主なプロパティ
+## 実装例
 
-`Agent` クラスは、コンストラクタに渡される `AgentOptions` オブジェクトを介して設定されます。以下は、最も重要なプロパティの一部です。
+機能的な Agent を作成するには、基本の `Agent` クラスを拡張し、`process` メソッドを実装します。次の例では、2つの数値を受け取り、その合計を返す Agent を定義します。
 
-| プロパティ | 型 | 説明 |
-| --- | --- | --- |
-| `name` | `string` | Agent の一意の名前で、識別とロギングに使用されます。デフォルトはクラス名です。 |
-| `description` | `string` | Agent の目的と機能に関する人間が読める形式の説明。 |
-| `subscribeTopic` | `string \| string[]` | Agent が受信メッセージをリッスンするトピック。 |
-| `publishTopic` | `string \| string[] \| function` | Agent が出力メッセージを送信するトピック。 |
-| `inputSchema` | `ZodType` | 入力メッセージの構造を検証するための Zod スキーマ。 |
-| `outputSchema` | `ZodType` | 出力メッセージの構造を検証するための Zod スキーマ。 |
-| `skills` | `(Agent \| FunctionAgentFn)[]` | この Agent がサブタスクを実行するために呼び出すことができる他の Agent または関数のリスト。 |
-| `memory` | `MemoryAgent \| MemoryAgent[]` | 情報を保存および取得するための 1 つ以上のメモリ Agent。 |
-| `hooks` | `AgentHooks[]` | Agent のライフサイクルイベントにカスタムロジックをアタッチするためのフックオブジェクトの配列。 |
-| `guideRails` | `GuideRailAgent[]` | メッセージフローを検証、変換、または制御するための GuideRail Agent のリスト。 |
-| `retryOnError` | `boolean \| object` | 失敗時の自動リトライの設定。 |
-
-## 主なメソッド
-
-### `invoke(input, options)`
-
-これは Agent を実行するための主要なメソッドです。`input` メッセージと `options` オブジェクトを受け取ります。`invoke` メソッドは、フックの実行、スキーマの検証、`process` メソッドの実行、エラー処理など、ライフサイクル全体を処理します。
-
-- **通常呼び出し**: デフォルトでは、`invoke` は最終的な出力オブジェクトで解決される Promise を返します。
-- **ストリーミング呼び出し**: `options.streaming` を `true` に設定すると、`invoke` は応答のチャンクが利用可能になるたびにそれらを出力する `ReadableStream` を返します。
-
-**例: 通常呼び出し**
-```typescript
-const result = await agent.invoke({ query: "What is AIGNE?" });
-console.log(result);
-```
-
-**例: ストリーミング呼び出し**
-```typescript
-const stream = await agent.invoke(
-  { query: "Tell me a story." },
-  { streaming: true }
-);
-
-for await (const chunk of stream) {
-  // 各チャンクが到着するたびに処理する
-  if (chunk.delta.text) {
-    process.stdout.write(chunk.delta.text.content);
-  }
-}
-```
-
-### `process(input, options)`
-
-これは**抽象メソッド**であり、カスタム Agent サブクラスで実装する必要があります。これには Agent のコアロジックが含まれます。検証済みの入力を受け取り、出力を返す責任があります。`process` メソッドは、直接オブジェクト、`ReadableStream`、`AsyncGenerator`、あるいは制御を移譲するための別の `Agent` インスタンスを返すことができます。
-
-**例: `process` の実装**
-```typescript
+```typescript title="adder-agent.ts" icon=logos:typescript
 import { Agent, type AgentInvokeOptions, type Message } from "@aigne/core";
 import { z } from "zod";
 
-class EchoAgent extends Agent {
+// 1. Zod を使用して入力および出力スキーマを定義し、検証を行います。
+const inputSchema = z.object({
+  a: z.number(),
+  b: z.number(),
+});
+
+const outputSchema = z.object({
+  sum: z.number(),
+});
+
+// 2. Zod スキーマから TypeScript の型を推論します。
+type AddAgentInput = z.infer<typeof inputSchema>;
+type AddAgentOutput = z.infer<typeof outputSchema>;
+
+// 3. Agent を拡張してカスタム Agent クラスを作成します。
+export class AddAgent extends Agent<AddAgentInput, AddAgentOutput> {
   constructor() {
     super({
-      name: "EchoAgent",
-      description: "An agent that echoes the input message.",
-      inputSchema: z.object({ message: z.string() }),
-      outputSchema: z.object({ response: z.string() }),
+      name: "AddAgent",
+      description: "An agent that adds two numbers.",
+      inputSchema,
+      outputSchema,
     });
   }
 
-  async process(input: { message: string }, options: AgentInvokeOptions) {
-    // Agent のコアロジック
-    return { response: `You said: ${input.message}` };
+  // 4. process メソッドにコアロジックを実装します。
+  async process(input: AddAgentInput, options: AgentInvokeOptions): Promise<AddAgentOutput> {
+    const { a, b } = input;
+    const sum = a + b;
+    return { sum };
   }
 }
 ```
 
-### `shutdown()`
+この例は、標準的な実装パターンを示しています。
+1.  入力および出力データ構造のために Zod スキーマを定義します。
+2.  対応する入力および出力タイプで `Agent` クラスを拡張します。
+3.  スキーマやその他のメタデータを `super()` コンストラクタに提供します。
+4.  Agent 固有のロジックを `process` メソッド内に実装します。
 
-このメソッドは、トピックの購読やメモリ接続など、Agent が使用するリソースをクリーンアップします。メモリリークを防ぐために、Agent が不要になったときにこのメソッドを呼び出すことが重要です。
+## まとめ
 
-## Agent のライフサイクルとフック
+`Agent` クラスは、AIGNE フレームワークにおける基本的な抽象化です。これは、すべての運用ユニットに対して一貫性のある堅牢な契約を提供し、それらが識別可能であり、明確なデータスキーマに従い、予測可能な実行ライフサイクルをたどることを保証します。この共通の仕組みを抽象化することにより、フレームワークは開発者が `process` メソッド内でタスクに必要な独自のロジックの実装に専念できるようにします。
 
-Agent の実行ライフサイクルは、フックを使用して監視および変更できる明確に定義されたプロセスです。
-
-1.  **`onStart`**: Agent の `process` メソッドが呼び出される直前にトリガーされます。このフックを使用して、入力を変更したり、セットアップタスクを実行したりできます。
-2.  **`onSkillStart` / `onSkillEnd`**: スキル (別の Agent) が呼び出される前後にトリガーされます。
-3.  **`onSuccess`**: `process` メソッドが正常に完了し、出力が処理された後にトリガーされます。
-4.  **`onError`**: 処理中にエラーが発生した場合にトリガーされます。ここでカスタムエラー処理やリトライロジックを実装できます。
-5.  **`onEnd`**: 呼び出しが成功したか失敗したかに関わらず、呼び出しの最後にトリガーされます。これは、クリーンアップ、ロギング、メトリクスに最適です。
-
-**例: フックの使用**
-```typescript
-const loggingHook = {
-  onStart: async ({ agent, input }) => {
-    console.log(`Agent ${agent.name} が入力で開始されました:`, input);
-  },
-  onEnd: async ({ agent, error }) => {
-    if (error) {
-      console.error(`Agent ${agent.name} が失敗しました:`, error);
-    } else {
-      console.log(`Agent ${agent.name} は正常に終了しました。`);
-    }
-  },
-};
-
-const agent = new MyAgent({
-  hooks: [loggingHook],
-});
-```
-
-## `FunctionAgent`
-
-よりシンプルなユースケースのために、AIGNE は `FunctionAgent` クラスを提供しています。これにより、単一の関数から Agent を作成でき、`Agent` を拡張する新しいクラスを作成する必要がなくなります。これは、シンプルでステートレスなユーティリティ Agent を作成するのに最適です。
-
-**例: `FunctionAgent` の作成**
-```typescript
-import { FunctionAgent } from "@aigne/core";
-import { z } from "zod";
-
-const multiplierAgent = new FunctionAgent({
-  name: "Multiplier",
-  inputSchema: z.object({ a: z.number(), b: z.number() }),
-  outputSchema: z.object({ result: z.number() }),
-  process: async (input) => {
-    return { result: input.a * input.b };
-  },
-});
-
-const result = await multiplierAgent.invoke({ a: 5, b: 10 });
-console.log(result); // { result: 50 }
-```
+Agent が中央エンジンによってどのように実行および管理されるかの詳細については、[AIGNE](./developer-guide-core-concepts-aigne-engine.md) のドキュメントを参照してください。利用可能なさまざまな特殊な Agent の実装については、[Agent のタイプ](./developer-guide-agents.md)のセクションを参照してください。

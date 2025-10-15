@@ -1,195 +1,310 @@
-# Agent フック
+# フック
 
-Agent フックは、Agent の実行ライフサイクルに介入するための強力なメカニズムを提供します。これにより、Agent のコア実装を変更することなく、Agent の開始前、成功後、またはエラー発生時などの主要なポイントにカスタムロジックを挿入できます。このため、フックはロギング、モニタリング、トレーシング、入力/出力の変更、カスタムエラー処理戦略の実装に最適です。
+フックは、Agent の実行ライフサイクルを監視、インターセプトし、カスタムロジックを注入するための強力な仕組みを提供します。これにより、Agent のコア実装を変更することなく、ロギング、モニタリング、入力/出力の変換、カスタムエラー処理などの機能を追加できます。
 
-## コアコンセプト
+このガイドでは、Agent の実行ライフサイクル、利用可能なフック、そしてそれらを効果的に実装する方法について詳しく説明します。
 
-### ライフサイクルイベント
+## Agent 実行ライフサイクル
 
-Agent のさまざまなライフサイクルイベントにカスタムロジックをアタッチできます。各フックは実行プロセスの特定の時点でトリガーされ、入力、出力、エラーなどの関連コンテキストを受け取ります。
+フックを正しく使用するためには、Agent の実行ライフサイクルを理解することが不可欠です。Agent が呼び出されると、一連のステップを経て実行され、特定の時点でフックがトリガーされます。
 
-利用可能なライフサイクルフックは以下の通りです：
+以下の図は、Agent の呼び出し中に発生するイベントのシーケンスと、それに対応して呼び出されるフックを示しています。
 
-| フック | トリガー | 目的 |
-| :------------- | :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `onStart` | Agent の `process` メソッドが呼び出される前。 | 入力を前処理または検証し、実行開始をログに記録し、または必要なリソースをセットアップします。Agent が受け取る前に入力を変更することができます。 |
-| `onSuccess` | Agent の `process` メソッドが正常に完了した後。 | 出力を後処理または検証し、成功した結果をログに記録し、またはクリーンアップを実行します。最終的な出力を変更することができます。 |
-| `onError` | Agent の実行中にエラーがスローされたとき。 | エラーをログに記録し、通知を送信し、またはカスタムのリトライロジックを実装します。Agent に操作をリトライするよう信号を送ることができます。 |
-| `onEnd` | `onSuccess` または `onError` が呼び出された後。 | 結果に関わらず、接続のクローズやリソースの解放などのクリーンアップ操作を実行します。最終的な出力を変更したり、リトライをトリガーしたりすることもできます。 |
-| `onSkillStart` | 現在の Agent によってスキル（サブ Agent）が呼び出される前。 | スキルの呼び出しをインターセプトしてログに記録したり、スキルに渡される入力を変更したりします。 |
-| `onSkillEnd` | スキルが（成功したかどうかにかかわらず）実行を完了した後。 | スキルからの結果やエラーをログに記録し、そのスキルに特化したクリーンアップを実行したり、スキル固有のエラーを処理したりします。 |
-| `onHandoff` | ある Agent が別の Agent に制御を移譲するとき。 | マルチ Agent システムにおける制御の流れを追跡し、タスクが Agent 間でどのように委任されるかを監視します。 |
+```d2 AIGNE Hooks Lifecycle icon=material-symbols:account-tree-outline
+direction: down
+style: {
+  font-size: 14
+}
 
-### フックの優先度
+InvokeAgent: "AIGNE.invoke(agent, input)" {
+  shape: step
+  style.fill: "#D5E8D4"
+}
 
-フックには `priority` を割り当てて、同じイベントに複数のフックが登録された場合の実行順序を制御できます。これは、認証や検証などの特定のフックが他のフックより先に実行されるようにするために役立ちます。
+onStart: "onStart フック" {
+  shape: hexagon
+  style.fill: "#F8CECC"
+}
 
-利用可能な優先度レベルは以下の通りです：
-- `high`
-- `medium`
-- `low` (デフォルト)
+InputValidation: "入力スキーマの検証" {
+  shape: step
+}
 
-フックは `high` から `low` の優先度順に実行されます。これは `sortHooks` ユーティリティによって処理され、予測可能な実行シーケンスを保証します。
+Preprocess: "agent.preprocess()" {
+  shape: step
+}
 
-```typescript
-// From packages/core/src/utils/agent-utils.ts
-const priorities: NonNullable<AgentHooks["priority"]>[] = ["high", "medium", "low"];
+Process: "agent.process()" {
+  shape: rectangle
+  style.fill: "#DAE8FC"
+}
 
-export function sortHooks(hooks: AgentHooks[]): AgentHooks[] {
-  return hooks
-    .slice(0)
-    .sort(({ priority: a = "low" }, { priority: b = "low" }) =>
-      a === b ? 0 : priorities.indexOf(a) - priorities.indexOf(b),
-    );
+Postprocess: "agent.postprocess()" {
+  shape: step
+}
+
+OutputValidation: "出力スキーマの検証" {
+  shape: step
+}
+
+Result: {
+  shape: diamond
+  style.fill: "#E1D5E7"
+}
+
+onSuccess: "onSuccess フック" {
+  shape: hexagon
+  style.fill: "#F8CECC"
+}
+
+onError: "onError フック" {
+  shape: hexagon
+  style.fill: "#F8CECC"
+}
+
+onEnd: "onEnd フック" {
+  shape: hexagon
+  style.fill: "#F8CECC"
+}
+
+ReturnOutput: "出力の返却" {
+  shape: step
+  style.fill: "#D5E8D4"
+}
+
+ThrowError: "エラーのスロー" {
+  shape: step
+  style.fill: "#F8CECC"
+}
+
+InvokeAgent -> onStart -> InputValidation -> Preprocess -> Process
+
+Process -> Postprocess -> OutputValidation -> Result
+
+Result -> "成功" -> onSuccess -> onEnd -> ReturnOutput
+Result -> "失敗" -> onError -> onEnd -> ThrowError
+
+subgraph "Skill Invocation (within process)" {
+  label: "スキルの呼び出し (process 内)"
+  direction: down
+  style.stroke-dash: 2
+
+  onSkillStart: "onSkillStart フック" {
+    shape: hexagon
+    style.fill: "#FFF2CC"
+  }
+
+  InvokeSkill: "invokeSkill()" {
+    shape: rectangle
+  }
+
+  onSkillEnd: "onSkillEnd フック" {
+    shape: hexagon
+    style.fill: "#FFF2CC"
+  }
+
+  onSkillStart -> InvokeSkill -> onSkillEnd
 }
 ```
+
+## 利用可能なフック
+
+フックは `AgentHooks` オブジェクト内で定義されます。各フックは、関数または独立した専用の Agent として実装できます。
+
+<x-field-group>
+  <x-field data-name="onStart" data-type="function | Agent">
+    <x-field-desc markdown>Agent の呼び出しの最初に、入力検証の前にトリガーされます。初期の `input` や `options` を変更するために使用できます。</x-field-desc>
+  </x-field>
+  <x-field data-name="onSuccess" data-type="function | Agent">
+    <x-field-desc markdown>Agent の `process` メソッドが正常に完了し、出力が検証された後にトリガーされます。最終的な `output` を変換するために使用できます。</x-field-desc>
+  </x-field>
+  <x-field data-name="onError" data-type="function | Agent">
+    <x-field-desc markdown>実行のどの段階でエラーがスローされてもトリガーされます。カスタムのエラーロギングや、`{ retry: true }` を返すことによるリトライメカニズムを実装するために使用できます。</x-field-desc>
+  </x-field>
+  <x-field data-name="onEnd" data-type="function | Agent">
+    <x-field-desc markdown>Agent の呼び出しの最後に、成功したか失敗したかに関わらずトリガーされます。クリーンアップタスク、最終的なロギング、またはメトリクスの収集に適しています。</x-field-desc>
+  </x-field>
+  <x-field data-name="onSkillStart" data-type="function | Agent">
+    <x-field-desc markdown>Agent がそのスキル（サブ Agent）の一つを呼び出す直前にトリガーされます。これは Agent 間のタスクの委任をトレースするのに役立ちます。</x-field-desc>
+  </x-field>
+  <x-field data-name="onSkillEnd" data-type="function | Agent">
+    <x-field-desc markdown>スキルの呼び出しが完了した後、成功したか失敗したかに関わらずトリガーされます。スキルの結果またはエラーを受け取ります。</x-field-desc>
+  </x-field>
+  <x-field data-name="onHandoff" data-type="function | Agent">
+    <x-field-desc markdown>Agent の `process` メソッドが別の Agent インスタンスを返し、実質的に制御を引き渡すときにトリガーされます。これにより、Agent から Agent への転送を監視できます。</x-field-desc>
+  </x-field>
+</x-field-group>
 
 ## フックの実装
 
-フックは、単純なコールバック関数として、または独立した再利用可能な `Agent` インスタンスとして、2つの方法で実装できます。
+フックは、3つの方法で Agent にアタッチできます：
+1. Agent のインスタンス化時に、`AgentOptions` の `hooks` プロパティを介して。
+2. 呼び出し時に、`AgentInvokeOptions` の `hooks` プロパティを介して。
+3. `AIGNEContext` インスタンス上でグローバルに。
 
-### 1. 関数フック
+### 例 1: 基本的なロギング
 
-単純なロジックの場合、`AgentOptions` オブジェクト内でフックを関数として直接定義できます。これはフックを使用する最も一般的で直接的な方法です。
+以下は、Agent の実行開始と終了をログに記録するフックの簡単な例です。
 
-**例：単純なロギングフック**
+```typescript Agent のロギングフック icon=logos:typescript
+import { Agent, AIGNE, type AgentHooks } from "@aigne/core";
 
-この例は、Agent の実行開始と終了をログに記録する基本的なフックを示しています。
-
-```typescript
-import { Agent, AgentOptions, Message } from "./agent"; // Assuming path to agent.ts
-
-// ロギングフックオブジェクトを定義
-const loggingHook = {
-  priority: "high",
+// ロギングフックを定義
+const loggingHook: AgentHooks = {
   onStart: ({ agent, input }) => {
-    console.log(`[INFO] Agent '${agent.name}' started with input:`, JSON.stringify(input));
+    console.log(`[${agent.name}] Starting execution with input:`, input);
   },
-  onEnd: ({ agent, output, error }) => {
+  onEnd: ({ agent, input, output, error }) => {
     if (error) {
-      console.error(`[ERROR] Agent '${agent.name}' failed with error:`, error.message);
+      console.error(`[${agent.name}] Execution failed for input:`, input, "Error:", error);
     } else {
-      console.log(`[INFO] Agent '${agent.name}' succeeded with output:`, JSON.stringify(output));
+      console.log(`[${agent.name}] Execution succeeded with output:`, output);
     }
-  }
+  },
 };
 
-// 新しい Agent を作成し、フックをアタッチ
-const myAgent = new Agent({
-  name: "DataProcessor",
-  hooks: [loggingHook],
-  // ... other agent options
-});
-```
-
-### 2. Agent フック
-
-より複雑または再利用可能なロジックの場合、フックをそれ自身の `Agent` として実装できます。これにより、フックのロジックをカプセル化し、その状態を管理し、複数の Agent 間で再利用できます。フック Agent への入力は、イベントペイロード（例：`{ agent, input, error }`）になります。
-
-**例：Agent ベースのエラーハンドラ**
-
-ここで、`ErrorHandlingAgent` は `onError` フックとして機能するように設計された Agent です。これには、監視サービスにアラートを送信するロジックが含まれている可能性があります。
-
-```typescript
-import { FunctionAgent, Agent, Message } from "./agent"; // Assuming path to agent.ts
-
-// アラートを送信してエラーを処理する Agent
-const errorHandlingAgent = new FunctionAgent({
-  name: "ErrorAlerter",
-  process: async ({ agent, error }) => {
-    console.log(`Alert! Agent ${agent.name} encountered an error: ${error.message}`);
-    // 実際のシナリオでは、ここで外部の監視 API を呼び出すことになるでしょう。
-  }
-});
-
-// 失敗する可能性のある Agent
-class RiskyAgent extends Agent<{ command: string }, { result: string }> {
-  async process(input) {
-    if (input.command === "fail") {
-      throw new Error("This operation was designed to fail.");
-    }
-    return { result: "Success!" };
+// シンプルな Agent を定義
+class MyAgent extends Agent {
+  async process(input: { message: string }) {
+    return { reply: `You said: ${input.message}` };
   }
 }
 
-// エラー処理 Agent をフックとしてアタッチ
-const riskyAgent = new RiskyAgent({
-  name: "RiskyOperation",
-  hooks: [
-    {
-      onError: errorHandlingAgent,
-    }
-  ],
+// フックを使用して Agent をインスタンス化
+const myAgent = new MyAgent({
+  name: "EchoAgent",
+  hooks: [loggingHook],
 });
+
+const aigne = new AIGNE();
+await aigne.invoke(myAgent, { message: "hello" });
+
+// コンソール出力:
+// [EchoAgent] Starting execution with input: { message: 'hello' }
+// [EchoAgent] Execution succeeded with output: { reply: 'You said: hello' }
 ```
 
-## 実行フローの変更
+### 例 2: `onStart` で入力を変更する
 
-フックは単なる監視のためだけではありません。Agent の実行フローを積極的に変更することができます。
+`onStart` フックは、Agent が受け取る `input` を変更するためにオブジェクトを返すことができます。
 
-- **入力の変更**: `onStart` フックは、新しい `input` プロパティを持つオブジェクトを返すことができます。これにより、Agent の `process` メソッドに渡される元の入力が置き換えられます。
-- **出力の変更**: `onSuccess` または `onEnd` フックは、新しい `output` プロパティを持つオブジェクトを返すことができます。これにより、Agent の元の結果が置き換えられます。
-- **リトライのトリガー**: `onError` または `onEnd` フックは `{ retry: true }` を返すことで、Agent に `process` メソッドを再実行するように指示できます。これは、一時的なエラーを処理するのに役立ちます。
+```typescript Agent の入力を変更 icon=logos:typescript
+import { Agent, AIGNE, type AgentHooks } from "@aigne/core";
 
-**例：入力変換とリトライロジック**
-
-```typescript
-import { Agent, AgentOptions, Message } from "./agent"; // Assuming path to agent.ts
-
-const transformationAndRetryHook = {
+const inputModificationHook: AgentHooks = {
   onStart: ({ input }) => {
-    // 処理前に入力を標準化
-    const transformedInput = { ...input, data: input.data.toLowerCase() };
-    return { input: transformedInput };
+    // 入力メッセージにタイムスタンプを追加
+    const newInput = {
+      ...input,
+      timestamp: new Date().toISOString(),
+    };
+    return { input: newInput };
   },
-  onError: ({ error }) => {
-    // ネットワークエラー時にリトライ
-    if (error.message.includes("network")) {
-      console.log("Network error detected. Retrying...");
-      return { retry: true };
-    }
-  }
 };
 
-const myAgent = new Agent({
-  name: "NetworkAgent",
-  hooks: [transformationAndRetryHook],
-  // ... other agent options
+class GreeterAgent extends Agent {
+  async process(input: { name: string; timestamp?: string }) {
+    return { greeting: `Hello, ${input.name}! (processed at ${input.timestamp})` };
+  }
+}
+
+const agent = new GreeterAgent({ hooks: [inputModificationHook] });
+
+const aigne = new AIGNE();
+const result = await aigne.invoke(agent, { name: "Alice" });
+
+console.log(result);
+// {
+//   greeting: "Hello, Alice! (processed at 2023-10-27T10:00:00.000Z)"
+// }
+```
+
+### 例 3: `onError` でのカスタムリトライ
+
+`onError` フックは `{ retry: true }` を返すことで、AIGNE が Agent の `process` メソッドを再試行するよう通知できます。これは、一時的な障害を処理するのに役立ちます。
+
+```typescript カスタムリトライフック icon=logos:typescript
+import { Agent, AIGNE, type AgentHooks } from "@aigne/core";
+
+let attempt = 0;
+
+const retryHook: AgentHooks = {
+  onError: ({ agent, error }) => {
+    console.log(`[${agent.name}] Attempt failed: ${error.message}. Retrying...`);
+    // true を返してリトライを通知しますが、最初の2回の試行のみです
+    if (attempt < 2) {
+      return { retry: true };
+    }
+    // 何も返さないことでエラーを伝播させます
+  },
+};
+
+class UnreliableAgent extends Agent {
+  async process() {
+    attempt++;
+    if (attempt <= 2) {
+      throw new Error("Service temporarily unavailable");
+    }
+    return { status: "OK" };
+  }
+}
+
+const agent = new UnreliableAgent({ hooks: [retryHook] });
+
+const aigne = new AIGNE();
+const result = await aigne.invoke(agent, {});
+
+console.log(result); // { status: 'OK' }
+```
+
+この Agent は2回失敗し、`retryHook` がエラーをインターセプトして毎回リトライをトリガーします。3回目の試行で Agent は成功します。
+
+## フックの優先度
+
+フックは Agent、呼び出し時、およびコンテキストで定義できます。実行順序を管理するために、フックは `priority` プロパティを `"high"`、`"medium"`、または `"low"`（デフォルト）に設定できます。
+
+フックは優先度の順に実行されます：`high` > `medium` > `low`。
+
+```typescript フックの優先度の例 icon=logos:typescript
+const highPriorityHook: AgentHooks = {
+  priority: 'high',
+  onStart: () => console.log('High priority hook executed.'),
+};
+
+const mediumPriorityHook: AgentHooks = {
+  priority: 'medium',
+  onStart: () => console.log('Medium priority hook executed.'),
+};
+
+const lowPriorityHook: AgentHooks = {
+  // priority はデフォルトで 'low' になります
+  onStart: () => console.log('Low priority hook executed.'),
+};
+
+class MonitoredAgent extends Agent {
+  async process(input: {}) {
+    console.log('Agent processing...');
+    return { success: true };
+  }
+}
+
+const agent = new MonitoredAgent({
+  hooks: [lowPriorityHook, highPriorityHook, mediumPriorityHook],
 });
+
+const aigne = new AIGNE();
+await aigne.invoke(agent, {});
+
+
+// コンソール出力:
+// High priority hook executed.
+// Medium priority hook executed.
+// Low priority hook executed.
+// Agent processing...
 ```
 
-## 宣言的設定 (YAML)
+この予測可能な実行順序は、あるフックのロジックが別のフックの結果に依存する場合に不可欠です。
 
-フックは YAML 設定ファイルで宣言的に定義することもでき、これは AIGNE CLI を使用する場合に特に便利です。フックをインラインで定義したり、他のファイルから参照したりすることができます。
+## まとめ
 
-**`test-agent-with-hooks.yaml` の例**
-
-この例は、インライン AI Agent や外部ファイル（`test-hooks.yaml`）で定義されたフックなど、さまざまなフックを使用するチーム Agent を示しています。
-
-```yaml
-# From: packages/core/test-agents/test-agent-with-hooks.yaml
-type: team
-name: test_agent_with_default_input
-hooks:
-  priority: high
-  on_start:
-    type: ai
-    name: test_hooks_inline # フックとして機能するインライン Agent
-  on_success: test-hooks.yaml # 外部フック定義への参照
-  on_error: test-hooks.yaml
-  on_end: test-hooks.yaml
-  on_skill_start: test-hooks.yaml
-  on_skill_end: test-hooks.yaml
-  on_handoff: test-hooks.yaml
-skills:
-  - url: ./test-agent-with-default-input-skill.yaml
-    hooks:
-      # フックは特定のスキルにもアタッチできます
-      on_start: test-hooks.yaml
-  - type: ai
-    name: test_agent_with_default_input_skill2.yaml
-    hooks:
-      on_start: test-hooks.yaml
-```
-
-この宣言的なアプローチにより、関心事のクリーンな分離が可能になり、Agent のロジックはロギング、セキュリティ、エラー処理などの横断的な関心事から切り離されます。
+フックは、堅牢で観測可能な Agent ベースのシステムを構築するための不可欠なツールです。これらは、ロギング、計装、回復力パターンなどの横断的関心事を、クリーンで非侵襲的な方法で Agent に追加する手段を提供します。Agent のライフサイクルと各フックの機能を理解することで、洗練された、本番環境に対応可能な AI アプリケーションを作成できます。

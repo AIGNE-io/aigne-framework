@@ -1,254 +1,179 @@
 # 提示词
 
-提示词构建和模板系统是创建与 AI 模型进行动态且强大交互的核心组件。它由两个主要部分组成：
+与 AI 模型的有效沟通取决于所提供提示词的质量和结构。AIGNE 框架通过其 `PromptBuilder` 类和集成的 Nunjucks 模板引擎，提供了一个强大的系统，用于创建动态、可复用和结构化的提示词。本指南对这些组件进行了系统性解释。
 
-1.  **提示词模板**：一个使用 Nunjucks 的灵活系统，用于创建动态、可复用的提示词组件。
-2.  **提示词构建器**：一个高级编排器，可将模板、上下文、记忆、工具和输出模式组装成一个完整的 `ChatModelInput`，准备发送给模型。
+有关如何在 Agent 中使用提示词的更多背景信息，请参阅 [AI Agent](./developer-guide-agents-ai-agent.md) 文档。
 
-### `PromptBuilder` 工作流
+## 使用 Nunjucks 进行提示词模板化
 
-`PromptBuilder` 是一个中心类，它编排所有不同的部分——模板、用户输入、上下文、记忆和工具——以构建一个最终的、可供模型使用的 `ChatModelInput` 对象。下图说明了此过程：
+该框架利用 [Nunjucks 模板引擎](https://mozilla.github.io/nunjucks/) 来促进动态提示词的创建。这允许直接在提示词文件中注入变量、包含外部文件以及实现其他编程逻辑。
 
-```d2
-direction: down
+所有提示词文本都由 `PromptTemplate` 类处理，该类使用 Nunjucks 来渲染最终的字符串。
 
-Inputs: {
-  label: "构建器输入"
-  shape: rectangle
-  style.stroke-dash: 2
-  grid-columns: 2
+### 变量替换
 
-  User-Input: "用户输入"
-  Context: "上下文"
-  Memories: "记忆"
-  Tools: "工具"
-  Output-Schemas: "输出模式"
+您可以使用 `{{ variable_name }}` 语法在提示词中定义占位符。这些占位符会在运行时被替换为实际值。
 
-  Templates: {
-    label: "提示词模板"
-    shape: rectangle
+```markdown title="analyst-prompt.md" icon=mdi:text-box
+Analyze the following data:
 
-    Nunjucks-Engine: {
-      label: "Nunjucks 引擎"
-      style.fill: "#f5f5f5"
-    }
-
-    PromptTemplate: {
-      label: "PromptTemplate\n(用于字符串格式化)"
-    }
-
-    ChatMessagesTemplate: {
-      label: "ChatMessagesTemplate\n(用于对话)"
-      grid-columns: 2
-      SystemMessageTemplate
-      UserMessageTemplate
-      AgentMessageTemplate
-      ToolMessageTemplate
-    }
-  }
-}
-
-PromptBuilder: {
-  label: "PromptBuilder"
-  shape: rectangle
-  style.fill: "#e6f7ff"
-}
-
-ChatModelInput: {
-  label: "ChatModelInput"
-  shape: rectangle
-  style.fill: "#d9f7be"
-}
-
-AI-Model: {
-  label: "AI 模型"
-  shape: cylinder
-}
-
-Inputs.Templates.PromptTemplate -> Inputs.Templates.Nunjucks: "使用"
-Inputs.Templates.ChatMessagesTemplate -> Inputs.Templates.Nunjucks: "使用"
-
-Inputs -> PromptBuilder: "由 .build() 组装"
-PromptBuilder -> ChatModelInput: "生成"
-ChatModelInput -> AI-Model: "发送至"
-
+{{ data }}
 ```
 
-## 提示词模板
+在使用此提示词调用 Agent 时，您需要在输入消息中提供 `data` 变量。
 
-提示词模板允许您定义提示词和对话的结构，使用变量并包含其他文件来创建模块化和可维护的提示词指令。
+```typescript title="index.ts" icon=logos:typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAI }s from "@aigne/openai";
 
-### `PromptTemplate`
+const model = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const aigne = new AIGNE({
+  model,
+  agents: {
+    analyst: new AIAgent({
+      instructions: { path: "./analyst-prompt.md" },
+      inputKey: "data",
+    }),
+  },
+});
 
-`PromptTemplate` 类是 Nunjucks 模板字符串的简单包装器。它允许您使用变量格式化字符串。
+const result = await aigne.invoke("analyst", {
+  data: "User feedback scores: 8, 9, 7, 10, 6.",
+});
 
-**主要功能：**
-
-*   **变量替换**：将动态数据注入到您的提示词中。
-*   **文件包含**：通过使用 `{% raw %}{% include "path/to/file.md" %}{% endraw %}` 语法包含其他模板文件来构建复杂的提示词。
-
-**示例：**
-
-假设您有两个模板文件：
-
-**`./main-prompt.md`**
-```markdown
-You are a professional chatbot.
-
-{% raw %}{% include "./personality.md" %}{% endraw %}
+console.log(result);
 ```
 
-**`./personality.md`**
-```markdown
-Your name is {% raw %}{{ name }}{% endraw %}.
+### 文件包含
+
+Nunjucks 允许使用 `{% include "path/to/file.md" %}` 标签从多个文件组合提示词。这对于在不同提示词中复用通用指令或组件非常有效。路径是相对于包含 `include` 标签的文件进行解析的。
+
+例如，您可以在一个文件中定义一组通用指令，并将其包含在另一个文件中。
+
+```markdown title="common-instructions.md" icon=mdi:text-box
+Always respond in a professional and factual manner.
+Do not speculate or provide opinions.
 ```
 
-您可以通过提供 `workingDir` 来解析相对包含路径，从而使用 `PromptTemplate` 渲染此结构。
+```markdown title="main-prompt.md" icon=mdi:text-box
+You are an expert financial analyst.
 
-```typescript
-import { PromptTemplate } from "packages/core/src/prompt/template.ts";
-import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
+{% include "./common-instructions.md" %}
 
-// 主模板文件的路径
-const templatePath = '/path/to/your/prompts/main-prompt.md';
-const workingDir = nodejs.path.dirname(templatePath);
-
-// 假设您读取了 main-prompt.md 的内容
-const templateContent = 'You are a professional chatbot.\n\n{% include "./personality.md" %}';
-
-const template = PromptTemplate.from(templateContent);
-
-const formattedPrompt = await template.format(
-  { name: "Alice" },
-  { workingDir: workingDir } // 为 include 提供 workingDir
-);
-
-console.log(formattedPrompt);
-// 输出:
-// You are a professional chatbot.
-//
-// Your name is Alice.
+Analyze the quarterly earnings report provided.
 ```
 
-### 聊天消息模板
+这种模块化的方法简化了提示词管理并确保了一致性。
 
-对于基于聊天的模型，该库提供了一组类来表示对话中的不同角色，从而可以轻松构建多轮对话。
+## 使用 ChatMessageTemplate 构建提示词结构
 
-*   `SystemMessageTemplate`：表示系统级指令。
-*   `UserMessageTemplate`：表示来自用户的消息。
-*   `AgentMessageTemplate`：表示来自 AI Agent 的消息。
-*   `ToolMessageTemplate`：表示工具调用的输出。
-*   `ChatMessagesTemplate`：用于存放消息模板数组的容器。
+对于基于聊天的模型，提示词被构建为一系列消息，每条消息都有特定的角色。该框架提供了以编程方式表示这些消息的类。
 
-**示例：**
+-   **`SystemMessageTemplate`**：为 AI 模型设置上下文或高级指令。
+-   **`UserMessageTemplate`**：表示来自最终用户的消息。
+-   **`AgentMessageTemplate`**：表示 AI 模型的先前响应，可用于少样本提示或继续对话。
+-   **`ToolMessageTemplate`**：表示 Agent 进行工具调用的结果。
 
-```typescript
+这些模板可以组合成一个 `ChatMessagesTemplate` 来定义一个完整的对话式提示词。
+
+```typescript title="structured-prompt.ts" icon=logos:typescript
 import {
   ChatMessagesTemplate,
   SystemMessageTemplate,
-  UserMessageTemplate
-} from "packages/core/src/prompt/template.ts";
+  UserMessageTemplate,
+} from "@aigne/core";
 
-const conversationTemplate = ChatMessagesTemplate.from([
-  SystemMessageTemplate.from("你是一个乐于助人、说话像海盗的助手。"),
-  UserMessageTemplate.from("我的名字是 {% raw %}{{ name }}{% endraw %}。我叫什么名字？"),
+const promptTemplate = new ChatMessagesTemplate([
+  SystemMessageTemplate.from(
+    "You are a helpful assistant that translates {{ input_language }} to {{ output_language }}."
+  ),
+  UserMessageTemplate.from("{{ text }}"),
 ]);
 
-const messages = await conversationTemplate.format({ name: "Captain Hook" });
-
-console.log(messages);
-// 输出:
-// [
-//   { role: 'system', content: '你是一个乐于助人、说话像海盗的助手。' },
-//   { role: 'user', content: '我的名字是 Captain Hook。我叫什么名字？' }
-// ]
+// 然后，此模板可以在 AIAgent 的 `instructions` 中使用。
 ```
 
-## `PromptBuilder`
+## `PromptBuilder` 类
 
-`PromptBuilder` 是一个高级类，它将所有组件——模板、用户输入、上下文、记忆、工具和模式——组装成一个最终的、可供模型使用的 `ChatModelInput` 对象。
+`PromptBuilder` 是负责组装发送给语言模型的最终完整提示词的核心组件。它协调整个过程，将各种输入整合成一个连贯的结构。
 
-### 工作原理
+下图说明了信息流入 `PromptBuilder` 的流程：
+<d2>
+direction: right
+style {
+  stroke-width: 2
+  font-size: 14
+}
+"用户输入 (消息)": {
+  shape: document
+  style.fill: "#D1E7DD"
+}
+"提示词模板 (.md)": {
+  shape: document
+  style.fill: "#D1E7DD"
+}
+"Agent 配置": {
+  shape: document
+  style.fill: "#D1E7DD"
+}
+上下文: {
+  shape: document
+  style.fill: "#D1E7DD"
+}
+PromptBuilder: {
+  shape: hexagon
+  style.fill: "#A9CCE3"
+}
+"ChatModelInput (发送至 LLM)": {
+  shape: document
+  style.fill: "#FADBD8"
+}
 
-构建器遵循封装在 `build` 方法中的清晰流程：
-1.  **解析指令**：它从基本指令开始，这些指令可以是字符串或 `ChatMessagesTemplate`。
-2.  **集成记忆**：如果 Agent 配置为使用记忆，构建器会检索它们并将其格式化为聊天消息。
-3.  **添加用户输入**：它会附加当前的用户消息和任何附加文件。
-4.  **配置工具**：它从 Agent 和当前上下文中收集所有可用工具（技能），为模型格式化它们，并确定 `toolChoice` 策略。
-5.  **设置响应格式**：如果提供了 `outputSchema`，它会配置模型的 `responseFormat` 以确保结构化输出（例如，JSON）。
+"用户输入 (消息)" -> PromptBuilder
+"提示词模板 (.md)" -> PromptBuilder
+"Agent 配置" -> PromptBuilder
+上下文 -> PromptBuilder
 
-### 示例
+PromptBuilder -> "ChatModelInput (发送至 LLM)"
 
-以下是 `PromptBuilder` 如何组装完整请求的综合示例。
+"Agent 配置".children: {
+  "技能/工具"
+  记忆
+  "输出模式"
+}
 
-```typescript
-import { PromptBuilder } from "packages/core/src/prompt/prompt-builder.ts";
-import { AIAgent } from "packages/core/src/agents/ai-agent.ts";
-import { z } from "zod";
+"ChatModelInput (发送至 LLM)".children: {
+  "渲染后的消息"
+  "工具定义"
+  "响应格式"
+}
+</d2>
 
-// 1. 定义一个包含指令和输出模式的 Agent
-const myAgent = new AIAgent({
-  name: "UserExtractor",
-  description: "从文本中提取用户详细信息。",
-  instructions: "从以下文本中提取用户的姓名和年龄。",
-  outputSchema: z.object({
-    name: z.string().describe("用户的全名"),
-    age: z.number().describe("用户的年龄（以年为单位）"),
-  }),
-});
+`PromptBuilder` 在 `build` 过程中自动执行以下操作：
 
-// 2. 创建一个 PromptBuilder 实例
-const builder = new PromptBuilder();
+1.  **加载指令**：从字符串、文件路径或 MCP `GetPromptResult` 对象加载提示词模板。
+2.  **渲染模板**：使用 Nunjucks 格式化提示词模板，注入用户输入消息中的变量。
+3.  **注入记忆**：如果 Agent 配置为使用记忆，`PromptBuilder` 会检索相关记忆并将其转换为系统、用户或 Agent 消息，以提供对话上下文。
+4.  **整合工具（技能）**：收集所有可用的技能（来自 Agent 配置和调用上下文），并将其格式化为模型的 `tools` 和 `tool_choice` 参数。
+5.  **定义响应格式**：如果 Agent 具有 `outputSchema`，`PromptBuilder` 会配置模型的 `responseFormat` 以强制执行结构化的 JSON 输出。
 
-// 3. 定义用户输入消息
-const userInput = {
-  message: "我的名字是 John Doe，我 30 岁。",
-};
+### 实例化
 
-// 4. 构建最终的 ChatModelInput
-const chatModelInput = await builder.build({
-  agent: myAgent,
-  input: userInput,
-});
+创建 `PromptBuilder` 最常用的方法是通过静态的 `PromptBuilder.from()` 方法，该方法可以接受不同的来源：
 
-console.log(JSON.stringify(chatModelInput, null, 2));
-// 输出:
-// {
-//   "messages": [
-//     {
-//       "role": "system",
-//       "content": "从以下文本中提取用户的姓名和年龄。"
-//     },
-//     {
-//       "role": "user",
-//       "content": [
-//         {
-//           "type": "text",
-//           "text": "我的名字是 John Doe，我 30 岁。"
-//         }
-//       ]
-//     }
-//   ],
-//   "responseFormat": {
-//     "type": "json_schema",
-//     "jsonSchema": {
-//       "name": "output",
-//       "schema": {
-//         "type": "object",
-//         "properties": {
-//           "name": {
-//             "type": "string",
-//             "description": "用户的全名"
-//           },
-//           "age": {
-//             "type": "number",
-//             "description": "用户的年龄（以年为单位）"
-//           }
-//         },
-//         "required": ["name", "age"]
-//       },
-//       "strict": true
-//     }
-//   }
-// }
-```
+-   **来自字符串**：
+    ```typescript
+    const builder = PromptBuilder.from("You are a helpful assistant.");
+    ```
+-   **来自文件路径**：
+    ```typescript
+    const builder = PromptBuilder.from({ path: "./prompts/my-prompt.md" });
+    ```
+
+当使用 `instructions` 定义 `AIAgent` 时，它内部会使用 `PromptBuilder.from()` 来创建和管理提示词构建过程。
+
+## 总结
+
+AIGNE 框架为提示词工程提供了一个分层且强大的系统。通过理解和利用 `PromptTemplate` 与 Nunjucks 来处理动态内容，以及使用 `PromptBuilder` 来协调最终结构，您可以为您的 AI Agent 创建复杂、模块化且有效的提示词。
+
+如需进一步阅读，请探索 [AIAgent 文档](./developer-guide-agents-ai-agent.md)，了解这些提示词如何集成到 Agent 生命周期中。

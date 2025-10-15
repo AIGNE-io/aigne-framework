@@ -1,195 +1,311 @@
-# Agent 钩子
+# 钩子
 
-Agent 钩子提供了一种强大的机制，可以介入 Agent 执行的生命周期。它们允许你在关键节点——例如 Agent 启动前、成功后或发生错误时——插入自定义逻辑，而无需更改 Agent 的核心实现。这使得钩子成为实现日志记录、监控、追踪、修改输入/输出以及自定义错误处理策略的理想选择。
+钩子（Hooks）提供了一种强大的机制，用于观察、拦截 Agent 的执行生命周期并向其中注入自定义逻辑。它们允许您在不改变 Agent 核心实现的情况下，添加日志记录、监控、输入/输出转换以及自定义错误处理等功能。
 
-## 核心概念
+本指南详细介绍了 Agent 的执行生命周期、可用的钩子以及如何有效地实现它们。
 
-### 生命周期事件
+## Agent 执行生命周期
 
-你可以将自定义逻辑附加到 Agent 的各种生命周期事件上。每个钩子在执行过程中的特定时间点被触发，并接收相关上下文，例如输入、输出或错误。
+要正确使用钩子，理解 Agent 的执行生命周期至关重要。当一个 Agent 被调用时，它会按一系列步骤执行，并在特定时间点触发钩子。
 
-以下是可用的生命周期钩子：
+下图展示了 Agent 调用期间的事件序列以及相应调用的钩子。
 
-| 钩子 | 触发时机 | 用途 |
-| :------------- | :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `onStart` | 在 Agent 的 `process` 方法被调用之前。 | 预处理或验证输入、记录执行的开始，或设置所需资源。它可以在 Agent 接收输入之前对其进行修改。 |
-| `onSuccess` | 在 Agent 的 `process` 方法成功完成后。 | 后处理或验证输出、记录成功结果，或执行清理操作。它可以修改最终的输出。 |
-| `onError` | 在 Agent 执行期间抛出错误时。 | 记录错误、发送通知，或实现自定义重试逻辑。它可以向 Agent 发出重试操作的信号。 |
-| `onEnd` | 在 `onSuccess` 或 `onError` 被调用之后。 | 无论结果如何都执行清理操作，例如关闭连接或释放资源。它也可以修改最终输出或触发重试。 |
-| `onSkillStart` | 在当前 Agent 调用一个技能（子 Agent）之前。 | 拦截并记录技能调用，或修改传递给技能的输入。 |
-| `onSkillEnd` | 在一个技能完成其执行（无论成功与否）之后。 | 记录技能的结果或错误，执行特定于该技能的清理，或处理特定于技能的错误。 |
-| `onHandoff` | 当一个 Agent 将控制权移交给另一个 Agent 时。 | 跟踪多 Agent 系统中的控制流，并监控任务在 Agent 之间的委派方式。 |
+```d2 AIGNE 钩子生命周期 icon=material-symbols:account-tree-outline
+direction: down
+style: {
+  font-size: 14
+}
 
-### 钩子优先级
+InvokeAgent: "AIGNE.invoke(agent, input)" {
+  shape: step
+  style.fill: "#D5E8D4"
+}
 
-可以为钩子分配 `priority`，以便在为同一事件注册多个钩子时控制它们的执行顺序。这对于确保某些钩子（如身份验证或验证）在其他钩子之前运行非常有用。
+onStart: "onStart 钩子" {
+  shape: hexagon
+  style.fill: "#F8CECC"
+}
 
-可用的优先级级别有：
-- `high`
-- `medium`
-- `low` (默认)
+InputValidation: "输入 Schema 校验" {
+  shape: step
+}
 
-钩子按从 `high` 到 `low` 的优先级顺序执行。这由 `sortHooks` 工具处理，确保了可预测的执行序列。
+Preprocess: "agent.preprocess()" {
+  shape: step
+}
 
-```typescript
-// 来自 packages/core/src/utils/agent-utils.ts
-const priorities: NonNullable<AgentHooks["priority"]>[] = ["high", "medium", "low"];
+Process: "agent.process()" {
+  shape: rectangle
+  style.fill: "#DAE8FC"
+}
 
-export function sortHooks(hooks: AgentHooks[]): AgentHooks[] {
-  return hooks
-    .slice(0)
-    .sort(({ priority: a = "low" }, { priority: b = "low" }) =>
-      a === b ? 0 : priorities.indexOf(a) - priorities.indexOf(b),
-    );
+Postprocess: "agent.postprocess()" {
+  shape: step
+}
+
+OutputValidation: "输出 Schema 校验" {
+  shape: step
+}
+
+Result: {
+  label: "结果"
+  shape: diamond
+  style.fill: "#E1D5E7"
+}
+
+onSuccess: "onSuccess 钩子" {
+  shape: hexagon
+  style.fill: "#F8CECC"
+}
+
+onError: "onError 钩子" {
+  shape: hexagon
+  style.fill: "#F8CECC"
+}
+
+onEnd: "onEnd 钩子" {
+  shape: hexagon
+  style.fill: "#F8CECC"
+}
+
+ReturnOutput: "返回输出" {
+  shape: step
+  style.fill: "#D5E8D4"
+}
+
+ThrowError: "抛出错误" {
+  shape: step
+  style.fill: "#F8CECC"
+}
+
+InvokeAgent -> onStart -> InputValidation -> Preprocess -> Process
+
+Process -> Postprocess -> OutputValidation -> Result
+
+Result -> "成功" -> onSuccess -> onEnd -> ReturnOutput
+Result -> "失败" -> onError -> onEnd -> ThrowError
+
+subgraph "技能调用 (在 process 内部)" {
+  label: "技能调用 (在 process 内部)"
+  direction: down
+  style.stroke-dash: 2
+
+  onSkillStart: "onSkillStart 钩子" {
+    shape: hexagon
+    style.fill: "#FFF2CC"
+  }
+
+  InvokeSkill: "invokeSkill()" {
+    shape: rectangle
+  }
+
+  onSkillEnd: "onSkillEnd 钩子" {
+    shape: hexagon
+    style.fill: "#FFF2CC"
+  }
+
+  onSkillStart -> InvokeSkill -> onSkillEnd
 }
 ```
+
+## 可用的钩子
+
+钩子在 `AgentHooks` 对象中定义。每个钩子都可以实现为一个函数或一个独立的、专用的 Agent。
+
+<x-field-group>
+  <x-field data-name="onStart" data-type="function | Agent">
+    <x-field-desc markdown>在 Agent 调用的最开始，输入校验之前触发。可用于修改初始的 `input` 或 `options`。</x-field-desc>
+  </x-field>
+  <x-field data-name="onSuccess" data-type="function | Agent">
+    <x-field-desc markdown>在 Agent 的 `process` 方法成功完成且输出已通过校验后触发。可用于转换最终的 `output`。</x-field-desc>
+  </x-field>
+  <x-field data-name="onError" data-type="function | Agent">
+    <x-field-desc markdown>在执行的任何阶段抛出错误时触发。可用于实现自定义错误日志记录，或通过返回 `{ retry: true }` 实现重试机制。</x-field-desc>
+  </x-field>
+  <x-field data-name="onEnd" data-type="function | Agent">
+    <x-field-desc markdown>在 Agent 调用的最末尾触发，无论成功还是失败。适用于清理任务、最终日志记录或指标收集。</x-field-desc>
+  </x-field>
+  <x-field data-name="onSkillStart" data-type="function | Agent">
+    <x-field-desc markdown>在 Agent 调用其某个技能（一个子 Agent）之前触发。这对于追踪 Agent 之间的任务委托很有用。</x-field-desc>
+  </x-field>
+  <x-field data-name="onSkillEnd" data-type="function | Agent">
+    <x-field-desc markdown>在技能调用完成（无论成功或失败）后触发。它会接收到技能的结果或错误。</x-field-desc>
+  </x-field>
+  <x-field data-name="onHandoff" data-type="function | Agent">
+    <x-field-desc markdown>当一个 Agent 的 `process` 方法返回另一个 Agent 实例时触发，这实际上是交出了控制权。这允许监控 Agent 到 Agent 的转移。</x-field-desc>
+  </x-field>
+</x-field-group>
 
 ## 实现钩子
 
-钩子可以通过两种方式实现：作为简单的回调函数，或作为独立的、可复用的 `Agent` 实例。
+可以通过三种方式将钩子附加到 Agent 上：
+1.  在 Agent 实例化时，通过 `AgentOptions` 中的 `hooks` 属性。
+2.  在调用时，通过 `AgentInvokeOptions` 中的 `hooks` 属性。
+3.  在 `AIGNEContext` 实例上全局设置。
 
-### 1. 函数钩子
+### 示例 1：基本日志记录
 
-对于简单的逻辑，你可以直接在 `AgentOptions` 对象中将钩子定义为一个函数。这是使用钩子最常见和最直接的方式。
+这是一个简单的钩子示例，用于记录 Agent 执行的开始和结束。
 
-**示例：一个简单的日志记录钩子**
+```typescript Agent 日志记录钩子 icon=logos:typescript
+import { Agent, AIGNE, type AgentHooks } from "@aigne/core";
 
-此示例演示了一个基本的钩子，用于记录 Agent 执行的开始和结束。
-
-```typescript
-import { Agent, AgentOptions, Message } from "./agent"; // 假设 agent.ts 的路径
-
-// 定义一个日志记录钩子对象
-const loggingHook = {
-  priority: "high",
+// 定义日志记录钩子
+const loggingHook: AgentHooks = {
   onStart: ({ agent, input }) => {
-    console.log(`[INFO] Agent '${agent.name}' started with input:`, JSON.stringify(input));
+    console.log(`[${agent.name}] Starting execution with input:`, input);
   },
-  onEnd: ({ agent, output, error }) => {
+  onEnd: ({ agent, input, output, error }) => {
     if (error) {
-      console.error(`[ERROR] Agent '${agent.name}' failed with error:`, error.message);
+      console.error(`[${agent.name}] Execution failed for input:`, input, "Error:", error);
     } else {
-      console.log(`[INFO] Agent '${agent.name}' succeeded with output:`, JSON.stringify(output));
+      console.log(`[${agent.name}] Execution succeeded with output:`, output);
     }
-  }
+  },
 };
 
-// 创建一个新的 Agent 并附加钩子
-const myAgent = new Agent({
-  name: "DataProcessor",
-  hooks: [loggingHook],
-  // ... 其他 Agent 选项
-});
-```
-
-### 2. Agent 钩子
-
-对于更复杂或可复用的逻辑，你可以将钩子实现为其自己的 `Agent`。这允许你封装钩子逻辑、管理其状态，并在多个 Agent 之间复用它。钩子 Agent 的输入将是事件的有效载荷（例如 `{ agent, input, error }`）。
-
-**示例：一个基于 Agent 的错误处理器**
-
-在这里，`ErrorHandlingAgent` 是一个被设计为 `onError` 钩子的 Agent。它可以包含向监控服务发送警报的逻辑。
-
-```typescript
-import { FunctionAgent, Agent, Message } from "./agent"; // 假设 agent.ts 的路径
-
-// 一个通过发送警报来处理错误的 Agent
-const errorHandlingAgent = new FunctionAgent({
-  name: "ErrorAlerter",
-  process: async ({ agent, error }) => {
-    console.log(`Alert! Agent ${agent.name} encountered an error: ${error.message}`);
-    // 在真实场景中，你可以在这里调用外部监控 API。
-  }
-});
-
-// 一个可能会失败的 Agent
-class RiskyAgent extends Agent<{ command: string }, { result: string }> {
-  async process(input) {
-    if (input.command === "fail") {
-      throw new Error("This operation was designed to fail.");
-    }
-    return { result: "Success!" };
+// 定义一个简单的 Agent
+class MyAgent extends Agent {
+  async process(input: { message: string }) {
+    return { reply: `You said: ${input.message}` };
   }
 }
 
-// 将错误处理 Agent 附加为钩子
-const riskyAgent = new RiskyAgent({
-  name: "RiskyOperation",
-  hooks: [
-    {
-      onError: errorHandlingAgent,
-    }
-  ],
+// 使用钩子实例化 Agent
+const myAgent = new MyAgent({
+  name: "EchoAgent",
+  hooks: [loggingHook],
 });
+
+const aigne = new AIGNE();
+await aigne.invoke(myAgent, { message: "hello" });
+
+// 控制台输出：
+// [EchoAgent] Starting execution with input: { message: 'hello' }
+// [EchoAgent] Execution succeeded with output: { reply: 'You said: hello' }
 ```
 
-## 修改执行流程
+### 示例 2：使用 `onStart` 修改输入
 
-钩子不仅用于观察；它们还可以主动修改 Agent 的执行流程。
+`onStart` 钩子可以返回一个对象来修改 Agent 将接收到的 `input`。
 
-- **修改输入**：`onStart` 钩子可以返回一个带有新 `input` 属性的对象，该属性将替换传递给 Agent 的 `process` 方法的原始输入。
-- **修改输出**：`onSuccess` 或 `onEnd` 钩子可以返回一个带有新 `output` 属性的对象，该属性将替换 Agent 的原始结果。
-- **触发重试**：`onError` 或 `onEnd` 钩子可以返回 `{ retry: true }` 来指示 Agent 重新运行其 `process` 方法。这对于处理瞬时错误很有用。
+```typescript 修改 Agent 输入 icon=logos:typescript
+import { Agent, AIGNE, type AgentHooks } from "@aigne/core";
 
-**示例：输入转换和重试逻辑**
-
-```typescript
-import { Agent, AgentOptions, Message } from "./agent"; // 假设 agent.ts 的路径
-
-const transformationAndRetryHook = {
+const inputModificationHook: AgentHooks = {
   onStart: ({ input }) => {
-    // 在处理前标准化输入
-    const transformedInput = { ...input, data: input.data.toLowerCase() };
-    return { input: transformedInput };
+    // 向输入消息中添加时间戳
+    const newInput = {
+      ...input,
+      timestamp: new Date().toISOString(),
+    };
+    return { input: newInput };
   },
-  onError: ({ error }) => {
-    // 遇到网络错误时重试
-    if (error.message.includes("network")) {
-      console.log("Network error detected. Retrying...");
-      return { retry: true };
-    }
-  }
 };
 
-const myAgent = new Agent({
-  name: "NetworkAgent",
-  hooks: [transformationAndRetryHook],
-  // ... 其他 Agent 选项
+class GreeterAgent extends Agent {
+  async process(input: { name: string; timestamp?: string }) {
+    return { greeting: `Hello, ${input.name}! (processed at ${input.timestamp})` };
+  }
+}
+
+const agent = new GreeterAgent({ hooks: [inputModificationHook] });
+
+const aigne = new AIGNE();
+const result = await aigne.invoke(agent, { name: "Alice" });
+
+console.log(result);
+// {
+//   greeting: "Hello, Alice! (processed at 2023-10-27T10:00:00.000Z)"
+// }
+```
+
+### 示例 3：使用 `onError` 自定义重试
+
+`onError` 钩子可以返回 `{ retry: true }` 来通知 AIGNE 应重新尝试 Agent 的 `process` 方法。这对于处理暂时性故障很有用。
+
+```typescript 自定义重试钩子 icon=logos:typescript
+import { Agent, AIGNE, type AgentHooks } from "@aigne/core";
+
+let attempt = 0;
+
+const retryHook: AgentHooks = {
+  onError: ({ agent, error }) => {
+    console.log(`[${agent.name}] Attempt failed: ${error.message}. Retrying...`);
+    // 返回 true 以表示重试，但仅限前 2 次尝试
+    if (attempt < 2) {
+      return { retry: true };
+    }
+    // 不返回任何内容，让错误继续传播
+  },
+};
+
+class UnreliableAgent extends Agent {
+  async process() {
+    attempt++;
+    if (attempt <= 2) {
+      throw new Error("Service temporarily unavailable");
+    }
+    return { status: "OK" };
+  }
+}
+
+const agent = new UnreliableAgent({ hooks: [retryHook] });
+
+const aigne = new AIGNE();
+const result = await aigne.invoke(agent, {});
+
+console.log(result); // { status: 'OK' }
+```
+
+这个 Agent 会失败两次，`retryHook` 会拦截错误并每次都触发重试。在第三次尝试时，Agent 成功执行。
+
+## 钩子优先级
+
+钩子可以在 Agent 上、在调用时以及在上下文中定义。为了管理执行顺序，钩子可以设置一个 `priority` 属性，其值为 `"high"`、`"medium"` 或 `"low"`（默认值）。
+
+钩子按其优先级顺序执行：`high` > `medium` > `low`。
+
+```typescript 钩子优先级示例 icon=logos:typescript
+const highPriorityHook: AgentHooks = {
+  priority: 'high',
+  onStart: () => console.log('High priority hook executed.'),
+};
+
+const mediumPriorityHook: AgentHooks = {
+  priority: 'medium',
+  onStart: () => console.log('Medium priority hook executed.'),
+};
+
+const lowPriorityHook: AgentHooks = {
+  // priority 默认为 'low'
+  onStart: () => console.log('Low priority hook executed.'),
+};
+
+class MonitoredAgent extends Agent {
+  async process(input: {}) {
+    console.log('Agent processing...');
+    return { success: true };
+  }
+}
+
+const agent = new MonitoredAgent({
+  hooks: [lowPriorityHook, highPriorityHook, mediumPriorityHook],
 });
+
+const aigne = new AIGNE();
+await aigne.invoke(agent, {});
+
+
+// 控制台输出：
+// High priority hook executed.
+// Medium priority hook executed.
+// Low priority hook executed.
+// Agent processing...
 ```
 
-## 声明式配置 (YAML)
+当一个钩子的逻辑依赖于另一个钩子的结果时，这种可预测的执行顺序至关重要。
 
-钩子也可以在 YAML 配置文件中以声明方式定义，这在使用 AIGNE CLI 时特别有用。你可以内联定义钩子或从其他文件中引用它们。
+## 总结
 
-**`test-agent-with-hooks.yaml` 示例**
-
-此示例展示了一个使用多种钩子的团队 Agent，包括一个内联 AI Agent 和在外部文件 (`test-hooks.yaml`) 中定义的钩子。
-
-```yaml
-# 来自: packages/core/test-agents/test-agent-with-hooks.yaml
-type: team
-name: test_agent_with_default_input
-hooks:
-  priority: high
-  on_start:
-    type: ai
-    name: test_hooks_inline # 一个作为钩子的内联 Agent
-  on_success: test-hooks.yaml # 引用外部钩子定义
-  on_error: test-hooks.yaml
-  on_end: test-hooks.yaml
-  on_skill_start: test-hooks.yaml
-  on_skill_end: test-hooks.yaml
-  on_handoff: test-hooks.yaml
-skills:
-  - url: ./test-agent-with-default-input-skill.yaml
-    hooks:
-      # 钩子也可以附加到特定的技能上
-      on_start: test-hooks.yaml
-  - type: ai
-    name: test_agent_with_default_input_skill2.yaml
-    hooks:
-      on_start: test-hooks.yaml
-```
-
-这种声明式方法可以实现关注点的清晰分离，将 Agent 的逻辑与日志记录、安全和错误处理等横切关注点解耦。
+钩子是构建健壮且可观察的基于 Agent 的系统的重要工具。它们提供了一种清晰、非侵入性的方式，为您的 Agent 添加诸如日志记录、性能监测和弹性模式等横切关注点。通过理解 Agent 的生命周期和每个钩子的功能，您可以创建出复杂的、生产就绪的 AI 应用程序。

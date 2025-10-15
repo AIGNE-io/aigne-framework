@@ -1,235 +1,132 @@
-本文件詳細介紹 `AIGNE` 類別，此類別是 AIGNE 框架中的核心協調器。您將學習如何建立、設定和使用 `AIGNE` 執行個體來管理 Agent、處理訊息傳遞，以及建構複雜的人工智慧驅動應用程式。
+# 總覽
 
-### 簡介
+AIGNE 框架是一個功能性 AI 應用程式開發框架，旨在簡化並加速建構可擴展、Agent 式 AI 應用程式的過程。它結合了函式程式設計概念、強大的人工智慧功能和模組化設計，為開發者提供一個結構化的環境。
 
-`AIGNE` 類別是此框架的核心元件，旨在協調多個 Agent 及其互動。它作為主要的執行引擎，管理 Agent 的生命週期，透過訊息佇列促進通訊，並為呼叫 Agent 工作流程提供統一的入口點。
+本文件提供了 AIGNE 框架的架構、核心元件和主要功能的高階概覽。它同時也作為一份導航指南，根據您的技術背景和目標，引導您至合適的文件路徑。
 
-`AIGNE` 類別的主要職責包括：
--   **Agent 管理**：載入、新增和管理構成應用程式的 Agent。
--   **執行情境**：為每個工作流程建立隔離的情境，以管理狀態並強制執行限制。
--   **呼叫**：提供一個靈活的 `invoke` 方法與 Agent 互動，支援標準回應和串流回應。
--   **訊息傳遞**：提供一個發布-訂閱系統，用於 Agent 之間的解耦通訊。
--   **資源管理**：確保 Agent 及相關資源的正常關閉。
+## 核心架構
 
-### 架構概覽
-
-`AIGNE` 類別位於框架的核心，協調各個元件以執行複雜的任務。下圖說明了它在架構中的核心角色。
+此框架的架構設計圍繞著一個稱為 `AIGNE` 的中央協調器，它負責管理稱為 `Agents` 的各種專用元件的生命週期和互動。`Agents` 是工作的基本單位，旨在執行特定任務。它們可以組成團隊來處理複雜的工作流程。
 
 ```d2
 direction: down
-
-User-Application: {
-  label: "使用者應用程式"
-  shape: rectangle
+style: {
+  font-size: 14
 }
 
-AIGNE-Framework: {
-  label: "AIGNE 框架"
+AIGNE: {
+  label: "AIGNE"
+  tooltip: "協調 Agent 和工作流程的中央執行引擎。"
+  shape: hexagon
+  style: {
+    fill: "#F0F4EB"
+    stroke: "#C2D7A7"
+    stroke-width: 2
+  }
+}
+
+Models: {
+  label: "AI 模型"
+  tooltip: "與外部語言和圖像模型（例如 OpenAI、Anthropic）的介面。"
+  shape: cylinder
+  style: {
+    fill: "#FEF7E8"
+    stroke: "#F7D8A3"
+    stroke-width: 2
+  }
+}
+
+Agents: {
+  shape: package
+  label: "Agents"
+  tooltip: "執行任務的專用工作單位。"
+  style: {
+    fill: "#EBF5FB"
+    stroke: "#AED6F1"
+    stroke-width: 2
+  }
+
+  AIAgent: {
+    label: "AI Agent"
+    tooltip: "與語言模型互動。"
+  }
+  TeamAgent: {
+    label: "Team Agent"
+    tooltip: "協調多個 Agent。"
+  }
+  FunctionAgent: {
+    label: "Function Agent"
+    tooltip: "包裝自訂程式碼。"
+  }
+  OtherAgents: {
+    label: "..."
+    tooltip: "其他專用 Agent，如 ImageAgent、MCPAgent 等。"
+  }
+}
+
+Skills: {
+  label: "技能與工具"
+  tooltip: "可供 Agent 使用的可重用函式或外部工具。"
   shape: rectangle
   style: {
-    stroke: "#888"
+    fill: "#F4ECF7"
+    stroke: "#D7BDE2"
     stroke-width: 2
-    stroke-dash: 4
-  }
-
-  AIGNE: {
-    label: "AIGNE 類別\n(核心協調器)"
-    icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-  }
-
-  Managed-Components: {
-    grid-columns: 2
-
-    Agents: {
-      label: "受管理的 Agent"
-      shape: rectangle
-      Agent-A: "Agent A"
-      Agent-B: "Agent B"
-      Agent-C: "..."
-    }
-
-    Message-Queue: {
-      label: "訊息佇列\n(發布/訂閱)"
-      shape: queue
-    }
   }
 }
 
-User-Application -> AIGNE-Framework.AIGNE: "invoke()"
-AIGNE-Framework.AIGNE -> AIGNE-Framework.Managed-Components.Agents: "Agent 管理"
-AIGNE-Framework.AIGNE -> AIGNE-Framework.Managed-Components.Message-Queue: "訊息傳遞"
-AIGNE-Framework.AIGNE -> AIGNE-Framework.AIGNE: "建立執行情境"
-AIGNE-Framework.Managed-Components.Agents.Agent-A <-> AIGNE-Framework.Managed-Components.Message-Queue: "通訊"
-
+AIGNE -> Agents: 管理與叫用
+Agents -> Models: 利用
+Agents -> Skills: 使用
 ```
 
-### 建立執行個體
+-   **AIGNE**：中央執行引擎，負責管理 Agent 的生命週期、協調其互動並處理整體執行流程。它透過一個可包含模型、Agent 和技能的組態進行實例化。
+-   **Agents**：框架的基本建構組塊。一個 Agent 是一個執行特定任務的自主單位。框架提供了幾種專門的 Agent 類型，包括用於與語言模型互動的 `AIAgent`、用於協調多個 Agent 的 `TeamAgent`，以及用於執行自訂程式碼的 `FunctionAgent`。
+-   **Models**：與 OpenAI、Anthropic 和 Google 等外部 AI 模型供應商介接的抽象層。Agent 使用這些模型來利用大型語言模型（LLM）和圖像生成模型的能力。
+-   **Skills**：可重用的功能，通常以函式或其他 Agent 的形式呈現，可以附加到 Agent 上以擴展其功能。
 
-您可以透過兩種主要方式建立 `AIGNE` 執行個體：直接使用其建構函式，或從檔案系統載入設定。
+## 主要功能
 
-#### 1. 使用建構函式
+AIGNE 框架具備一套全面的功能，以支援開發複雜的 AI 應用程式。
 
-最直接的方法是使用 `AIGNEOptions` 物件來實例化該類別。這讓您能以程式化的方式定義引擎的所有方面，例如全域模型、Agent 和技能。
+<x-cards data-columns="2">
+  <x-card data-title="模組化設計" data-icon="lucide:blocks">
+    清晰的模組化結構讓開發者能有效組織程式碼，從而提高開發效率並簡化維護。
+  </x-card>
+  <x-card data-title="支援多種 AI 模型" data-icon="lucide:bot">
+    內建支援多種主流 AI 模型，包括 OpenAI、Google 和 Anthropic 的模型，並採用可擴展的設計以支援其他模型。
+  </x-card>
+  <x-card data-title="彈性的工作流程模式" data-icon="lucide:git-merge">
+    原生支援循序、並行和路由等多種工作流程模式，以滿足複雜的應用程式需求。
+  </x-card>
+  <x-card data-title="支援 TypeScript" data-icon="lucide:file-type">
+    提供全面的 TypeScript 型別定義，確保型別安全並提升整體開發者體驗。
+  </x-card>
+  <x-card data-title="程式碼執行" data-icon="lucide:terminal-square">
+    支援在安全的沙箱環境中執行動態產生的程式碼，實現強大的自動化功能。
+  </x-card>
+  <x-card data-title="整合 MCP 協定" data-icon="lucide:plug-zap">
+    透過模型內容協定（MCP）無縫整合外部系統和服務。
+  </x-card>
+</x-cards>
 
-**參數 (`AIGNEOptions`)**
+## 如何使用本文件
 
-| 參數 | 類型 | 說明 |
-| :--- | :--- | :--- |
-| `name` | `string` | AIGNE 執行個體的名稱。 |
-| `description` | `string` | 執行個體用途的說明。 |
-| `model` | `ChatModel` | 供所有未指定模型的 Agent 使用的全域模型。 |
-| `imageModel` | `ImageModel` | 用於處理圖片相關任務的選用全域圖片模型。 |
-| `skills` | `Agent[]` | 此執行個體可用的技能 Agent 列表。 |
-| `agents` | `Agent[]` | 由該執行個體管理的主要 Agent 列表。 |
-| `limits` | `ContextLimits` | 執行情境的使用限制，例如超時或最大 token 數。 |
-| `observer` | `AIGNEObserver` | 用於監控和記錄的觀察者。 |
+為滿足不同需求，本文件分為兩條主要路徑。請選擇最符合您角色和目標的路徑。
 
-**範例**
+<x-cards data-columns="2">
+  <x-card data-title="開發者指南" data-icon="lucide:code" data-href="/developer-guide/getting-started" data-cta="開始建構">
+    適用於工程師和開發者。本指南提供技術深入探討、程式碼優先的範例、API 參考資料，以及使用 AIGNE 框架建構、測試和部署 Agent 式應用程式所需的一切。
+  </x-card>
+  <x-card data-title="使用者指南" data-icon="lucide:user" data-href="/user-guide" data-cta="學習概念">
+    適用於非技術使用者、產品經理和業務相關人員。本指南以淺顯的語言解釋 AI Agent 和工作流程的核心概念，著重於潛在應用和業務成果，不涉及技術術語。
+  </x-card>
+</x-cards>
 
-```typescript
-import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+## 總結
 
-// 1. 建立一個模型執行個體
-const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: "gpt-4-turbo",
-});
+本總覽介紹了 AIGNE 框架、其核心架構及主要功能。該框架是一套用於建構現代、基於 Agent 的 AI 應用程式的綜合工具集。
 
-// 2. 定義一個 Agent
-const assistantAgent = AIAgent.from({
-  name: "Assistant",
-  instructions: "You are a helpful assistant.",
-});
-
-// 3. 建立一個 AIGNE 執行個體
-const aigne = new AIGNE({
-  model: model,
-  agents: [assistantAgent],
-  name: "MyFirstAIGNE",
-});
-```
-
-#### 2. 從設定檔載入
-
-對於更複雜的應用程式，您可以在 YAML 檔案中定義您的 AIGNE 設定，並使用靜態 `AIGNE.load()` 方法載入它。這種方法將設定與程式碼分離，使您的應用程式更具模組化。
-
-```typescript
-import { AIGNE } from '@aigne/core';
-
-// 假設您在 './my-aigne-app' 目錄中有一個 `aigne.yaml` 檔案
-async function loadAigne() {
-  const aigne = await AIGNE.load('./my-aigne-app');
-  console.log(`AIGNE instance "${aigne.name}" loaded successfully.`);
-  return aigne;
-}
-```
-
-### 核心方法
-
-`AIGNE` 類別提供了一套強大的方法來管理 Agent 並與之互動。
-
-#### `invoke()`
-
-`invoke` 方法是與 Agent 互動的主要方式。它支援多種模式，包括建立持續的使用者會話、發送單一訊息以及串流回應。
-
-**1. 建立一個 User Agent**
-
-在沒有訊息的情況下呼叫一個 Agent，會建立一個 `UserAgent`，它會維護一個一致的互動情境。
-
-```typescript
-// 建立一個 UserAgent 以便與 'assistantAgent' 進行持續互動
-const userAgent = aigne.invoke(assistantAgent);
-
-// 現在您可以透過 userAgent 發送多則訊息
-const response1 = await userAgent.invoke("Hello, what's your name?");
-const response2 = await userAgent.invoke("Can you help me with a task?");
-```
-
-**2. 發送單一訊息（請求-回應）**
-
-對於簡單的一次性互動，您可以直接傳遞 Agent 和訊息。
-
-```typescript
-const response = await aigne.invoke(
-  assistantAgent,
-  "Write a short poem about AI.",
-);
-console.log(response);
-```
-
-**3. 串流回應**
-
-若要以區塊串流的形式接收回應，請將 `streaming` 選項設為 `true`。這對於像聊天機器人這樣的即時應用程式非常理想。
-
-```typescript
-const stream = await aigne.invoke(
-  assistantAgent,
-  "Tell me a long story.",
-  { streaming: true }
-);
-
-for await (const chunk of stream) {
-  // 在故事的每個片段到達時進行處理
-  process.stdout.write(chunk.delta.text?.content || "");
-}
-```
-
-#### `addAgent()`
-
-您可以在 `AIGNE` 執行個體建立後動態地向其新增 Agent。該 Agent 將被附加到執行個體的生命週期和通訊系統中。
-
-```typescript
-const newAgent = AIAgent.from({ name: "NewAgent", instructions: "..." });
-aigne.addAgent(newAgent);
-```
-
-#### `publish()` & `subscribe()`
-
-此框架包含一個用於 Agent 之間解耦通訊的訊息佇列。Agent 可以將訊息發布到主題，而其他 Agent 可以訂閱這些主題以接收訊息。
-
-**發布訊息**
-
-```typescript
-// 將訊息發布到 'news_updates' 主題
-aigne.publish("news_updates", {
-  headline: "AIGNE Framework v2.0 Released",
-  content: "New features include...",
-});
-```
-
-**訂閱主題**
-
-您可以訂閱一個主題以接收單一訊息，或設定一個持續的監聽器。
-
-```typescript
-// 1. 等待主題上的下一則訊息
-const nextMessage = await aigne.subscribe('user_actions');
-console.log('Received action:', nextMessage);
-
-// 2. 為主題上的所有訊息設定一個監聽器
-const unsubscribe = aigne.subscribe('system_events', (payload) => {
-  console.log(`System Event: ${payload.message.type}`);
-});
-
-// 之後若要停止監聽：
-unsubscribe();
-```
-
-#### `shutdown()`
-
-為確保乾淨地退出，`shutdown` 方法會優雅地終止所有 Agent 和技能，並清理它們持有的任何資源。
-
-```typescript
-await aigne.shutdown();
-console.log("AIGNE instance has been shut down.");
-```
-
-這也可以使用現代 JavaScript/TypeScript 中的 `Symbol.asyncDispose` 功能來自動管理。
-
-```typescript
-async function run() {
-  await using aigne = new AIGNE({ ... });
-  // ... 使用 aigne 執行個體 ...
-} // aigne.shutdown() 會在此處自動呼叫
-```
+關於下一步，我們建議如下：
+-   **開發者**：請前往 [開始使用](./developer-guide-getting-started.md) 指南，進行動手實作教學。
+-   **非技術使用者**：請從 [什麼是 AIGNE？](./user-guide-what-is-aigne.md) 開始，進行概念性介紹。

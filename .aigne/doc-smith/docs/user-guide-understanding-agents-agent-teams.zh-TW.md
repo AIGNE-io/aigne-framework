@@ -1,216 +1,102 @@
-# Team Agent
+# Agent 團隊
 
-`TeamAgent` 是一種專門的 Agent，可編排一組其他 Agent (稱為「技能」) 來執行複雜的任務。它管理這些 Agent 如何協同工作，並處理它們之間的資訊流。
+雖然單一、專業的 Agent 對於特定任務很有用，但有些問題對於單一 Agent 來說過於龐大或複雜，無法獨自處理。就像在人類組織中一樣，當一項任務需要多個步驟或多樣化的技能時，您會組建一個團隊。在 AIGNE 中，Agent 團隊是一群被組織起來協作解決更大目標的 Agent。
 
-您可以設定 `TeamAgent` 以兩種主要方式執行其技能：
-- **循序模式**：Agent 依序執行，一個 Agent 的輸出會成為下一個 Agent 的輸入。這非常適合用於建立多步驟的工作流程。
-- **並行模式**：所有 Agent 使用相同的輸入同時執行，其輸出會被合併。這適用於需要一次產生多個獨立資訊片段的任務。
+可以這樣想：如果一個 [基本 Agent](./user-guide-understanding-agents-basic-agents.md) 就像一位平面設計師這樣的專家，那麼一個 Agent 團隊就是整個行銷部門，包括文案撰寫員、策略師和設計師，他們共同為一個行銷活動而努力。
 
-除了基本的編排功能，`TeamAgent` 還提供進階功能，例如：
-- **迭代**：自動處理輸入陣列中的每個項目，適用於批次處理。
-- **反思**：使用「審查者」Agent 來驗證並迭代修正團隊的輸出，直到符合特定標準為止，從而實現自我修正的工作流程。
+## Agent 團隊如何協作
 
-這些功能的組合使 `TeamAgent` 成為一個強大的工具，可用於建構複雜、多步驟且資料密集的精密多 Agent 系統。
+根據任務的性質，Agent 團隊可以被設定以不同的方式協同工作。兩種主要的協作模式是循序式和平行式。
 
-## 運作方式
+### 循序式工作流程：裝配線
 
-`TeamAgent` 接收一個輸入，根據設定的模式將其傳遞給其技能 Agent 團隊，然後將結果匯總成最終輸出。下圖說明了不同的處理流程。
+在循序式工作流程中，Agent 按照特定順序一個接一個地執行任務。第一個 Agent 的輸出成為第二個 Agent 的輸入，依此類推，就像一條裝配線。這種方法非常適合每個步驟都依賴於前一步驟完成的流程。
+
+例如，要撰寫一篇部落格文章，一個團隊可能會這樣工作：
+1.  **研究員 Agent：** 蒐集有關主題的資訊和關鍵事實。
+2.  **撰寫員 Agent：** 根據研究結果撰寫部落格文章草稿。
+3.  **編輯員 Agent：** 審查草稿的文法和風格，並提供最終版本。
+
+### 平行式工作流程：腦力激盪會議
+
+在平行式工作流程中，團隊中的所有 Agent 會同時處理相同的初始輸入。每個 Agent 獨立執行其專業任務，然後將它們各自的輸出結合起來，形成最終結果。這類似於一場腦力激盪會議，不同的專家同時對一個問題貢獻他們獨特的觀點。
+
+例如，要分析市場情緒，一個團隊可以平行工作：
+*   **輸入：** 一家公司的名稱。
+*   **社群媒體 Agent：** 掃描 Twitter 上的提及。
+*   **新聞 Agent：** 搜尋最近的新聞文章。
+*   **金融 Agent：** 查詢近期的股票表現。
+*   **輸出：** 將所有三份報告合併成一份單一、全面的市場分析。
+
+### 反思：品質保證循環
+
+一個更進階的模式是「反思」，它引入了一個品質控制步驟。在這個模型中，團隊完成其任務，然後由一個特殊的 **審查員 Agent** 檢查輸出。
+
+*   如果工作成果符合要求的標準，審查員會批准它，流程就完成了。
+*   如果工作成果不令人滿意，審查員會提供回饋並將其送回團隊再次嘗試。
+
+這個循環會一直持續，直到輸出被批准或達到最大嘗試次數為止。它透過將審查和改進的循環直接建構到工作流程中，來確保更高品質的結果。
+
+下圖說明了這三種主要的協作模式。
 
 ```d2
 direction: down
 
-Input
-
-TeamAgent: {
-  label: "Team Agent 編排"
-  shape: rectangle
+Sequential-Workflow: {
+  label: "循序式工作流程：裝配線"
   style.stroke-dash: 2
 
-  Sequential-Mode: {
-    label: "循序模式"
-    shape: rectangle
-    style.fill: "#f0f8ff"
-    Skill-A: "技能 A"
-    Skill-B: "技能 B"
-    Skill-C: "技能 C"
-    Skill-A -> Skill-B -> Skill-C
-  }
+  Input: { shape: oval }
+  Researcher: "研究員 Agent"
+  Writer: "撰寫員 Agent"
+  Editor: "編輯員 Agent"
+  Output: { label: "最終版本"; shape: oval }
 
-  Parallel-Mode: {
-    label: "並行模式"
-    shape: rectangle
-    style.fill: "#f0fff0"
-    Skill-X: "技能 X"
-    Skill-Y: "技能 Y"
-    Skill-Z: "技能 Z"
-    Combine-Results: "合併結果"
-    Skill-X -> Combine-Results
-    Skill-Y -> Combine-Results
-    Skill-Z -> Combine-Results
-  }
-
-  Advanced-Workflow: {
-    label: "進階工作流程 (反思與迭代)"
-    shape: rectangle
-    style.fill: "#fff8f0"
-    Process-Item: {
-      label: "對於輸入陣列中的每個項目..."
-      shape: rectangle
-      style.stroke-dash: 2
-      Team-Execution: "團隊執行\n(循序或並行)"
-      Initial-Output: "初始輸出"
-      Reviewer-Agent: "審查者 Agent"
-      Meets-Criteria: {
-        label: "符合標準？"
-        shape: diamond
-      }
-      Team-Execution -> Initial-Output
-      Initial-Output -> Reviewer-Agent
-      Reviewer-Agent -> Meets-Criteria
-      Meets-Criteria -> Team-Execution: "否，修正"
-    }
-  }
+  Input -> Researcher: "主題"
+  Researcher -> Writer: "研究成果"
+  Writer -> Editor: "草稿"
+  Editor -> Output: "批准的文章"
 }
 
-Final-Output
+Parallel-Workflow: {
+  label: "平行式工作流程：腦力激盪會議"
+  style.stroke-dash: 2
 
-Input -> TeamAgent.Sequential-Mode.Skill-A: "單一輸入"
-TeamAgent.Sequential-Mode.Skill-C -> Final-Output
+  Input: { label: "公司名稱"; shape: oval }
+  Social-Media: "社群媒體 Agent"
+  News: "新聞 Agent"
+  Financial: "金融 Agent"
+  Output: { label: "綜合市場分析"; shape: oval }
 
-Input -> TeamAgent.Parallel-Mode.Skill-X
-Input -> TeamAgent.Parallel-Mode.Skill-Y
-Input -> TeamAgent.Parallel-Mode.Skill-Z
-TeamAgent.Parallel-Mode.Combine-Results -> Final-Output
+  Input -> Social-Media
+  Input -> News
+  Input -> Financial
+  Social-Media -> Output: "提及"
+  News -> Output: "文章"
+  Financial -> Output: "股票數據"
+}
 
-Input -> TeamAgent.Advanced-Workflow.Process-Item.Team-Execution: "輸入陣列"
-TeamAgent.Advanced-Workflow.Process-Item.Meets-Criteria -> Final-Output: "是"
+Reflection-Workflow: {
+  label: "反思：品質保證循環"
+  style.stroke-dash: 2
 
+  Team: "Agent 團隊"
+  Task-Output: "任務輸出"
+  Reviewer: {
+    label: "審查員 Agent"
+    shape: diamond
+  }
+  Final-Output: { label: "最終批准的輸出"; shape: oval }
+
+  Team -> Task-Output
+  Task-Output -> Reviewer
+  Reviewer -> Final-Output: "已批准"
+  Reviewer -> Team: "需要修訂\n（回饋）"
+}
 ```
 
-## 設定
+## 總結
 
-您可以使用以下選項設定 `TeamAgent`。
+透過將 Agent 組織成團隊，您可以自動化更複雜、多步驟的工作流程。這種協作方法能夠建立複雜的解決方案，以模擬真實世界的業務流程，從內容創作流程到數據分析和品質保證檢查。
 
-### 基本設定
-
-<x-field-group>
-  <x-field data-name="name" data-type="string" data-required="true" data-desc="Agent 的唯一識別碼。"></x-field>
-  <x-field data-name="description" data-type="string" data-required="false" data-desc="Agent 用途的簡要說明。"></x-field>
-  <x-field data-name="skills" data-type="Agent[]" data-required="true" data-desc="此團隊將編排的 Agent 實例陣列。"></x-field>
-  <x-field data-name="mode" data-type="ProcessMode" data-default="sequential" data-desc="處理模式。可為 `sequential` (循序執行) 或 `parallel` (同步執行)。"></x-field>
-  <x-field data-name="input_schema" data-type="object" data-required="false" data-desc="定義預期輸入格式的 JSON 結構描述。"></x-field>
-  <x-field data-name="output_schema" data-type="object" data-required="false" data-desc="定義預期輸出格式的 JSON 結構描述。"></x-field>
-</x-field-group>
-
-### 進階功能
-
-<x-field-group>
-    <x-field data-name="reflection" data-type="ReflectionMode" data-required="false" data-desc="啟用迭代的審查與修正流程以提高輸出品質。詳情請參閱「反思」一節。"></x-field>
-    <x-field data-name="iterateOn" data-type="string" data-required="false" data-desc="要迭代的輸入欄位名稱 (必須是陣列)。團隊會個別處理陣列中的每個項目。"></x-field>
-    <x-field data-name="concurrency" data-type="number" data-default="1" data-desc="使用 `iterateOn` 時，此設定可指定並行處理的最大項目數。"></x-field>
-    <x-field data-name="iterateWithPreviousOutput" data-type="boolean" data-default="false" data-desc="若為 `true`，處理 `iterateOn` 陣列中一個項目的輸出會被合併回去，並可供下一個項目的處理使用。需要將 `concurrency` 設為 1。"></x-field>
-    <x-field data-name="includeAllStepsOutput" data-type="boolean" data-default="false" data-desc="在 `sequential` 模式下，若為 `true`，則每個中間 Agent 的輸出都會包含在最終結果中，而不僅僅是最後一個。這對於偵錯很有用。"></x-field>
-</x-field-group>
-
----
-
-## 核心概念
-
-### 處理模式
-
-`mode` 屬性決定了團隊內 Agent (技能) 的執行流程。
-
-#### 循序模式
-
-在 `sequential` 模式下，Agent 會按照它們在 `skills` 陣列中定義的順序逐一執行。每個 Agent 的輸出會與原始輸入以及所有先前 Agent 的輸出合併，形成鏈中下一個 Agent 的輸入。
-
-此模式非常適合用於建構每一步都基於上一步的工作流程，例如資料處理、分析和報告的流程。
-
-**範例流程 (`sequential`)：**
-1.  **Agent 1** 收到初始輸入 `{ "topic": "AI" }`。
-2.  **Agent 1** 產生輸出 `{ "research": "..." }`。
-3.  **Agent 2** 收到合併後的輸入 `{ "topic": "AI", "research": "..." }`。
-4.  **Agent 2** 產生輸出 `{ "summary": "..." }`。
-5.  最終輸出為 `{ "topic": "AI", "research": "...", "summary": "..." }`。
-
-#### 並行模式
-
-在 `parallel` 模式下，`skills` 陣列中的所有 Agent 會同時執行。每個 Agent 都會收到完全相同的初始輸入。然後，它們的輸出會被合併以形成最終結果。如果多個 Agent 產生具有相同鍵的輸出，系統會決定哪個 Agent「擁有」該鍵以避免衝突。
-
-此模式對於可以同時進行多個獨立工作的任務非常高效，例如從不同來源收集資訊或對同一個資料集進行不同的分析。
-
-**範例流程 (`parallel`)：**
-1.  **Agent A** 和 **Agent B** 都收到初始輸入 `{ "company": "Initech" }`。
-2.  **Agent A** 產生 `{ "financials": "..." }`。
-3.  **Agent B** 產生 `{ "news": "..." }`。
-4.  最終輸出是兩者的組合：`{ "financials": "...", "news": "..." }`。
-
-### 迭代
-
-`iterateOn` 功能可實現批次處理。透過指定一個包含陣列的輸入欄位，您可以指示 `TeamAgent` 對該陣列中的每個項目執行其完整的工作流程 (循序或並行)。
-
--   **`concurrency`**：您可以控制一次處理多少個項目。例如，`concurrency: 5` 將並行處理陣列中的五個項目。
--   **`iterateWithPreviousOutput`**：當設定為 `true` (且 `concurrency` 為 1) 時，處理項目 `N` 的輸出會被合併到項目 `N+1` 的資料中。這會產生一種累積效應，適用於每一步都依賴於上一步的任務，例如建構敘事或總結一系列事件。
-
-**YAML 範例 (`iterateOn`)**
-此設定會處理來自 `sections` 輸入欄位的陣列，並行數為 2。
-
-```yaml
-# sourceId: packages/core/test-agents/team.yaml
-type: team
-name: test-team-agent
-description: Test team agent
-skills:
-  - sandbox.js
-  - chat.yaml
-mode: parallel
-input_schema:
-  type: object
-  properties:
-    sections:
-      type: array
-      description: Sections to iterate over
-      items:
-        type: object
-        properties:
-          title:
-            type: string
-          description:
-            type: string
-output_schema:
-  type: object
-  properties:
-    sections:
-      type: array
-      description: Results from each section
-      items:
-        type: object
-        properties:
-          title:
-            type: string
-          description:
-            type: string
-iterate_on: sections
-concurrency: 2
-iterate-with-previous-output: false
-include-all-steps-output: true
-```
-
-### 反思
-
-反思提供了一種自我修正和品質控制的機制。啟用後，`TeamAgent` 的初始輸出會被傳遞給一個指定的 `reviewer` Agent。此審查者會根據一組標準評估輸出。
-
--   如果輸出被核准，流程即告結束。
--   如果輸出未被核准，審查者的回饋會被加到上下文中，而原始的 Agent 團隊會再次執行以產生修正後的輸出。
-
-此循環會一直持續，直到輸出被核准或達到 `maxIterations` 的上限為止。
-
-`reflection` 設定需要：
-<x-field-group>
-    <x-field data-name="reviewer" data-type="Agent" data-required="true" data-desc="負責評估團隊輸出的 Agent。"></x-field>
-    <x-field data-name="isApproved" data-type="string | (output: Message) => boolean" data-required="true" data-desc="用於判斷輸出是否被核准的條件。可以是審查者輸出中的欄位名稱 (例如 `is_complete`) 或是一個函式，核准時回傳 `true`。"></x-field>
-    <x-field data-name="maxIterations" data-type="number" data-default="3" data-desc="停止前審查-修正循環的最大次數。"></x-field>
-    <x-field data-name="returnLastOnMaxIterations" data-type="boolean" data-default="false" data-desc="若為 `true`，Agent 在達到 `maxIterations` 後即使輸出未被核准，仍會回傳最後一次產生的輸出。若為 `false`，則會拋出錯誤。"></x-field>
-</x-field-group>
-
-此功能對於需要高準確度、遵守特定格式或可由另一個 Agent 自動進行複雜驗證的任務非常強大。
+要了解這些概念的實際應用，請探索我們的 [常見工作流程](./user-guide-common-workflows.md) 指南，其中提供了 Agent 團隊解決實際問題的實用範例。有關實作的技術細節，開發者可以參考 [團隊 Agent 文件](./developer-guide-agents-team-agent.md)。

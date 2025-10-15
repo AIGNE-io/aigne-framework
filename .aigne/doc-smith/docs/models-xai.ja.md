@@ -1,107 +1,101 @@
-# @aigne/xai
+# xAI
 
-`@aigne/xai` パッケージは、AIGNE フレームワークと XAI の言語モデル（Grokなど）とのシームレスな統合を提供します。AIGNE アプリケーション内で XAI の高度な AI 機能を活用するための標準化されたインターフェースを提供し、一貫した開発体験を保証します。
+このガイドでは、AIGNE フレームワーク内で xAI の言語モデル、具体的には Grok を設定して使用するための手順を説明します。必要なパッケージのインストール、API キーの設定、モデルのインスタンス化、そして標準呼び出しとストリーミング呼び出しの両方の例について解説します。
 
-この SDK は、X.AI が提供する OpenAI 互換の API 形式を基盤に構築されており、`grok-2-latest` のようなモデルとの簡単な対話を可能にします。
-
-## アーキテクチャ概要
-
-`@aigne/xai` パッケージは、コアの AIGNE フレームワークと XAI API 間のコネクターとして機能し、一貫したインターフェースで XAI モデルをアプリケーションに組み込むことができます。
+`@aigne/xai` パッケージは xAI API への直接的なインターフェースとして機能し、開発者は AIGNE フレームワークが提供する標準化された `ChatModel` インターフェースを通じて、Grok の機能をアプリケーションに統合できます。
 
 ```d2
 direction: down
 
-AIGNE-Application: {
-  label: "AIGNE アプリケーション"
+Developer: {
+  shape: c4-person
+}
+
+aigne-xai: {
+  label: "@aigne/xai パッケージ"
+  shape: rectangle
+}
+
+xAI-Platform: {
+  label: "xAI プラットフォーム"
   shape: rectangle
 
-  aigne-xai: {
-    label: "@aigne/xai SDK"
-    shape: rectangle
+  API-Key: {
+    label: "API キー"
+  }
+
+  Grok-Models: {
+    label: "Grok モデル"
   }
 }
 
-XAI-API: {
-  label: "XAI API"
-  shape: rectangle
+Developer -> xAI-Platform.API-Key: "1. API キーを取得"
+Developer -> aigne-xai: "2. パッケージを設定\n(API キー、モデル選択)"
+aigne-xai -> xAI-Platform.Grok-Models: "3. API リクエストを送信"
+xAI-Platform.Grok-Models -> aigne-xai: "4. レスポンスを返す"
+aigne-xai -> Developer: "5. 結果を渡す"
 
-  XAI-Models: {
-    label: "XAI モデル\n(例: Grok)"
-    shape: cylinder
-  }
-}
-
-AIGNE-Application.aigne-xai -> XAI-API: "OpenAI互換API経由で通信"
-XAI-API -> XAI-API.XAI-Models: "アクセスを提供"
 ```
-
-## 機能
-
-*   **XAI API 統合**: XAI の API サービスへの直接接続。
-*   **チャット補完**: 利用可能なすべてのモデルで XAI のチャット補完 API をサポート。
-*   **関数呼び出し**: 関数呼び出し機能の組み込みサポート。
-*   **ストリーミング応答**: より応答性の高いアプリケーションのためのストリーミング応答の処理を可能にします。
-*   **タイプセーフ**: すべての API とモデルに対応する包括的な TypeScript 型定義が付属。
-*   **一貫したインターフェース**: AIGNE フレームワークのモデルインターフェースと完全に互換性があります。
-*   **エラーハンドリング**: 堅牢なエラーハンドリングとリトライメカニズムを含みます。
-*   **完全な設定オプション**: モデルの動作を微調整するための広範な設定オプションを提供します。
 
 ## インストール
 
-npm、yarn、または pnpm を使用してパッケージをインストールできます。
+まず、お好みのパッケージマネージャーを使用して `@aigne/xai` パッケージと AIGNE コアライブラリをインストールします。
 
-### npm
-
-```bash
-npm install @aigne/xai @aigne/core
-```
-
-### yarn
-
-```bash
-yarn add @aigne/xai @aigne/core
-```
-
-### pnpm
-
-```bash
-pnpm add @aigne/xai @aigne/core
-```
+<x-cards data-columns="3">
+  <x-card data-title="npm" data-icon="logos:npm-icon">
+    ```bash
+    npm install @aigne/xai @aigne/core
+    ```
+  </x-card>
+  <x-card data-title="yarn" data-icon="logos:yarn">
+    ```bash
+    yarn add @aigne/xai @aigne/core
+    ```
+  </x-card>
+  <x-card data-title="pnpm" data-icon="logos:pnpm">
+    ```bash
+    pnpm add @aigne/xai @aigne/core
+    ```
+  </x-card>
+</x-cards>
 
 ## 設定
 
-まず、`XAIChatModel` を設定する必要があります。モデルは、その動作をカスタマイズするためにさまざまなオプションで初期化できます。
+`XAIChatModel` クラスは、xAI API とやり取りするための主要なインターフェースです。これを使用するには、xAI API キーで設定する必要があります。
 
-```typescript
+API キーは 2 つの方法で提供できます：
+1.  **コンストラクタで直接指定する**：`apiKey` プロパティ経由でキーを渡します。
+2.  **環境変数**：`XAI_API_KEY` 環境変数を設定します。モデルはそれを自動的に検出して使用します。
+
+### コンストラクタのオプション
+
+`XAIChatModel` のインスタンスを作成する際に、以下のオプションを指定できます：
+
+<x-field-group>
+  <x-field data-name="apiKey" data-type="string" data-required="false">
+    <x-field-desc markdown>xAI API キーです。提供されない場合、システムは `XAI_API_KEY` 環境変数をフォールバックとして使用します。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false" data-default="grok-2-latest">
+    <x-field-desc markdown>チャット補完に使用する特定の xAI モデルです。デフォルトは `grok-2-latest` です。</x-field-desc>
+  </x-field>
+  <x-field data-name="baseURL" data-type="string" data-required="false" data-default="https://api.x.ai/v1">
+    <x-field-desc markdown>xAI API のベース URL です。これは事前設定されており、通常は変更する必要はありません。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>`temperature` や `topP` など、xAI API に渡す追加のオプションです。</x-field-desc>
+  </x-field>
+</x-field-group>
+
+## 基本的な使用方法
+
+以下の例では、`XAIChatModel` をインスタンス化し、それを呼び出してレスポンスを取得する方法を示します。
+
+```typescript Basic Invocation icon=logos:typescript
 import { XAIChatModel } from "@aigne/xai";
 
 const model = new XAIChatModel({
-  // APIキーを直接提供するか、XAI_API_KEY環境変数を使用します
-  apiKey: "your-xai-api-key", // 環境変数が設定されている場合はオプション
-
-  // 使用するモデルを指定します。デフォルトは 'grok-2-latest'
-  model: "grok-2-latest",
-
-  // モデルに渡す追加オプション
-  modelOptions: {
-    temperature: 0.7,
-    max_tokens: 1024,
-  },
-});
-```
-
-`apiKey` は、コンストラクタに直接渡すか、`XAI_API_KEY` という名前の環境変数として設定できます。SDK は自動的にそれを取得します。
-
-## 基本的な使い方
-
-次の例は、`invoke` メソッドを使用して簡単なリクエストを XAI モデルに送信し、レスポンスを受信する方法を示しています。
-
-```typescript
-import { XAIChatModel } from "@aigne/xai";
-
-const model = new XAIChatModel({
-  // APIキーを直接提供するか、環境変数 XAI_API_KEY を使用します
-  apiKey: "your-api-key", // 環境変数に設定されている場合はオプション
+  // API キーを直接指定するか、環境変数 XAI_API_KEY を使用します
+  apiKey: "your-api-key", // 環境変数に設定されている場合はオプションです
   // モデルを指定します (デフォルトは 'grok-2-latest')
   model: "grok-2-latest",
   modelOptions: {
@@ -114,23 +108,28 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* 出力:
-  {
-    text: "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!",
-    model: "grok-2-latest",
-    usage: {
-      inputTokens: 6,
-      outputTokens: 17
-    }
-  }
-  */
 ```
 
-## ストリーミング応答
+### レスポンスの例
 
-リアルタイムの対話を必要とするアプリケーションでは、モデルからの応答をストリーミングできます。これは、ユーザーが応答が生成されるのを確認できる対話型インターフェースを作成するのに役立ちます。
+`invoke` メソッドは、モデルのレスポンスと使用状況のメタデータを含むオブジェクトを返します。
 
-```typescript
+```json Response Object icon=mdi:code-json
+{
+  "text": "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!",
+  "model": "grok-2-latest",
+  "usage": {
+    "inputTokens": 6,
+    "outputTokens": 17
+  }
+}
+```
+
+## ストリーミングレスポンス
+
+リアルタイムアプリケーション向けに、モデルからのレスポンスをストリーミングできます。`invoke` メソッドで `streaming: true` オプションを設定すると、データが利用可能になり次第、チャンクで受信できます。
+
+```typescript Streaming Example icon=logos:typescript
 import { isAgentResponseDelta } from "@aigne/core";
 import { XAIChatModel } from "@aigne/xai";
 
@@ -157,10 +156,26 @@ for await (const chunk of stream) {
   }
 }
 
-console.log(fullText); // 出力: "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!"
-console.log(json); // { model: "grok-2-latest", usage: { inputTokens: 6, outputTokens: 17 } }
+console.log(fullText);
+console.log(json);
 ```
 
-## ライセンス
+### ストリーミング出力
 
-このパッケージは、Elastic-2.0 ライセンスの下でリリースされています。
+ストリームを反復処理する際に、テキストの差分を蓄積して完全なメッセージを形成し、JSON 部分をマージして最終的なメタデータを取得できます。
+
+```text Text Output icon=mdi:text-box
+I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!
+```
+
+```json JSON Output icon=mdi:code-json
+{
+  "model": "grok-2-latest",
+  "usage": {
+    "inputTokens": 6,
+    "outputTokens": 17
+  }
+}
+```
+
+これで `@aigne/xai` パッケージの使用に関するガイドは終わりです。利用可能な他のモデルに関する詳細については、[モデル概要](./models-overview.md) を参照してください。

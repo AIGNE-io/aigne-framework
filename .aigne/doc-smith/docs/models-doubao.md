@@ -1,114 +1,61 @@
-This document provides a comprehensive guide to using the `@aigne/doubao` SDK, which integrates Doubao AI models into the AIGNE Framework. You will learn how to install, configure, and use the SDK to leverage Doubao's chat and image generation capabilities in your applications.
+# Doubao
 
-To illustrate the SDK's role, here is a high-level overview of the architecture:
+The `@aigne/doubao` package provides a seamless integration between the AIGNE Framework and Doubao's powerful language and image generation models. This guide provides a complete reference for configuring and utilizing Doubao models within your AIGNE applications.
 
-```d2
-direction: down
+This integration allows developers to leverage Doubao's advanced AI capabilities through the consistent and unified interface of the AIGNE Framework.
 
-User-Application: {
-  label: "Your Application"
-  shape: rectangle
-}
+## Installation
 
-AIGNE-Framework: {
-  label: "AIGNE Framework"
-  shape: rectangle
-
-  aigne-doubao-SDK: {
-    label: "@aigne/doubao SDK"
-    shape: rectangle
-  }
-}
-
-Doubao-AI-Service: {
-  label: "Doubao AI Service"
-  shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-dash: 4
-  }
-
-  Chat-Models: {
-    label: "Chat Models"
-  }
-  Image-Models: {
-    label: "Image Generation Models"
-  }
-}
-
-User-Application -> AIGNE-Framework.aigne-doubao-SDK: "Uses SDK"
-AIGNE-Framework.aigne-doubao-SDK -> Doubao-AI-Service: "API Calls"
-```
-
-## 1. Introduction
-
-`@aigne/doubao` provides a seamless integration between the AIGNE Framework and Doubao's powerful language models. This package enables developers to easily leverage Doubao's AI capabilities in their AIGNE applications, offering a consistent interface while harnessing Doubao's advanced features.
-
-### Features
-
-*   **Direct Doubao API Integration**: Connects directly to Doubao's API services.
-*   **Chat Completions**: Supports all available Doubao chat models.
-*   **Function Calling**: Includes built-in support for function calling.
-*   **Streaming Responses**: Enables streaming for more responsive applications.
-*   **Type-Safe**: Provides comprehensive TypeScript typings for all APIs.
-*   **Consistent Interface**: Aligns with the AIGNE Framework's model interface for interoperability.
-*   **Robust Error Handling**: Features built-in error handling and retry mechanisms.
-*   **Full Configuration**: Offers extensive options for fine-tuning model behavior.
-
-## 2. Installation
-
-To get started, install the `@aigne/doubao` and `@aigne/core` packages using your preferred package manager.
-
-### Using npm
+To begin, install the necessary packages using your preferred package manager. You will need both `@aigne/core` and the Doubao-specific package.
 
 ```bash
 npm install @aigne/doubao @aigne/core
 ```
 
-### Using yarn
-
 ```bash
 yarn add @aigne/doubao @aigne/core
 ```
-
-### Using pnpm
 
 ```bash
 pnpm add @aigne/doubao @aigne/core
 ```
 
-## 3. Configuration
+## Configuration
 
-Before using the SDK, you need to configure your Doubao API key. The key can be provided directly in the model constructor or through the `DOUBAO_API_KEY` environment variable.
+To use the Doubao models, you must provide an API key. The key can be configured in one of two ways, in order of precedence:
 
-```typescript
+1.  **Direct Instantiation**: Pass the `apiKey` directly in the model's constructor. This method is explicit and overrides any other configuration.
+2.  **Environment Variable**: Set the `DOUBAO_API_KEY` environment variable. The model will automatically use this variable if no key is provided in the constructor.
+
+```typescript "Configuration Example" icon=logos:typescript
 import { DoubaoChatModel } from "@aigne/doubao";
 
-// Option 1: Provide API key directly
-const model = new DoubaoChatModel({
-  apiKey: "your-api-key",
+// Method 1: Direct Instantiation
+const modelWithApiKey = new DoubaoChatModel({
+  apiKey: "your-doubao-api-key",
 });
 
-// Option 2: Use environment variable (DOUBAO_API_KEY)
-// Make sure the variable is set in your environment
-// const model = new DoubaoChatModel();
+// Method 2: Environment Variable
+// Set DOUBAO_API_KEY in your .env file or shell
+// DOUBAO_API_KEY="your-doubao-api-key"
+const modelFromEnv = new DoubaoChatModel();
 ```
 
-## 4. Chat Model Usage
+The base URL for the Doubao API is pre-configured to `https://ark.cn-beijing.volces.com/api/v3`, but it can be overridden by passing a `baseURL` option to the constructor if necessary.
 
-The `DoubaoChatModel` class provides an interface for interacting with Doubao's chat completion models.
+## Chat Models
+
+For conversational tasks, the `DoubaoChatModel` provides an interface to Doubao's language models. It leverages an OpenAI-compatible API structure, ensuring a familiar development experience.
 
 ### Basic Usage
 
-Here is a simple example of how to invoke the chat model to get a response.
+To perform a chat completion, instantiate `DoubaoChatModel` and use the `invoke` method.
 
-```typescript
+```typescript "Basic Chat Completion" icon=logos:typescript
 import { DoubaoChatModel } from "@aigne/doubao";
 
 const model = new DoubaoChatModel({
-  // Provide API key directly or use environment variable DOUBAO_API_KEY
-  apiKey: "your-api-key", // Optional if set in env variables
-  // Specify model version (defaults to 'doubao-seed-1-6-250615')
+  apiKey: "your-doubao-api-key", // Or use environment variable
   model: "doubao-seed-1-6-250615",
   modelOptions: {
     temperature: 0.7,
@@ -120,28 +67,31 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* Output:
-  {
-    text: "Hello! I'm an AI assistant powered by Doubao's language model.",
-    model: "doubao-seed-1-6-250615",
-    usage: {
-      inputTokens: 7,
-      outputTokens: 12
-    }
+```
+
+**Example Response**
+
+```json
+{
+  "text": "Hello! I'm an AI assistant powered by Doubao's language model.",
+  "model": "doubao-seed-1-6-250615",
+  "usage": {
+    "inputTokens": 7,
+    "outputTokens": 12
   }
-*/
+}
 ```
 
 ### Streaming Responses
 
-For real-time applications, you can stream responses from the model. This allows you to process the output as it becomes available.
+For real-time applications, you can stream the response from the model. Set the `streaming` option to `true` in the `invoke` call and iterate over the resulting stream to process chunks as they arrive.
 
-```typescript
+```typescript "Streaming Chat Response" icon=logos:typescript
 import { isAgentResponseDelta } from "@aigne/core";
 import { DoubaoChatModel } from "@aigne/doubao";
 
 const model = new DoubaoChatModel({
-  apiKey: "your-api-key",
+  apiKey: "your-doubao-api-key",
   model: "doubao-seed-1-6-250615",
 });
 
@@ -149,7 +99,7 @@ const stream = await model.invoke(
   {
     messages: [{ role: "user", content: "Introduce yourself" }],
   },
-  { streaming: true },
+  { streaming: true }
 );
 
 let fullText = "";
@@ -158,45 +108,133 @@ const json = {};
 for await (const chunk of stream) {
   if (isAgentResponseDelta(chunk)) {
     const text = chunk.delta.text?.text;
-    if (text) fullText += text;
-    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+    if (text) {
+      fullText += text;
+      process.stdout.write(text); // Print text chunks as they arrive
+    }
+    if (chunk.delta.json) {
+      Object.assign(json, chunk.delta.json);
+    }
   }
 }
 
-console.log(fullText); // Output: "Hello! I'm an AI assistant powered by Doubao's language model."
-console.log(json); // { model: "doubao-seed-1-6-250615", usage: { inputTokens: 7, outputTokens: 12 } }
+console.log("\n--- Final Data ---");
+console.log(fullText);
+console.log(json);
 ```
 
-## 5. Image Model Usage
+### Chat Model Parameters
 
-The `DoubaoImageModel` class allows you to generate images using Doubao's image creation models, such as `doubao-seedream-4-0-250828`.
+The `DoubaoChatModel` constructor accepts the following options:
 
-### Basic Image Generation
+<x-field-group>
+  <x-field data-name="apiKey" data-type="string" data-required="false">
+    <x-field-desc markdown>Your Doubao API key. If not provided, the `DOUBAO_API_KEY` environment variable will be used.</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false" data-default="doubao-seed-1-6-250615">
+    <x-field-desc markdown>The specific chat model to use.</x-field-desc>
+  </x-field>
+  <x-field data-name="baseURL" data-type="string" data-required="false" data-default="https://ark.cn-beijing.volces.com/api/v3">
+    <x-field-desc markdown>The base URL for the Doubao API endpoint.</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>Additional options passed to the model API, such as `temperature`, `top_p`, etc. These are standard OpenAI-compatible parameters.</x-field-desc>
+  </x-field>
+</x-field-group>
 
-The following example demonstrates how to generate an image from a text prompt.
+## Image Models
 
-```typescript
+The `DoubaoImageModel` class enables image generation by interfacing with Doubao's image models.
+
+### Basic Usage
+
+Instantiate `DoubaoImageModel` and call the `invoke` method with a prompt to generate an image.
+
+```typescript "Image Generation" icon=logos:typescript
 import { DoubaoImageModel } from "@aigne/doubao";
 
 async function generateImage() {
   const imageModel = new DoubaoImageModel({
-    apiKey: "your-api-key", // Or use DOUBAO_API_KEY env var
-    model: "doubao-seedream-4-0-250828", // Specify the image model
+    apiKey: "your-doubao-api-key", // Or use environment variable
+    model: "doubao-seedream-4-0-250828",
   });
 
-  const output = await imageModel.invoke({
-    prompt: "A futuristic cityscape at sunset",
+  const result = await imageModel.invoke({
+    prompt: "A photorealistic image of a cat programming on a laptop",
+    modelOptions: {
+      size: "1024x1024",
+      watermark: false,
+    },
   });
 
-  // The output contains the generated image data (URL or base64)
-  console.log(output.images);
+  console.log(result);
 }
 
 generateImage();
 ```
 
-The `output.images` array will contain objects with either a `url` or a `data` property (base64 encoded) for each generated image.
+**Example Response**
 
-## 6. License
+```json
+{
+  "images": [
+    {
+      "type": "file",
+      "data": "...", // base64 encoded image data
+      "mimeType": "image/jpeg"
+    }
+  ],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 1
+  },
+  "model": "doubao-seedream-4-0-250828"
+}
+```
 
-The `@aigne/doubao` SDK is released under the Elastic-2.0 License.
+### Image Model Parameters
+
+The `DoubaoImageModel` `invoke` method accepts an input object with the following properties. Note that parameter availability may vary by model.
+
+<x-field-group>
+  <x-field data-name="prompt" data-type="string" data-required="true">
+    <x-field-desc markdown>A text description of the desired image(s).</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false" data-default="doubao-seedream-4-0-250828">
+    <x-field-desc markdown>The identifier for the image model to use.</x-field-desc>
+  </x-field>
+  <x-field data-name="image" data-type="FileUnion" data-required="false">
+    <x-field-desc markdown>For image-to-image models (`doubao-seededit-3-0-i2i`), provides the input image.</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>An object containing model-specific parameters.</x-field-desc>
+    <x-field data-name="size" data-type="string" data-required="false">
+      <x-field-desc markdown>The desired dimensions of the generated image (e.g., `"1024x1024"`).</x-field-desc>
+    </x-field>
+    <x-field data-name="seed" data-type="number" data-required="false">
+      <x-field-desc markdown>A seed value for reproducible results. Supported by `doubao-seedream-3-0-t2i` and `doubao-seededit-3-0-i2i`.</x-field-desc>
+    </x-field>
+    <x-field data-name="guidanceScale" data-type="number" data-required="false">
+      <x-field-desc markdown>Controls how closely the generated image follows the prompt. Supported by `doubao-seedream-3-0-t2i` and `doubao-seededit-3-0-i2i`.</x-field-desc>
+    </x-field>
+    <x-field data-name="stream" data-type="boolean" data-required="false" data-default="false">
+      <x-field-desc markdown>If `true`, streams the generation results. Supported by `doubao-seedream-4` models.</x-field-desc>
+    </x-field>
+    <x-field data-name="watermark" data-type="boolean" data-required="false" data-default="false">
+      <x-field-desc markdown>If `false`, disables the watermark on the generated image.</x-field-desc>
+    </x-field>
+    <x-field data-name="sequentialImageGeneration" data-type="boolean" data-required="false">
+      <x-field-desc markdown>Enables sequential image generation. Supported by `doubao-seedream-4` models.</x-field-desc>
+    </x-field>
+  </x-field>
+</x-field-group>
+
+### Supported Image Models
+
+The following table lists the supported image models and their key characteristics.
+
+| Model Family                | Supported Models                | Key Use Case          |
+| --------------------------- | ------------------------------- | --------------------- |
+| `doubao-seedream-4`         | `doubao-seedream-4-0-250828`    | Text-to-Image (T2I)   |
+| `doubao-seedream-3-0-t2i`   | (Specific model names vary)     | Text-to-Image (T2I)   |
+| `doubao-seededit-3-0-i2i`   | (Specific model names vary)     | Image-to-Image (I2I)  |

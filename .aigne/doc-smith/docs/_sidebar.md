@@ -41,7 +41,3 @@
   * [xAI](/models-xai.md)
   * [LMStudio](/models-lmstudio.md)
   * [AIGNE Hub](/models-aigne-hub.md)
-* [Reference](/reference.md)
-  * [API Reference](/reference-api.md)
-  * [Configuration](/reference-configuration.md)
-  * [Changelog](/reference-changelog.md)

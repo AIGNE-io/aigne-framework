@@ -1,233 +1,76 @@
-```d2
-direction: down
+# 基礎 Agent
 
-Invocation: {
-  label: "調用\n（使用者輸入、歷史記錄）"
-  shape: oval
+您可以將基礎 Agent 想像成一個專業的數位助理，就像一個樂於助人的聊天機器人或一個專注的資料輸入員。每個 Agent 都被設計用來執行一種特定類型的任務並將其完美完成。它根據一組明確的指令運作，接收特定的輸入進行處理，並產生結果。
+
+這些單一用途的 Agent 是 AIGNE 的基本建構模塊。雖然它們本身很簡單，但可以組合起來處理更複雜的工作流程，我們將在 [Agent 團隊](./user-guide-understanding-agents-agent-teams.md) 一節中探討這一點。
+
+## Agent 的結構
+
+每個基礎 Agent，無論其功能為何，都由幾個核心組件定義。了解這些部分有助於闡明 Agent 如何知道該做什麼。
+
+<x-cards data-columns="2">
+  <x-card data-title="指令" data-icon="lucide:book-marked">
+    這是 Agent 的永久規則手冊或工作說明。它是一份詳細的指南，告訴 Agent 它的身份、目的以及應如何行事。例如，客戶服務 Agent 的指令可能是：「你是一位友善且樂於助人的助理。你的目標是準確地回答客戶問題。」
+  </x-card>
+  <x-card data-title="輸入" data-icon="lucide:arrow-right-to-line">
+    這是在特定時刻您給予 Agent 的特定資訊或任務。如果該 Agent 是一個聊天機器人，輸入就是使用者的問題，例如「你們的營業時間是什麼？」。
+  </x-card>
+  <x-card data-title="輸出" data-icon="lucide:arrow-left-from-line">
+    這是 Agent 根據其指令處理輸入後產生的結果。對於聊天機器人的例子，輸出就是答案：「我們的營業時間是週一至週五，上午 9 點到下午 5 點。」
+  </x-card>
+  <x-card data-title="技能" data-icon="lucide:sparkles">
+    這些是 Agent 可用於執行其任務的特殊工具或能力。例如，一個「天氣 Agent」可能擁有一項技能，使其能夠從外部服務存取即時天氣資料。
+  </x-card>
+</x-cards>
+
+## Agent 如何運作
+
+這個過程很直接。使用者向 Agent 提供一個輸入。Agent 接著會查閱其核心指令以了解情境和規則，在必要時使用它可能具備的任何技能，並產生一個輸出。
+
+```d2 icon=material-symbols:robot-2-outline
+direction: right
+
+User: {
+  label: "使用者"
+  shape: person
 }
 
-AIAgent: {
-  label: "AIAgent 核心邏輯"
-  shape: rectangle
-  style: {
-    stroke-width: 2
-    stroke-dash: 4
-  }
-
-  PromptBuilder: {
-    label: "1. 建構提示"
-    shape: rectangle
-  }
-
-  Response-Handler: {
-    label: "3. 處理回應"
-    shape: diamond
-  }
-
-  Tool-Executor: {
-    label: "4a. 執行工具"
-    shape: rectangle
-  }
-
-  Output-Processor: {
-    label: "4b. 處理最終答案\n（結構化資料提取）"
-    shape: rectangle
-  }
+Agent: {
+  label: "基礎 Agent"
+  shape: hexagon
+  style.fill: "#f0f4f8"
 }
 
-Language-Model: {
-  label: "語言模型"
-  shape: cylinder
+Instructions: {
+  label: "核心指令\n（規則手冊）"
+  shape: document
 }
 
-Tools: {
-  label: "可用工具"
-  shape: rectangle
-  Tool-A: "工具 A"
-  Tool-B: "工具 B"
+Output: {
+  label: "結果"
+  shape: document
 }
 
-Final-Response: {
-  label: "串流回應"
-  shape: oval
-}
-
-Invocation -> AIAgent.PromptBuilder
-AIAgent.PromptBuilder -> Language-Model: "2. 發送提示"
-Language-Model -> AIAgent.Response-Handler: "LLM 原始輸出"
-AIAgent.Response-Handler -> AIAgent.Tool-Executor: "工具呼叫"
-AIAgent.Tool-Executor -> Tools
-Tools -> AIAgent.PromptBuilder: "將工具結果返回至上下文" {
-  style.stroke-dash: 2
-}
-AIAgent.Response-Handler -> AIAgent.Output-Processor: "最終答案"
-AIAgent.Output-Processor -> Final-Response
+User -> Agent: "輸入（例如，一個具體問題）"
+Agent -> Instructions: "查閱"
+Instructions -> Agent: "提供指導"
+Agent -> Output: "產生輸出（例如，一個答案）"
 ```
 
-## 建立 AIAgent
+## 範例：一個簡單的聊天 Agent
 
-您可以使用 `AIAgent.from()` 工廠方法或直接使用建構函式來建立 `AIAgent` 執行個體。一個 Agent 至少需要 instructions 或 `inputKey` 才能運作。
+讓我們來看一個「聊天 Agent」的實際範例。這個 Agent 被設計成一個樂於助人、能回答問題的助理。其設定看起來會像這樣：
 
-以下是建立聊天 Agent 的基本範例：
+| 屬性 | 值 | 說明 |
+| :--- | :--- | :--- |
+| **名稱** | `chat` | Agent 的一個簡單識別碼。 |
+| **說明** | `Chat agent` | 對其用途的簡要說明。 |
+| **指令**| `你是一個樂於助人的助理...` | 這告訴 Agent 要友善且提供豐富資訊。 |
+| **輸入鍵** | `message` | Agent 預期使用者的問題會被標記為 "message"。 |
+| **輸出鍵** | `message` | Agent 會將其答案標記為 "message"。 |
 
-```typescript
-import { AIAgent } from "@core/agents/ai-agent";
-import { GoogleChatModel } from "@core/models/google";
+當您向這個 Agent 發送像 `message: 「一個 Agent 是如何運作的？」` 這樣的輸入時，它會遵循其樂於助人的指令，並根據其程式設計提供一個清晰、資訊豐富的答案。
 
-// 假設模型已在其他地方設定，例如在中央上下文中
-const model = new GoogleChatModel({ model: "gemini-1.5-flash" });
+## 總結
 
-const chatAgent = AIAgent.from({
-  name: "chat-bot",
-  description: "一個能回答問題的實用助理。",
-  instructions: "你是一個實用的助理。你的目標是協助使用者找到他們需要的資訊並進行友善的對話。",
-  inputKey: "message",
-  model: model,
-});
-
-async function runChat() {
-  const responseStream = await chatAgent.invoke({ message: "Hello, world!" });
-  for await (const chunk of responseStream) {
-    if (chunk.delta.text?.message) {
-      process.stdout.write(chunk.delta.text.message);
-    }
-  }
-}
-
-runChat();
-```
-
-此範例建立了一個簡單的 Agent，它使用提供的指示來回應在 `message` 欄位中傳遞的使用者輸入。
-
-## 設定選項 (`AIAgentOptions`)
-
-`AIAgentOptions` 介面提供了廣泛的設定選項，以客製化 Agent 的行為。
-
-<x-field-group>
-  <x-field data-name="name" data-type="string" data-required="true" data-desc="Agent 的唯一名稱。"></x-field>
-  <x-field data-name="description" data-type="string" data-required="true" data-desc="對 Agent 目的和能力的描述。"></x-field>
-  <x-field data-name="model" data-type="ChatModel" data-required="false" data-desc="Agent 將使用的語言模型執行個體。這也可以在調用時提供。"></x-field>
-  <x-field data-name="instructions" data-type="string | PromptBuilder" data-required="false" data-desc="指導 AI 模型行為的指示。可以是一個簡單的字串，也可以是一個用於複雜模板的 `PromptBuilder` 執行個體。"></x-field>
-  <x-field data-name="inputKey" data-type="string" data-required="false" data-desc="指定輸入訊息中的哪個鍵應被視為主要使用者訊息。"></x-field>
-  <x-field data-name="outputKey" data-type="string" data-default="message" data-desc="用於回應物件中文字輸出的自訂鍵。預設為 `message`。"></x-field>
-  <x-field data-name="toolChoice" data-type="AIAgentToolChoice | Agent" data-default="auto" data-desc="控制 Agent 如何使用工具。詳情請參閱「工具使用」部分。"></x-field>
-  <x-field data-name="keepTextInToolUses" data-type="boolean" data-required="false" data-desc="若為 true，模型在呼叫工具時生成的文字將保留在最終輸出中。"></x-field>
-  <x-field data-name="catchToolsError" data-type="boolean" data-default="true" data-desc="若為 false，當工具執行失敗時，Agent 將會拋出錯誤。預設為 true，允許 Agent 處理錯誤。"></x-field>
-  <x-field data-name="structuredStreamMode" data-type="boolean" data-default="false" data-desc="啟用一種模式，用於從模型的串流回應中提取結構化元資料（例如 JSON）。"></x-field>
-  <x-field data-name="customStructuredStreamInstructions" data-type="object" data-required="false" data-desc="允許完全自訂結構化串流行為，包括提示指示和元資料解析邏輯。"></x-field>
-  <x-field data-name="memoryAgentsAsTools" data-type="boolean" data-default="false" data-desc="當為 true 時，memory agents 將作為工具提供，模型可以呼叫這些工具來明確地檢索或儲存資訊。"></x-field>
-</x-field-group>
-
-## 工具使用
-
-`AIAgent` 的一個關鍵功能是它能夠使用其他 Agent 作為工具。這使您能夠建構複雜的系統，其中一個 AI Agent 可以將任務委派給專門的 Agent 來執行操作。`toolChoice` 選項控制此行為。
-
-### `AIAgentToolChoice` 列舉
-
--   **`auto` (預設)**：語言模型根據對話的上下文決定是否呼叫工具。這是最具彈性的選項。
--   **`none`**：停用 Agent 的所有工具使用，迫使其僅依賴自身知識。
--   **`required`**：強制 Agent 使用其中一個可用工具。模型必須進行工具呼叫。
--   **`router`**：一種特殊模式，其中 Agent 的唯一目的是選擇最合適的工具，並將使用者的輸入直接路由到該工具。`AIAgent` 本身不作回應；所選工具的輸出將成為最終回應。
-
-### 範例：使用工具
-
-```typescript
-import { Agent } from "@core/agents/agent";
-import { AIAgent, AIAgentToolChoice } from "@core/agents/ai-agent";
-
-// 一個獲取天氣資訊的簡單工具 (一個 Agent)
-const weatherTool = new Agent({
-  name: "get_weather",
-  description: "獲取特定地點的當前天氣。",
-  inputSchema: {
-    type: "object",
-    properties: {
-      location: { type: "string", description: "城市和州，例如：San Francisco, CA" },
-    },
-    required: ["location"],
-  },
-  async *process(input) {
-    yield {
-      delta: {
-        json: {
-          weather: `The weather in ${input.location} is sunny.`,
-        },
-      },
-    };
-  },
-});
-
-// 一個設定為使用此工具的 AIAgent
-const weatherAssistant = AIAgent.from({
-  name: "weather-assistant",
-  description: "一個可以提供天氣預報的助理。",
-  instructions: "你是一個天氣助理。使用可用的工具來回答有關天氣的問題。",
-  tools: [weatherTool],
-  toolChoice: AIAgentToolChoice.auto,
-});
-
-async function getWeather() {
-  const responseStream = await weatherAssistant.invoke({
-    message: "What's the weather like in New York?",
-  });
-
-  for await (const chunk of responseStream) {
-    // 最終輸出將是工具結果的綜合
-    console.log(chunk);
-  }
-}
-
-getWeather();
-```
-
-## 結構化資料提取
-
-`structuredStreamMode` 是一個強大的功能，適用於您需要從語言模型的回應中提取結構化資訊（如 JSON）以及純文字的場景。啟用後，Agent 會在模型的輸出中尋找特殊的元資料標籤，並解析其中的內容。
-
-### 啟用結構化串流模式
-
-要使用此功能，您必須：
-1.  在 Agent 的選項中設定 `structuredStreamMode: true`。
-2.  透過 `instructions` 提示，指示模型將其結構化輸出格式化到特定的標籤內（預設為 `<metadata>...</metadata>`）。
-
-### 範例：提取 JSON
-
-```typescript
-import { AIAgent } from "@core/agents/ai-agent";
-
-const sentimentAnalyzer = AIAgent.from({
-  name: "sentiment-analyzer",
-  description: "分析訊息的情感並提供評分。",
-  instructions: `
-    分析使用者訊息的情感。
-    以簡短的解釋回應，然後在 <metadata> 標籤中提供結構化的情感分析。
-    元資料應為一個 YAML 物件，包含 'sentiment'（positive、negative 或 neutral）和 'score'（0-1）欄位。
-  `,
-  structuredStreamMode: true,
-});
-
-async function analyzeSentiment() {
-  const responseStream = await sentimentAnalyzer.invoke({
-    message: "I am absolutely thrilled with the new update! It's fantastic.",
-  });
-
-  for await (const chunk of responseStream) {
-    if (chunk.delta.text?.message) {
-      // 串流回應的文字部分
-      process.stdout.write(chunk.delta.text.message);
-    }
-    if (chunk.delta.json) {
-      // 解析後的 JSON 物件將會出現在這裡
-      console.log("\n[METADATA]:", chunk.delta.json);
-    }
-  }
-}
-
-// 預期輸出將會串流文字說明，
-// 接著是解析後的 JSON 物件：
-// [METADATA]: { sentiment: 'positive', score: 0.95 }
-
-analyzeSentiment();
-```
-
-您可以使用 `customStructuredStreamInstructions` 選項進一步自訂元資料標籤和解析邏輯，以支援 YAML 以外的格式，例如 JSON。
+一個基礎 Agent 是一個單一任務的數位工作者，由其指令、接收的輸入和產生的輸出來定義。它們是 AIGNE 的必要基礎組件。雖然在執行特定任務時很強大，但它們的真正潛力是在被組合成 [Agent 團隊](./user-guide-understanding-agents-agent-teams.md) 以應對更複雜的挑戰時才會被釋放。

@@ -1,172 +1,124 @@
-# モデル
+# 概要
 
-モデルは AIGNE プラットフォームの中核をなすコンポーネントであり、さまざまなサードパーティの AI モデルと対話するための標準化されたインターフェースを提供します。このドキュメントでは、基本的なモデルアーキテクチャについて説明し、利用可能なモデルをリストアップし、その使用方法の例を示します。
+AIGNEフレームワークは、モデル非依存に設計されており、開発者はさまざまなプロバイダーの大規模言語モデル（LLM）や画像生成モデルを幅広く統合できます。これは、各プロバイダー独自のAPIを、一貫したインターフェースの背後で抽象化する、標準化されたアダプターシステムを通じて実現されています。
 
-## 概要
+このシステムの中核となるのが、`ChatModel` と `ImageModel` のAgentです。これらの特化したAgentは、アプリケーションのロジックと外部のAIサービスとの間の橋渡しとして機能します。これらの標準化されたAgentを使用することで、モデルプロバイダーを最小限のコード変更で切り替えることができ、多くの場合、設定の変更だけで済みます。サポートされている各プロバイダーには、そのAPIと通信するための特定の実装を含む専用パッケージ（例：`@aigne/openai`、`@aigne/anthropic`）があります。
 
-AIGNE モデルシステムは階層構造で設計されています。ベースには、あらゆる処理ユニットの基本的なインターフェースを定義する `Agent` があります。これを拡張するのが汎用的な `Model` クラスで、これはさまざまなデータ型、特にファイルコンテンツの専門的な処理を導入する抽象クラスです。
-
-OpenAI や Anthropic などの各サードパーティ AI プロバイダーは、`Model` クラスの具象実装を持っています。例えば、`OpenAIChatModel` や `AnthropicChatModel` は、それぞれのサービスの固有の API や要件を処理する特定のクラスです。このアーキテクチャにより、さまざまなモデルを一貫した方法で使用できます。
+このセクションでは、公式にサポートされているすべてのモデルプロバイダーの概要を説明します。特定のプロバイダーのインストール、設定、および使用方法に関する詳細な手順については、その専用のドキュメントページを参照してください。
 
 ```d2
 direction: down
-
-Agent: {
-  label: "Agent\n(ベースインターフェース)"
-  shape: rectangle
+style: {
+  stroke-width: 2
+  font-size: 14
 }
 
-Model: {
-  label: "Model\n(抽象クラス)\nファイルコンテンツを処理"
+AIGNE_Framework_Core: {
+  label: "AIGNEフレームワークコア"
   shape: rectangle
   style: {
-    stroke-dash: 4
+    fill: "#D1E7DD"
+    stroke: "#198754"
   }
 }
 
-Concrete-Models: {
-  label: "具象モデル実装"
-  grid-columns: 2
-  grid-gap: 100
-
-  Chat-Models: {
-    label: "チャットモデル"
-    shape: rectangle
-    grid-columns: 3
-
-    OpenAIChatModel
-    AnthropicChatModel
-    BedrockChatModel
-    DeepSeekChatModel
-    GeminiChatModel
-    OllamaChatModel
-    OpenRouterChatModel
-    XAIChatModel
-    DoubaoChatModel
-    PoeChatModel
-    AIGNEHubChatModel
-  }
-
-  Image-Models: {
-    label: "画像モデル"
-    shape: rectangle
-    grid-columns: 2
-
-    OpenAIImageModel
-    GeminiImageModel
-    IdeogramImageModel
-    DoubaoImageModel
-    AIGNEHubImageModel
+Model_Abstraction_Layer: {
+  label: "モデル抽象化レイヤー"
+  shape: rectangle
+  style: {
+    fill: "#cfe2ff"
+    stroke: "#0d6efd"
   }
 }
 
-Model -> Agent: "extends"
-Concrete-Models.Chat-Models -> Model: "implements"
-Concrete-Models.Image-Models -> Model: "implements"
-
-```
-
-## コアコンセプト
-
-### 汎用モデルクラス
-
-`packages/core/src/agents/model.ts` で定義されている抽象クラス `Model` は、すべての特定のモデル実装の基盤として機能します。その主な責務は次のとおりです:
-
--   **インタラクションの標準化**: 基盤となるプロバイダーに関係なく、モデルを呼び出すための一貫した API を提供します。
--   **ファイルハンドリング**: ファイルコンテンツを異なるフォーマット間で自動的に変換します。これはデータハンドリングを簡素化する主要な機能です。`Model` クラスは、ファイルデータを以下の形式で受け取ることができます:
-    -   **URL**: ファイルへの公開 URL。モデルはこれをダウンロードして処理します。
-    -   **ローカルファイル**: ローカルファイルシステム上のファイルへのパス。
-    -   **Base64エンコード**: Base64 文字列としてエンコードされたファイルコンテンツ。
-
-このクラスはこれらのフォーマット間の変換を管理し、データが使用されている特定のモデルに適したフォーマットであることを保証します。
-
-## 利用可能なモデル
-
-AIGNE は、さまざまなプロバイダーの幅広いチャットモデルおよび画像生成モデルをサポートしています。
-
-### チャットモデル
-
-以下の表は、テキストベースの対話のためにインスタンス化して使用できる、利用可能なチャットモデルをリストアップしたものです。
-
-| プロバイダー / クラス名 | エイリアス | API キー環境変数 |
-| :--- | :--- | :--- |
-| `OpenAIChatModel` | | `OPENAI_API_KEY` |
-| `AnthropicChatModel` | | `ANTHROPIC_API_KEY` |
-| `BedrockChatModel` | | `AWS_ACCESS_KEY_ID` |
-| `DeepSeekChatModel` | | `DEEPSEEK_API_KEY` |
-| `GeminiChatModel` | `google` | `GEMINI_API_KEY`, `GOOGLE_API_KEY` |
-| `OllamaChatModel` | | `OLLAMA_API_KEY` |
-| `OpenRouterChatModel`| | `OPEN_ROUTER_API_KEY` |
-| `XAIChatModel` | | `XAI_API_KEY` |
-| `DoubaoChatModel` | | `DOUBAO_API_KEY` |
-| `PoeChatModel` | | `POE_API_KEY` |
-| `AIGNEHubChatModel` | | `AIGNE_HUB_API_KEY` |
-
-### 画像モデル
-
-以下の表は、ビジュアルコンテンツを生成するために利用可能な画像モデルをリストアップしたものです。
-
-| プロバイダー / クラス名 | エイリアス | API キー環境変数 |
-| :--- | :--- | :--- |
-| `OpenAIImageModel` | | `OPENAI_API_KEY` |
-| `GeminiImageModel` | `google` | `GEMINI_API_KEY` |
-| `IdeogramImageModel` | | `IDEOGRAM_API_KEY` |
-| `DoubaoImageModel` | | `DOUBAO_API_KEY` |
-| `AIGNEHubImageModel` | | `AIGNE_HUB_API_KEY` |
-
-## 使用方法
-
-サポートされているモデルのいずれかを簡単にインスタンス化して使用できます。システムは、プロバイダー文字列に基づいて正しいモデルを見つけてロードするためのヘルパー関数を提供します。
-
-### モデル識別子の解析
-
-モデルは通常、`provider/model_name` の形式の文字列で識別されます。例えば、`openai/gpt-4o` です。`parseModel` ユーティリティを使用して、この文字列を構成要素に分割できます。
-
-```typescript
-import { parseModel } from "models/aigne-hub/src/utils/model.ts";
-
-const { provider, model } = parseModel("openai/gpt-4o");
-
-console.log(provider); // "openai"
-console.log(model);    // "gpt-4o"
-```
-
-### モデルの検索と作成
-
-`findModel` 関数を使用すると、利用可能なモデルのリストから正しいモデルクラスを見つけることができます。その後、一致したモデルの `create` メソッドを使用してインスタンス化できます。
-
-この例では、プロバイダー名でモデルを検索し、そのインスタンスを作成する方法を示します。
-
-```typescript
-import { findModel, parseModel } from "models/aigne-hub/src/utils/model.ts";
-
-// 完全なモデル識別子文字列
-const modelIdentifier = "openai/gpt-4o";
-
-// 1. 識別子を解析してプロバイダーとモデル名を取得
-const { provider, model: modelName } = parseModel(modelIdentifier);
-
-// 2. 対応する読み込み可能なモデル設定を検索
-const { match } = findModel(provider);
-
-if (match) {
-  // 3. モデルのインスタンスを作成
-  const chatModel = match.create({
-    model: modelName,
-    // modelOptions を使用して追加のパラメータを渡すことができます
-    modelOptions: {
-      temperature: 0.7,
-    },
-    // API キーを直接渡すことも可能ですが、
-    // 環境変数を使用することが推奨されます。
-    // apiKey: "sk-...",
-  });
-
-  // これで chatModel インスタンスを使用して API コールを行うことができます
-  console.log(`Successfully created model: ${chatModel.constructor.name}`);
-} else {
-  console.error(`Model provider "${provider}" not found.`);
+ChatModel: {
+  label: "ChatModelインターフェース"
+  shape: rectangle
+  style: {
+    fill: "#f8d7da"
+    stroke: "#dc3545"
+  }
 }
+
+ImageModel: {
+  label: "ImageModelインターフェース"
+  shape: rectangle
+  style: {
+    fill: "#f8d7da"
+    stroke: "#dc3545"
+  }
+}
+
+Model_Providers: {
+  label: "モデルプロバイダーアダプター"
+  shape: cloud
+  style: {
+    fill: "#fff3cd"
+    stroke: "#ffc107"
+  }
+}
+
+OpenAI: "OpenAIアダプター\n(@aigne/openai)"
+Anthropic: "Anthropicアダプター\n(@aigne/anthropic)"
+Google: "Google Geminiアダプター\n(@aigne/gemini)"
+Bedrock: "AWS Bedrockアダプター\n(@aigne/bedrock)"
+Ollama: "Ollamaアダプター\n(@aigne/ollama)"
+Other_Providers: {
+    label: "..."
+    shape: circle
+}
+
+
+AIGNE_Framework_Core -> Model_Abstraction_Layer: と相互作用
+
+Model_Abstraction_Layer.ChatModel
+Model_Abstraction_Layer.ImageModel
+
+Model_Abstraction_Layer -> Model_Providers: に接続
+
+Model_Providers.OpenAI
+Model_Providers.Anthropic
+Model_Providers.Google
+Model_Providers.Bedrock
+Model_Providers.Ollama
+Model_Providers.Other_Providers
+
+ChatModel -> OpenAI
+ChatModel -> Anthropic
+ChatModel -> Google
+ChatModel -> Bedrock
+ChatModel -> Ollama
+ImageModel -> OpenAI
+ImageModel -> Google
 ```
 
-このモジュール式のアプローチにより、最小限のコード変更で異なる AI モデル間を簡単に切り替えることができ、アプリケーションの柔軟性と再利用性が向上します。
+## サポートされているチャットモデル
+
+以下の表は、AIGNEフレームワークで公式にサポートされているチャットモデルプロバイダーの一覧です。プロバイダーを選択すると、その詳細な統合ガイドが表示されます。
+
+| プロバイダー | パッケージ |
+| :--- | :--- |
+| [AIGNE Hub](./models-aigne-hub.md) | `@aigne/aigne-hub` |
+| [Anthropic](./models-anthropic.md) | `@aigne/anthropic` |
+| [AWS Bedrock](./models-bedrock.md) | `@aigne/bedrock` |
+| [DeepSeek](./models-deepseek.md) | `@aigne/deepseek` |
+| [Doubao](./models-doubao.md) | `@aigne/doubao` |
+| [Google Gemini](./models-gemini.md) | `@aigne/gemini` |
+| [LMStudio](./models-lmstudio.md) | `@aigne/lmstudio` |
+| [Ollama](./models-ollama.md) | `@aigne/ollama` |
+| [OpenAI](./models-openai.md) | `@aigne/openai` |
+| [OpenRouter](./models-open-router.md) | `@aigne/open-router` |
+| [Poe](./models-poe.md) | `@aigne/poe` |
+| [xAI](./models-xai.md) | `@aigne/xai` |
+
+## サポートされている画像モデル
+
+以下の表は、公式にサポートされている画像生成モデルプロバイダーの一覧です。プロバイダーを選択すると、その詳細な統合ガイドが表示されます。
+
+| プロバイダー | パッケージ |
+| :--- | :--- |
+| [AIGNE Hub](./models-aigne-hub.md) | `@aigne/aigne-hub` |
+| [Doubao](./models-doubao.md) | `@aigne/doubao` |
+| [Google Gemini](./models-gemini.md) | `@aigne/gemini` |
+| [Ideogram](./models-ideogram.md) | `@aigne/ideogram` |
+| [OpenAI](./models-openai.md) | `@aigne/openai` |

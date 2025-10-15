@@ -1,162 +1,221 @@
-This document provides a detailed overview of the `ChatModel` class, a fundamental component for interacting with Large Language Models (LLMs). It covers the class architecture, its input and output formats, and related data structures that enable powerful features like tool calls and structured data handling.
+# Models
+
+Models are specialized agents that serve as a crucial abstraction layer, providing a standardized interface for interacting with external AI services, such as Large Language Models (LLMs) and image generation platforms. They encapsulate the complexity of API communication, allowing developers to work with various AI providers through a consistent and unified contract.
+
+The AIGNE Framework defines a base `Model` class, which is extended by two primary specializations: `ChatModel` for text-based conversational AI and `ImageModel` for image generation tasks. These abstractions are the foundation upon which higher-level agents like `AIAgent` and `ImageAgent` are built.
+
+## Core Concepts
+
+The `Model` layer is designed to streamline interactions with different AI providers. Instead of writing provider-specific code for each service (like OpenAI, Anthropic, or Google Gemini), you interact with the standardized `ChatModel` or `ImageModel` interface. The AIGNE framework, through specific model packages (e.g., `@aigne/openai`), handles the translation between this standard format and the provider's native API.
+
+This design offers several key advantages:
+- **Provider Agnostic:** Swap out underlying AI models with minimal code changes. For example, you can switch from OpenAI's GPT-4 to Anthropic's Claude 3 by simply changing the model instantiation.
+- **Standardized Data Structures:** All models use consistent input and output schemas (`ChatModelInput`, `ImageModelOutput`, etc.), simplifying data handling and agent composition.
+- **Simplified API:** The models provide a clean, high-level API that abstracts away the nuances of authentication, request formatting, and error handling for each external service.
+
+The following diagram illustrates the relationship between the base `Agent`, the `Model` abstractions, and the external AI services they connect to.
 
 ```d2
 direction: down
 
-User-Application: {
-  label: "User / Application"
-  shape: c4-person
-}
-
-ChatModel-System: {
-  label: "ChatModel System"
+Application-Layer: {
+  label: "Application Layer (Your Code)"
   shape: rectangle
 
-  ChatModel: {
-    label: "ChatModel Instance"
+  AIAgent: {
+    label: "AIAgent"
+    shape: rectangle
   }
 
-  LLM: {
-    label: "Large Language Model"
+  ImageAgent: {
+    label: "ImageAgent"
+    shape: rectangle
+  }
+}
+
+AIGNE-Framework: {
+  label: "AIGNE Framework (Abstraction Layer)"
+  shape: rectangle
+  style: {
+    stroke-dash: 2
+  }
+
+  Model-Abstractions: {
+    grid-columns: 2
+
+    ChatModel: {
+      label: "ChatModel"
+      shape: rectangle
+    }
+  
+    ImageModel: {
+      label: "ImageModel"
+      shape: rectangle
+    }
+  }
+}
+
+External-AI-Services: {
+  label: "External AI Services"
+  shape: rectangle
+  grid-columns: 3
+
+  OpenAI: {
+    label: "OpenAI\n(GPT-4, etc.)"
     shape: cylinder
   }
 
-  Tools: {
-    label: "Tools / Functions"
+  Anthropic: {
+    label: "Anthropic\n(Claude 3, etc.)"
+    shape: cylinder
+  }
+
+  Google: {
+    label: "Google\n(Gemini, etc.)"
+    shape: cylinder
   }
 }
 
-User-Application -> ChatModel-System.ChatModel: "1. invoke(Input)"
-ChatModel-System.ChatModel -> ChatModel-System.LLM: "2. Send Formatted Request"
-ChatModel-System.LLM -> ChatModel-System.ChatModel: "3. Receive LLM Response"
-
-# Path A: Simple Text Response
-ChatModel-System.ChatModel -> User-Application: "4a. Return Output with Text"
-
-# Path B: Tool Call Response
-ChatModel-System.ChatModel -> ChatModel-System.Tools: "4b. Execute Tool Call"
-ChatModel-System.Tools -> ChatModel-System.ChatModel: "5b. Return Tool Result"
-ChatModel-System.ChatModel -> ChatModel-System.LLM: "6b. Send Result for Final Answer"
-ChatModel-System.LLM -> ChatModel-System.ChatModel: "7b. Receive Final Response"
-ChatModel-System.ChatModel -> User-Application: "8b. Return Final Output"
+Application-Layer.AIAgent -> AIGNE-Framework.Model-Abstractions.ChatModel: "Uses (ChatModelInput/Output)"
+Application-Layer.ImageAgent -> AIGNE-Framework.Model-Abstractions.ImageModel: "Uses (ImageModelInput/Output)"
+AIGNE-Framework.Model-Abstractions.ChatModel -> External-AI-Services: "Connects to LLM Provider"
+AIGNE-Framework.Model-Abstractions.ImageModel -> External-AI-Services: "Connects to Image Provider"
 ```
 
-## ChatModel
+## ChatModel Abstraction
 
-The `ChatModel` class is an abstract base class designed for interacting with Large Language Models (LLMs). It extends the `Agent` class and provides a standardized interface for managing model inputs, outputs, and capabilities. Concrete implementations for specific models (e.g., OpenAI, Anthropic) should inherit from this class.
+The `ChatModel` is an abstract class designed for interfacing with Large Language Models (LLMs). It provides a structured way to handle conversational interactions, including multi-turn dialogues, tool usage, and structured data extraction.
 
-### Core Concepts
+### ChatModelInput
 
-- **Extensibility**: `ChatModel` is designed to be extended, allowing developers to create custom connectors for various LLMs by implementing the abstract `process` method.
-- **Unified Interface**: It offers a consistent API for both streaming and non-streaming responses, simplifying interactions with different models.
-- **Tool Integration**: The class provides built-in support for tool calls, enabling models to interact with external functions and data sources.
-- **Structured Output**: `ChatModel` can enforce JSON schema compliance on model outputs, ensuring reliable, structured data.
-- **Automatic Retries**: It includes a default retry mechanism for handling network errors and issues with structured output generation.
-
-### Key Methods
-
-#### `constructor(options?: ChatModelOptions)`
-
-Creates a new instance of `ChatModel`.
+The `ChatModelInput` interface defines the data structure for requests sent to a language model. It standardizes how messages, tools, and other configurations are passed.
 
 <x-field-group>
-  <x-field data-name="options" data-type="ChatModelOptions" data-required="false" data-desc="Configuration options for the agent.">
-    <x-field data-name="model" data-type="string" data-required="false" data-desc="The name or identifier of the model to use."></x-field>
-    <x-field data-name="modelOptions" data-type="ChatModelInputOptions" data-required="false" data-desc="Default options to pass to the model on each invocation."></x-field>
-    <x-field data-name="retryOnError" data-type="boolean | object" data-required="false" data-desc="Configuration for retrying on errors. Defaults to 3 retries for network and structured output errors."></x-field>
+  <x-field data-name="messages" data-type="ChatModelInputMessage[]" data-required="true">
+    <x-field-desc markdown>An array of message objects that form the conversation history and the current prompt.</x-field-desc>
+  </x-field>
+  <x-field data-name="responseFormat" data-type="ChatModelInputResponseFormat" data-required="false">
+    <x-field-desc markdown>Specifies the desired format for the model's output, such as plain text or structured JSON based on a provided schema.</x-field-desc>
+  </x-field>
+  <x-field data-name="tools" data-type="ChatModelInputTool[]" data-required="false">
+    <x-field-desc markdown>A list of available tools (functions) that the model can request to call to perform actions or retrieve information.</x-field-desc>
+  </x-field>
+  <x-field data-name="toolChoice" data-type="ChatModelInputToolChoice" data-required="false">
+    <x-field-desc markdown>Controls how the model uses the provided tools. It can be set to `"auto"`, `"none"`, `"required"`, or to force a specific function call.</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="ChatModelInputOptions" data-required="false">
+    <x-field-desc markdown>A container for provider-specific options, such as `temperature`, `topP`, or `parallelToolCalls`.</x-field-desc>
+  </x-field>
+  <x-field data-name="outputFileType" data-type="'local' | 'file'" data-required="false">
+    <x-field-desc markdown>Specifies the desired format for any file-based outputs, either as a local file path (`local`) or a base64-encoded string (`file`).</x-field-desc>
   </x-field>
 </x-field-group>
 
-#### `process(input: ChatModelInput, options: AgentInvokeOptions)`
+#### ChatModelInputMessage
 
-The core abstract method that must be implemented by all subclasses. It handles the direct communication with the underlying LLM, including sending requests and processing responses.
-
-<x-field-group>
-  <x-field data-name="input" data-type="ChatModelInput" data-required="true" data-desc="The standardized input containing messages, tools, and model options."></x-field>
-  <x-field data-name="options" data-type="AgentInvokeOptions" data-required="true" data-desc="Options for the agent invocation, including context and limits."></x-field>
-</x-field-group>
-
-#### `preprocess(input: ChatModelInput, options: AgentInvokeOptions)`
-
-Performs operations before the main `process` method is called. This includes validating token limits and normalizing tool names to be compatible with the LLM.
-
-#### `postprocess(input: ChatModelInput, output: ChatModelOutput, options: AgentInvokeOptions)`
-
-Performs operations after the `process` method completes. Its primary role is to update token usage statistics in the invocation context.
-
-### Input Data Structures
-
-#### `ChatModelInput`
-
-The main input interface for the `ChatModel`.
+Each message in the `messages` array follows a defined structure.
 
 <x-field-group>
-  <x-field data-name="messages" data-type="ChatModelInputMessage[]" data-required="true" data-desc="An array of messages to be sent to the model."></x-field>
-  <x-field data-name="responseFormat" data-type="ChatModelInputResponseFormat" data-required="false" data-desc="Specifies the desired output format (e.g., text or JSON)."></x-field>
-  <x-field data-name="outputFileType" data-type="FileType" data-required="false" data-desc="The desired format for file outputs ('local' or 'file')."></x-field>
-  <x-field data-name="tools" data-type="ChatModelInputTool[]" data-required="false" data-desc="A list of tools the model can use."></x-field>
-  <x-field data-name="toolChoice" data-type="ChatModelInputToolChoice" data-required="false" data-desc="The strategy for tool selection (e.g., 'auto', 'required')."></x-field>
-  <x-field data-name="modelOptions" data-type="ChatModelInputOptions" data-required="false" data-desc="Model-specific configuration options."></x-field>
+  <x-field data-name="role" data-type="'system' | 'user' | 'agent' | 'tool'" data-required="true">
+    <x-field-desc markdown>The role of the message sender. `system` provides instructions, `user` represents user input, `agent` is for model responses, and `tool` is for the output of a tool call.</x-field-desc>
+  </x-field>
+  <x-field data-name="content" data-type="string | UnionContent[]" data-required="false">
+    <x-field-desc markdown>The content of the message. It can be a simple string or an array for multimodal content, combining text and images (`FileUnionContent`).</x-field-desc>
+  </x-field>
+  <x-field data-name="toolCalls" data-type="object[]" data-required="false">
+    <x-field-desc markdown>Used in an `agent` message to indicate one or more tool calls initiated by the model.</x-field-desc>
+  </x-field>
+  <x-field data-name="toolCallId" data-type="string" data-required="false">
+    <x-field-desc markdown>Used in a `tool` message to link the tool's output back to the corresponding `toolCalls` request.</x-field-desc>
+  </x-field>
 </x-field-group>
 
-#### `ChatModelInputMessage`
+### ChatModelOutput
 
-Represents a single message in the conversation history.
+The `ChatModelOutput` interface standardizes the response received from a language model.
 
 <x-field-group>
-    <x-field data-name="role" data-type="Role" data-required="true" data-desc="The role of the message author ('system', 'user', 'agent', or 'tool')."></x-field>
-    <x-field data-name="content" data-type="ChatModelInputMessageContent" data-required="false" data-desc="The content of the message, which can be a string or a rich content array."></x-field>
-    <x-field data-name="toolCalls" data-type="object[]" data-required="false" data-desc="For 'agent' roles, a list of tool calls requested by the model."></x-field>
-    <x-field data-name="toolCallId" data-type="string" data-required="false" data-desc="For 'tool' roles, the ID of the tool call this message is a response to."></x-field>
+  <x-field data-name="text" data-type="string" data-required="false">
+    <x-field-desc markdown>The text-based content of the model's response.</x-field-desc>
+  </x-field>
+  <x-field data-name="json" data-type="object" data-required="false">
+    <x-field-desc markdown>The JSON object returned by the model when `responseFormat` is set to `"json_schema"`.</x-field-desc>
+  </x-field>
+  <x-field data-name="toolCalls" data-type="ChatModelOutputToolCall[]" data-required="false">
+    <x-field-desc markdown>An array of tool call requests made by the model. Each object includes the function name and arguments.</x-field-desc>
+  </x-field>
+  <x-field data-name="usage" data-type="ChatModelOutputUsage" data-required="false">
+    <x-field-desc markdown>An object containing token usage statistics, including `inputTokens` and `outputTokens`.</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false">
+    <x-field-desc markdown>The identifier of the model that generated the response.</x-field-desc>
+  </x-field>
+  <x-field data-name="files" data-type="FileUnionContent[]" data-required="false">
+    <x-field-desc markdown>An array of files generated by the model, if any.</x-field-desc>
+  </x-field>
 </x-field-group>
 
-#### `ChatModelInputTool`
+## ImageModel Abstraction
 
-Defines a tool that the model can invoke.
+The `ImageModel` is an abstract class for interfacing with image generation models. It provides a simplified contract for creating or editing images based on textual prompts.
+
+### ImageModelInput
+
+The `ImageModelInput` interface defines the request structure for an image generation task.
 
 <x-field-group>
-    <x-field data-name="type" data-type="'function'" data-required="true" data-desc="The type of the tool. Currently, only 'function' is supported."></x-field>
-    <x-field data-name="function" data-type="object" data-required="true" data-desc="The function definition.">
-        <x-field data-name="name" data-type="string" data-required="true" data-desc="The name of the function."></x-field>
-        <x-field data-name="description" data-type="string" data-required="false" data-desc="A description of what the function does."></x-field>
-        <x-field data-name="parameters" data-type="object" data-required="true" data-desc="A JSON schema object defining the function's parameters."></x-field>
-    </x-field>
+  <x-field data-name="prompt" data-type="string" data-required="true">
+    <x-field-desc markdown>A textual description of the desired image.</x-field-desc>
+  </x-field>
+  <x-field data-name="image" data-type="FileUnionContent[]" data-required="false">
+    <x-field-desc markdown>An optional array of input images, used for tasks like image editing or creating variations.</x-field-desc>
+  </x-field>
+  <x-field data-name="n" data-type="number" data-required="false">
+    <x-field-desc markdown>The number of images to generate. Defaults to 1.</x-field-desc>
+  </x-field>
+  <x-field data-name="outputFileType" data-type="'local' | 'file'" data-required="false">
+    <x-field-desc markdown>Specifies whether the output images should be saved as local files (`local`) or returned as base64-encoded strings (`file`).</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="ImageModelInputOptions" data-required="false">
+    <x-field-desc markdown>A container for provider-specific options, such as image dimensions, quality, or style presets.</x-field-desc>
+  </x-field>
 </x-field-group>
 
-### Output Data Structures
+### ImageModelOutput
 
-#### `ChatModelOutput`
-
-The main output interface for the `ChatModel`.
+The `ImageModelOutput` interface defines the response structure from an image generation service.
 
 <x-field-group>
-  <x-field data-name="text" data-type="string" data-required="false" data-desc="The text response from the model."></x-field>
-  <x-field data-name="json" data-type="object" data-required="false" data-desc="The JSON response from the model, if a JSON schema was requested."></x-field>
-  <x-field data-name="toolCalls" data-type="ChatModelOutputToolCall[]" data-required="false" data-desc="A list of tool calls the model wants to execute."></x-field>
-  <x-field data-name="usage" data-type="ChatModelOutputUsage" data-required="false" data-desc="Token usage statistics for the invocation."></x-field>
-  <x-field data-name="model" data-type="string" data-required="false" data-desc="The name of the model that generated the response."></x-field>
-  <x-field data-name="files" data-type="FileUnionContent[]" data-required="false" data-desc="A list of files generated by the model."></x-field>
+  <x-field data-name="images" data-type="FileUnionContent[]" data-required="true">
+    <x-field-desc markdown>An array of the generated images. The format of each element depends on the `outputFileType` specified in the input.</x-field-desc>
+  </x-field>
+  <x-field data-name="usage" data-type="ChatModelOutputUsage" data-required="false">
+    <x-field-desc markdown>An object containing usage statistics, which may include token counts or other provider-specific metrics.</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false">
+    <x-field-desc markdown>The identifier of the model that generated the images.</x-field-desc>
+  </x-field>
 </x-field-group>
 
-#### `ChatModelOutputToolCall`
+## File Content Types
 
-Represents a single tool call requested by the model.
+Models handle various forms of file inputs for multimodal tasks through the `FileUnionContent` type. This discriminated union allows files to be represented in three ways:
 
-<x-field-group>
-    <x-field data-name="id" data-type="string" data-required="true" data-desc="A unique identifier for this tool call."></x-field>
-    <x-field data-name="type" data-type="'function'" data-required="true" data-desc="The type of the tool."></x-field>
-    <x-field data-name="function" data-type="object" data-required="true" data-desc="The function call details.">
-        <x-field data-name="name" data-type="string" data-required="true" data-desc="The name of the function to call."></x-field>
-        <x-field data-name="arguments" data-type="Message" data-required="true" data-desc="The arguments to pass to the function, parsed as a JSON object."></x-field>
-    </x-field>
-</x-field-group>
+-   **`LocalContent`**: Represents a file stored on the local filesystem.
+    -   `type`: "local"
+    -   `path`: The absolute path to the file.
+-   **`UrlContent`**: Represents a file accessible via a public URL.
+    -   `type`: "url"
+    -   `url`: The URL of the file.
+-   **`FileContent`**: Represents a file as a base64-encoded string.
+    -   `type`: "file"
+    -   `data`: The base64-encoded content of the file.
 
-#### `ChatModelOutputUsage`
+The `Model` base class includes a `transformFileType` method that can automatically convert between these formats as needed, simplifying file handling across different agents and model providers.
 
-Provides information about token consumption.
+## Summary
 
-<x-field-group>
-    <x-field data-name="inputTokens" data-type="number" data-required="true" data-desc="The number of tokens used in the input prompt."></x-field>
-    <x-field data-name="outputTokens" data-type="number" data-required="true" data-desc="The number of tokens generated in the output."></x-field>
-    <x-field data-name="aigneHubCredits" data-type="number" data-required="false" data-desc="Credits consumed if using AIGNE Hub services."></x-field>
-</x-field-group>
+The `ChatModel` and `ImageModel` abstractions are core components that make the AIGNE Framework flexible and provider-agnostic. They provide a stable, standardized interface for interacting with a wide range of external AI services.
+
+-   To learn how to use these models in practice, see the documentation for the [AI Agent](./developer-guide-agents-ai-agent.md) and [Image Agent](./developer-guide-agents-image-agent.md).
+-   For details on configuring specific providers like OpenAI, Anthropic, or Google Gemini, refer to the guides in the [Models](./models.md) section.

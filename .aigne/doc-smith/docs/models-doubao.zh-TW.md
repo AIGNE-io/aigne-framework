@@ -1,114 +1,61 @@
-本文件提供 `@aigne/doubao` SDK 的完整使用指南，此 SDK 將豆包 AI 模型整合至 AIGNE 框架中。您將學習如何安裝、設定及使用此 SDK，以在您的應用程式中利用豆包的聊天和圖片生成功能。
+# Doubao
 
-為說明此 SDK 的作用，以下是高階架構概覽：
+`@aigne/doubao` 套件提供了 AIGNE 框架與豆包強大的語言和圖像生成模型之間的無縫整合。本指南為在您的 AIGNE 應用程式中設定和使用豆包模型提供了完整的參考。
 
-```d2
-direction: down
+此整合讓開發人員可以透過 AIGNE 框架一致且統一的介面，來利用豆包的先進 AI 功能。
 
-User-Application: {
-  label: "您的應用程式"
-  shape: rectangle
-}
+## 安裝
 
-AIGNE-Framework: {
-  label: "AIGNE 框架"
-  shape: rectangle
-
-  aigne-doubao-SDK: {
-    label: "@aigne/doubao SDK"
-    shape: rectangle
-  }
-}
-
-Doubao-AI-Service: {
-  label: "豆包 AI 服務"
-  shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-dash: 4
-  }
-
-  Chat-Models: {
-    label: "聊天模型"
-  }
-  Image-Models: {
-    label: "圖片生成模型"
-  }
-}
-
-User-Application -> AIGNE-Framework.aigne-doubao-SDK: "使用 SDK"
-AIGNE-Framework.aigne-doubao-SDK -> Doubao-AI-Service: "API 呼叫"
-```
-
-## 1. 簡介
-
-`@aigne/doubao` 提供了 AIGNE 框架與豆包強大語言模型之間的無縫整合。此套件讓開發者能輕易地在 AIGNE 應用程式中利用豆包的 AI 功能，在運用豆包進階特性的同時，也提供了一致的介面。
-
-### 功能
-
-*   **直接整合豆包 API**：直接連接至豆包的 API 服務。
-*   **聊天完成功能**：支援所有可用的豆包聊天模型。
-*   **函式呼叫**：內建對函式呼叫的支援。
-*   **串流回應**：啟用串流功能，以實現更具回應性的應用程式。
-*   **型別安全**：為所有 API 提供全面的 TypeScript 型別定義。
-*   **一致的介面**：與 AIGNE 框架的模型介面對齊，以實現互通性。
-*   **穩健的錯誤處理**：具備內建的錯誤處理和重試機制。
-*   **完整的設定選項**：提供廣泛的選項以微調模型行為。
-
-## 2. 安裝
-
-首先，請使用您偏好的套件管理器安裝 `@aigne/doubao` 和 `@aigne/core` 套件。
-
-### 使用 npm
+首先，使用您偏好的套件管理器安裝必要的套件。您將需要 `@aigne/core` 和豆包專用的套件。
 
 ```bash
 npm install @aigne/doubao @aigne/core
 ```
 
-### 使用 yarn
-
 ```bash
 yarn add @aigne/doubao @aigne/core
 ```
-
-### 使用 pnpm
 
 ```bash
 pnpm add @aigne/doubao @aigne/core
 ```
 
-## 3. 設定
+## 設定
 
-在使用 SDK 之前，您需要設定您的豆包 API 金鑰。金鑰可以直接在模型建構函式中提供，或透過 `DOUBAO_API_KEY` 環境變數提供。
+若要使用豆包模型，您必須提供一個 API 金鑰。金鑰可以透過以下兩種方式之一進行設定，優先順序如下：
 
-```typescript
+1.  **直接實例化**：在模型的建構函式中直接傳入 `apiKey`。此方法明確，並會覆寫任何其他設定。
+2.  **環境變數**：設定 `DOUBAO_API_KEY` 環境變數。如果建構函式中未提供金鑰，模型將自動使用此變數。
+
+```typescript "設定範例" icon=logos:typescript
 import { DoubaoChatModel } from "@aigne/doubao";
 
-// 選項 1：直接提供 API 金鑰
-const model = new DoubaoChatModel({
-  apiKey: "your-api-key",
+// 方法 1：直接實例化
+const modelWithApiKey = new DoubaoChatModel({
+  apiKey: "your-doubao-api-key",
 });
 
-// 選項 2：使用環境變數 (DOUBAO_API_KEY)
-// 請確保已在您的環境中設定該變數
-// const model = new DoubaoChatModel();
+// 方法 2：環境變數
+// 在您的 .env 檔案或 shell 中設定 DOUBAO_API_KEY
+// DOUBAO_API_KEY="your-doubao-api-key"
+const modelFromEnv = new DoubaoChatModel();
 ```
 
-## 4. 聊天模型用法
+豆包 API 的基礎 URL 已預先設定為 `https://ark.cn-beijing.volces.com/api/v3`，但如有必要，可以透過向建構函式傳入 `baseURL` 選項來覆寫它。
 
-`DoubaoChatModel` 類別提供了一個與豆包聊天完成模型互動的介面。
+## 聊天模型
+
+對於對話型任務，`DoubaoChatModel` 提供了與豆包語言模型的介面。它利用了與 OpenAI 相容的 API 結構，確保了熟悉的開發體驗。
 
 ### 基本用法
 
-以下是一個如何呼叫聊天模型以取得回應的簡單範例。
+若要執行聊天補全，請實例化 `DoubaoChatModel` 並使用 `invoke` 方法。
 
-```typescript
+```typescript "基本聊天補全" icon=logos:typescript
 import { DoubaoChatModel } from "@aigne/doubao";
 
 const model = new DoubaoChatModel({
-  // 直接提供 API 金鑰，或使用環境變數 DOUBAO_API_KEY
-  apiKey: "your-api-key", // 若已在環境變數中設定則為選用
-  // 指定模型版本（預設為 'doubao-seed-1-6-250615'）
+  apiKey: "your-doubao-api-key", // 或使用環境變數
   model: "doubao-seed-1-6-250615",
   modelOptions: {
     temperature: 0.7,
@@ -120,28 +67,31 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* 輸出：
-  {
-    text: "您好！我是一個由豆包語言模型驅動的 AI 助理。",
-    model: "doubao-seed-1-6-250615",
-    usage: {
-      inputTokens: 7,
-      outputTokens: 12
-    }
+```
+
+**回應範例**
+
+```json
+{
+  "text": "Hello! I'm an AI assistant powered by Doubao's language model.",
+  "model": "doubao-seed-1-6-250615",
+  "usage": {
+    "inputTokens": 7,
+    "outputTokens": 12
   }
-*/
+}
 ```
 
 ### 串流回應
 
-對於即時應用程式，您可以從模型中串流回應。這讓您可以在輸出可用時立即處理。
+對於即時應用程式，您可以從模型串流傳輸回應。在 `invoke` 呼叫中將 `streaming` 選項設定為 `true`，並迭代產生的串流以在區塊到達時進行處理。
 
-```typescript
+```typescript "串流聊天回應" icon=logos:typescript
 import { isAgentResponseDelta } from "@aigne/core";
 import { DoubaoChatModel } from "@aigne/doubao";
 
 const model = new DoubaoChatModel({
-  apiKey: "your-api-key",
+  apiKey: "your-doubao-api-key",
   model: "doubao-seed-1-6-250615",
 });
 
@@ -149,7 +99,7 @@ const stream = await model.invoke(
   {
     messages: [{ role: "user", content: "Introduce yourself" }],
   },
-  { streaming: true },
+  { streaming: true }
 );
 
 let fullText = "";
@@ -158,45 +108,133 @@ const json = {};
 for await (const chunk of stream) {
   if (isAgentResponseDelta(chunk)) {
     const text = chunk.delta.text?.text;
-    if (text) fullText += text;
-    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+    if (text) {
+      fullText += text;
+      process.stdout.write(text); // 在文字區塊到達時印出
+    }
+    if (chunk.delta.json) {
+      Object.assign(json, chunk.delta.json);
+    }
   }
 }
 
-console.log(fullText); // 輸出："您好！我是一個由豆包語言模型驅動的 AI 助理。"
-console.log(json); // { model: "doubao-seed-1-6-250615", usage: { inputTokens: 7, outputTokens: 12 } }
+console.log("\n--- Final Data ---");
+console.log(fullText);
+console.log(json);
 ```
 
-## 5. 圖片模型用法
+### 聊天模型參數
 
-`DoubaoImageModel` 類別讓您能使用豆包的圖片生成模型（例如 `doubao-seedream-4-0-250828`）來生成圖片。
+`DoubaoChatModel` 建構函式接受以下選項：
 
-### 基本圖片生成
+<x-field-group>
+  <x-field data-name="apiKey" data-type="string" data-required="false">
+    <x-field-desc markdown>您的豆包 API 金鑰。若未提供，將使用 `DOUBAO_API_KEY` 環境變數。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false" data-default="doubao-seed-1-6-250615">
+    <x-field-desc markdown>要使用的特定聊天模型。</x-field-desc>
+  </x-field>
+  <x-field data-name="baseURL" data-type="string" data-required="false" data-default="https://ark.cn-beijing.volces.com/api/v3">
+    <x-field-desc markdown>豆包 API 端點的基礎 URL。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>傳遞給模型 API 的額外選項，例如 `temperature`、`top_p` 等。這些是標準的 OpenAI 相容參數。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-以下範例示範如何從文字提示生成圖片。
+## 圖像模型
 
-```typescript
+`DoubaoImageModel` 類別透過與豆包的圖像模型介接來啟用圖像生成。
+
+### 基本用法
+
+實例化 `DoubaoImageModel` 並使用提示呼叫 `invoke` 方法以生成圖像。
+
+```typescript "圖像生成" icon=logos:typescript
 import { DoubaoImageModel } from "@aigne/doubao";
 
 async function generateImage() {
   const imageModel = new DoubaoImageModel({
-    apiKey: "your-api-key", // 或使用 DOUBAO_API_KEY 環境變數
-    model: "doubao-seedream-4-0-250828", // 指定圖片模型
+    apiKey: "your-doubao-api-key", // 或使用環境變數
+    model: "doubao-seedream-4-0-250828",
   });
 
-  const output = await imageModel.invoke({
-    prompt: "A futuristic cityscape at sunset",
+  const result = await imageModel.invoke({
+    prompt: "A photorealistic image of a cat programming on a laptop",
+    modelOptions: {
+      size: "1024x1024",
+      watermark: false,
+    },
   });
 
-  // 輸出包含生成的圖片資料（URL 或 base64）
-  console.log(output.images);
+  console.log(result);
 }
 
 generateImage();
 ```
 
-`output.images` 陣列將為每張生成的圖片包含一個帶有 `url` 或 `data` 屬性（base64 編碼）的物件。
+**回應範例**
 
-## 6. 授權條款
+```json
+{
+  "images": [
+    {
+      "type": "file",
+      "data": "...", // base64 編碼的圖像資料
+      "mimeType": "image/jpeg"
+    }
+  ],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 1
+  },
+  "model": "doubao-seedream-4-0-250828"
+}
+```
 
-`@aigne/doubao` SDK 採用 Elastic-2.0 授權條款發行。
+### 圖像模型參數
+
+`DoubaoImageModel` 的 `invoke` 方法接受一個具有以下屬性的輸入物件。請注意，參數的可用性可能因模型而異。
+
+<x-field-group>
+  <x-field data-name="prompt" data-type="string" data-required="true">
+    <x-field-desc markdown>所需圖像的文字描述。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false" data-default="doubao-seedream-4-0-250828">
+    <x-field-desc markdown>要使用的圖像模型的識別碼。</x-field-desc>
+  </x-field>
+  <x-field data-name="image" data-type="FileUnion" data-required="false">
+    <x-field-desc markdown>對於圖像轉圖像模型 (`doubao-seededit-3-0-i2i`)，提供輸入圖像。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>包含模型特定參數的物件。</x-field-desc>
+    <x-field data-name="size" data-type="string" data-required="false">
+      <x-field-desc markdown>生成圖像的所需尺寸 (例如 `\"1024x1024\"`)。</x-field-desc>
+    </x-field>
+    <x-field data-name="seed" data-type="number" data-required="false">
+      <x-field-desc markdown>用於可重現結果的種子值。由 `doubao-seedream-3-0-t2i` 和 `doubao-seededit-3-0-i2i` 支援。</x-field-desc>
+    </x-field>
+    <x-field data-name="guidanceScale" data-type="number" data-required="false">
+      <x-field-desc markdown>控制生成圖像與提示的符合程度。由 `doubao-seedream-3-0-t2i` 和 `doubao-seededit-3-0-i2i` 支援。</x-field-desc>
+    </x-field>
+    <x-field data-name="stream" data-type="boolean" data-required="false" data-default="false">
+      <x-field-desc markdown>若為 `true`，則串流傳輸生成結果。由 `doubao-seedream-4` 模型支援。</x-field-desc>
+    </x-field>
+    <x-field data-name="watermark" data-type="boolean" data-required="false" data-default="false">
+      <x-field-desc markdown>若為 `false`，則停用生成圖像上的浮水印。</x-field-desc>
+    </x-field>
+    <x-field data-name="sequentialImageGeneration" data-type="boolean" data-required="false">
+      <x-field-desc markdown>啟用循序圖像生成。由 `doubao-seedream-4` 模型支援。</x-field-desc>
+    </x-field>
+  </x-field>
+</x-field-group>
+
+### 支援的圖像模型
+
+下表列出了支援的圖像模型及其主要特性。
+
+| 模型系列 | 支援的模型 | 主要使用案例 |
+| --------------------------- | ------------------------------- | --------------------- |
+| `doubao-seedream-4` | `doubao-seedream-4-0-250828` | 文字轉圖像 (T2I) |
+| `doubao-seedream-3-0-t2i` | (具體模型名稱各不相同) | 文字轉圖像 (T2I) |
+| `doubao-seededit-3-0-i2i` | (具體模型名稱各不相同) | 圖像轉圖像 (I2I) |

@@ -1,217 +1,232 @@
-This document provides a detailed guide to the AIGNE loader system, which is responsible for loading and parsing configuration files to construct and initialize agents. The loader is the primary entry point for defining and configuring the behavior of your AI agents and their interactions.
+# Defining Agents with YAML
 
-## Overview
+The AIGNE Framework supports a declarative approach for defining agents using YAML configuration files. This method separates the agent's definition (its properties, instructions, and skills) from the application's business logic, promoting better organization, reusability, and easier management of complex agentic systems.
 
-The AIGNE loader system is designed to interpret a set of configuration files, starting with a root `aigne.yaml` file, to build a complete runtime environment. This process involves parsing the project-level settings, discovering all specified agents and skills, and instantiating them into executable objects. The loader supports defining agents in both YAML for simplicity and JavaScript/TypeScript for more complex, programmatic logic.
+This guide provides a comprehensive overview of the YAML syntax for defining various agent types and their properties.
 
-The loading process can be visualized as follows:
+## Basic Structure
 
-```d2
-direction: down
+Every agent definition, regardless of its type, is contained within a `.yaml` file. The `type` attribute is the primary discriminator that determines the agent's behavior and required properties. If the `type` is omitted, it defaults to `ai`.
 
-Config-Sources: {
-  label: "Configuration Sources"
-  shape: rectangle
+Here is a fundamental example of an AI agent configuration:
 
-  aigne-yaml: "aigne.yaml\n(Root Entry Point)"
-
-  definitions: {
-    label: "Agent & Skill Definitions"
-    shape: rectangle
-    grid-columns: 2
-
-    yaml-files: "YAML Files\n(.yml)"
-    ts-js-files: "TypeScript/JavaScript\n(.ts, .js)"
-  }
-}
-
-Loader: {
-  label: "AIGNE Loader System"
-  shape: rectangle
-}
-
-Runtime: {
-  label: "Initialized Runtime Environment"
-  shape: rectangle
-
-  Objects: {
-    label: "Live Objects in Memory"
-    shape: rectangle
-    grid-columns: 2
-
-    Agent-Instances: "Agent Instances"
-    Skill-Instances: "Skill Instances"
-  }
-}
-
-Config-Sources.aigne-yaml -> Loader: "1. Read"
-Config-Sources.definitions -> Loader: "2. Discover"
-Loader -> Loader: "3. Parse & Build"
-Loader -> Runtime.Objects: "4. Instantiate"
-```
-
-## Core Functionality
-
-The loader system is orchestrated by a few key functions that handle the discovery, parsing, and instantiation of your project's configuration.
-
-### The `load` function
-
-This is the main entry point for the loader system. It takes a path to your project directory (or a specific `aigne.yaml` file) and an options object, then returns a fully resolved `AIGNEOptions` object ready for use.
-
-```typescript
-// From: packages/core/src/loader/index.ts
-
-export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
-  // ... implementation
-}
-```
-
-### The `loadAgent` function
-
-This function is responsible for loading a single agent from a file. It automatically detects the file type (YAML or JavaScript/TypeScript) and uses the appropriate parser.
-
-```typescript
-// From: packages/core/src/loader/index.ts
-
-export async function loadAgent(
-  path: string,
-  options?: LoadOptions,
-  agentOptions?: AgentOptions,
-): Promise<Agent> {
-  // ... implementation
-}
-```
-
-## Project Configuration: `aigne.yaml`
-
-The `aigne.yaml` (or `aigne.yml`) file is the root of your project's configuration. The loader searches for this file in the provided path to begin the loading process.
-
-### `aigne.yaml` Schema
-
-Here are the top-level properties you can define in your `aigne.yaml` file:
-
-| Key | Type | Description |
-| :--- | :--- | :--- |
-| `name` | `string` | The name of your project. |
-| `description` | `string` | A brief description of your project. |
-| `model` | `string` or `object` | Default chat model configuration for all agents. Can be overridden by individual agents. |
-| `imageModel` | `string` or `object` | Default image model configuration for all agents. |
-| `agents` | `string[]` | A list of paths to agent definition files to be loaded. |
-| `skills` | `string[]` | A list of paths to skill definition files to be globally available. |
-| `mcpServer` | `object` | Configuration for the MCP (Multi-agent Communication Protocol) server, including a list of agents to expose. |
-| `cli` | `object` | Configuration for the command-line interface, defining chat agents and agent command structures. |
-
-### Example `aigne.yaml`
-
-This example demonstrates a typical project setup, defining a default model, and listing various agents and skills to be loaded.
-
-```yaml
-name: test_aigne_project
-description: A test project for the aigne agent
-chat_model:
-  name: gpt-4o-mini
-  temperature: 0.8
-agents:
-  - chat.yaml
-  - chat-with-prompt.yaml
-  - team.yaml
-  - image.yaml
-  - agents/test-relative-prompt-paths.yaml
+```yaml chat.yaml
+name: Basic Chat Agent
+description: A simple agent that responds to user messages.
+type: ai
+instructions: "You are a helpful assistant. Respond to the user's message concisely."
+input_key: message
 skills:
-  - sandbox.js
-mcp_server:
-  agents:
-    - chat.yaml
-cli:
-  agents:
-    - chat.yaml
-    - test-cli-agents/b.yaml
-    - url: test-cli-agents/a.yaml
-      name: a-renamed
-      description: A agent from a.yaml
-      alias: ["a", "a-agent"]
-      agents:
-        - url: test-cli-agents/a-1.yaml
-          agents:
-            - url: test-cli-agents/a-1-1.yaml
-            - url: test-cli-agents/a-1-2.yaml
-              name: a12-renamed
-              description: A agent from a-1-2.yaml
-        - test-cli-agents/a-2.yaml
+  - my-skill.js
 ```
 
-## Agent Configuration (YAML)
+### Core Properties
 
-Agents are the fundamental building blocks of the AIGNE platform. You can define them in YAML files for a declarative and easy-to-read format.
+The following properties are common across most agent types:
 
-### Common Agent Properties
+<x-field-group>
+  <x-field data-name="name" data-type="string" data-required="false">
+    <x-field-desc markdown>A human-readable name for the agent.</x-field-desc>
+  </x-field>
+  <x-field data-name="description" data-type="string" data-required="false">
+    <x-field-desc markdown>A brief description of the agent's purpose and capabilities.</x-field-desc>
+  </x-field>
+  <x-field data-name="type" data-type="string" data-required="false" data-default="ai">
+    <x-field-desc markdown>Specifies the agent's type. Determines the required fields and behavior. Valid types include `ai`, `image`, `team`, `transform`, `mcp`, and `function`.</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="object | string" data-required="false">
+    <x-field-desc markdown>Configuration for the chat model used by the agent, overriding any globally defined model. Can be a string or a detailed object.</x-field-desc>
+  </x-field>
+  <x-field data-name="skills" data-type="array" data-required="false">
+    <x-field-desc markdown>A list of other agents or JavaScript/TypeScript functions that this agent can use as tools. Each skill is referenced by its file path.</x-field-desc>
+  </x-field>
+  <x-field data-name="inputSchema" data-type="object | string" data-required="false">
+    <x-field-desc markdown>A JSON schema defining the expected input structure. Can be an inline object or a path to an external `.json` or `.yaml` file.</x-field-desc>
+  </x-field>
+  <x-field data-name="outputSchema" data-type="object | string" data-required="false">
+    <x-field-desc markdown>A JSON schema for structuring the agent's output. Can be an inline object or a path to an external file. This is crucial for enabling structured output.</x-field-desc>
+  </x-field>
+  <x-field data-name="memory" data-type="boolean | object" data-required="false">
+    <x-field-desc markdown>Enables statefulness for the agent. Set to `true` for default memory or provide a configuration object for specific providers.</x-field-desc>
+  </x-field>
+  <x-field data-name="hooks" data-type="array" data-required="false">
+    <x-field-desc markdown>Defines lifecycle hooks (`onStart`, `onSuccess`, `onError`, `onEnd`) that trigger other agents at different stages of execution.</x-field-desc>
+  </x-field>
+</x-field-group>
 
-All agent types share a set of common properties:
+## Loading External Prompts and Schemas
 
-| Key | Type | Description |
-| :--- | :--- | :--- |
-| `name` | `string` | A unique name for the agent. |
-| `description` | `string` | A description of the agent's purpose and capabilities. |
-| `model` | `string` or `object` | Overrides the default chat model for this specific agent. |
-| `inputSchema` | `string` or `object` | A path to a JSON schema file or an inline schema defining the expected input. |
-| `outputSchema` | `string` or `object` | A path to a JSON schema file or an inline schema defining the expected output. |
-| `skills` | `(string or object)[]` | A list of skills (tools) available to this agent. Can be a path to a skill file or a nested agent definition. |
-| `memory` | `boolean` or `object` | Enables memory for the agent. Can be a simple `true` or an object for advanced configuration. |
-| `hooks` | `object` or `object[]` | Defines hooks that trigger other agents at different points in the lifecycle (e.g., `onStart`, `onSuccess`). |
+To maintain clean and modular configurations, you can load agent instructions and schemas from external files. This is particularly useful for complex prompts or reusable data structures.
 
-### Agent Types
+### External Instructions
 
-The `type` property determines the agent's core behavior.
+For `ai` and `image` agents, instructions can be lengthy. You can define them in a separate Markdown or text file and reference it using the `url` key.
 
-#### 1. AI Agent (`type: "ai"`)
-
-The most common type, used for general-purpose AI tasks. It uses a large language model to process instructions and interact with skills.
-
--   **`instructions`**: Defines the agent's prompt. Can be a string, an object with `role` and `content`, or a reference to a file using `url`.
--   **`inputKey`**: The key in the input object that should be treated as the main user message.
--   **`toolChoice`**: Controls how the agent uses tools (e.g., `auto`, `required`).
-
-**Example:**
-
-```yaml
+```yaml chat-with-prompt.yaml
 name: chat-with-prompt
-description: Chat agent
+description: An AI agent with instructions loaded from an external file.
+type: ai
 instructions:
-  url: chat-prompt.md
+  url: prompts/main-prompt.md
 input_key: message
 memory: true
 skills:
+  - skills/sandbox.js
+```
+
+The `main-prompt.md` file contains the raw text that will be used as the agent's system prompt.
+
+```markdown prompts/main-prompt.md
+You are a master programmer. When the user asks for code, provide a complete, runnable example and explain the key parts.
+```
+
+You can also construct a multi-part prompt with different roles:
+
+```yaml multi-role-prompt.yaml
+instructions:
+  - role: system
+    url: prompts/system-role.md
+  - role: user
+    content: "Here is an example of a good response:"
+  - role: assistant
+    url: prompts/example-response.md
+```
+
+### External Schemas
+
+Similarly, `inputSchema` and `outputSchema` can reference external JSON or YAML files that define the schema structure.
+
+```yaml structured-output-agent.yaml
+name: JSON Extractor
+type: ai
+instructions: Extract the user's name and email from the text.
+outputSchema: schemas/user-schema.yaml
+```
+
+The `user-schema.yaml` file would contain the JSON schema definition:
+
+```yaml schemas/user-schema.yaml
+type: object
+properties:
+  name:
+    type: string
+    description: The full name of the user.
+  email:
+    type: string
+    description: The email address of the user.
+required:
+  - name
+  - email
+```
+
+## Agent Type Specifics
+
+The following sections detail the unique configuration properties for each agent type.
+
+### AI Agent (`type: ai`)
+
+The `AIAgent` is the most common type, designed for general-purpose interaction with language models.
+
+```yaml ai-agent-example.yaml
+type: ai
+name: Customer Support AI
+instructions:
+  url: prompts/support-prompt.md
+input_key: customer_query
+output_key: response
+# Enforce the model to call a specific skill
+tool_choice: "sandbox"
+outputSchema: schemas/support-response.yaml
+skills:
   - sandbox.js
 ```
 
-#### 2. Image Agent (`type: "image"`)
+<x-field-group>
+  <x-field data-name="instructions" data-type="string | object | array" data-required="false">
+    <x-field-desc markdown>The system prompt or instructions for the AI model. Can be a simple string, a reference to an external file (`url`), or an array of message objects (`role`, `content`/`url`).</x-field-desc>
+  </x-field>
+  <x-field data-name="inputKey" data-type="string" data-required="false">
+    <x-field-desc markdown>The key in the input object that contains the main user message to be sent to the model.</x-field-desc>
+  </x-field>
+  <x-field data-name="outputKey" data-type="string" data-required="false">
+    <x-field-desc markdown>The key under which the AI's final text response will be placed in the output object.</x-field-desc>
+  </x-field>
+  <x-field data-name="toolChoice" data-type="string" data-required="false">
+    <x-field-desc markdown>Forces the model to use a specific skill (tool). The value must match the name of a skill attached to the agent.</x-field-desc>
+  </x-field>
+</x-field-group>
 
-Specialized for generating images based on a prompt.
+### Team Agent (`type: team`)
 
--   **`instructions`**: (Required) The prompt used for image generation.
--   **`modelOptions`**: A dictionary of options specific to the image generation model.
+The `TeamAgent` orchestrates a collection of child agents (defined under `skills`) to perform a multi-step task.
 
-#### 3. Team Agent (`type: "team"`)
+```yaml team-agent-example.yaml
+type: team
+name: Research and Write Team
+# Agents will run one after another
+mode: sequential
+# The output of this team will be the collected outputs of all steps
+include_all_steps_output: true
+skills:
+  - url: agents/researcher.yaml
+  - url: agents/writer.yaml
+  - url: agents/editor.yaml
+```
 
-Orchestrates a group of agents (skills) to work together on a task.
+<x-field-group>
+  <x-field data-name="mode" data-type="string" data-required="false" data-default="sequential">
+    <x-field-desc markdown>The execution mode for the team. Can be `sequential` (agents run in order) or `parallel` (agents run concurrently).</x-field-desc>
+  </x-field>
+  <x-field data-name="iterateOn" data-type="string" data-required="false">
+    <x-field-desc markdown>The key in the input object containing an array. The team will execute its workflow for each item in the array.</x-field-desc>
+  </x-field>
+  <x-field data-name="reflection" data-type="object" data-required="false">
+    <x-field-desc markdown>Configures a self-correction loop where a `reviewer` agent inspects the output and can trigger re-runs until the output is approved.</x-field-desc>
+  </x-field>
+</x-field-group>
 
--   **`mode`**: The processing mode, such as `parallel` or `sequential`.
--   **`iterateOn`**: The key from the input to iterate over when processing with skills.
--   **`reflection`**: Configures a review process where a `reviewer` agent approves or requests changes to the output.
+### Image Agent (`type: image`)
 
-#### 4. Transform Agent (`type: "transform"`)
+The `ImageAgent` is specialized for generating images using an image model.
 
-Transforms input data using a JSONata expression.
+```yaml image-agent-example.yaml
+type: image
+name: Logo Generator
+instructions: "A minimalist, flat-design logo for a tech startup named 'Innovate'."
+# Pass through specific options to the image model provider
+model_options:
+  quality: hd
+  style: vivid
+```
 
--   **`jsonata`**: (Required) A string containing the JSONata expression to apply to the input.
+<x-field-group>
+  <x-field data-name="instructions" data-type="string | object" data-required="true">
+    <x-field-desc markdown>The prompt describing the desired image. Unlike the AI agent, this is a mandatory field.</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>A key-value map of provider-specific options to control image generation (e.g., `quality`, `style`, `size`).</x-field-desc>
+  </x-field>
+</x-field-group>
 
-#### 5. MCP Agent (`type: "mcp"`)
+### Transform Agent (`type: transform`)
 
-Acts as a client to an external agent or service.
+The `TransformAgent` uses a [JSONata](https://jsonata.org/) expression to declaratively map, filter, or restructure JSON data without writing code.
 
--   **`url`**: The URL of the external agent.
--   **`command`**: A shell command to execute.
+```yaml transform-agent-example.yaml
+type: transform
+name: User Formatter
+description: Extracts and formats user names from a list.
+jsonata: "payload.users.{'name': firstName & ' ' & lastName}"
+```
 
-#### 6. Function Agent (`type: "function"`)
+<x-field-group>
+  <x-field data-name="jsonata" data-type="string" data-required="true">
+    <x-field-desc markdown>The JSONata expression to execute against the input data.</x-field-desc>
+  </x-field>
+</x-field-group>
 
-Defined programmatically in a JavaScript/TypeScript file. This type is specified in the JS/TS file itself, not in YAML.
+## Summary
+
+Defining agents via YAML offers a powerful, declarative alternative to programmatic definition. It allows for clear separation of concerns, enhances reusability, and simplifies the management of agent configurations. By leveraging external files for prompts and schemas, you can build complex, modular, and maintainable AI systems.
+
+For more hands-on examples, refer to the other guides in the [Advanced Topics](./developer-guide-advanced-topics.md) section.

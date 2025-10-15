@@ -1,169 +1,70 @@
-# @aigne/gemini
+# Google Gemini
 
-<p align="center">
-  <picture>
-    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)">
-    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)">
-    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
-  </picture>
-</p>
+This document provides a comprehensive guide for configuring and using Google's Gemini models within the AIGNE Framework. It covers the setup of API keys, model selection, and the specific features available through the `@aigne/gemini` package for both chat and image generation functionalities.
 
-[![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
-[![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
-[![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
-[![NPM Version](https://img.shields.io/npm/v/@aigne/gemini)](https://www.npmjs.com/package/@aigne/gemini)
-[![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/gemini)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
-
-AIGNE Gemini SDK for integrating with Google's Gemini AI models within the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework).
-
-## Introduction
-
-`@aigne/gemini` provides a seamless integration between the AIGNE Framework and Google's Gemini language models and API. This package enables developers to easily leverage Gemini's advanced AI capabilities in their AIGNE applications, providing a consistent interface across the framework while taking advantage of Google's state-of-the-art multimodal models.
-
-<picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-gemini-dark.png" media="(prefers-color-scheme: dark)">
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-gemini.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-gemini.png" alt="AIGNE Arch" />
-</picture>
-
-## Architecture
-
-The following diagram illustrates how the `@aigne/gemini` package fits within the AIGNE framework and interacts with the Google Gemini API.
-
-```d2
-direction: down
-
-User-Application: {
-  label: "Your AIGNE Application"
-  shape: rectangle
-}
-
-AIGNE-Framework: {
-  label: "AIGNE Framework"
-  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-  shape: rectangle
-  grid-columns: 2
-  grid-gap: 100
-
-  AIGNE-Core: {
-    label: "@aigne/core"
-    shape: rectangle
-    
-    Model-Interface: {
-      label: "Model Interface\n(invoke, stream)"
-      shape: rectangle
-      style: {
-        stroke-dash: 2
-      }
-    }
-  }
-
-  AIGNE-Gemini: {
-    label: "@aigne/gemini"
-    shape: rectangle
-    
-    GeminiChatModel: {
-      label: "GeminiChatModel"
-    }
-    
-    GeminiImageModel: {
-      label: "GeminiImageModel"
-    }
-  }
-}
-
-Google-Cloud: {
-  label: "Google Cloud"
-  shape: rectangle
-
-  Google-Gemini-API: {
-    label: "Google Gemini API"
-    shape: cylinder
-    grid-columns: 2
-    
-    Gemini-Models: {
-      label: "Gemini Models\n(e.g., gemini-1.5-pro)"
-    }
-    
-    Imagen-Models: {
-      label: "Imagen Models\n(e.g., imagen-4.0)"
-    }
-  }
-}
-
-User-Application -> AIGNE-Framework.AIGNE-Core: "Uses Core"
-User-Application -> AIGNE-Framework.AIGNE-Gemini: "Imports & Instantiates"
-
-AIGNE-Framework.AIGNE-Core.Model-Interface -> AIGNE-Framework.AIGNE-Gemini: {
-  label: "Implements"
-  style: {
-    stroke-dash: 4
-  }
-}
-
-AIGNE-Framework.AIGNE-Gemini.GeminiChatModel -> Google-Cloud.Google-Gemini-API.Gemini-Models: "API Call"
-AIGNE-Framework.AIGNE-Gemini.GeminiImageModel -> Google-Cloud.Google-Gemini-API.Gemini-Models: "API Call"
-AIGNE-Framework.AIGNE-Gemini.GeminiImageModel -> Google-Cloud.Google-Gemini-API.Imagen-Models: "API Call"
-
-```
+The `@aigne/gemini` package provides a direct integration with Google's Gemini and Imagen APIs, allowing developers to leverage these advanced multimodal models in their AIGNE applications through a consistent and predictable interface.
 
 ## Features
 
-*   **Google Gemini API Integration**: Direct connection to Google's Gemini API services
-*   **Chat Completions**: Support for Gemini's chat completions API with all available models
-*   **Image Generation**: Support for both Imagen and Gemini image generation models
-*   **Multimodal Support**: Built-in support for handling both text and image inputs
-*   **Function Calling**: Support for function calling capabilities
-*   **Streaming Responses**: Support for streaming responses for more responsive applications
-*   **Type-Safe**: Comprehensive TypeScript typings for all APIs and models
-*   **Consistent Interface**: Compatible with the AIGNE Framework's model interface
-*   **Error Handling**: Robust error handling and retry mechanisms
-*   **Full Configuration**: Extensive configuration options for fine-tuning behavior
+- **Direct Google API Integration**: Connects directly to Google's Gemini and Imagen API services.
+- **Chat Completions**: Full support for Gemini chat models, including `gemini-1.5-pro` and `gemini-1.5-flash`.
+- **Image Generation**: Supports both Imagen (e.g., `imagen-4.0-generate-001`) and Gemini models for image generation.
+- **Multimodal Capabilities**: Natively handles both text and image inputs for multimodal applications.
+- **Function Calling**: Integrates with Gemini's function calling capabilities.
+- **Streaming Responses**: Enables real-time, responsive applications by supporting streaming responses.
+- **Type-Safe**: Provides comprehensive TypeScript typings for all API interactions and model configurations.
 
 ## Installation
 
-### Using npm
+To begin, install the necessary packages using your preferred package manager.
 
+<tabs>
+<tab title="npm">
 ```bash
 npm install @aigne/gemini @aigne/core
 ```
-
-### Using yarn
-
+</tab>
+<tab title="yarn">
 ```bash
 yarn add @aigne/gemini @aigne/core
 ```
-
-### Using pnpm
-
+</tab>
+<tab title="pnpm">
 ```bash
 pnpm add @aigne/gemini @aigne/core
 ```
+</tab>
+</tabs>
 
-## Getting Started
+## Configuration
 
-### Environment Variables
+The Gemini models require an API key for authentication. The key can be provided directly in the model constructor or, for better security and flexibility, through an environment variable.
 
-Before using the SDK, you need to set your Gemini API key. The SDK will automatically detect the key from the following environment variable:
+Set the following environment variable to allow the framework to automatically detect your API key:
 
-```bash
-export GEMINI_API_KEY="your-gemini-api-key"
+```bash title="Environment Variable"
+export GEMINI_API_KEY="your-google-api-key"
 ```
 
-Alternatively, you can pass the `apiKey` directly when instantiating a model.
+## Chat Model
 
-### Chat Model Usage
+The `GeminiChatModel` class provides an interface for interacting with Google's chat-based models.
 
-The `GeminiChatModel` provides an interface for interacting with Gemini's chat completion models.
+### Basic Usage
 
-```typescript
+Below is a standard example of instantiating the `GeminiChatModel` and invoking it to get a response.
+
+```typescript "Chat Model Example" icon=logos:javascript
 import { GeminiChatModel } from "@aigne/gemini";
 
 const model = new GeminiChatModel({
-  // Provide API key directly or use environment variable GOOGLE_API_KEY
-  apiKey: "your-api-key", // Optional if set in env variables
-  // Specify Gemini model version (defaults to 'gemini-1.5-pro' if not specified)
+  // The API key is optional if the GEMINI_API_KEY environment variable is set.
+  apiKey: "your-google-api-key",
+
+  // Specify the model version. Defaults to 'gemini-1.5-pro' if not provided.
   model: "gemini-1.5-flash",
+
+  // Additional model options can be set.
   modelOptions: {
     temperature: 0.7,
   },
@@ -174,60 +75,27 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* Output:
-  {
-    text: "Hello from Gemini! I'm Google's helpful AI assistant. How can I assist you today?",
-    model: "gemini-1.5-flash"
-  }
-*/
 ```
 
-### Image Generation Model Usage
+The expected output will be an object containing the model's response.
 
-The `GeminiImageModel` allows you to generate images using either Imagen or Gemini models.
-
-```typescript
-import { GeminiImageModel } from "@aigne/gemini";
-
-const model = new GeminiImageModel({
-  apiKey: "your-api-key", // Optional if set in env variables
-  model: "imagen-4.0-generate-001", // Default Imagen model
-});
-
-const result = await model.invoke({
-  prompt: "A serene mountain landscape at sunset with golden light",
-  n: 1,
-});
-
-console.log(result);
-/* Output:
-  {
-    images: [
-      {
-        base64: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
-      }
-    ],
-    usage: {
-      inputTokens: 0,
-      outputTokens: 0
-    },
-    model: "imagen-4.0-generate-001"
-  }
-*/
+```json "Example Response"
+{
+  "text": "Hello from Gemini! I'm Google's helpful AI assistant. How can I assist you today?",
+  "model": "gemini-1.5-flash"
+}
 ```
-
-## Advanced Usage
 
 ### Streaming Responses
 
-For real-time applications, you can stream responses from the chat model. This allows you to process the output as it's being generated.
+For applications requiring real-time interaction, you can enable streaming to process response chunks as they become available.
 
-```typescript
+```typescript "Streaming Example" icon=logos:javascript
 import { isAgentResponseDelta } from "@aigne/core";
 import { GeminiChatModel } from "@aigne/gemini";
 
 const model = new GeminiChatModel({
-  apiKey: "your-api-key",
+  apiKey: "your-google-api-key",
   model: "gemini-1.5-flash",
 });
 
@@ -235,7 +103,7 @@ const stream = await model.invoke(
   {
     messages: [{ role: "user", content: "Hi there, introduce yourself" }],
   },
-  { streaming: true },
+  { streaming: true }
 );
 
 let fullText = "";
@@ -244,56 +112,119 @@ const json = {};
 for await (const chunk of stream) {
   if (isAgentResponseDelta(chunk)) {
     const text = chunk.delta.text?.text;
-    if (text) fullText += text;
-    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+    if (text) {
+      fullText += text;
+    }
+    if (chunk.delta.json) {
+      Object.assign(json, chunk.delta.json);
+    }
   }
 }
 
-console.log(fullText); // Output: "Hello from Gemini! I'm Google's helpful AI assistant. How can I assist you today?"
-console.log(json); // { model: "gemini-1.5-flash" }
+console.log(fullText);
+// Expected Output: "Hello from Gemini! I'm Google's helpful AI assistant. How can I assist you today?"
+
+console.log(json);
+// Expected Output: { model: "gemini-1.5-flash" }
+```
+
+## Image Generation Model
+
+The `GeminiImageModel` class is used to generate images. It supports two distinct types of underlying models: **Imagen** models, which are specialized for image generation, and multimodal **Gemini** models, which can also generate images.
+
+### Basic Usage
+
+Here is a basic example of generating an image using the default Imagen model.
+
+```typescript "Image Generation Example" icon=logos:javascript
+import { GeminiImageModel } from "@aigne/gemini";
+
+const model = new GeminiImageModel({
+  apiKey: "your-google-api-key",
+  // Defaults to "imagen-4.0-generate-001"
+  model: "imagen-4.0-generate-001",
+});
+
+const result = await model.invoke({
+  prompt: "A serene mountain landscape at sunset with golden light",
+  n: 1,
+});
+
+console.log(result);
+```
+
+The result will contain the generated image data in Base64 format.
+
+```json "Example Response"
+{
+  "images": [
+    {
+      "type": "file",
+      "data": "iVBORw0KGgoAAAANSUhEUgAA...",
+      "mimeType": "image/png"
+    }
+  ],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0
+  },
+  "model": "imagen-4.0-generate-001"
+}
 ```
 
 ### Image Generation Parameters
 
-The `GeminiImageModel` supports a wide range of parameters that differ based on the underlying model family (Imagen or Gemini).
+The available parameters for image generation differ based on whether you are using an Imagen or a Gemini model.
 
 #### Imagen Models (e.g., `imagen-4.0-generate-001`)
 
--   **`prompt`** (string): The text description of the image you want to generate.
--   **`n`** (number): Number of images to generate (defaults to 1).
--   **`seed`** (number): Random seed for reproducible generation.
--   **`safetyFilterLevel`** (string): Safety filter level for content moderation.
--   **`personGeneration`** (string): Person generation settings.
--   **`outputMimeType`** (string): Output image format (e.g., "image/png", "image/jpeg").
--   **`outputGcsUri`** (string): Google Cloud Storage URI for output.
--   **`outputCompressionQuality`** (number): JPEG compression quality (1-100).
--   **`negativePrompt`** (string): Description of what to exclude from the image.
--   **`language`** (string): Language for the prompt.
--   **`includeSafetyAttributes`** (boolean): Include safety attributes in response.
--   **`includeRaiReason`** (boolean): Include RAI reasoning in response.
--   **`imageSize`** (string): Size of the generated image.
--   **`guidanceScale`** (number): Guidance scale for generation.
--   **`aspectRatio`** (string): Aspect ratio of the image.
--   **`addWatermark`** (boolean): Add watermark to generated images.
+These parameters are specific to models optimized for image generation.
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `prompt` | `string` | **Required.** The text description of the image to generate. |
+| `n` | `number` | The number of images to generate. Defaults to `1`. |
+| `negativePrompt` | `string` | A description of elements to exclude from the image. |
+| `seed` | `number` | A random seed for ensuring reproducible image generation. |
+| `aspectRatio` | `string` | The aspect ratio for the generated image (e.g., "1:1", "16:9"). |
+| `imageSize` | `string` | The size of the generated image (e.g., "1024x1024"). |
+| `guidanceScale` | `number` | Controls how closely the generated image adheres to the prompt. |
+| `outputMimeType` | `string` | The output format for the image (e.g., "image/png", "image/jpeg"). |
+| `addWatermark` | `boolean` | If `true`, adds a watermark to the generated images. |
+| `safetyFilterLevel` | `string` | The safety filter level for content moderation. |
+| `personGeneration` | `string` | Settings related to the generation of people in images. |
+| `outputGcsUri` | `string` | A Google Cloud Storage URI to save the output. |
+| `outputCompressionQuality` | `number` | JPEG compression quality, from 1 to 100. |
+| `language` | `string` | The language of the prompt. |
+| `includeSafetyAttributes` | `boolean` | If `true`, includes safety attributes in the response. |
+| `includeRaiReason` | `boolean` | If `true`, includes RAI (Responsible AI) reasoning in the response. |
 
 #### Gemini Models (e.g., `gemini-1.5-pro`)
 
--   **`prompt`** (string): The text description of the image you want to generate.
--   **`n`** (number): Number of images to generate (defaults to 1).
--   **`temperature`** (number): Controls randomness in generation (0.0 to 1.0).
--   **`maxOutputTokens`** (number): Maximum number of tokens in response.
--   **`topP`** (number): Nucleus sampling parameter.
--   **`topK`** (number): Top-k sampling parameter.
--   **`safetySettings`** (array): Safety settings for content generation.
--   **`seed`** (number): Random seed for reproducible generation.
--   **`stopSequences`** (array): Sequences that stop generation.
--   **`systemInstruction`** (string): System-level instructions.
+These parameters apply when using a multimodal Gemini model for image generation.
 
-#### Advanced Image Generation Example
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `prompt` | `string` | **Required.** The text description of the image to generate. |
+| `n` | `number` | The number of images to generate. Defaults to `1`. |
+| `temperature` | `number` | Controls randomness (0.0 to 1.0). Higher values lead to more creative outputs. |
+| `maxOutputTokens` | `number` | The maximum number of tokens in the response. |
+| `topP` | `number` | The nucleus sampling parameter. |
+| `topK` | `number` | The top-k sampling parameter. |
+| `seed` | `number` | A random seed for ensuring reproducible generation. |
+| `stopSequences` | `array` | A list of sequences that will stop the generation process. |
+| `safetySettings` | `array` | Custom safety settings for content generation. |
+| `systemInstruction` | `string` | System-level instructions to guide the model's behavior. |
 
-This example demonstrates how to use several advanced parameters with an Imagen model.
+### Advanced Image Generation
 
-```typescript
+This example demonstrates using multiple parameters to fine-tune the output from an Imagen model.
+
+```typescript "Advanced Image Generation" icon=logos:javascript
+import { GeminiImageModel } from "@aigne/gemini";
+
+const model = new GeminiImageModel({ apiKey: "your-google-api-key" });
+
 const result = await model.invoke({
   prompt: "A futuristic cityscape with neon lights and flying cars",
   model: "imagen-4.0-generate-001",
@@ -304,33 +235,15 @@ const result = await model.invoke({
   negativePrompt: "blurry, low quality, distorted",
   seed: 12345,
   includeSafetyAttributes: true,
-  outputMimeType: "image/png"
+  outputMimeType: "image/png",
 });
+
+console.log(result);
 ```
 
-### Default Model Options
+## Further Reading
 
-You can configure default options at the model level, which will be applied to all subsequent `invoke` calls.
+For a complete list of parameters and more advanced features, refer to the official Google AI documentation.
 
-```typescript
-const model = new GeminiImageModel({
-  apiKey: "your-api-key",
-  model: "imagen-4.0-generate-001",
-  modelOptions: {
-    safetyFilterLevel: "BLOCK_MEDIUM_AND_ABOVE",
-    includeSafetyAttributes: true,
-    outputMimeType: "image/png"
-  }
-});
-```
-
-## API Reference
-
-For a complete and detailed list of all available parameters and advanced features, please refer to the official Google GenAI documentation:
-
--   **Imagen Models**: [Google GenAI Models.generateImages()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generateimages)
--   **Gemini Models**: [Google GenAI Models.generateContent()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generatecontent)
-
-## License
-
-This SDK is licensed under the [Elastic-2.0 License](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md).
+- **Imagen Models**: [Google GenAI Models.generateImages()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generateimages)
+- **Gemini Models**: [Google GenAI Models.generateContent()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generatecontent)

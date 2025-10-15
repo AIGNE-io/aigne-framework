@@ -1,254 +1,179 @@
 # Prompts
 
-The prompt building and templating system is a core component for creating dynamic and powerful interactions with AI models. It consists of two main parts:
+Effective communication with AI models is contingent upon the quality and structure of the prompts provided. The AIGNE framework supplies a robust system for creating dynamic, reusable, and structured prompts through its `PromptBuilder` class and the integrated Nunjucks templating engine. This guide provides a systematic explanation of these components.
 
-1.  **Prompt Templates**: A flexible system using Nunjucks for creating dynamic, reusable prompt components.
-2.  **Prompt Builder**: A high-level orchestrator that assembles templates, context, memories, tools, and output schemas into a complete `ChatModelInput` ready to be sent to a model.
+Refer to the [AI Agent](./developer-guide-agents-ai-agent.md) documentation for more context on how prompts are utilized within agents.
 
-### `PromptBuilder` Workflow
+## Prompt Templating with Nunjucks
 
-The `PromptBuilder` is the central class that orchestrates all the different pieces—templates, user input, context, memories, and tools—to construct a final, model-ready `ChatModelInput` object. The following diagram illustrates this process:
+The framework utilizes the [Nunjucks templating engine](https://mozilla.github.io/nunjucks/) to facilitate the creation of dynamic prompts. This allows for the injection of variables, inclusion of external files, and other programmatic logic directly within your prompt files.
 
-```d2
-direction: down
+All prompt text is processed by the `PromptTemplate` class, which uses Nunjucks to render the final string.
 
-Inputs: {
-  label: "Builder Inputs"
-  shape: rectangle
-  style.stroke-dash: 2
-  grid-columns: 2
+### Variable Substitution
 
-  User-Input
-  Context
-  Memories
-  Tools
-  Output-Schemas: "Output Schemas"
+You can define placeholders in your prompts using the `{{ variable_name }}` syntax. These placeholders are replaced with actual values at runtime.
 
-  Templates: {
-    label: "Prompt Templates"
-    shape: rectangle
+```markdown title="analyst-prompt.md" icon=mdi:text-box
+Analyze the following data:
 
-    Nunjucks-Engine: {
-      label: "Nunjucks Engine"
-      style.fill: "#f5f5f5"
-    }
-
-    PromptTemplate: {
-      label: "PromptTemplate\n(for string formatting)"
-    }
-
-    ChatMessagesTemplate: {
-      label: "ChatMessagesTemplate\n(for conversations)"
-      grid-columns: 2
-      SystemMessageTemplate
-      UserMessageTemplate
-      AgentMessageTemplate
-      ToolMessageTemplate
-    }
-  }
-}
-
-PromptBuilder: {
-  label: "PromptBuilder"
-  shape: rectangle
-  style.fill: "#e6f7ff"
-}
-
-ChatModelInput: {
-  label: "ChatModelInput"
-  shape: rectangle
-  style.fill: "#d9f7be"
-}
-
-AI-Model: {
-  label: "AI Model"
-  shape: cylinder
-}
-
-Inputs.Templates.PromptTemplate -> Inputs.Templates.Nunjucks: "uses"
-Inputs.Templates.ChatMessagesTemplate -> Inputs.Templates.Nunjucks: "uses"
-
-Inputs -> PromptBuilder: "Assembled by .build()"
-PromptBuilder -> ChatModelInput: "Generates"
-ChatModelInput -> AI-Model: "Sent to"
-
+{{ data }}
 ```
 
-## Prompt Templates
+When invoking an agent with this prompt, you would provide the `data` variable in the input message.
 
-Prompt templates allow you to define the structure of your prompts and conversations, using variables and including other files to create modular and maintainable prompt instructions.
+```typescript title="index.ts" icon=logos:typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAI }s from "@aigne/openai";
 
-### `PromptTemplate`
+const model = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const aigne = new AIGNE({
+  model,
+  agents: {
+    analyst: new AIAgent({
+      instructions: { path: "./analyst-prompt.md" },
+      inputKey: "data",
+    }),
+  },
+});
 
-The `PromptTemplate` class is a simple wrapper around a Nunjucks template string. It allows you to format a string with variables.
+const result = await aigne.invoke("analyst", {
+  data: "User feedback scores: 8, 9, 7, 10, 6.",
+});
 
-**Key Features:**
-
-*   **Variable Substitution**: Inject dynamic data into your prompts.
-*   **File Inclusion**: Build complex prompts by including other template files using the `{% raw %}{% include "path/to/file.md" %}{% endraw %}` syntax.
-
-**Example:**
-
-Let's say you have two template files:
-
-**`./main-prompt.md`**
-```markdown
-You are a professional chatbot.
-
-{% raw %}{% include "./personality.md" %}{% endraw %}
+console.log(result);
 ```
 
-**`./personality.md`**
-```markdown
-Your name is {% raw %}{{ name }}{% endraw %}.
+### File Inclusion
+
+Nunjucks allows for the composition of prompts from multiple files using the `{% include "path/to/file.md" %}` tag. This is highly effective for reusing common instructions or components across different prompts. Paths are resolved relative to the file containing the `include` tag.
+
+For example, you can define a common set of instructions in one file and include it in another.
+
+```markdown title="common-instructions.md" icon=mdi:text-box
+Always respond in a professional and factual manner.
+Do not speculate or provide opinions.
 ```
 
-You can use `PromptTemplate` to render this structure by providing a `workingDir` to resolve the relative include path.
+```markdown title="main-prompt.md" icon=mdi:text-box
+You are an expert financial analyst.
 
-```typescript
-import { PromptTemplate } from "packages/core/src/prompt/template.ts";
-import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
+{% include "./common-instructions.md" %}
 
-// Path to the main template file
-const templatePath = '/path/to/your/prompts/main-prompt.md';
-const workingDir = nodejs.path.dirname(templatePath);
-
-// Assume you read the content of main-prompt.md
-const templateContent = 'You are a professional chatbot.\n\n{% include "./personality.md" %}';
-
-const template = PromptTemplate.from(templateContent);
-
-const formattedPrompt = await template.format(
-  { name: "Alice" },
-  { workingDir: workingDir } // Provide workingDir for includes
-);
-
-console.log(formattedPrompt);
-// Output:
-// You are a professional chatbot.
-//
-// Your name is Alice.
+Analyze the quarterly earnings report provided.
 ```
 
-### Chat Message Templates
+This modular approach simplifies prompt management and ensures consistency.
 
-For chat-based models, the library provides a set of classes to represent different roles in a conversation, making it easy to structure multi-turn dialogues.
+## Structuring Prompts with ChatMessageTemplate
 
-*   `SystemMessageTemplate`: Represents a system-level instruction.
-*   `UserMessageTemplate`: Represents a message from the user.
-*   `AgentMessageTemplate`: Represents a message from the AI agent.
-*   `ToolMessageTemplate`: Represents the output of a tool call.
-*   `ChatMessagesTemplate`: A container for an array of message templates.
+For chat-based models, prompts are structured as a sequence of messages, each with a specific role. The framework provides classes to represent these messages programmatically.
 
-**Example:**
+-   **`SystemMessageTemplate`**: Sets the context or high-level instructions for the AI model.
+-   **`UserMessageTemplate`**: Represents a message from the end-user.
+-   **`AgentMessageTemplate`**: Represents a previous response from the AI model, useful for few-shot prompting or continuing a conversation.
+-   **`ToolMessageTemplate`**: Represents the result of a tool call made by the agent.
 
-```typescript
+These templates can be combined into a `ChatMessagesTemplate` to define a complete conversational prompt.
+
+```typescript title="structured-prompt.ts" icon=logos:typescript
 import {
   ChatMessagesTemplate,
   SystemMessageTemplate,
-  UserMessageTemplate
-} from "packages/core/src/prompt/template.ts";
+  UserMessageTemplate,
+} from "@aigne/core";
 
-const conversationTemplate = ChatMessagesTemplate.from([
-  SystemMessageTemplate.from("You are a helpful assistant who speaks like a pirate."),
-  UserMessageTemplate.from("My name is {% raw %}{{ name }}{% endraw %}. What is my name?"),
+const promptTemplate = new ChatMessagesTemplate([
+  SystemMessageTemplate.from(
+    "You are a helpful assistant that translates {{ input_language }} to {{ output_language }}."
+  ),
+  UserMessageTemplate.from("{{ text }}"),
 ]);
 
-const messages = await conversationTemplate.format({ name: "Captain Hook" });
-
-console.log(messages);
-// Output:
-// [
-//   { role: 'system', content: 'You are a helpful assistant who speaks like a pirate.' },
-//   { role: 'user', content: 'My name is Captain Hook. What is my name?' }
-// ]
+// This template can then be used in an AIAgent's `instructions`.
 ```
 
-## `PromptBuilder`
+## The `PromptBuilder` Class
 
-The `PromptBuilder` is the high-level class that assembles all components—templates, user input, context, memories, tools, and schemas—into a final, model-ready `ChatModelInput` object.
+The `PromptBuilder` is the central component responsible for assembling the final, complete prompt that is sent to the language model. It orchestrates the entire process, integrating various inputs into a coherent structure.
 
-### How it Works
+The following diagram illustrates the flow of information into the `PromptBuilder`:
+<d2>
+direction: right
+style {
+  stroke-width: 2
+  font-size: 14
+}
+"User Input (Message)": {
+  shape: document
+  style.fill: "#D1E7DD"
+}
+"Prompt Template (.md)": {
+  shape: document
+  style.fill: "#D1E7DD"
+}
+"Agent Configuration": {
+  shape: document
+  style.fill: "#D1E7DD"
+}
+Context: {
+  shape: document
+  style.fill: "#D1E7DD"
+}
+PromptBuilder: {
+  shape: hexagon
+  style.fill: "#A9CCE3"
+}
+"ChatModelInput (to LLM)": {
+  shape: document
+  style.fill: "#FADBD8"
+}
 
-The builder follows a clear process encapsulated within the `build` method:
-1.  **Resolve Instructions**: It starts with the base instructions, which can be a string or a `ChatMessagesTemplate`.
-2.  **Integrate Memories**: If the agent is configured to use memories, the builder retrieves them and formats them into chat messages.
-3.  **Add User Input**: It appends the current user message and any attached files.
-4.  **Configure Tools**: It gathers all available tools (skills) from the agent and the current context, formats them for the model, and determines the `toolChoice` strategy.
-5.  **Set Response Format**: If an `outputSchema` is provided, it configures the model's `responseFormat` to ensure structured output (e.g., JSON).
+"User Input (Message)" -> PromptBuilder
+"Prompt Template (.md)" -> PromptBuilder
+"Agent Configuration" -> PromptBuilder
+Context -> PromptBuilder
 
-### Example
+PromptBuilder -> "ChatModelInput (to LLM)"
 
-Here is a comprehensive example of how `PromptBuilder` assembles a complete request.
+"Agent Configuration".children: {
+  "Skills/Tools"
+  Memory
+  "Output Schema"
+}
 
-```typescript
-import { PromptBuilder } from "packages/core/src/prompt/prompt-builder.ts";
-import { AIAgent } from "packages/core/src/agents/ai-agent.ts";
-import { z } from "zod";
+"ChatModelInput (to LLM)".children: {
+  "Rendered Messages"
+  "Tool Definitions"
+  "Response Format"
+}
+</d2>
 
-// 1. Define an agent with instructions and an output schema
-const myAgent = new AIAgent({
-  name: "UserExtractor",
-  description: "Extracts user details from text.",
-  instructions: "Extract the user's name and age from the following text.",
-  outputSchema: z.object({
-    name: z.string().describe("The user's full name"),
-    age: z.number().describe("The user's age in years"),
-  }),
-});
+The `PromptBuilder` automatically performs the following actions during the `build` process:
 
-// 2. Create a PromptBuilder instance
-const builder = new PromptBuilder();
+1.  **Load Instructions**: It loads the prompt template from a string, a file path, or an MCP `GetPromptResult` object.
+2.  **Render Templates**: It uses Nunjucks to format the prompt templates, injecting variables from the user's input message.
+3.  **Inject Memory**: If the agent is configured to use memory, the `PromptBuilder` retrieves relevant memories and converts them into system, user, or agent messages to provide conversational context.
+4.  **Incorporate Tools (Skills)**: It gathers all available skills (from the agent configuration and the invocation context) and formats them into the `tools` and `tool_choice` parameters for the model.
+5.  **Define Response Format**: If the agent has an `outputSchema`, the `PromptBuilder` configures the model's `responseFormat` to enforce structured JSON output.
 
-// 3. Define the user's input message
-const userInput = {
-  message: "My name is John Doe and I am 30 years old.",
-};
+### Instantiation
 
-// 4. Build the final ChatModelInput
-const chatModelInput = await builder.build({
-  agent: myAgent,
-  input: userInput,
-});
+The most common method for creating a `PromptBuilder` is via the static `PromptBuilder.from()` method, which can accept different sources:
 
-console.log(JSON.stringify(chatModelInput, null, 2));
-// Output:
-// {
-//   "messages": [
-//     {
-//       "role": "system",
-//       "content": "Extract the user's name and age from the following text."
-//     },
-//     {
-//       "role": "user",
-//       "content": [
-//         {
-//           "type": "text",
-//           "text": "My name is John Doe and I am 30 years old."
-//         }
-//       ]
-//     }
-//   ],
-//   "responseFormat": {
-//     "type": "json_schema",
-//     "jsonSchema": {
-//       "name": "output",
-//       "schema": {
-//         "type": "object",
-//         "properties": {
-//           "name": {
-//             "type": "string",
-//             "description": "The user's full name"
-//           },
-//           "age": {
-//             "type": "number",
-//             "description": "The user's age in years"
-//           }
-//         },
-//         "required": ["name", "age"]
-//       },
-//       "strict": true
-//     }
-//   }
-// }
-```
+-   **From a string**:
+    ```typescript
+    const builder = PromptBuilder.from("You are a helpful assistant.");
+    ```
+-   **From a file path**:
+    ```typescript
+    const builder = PromptBuilder.from({ path: "./prompts/my-prompt.md" });
+    ```
+
+When an `AIAgent` is defined with `instructions`, it internally uses `PromptBuilder.from()` to create and manage the prompt building process.
+
+## Summary
+
+The AIGNE framework provides a layered and powerful system for prompt engineering. By understanding and utilizing `PromptTemplate` with Nunjucks for dynamic content and `PromptBuilder` for orchestrating the final structure, you can create sophisticated, modular, and effective prompts for your AI agents.
+
+For further reading, explore the [AIAgent documentation](./developer-guide-agents-ai-agent.md) to see how these prompts are integrated into the agent lifecycle.

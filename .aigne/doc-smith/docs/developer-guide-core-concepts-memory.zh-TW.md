@@ -1,29 +1,25 @@
-# 記憶體管理
+# 記憶體
 
-記憶體模組提供了一個強大的框架，讓 Agent 能夠持久化和回憶資訊，從而建立一個有狀態且具備情境感知能力的系統。這使得 Agent 能夠維護互動歷史、從過去的事件中學習，並做出更明智的決策。
+`MemoryAgent` 為 Agent 提供了一種機制，使其能夠在多次互動中維持狀態並記住資訊。它作為一個特化的協調器，不直接處理訊息，而是透過兩個關鍵元件來管理記憶體操作：用於儲存資訊的 `Recorder` 和用於回憶資訊的 `Retriever`。這種關注點分離的設計，實現了彈性且可插拔的記憶體儲存解決方案。
 
-記憶體系統的核心是 `MemoryAgent`，它作為所有記憶相關操作的中央協調者。它將實際的寫入和讀取記憶任務委派給兩個專門的元件：`MemoryRecorder` 和 `MemoryRetriever`。這種關注點分離的設計實現了彈性且可擴展的記憶解決方案。
+## 核心元件
 
-- **MemoryAgent**：記憶體操作的主要進入點。它負責協調記錄和擷取過程。
-- **MemoryRecorder**：一個 Agent 技能，負責將記憶寫入或儲存到持久化後端（例如，資料庫、檔案系統或記憶體內儲存）。
-- **MemoryRetriever**：一個 Agent 技能，負責從儲存後端查詢和擷取記憶。
+記憶體系統由三個主要類別組成：
 
-本指南將逐一介紹每個元件，解釋它們的角色，並提供如何在您的 Agent 系統中實作和使用它們的實際範例。
-
-## 架構概觀
-
-下圖說明了核心記憶體元件之間的關係。應用程式邏輯與 `MemoryAgent` 互動，而 `MemoryAgent` 則使用 `MemoryRecorder` 和 `MemoryRetriever` 技能與持久化儲存後端互動。
+1.  **`MemoryAgent`**：管理記憶體操作的中央 Agent。它配置了一個 recorder 和一個 retriever，並提供 `record()` 和 `retrieve()` 方法來與記憶體儲存互動。
+2.  **`MemoryRecorder`**：一個負責將資訊寫入持久性儲存後端（例如，資料庫、檔案系統或向量儲存）的 Agent。您必須提供資料儲存方式和位置的實作。
+3.  **`MemoryRetriever`**：一個負責根據指定條件（例如搜尋查詢或限制數量）從儲存後端擷取資訊的 Agent。您必須提供擷取邏輯的實作。
 
 ```d2
 direction: down
 
-Agent-System: {
-  label: "Agent 系統\n(應用程式)"
+AIGNE-Engine: {
+  label: "AIGNE\n（應用程式邏輯）"
   shape: rectangle
 }
 
-Memory-Module: {
-  label: "記憶體模組"
+Memory-Agent: {
+  label: "MemoryAgent（協調器）"
   shape: rectangle
   style: {
     stroke: "#888"
@@ -31,276 +27,197 @@ Memory-Module: {
     stroke-dash: 4
   }
 
-  MemoryAgent: {
-    label: "MemoryAgent\n(協調者)"
-  }
-
   MemoryRecorder: {
-    label: "MemoryRecorder\n(Agent 技能)"
+    label: "MemoryRecorder"
+    shape: rectangle
   }
 
   MemoryRetriever: {
-    label: "MemoryRetriever\n(Agent 技能)"
+    label: "MemoryRetriever"
+    shape: rectangle
   }
 }
 
-Persistent-Backend: {
-  label: "持久化後端\n(資料庫、檔案系統等)"
+Storage-Backend: {
+  label: "儲存後端\n（資料庫、向量儲存等）"
   shape: cylinder
 }
 
-Agent-System -> Memory-Module.MemoryAgent: "1. record() / retrieve()"
+# 記錄流程
+AIGNE-Engine -> Memory-Agent: "1. invoke(record)"
+Memory-Agent -> Memory-Agent.MemoryRecorder: "2. 委派給 Recorder"
+Memory-Agent.MemoryRecorder -> Storage-Backend: "3. 寫入資料"
 
-Memory-Module.MemoryAgent -> Memory-Module.MemoryRecorder: "2a. 委派寫入"
-Memory-Module.MemoryRecorder -> Persistent-Backend: "3a. 儲存記憶"
-
-Memory-Module.MemoryAgent -> Memory-Module.MemoryRetriever: "2b. 委派讀取"
-Memory-Module.MemoryRetriever -> Persistent-Backend: "3b. 查詢記憶"
-Persistent-Backend -> Memory-Module.MemoryRetriever: "4b. 回傳記憶"
+# 擷取流程
+AIGNE-Engine -> Memory-Agent: "4. invoke(retrieve)" {
+  style.stroke-dash: 2
+}
+Memory-Agent -> Memory-Agent.MemoryRetriever: "5. 委派給 Retriever" {
+  style.stroke-dash: 2
+}
+Storage-Backend -> Memory-Agent.MemoryRetriever: "6. 回傳資料" {
+  style.stroke-dash: 2
+}
 ```
 
-## 核心元件
+## 運作方式
 
-### MemoryAgent
+`MemoryAgent` 將任務委派給其下屬的 Agent。當您在 `MemoryAgent` 上呼叫 `record()` 方法時，它會呼叫其設定的 `MemoryRecorder` 來持久化儲存資料。同樣地，當您呼叫 `retrieve()` 時，它會呼叫 `MemoryRetriever` 來查詢並回傳儲存的資訊。
 
-`MemoryAgent` 是一個專門的 Agent，作為管理、儲存和擷取記憶的主要介面。它不像其他 Agent 那樣被設計為直接呼叫來處理訊息；相反地，它提供核心的 `record()` 和 `retrieve()` 方法來與系統的記憶體互動。
+這種架構讓開發者能夠定義自訂的儲存和擷取邏輯，而無需更改核心的 Agent 工作流程。例如，您可以實作一個將對話歷史記錄儲存到 PostgreSQL 資料庫的 recorder，以及一個使用向量嵌入來尋找語意上相似的過去互動的 retriever。
 
-您可以透過提供一個 `recorder` 和一個 `retriever` 來設定 `MemoryAgent`。這些可以是預先建置的實例或定義您特定儲存邏輯的自訂函式。
+## `MemoryAgent`
 
-**主要功能：**
+`MemoryAgent` 是記憶體管理的主要介面。它的設計並不是要在處理 Agent 鏈中直接呼叫，而是作為一個有狀態的服務，供其他 Agent 或您的應用程式邏輯使用。
 
-- **集中管理**：作為記憶體操作的單一聯絡點。
-- **委派**：將儲存和擷取邏輯卸載給專用的 `MemoryRecorder` 和 `MemoryRetriever` Agent。
-- **自動記錄**：可透過 `autoUpdate` 設定，自動記錄其觀察到的所有訊息，從而建立無縫的互動歷史記錄。
+### 設定
 
-**範例：建立一個 MemoryAgent**
+要建立一個 `MemoryAgent`，您需要為其提供一個 `recorder` 和一個 `retriever`。它們可以是 `MemoryRecorder` 和 `MemoryRetriever` 的實例，也可以是其各自 `process` 方法的函式定義。
 
-```typescript
-import { MemoryAgent, MemoryRecorder, MemoryRetriever } from "@core/memory";
-import { Agent, type AgentInvokeOptions, type Message } from "@core/agents";
+```typescript Agent 初始化 icon=logos:typescript
+import { MemoryAgent, MemoryRecorder, MemoryRetriever } from "@aigne/core";
+import { v7 as uuidv7 } from "@aigne/uuid";
 
-// 定義記錄和擷取記憶的自訂邏輯
-const myRecorder = new MemoryRecorder({
-  process: async (input, options) => {
-    // 將記憶儲存到資料庫的自訂邏輯
-    console.log("Recording memories:", input.content);
-    // ... 實作 ...
-    return { memories: [] }; // 回傳已建立的記憶
+// 1. 為示範定義一個簡單的記憶體內儲存
+const memoryStore: Map<string, any> = new Map();
+
+// 2. 實作 recorder 邏輯
+const recorder = new MemoryRecorder({
+  async process({ content }) {
+    const memories = content.map((item) => {
+      const memory = {
+        id: uuidv7(),
+        content: item,
+        createdAt: new Date().toISOString(),
+      };
+      memoryStore.set(memory.id, memory);
+      return memory;
+    });
+    return { memories };
   },
 });
 
-const myRetriever = new MemoryRetriever({
-  process: async (input, options) => {
-    // 從資料庫擷取記憶的自訂邏輯
-    console.log("Retrieving memories with search:", input.search);
-    // ... 實作 ...
-    return { memories: [] }; // 回傳找到的記憶
+// 3. 實作 retriever 邏輯
+const retriever = new MemoryRetriever({
+  async process({ search, limit = 10 }) {
+    // 這是一個簡化的搜尋。實際的實作可能會使用資料庫查詢或向量搜尋。
+    const allMemories = Array.from(memoryStore.values());
+    const filteredMemories = search
+      ? allMemories.filter((m) => JSON.stringify(m.content).includes(search as string))
+      : allMemories;
+
+    return { memories: filteredMemories.slice(0, limit) };
   },
 });
 
-// 建立 MemoryAgent
+// 4. 實例化 MemoryAgent
 const memoryAgent = new MemoryAgent({
-  recorder: myRecorder,
-  retriever: myRetriever,
-  autoUpdate: true, // 自動記錄來自訂閱主題的訊息
-  subscribeTopic: "user-input",
+  recorder,
+  retriever,
 });
 ```
 
-### MemoryRecorder
+上面的範例展示了如何使用一個簡單的記憶體內儲存機制來建立 `MemoryAgent`。在生產環境中，您會將其替換為更穩健的解決方案，例如資料庫。
 
-`MemoryRecorder` 是一個負責儲存記憶的抽象 Agent 類別。若要使用它，您必須提供 `process` 方法的具體實作，其中包含如何以及在何處持久化記憶資料的邏輯。這種設計讓您可以連接到任何儲存後端，從簡單的記憶體內陣列到複雜的向量資料庫。
+### `MemoryAgentOptions`
 
-**輸入 (`MemoryRecorderInput`)**
+<x-field-group>
+  <x-field data-name="recorder" data-type="MemoryRecorder | MemoryRecorderOptions['process'] | MemoryRecorderOptions" data-required="false">
+    <x-field-desc markdown>負責儲存記憶的 Agent 或函式。它可以是一個完整的 `MemoryRecorder` 實例、一個設定物件，或者僅僅是處理函式。</x-field-desc>
+  </x-field>
+  <x-field data-name="retriever" data-type="MemoryRetriever | MemoryRetrieverOptions['process'] | MemoryRetrieverOptions" data-required="false">
+    <x-field-desc markdown>負責擷取記憶的 Agent 或函式。它可以是一個完整的 `MemoryRetriever` 實例、一個設定物件，或者僅僅是處理函式。</x-field-desc>
+  </x-field>
+  <x-field data-name="autoUpdate" data-type="boolean" data-required="false">
+    <x-field-desc markdown>若為 `true`，Agent 將在完成操作後自動記錄資訊，以建立互動歷史。</x-field-desc>
+  </x-field>
+  <x-field data-name="subscribeTopic" data-type="string | string[]" data-required="false" data-desc="要訂閱以進行自動訊息記錄的主題。"></x-field>
+  <x-field data-name="skills" data-type="Agent[]" data-required="false" data-desc="一組可作為技能使用的其他 Agent。recorder 和 retriever 會自動新增到此列表中。"></x-field>
+</x-field-group>
 
-`process` 函式接收一個輸入物件，其中包含一個 `content` 陣列。陣列中的每個項目都代表一則要儲存的資訊，可以是 `input` 訊息、`output` 訊息以及 `source` Agent 的 ID。
+## `MemoryRecorder`
 
-```typescript
-interface MemoryRecorderInput extends Message {
-  content: {
-    input?: Message;
-    output?: Message;
-    source?: string;
-  }[];
-}
-```
+`MemoryRecorder` 是一個抽象的 Agent 類別，它定義了儲存記憶的合約。您必須為其 `process` 方法提供具體的實作。
 
-**輸出 (`MemoryRecorderOutput`)**
+### `MemoryRecorderInput`
 
-此函式應回傳一個 promise，其解析值為一個物件，內含一個成功建立的 `memories` 陣列。
+`MemoryRecorder` 的 `process` 方法會接收一個 `MemoryRecorderInput` 物件。
 
-```typescript
-interface MemoryRecorderOutput extends Message {
-  memories: Memory[];
-}
-```
+<x-field-group>
+  <x-field data-name="content" data-type="array" data-required="true">
+    <x-field-desc markdown>一個要作為記憶儲存的物件陣列。每個物件可以包含一個 `input`、`output` 和 `source`，以提供記憶的上下文。</x-field-desc>
+    <x-field data-name="input" data-type="Message" data-required="false" data-desc="導致此記憶的輸入訊息（例如，使用者的提示）。"></x-field>
+    <x-field data-name="output" data-type="Message" data-required="false" data-desc="產生的輸出訊息（例如，AI 的回應）。"></x-field>
+    <x-field data-name="source" data-type="string" data-required="false" data-desc="產生輸出的 Agent 或系統的識別碼。"></x-field>
+  </x-field>
+</x-field-group>
 
-**範例：實作一個簡單的記憶體內記錄器**
+### `MemoryRecorderOutput`
 
-以下是如何建立一個將記憶儲存在本機陣列中的簡單記錄器。
+`process` 方法必須回傳一個 `MemoryRecorderOutput` 物件。
 
-```typescript
-import {
-  MemoryRecorder,
-  type MemoryRecorderInput,
-  type MemoryRecorderOutput,
-  type Memory,
-  newMemoryId,
-} from "@core/memory";
-import { type AgentInvokeOptions, type AgentProcessResult } from "@core/agents";
+<x-field-group>
+  <x-field data-name="memories" data-type="Memory[]" data-required="true" data-desc="新建立的記憶物件陣列，每個物件都包含其唯一的 ID、原始內容和建立時間戳。"></x-field>
+</x-field-group>
 
-// 使用一個簡單的記憶體內陣列作為我們的資料庫
-const memoryDB: Memory[] = [];
+## `MemoryRetriever`
 
-const inMemoryRecorder = new MemoryRecorder({
-  process: async (
-    input: MemoryRecorderInput,
-    options: AgentInvokeOptions
-  ): Promise<AgentProcessResult<MemoryRecorderOutput>> => {
-    const newMemories: Memory[] = input.content.map((item) => ({
-      id: newMemoryId(),
-      content: item,
-      createdAt: new Date().toISOString(),
-    }));
+`MemoryRetriever` 是一個抽象的 Agent 類別，它定義了從儲存中擷取記憶的合約。您必須為其 `process` 方法提供具體的實作。
 
-    // 將新記憶新增至我們的「資料庫」
-    memoryDB.push(...newMemories);
-    console.log("Current memory count:", memoryDB.length);
+### `MemoryRetrieverInput`
 
-    return { memories: newMemories };
-  },
-});
-```
+`MemoryRetriever` 的 `process` 方法會接收一個 `MemoryRetrieverInput` 物件，以篩選和限制結果。
 
-### MemoryRetriever
+<x-field-group>
+  <x-field data-name="limit" data-type="number" data-required="false">
+    <x-field-desc markdown>要回傳的最大記憶數量。可用於分頁或保持較小的上下文視窗。</x-field-desc>
+  </x-field>
+  <x-field data-name="search" data-type="string | Message" data-required="false">
+    <x-field-desc markdown>用於篩選記憶的搜尋詞或訊息物件。實作方式決定了如何使用此值（例如，關鍵字搜尋、向量相似度）。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-`MemoryRetriever` 是記錄器的對應元件。它是一個負責從儲存空間擷取記憶的抽象 Agent 類別。與記錄器一樣，它需要一個 `process` 方法的自訂實作來定義擷取邏輯。
+### `MemoryRetrieverOutput`
 
-**輸入 (`MemoryRetrieverInput`)**
+`process` 方法必須回傳一個 `MemoryRetrieverOutput` 物件。
 
-`process` 函式接收一個輸入物件，其中可包含一個 `search` 查詢和一個 `limit` 來控制結果數量。實作方式決定了如何執行搜尋（例如，關鍵字比對、向量相似度）。
+<x-field-group>
+  <x-field data-name="memories" data-type="Memory[]" data-required="true" data-desc="符合擷取條件的記憶物件陣列。"></x-field>
+</x-field-group>
 
-```typescript
-interface MemoryRetrieverInput extends Message {
-  limit?: number;
-  search?: string | Message;
-}
-```
+## 使用範例
 
-**輸出 (`MemoryRetrieverOutput`)**
+一旦 `MemoryAgent` 設定完成，您就可以在應用程式的上下文中使用它來記錄和擷取資訊。
 
-此函式應回傳一個 promise，其解析值為一個物件，內含一個符合查詢條件的 `memories` 陣列。
+```typescript AIGNE 互動 icon=logos:typescript
+import { AIGNE } from "@aigne/core";
 
-```typescript
-interface MemoryRetrieverOutput extends Message {
-  memories: Memory[];
-}
-```
-
-**範例：實作一個簡單的記憶體內擷取器**
-
-此擷取器與上方的 `inMemoryRecorder` 範例搭配使用，在本地陣列中搜尋相符的內容。
-
-```typescript
-import {
-  MemoryRetriever,
-  type MemoryRetrieverInput,
-  type MemoryRetrieverOutput,
-  type Memory,
-} from "@core/memory";
-import { type AgentInvokeOptions, type AgentProcessResult } from "@core/agents";
-
-// 假設 memoryDB 與記錄器使用的陣列相同
-declare const memoryDB: Memory[];
-
-const inMemoryRetriever = new MemoryRetriever({
-  process: async (
-    input: MemoryRetrieverInput,
-    options: AgentInvokeOptions
-  ): Promise<AgentProcessResult<MemoryRetrieverOutput>> => {
-    let results: Memory[] = [...memoryDB];
-
-    // 根據搜尋查詢篩選結果
-    if (input.search && typeof input.search === "string") {
-      const searchTerm = input.search.toLowerCase();
-      results = results.filter((mem) =>
-        JSON.stringify(mem.content).toLowerCase().includes(searchTerm)
-      );
-    }
-
-    // 套用限制
-    if (input.limit) {
-      results = results.slice(-input.limit); // 取得最新的項目
-    }
-
-    return { memories: results };
-  },
-});
-```
-
-## 整合所有元件
-
-現在，讓我們結合這些元件來建立一個功能齊全的記憶體系統。我們將使用自訂的記憶體內記錄器和擷取器來實例化 `MemoryAgent`，然後用它來記錄和擷取資訊。
-
-```typescript
-import { MemoryAgent, MemoryRecorder, MemoryRetriever } from "@core/memory";
-import { AIGNE, type Context } from "@core/aigne";
-
-// --- 假設 inMemoryRecorder 和 inMemoryRetriever 的定義如上 ---
-
-// 1. 初始化 MemoryAgent
-const memoryAgent = new MemoryAgent({
-  recorder: inMemoryRecorder,
-  retriever: inMemoryRetriever,
+// 假設 memoryAgent 已如第一個範例所示進行設定
+const aigne = new AIGNE({
+  // ...other configurations
 });
 
-// 2. 建立一個執行 Agent 的情境
-const context = new AIGNE().createContext();
+async function run() {
+  // 記錄一筆新記憶
+  const recordedMemory = await aigne.invoke(memoryAgent.record.bind(memoryAgent), {
+    content: [{ input: { query: "What is the capital of France?" } }],
+  });
+  console.log("Recorded:", recordedMemory.memories[0].id);
 
-// 3. 記錄一筆新記憶
-async function runMemoryExample(context: Context) {
-  console.log("Recording a new memory...");
-  await memoryAgent.record(
-    {
-      content: [
-        {
-          input: { text: "What is the capital of France?" },
-          output: { text: "The capital of France is Paris." },
-          source: "GeographyAgent",
-        },
-      ],
-    },
-    context
-  );
-
-  // 4. 擷取記憶
-  console.log("\nRetrieving memories about 'France'...");
-  const retrieved = await memoryAgent.retrieve({ search: "France" }, context);
-
-  console.log("Found memories:", retrieved.memories);
+  // 擷取記憶
+  const retrievedMemories = await aigne.invoke(memoryAgent.retrieve.bind(memoryAgent), {
+    search: "France",
+    limit: 5,
+  });
+  console.log("Retrieved:", retrievedMemories.memories);
 }
 
-runMemoryExample(context);
-
-/**
- * 預期輸出：
- *
- * Recording a new memory...
- * Current memory count: 1
- *
- * Retrieving memories about 'France'...
- * Found memories: [
- *   {
- *     id: '...',
- *     content: {
- *       input: { text: 'What is the capital of France?' },
- *       output: { text: 'The capital of France is Paris.' },
- *       source: 'GeographyAgent'
- *     },
- *     createdAt: '...'
- *   }
- * ]
- */
+run();
 ```
+此範例展示了如何使用 `aigne.invoke` 方法來呼叫 `memoryAgent` 實例上的 `record` 和 `retrieve` 函式，從而在多次互動中有效地管理 Agent 的狀態。
 
-這個完整的範例展示了端到端的流程：定義自訂儲存邏輯，將其整合到 `MemoryAgent` 中，並使用該 Agent 來管理系統的記憶體。
+## 總結
+
+`MemoryAgent` 為管理 Agent 應用程式中的狀態提供了一個強大而靈活的抽象層。透過將協調（`MemoryAgent`）與實作細節（`MemoryRecorder`、`MemoryRetriever`）分離，您可以輕鬆整合各種儲存後端，從簡單的記憶體內陣列到複雜的向量資料庫。
+
+有關核心執行引擎的更多資訊，請參閱 [AIGNE](./developer-guide-core-concepts-aigne-engine.md) 文件。要了解工作的基本建構模組，請參閱 [Agents](./developer-guide-core-concepts-agents.md) 頁面。

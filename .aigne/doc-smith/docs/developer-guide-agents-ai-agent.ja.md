@@ -1,111 +1,236 @@
-AI Agent は、チャットモデルを利用してユーザー入力を解釈し、応答を生成する特殊な Agent です。特定の指示、ツール（スキル）、メモリを設定して、幅広いタスクを処理できます。この Agent は、ユーザー、言語モデル、および提供する外部ツール間の橋渡しをするため、対話型 AI の作成において中心的な役割を果たします。
+# AI Agent
 
-`AIAgent` の主な機能は次のとおりです。
-- **直接的な LLM 統合**: 互換性のあるチャットモデルに接続し、インテリジェントで文脈を認識した応答を生成します。
-- **カスタマイズ可能な指示**: プロンプトテンプレートを使用して、Agent の振る舞い、個性、タスクの焦点を調整します。
-- **ツールと関数の呼び出し**: Agent に外部システム、API、またはデータベースと対話するスキルを付与します。
-- **ストリーミング応答**: リアルタイムのトークンごとの応答を可能にし、ダイナミックなユーザーエクスペリエンスを実現します。
-- **ルーターモード**: ユーザー入力に基づいて、他の特化した Agent にタスクをインテリジェントに委任するために Agent を使用します。
-- **ステートフルなメモリ**: Agent にメモリを装備させ、以前の対話を記憶し、文脈を維持させます。
+`AIAgent` は、大規模言語モデル (LLM) と対話するための主要なコンポーネントです。`ChatModel` への直接的なインターフェースとして機能し、高度な会話型 AI、関数呼び出し (ツールの使用)、構造化データ抽出を可能にします。この Agent は、プロンプトの構築、モデルの呼び出し、応答の解析、ツール実行ループといった複雑な処理を扱います。
 
-### クラス図
+このガイドでは、`AIAgent` の設定とそのコア機能について包括的に解説します。Agent が AIGNE フレームワークにどのように適合するかをより広く理解するには、[Agent のコアコンセプトガイド](./developer-guide-core-concepts-agents.md) を参照してください。
 
-以下の図は、Agent 階層全体における `AIAgent` の位置を示しており、ベースの `Agent` クラスからの継承と `PromptBuilder` とのコンポジション（合成）関係を表しています。
+## 仕組み
 
-```mermaid
-classDiagram
-    class Agent {
-        +string name
-        +string description
-        +invoke(input, context)
-        +process(input, context)
-    }
+`AIAgent` は、ユーザーの入力を処理して応答を生成するために、体系的なプロセスに従います。このプロセスには、特にツールが使用される場合に、LLM との複数回の対話が含まれることがよくあります。
 
-    AIAgent --|> Agent: 継承
-    AIAgent *.. PromptBuilder: 合成
-    class AIAgent {
-        +ChatModel model
-        +PromptBuilder instructions
-        +string outputKey
-        +AIAgentToolChoice toolChoice
-        +boolean catchToolsError
-    }
+```d2
+direction: right
+style {
+  stroke-width: 2
+}
 
-    class PromptBuilder {
-        +build(options) Prompt
-    }
+# ユーザー入力から開始
+input: ユーザー入力
+
+# Agent コンポーネント
+agent: AIAgent {
+  shape: package
+  style.fill: "#f0f4f8"
+
+  builder: PromptBuilder
+  model: ChatModel
+  tools: "ツール (スキル)"
+}
+
+# 最終出力で終了
+output: 最終応答
+
+# プロセスフロー
+input -> agent.builder: "1. プロンプトの構築"
+agent.builder -> agent.model: "2. モデルの呼び出し"
+agent.model -> agent: "3. 応答の受信"
+
+subgraph "ツール実行ループ" {
+  direction: down
+  style {
+    stroke-dash: 4
+  }
+
+  agent -> check_tool_call: "4. 応答の解析" {shape: diamond}
+  check_tool_call -> output: "いいえ"
+  check_tool_call -> agent.tools: "はい (ツール呼び出しを検出)"
+
+  agent.tools -> agent.builder: "5. ツールの実行と結果のフォーマット"
+}
+
+agent -> output: "6. 最終出力のフォーマット"
 ```
 
-## 設定オプション (AIAgentOptions)
+上の図は、リクエストの典型的なライフサイクルを示しています。
+1.  **プロンプトの構築**: `AIAgent` は `PromptBuilder` を使用して、その `instructions`、ユーザー入力、および以前のツール呼び出しの履歴から最終的なプロンプトを組み立てます。
+2.  **モデルの呼び出し**: 完全に形成されたプロンプトが、設定された `ChatModel` に送信されます。
+3.  **応答の解析**: Agent はモデルの生の出力を受け取ります。
+4.  **ツール呼び出しの検出**: 応答にツールを呼び出すリクエストが含まれているかどうかを確認します。
+    - **いいえ**の場合、Agent はテキスト応答をフォーマットして返します。
+    - **はい**の場合、ツール実行ループに進みます。
+5.  **ツールの実行**: Agent は要求されたツール (別の Agent) を特定して呼び出し、その出力をキャプチャし、モデル用のメッセージにフォーマットします。その後、プロセスはステップ 1 にループバックし、ツールの結果を次の生成ステップのためにモデルに送り返します。
+6.  **最終出力**: モデルがツール呼び出しなしで最終的なテキスト応答を生成すると、Agent はそれをフォーマットし、ユーザーにストリーミングして返します。
 
-`AIAgent` を作成する際に、`AIAgentOptions` オブジェクトを提供してその振る舞いをカスタマイズできます。このオブジェクトは、ベースの `AgentOptions` を拡張したものです。
+## 設定
 
-| パラメータ | 型 | 説明 | デフォルト |
-| --- | --- | --- | --- |
-| `instructions` | `string \| PromptBuilder` | AI モデルの振る舞いをガイドするための指示。単純な文字列、または複雑なプロンプトテンプレート用の `PromptBuilder` インスタンスを指定できます。 | |
-| `inputKey` | `string` | プライマリユーザーメッセージとして使用する、入力メッセージ内のキー。 | |
-| `outputKey` | `string` | 応答メッセージの主要なテキスト出力に使用するキー。 | `"message"` |
-| `toolChoice` | `AIAgentToolChoice \| Agent` | Agent がツールをどのように使用するかを制御します。enum 値またはルーターとして機能する別の Agent を指定できます。 | `auto` |
-| `keepTextInToolUses` | `boolean` | `true` の場合、ツール実行中にモデルが生成したテキストは最終出力に保持されます。 | `false` |
-| `catchToolsError` | `boolean` | `true` の場合、Agent はツール実行からのエラーをキャッチして処理を続行します。`false` の場合、エラーをスローします。 | `true` |
-| `structuredStreamMode` | `boolean` | モデルのストリーミング応答を解析し、特定のタグで囲まれた構造化メタデータ（例：JSON）を抽出するモードを有効にします。 | `false` |
-| `memoryAgentsAsTools` | `boolean` | `true` の場合、メモリ Agent は、モデルが情報を明示的に取得または保存するために呼び出せるツールとして公開されます。 | `false` |
+`AIAgent` は、そのコンストラクタオプションを通じて設定されます。以下は、利用可能なパラメータの詳細な内訳です。
 
-### ツール選択オプション
+<x-field-group>
+  <x-field data-name="instructions" data-type="string | PromptBuilder" data-required="false">
+    <x-field-desc markdown>AI モデルの動作をガイドする中心的な指示。これは、単純な文字列または複雑で動的なプロンプトを作成するための `PromptBuilder` インスタンスにすることができます。詳細については、[プロンプト](./developer-guide-advanced-topics-prompts.md) ガイドを参照してください。</x-field-desc>
+  </x-field>
+  <x-field data-name="inputKey" data-type="string" data-required="false">
+    <x-field-desc markdown>入力メッセージオブジェクトのどのキーをメインのユーザークエリとして扱うかを指定します。設定されていない場合、`instructions` を提供する必要があります。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputKey" data-type="string" data-default="message" data-required="false">
+    <x-field-desc markdown>Agent の最終的なテキスト応答が出力オブジェクトのどのキーの下に配置されるかを定義します。デフォルトは `message` です。</x-field-desc>
+  </x-field>
+  <x-field data-name="inputFileKey" data-type="string" data-required="false">
+    <x-field-desc markdown>モデルに送信されるファイルデータを含む入力メッセージのキーを指定します。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputFileKey" data-type="string" data-default="files" data-required="false">
+    <x-field-desc markdown>モデルによって生成されたファイルが出力オブジェクトのどのキーの下に配置されるかを定義します。デフォルトは `files` です。</x-field-desc>
+  </x-field>
+  <x-field data-name="toolChoice" data-type="AIAgentToolChoice | Agent" data-default="auto" data-required="false">
+    <x-field-desc markdown>Agent が利用可能なツール (スキル) をどのように使用するかを制御します。詳細については、以下のツール使用のセクションを参照してください。</x-field-desc>
+  </x-field>
+  <x-field data-name="toolCallsConcurrency" data-type="number" data-default="1" data-required="false">
+    <x-field-desc markdown>1 ターンで同時に実行できるツール呼び出しの最大数。</x-field-desc>
+  </x-field>
+  <x-field data-name="catchToolsError" data-type="boolean" data-default="true" data-required="false">
+    <x-field-desc markdown>`true` の場合、Agent はツール実行からのエラーをキャッチし、エラーメッセージをモデルにフィードバックします。`false` の場合、エラーはプロセス全体を停止させます。</x-field-desc>
+  </x-field>
+  <x-field data-name="structuredStreamMode" data-type="boolean" data-default="false" data-required="false">
+    <x-field-desc markdown>モデルのストリーミング応答から構造化 JSON データを抽出するモードを有効にします。詳細については、構造化出力のセクションを参照してください。</x-field-desc>
+  </x-field>
+  <x-field data-name="memoryAgentsAsTools" data-type="boolean" data-default="false" data-required="false">
+    <x-field-desc markdown>`true` の場合、アタッチされた `MemoryAgent` インスタンスは呼び出し可能なツールとしてモデルに公開され、Agent が明示的にメモリから読み書きできるようになります。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-`toolChoice` プロパティは、Agent が割り当てられたツール（スキル）を実行するために使用する戦略を決定します。
+### 基本的な例
 
-| 値 | 説明 |
-| --- | --- |
-| `auto` | 言語モデルが会話の文脈に基づいてツールを使用するかどうかを決定します。 |
-| `none` | Agent のすべてのツール使用を無効にします。 |
-| `required` | Agent に利用可能なツールのいずれかを使用させます。 |
-| `router` | Agent はツールを 1 つだけ選択し、入力を直接そのツールにルーティングします。これは、委任者 Agent を作成するのに役立ちます。 |
+これは、役立つアシスタントとして機能するように設定された単純な `AIAgent` の例です。
 
-## AIAgent の作成
+```javascript 基本的なチャット Agent icon=logos:javascript
+import { AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
 
-`AIAgent` インスタンスは、そのコンストラクタまたは静的な `AIAgent.from()` ファクトリメソッドを使用して作成できます。最も一般的な方法は、YAML ファイルで設定を定義し、それを読み込むことです。
+// 使用するモデルを設定
+const model = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  model: "gpt-4o",
+});
 
-以下は、シンプルなチャット Agent の YAML 設定の例です。
+// AI Agent を作成
+const chatAgent = new AIAgent({
+  instructions: "You are a helpful assistant.",
+  inputKey: "question",
+  outputKey: "answer",
+});
 
-**`chat.yaml`**
-```yaml
-name: chat
-model: google/gemini-2.5-flash
-task_title: "process: {{message}}"
-alias:
-  - chat-bot
-  - bot
-description: Chat agent
-instructions: |
-  You are a helpful assistant that can answer questions and provide information on a wide range of topics.
-  Your goal is to assist users in finding the information they need and to engage in friendly conversation.
-input_key: message
-memory: true
-skills:
-  - sandbox.js
-include_input_in_output: true
+// Agent を実行するには、AIGNE の invoke メソッドを使用します
+// const aigne = new AIGNE({ model });
+// const response = await aigne.invoke(chatAgent, { question: "What is AIGNE?" });
+// console.log(response.answer);
 ```
 
-この設定は、Google Gemini モデルを使用し、明確な指示セットを持ち、メモリとサンドボックススキルを備えたチャット Agent を定義します。
+この Agent は `question` キーを持つ入力オブジェクトを受け取り、`answer` キーを持つ出力オブジェクトを生成します。
 
-## コアコンセプト
+## ツールの使用
 
-### 指示とプロンプティング
+`AIAgent` の強力な機能は、他の Agent をツールとして使用する能力です。呼び出し時に `skills` のリストを提供することで、`AIAgent` はこれらのツールを呼び出して情報を収集したり、アクションを実行したりすることを決定できます。`toolChoice` オプションがこの動作を決定します。
 
-`instructions` プロパティは、`AIAgent` をガイドする主要な方法です。これはシステムプロンプトとして機能し、言語モデルのコンテキスト、個性、目標を設定します。静的な指示には単純な文字列を使用でき、入力やコンテキストから変数を組み込むことができる動的なプロンプトには `PromptBuilder` を活用できます。
+| `toolChoice` の値 | 説明 |
+| :--- | :--- |
+| `auto` | (デフォルト) モデルが会話のコンテキストに基づいてツールを呼び出すかどうかを決定します。 |
+| `none` | ツールの使用を完全に無効にします。モデルはどのツールも呼び出そうとしません。 |
+| `required` | モデルに 1 つ以上のツールを強制的に呼び出させます。 |
+| `router` | モデルが正確に 1 つのツールを選択することを強制される特殊なモード。Agent はリクエストをそのツールに直接ルーティングし、その応答を最終出力としてストリーミングします。これは、ディスパッチャー Agent を作成するのに非常に効率的です。 |
 
-### ツールの使用と関数の呼び出し
+### ツール使用例
 
-`skills`（他の Agent）を `AIAgent` に割り当てることで、テキスト生成以外のアクションを実行する能力を付与します。ユーザーのリクエストが外部アクションを必要とする場合、モデルは適切なツールへの「関数呼び出し」を開始できます。Agent はツールを実行し、結果を受け取り、その出力を使用して最終的な応答を生成します。これにより、Agent はデータの取得、API との対話、または計算を実行できます。
+天気情報を取得できる `FunctionAgent` があるとします。これをスキルとして `AIAgent` に提供できます。
 
-### 処理ワークフロー
+```javascript ツールを持つ Agent icon=logos:javascript
+import { AIAgent, FunctionAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
 
-`AIAgent` の内部 `process` メソッドは、言語モデルとツールとの対話を調整します。
-1.  **プロンプトの構築**：システム指示、ユーザー入力、会話履歴（メモリ）、および利用可能なツールの定義を組み合わせて、モデルに送信される最終的なプロンプトを構築します。
-2.  **モデルの呼び出し**：設定されたチャットモデルにリクエストを送信します。
-3.  **応答の処理**：モデルの出力を処理します。出力は、直接的なテキスト応答か、ツールを呼び出すリクエストのいずれかです。
-    - ツール呼び出しが要求された場合、Agent はツールを実行します。
-    - ツールの出力は、新しいリクエストでモデルに送り返されます。
-    - このループは、モデルがユーザーへの最終的な応答を生成するまで続きます。
-4.  **ストリーミング出力**：最終的な応答は、リアルタイム出力を可能にする差分オブジェクトのストリームとして生成されます。
+// 天気を取得する単純な関数
+function getCurrentWeather(location) {
+  if (location.toLowerCase().includes("tokyo")) {
+    return JSON.stringify({ location: "Tokyo", temperature: "15", unit: "celsius" });
+  }
+  return JSON.stringify({ location, temperature: "unknown" });
+}
+
+// 関数を FunctionAgent でラップしてツールにする
+const weatherTool = new FunctionAgent({
+  name: "get_current_weather",
+  description: "Get the current weather in a given location",
+  inputSchema: {
+    type: "object",
+    properties: { location: { type: "string", description: "The city and state" } },
+    required: ["location"],
+  },
+  process: ({ location }) => getCurrentWeather(location),
+});
+
+// モデルを設定
+const model = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  model: "gpt-4o",
+});
+
+// 天気ツールを使用できる AI Agent を作成
+const weatherAssistant = new AIAgent({
+  instructions: "You are a helpful assistant that can provide weather forecasts.",
+  inputKey: "query",
+  outputKey: "response",
+});
+
+// 呼び出す際に、ツールをスキルとして提供する
+// const aigne = new AIGNE({ model, skills: [weatherTool] });
+// const result = await aigne.invoke(weatherAssistant, { query: "What's the weather like in Tokyo?" });
+// console.log(result.response); // LLM はツールの出力を使用して応答します
+```
+
+このシナリオでは、`AIAgent` はクエリを受け取り、天気情報の必要性を認識し、`weatherTool` を呼び出し、その JSON 出力を受け取り、そのデータを使用して自然言語の応答を生成します。
+
+## 構造化出力
+
+感情分析、分類、エンティティ抽出など、特定の構造化情報を抽出する必要があるタスクには、`structuredStreamMode` が非常に役立ちます。有効にすると、Agent はモデルのストリーミング出力を積極的に解析して JSON オブジェクトを見つけて抽出します。
+
+デフォルトでは、モデルは構造化データを YAML 形式で `<metadata>...</metadata>` タグ内に配置するように指示される必要があります。
+
+### 構造化出力の例
+
+この例では、ユーザーメッセージの感情を分析し、構造化された JSON オブジェクトを返すように Agent を設定します。
+
+```javascript 構造化感情分析 icon=logos:javascript
+import { AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
+
+const sentimentAnalyzer = new AIAgent({
+  instructions: `
+    Analyze the sentiment of the user's message.
+    Respond with a single word summary, followed by a structured analysis.
+    Place the structured analysis in YAML format inside <metadata> tags.
+    The structure should contain 'sentiment' (positive, negative, or neutral) and a 'score' from -1.0 to 1.0.
+  `,
+  inputKey: "message",
+  outputKey: "summary",
+  structuredStreamMode: true,
+});
+
+// 呼び出されると、出力にはテキストの要約と
+// 解析された JSON オブジェクトの両方が含まれます。
+// const aigne = new AIGNE({ model: new OpenAI(...) });
+// const result = await aigne.invoke(sentimentAnalyzer, { message: "AIGNE is an amazing framework!" });
+/*
+  期待される結果:
+  {
+    summary: "Positive.",
+    sentiment: "positive",
+    score: 0.9
+  }
+*/
+```
+
+`customStructuredStreamInstructions` オプションを使用して、開始/終了タグや解析関数 (例: JSON を直接サポートするため) を含む解析ロジックをカスタマイズできます。
+
+## まとめ
+
+`AIAgent` は、高度な AI アプリケーションを作成するための基礎的な構成要素です。これは、ツールの使用、構造化データの抽出、メモリの統合を完全にサポートする、言語モデルへの堅牢で柔軟なインターフェースを提供します。
+
+より複雑なワークフローでは、複数の Agent を連携させる必要があるかもしれません。その方法を学ぶには、[Team Agent](./developer-guide-agents-team-agent.md) のドキュメントに進んでください。高度なプロンプトテンプレート技術については、[プロンプト](./developer-guide-advanced-topics-prompts.md) ガイドを参照してください。

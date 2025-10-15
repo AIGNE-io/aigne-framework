@@ -1,236 +1,175 @@
-# Agent
+# Agents
 
-The `Agent` class is the cornerstone of the AIGNE framework. It serves as the base class for all agents, providing a robust mechanism for defining input/output schemas, implementing processing logic, and managing interactions within the agent system.
+In the AIGNE Framework, the **`Agent`** is the fundamental unit of work. It is an abstract class that establishes a standard contract for all specialized agent types. An agent can be conceptualized as a distinct worker capable of executing a specific task, processing information, and interacting with other agents within the system.
 
-By extending the `Agent` class, you can create custom agents with a wide range of capabilities, from simple function-based utilities to complex, AI-driven entities. Agents are designed to be modular, reusable, and capable of communicating with each other through a message-passing system.
+Every specialized agent, whether designed for interacting with an AI model, transforming data, or orchestrating a team of other agents, inherits its core structure and behavior from this base `Agent` class. This architectural principle ensures consistency and predictability across the framework.
+
+Further reading on specialized agent types can be found in the [Agent Types](./developer-guide-agents.md) section.
+
+## Core Concepts
+
+The `Agent` class is designed around several core concepts that define its identity, data contracts, and operational behavior. These are configured via the `AgentOptions` object during the agent's instantiation.
+
+### Key Properties
+
+The following properties define an agent's configuration:
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `name` | `string` | A unique identifier for the agent, used for logging and referencing. It defaults to the constructor's class name if not specified. |
+| `description` | `string` | A human-readable summary of the agent's purpose and capabilities, useful for documentation and debugging. |
+| `inputSchema` | `ZodType` | A Zod schema defining the structure and validation rules for the agent's input data. This ensures data integrity. |
+| `outputSchema` | `ZodType` | A Zod schema defining the structure and validation rules for the agent's output data. |
+| `skills` | `Agent[]` | A list of other agents that this agent can invoke to perform delegated sub-tasks, enabling compositional behavior. |
+| `memory` | `MemoryAgent` | An optional memory unit allowing the agent to persist and recall state across multiple interactions. |
+| `hooks` | `AgentHooks[]` | A set of lifecycle hooks (e.g., `onStart`, `onEnd`) for observing or modifying agent behavior at runtime. |
+| `guideRails` | `GuideRailAgent[]` | A list of specialized agents that enforce rules, policies, or constraints on the agent's inputs and outputs. |
+
+### The `process` Method
+
+The `process` method is the central component of every agent. It is defined as an `abstract` method in the base `Agent` class, which mandates that any concrete agent class must provide an implementation. This method contains the core logic that defines what the agent does.
+
+The method receives the validated input message and invocation options, including the execution `Context`, and is responsible for producing an output.
+
+```typescript Agent.ts icon=logos:typescript
+export abstract class Agent<I extends Message = any, O extends Message = any> {
+  // ... constructor and other properties
+
+  /**
+   * Core processing method of the agent, must be implemented in subclasses
+   *
+   * @param input Input message
+   * @param options Options for agent invocation
+   * @returns Processing result
+   */
+  abstract process(input: I, options: AgentInvokeOptions): PromiseOrValue<AgentProcessResult<O>>;
+
+  // ... other methods
+}
+```
+
+The return value, `AgentProcessResult`, can be a direct object, a streaming response, an async generator, or another agent instance for task forwarding.
+
+## Agent Lifecycle
+
+The execution of an agent adheres to a structured lifecycle, which provides clear points for extension via hooks.
 
 ```d2
 direction: down
 
-Input-Message: {
-  label: "Input Message\n(from subscribeTopic)"
-  shape: oval
-}
-
-Output-Message: {
-  label: "Output Message\n(to publishTopic)"
-  shape: oval
-}
-
-Agent: {
-  label: "Agent Instance"
-  shape: rectangle
+Agent-Lifecycle: {
+  label: "Agent Execution Lifecycle"
   style: {
-    stroke-width: 3
+    stroke-dash: 4
   }
 
-  invoke-method: {
-    label: "invoke()"
-    shape: rectangle
-    style.fill: "#d0e0f0"
+  invoke: {
+    label: "1. invoke(input)"
+    shape: oval
   }
 
-  Pre-Processing: {
-    label: "Pre-Processing"
+  on-start: {
+    label: "2. onStart Hook"
     shape: rectangle
-    style.stroke-dash: 2
-
-    GuideRails-Pre: "GuideRails (pre)"
-    onStart-Hook: "onStart Hook"
-    Input-Schema-Validation: {
-      label: "Input Schema Validation\n(Zod)"
-    }
   }
 
-  process-method: {
-    label: "process()\n(Custom Core Logic)"
-    shape: rectangle
-    style.fill: "#e0f0d0"
-
-    Skills: {
-      label: "Skills\n(Other Agents)"
-      shape: rectangle
-    }
-    Memory: {
-      label: "Memory"
-      shape: cylinder
-    }
+  input-validation: {
+    label: "3. Input Valid?"
+    shape: diamond
   }
 
-  Post-Processing: {
-    label: "Post-Processing"
+  process: {
+    label: "4. process(input)"
     shape: rectangle
-    style.stroke-dash: 2
+    style.fill: "#e6f7ff"
+  }
 
-    Output-Schema-Validation: {
-      label: "Output Schema Validation\n(Zod)"
-    }
-    onSuccess-onError-Hooks: "onSuccess / onError Hooks"
-    GuideRails-Post: "GuideRails (post)"
-    onEnd-Hook: "onEnd Hook"
+  output-validation: {
+    label: "5. Output Valid?"
+    shape: diamond
+  }
+
+  on-end: {
+    label: "6. onEnd Hook\n(handles success or error)"
+    shape: rectangle
+  }
+
+  return-value: {
+    label: "7. Return Output or Throw Error"
+    shape: oval
   }
 }
 
-FunctionAgent: {
-  label: "FunctionAgent\n(Simplified Agent)"
-  shape: rectangle
-}
-
-Input-Message -> Agent.invoke-method: "1. Call"
-
-Agent.invoke-method -> Agent.Pre-Processing.GuideRails-Pre: "2. Pre-validation"
-Agent.Pre-Processing.GuideRails-Pre -> Agent.Pre-Processing.onStart-Hook: "3. Trigger"
-Agent.Pre-Processing.onStart-Hook -> Agent.Pre-Processing.Input-Schema-Validation: "4. Validate Input"
-Agent.Pre-Processing.Input-Schema-Validation -> Agent.process-method: "5. Execute"
-
-Agent.process-method -> Agent.process-method.Skills: "delegates to"
-Agent.process-method <-> Agent.process-method.Memory: "accesses"
-
-Agent.process-method -> Agent.Post-Processing.Output-Schema-Validation: "6. Validate Output"
-Agent.Post-Processing.Output-Schema-Validation -> Agent.Post-Processing.onSuccess-onError-Hooks: "7. Trigger"
-Agent.Post-Processing.onSuccess-onError-Hooks -> Agent.Post-Processing.GuideRails-Post: "8. Post-validation"
-Agent.Post-Processing.GuideRails-Post -> Agent.Post-Processing.onEnd-Hook: "9. Trigger"
-Agent.Post-Processing.onEnd-Hook -> Output-Message: "10. Publish Result"
-
-FunctionAgent -> Agent.process-method: "Provides function for"
+Agent-Lifecycle.invoke -> Agent-Lifecycle.on-start
+Agent-Lifecycle.on-start -> Agent-Lifecycle.input-validation
+Agent-Lifecycle.input-validation -> Agent-Lifecycle.process: "Yes"
+Agent-Lifecycle.process -> Agent-Lifecycle.output-validation
+Agent-Lifecycle.output-validation -> Agent-Lifecycle.on-end: "Yes"
+Agent-Lifecycle.on-end -> Agent-Lifecycle.return-value
+Agent-Lifecycle.input-validation -> Agent-Lifecycle.on-end: "No"
+Agent-Lifecycle.output-validation -> Agent-Lifecycle.on-end: "No"
 ```
 
-## Core Concepts
+1.  **Invocation**: An agent's execution is initiated by calling its `invoke()` method with an input payload.
+2.  **`onStart` Hook**: The `onStart` hooks are triggered, providing an opportunity for pre-processing logic, such as logging or input transformation.
+3.  **Input Validation**: The input data is automatically validated against the agent's `inputSchema`. If validation fails, the process is aborted.
+4.  **`process()` Execution**: The core logic defined in the agent's `process()` method is executed.
+5.  **Output Validation**: The result from the `process()` method is validated against the agent's `outputSchema`.
+6.  **`onEnd` Hook**: The `onEnd` hooks are triggered with the final output or any error that occurred. This is the designated point for post-processing, logging results, or implementing custom failure handling.
+7.  **Return Value**: The final, validated output is returned to the original caller.
 
-- **Message-Driven Architecture**: Agents operate on a publish-subscribe model. They subscribe to specific topics to receive input messages and publish their output to other topics, enabling seamless inter-agent communication.
-- **Input/Output Schemas**: You can define `inputSchema` and `outputSchema` using Zod schemas to ensure that all data flowing into and out of an agent is validated and conforms to a predefined structure.
-- **Skills**: Agents can possess `skills`, which are other agents or functions. This allows you to create complex agents that delegate tasks to more specialized agents, promoting a modular and hierarchical design.
-- **Lifecycle Hooks**: The agent lifecycle can be intercepted with `hooks` (e.g., `onStart`, `onEnd`, `onError`). Hooks are invaluable for logging, monitoring, tracing, and implementing custom logic at various stages of an agent's execution.
-- **Streaming Responses**: Agents can return responses in a streaming fashion, which is ideal for real-time applications like chatbots, where results can be displayed incrementally as they are generated.
-- **GuideRails**: `guideRails` are specialized agents that act as validators or controllers for another agent's execution. They can inspect the input and expected output to enforce rules, policies, or business logic, and can even abort the process if necessary.
-- **Memory**: Agents can be equipped with `memory` to persist state and recall information from past interactions, enabling more context-aware behavior.
+This systematic lifecycle ensures that data is consistently validated and offers clear, non-invasive extension points for custom logic.
 
-## Key Properties
+## Implementation Example
 
-The `Agent` class is configured via an `AgentOptions` object passed to its constructor. Here are some of the most important properties:
+To create a functional agent, extend the base `Agent` class and implement the `process` method. The following example defines an agent that accepts two numbers and returns their sum.
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `name` | `string` | A unique name for the agent, used for identification and logging. Defaults to the class name. |
-| `description` | `string` | A human-readable description of the agent's purpose and capabilities. |
-| `subscribeTopic` | `string \| string[]` | The topic(s) the agent listens to for incoming messages. |
-| `publishTopic` | `string \| string[] \| function` | The topic(s) where the agent sends its output messages. |
-| `inputSchema` | `ZodType` | A Zod schema to validate the structure of input messages. |
-| `outputSchema` | `ZodType` | A Zod schema to validate the structure of output messages. |
-| `skills` | `(Agent \| FunctionAgentFn)[]` | A list of other agents or functions that this agent can invoke to perform sub-tasks. |
-| `memory` | `MemoryAgent \| MemoryAgent[]` | One or more memory agents for storing and retrieving information. |
-| `hooks` | `AgentHooks[]` | An array of hook objects to attach custom logic to the agent's lifecycle events. |
-| `guideRails` | `GuideRailAgent[]` | A list of GuideRail agents to validate, transform, or control the message flow. |
-| `retryOnError` | `boolean \| object` | Configuration for automatic retries upon failure. |
-
-## Key Methods
-
-### `invoke(input, options)`
-
-This is the primary method for executing an agent. It takes an `input` message and an `options` object. The `invoke` method handles the entire lifecycle, including running hooks, validating schemas, executing the `process` method, and handling errors.
-
-- **Regular Invocation**: By default, `invoke` returns a Promise that resolves with the final output object.
-- **Streaming Invocation**: If you set `options.streaming` to `true`, `invoke` returns a `ReadableStream` that emits chunks of the response as they become available.
-
-**Example: Regular Invocation**
-```typescript
-const result = await agent.invoke({ query: "What is AIGNE?" });
-console.log(result);
-```
-
-**Example: Streaming Invocation**
-```typescript
-const stream = await agent.invoke(
-  { query: "Tell me a story." },
-  { streaming: true }
-);
-
-for await (const chunk of stream) {
-  // Process each chunk as it arrives
-  if (chunk.delta.text) {
-    process.stdout.write(chunk.delta.text.content);
-  }
-}
-```
-
-### `process(input, options)`
-
-This is an **abstract method** that you must implement in your custom agent subclass. It contains the core logic of the agent. It receives the validated input and is responsible for returning the output. The `process` method can return a direct object, a `ReadableStream`, an `AsyncGenerator`, or even another `Agent` instance to transfer control.
-
-**Example: Implementing `process`**
-```typescript
+```typescript title="adder-agent.ts" icon=logos:typescript
 import { Agent, type AgentInvokeOptions, type Message } from "@aigne/core";
 import { z } from "zod";
 
-class EchoAgent extends Agent {
+// 1. Define the input and output schemas using Zod for validation.
+const inputSchema = z.object({
+  a: z.number(),
+  b: z.number(),
+});
+
+const outputSchema = z.object({
+  sum: z.number(),
+});
+
+// 2. Infer TypeScript types from the Zod schemas.
+type AddAgentInput = z.infer<typeof inputSchema>;
+type AddAgentOutput = z.infer<typeof outputSchema>;
+
+// 3. Create the custom agent class by extending Agent.
+export class AddAgent extends Agent<AddAgentInput, AddAgentOutput> {
   constructor() {
     super({
-      name: "EchoAgent",
-      description: "An agent that echoes the input message.",
-      inputSchema: z.object({ message: z.string() }),
-      outputSchema: z.object({ response: z.string() }),
+      name: "AddAgent",
+      description: "An agent that adds two numbers.",
+      inputSchema,
+      outputSchema,
     });
   }
 
-  async process(input: { message: string }, options: AgentInvokeOptions) {
-    // Core logic of the agent
-    return { response: `You said: ${input.message}` };
+  // 4. Implement the core logic in the process method.
+  async process(input: AddAgentInput, options: AgentInvokeOptions): Promise<AddAgentOutput> {
+    const { a, b } = input;
+    const sum = a + b;
+    return { sum };
   }
 }
 ```
 
-### `shutdown()`
+This example illustrates the standard implementation pattern:
+1.  Define Zod schemas for input and output data structures.
+2.  Extend the `Agent` class with the corresponding input and output types.
+3.  Provide the schemas and other metadata to the `super()` constructor.
+4.  Implement the agent's specific logic within the `process` method.
 
-This method cleans up resources used by the agent, such as topic subscriptions and memory connections. It's important to call this method when an agent is no longer needed to prevent memory leaks.
+## Summary
 
-## Agent Lifecycle and Hooks
+The `Agent` class is the foundational abstraction in the AIGNE Framework. It provides a consistent and robust contract for all operational units, ensuring they are identifiable, adhere to clear data schemas, and follow a predictable execution lifecycle. By abstracting this common machinery, the framework allows developers to focus exclusively on implementing the unique logic required for their tasks within the `process` method.
 
-The agent execution lifecycle is a well-defined process that can be monitored and modified using hooks.
-
-1.  **`onStart`**: Triggered just before the agent's `process` method is called. You can use this hook to modify the input or perform setup tasks.
-2.  **`onSkillStart` / `onSkillEnd`**: Triggered before and after a skill (another agent) is invoked.
-3.  **`onSuccess`**: Triggered after the `process` method completes successfully and the output has been processed.
-4.  **`onError`**: Triggered if an error occurs during processing. You can implement custom error handling or retry logic here.
-5.  **`onEnd`**: Triggered at the very end of the invocation, regardless of whether it succeeded or failed. This is ideal for cleanup, logging, and metrics.
-
-**Example: Using Hooks**
-```typescript
-const loggingHook = {
-  onStart: async ({ agent, input }) => {
-    console.log(`Agent ${agent.name} started with input:`, input);
-  },
-  onEnd: async ({ agent, error }) => {
-    if (error) {
-      console.error(`Agent ${agent.name} failed:`, error);
-    } else {
-      console.log(`Agent ${agent.name} finished successfully.`);
-    }
-  },
-};
-
-const agent = new MyAgent({
-  hooks: [loggingHook],
-});
-```
-
-## `FunctionAgent`
-
-For simpler use cases, AIGNE provides the `FunctionAgent` class. It allows you to create an agent from a single function, abstracting away the need to create a new class that extends `Agent`. This is perfect for creating simple, stateless utility agents.
-
-**Example: Creating a `FunctionAgent`**
-```typescript
-import { FunctionAgent } from "@aigne/core";
-import { z } from "zod";
-
-const multiplierAgent = new FunctionAgent({
-  name: "Multiplier",
-  inputSchema: z.object({ a: z.number(), b: z.number() }),
-  outputSchema: z.object({ result: z.number() }),
-  process: async (input) => {
-    return { result: input.a * input.b };
-  },
-});
-
-const result = await multiplierAgent.invoke({ a: 5, b: 10 });
-console.log(result); // { result: 50 }
-```
+For details on how agents are executed and managed by the central engine, refer to the [AIGNE](./developer-guide-core-concepts-aigne-engine.md) documentation. To explore the various specialized agent implementations available, see the [Agent Types](./developer-guide-agents.md) section.

@@ -1,289 +1,257 @@
-# MCPAgent
+# MCP Agent
 
-`MCPAgent`は、モデルコンテキストプロトコル（MCP）を実装するサーバーと対話するために設計された特殊なAgentです。アプリケーションとMCPサーバーの間のブリッジとして機能し、シームレスに接続し、サーバーの機能を検出し、そのツール、プロンプト、リソースを利用することができます。
+`MCPAgent` は、**モデルコンテキストプロトコル (MCP)** に準拠した外部システムと対話するために設計された特殊な Agent です。これはブリッジとして機能し、AIGNE アプリケーションがリモートの MCP サーバーに接続し、ツール、プロンプト、リソースなどの機能を、あたかもフレームワークのネイティブコンポーネントであるかのように利用できるようにします。
 
-このAgentは、サーバーがローカルのコマンドラインプロセスとして実行されているか、HTTP経由でネットワーク上で利用可能であるかに関わらず、通信のための標準化されたインターフェースを提供することで、外部サービスの統合を簡素化します。
+これにより、データベースコネクタやウェブオートメーションツールから、独自のエンタープライズシステムまで、MCP 準拠のインターフェースを公開していれば、幅広い外部サービスとのシームレスな統合が可能になります。
 
-## アーキテクチャ概要
+主な機能は次のとおりです。
+- **複数のトランスポートプロトコル**: 標準 I/O (`stdio`)、サーバーセントイベント (`sse`)、または `streamableHttp` を介して MCP サーバーに接続します。
+- **自動検出**: 接続された MCP サーバーで利用可能なツール、プロンプト、リソースを自動的に検出し、登録します。
+- **堅牢な接続管理**: ネットワークベースのトランスポートに対して自動再接続機能を備え、一時的な接続性の問題に対応します。
 
-`MCPAgent`は、ベースの`Agent`クラスを拡張し、MCP `Client`をカプセル化してリモートサーバーとの接続と通信を管理します。サーバーが提供するものを自動的に検出し、スキル、プロンプト、リソースなどのネイティブなAIGNEコンポーネントとして表現します。
+## MCPAgent の仕組み
 
-# MCPAgent
+`MCPAgent` は、MCP サーバーへの接続と、その提供機能を AIGNE の構成要素に変換するロジックをカプセル化しています。`MCPAgent` が初期化されると、指定されたサーバーに接続し、利用可能なツール、プロンプト、リソースを問い合わせます。これらは、それぞれ `skills`、`prompts`、`resources` として Agent インスタンスに動的にアタッチされ、AIGNE ワークフロー内で直接アクセスできるようになります。
 
-`MCPAgent`は、モデルコンテキストプロトコル（MCP）を実装するサーバーと対話するために設計された特殊なAgentです。アプリケーションとMCPサーバーの間のブリッジとして機能し、シームレスに接続し、サーバーの機能を検出し、そのツール、プロンプト、リソースを利用することができます。
-
-このAgentは、サーバーがローカルのコマンドラインプロセスとして実行されているか、HTTP経由でネットワーク上で利用可能であるかに関わらず、通信のための標準化されたインターフェースを提供することで、外部サービスの統合を簡素化します。
-
-## アーキテクチャ概要
-
-`MCPAgent`は、ベースの`Agent`クラスを拡張し、MCP `Client`をカプセル化してリモートサーバーとの接続と通信を管理します。サーバーが提供するものを自動的に検出し、スキル、プロンプト、リソースなどのネイティブなAIGNEコンポーネントとして表現します。
 ```d2
-direction: down
-
-Application: {
-  label: "あなたのアプリケーション"
-  shape: rectangle
+direction: right
+style: {
+  font-size: 14
 }
 
-MCPAgent: {
-  label: "MCPAgent"
-  shape: rectangle
+"AIGNE アプリケーション" -> aigne.invoke
 
-  MCP-Client: {
-    label: "MCPクライアント\n(接続を管理)"
+subgraph "AIGNE フレームワーク" {
+  aigne.invoke -> mcp_agent: "MCPAgent" {
+    shape: hexagon
+    style.fill: "#D1E7DD"
   }
 }
 
-Agent-Base: {
-  label: "Agent (ベースクラス)"
+subgraph "トランスポート層 (ネットワーク / Stdio)" {
+  mcp_agent -> transport: "MCP リクエスト"
+  transport -> mcp_agent: "MCP レスポンス"
 }
 
-MCP-Server: {
-  label: "MCPサーバー\n(ローカルCLIまたはリモートHTTP)"
-  shape: rectangle
-  style.stroke-dash: 4
+transport -> "外部 MCP サーバー"
 
-  Server-Offerings: {
-    label: "サーバーが提供するもの"
-    grid-columns: 3
-    Skills: {label: "スキル"}
-    Prompts: {label: "プロンプト"}
-    Resources: {label: "リソース"}
-  }
+subgraph "外部システム" {
+ "外部 MCP サーバー" -> "ツール"
+ "外部 MCP サーバー" -> "プロンプト"
+ "外部 MCP サーバー" -> "リソース"
 }
-
-Application -> MCPAgent: "1. 使用する"
-MCPAgent -> Agent-Base: "拡張" {
-  style.stroke-dash: 2
-}
-MCPAgent.MCP-Client -> MCP-Server: "2. 接続 & 通信"
-MCP-Server.Server-Offerings -> MCPAgent: "3. 発見する" {
-  style.stroke-dash: 2
-}
-MCPAgent -> Application: "4. コンポーネントを提供\n(スキル, プロンプト, リソース)"
-
 ```
 
-## MCPAgentの作成
+## MCPAgent の作成
 
-`MCPAgent`を作成するには、主に2つの方法があります。MCPサーバーへの新しい接続を確立する方法と、事前設定済みのMCPクライアントインスタンスを使用する方法です。
+静的メソッド `MCPAgent.from()` を使用して `MCPAgent` インスタンスを作成できます。このファクトリメソッドは、MCP サーバーへの接続方法に応じて、いくつかの設定パターンをサポートしています。
 
-### 1. サーバー接続から
+### 1. 標準 I/O (Stdio) 経由での接続
 
-静的メソッド`MCPAgent.from()`は、Agentを作成する最も一般的な方法です。接続プロセスを処理し、サーバーの機能を自動的に検出します。
-
-#### SSEトランスポートの使用
-
-サーバーサイドイベント（SSE）を使用してリモートMCPサーバーに接続できます。これは、URLが提供された場合のデフォルトのトランスポートメカニズムです。
-
-**パラメータ**
+この方法は、MCP サーバーをローカルの子プロセスとして実行する場合に最適です。`MCPAgent` は、サーバーの標準入力および出力ストリームを介して通信します。
 
 <x-field-group>
-  <x-field data-name="url" data-type="string" data-required="true" data-desc="リモートMCPサーバーのURL。"></x-field>
-  <x-field data-name="transport" data-type="'sse' | 'streamableHttp'" data-default="'sse'" data-desc="トランスポートプロトコルを指定します。デフォルトは 'sse' です。"></x-field>
-  <x-field data-name="timeout" data-type="number" data-default="60000" data-desc="リクエストのタイムアウト（ミリ秒）。"></x-field>
-  <x-field data-name="maxReconnects" data-type="number" data-default="10" data-desc="接続が失われた場合の自動再接続試行の最大数。0に設定すると無効になります。"></x-field>
-  <x-field data-name="shouldReconnect" data-type="(error: Error) => boolean" data-desc="受信したエラーに基づいて再接続を試みるべきかどうかを判断する関数。デフォルトではすべてのエラーに対して true となります。"></x-field>
-  <x-field data-name="opts" data-type="SSEClientTransportOptions" data-desc="基礎となるSSEClientTransportに渡す追加オプション。"></x-field>
+  <x-field data-name="command" data-type="string" data-required="true" data-desc="MCP サーバープロセスを開始するために実行するコマンド。"></x-field>
+  <x-field data-name="args" data-type="string[]" data-required="false" data-desc="コマンドに渡す文字列引数の配列。"></x-field>
+  <x-field data-name="env" data-type="Record<string, string>" data-required="false" data-desc="子プロセスに設定する環境変数。"></x-field>
 </x-field-group>
 
-**例**
-
-```typescript
+```javascript ローカルファイルシステムサーバーへの接続 icon=logos:javascript
 import { MCPAgent } from "@aigne/core";
 
-// SSEトランスポートを使用してMCPAgentを作成する例
-const agent = await MCPAgent.from({
-  url: "http://example.com/mcp-server",
+// コマンドラインサーバーを実行して MCPAgent を作成
+await using mcpAgent = await MCPAgent.from({
+  command: "npx",
+  args: ["-y", "@modelcontextprotocol/server-filesystem", "."],
 });
 
-console.log("MCPAgent created from SSE server:", agent.name);
+console.log('Connected to:', mcpAgent.name);
+
+// ファイルシステムサーバーによって提供されるスキルにアクセス
+const fileReader = mcpAgent.skills.read_file;
+if (fileReader) {
+  const result = await fileReader.invoke({ path: "./package.json" });
+  console.log(result);
+}
 ```
 
-#### StreamableHTTPトランスポートの使用
+### 2. ネットワーク経由での接続 (SSE または StreamableHTTP)
 
-対応しているサーバーでは、パフォーマンス上の利点がある`streamableHttp`トランスポートを使用できます。
+これは、ネットワーク経由でリモートの MCP サーバーに接続するための標準的な方法です。以下の2つのトランスポートプロトコルから選択できます。
+*   `sse`: サーバーセントイベント。ストリーミングのためのシンプルで広くサポートされているプロトコルです。
+*   `streamableHttp`: より高度な双方向ストリーミングプロトコルです。
 
-**例**
+<x-field-group>
+  <x-field data-name="url" data-type="string" data-required="true" data-desc="リモート MCP サーバーエンドポイントの URL。"></x-field>
+  <x-field data-name="transport" data-type="'sse' | 'streamableHttp'" data-default="sse" data-required="false">
+    <x-field-desc markdown>使用するトランスポートプロトコル。デフォルトは `sse` です。</x-field-desc>
+  </x-field>
+  <x-field data-name="opts" data-type="object" data-required="false" data-desc="基盤となるトランスポートクライアントに渡す追加オプション (例: ヘッダーや認証用)。"></x-field>
+  <x-field data-name="timeout" data-type="number" data-default="60000" data-required="false">
+    <x-field-desc markdown>リクエストのタイムアウト (ミリ秒)。</x-field-desc>
+  </x-field>
+  <x-field data-name="maxReconnects" data-type="number" data-default="10" data-required="false">
+    <x-field-desc markdown>接続が失われた場合に再接続を試行する最大回数。`0` に設定すると無効になります。</x-field-desc>
+  </x-field>
+  <x-field data-name="shouldReconnect" data-type="(error: Error) => boolean" data-required="false">
+    <x-field-desc markdown>受信したエラーに基づいて再接続を試行すべきかどうかを `true` で返す関数。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-```typescript
+```javascript StreamableHTTP 経由での接続 icon=logos:javascript
 import { MCPAgent } from "@aigne/core";
 
-// StreamableHTTPトランスポートを使用してMCPAgentを作成する例
-const agent = await MCPAgent.from({
-  url: "http://example.com/mcp-server",
+// StreamableHTTP サーバー接続を使用して MCPAgent を作成
+await using mcpAgent = await MCPAgent.from({
+  url: `http://localhost:3000/mcp`,
   transport: "streamableHttp",
 });
 
-console.log("MCPAgent created from StreamableHTTP server:", agent.name);
+console.log('Connected to:', mcpAgent.name);
+
+const echoSkill = mcpAgent.skills.echo;
+if (echoSkill) {
+  const result = await echoSkill.invoke({ message: "Hello, World!" });
+  console.log(result);
+}
 ```
 
-#### Stdioトランスポートの使用
+### 3. 事前設定済みクライアントの使用
 
-標準入出力（stdio）を介して通信するローカルMCPサーバーに接続するには、実行するコマンドを指定できます。
-
-**パラメータ**
+すでに MCP `Client` オブジェクトをインスタンス化して設定している場合は、それを直接渡して `MCPAgent` を作成できます。これは、クライアントの設定をきめ細かく制御する必要がある高度なシナリオで役立ちます。
 
 <x-field-group>
-    <x-field data-name="command" data-type="string" data-required="true" data-desc="MCPサーバープロセスを開始するために実行するコマンド。"></x-field>
-    <x-field data-name="args" data-type="string[]" data-desc="コマンドに渡す文字列引数の配列。"></x-field>
-    <x-field data-name="env" data-type="Record<string, string>" data-desc="プロセスに設定する環境変数。"></x-field>
+  <x-field data-name="client" data-type="Client" data-required="true" data-desc="事前設定済みの MCP Client のインスタンス。"></x-field>
+  <x-field data-name="prompts" data-type="MCPPrompt[]" data-required="false" data-desc="オプションで、事前定義された MCP プロンプトの配列。"></x-field>
+  <x-field data-name="resources" data-type="MCPResource[]" data-required="false" data-desc="オプションで、事前定義された MCP リソースの配列。"></x-field>
 </x-field-group>
 
-**例**
-
-```typescript
-import { MCPAgent } from "@aigne/core";
-
-// Stdioトランスポートを使用してMCPAgentを作成する例
-const agent = await MCPAgent.from({
-  command: "npx",
-  args: ["-y", "@mcpfun/mcp-server-ccxt"],
-});
-
-console.log("MCPAgent created from stdio server:", agent.name);
-```
-
-### 2. 事前設定済みクライアントから
-
-既存のMCP `Client`インスタンスがある場合は、それを直接`MCPAgent`コンストラクタに渡すことができます。これは、クライアントのライフサイクルや設定を個別に管理する必要があるシナリオで役立ちます。
-
-**パラメータ**
-
-<x-field-group>
-    <x-field data-name="client" data-type="Client" data-required="true" data-desc="事前設定済みのMCPクライアントインスタンス。"></x-field>
-    <x-field data-name="prompts" data-type="MCPPrompt[]" data-desc="事前定義されたMCPプロンプトのオプション配列。"></x-field>
-    <x-field data-name="resources" data-type="MCPResource[]" data-desc="事前定義されたMCPリソースのオプション配列。"></x-field>
-</x-field-group>
-
-**例**
-
-```typescript
+```javascript クライアントインスタンスからの作成 icon=logos:javascript
 import { MCPAgent } from "@aigne/core";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
-// 直接クライアントインスタンスを使用してMCPAgentを作成する例
-const client = new Client({ name: "MyClient", version: "1.0.0" });
-await client.connect(new SSEClientTransport(new URL("http://example.com/mcp-server")));
+// クライアントを手動で作成および設定
+const client = new Client({ name: "test-client", version: "1.0.0" });
+const transport = new StdioClientTransport({
+  command: "bun",
+  args: ["./mock-mcp-server.ts"],
+});
+await client.connect(transport);
 
-const agent = new MCPAgent({
-  name: "MyDirectAgent",
+// 既存のクライアントインスタンスから MCPAgent を作成
+await using mcpAgent = MCPAgent.from({
+  name: client.getServerVersion()?.name,
   client,
 });
 
-console.log("MCPAgent created from direct client:", agent.name);
+console.log('Connected to:', mcpAgent.name);
 ```
 
-## プロパティ
+## サーバーの機能へのアクセス
 
-`MCPAgent`インスタンスは、いくつかのプロパティを通じてサーバーの機能へのアクセスを提供します。
+`MCPAgent` が接続されると、サーバーのツール、プロンプト、リソースがそのプロパティを通じて公開されます。
 
-### `client`
+### スキルへのアクセス
 
-MCPサーバーとのすべての通信に使用される、基礎となる`Client`インスタンスです。
+サーバー側のツールは、`MCPAgent` インスタンスの `skills` として公開されます。名前でアクセスし、その `invoke` メソッドを使用できます。これらのスキルは、`AIAgent` などの他の Agent に渡して、新しい機能を与えることができます。
 
-<x-field data-name="client" data-type="Client" data-desc="MCPクライアントインスタンス。"></x-field>
+```javascript MCPAgent からのスキルの使用 icon=logos:javascript
+// `mcpAgent` は初期化済みの MCPAgent であると仮定
+const echoSkill = mcpAgent.skills.echo;
 
-### `skills`
-
-MCPサーバーによって公開されたツールは自動的に検出され、`skills`プロパティ内の`Agent`インスタンスの配列として利用可能になります。スキルにはインデックスまたは名前でアクセスできます。
-
-<x-field data-name="skills" data-type="Agent[]" data-desc="サーバーから検出された呼び出し可能なスキルの配列。"></x-field>
-
-**例：スキルへのアクセス**
-
-```typescript
-// 利用可能なすべてのスキル名をリストアップ
-const skillNames = agent.skills.map(skill => skill.name);
-console.log("Available skills:", skillNames);
-
-// 名前で特定のスキルにアクセス
-const getTickerSkill = agent.skills["get-ticker"];
-if (getTickerSkill) {
-  console.log("Found skill:", getTickerSkill.description);
+if (echoSkill) {
+  const result = await echoSkill.invoke({ message: "Hello from AIGNE!" });
+  console.log(result);
+  // 期待される出力:
+  // {
+  //   "content": [
+  //     { "text": "Tool echo: Hello from AIGNE!", "type": "text" }
+  //   ]
+  // }
 }
 ```
 
-### `prompts`
+### プロンプトへのアクセス
 
-サーバーから利用可能なプロンプトには、`prompts`配列を介してアクセスできます。
+サーバーで定義されたプロンプトは、`prompts` プロパティの下で利用できます。これらは、サーバーから事前定義された複雑なプロンプト構造を取得するのに役立ちます。
 
-<x-field data-name="prompts" data-type="MCPPrompt[]" data-desc="サーバーから利用可能なMCPプロンプトの配列。"></x-field>
+```javascript サーバーサイドのプロンプトへのアクセス icon=logos:javascript
+// `mcpAgent` は初期化済みの MCPAgent であると仮定
+const echoPrompt = mcpAgent.prompts.echo;
 
-**例：プロンプトへのアクセス**
-
-```typescript
-// 名前でプロンプトにアクセス
-const examplePrompt = agent.prompts['example-prompt'];
-
-if (examplePrompt) {
-    const result = await examplePrompt.invoke({
-        variable1: "value1"
-    });
-    console.log(result.content);
+if (echoPrompt) {
+  const result = await echoPrompt.invoke({ message: "Hello!" });
+  console.log(result);
+  // 期待される出力:
+  // {
+  //   "messages": [
+  //     {
+  //       "content": { "text": "Please process this message: Hello!", "type": "text" },
+  //       "role": "user"
+  //     },
+  //     ...
+  //   ]
+  // }
 }
 ```
 
-### `resources`
+### リソースへのアクセス
 
-リソーステンプレートを含むリソースは、`resources`配列で利用できます。
+サーバーでホストされているリソースまたはリソーステンプレートには、`resources` プロパティを介してアクセスできます。これにより、URI テンプレートを展開してサーバーからデータを読み取ることができます。
 
-<x-field data-name="resources" data-type="MCPResource[]" data-desc="サーバーから利用可能なMCPリソースの配列。"></x-field>
+```javascript サーバーサイドのリソースの読み取り icon=logos:javascript
+// `mcpAgent` は初期化済みの MCPAgent であると仮定
+const echoResource = mcpAgent.resources.echo;
 
-**例：リソースへのアクセス**
-
-```typescript
-// 名前でリソースにアクセス
-const userDataResource = agent.resources['user-data'];
-
-if (userDataResource) {
-    const result = await userDataResource.invoke({
-        userId: "123"
-    });
-    console.log(result.content);
+if (echoResource) {
+  const result = await echoResource.invoke({ message: "Hello!" });
+  console.log(result);
+  // 期待される出力:
+  // {
+  //   "contents": [
+  //     { "text": "Resource echo: Hello!", "uri": "echo://Hello!" }
+  //   ]
+  // }
 }
 ```
 
-## メソッド
+## 接続の切断
 
-### `shutdown()`
+リソースを解放するためには、MCP サーバーへの接続を適切に閉じる必要があります。
 
-このメソッドは、MCPサーバーへの接続を閉じることで、Agentをクリーンにシャットダウンします。Agentの使用が終了したら、リソースを解放するためにこのメソッドを呼び出すことが重要です。
+### 手動シャットダウン
 
-**例：Agentのシャットダウン**
+`shutdown()` メソッドを明示的に呼び出すことができます。
 
-```typescript
-// shutdownが確実に呼び出されるように、finallyブロックを使用することを推奨します
-try {
-  // Agentを使用...
-  const ticker = await agent.skills['get-ticker'].invoke({
-    exchange: "coinbase",
-    symbol: "BTC/USD",
+```javascript Agent の手動シャットダウン icon=logos:javascript
+const mcpAgent = await MCPAgent.from({
+  url: `http://localhost:3000/mcp`,
+});
+
+// ... agent を使用
+
+await mcpAgent.shutdown();
+```
+
+### `using` を使用した自動シャットダウン
+
+`using` 宣言 (ES2023) をサポートする環境では、Agent がスコープ外に出たときに自動的に接続が閉じられます。これは、Agent のライフサイクルを管理するための推奨されるアプローチです。
+
+```javascript 'using' による自動シャットダウン icon=logos:javascript
+async function connectAndUseAgent() {
+  await using mcpAgent = await MCPAgent.from({
+    url: `http://localhost:3000/mcp`,
   });
-  console.log(ticker);
-} finally {
-  await agent.shutdown();
-  console.log("Agent has been shut down.");
-}
+
+  // ここで agent が使用されます...
+  const echo = mcpAgent.skills.echo;
+  if (echo) await echo.invoke({ message: "Test" });
+} // <-- ここで mcpAgent.shutdown() が自動的に呼び出されます。
 ```
 
-`MCPAgent`は`Symbol.asyncDispose`メソッドもサポートしており、`using`ステートメントを使用して自動的なリソース管理を行うことができます。
+## まとめ
 
-**例：`await using`を使用した自動シャットダウン**
+`MCPAgent` は、外部システムと統合することで AIGNE フレームワークの機能を拡張するための重要なコンポーネントです。接続と通信のロジックを抽象化することにより、外部のツールやデータソースを、Agent ワークフローの主要な要素として扱うことができます。
 
-```typescript
-import { MCPAgent } from "@aigne/core";
-
-async function main() {
-    await using agent = await MCPAgent.from({
-        url: "http://example.com/mcp-server",
-    });
-    
-    // このブロックの終わりにAgentは自動的にシャットダウンされます
-    const skills = agent.skills.map(s => s.name);
-    console.log("Available skills:", skills);
-}
-
-main();
-```
+`MCPAgent` によって提供されるスキルの使用方法の詳細については、[AI Agent](./developer-guide-agents-ai-agent.md) のドキュメントを参照してください。

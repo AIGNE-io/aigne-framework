@@ -1,95 +1,157 @@
-本文件為 `TransformAgent` 提供了一份完整的使用指南，`TransformAgent` 是一種專門用於透過 JSONata 表達式進行資料轉換的 Agent。您將學習如何設定和使用此 Agent 來執行資料格式轉換、欄位對應和 API 回應正規化等任務。
+# Transform Agent
 
-## 總覽
+`TransformAgent` 是一種專門的 agent，提供了一種使用 [JSONata](https://jsonata.org/) 表達式來宣告式轉換結構化資料的方法。它非常適合需要將資料從一種格式對應、重組或轉換為另一種格式，而無需複雜命令式邏輯的場景。
 
-`TransformAgent` 是一種專門的 Agent，它使用 [JSONata](https://jsonata.org/) 表達式將輸入資料轉換為所需的輸出格式。它提供了一種宣告式且強大的方式來處理結構化資料操作，而無需編寫複雜的自訂邏輯。
+常見用例包括：
+- 將 API 回應正規化為一致的格式。
+- 在不同資料結構之間對應欄位（例如，將資料庫結果對應到應用程式模型）。
+- 重組設定資料。
+- 轉換資料格式，例如將欄位名稱從 `snake_case` 改為 `camelCase`。
+- 對資料執行簡單的彙總、計算或篩選。
 
-此 Agent 特別適用於：
-- API 回應正規化和欄位對應
-- 資料庫查詢結果轉換
-- 組態資料重組
-- 轉換資料格式（例如：snake_case 轉為 camelCase）
-- 執行彙總和計算操作
-- 篩選和條件式資料處理
-
-## 運作方式
-
-`TransformAgent` 透過應用使用者定義的 JSONata 表達式來處理傳入的資料。其核心邏輯包括接收一個結構化的輸入訊息，根據該表達式對其進行評估，然後回傳一個包含已轉換結構和資料的新訊息。
+對於需要更複雜、自訂邏輯的轉換，請考慮使用 [Function Agent](./developer-guide-agents-function-agent.md)。
 
 ```d2
 direction: down
 
-Input-Data: {
-  label: "結構化輸入\n（例如：API 回應、資料庫結果）"
-  shape: rectangle
+Developer: {
+  shape: c4-person
 }
 
-TransformAgent: {
-  label: "TransformAgent"
+Transform-Agent-Workflow: {
+  label: "Transform Agent 工作流程"
   shape: rectangle
+  style: {
+    stroke-dash: 2
+  }
 
-  Transformation-Engine: {
-    label: "轉換引擎"
+  Input-Data: {
+    label: "輸入資料\n（例如：snake_case）"
     shape: rectangle
   }
 
-  JSONata-Expression: {
-    label: "JSONata 表達式\n（使用者定義的邏輯）"
-    shape: rectangle
-    style: {
-      stroke: "#888"
-      stroke-width: 2
-      stroke-dash: 4
+  Agent-Core: {
+    label: "轉換邏輯"
+
+    Transform-Agent: {
+      label: "Transform Agent"
+      shape: rectangle
+    }
+
+    JSONata-Expression: {
+      label: "JSONata 表達式"
+      shape: rectangle
+      style: {
+        fill: "#f0f0f0"
+      }
     }
   }
+
+  Output-Data: {
+    label: "輸出資料\n（例如：camelCase）"
+    shape: rectangle
+  }
 }
 
-Output-Data: {
-  label: "轉換後的輸出\n（正規化資料）"
-  shape: rectangle
-}
+Developer -> Transform-Agent-Workflow.Agent-Core.JSONata-Expression: "1. 定義轉換"
+Transform-Agent-Workflow.Agent-Core.JSONata-Expression -> Transform-Agent-Workflow.Agent-Core.Transform-Agent: "設定"
+Developer -> Transform-Agent-Workflow.Input-Data: "2. 提供輸入"
+Transform-Agent-Workflow.Input-Data -> Transform-Agent-Workflow.Agent-Core.Transform-Agent: "3. 處理"
+Transform-Agent-Workflow.Agent-Core.Transform-Agent -> Transform-Agent-Workflow.Output-Data: "4. 產生"
+Transform-Agent-Workflow.Output-Data -> Developer: "5. 回傳結果"
 
-Input-Data -> TransformAgent.Transformation-Engine: "1. 接收資料"
-TransformAgent.JSONata-Expression -> TransformAgent.Transformation-Engine: "2. 應用邏輯"
-TransformAgent.Transformation-Engine -> Output-Data: "3. 回傳轉換後的資料"
 ```
 
-## 組態
+## 設定
 
-要使用 `TransformAgent`，您需要在一個 YAML 檔案中定義其組態。以下是關鍵欄位：
+`TransformAgent` 使用以下選項進行設定。
 
-| Field | Type | Description |
-| --------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type` | `string` | 指定 Agent 類型。必須設為 `transform`。 |
-| `name` | `string` | Agent 實例的唯一名稱。 |
-| `description` | `string` | Agent 用途的簡要描述。 |
-| `input_schema` | `object` | 使用 JSON Schema 定義預期的輸入資料結構。 |
-| `output_schema` | `object` | 使用 JSON Schema 定義預期的輸出資料結構。 |
-| `jsonata` | `string` | 一個 [JSONata](https://jsonata.org/) 表達式，用於指定如何將輸入資料轉換為輸出格式。這是該 Agent 的核心邏輯。<br><br> **常見模式：**<ul><li>**欄位對應：** `{ "newField": oldField }`</li><li>**陣列轉換：** `items.{ "name": product_name }`</li><li>**計算：** `$sum(items.price)`</li><li>**條件邏輯：** `condition ? value1 : value2`</li></ul>更多詳細資訊，請參閱 [JSONata 官方文件](https://docs.jsonata.org/overview.html) 並在 [JSONata Playground](https://try.jsonata.org/) 中進行實驗。 |
+<x-field-group>
+  <x-field data-name="jsonata" data-type="string" data-required="true">
+    <x-field-desc markdown>
+      一個 [JSONata](https://jsonata.org/) 表達式字串，用於定義資料轉換邏輯。JSONata 是一種輕量級的 JSON 資料查詢和轉換語言。該表達式決定了輸入訊息如何轉換為輸出訊息。您可以在 [JSONata Playground](https://try.jsonata.org/) 中試驗各種表達式。
 
-## 範例
+      **常見模式：**
+      - **欄位對應：** `{ "newField": oldField }`
+      - **陣列轉換：** `items.{ "name": product_name, "price": price }`
+      - **計算：** `$sum(items.price)`
+      - **條件邏輯：** `condition ? value1 : value2`
+      - **字串操作：** `$uppercase(name)`
+    </x-field-desc>
+  </x-field>
+</x-field-group>
 
-此範例示範如何設定 `TransformAgent` 以將使用者資料從 `snake_case` 轉換為 `camelCase`。
+## 用法
 
-### 組態 (`transform.yaml`)
+`TransformAgent` 可以使用 TypeScript 以程式化方式定義，或使用 YAML 以宣告方式定義。
 
-```yaml
+### TypeScript 範例
+
+此範例示範如何建立一個將欄位名稱從 snake_case 轉換為 camelCase 的 `TransformAgent`。
+
+```typescript Transform Agent Example icon=logos:typescript
+import { TransformAgent } from "@aigne/core";
+
+// 1. 定義 TransformAgent
+const snakeToCamelAgent = TransformAgent.from({
+  name: "snake-to-camel-converter",
+  description: "Converts user data fields from snake_case to camelCase.",
+  jsonata: `{
+    "userId": user_id,
+    "userName": user_name,
+    "createdAt": created_at
+  }`,
+});
+
+// 2. 定義輸入資料
+const inputData = {
+  user_id: "usr_12345",
+  user_name: "John Doe",
+  created_at: "2023-10-27T10:00:00Z",
+};
+
+// 3. 呼叫 agent 執行轉換
+async function runTransform() {
+  const result = await snakeToCamelAgent.invoke(inputData);
+  console.log(result);
+}
+
+runTransform();
+```
+
+該 agent 將 JSONata 表達式應用於 `inputData`，並按照指定重新命名鍵。
+
+**輸出**
+
+```json icon=mdi:code-json
+{
+  "userId": "usr_12345",
+  "userName": "John Doe",
+  "createdAt": "2023-10-27T10:00:00Z"
+}
+```
+
+### YAML 範例
+
+同一個 agent 可以在 YAML 檔案中以宣告方式定義。這對於將 agent 定義為更大型設定的一部分非常有用。
+
+```yaml transform.yaml icon=mdi:language-yaml
 type: transform
 name: transform-agent
 description: |
-  一個使用 JSONata 表達式處理輸入資料的 Transform Agent。
+  A Transform Agent that processes input data using JSONata expressions.
 input_schema:
   type: object
   properties:
     user_id:
       type: string
-      description: 使用者 ID。
+      description: The ID of the user.
     user_name:
       type: string
-      description: 使用者名稱。
+      description: The name of the user.
     created_at:
       type: string
-      description: 使用者的建立日期。
+      description: The creation date of the user.
   required:
     - user_id
     - user_name
@@ -99,13 +161,13 @@ output_schema:
   properties:
     userId:
       type: string
-      description: 使用者 ID。
+      description: The ID of the user.
     userName:
       type: string
-      description: 使用者名稱。
+      description: The name of the user.
     createdAt:
       type: string
-      description: 使用者的建立日期。
+      description: The creation date of the user.
   required:
     - userId
     - userName
@@ -118,28 +180,10 @@ jsonata: |
   }
 ```
 
-### 使用方式
+此 YAML 定義指定了 agent 的類型、名稱、結構描述以及核心的 `jsonata` 轉換表達式，實現了與 TypeScript 範例相同的結果。
 
-當 Agent 收到與 `input_schema` 相符的輸入訊息時，它會應用 `jsonata` 表達式來轉換資料。
+## 總結
 
-**輸入資料：**
+`TransformAgent` 為處理結構化資料轉換提供了一種強大而簡潔的方法。透過利用 JSONata，它將資料對應和重組邏輯與您的主要應用程式碼分開，從而實現更清晰、更易於維護的 agentic 工作流程。
 
-```json
-{
-  "user_id": "usr_12345",
-  "user_name": "John Doe",
-  "created_at": "2023-10-27T10:00:00Z"
-}
-```
-
-**輸出資料：**
-
-處理後，Agent 將產生以下符合 `output_schema` 的輸出：
-
-```json
-{
-  "userId": "usr_12345",
-  "userName": "John Doe",
-  "createdAt": "2023-10-27T10:00:00Z"
-}
-```
+若要將此 agent 與其他 agent 進行協調，請參閱 [Team Agent](./developer-guide-agents-team-agent.md) 文件。

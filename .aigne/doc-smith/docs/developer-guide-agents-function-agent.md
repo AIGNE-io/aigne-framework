@@ -1,320 +1,245 @@
-This document provides a comprehensive guide to the `Agent` class, the fundamental building block in the AIGNE framework. You will learn how to create, configure, and use agents to perform a wide range of tasks.
+# Function Agent
 
-## The Agent Class
+The `FunctionAgent` provides a straightforward method for encapsulating existing TypeScript or JavaScript functions, thereby elevating them to first-class agents within the AIGNE framework. This enables the seamless integration of custom business logic, external API interactions, or any arbitrary code into an agentic workflow, obviating the need for extensive boilerplate.
 
-The `Agent` is the base class for all agents in the AIGNE system. It provides a robust framework for defining processing logic, managing input/output schemas, and interacting with other components. By extending the `Agent` class, you can create custom agents with specialized capabilities.
+By wrapping a function, the `FunctionAgent` allows it to participate fully in the agent ecosystem. It can be invoked identically to any other agent, incorporated as a skill within an `AIAgent` or `TeamAgent`, and interact with the AIGNE context and lifecycle hooks. This positions it as an essential component for bridging conventional programmatic logic with AI-driven processes.
 
-### Key Responsibilities
-
--   **Process Data**: Agents take structured input, perform operations, and produce structured output.
--   **Data Validation**: They use Zod schemas to ensure that input and output data conform to expected formats.
--   **Communication**: Agents interact with each other and the system through a message-passing context.
--   **State Management**: They can maintain a memory of past interactions to inform future behavior.
--   **Extensibility**: Agents can use other agents as "skills" to delegate tasks and build complex workflows.
-
-### Class Diagram
-
-The following diagram illustrates the architecture of the `Agent` class and its relationship with other core components in the system.
+This diagram illustrates the creation and invocation flow of a `FunctionAgent`, from providing the source function to receiving the final output.
 
 ```d2
 direction: down
 
-Agent: {
-  shape: class
-  "-inputSchema: ZodSchema"
-  "-outputSchema: ZodSchema"
-  "-skills: Agent[]"
-  "-memory: Memory"
-  "+run(input, context): any"
+Zod-Library: {
+  label: "Zod Library"
+  shape: rectangle
+  style.fill: "#f0f0f0"
 }
 
-ZodSchema: {
-  shape: class
-  "+parse(data): any"
+External-API: {
+  label: "External API\n(e.g., REST, GraphQL)"
+  shape: cylinder
 }
 
-Context: {
-  shape: class
-  "..."
+Developers-Code: {
+  label: "Developer's Code"
+  shape: rectangle
+  style: {
+    stroke: "#888"
+    stroke-width: 2
+    stroke-dash: 4
+  }
+
+  Custom-Logic: {
+    label: "Custom Logic\n(JS/TS Function)"
+    shape: rectangle
+  }
+
+  Agent-Config: {
+    label: "Agent Configuration Object"
+    shape: rectangle
+  }
 }
 
-Memory: {
-  shape: class
-  "..."
+AIGNE-Framework: {
+  label: "AIGNE Framework"
+  shape: rectangle
+
+  FunctionAgent: {
+    label: "FunctionAgent"
+    shape: rectangle
+
+    from-method: {
+      label: "from()"
+      shape: oval
+    }
+
+    invoke-method: {
+      label: "invoke()"
+      shape: oval
+    }
+  }
 }
 
-Agent -> Agent: "uses as skill" {
-  style.stroke-dash: 4
+Developers-Code.Custom-Logic -> AIGNE-Framework.FunctionAgent.from-method: "1a. Provide Function"
+Developers-Code.Agent-Config -> AIGNE-Framework.FunctionAgent.from-method: "1b. Provide Config"
+Zod-Library -> Developers-Code.Agent-Config: {
+  label: "Defines Schemas"
+  style.stroke-dash: 2
 }
+AIGNE-Framework.FunctionAgent.from-method -> AIGNE-Framework.FunctionAgent: "2. Creates Instance"
 
-Agent -> ZodSchema: "validates with"
-
-Agent -> Context: "communicates via"
-
-Agent -> Memory: "manages state with"
+Developers-Code -> AIGNE-Framework.FunctionAgent.invoke-method: "3. Call with input"
+AIGNE-Framework.FunctionAgent.invoke-method -> Developers-Code.Custom-Logic: "4. Execute 'process' logic"
+Developers-Code.Custom-Logic -> External-API: "5. (Optional) Fetch data"
+External-API -> Developers-Code.Custom-Logic: "6. Return data"
+Developers-Code.Custom-Logic -> AIGNE-Framework.FunctionAgent.invoke-method: "7. Return result"
+AIGNE-Framework.FunctionAgent.invoke-method -> Developers-Code: "8. Return final output"
 ```
 
-## Creating an Agent
+## Key Concepts
 
-There are two primary ways to create an agent: extending the `Agent` class or using the `FunctionAgent` for simpler, function-based agents.
+A `FunctionAgent` is a specialized implementation of the `Agent` class that delegates its core processing logic to a user-supplied function. The primary constructor for this agent is the static method `FunctionAgent.from()`, which streamlines its instantiation.
 
-### Extending the `Agent` Class
+A `FunctionAgent` can be created in two ways:
 
-For complex agents with specific logic, you can extend the base `Agent` class and implement the abstract `process` method.
+1.  **Directly from a function:** Pass a synchronous or asynchronous function to `FunctionAgent.from()`. The agent will infer properties, such as its name, from the function definition.
+2.  **From a configuration object:** For more explicit control, provide an options object that specifies the `process` function along with other standard agent configurations like `name`, `description`, `inputSchema`, and `outputSchema`.
 
-**Core Concepts:**
+This design provides flexibility for both rapid, ad-hoc integrations and the development of robust, well-defined agent components.
 
--   **`constructor(options)`**: Initializes the agent with configuration like its name, description, schemas, and skills.
--   **`process(input, options)`**: The core logic of the agent. This is where you define what the agent actually *does*. It receives input and invocation options (including the context) and must return a result.
+## Creating a Function Agent
 
-**Example: A Simple Calculator Agent**
+The standard method for creating a `FunctionAgent` is through the `FunctionAgent.from()` factory method, which accepts either a function or a configuration object.
 
-```typescript
-import { Agent, AgentOptions, AgentInvokeOptions, Message } from "@aigne/core";
+### From a Simple Function
+
+Any standard function can be wrapped directly. The AIGNE framework will use the function's name as the agent's name. This approach is optimal for simple, self-contained operations.
+
+```javascript Wrapping a Simple Function icon=logos:javascript
+import { FunctionAgent } from "@aigne/core";
+
+// Define a simple synchronous function
+function add({ a, b }) {
+  return { result: a + b };
+}
+
+// Wrap the function into an agent
+const addAgent = FunctionAgent.from(add);
+
+console.log(addAgent.name); // Outputs: 'add'
+```
+
+The function receives the agent's input object as its first argument and is expected to return an object that constitutes the agent's output.
+
+### With Full Configuration
+
+For more complex integrations, a full configuration object should be provided. This allows for the definition of input/output schemas for validation, the inclusion of a description, and the assignment of a custom name. This method is recommended for creating robust and reusable agents.
+
+```javascript Function Agent with Configuration icon=logos:javascript
+import { FunctionAgent } from "@aigne/core";
 import { z } from "zod";
 
-// Define input and output message shapes
-interface CalculatorInput extends Message {
-  operation: "add" | "subtract";
-  a: number;
-  b: number;
-}
-
-interface CalculatorOutput extends Message {
-  result: number;
-}
-
-// Create the custom agent
-class CalculatorAgent extends Agent<CalculatorInput, CalculatorOutput> {
-  constructor(options: AgentOptions<CalculatorInput, CalculatorOutput> = {}) {
-    super({
-      // Define agent metadata
-      name: "Calculator",
-      description: "Performs basic arithmetic operations.",
-      
-      // Define Zod schemas for validation
-      inputSchema: z.object({
-        operation: z.enum(["add", "subtract"]),
-        a: z.number(),
-        b: z.number(),
-      }),
-      outputSchema: z.object({
-        result: z.number(),
-      }),
-      
-      ...options,
-    });
-  }
-
-  // Implement the core processing logic
-  async process(input: CalculatorInput, options: AgentInvokeOptions): Promise<CalculatorOutput> {
-    let result: number;
-    
-    if (input.operation === "add") {
-      result = input.a + input.b;
-    } else {
-      result = input.a - input.b;
+const fetchUserAgent = FunctionAgent.from({
+  name: "FetchUser",
+  description: "Fetches user data from a placeholder API.",
+  inputSchema: z.object({
+    userId: z.number().describe("The ID of the user to fetch."),
+  }),
+  outputSchema: z.object({
+    id: z.number(),
+    name: z.string(),
+    email: z.string().email(),
+  }),
+  process: async ({ userId }) => {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch user data.");
     }
-    
-    return { result };
-  }
-}
-```
-
-### Using `FunctionAgent`
-
-For simpler, stateless tasks, `FunctionAgent` provides a convenient way to create an agent from a single function without the boilerplate of defining a class.
-
-**Example: A JavaScript Code Evaluator**
-
-This agent takes a string of JavaScript code, evaluates it in a safe sandbox, and returns the result.
-
-```javascript
-import { FunctionAgent } from "@aigne/core";
-import vm from "node:vm";
-
-// The function that contains the agent's logic
-async function evaluateJs({ code }) {
-  const sandbox = {};
-  const context = vm.createContext(sandbox);
-  const result = vm.runInContext(code, context, { displayErrors: true });
-  return { result };
-}
-
-// Define metadata and schemas separately
-evaluateJs.description = "This agent evaluates JavaScript code.";
-evaluateJs.input_schema = {
-  type: "object",
-  properties: {
-    code: { type: "string", description: "JavaScript code to evaluate" },
+    const data = await response.json();
+    return {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+    };
   },
-  required: ["code"],
-};
-evaluateJs.output_schema = {
-  type: "object",
-  properties: {
-    result: { type: "any", description: "Result of the evaluated code" },
-  },
-  required: ["result"],
-};
-
-// Create the agent from the function
-const sandboxAgent = new FunctionAgent({
-  name: "Sandbox",
-  description: evaluateJs.description,
-  inputSchema: evaluateJs.input_schema,
-  outputSchema: evaluateJs.output_schema,
-  process: evaluateJs,
 });
 ```
 
-## Invoking an Agent
+In this example, `zod` schemas are defined to ensure the input `userId` is a number and the output conforms to a specified structure.
 
-To execute an agent, you use the `invoke` method. It takes the input message and an optional options object. The agent's execution is managed by a `Context` object, which handles message passing, event emission, and resource tracking.
+## Invoking a Function Agent
 
-### Regular vs. Streaming Responses
+A created `FunctionAgent` is invoked using the standard `.invoke()` method, consistent with all other agent types.
 
-The `invoke` method can operate in two modes:
+```javascript Invoking the Agent icon=logos:javascript
+async function main() {
+  // Using the simple 'add' agent from the previous example
+  const result = await addAgent.invoke({ a: 10, b: 5 });
+  console.log(result); // { result: 15 }
 
-1.  **Regular (Default)**: The method returns a `Promise` that resolves with the final, complete output object once the agent has finished processing.
-2.  **Streaming**: By setting `streaming: true` in the options, the method returns a `ReadableStream`. You can read chunks from this stream as they are generated by the agent, allowing for real-time updates.
-
-**Example: Invoking the Calculator Agent**
-
-```typescript
-const calculator = new CalculatorAgent();
-
-// Regular invocation
-async function runCalculation() {
-  const output = await calculator.invoke({
-    operation: "add",
-    a: 10,
-    b: 5,
-  });
-  
-  console.log("Result:", output.result); // Output: Result: 15
+  // Using the configured 'FetchUser' agent
+  const user = await fetchUserAgent.invoke({ userId: 1 });
+  console.log(user); 
+  // { id: 1, name: 'Leanne Graham', email: 'Sincere@april.biz' }
 }
 
-runCalculation();
+main();
 ```
 
-**Example: A Streaming Agent**
+The `invoke` method manages the execution lifecycle, including input validation against the schema (if provided), execution of the underlying function, and validation of the result against the output schema.
 
-```typescript
-import { Agent, textDelta } from "@aigne/core";
+## Advanced Usage
 
-class StreamingEchoAgent extends Agent<{text: string}, {response: string}> {
-  // ... constructor ...
-  
-  async *process(input) {
-    const words = input.text.split(" ");
-    for (const word of words) {
-      // Yield a delta chunk for each word
-      yield textDelta({ response: word + " " });
-      await new Promise(resolve => setTimeout(resolve, 100)); // Simulate work
+### Streaming Responses
+
+`FunctionAgent` supports streaming responses through the use of asynchronous generators. The `process` function can be defined as an `async function*` that `yield`s `AgentResponseChunk` objects, enabling incremental data transmission.
+
+```javascript Streaming with an Async Generator icon=logos:javascript
+import { FunctionAgent, jsonDelta, textDelta } from "@aigne/core";
+import { z } from "zod";
+
+const streamNumbersAgent = FunctionAgent.from({
+  name: "StreamNumbers",
+  inputSchema: z.object({
+    count: z.number().int().positive(),
+  }),
+  outputSchema: z.object({
+    finalCount: z.number(),
+    message: z.string(),
+  }),
+  process: async function* ({ count }) {
+    for (let i = 1; i <= count; i++) {
+      yield textDelta({ message: `Processing number ${i}... ` });
+      await new Promise((resolve) => setTimeout(resolve, 200)); // Simulate work
     }
-  }
-}
-
-const echoAgent = new StreamingEchoAgent();
-
-// Streaming invocation
-async function runStreaming() {
-  const stream = await echoAgent.invoke(
-    { text: "This is a streaming test" },
-    { streaming: true }
-  );
-  
-  const reader = stream.getReader();
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    
-    // Process each chunk as it arrives
-    if (value.delta?.text?.response) {
-      process.stdout.write(value.delta.text.response);
-    }
-  }
-}
-// Output will appear word-by-word: "This is a streaming test "
-runStreaming();
-```
-
-## Agent Lifecycle and Hooks
-
-Agent execution follows a defined lifecycle, and you can tap into key moments using `hooks`. Hooks allow you to add logging, monitoring, or custom logic without modifying the agent's core implementation.
-
-### Invocation Flow Diagram
-
-This diagram shows the sequence of events during an agent's invocation.
-
-```mermaid
-flowchart TD
-    A["invoke() called"] --> B{Call onStart Hooks};
-    B --> C{Validate Input Schema};
-    C --> D["preprocess()"];
-    D --> E["process()"];
-    E --> F["postprocess()"];
-    F --> G{Validate Output Schema};
-    G --> H{Call onSuccess/onError Hooks};
-    H --> I{Call onEnd Hooks};
-    I --> J[Return Final Output];
-    
-    subgraph Error Handling
-        C -- Invalid --> H;
-        E -- Throws --> H;
-        G -- Invalid --> H;
-    end
-```
-
-### Key Hooks
-
--   `onStart`: Called before any processing begins. Can modify the input.
--   `onSuccess`: Called after the agent successfully produces an output.
--   `onError`: Called if an error is thrown during processing.
--   `onEnd`: Always called at the end of the invocation, regardless of success or failure.
--   `onSkillStart` / `onSkillEnd`: Called before and after a skill is invoked.
-
-**Example: Adding a Logging Hook**
-
-```typescript
-const calculator = new CalculatorAgent({
-  hooks: [{
-    onStart: async ({ agent, input }) => {
-      console.log(`[${agent.name}] Starting with input:`, input);
-    },
-    onSuccess: async ({ agent, output }) => {
-      console.log(`[${agent.name}] Succeeded with output:`, output);
-    },
-    onError: async ({ agent, error }) => {
-      console.error(`[${agent.name}] Failed with error:`, error);
-    },
-  }]
+    yield jsonDelta({ finalCount: count });
+    yield textDelta({ message: "Done." });
+  },
 });
 
-await calculator.invoke({ operation: "subtract", a: 10, b: 20 });
-// Logs:
-// [Calculator] Starting with input: { operation: 'subtract', a: 10, b: 20 }
-// [Calculator] Succeeded with output: { result: -10 }
+async function runStream() {
+  const stream = await streamNumbersAgent.invoke({ count: 5 }, { streaming: true });
+  for await (const chunk of stream) {
+    console.log(chunk);
+  }
+}
+
+runStream();
 ```
 
-## Core Properties and Methods
+This capability is particularly useful for long-running tasks where providing real-time feedback on the agent's progress is required.
 
-This is a reference for the most important properties and methods of the `Agent` class.
+## Configuration
 
-| Member                | Type                                    | Description                                                                                                                              |
-| --------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                | `string`                                | The identifier for the agent. Defaults to the class name.                                                                                |
-| `description`         | `string`                                | A human-readable description of the agent's purpose.                                                                                     |
-| `inputSchema`         | `ZodType`                               | A Zod schema to validate the input message.                                                                                              |
-| `outputSchema`        | `ZodType`                               | A Zod schema to validate the output message.                                                                                             |
-| `skills`              | `Agent[]`                               | A list of other agents that this agent can invoke to delegate tasks.                                                                     |
-| `memory`              | `MemoryAgent`                           | An optional memory agent to store and retrieve information from past interactions.                                                       |
-| `hooks`               | `AgentHooks[]`                          | An array of hook objects to intercept the agent's lifecycle events.                                                                      |
-| `retryOnError`        | `boolean \| object`                     | Configuration for automatically retrying the agent's `process` method on failure.                                                        |
-| `guideRails`          | `GuideRailAgent[]`                      | A list of special agents that can inspect and validate the agent's input and output to enforce policies or rules.                        |
-| `invoke()`            | `function`                              | **(Public Method)** Executes the agent with a given input. Returns a final result or a stream.                                         |
-| `process()`           | `function`                              | **(Abstract Method)** The core logic to be implemented by subclasses.                                                                    |
-| `invokeSkill()`       | `function`                              | **(Protected Method)** A helper method for invoking another agent that has been added as a skill.                                        |
-| `addSkill()`          | `function`                              | Adds one or more agents to this agent's list of skills.                                                                                  |
-| `shutdown()`          | `function`                              | Cleans up resources, such as unsubscribing from topics.                                                                                  |
+The `FunctionAgent` is initialized via a configuration object passed to `FunctionAgent.from` or its constructor. The following parameters are specific to its configuration.
+
+<x-field-group>
+  <x-field data-name="process" data-type="FunctionAgentFn" data-required="true">
+    <x-field-desc markdown>The function that implements the agent's logic. It receives the input message and invocation options and returns the processing result. This can be a synchronous function, an async function returning a Promise, or an async generator for streaming.</x-field-desc>
+  </x-field>
+  <x-field data-name="name" data-type="string" data-required="false">
+    <x-field-desc markdown>A unique name for the agent, used for identification and logging. If not provided, it defaults to the name of the `process` function.</x-field-desc>
+  </x-field>
+  <x-field data-name="description" data-type="string" data-required="false">
+    <x-field-desc markdown>A human-readable description of what the agent does. This is useful for documentation and for other agents to understand its capabilities.</x-field-desc>
+  </x-field>
+  <x-field data-name="inputSchema" data-type="ZodObject" data-required="false">
+    <x-field-desc markdown>A Zod schema to validate the structure and types of the input message. If validation fails, the agent will throw an error before the `process` function is called.</x-field-desc>
+  </x-field>
+  <x-field data-name="outputSchema" data-type="ZodObject" data-required="false">
+    <x-field-desc markdown>A Zod schema to validate the structure and types of the output message returned by the `process` function. If validation fails, an error is thrown.</x-field-desc>
+  </x-field>
+</x-field-group>
+
+All other properties from the base `AgentOptions` are also available. Refer to the [Agent documentation](./developer-guide-core-concepts-agents.md) for a complete list.
+
+## Summary
+
+The `FunctionAgent` is a versatile tool for integrating conventional code into the AIGNE framework, acting as a bridge that allows any JavaScript or TypeScript function to operate as a standard agent.
+
+-   **Simplicity:** Wrap existing functions with minimal effort using `FunctionAgent.from()`.
+-   **Integration:** Seamlessly incorporate traditional business logic, calculations, or external API calls into agentic workflows.
+-   **Validation:** Enforce data contracts and improve reliability by defining input and output schemas with Zod.
+-   **Flexibility:** Supports synchronous functions, asynchronous promises, and streaming with async generators.
+
+By leveraging `FunctionAgent`, developers can combine the deterministic and reliable nature of traditional code with the dynamic capabilities of AI agents to build more powerful and robust applications. For orchestrating multiple agents, including Function Agents, refer to the documentation on the [Team Agent](./developer-guide-agents-team-agent.md).

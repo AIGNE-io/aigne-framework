@@ -1,142 +1,135 @@
 # Getting Started
 
-This guide provides everything you need to get the AIGNE Framework installed and running in just a few minutes. By the end, you will have built and run your first AI-powered agent.
+This guide provides the necessary steps to set up your development environment and run your first AI agent using the AIGNE Framework. The process is designed to be completed in under 30 minutes, offering a practical, hands-on introduction to the framework's fundamental workflow.
 
-## What is AIGNE Framework?
+We will cover system prerequisites, installation of the required packages, and a complete, copy-paste-ready example that demonstrates how to define, configure, and execute a basic AI agent.
 
-AIGNE Framework \[ˈei dʒən] is a functional AI application development framework designed to simplify and accelerate the process of building modern, AI-powered applications. It combines functional programming, powerful AI capabilities, and a modular design to help you create scalable and maintainable solutions.
+## Prerequisites
 
-**Key Features:**
+Before proceeding, ensure your development environment meets the following requirement:
 
-*   **Modular Design**: A clear structure that improves development efficiency and simplifies maintenance.
-*   **TypeScript Support**: Comprehensive type definitions for a better and safer development experience.
-*   **Multiple AI Model Support**: Built-in support for major AI models like OpenAI, Gemini, and Claude, with easy extensibility.
-*   **Flexible Workflow Patterns**: Simplifies complex operations with patterns for sequential, concurrent, routing, and handoff workflows.
-*   **MCP Protocol Integration**: Seamlessly integrates with external systems through the Model Context Protocol.
+*   **Node.js**: Version 20.0 or higher is required.
 
-## 1. Prerequisites
-
-Before you begin, ensure you have Node.js installed on your system.
-
-*   **Node.js**: Version 20.0 or higher.
-
-You can verify your Node.js version by running the following command in your terminal:
+You can verify your Node.js version by executing the following command in your terminal:
 
 ```bash
 node -v
 ```
 
-## 2. Installation
+## Installation
 
-You can install the core AIGNE package using your preferred package manager.
+To begin, you need to install the core AIGNE package and a model provider package. For this guide, we will use the official OpenAI model provider.
 
-### Using npm
+Install the necessary packages using your preferred package manager:
 
-```bash
-npm install @aigne/core
+<x-cards data-columns="3">
+  <x-card data-title="npm" data-icon="logos:npm-icon">
+    ```bash
+    npm install @aigne/core @aigne/openai
+    ```
+  </x-card>
+  <x-card data-title="yarn" data-icon="logos:yarn">
+    ```bash
+    yarn add @aigne/core @aigne/openai
+    ```
+  </x-card>
+  <x-card data-title="pnpm" data-icon="logos:pnpm">
+    ```bash
+    pnpm add @aigne/core @aigne/openai
+    ```
+  </x-card>
+</x-cards>
+
+Additionally, you will need an OpenAI API key. Set it as an environment variable named `OPENAI_API_KEY`.
+
+```bash title=".env"
+OPENAI_API_KEY="sk-..."
 ```
 
-### Using yarn
+## Quick Start Example
 
-```bash
-yarn add @aigne/core
-```
+This example demonstrates the complete process of creating and running a simple "assistant" agent.
 
-### Using pnpm
+1.  Create a new TypeScript file named `index.ts`.
+2.  Copy and paste the following code into the file.
 
-```bash
-pnpm add @aigne/core
-```
-
-## 3. Your First AIGNE Application
-
-Let's create a simple "Hello, World!" style application with a helpful assistant agent.
-
-#### Step 1: Set Up Your Project File
-
-Create a new file named `index.ts`.
-
-#### Step 2: Add the Code
-
-This example demonstrates the three core components of the AIGNE Framework: the **Model**, the **Agent**, and the **AIGNE Engine**.
-
-*   **Model**: An instance of an AI model (e.g., `OpenAIChatModel`) that will power your agent.
-*   **Agent**: A definition of your AI's personality and instructions (e.g., `AIAgent`).
-*   **AIGNE Engine**: The main executor that runs the agent and handles communication.
-
-Copy and paste the following code into your `index.ts` file:
-
-```typescript
+```typescript index.ts icon=logos:typescript-icon
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
+// 1. Instantiate the AI Model
+// This creates a connection to the OpenAI API using the specified model.
+// The API key is read from the OPENAI_API_KEY environment variable.
+const model = new OpenAIChatModel({
+  model: "gpt-4o-mini",
+});
+
+// 2. Define the AI Agent
+// An agent is a unit of work. This AIAgent is configured with
+// instructions that define its personality and task.
+const assistantAgent = AIAgent.from({
+  name: "Assistant",
+  instructions: "You are a helpful and friendly assistant.",
+});
+
+// 3. Instantiate the AIGNE
+// The AIGNE class is the central orchestrator that manages and runs agents.
+// It is configured with the model that its agents will use.
+const aigne = new AIGNE({ model });
+
 async function main() {
-  // 1. Create an AI model instance
-  // This connects to the AI provider (e.g., OpenAI).
-  // Ensure you have your API key set as an environment variable.
-  const model = new OpenAIChatModel({
-    apiKey: process.env.OPENAI_API_KEY,
-    model: process.env.DEFAULT_CHAT_MODEL || "gpt-4-turbo",
-  });
-
-  // 2. Create an AI agent
-  // This defines the agent's identity and purpose.
-  const agent = AIAgent.from({
-    name: "Assistant",
-    instructions: "You are a helpful assistant.",
-  });
-
-  // 3. Initialize the AIGNE engine
-  // This is the main execution engine that brings everything together.
-  const aigne = new AIGNE({ model });
-
-  // 4. Start an interactive session with the agent
-  const userAgent = aigne.invoke(agent);
-
-  // 5. Send a message to the agent and get a response
-  const response = await userAgent.invoke(
-    "Hello, can you help me write a short article?",
+  // 4. Invoke the Agent
+  // The invoke method runs the agent with a given input.
+  // The framework handles the interaction with the model.
+  const response = await aigne.invoke(
+    assistantAgent,
+    "Why is the sky blue?"
   );
 
+  // 5. Print the Response
   console.log(response);
 }
 
 main();
 ```
 
-#### Step 3: Set Your API Key
+### Running the Example
 
-Before running the script, you need to provide your OpenAI API key. You can do this by setting an environment variable in your terminal.
-
-```bash
-export OPENAI_API_KEY="your-api-key-here"
-```
-
-#### Step 4: Run the Application
-
-Execute the file using a TypeScript runner like `ts-node`.
+Execute the script from your terminal. If you are using TypeScript, you can use a tool like `ts-node`.
 
 ```bash
 npx ts-node index.ts
 ```
 
-You should see a helpful response from your assistant agent printed in the console!
+### Expected Output
 
-## How It Works: A Quick Overview
+The output will be the agent's response to the question, formatted as a JSON object. The content of the `message` field will vary, as it is generated by the AI model.
 
-The AIGNE Framework is designed to be modular and extensible. The `AIGNE` engine orchestrates interactions between the user, agents, and AI models.
+```json
+{
+  "message": "The sky appears blue because of a phenomenon called Rayleigh scattering..."
+}
+```
 
-<picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-dark.png" media="(prefers-color-scheme: dark)">
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne.png" alt="AIGNE Architecture Diagram" />
-</picture>
+## Code Breakdown
 
-## Next Steps
+The example is composed of four primary steps that represent the core workflow of the AIGNE Framework.
 
-You've successfully built and run your first AIGNE application. Now you're ready to explore more advanced features.
+1.  **Model Initialization**: An instance of `OpenAIChatModel` is created. This object serves as a direct interface to the specified OpenAI model (e.g., `gpt-4o-mini`). It requires an API key for authentication, which is automatically sourced from the `OPENAI_API_KEY` environment variable.
 
-*   **Dive into Core Concepts**: Get a deeper understanding of the [AIGNE Engine, Agents, and Models](./developer-guide-core-concepts.md).
-*   **Explore Agent Types**: Learn about the different kinds of specialized agents you can build in the [Agent Types](./developer-guide-agents.md) section.
-*   **Simplify Workflows**: Discover how to orchestrate complex, multi-agent tasks by reviewing patterns like [Sequential and Parallel](./developer-guide-agents-team-agent.md) execution.
-*   **Browse the Full Documentation**: For in-depth guides and API references, visit the complete [AIGNE Framework Documentation](https://www.arcblock.io/docs/aigne-framework).
+2.  **Agent Definition**: An `AIAgent` is defined using the static `from` method. This is the fundamental unit of work in the framework. Its behavior is defined by the `instructions` property, which acts as a system prompt, guiding the AI model's responses.
+
+3.  **AIGNE Instantiation**: The `AIGNE` class is instantiated. It acts as the execution engine and orchestrator for all agents. By passing the `model` instance into its constructor, we establish a default model for all agents managed by this AIGNE instance.
+
+4.  **Agent Invocation**: The `aigne.invoke()` method is called to execute the `assistantAgent`. The first argument is the agent to run, and the second is the input message. The framework manages the complete lifecycle of the request: sending the prompt and instructions to the model, receiving the response, and returning it as structured output.
+
+This simple example illustrates the modular and declarative nature of the framework, where models, agents, and the execution engine are configured and composed to build powerful AI-driven applications.
+
+## Summary
+
+In this guide, you have successfully set up your environment, installed the necessary AIGNE packages, and built and run a functional AI agent. You have learned the basic workflow: defining a model, creating an agent with specific instructions, and using the AIGNE to invoke it with a user prompt.
+
+With this foundation, you are now ready to explore more advanced topics.
+
+*   To understand the fundamental building blocks of the framework in greater detail, proceed to the [Core Concepts](./developer-guide-core-concepts.md) documentation.
+*   To learn about the different types of specialized agents and their use cases, see the [Agent Types](./developer-guide-agents.md) section.

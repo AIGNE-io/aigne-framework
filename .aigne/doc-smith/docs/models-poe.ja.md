@@ -1,90 +1,92 @@
-# @aigne/poe
+ユーザーは D2 ダイアグラムの構文エラーを修正したいと考えています。
+エラーメッセージ `invalid style keyword: "font-family"` は、`font-family` が D2 で有効なスタイルプロパティではないことを示しています。
+D2 コード内のこの行を削除または修正する必要があります。
 
-[AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) 内で Poe 言語モデルおよび API サービスと統合するための AIGNE Poe SDK。
+ISTJ の性格に基づき、以下の手順を実行します：
+1.  **リクエストの分析:** ユーザーから D2 構文エラーに関するフィードバックが提供されました。目標は、ダイアグラムを修正し、ドキュメントを再生成することです。
+2.  **エラーの特定:** エラーは `invalid style keyword: "font-family"` です。これは D2 コードの事実上のエラーです。
+3.  **修正案の策定:** D2 ダイアグラムの `style` ブロックから `font-family` プロパティを削除する必要があります。
+4.  **ドキュメントの再生成:** 修正された D2 コードでドキュメント全体を再生成します。他のすべての情報が正確であり、確立された構造に従っていることを確認します。
+5.  **出力のレビュー:** 最終決定する前に、生成された Markdown と修正された D2 ブロックを再確認し、構文的に正しく、論理的に健全であることを保証します。
 
-## 概要
+ドキュメントコンテンツの生成プロセスを分解してみましょう。
 
-`@aigne/poe` は、AIGNE Framework と Poe の言語モデルおよび API サービス間のシームレスな統合を提供します。このパッケージにより、開発者は AIGNE アプリケーションで Poe のモデルを簡単に活用でき、Poe の高度な AI 機能を利用しながら、フレームワーク全体で一貫したインターフェースを提供できます。
+**計画:**
+
+1.  **はじめに:** `@aigne/poe` パッケージの概要から始め、その目的を説明します。つまり、AIGNE フレームワークを、さまざまなサードパーティモデルへのアクセスを提供する Poe API に接続することです。OpenAI 互換 API を使用していることにも言及します。メインのモデル概要ページへのリンクを記載します。
+2.  **ダイアグラム:** 修正されたアーキテクチャを示す D2 ダイアグラムを生成します。ダイアグラムには、AIGNE アプリケーション、`@aigne/poe` パッケージ、Poe API、および基盤となる言語モデル（GPT、Claude など）を表示します。不正な `font-family` スタイルは削除します。
+3.  **インストール:** npm、yarn、pnpm を使用して必要なパッケージ（`@aigne/poe` および `@aigne/core`）をインストールするための、コピー＆ペースト可能な明確なコマンドを提供します。これは標準的で実用的なステップです。
+4.  **設定:** `PoeChatModel` の設定オプションを詳述します。
+    *   API キーを提供する2つの方法（`apiKey` プロパティ vs `POE_API_KEY` 環境変数）を説明します。これはセットアップに不可欠です。
+    *   `<x-field-group>` を使用して、コンストラクタのオプション（`apiKey`、`model`、`modelOptions`、`baseURL`）を構造化され、読みやすい形式で提示します。
+    *   デフォルト値（`gpt-5-mini`、`https://api.poe.com/v1`）を含む各フィールドの正確な説明を提供します。情報はソースコード（`models/poe/src/poe.ts`）で入手可能です。
+5.  **使用法セクション:**
+    *   **標準呼び出し:** `PoeChatModel` をインスタンス化し、`invoke` メソッドを呼び出す、完全で動作する TypeScript の例を提供します。明確で実用的な例（モデルにそれが何であるかを尋ねるなど）を使用します。例は README で入手可能です。
+    *   期待される JSON 出力を表示します。これはユーザーが実装を確認するのに役立ちます。
+    *   **ストリーミングレスポンス:** `streaming: true` オプションの使用方法を示す2番目の完全な TypeScript の例を提供します。チャンクを処理するためのループ（`isAgentResponseDelta`）を示します。これは README で言及されている主要な機能です。
+    *   最終的なテキストとメタデータがどのように組み立てられるかを含め、期待されるストリーミング出力を表示します。
+6.  **参考文献/まとめ:** 関連する外部ドキュメント（公式 Poe ドキュメント）および内部ドキュメント（コアコンセプト：モデル）へのリンクで締めくくります。これにより、ユーザーに明確な次のステップを提供します。
+
+この計画は、フィードバックで指摘された特定のエラーを修正しつつ、技術ガイドに対するユーザーのニーズに直接応える、体系的で事実に基づいたものです。これは、正確性、構造、実用性を優先する ISTJ のアプローチに従っています。# Poe
+
+`@aigne/poe` パッケージは、[Poe](https://poe.com/) との統合のための標準化されたインターフェースを提供します。Poe は、OpenAI、Anthropic、Google などのサードパーティ製言語モデルに幅広くアクセスできるサービスです。OpenAI 互換の API エンドポイントを活用することで、このパッケージは AIGNE フレームワーク内でさまざまなモデルをシームレスに使用できるようにします。
+
+このガイドでは、`PoeChatModel` のインストール、設定、利用方法をステップバイステップで説明します。モデル統合に関するより一般的な情報については、[モデルの概要](./models-overview.md) ドキュメントを参照してください。
 
 ```d2
 direction: down
 
-Developer: {
+Developer-App: {
+  label: "開発者の\nアプリケーション"
   shape: c4-person
-  label: "開発者"
 }
 
-AIGNE-Application: {
-  label: "AIGNE アプリケーション"
+AIGNE-Framework: {
+  label: "AIGNE フレームワーク"
   shape: rectangle
 
-  App-Code: {
-    label: "アプリケーションコード\n(例: `model.invoke()`)"
-    shape: rectangle
-  }
-
-  Dependencies: {
-    label: "依存関係"
-    shape: rectangle
-
-    aigne-core: {
-      label: "@aigne/core"
-      shape: rectangle
-    }
-
-    aigne-poe: {
-      label: "@aigne/poe\n(PoeChatModel)"
-      shape: rectangle
-    }
-  }
-}
-
-Poe-API: {
-  label: "Poe API サービス"
-  shape: cylinder
-
-  Poe-Models: {
-    label: "Poe 言語モデル\n(例: claude-3-opus)"
+  aigne-poe: {
+    label: "@aigne/poe\nPoeChatModel"
     shape: rectangle
   }
 }
 
-Developer -> AIGNE-Application.App-Code: "コードを記述・実行"
-AIGNE-Application.Dependencies.aigne-poe -> AIGNE-Application.Dependencies.aigne-core: "コアインターフェースに依存し\n実装する"
-AIGNE-Application.App-Code -> AIGNE-Application.Dependencies.aigne-poe: "1. 'invoke()' を呼び出す"
-AIGNE-Application.Dependencies.aigne-poe -> Poe-API: "2. API リクエストを送信"
-Poe-API -> AIGNE-Application.Dependencies.aigne-poe: "3. レスポンスを返す\n(単一オブジェクトまたはストリーム)"
-AIGNE-Application.Dependencies.aigne-poe -> AIGNE-Application.App-Code: "4. アプリに結果を渡す"
+Poe-Service: {
+  label: "Poe サービス"
+  shape: rectangle
+
+  Poe-API: {
+    label: "OpenAI 互換 API"
+  }
+
+  Third-Party-Models: {
+    label: "サードパーティ製言語モデル"
+    grid-columns: 3
+    OpenAI: {}
+    Anthropic: {}
+    Google: {}
+  }
+}
+
+Developer-App -> AIGNE-Framework.aigne-poe: "1. PoeChatModel を使用"
+AIGNE-Framework.aigne-poe -> Poe-Service.Poe-API: "2. API リクエストを送信"
+Poe-Service.Poe-API -> Poe-Service.Third-Party-Models: "3. 選択されたモデルにルーティング"
+Poe-Service.Third-Party-Models -> Poe-Service.Poe-API: "4. レスポンスを生成"
+Poe-Service.Poe-API -> AIGNE-Framework.aigne-poe: "5. レスポンスストリームを返す"
+AIGNE-Framework.aigne-poe -> Developer-App: "6. 結果を配信"
 ```
-
-## 機能
-
-*   **Poe API 統合**: Poe の API サービスへの直接接続。
-*   **チャット補完**: 利用可能なすべてのモデルでの Poe のチャット補完 API のサポート。
-*   **関数呼び出し**: 関数呼び出し機能の組み込みサポート。
-*   **ストリーミング応答**: より応答性の高いアプリケーションのためのストリーミング応答のサポート。
-*   **型安全**: すべての API とモデルに対する包括的な TypeScript の型定義。
-*   **一貫したインターフェース**: AIGNE Framework のモデルインターフェースとの互換性。
-*   **エラーハンドリング**: 堅牢なエラーハンドリングとリトライメカニズム。
-*   **完全な設定**: 動作を微調整するための広範な設定オプション。
 
 ## インストール
 
-お好みのパッケージマネージャーを使用してパッケージをインストールしてください。
-
-### npm
+まず、お好みのパッケージマネージャーを使用して必要なパッケージをインストールします。`@aigne/core` と Poe 固有のパッケージの両方が必要です。
 
 ```bash
 npm install @aigne/poe @aigne/core
 ```
 
-### yarn
-
 ```bash
 yarn add @aigne/poe @aigne/core
 ```
-
-### pnpm
 
 ```bash
 pnpm add @aigne/poe @aigne/core
@@ -92,42 +94,42 @@ pnpm add @aigne/poe @aigne/core
 
 ## 設定
 
-開始するには、`PoeChatModel` をインスタンス化します。コンストラクターは設定用の `options` オブジェクトを受け入れます。
+`PoeChatModel` クラスは、Poe API と対話するための主要なインターフェースです。これをインスタンス化するには、Poe API キーを提供し、目的のモデルを指定する必要があります。
 
-```typescript
-import { PoeChatModel } from "@aigne/poe";
-
-const model = new PoeChatModel({
-  // Options
-});
-```
-
-**コンストラクターのオプション**
+API キーは2つの方法で設定できます：
+1.  コンストラクタで `apiKey` プロパティを介して直接設定する。
+2.  `POE_API_KEY` という名前の環境変数として設定する。
 
 <x-field-group>
-    <x-field data-name="apiKey" data-type="string" data-required="false" data-desc="あなたの Poe API キー。指定しない場合、SDK は環境変数 `POE_API_KEY` を使用します。"></x-field>
-    <x-field data-name="model" data-type="string" data-required="false" data-default="'gpt-5-mini'" data-desc="補完に使用する特定の Poe モデル (例: 'claude-3-opus')。"></x-field>
-    <x-field data-name="baseURL" data-type="string" data-required="false" data-default="'https://api.poe.com/v1'" data-desc="Poe API のベース URL。"></x-field>
-    <x-field data-name="modelOptions" data-type="object" data-required="false" data-desc="モデル API に渡す追加のオプション。`temperature` や `top_p` など。"></x-field>
+  <x-field data-name="apiKey" data-type="string" data-required="false">
+    <x-field-desc markdown>あなたの Poe API キー。コンストラクタではオプションですが、認証を成功させるには、キーがここか `POE_API_KEY` 環境変数で利用可能である必要があります。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-default="gpt-5-mini" data-required="false">
+    <x-field-desc markdown>使用したいモデルの識別子。Poe は `claude-3-opus` や `gpt-4o` などのモデルへのアクセスを提供します。指定しない場合、デフォルトは `gpt-5-mini` です。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>`temperature`、`topP`、`maxTokens` など、モデル API に渡す追加のオプション。これらのパラメータは、基盤となるモデルプロバイダーに直接送信されます。</x-field-desc>
+  </x-field>
+  <x-field data-name="baseURL" data-type="string" data-default="https://api.poe.com/v1" data-required="false">
+    <x-field-desc markdown>Poe API のベース URL。カスタムプロキシを使用している場合を除き、これを変更すべきではありません。</x-field-desc>
+  </x-field>
 </x-field-group>
 
-API キーは 2 つの方法で設定できます。
-1.  コンストラクターで直接指定: `new PoeChatModel({ apiKey: "your-api-key" })`
-2.  `POE_API_KEY` という名前の環境変数として設定。
+## 使用法
 
-## 使用方法
+以下の例では、`PoeChatModel` インスタンスを作成し、標準およびストリーミングのチャット補完に使用する方法を示します。
 
-### 基本的な呼び出し
+### 標準呼び出し
 
-Poe API にリクエストを送信するには、`invoke` メソッドを使用します。このメソッドは `messages` 配列を持つオブジェクトを受け取り、モデルのレスポンスで解決される Promise を返します。
+単純なリクエスト・レスポンスの対話には、`invoke` メソッドを使用します。このメソッドはリクエストを送信し、モデルからの完全なレスポンスを待ちます。
 
-```typescript
+```typescript 基本的な使用法 icon=logos:typescript
 import { PoeChatModel } from "@aigne/poe";
 
 const model = new PoeChatModel({
-  // API キーを直接指定するか、環境変数 POE_API_KEY を使用します
-  apiKey: "your-api-key", // 環境変数で設定されている場合はオプション
-  // モデルを指定 (デフォルトは 'gpt-5-mini')
+  // API キーを直接指定するか、POE_API_KEY 環境変数を設定します
+  apiKey: "your-poe-api-key",
+  // Poe を通じて利用可能な目的のモデルを指定します
   model: "claude-3-opus",
   modelOptions: {
     temperature: 0.7,
@@ -139,28 +141,31 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* 出力:
-  {
-    text: "I'm powered by Poe, using the Claude 3 Opus model from Anthropic.",
-    model: "claude-3-opus",
-    usage: {
-      inputTokens: 5,
-      outputTokens: 14
-    }
-  }
-  */
 ```
 
-### ストリーミング応答
+`invoke` メソッドは、モデルの出力と使用状況のメタデータを含む構造化されたレスポンスを返します。
 
-リアルタイムアプリケーション向けに、モデルからのレスポンスをストリーミングできます。`invoke` メソッドの第 2 引数で `streaming: true` オプションを設定します。これにより、レスポンスのチャンクが利用可能になるたびにそれらを生成する非同期イテレータが返されます。
+```json 期待される出力 icon=material-symbols:data-object-outline
+{
+  "text": "私は Poe を利用しており、Anthropic 社の Claude 3 Opus モデルを使用しています。",
+  "model": "claude-3-opus",
+  "usage": {
+    "inputTokens": 5,
+    "outputTokens": 14
+  }
+}
+```
 
-```typescript
+### ストリーミングレスポンス
+
+リアルタイムアプリケーションでは、レスポンスが生成されると同時にストリーミングできます。`invoke` 呼び出しで `streaming: true` オプションを設定すると、レスポンスチャンクの非同期ストリームを受け取ることができます。
+
+```typescript ストリーミングの例 icon=logos:typescript
 import { isAgentResponseDelta } from "@aigne/core";
 import { PoeChatModel } from "@aigne/poe";
 
 const model = new PoeChatModel({
-  apiKey: "your-api-key",
+  apiKey: "your-poe-api-key",
   model: "claude-3-opus",
 });
 
@@ -177,15 +182,31 @@ const json = {};
 for await (const chunk of stream) {
   if (isAgentResponseDelta(chunk)) {
     const text = chunk.delta.text?.text;
-    if (text) fullText += text;
-    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+    if (text) {
+      fullText += text;
+      process.stdout.write(text);
+    }
+    if (chunk.delta.json) {
+      Object.assign(json, chunk.delta.json);
+    }
   }
 }
 
-console.log(fullText); // 出力: "I'm powered by Poe, using the Claude 3 Opus model from Anthropic."
-console.log(json); // { model: "anthropic/claude-3-opus", usage: { inputTokens: 5, outputTokens: 14 } }
+console.log("\n--- Final Assembled Data ---");
+console.log("Full Text:", fullText);
+console.log("Metadata:", json);
 ```
 
-## ライセンス
+ストリームを反復処理する際、各チャンクはレスポンスの差分を提供します。完全なテキストとメタデータは、これらの個々のチャンクから組み立てる必要があります。
 
-このパッケージは [Elastic-2.0 License](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md) の下でライセンスされています。
+```text 期待される出力 icon=material-symbols:terminal
+私は Poe を利用しており、Anthropic 社の Claude 3 Opus モデルを使用しています。
+--- 最終的に組み立てられたデータ ---
+全文: 私は Poe を利用しており、Anthropic 社の Claude 3 Opus モデルを使用しています。
+メタデータ: { model: "anthropic/claude-3-opus", usage: { inputTokens: 5, outputTokens: 14 } }
+```
+
+## 参考文献
+
+- 利用可能なモデルとその機能の完全なリストについては、公式の [Poe ドキュメント](https://developer.poe.com/docs/server-bots-and-apis) を参照してください。
+- モデルが AIGNE の広範なアーキテクチャにどのように適合するかを理解するには、[コアコンセプト：モデル](./developer-guide-core-concepts-models.md) のページを参照してください。

@@ -1,123 +1,120 @@
-# @aigne/ollama
+# Ollama
 
-`@aigne/ollama` SDK 提供了 AIGNE 框架与通过 Ollama 本地托管的 AI 模型之间的无缝集成。这使得开发人员可以轻松地在他们的 AIGNE 应用程序中利用开源语言模型，在提供一致接口的同时，确保隐私和对 AI 功能的离线访问。
+`@aigne/ollama` 包提供了 AIGNE 框架与通过 [Ollama](https://ollama.ai/) 本地托管的 AI 模型之间的无缝集成。这使得开发人员能够利用在自己硬件上运行的各种开源语言模型，确保了 AI 功能的隐私性和离线访问能力。
+
+本指南涵盖了在您的 AIGNE 应用中配置和使用 `OllamaChatModel` 的必要步骤。有关其他模型提供商的信息，请参阅[模型概述](./models-overview.md)。
+
+下图说明了 AIGNE 框架如何与本地 Ollama 实例进行交互。
 
 ```d2
-direction: down
-
-AIGNE-Application: {
-  label: "你的 AIGNE 应用程序"
-  shape: rectangle
+direction: right
+style: {
+  font-size: 14
+  fill: "#F6F8FA"
+  stroke: "#B4B4B4"
+  stroke-width: 1
 }
 
-aigne-ollama: {
-  label: "@aigne/ollama SDK"
+AIGNE_Application: "AIGNE 应用" {
   shape: rectangle
+  style.fill: "#E6F7FF"
+  style.stroke: "#91D5FF"
 }
 
-Ollama-Instance: {
-  label: "Ollama 实例\n（本地运行）"
+OllamaChatModel: "@aigne/ollama\nOllamaChatModel" {
   shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
+  style.fill: "#F9F0FF"
+  style.stroke: "#D3ADF7"
+}
 
-  API-Server: {
-    label: "API 服务器\n(localhost:11434)"
-    shape: rectangle
-  }
-
-  Local-Models: {
-    label: "本地 AI 模型"
-    shape: rectangle
-    grid-columns: 2
-
-    Llama3: { shape: rectangle }
-    Mistral: { shape: rectangle }
-    "and more...": { shape: rectangle }
+Ollama_Instance: "本地 Ollama 实例" {
+  shape: cylinder
+  style.fill: "#FFF7E6"
+  style.stroke: "#FFE7BA"
+  
+  LLM: "语言模型\n（例如 Llama 3）" {
+    shape: hexagon
+    style.fill: "#F6FFED"
+    style.stroke: "#B7EB8F"
   }
 }
 
-AIGNE-Application -> aigne-ollama: "使用 `OllamaChatModel`"
-aigne-ollama -> Ollama-Instance.API-Server: "发送 HTTP API 请求"
-Ollama-Instance.API-Server -> Ollama-Instance.Local-Models: "加载并运行模型"
-Ollama-Instance.Local-Models -> Ollama-Instance.API-Server: "返回补全结果"
+AIGNE_Application -> OllamaChatModel: "1. 调用模型"
+OllamaChatModel -> Ollama_Instance: "2. 发送请求至\n   http://localhost:11434"
+Ollama_Instance.LLM -> Ollama_Instance: "3. 处理请求"
+Ollama_Instance -> OllamaChatModel: "4. 返回响应"
+OllamaChatModel -> AIGNE_Application: "5. 交付结果"
 ```
 
-## 功能特性
+## 先决条件
 
-*   **直接集成 Ollama**：直接连接到本地的 Ollama 实例。
-*   **支持本地模型**：使用通过 Ollama 托管的各种开源模型。
-*   **聊天补全**：完全支持与所有兼容的 Ollama 模型进行聊天补全的 API。
-*   **流式响应**：通过支持流式响应，实现实时、响应迅速的应用程序。
-*   **类型安全**：受益于所有 API 和模型的全面 TypeScript 类型定义。
-*   **一致的接口**：与 AIGNE 框架的模型接口平滑集成。
-*   **注重隐私**：在本地运行模型，无需将数据发送到外部服务。
-*   **完整的配置选项**：提供广泛的配置选项以微调模型行为。
-
-## 前提条件
-
-在使用此包之前，您必须在您的机器上安装并运行 [Ollama](https://ollama.ai/)。您还需要拉取至少一个模型。请按照 [Ollama 网站](https://ollama.ai/) 上的官方说明完成设置。
+在使用此包之前，您必须在本地计算机上安装并运行 Ollama。您还需要拉取至少一个模型。有关详细说明，请参阅 [Ollama 官方网站](https://ollama.ai/)。
 
 ## 安装
 
-使用您喜欢的包管理器安装此包及其核心依赖项。
+首先，使用您偏好的包管理器安装必要的 AIGNE 包。
 
-### npm
-
-```bash
-npm install @aigne/ollama @aigne/core
-```
-
-### yarn
-
-```bash
-yarn add @aigne/ollama @aigne/core
-```
-
-### pnpm
-
-```bash
-pnpm add @aigne/ollama @aigne/core
-```
+<x-cards data-columns="3">
+  <x-card data-title="npm" data-icon="logos:npm-icon">
+    ```bash
+    npm install @aigne/ollama @aigne/core
+    ```
+  </x-card>
+  <x-card data-title="yarn" data-icon="logos:yarn">
+    ```bash
+    yarn add @aigne/ollama @aigne/core
+    ```
+  </x-card>
+  <x-card data-title="pnpm" data-icon="logos:pnpm">
+    ```bash
+    pnpm add @aigne/ollama @aigne/core
+    ```
+  </x-card>
+</x-cards>
 
 ## 配置
 
-主要入口点是 `OllamaChatModel` 类，它连接到您的本地 Ollama 实例。
+`OllamaChatModel` 类是与 Ollama 交互的主要接口。实例化模型时，您可以提供几个配置选项来自定义其行为。
 
-```typescript
+```typescript OllamaChatModel 实例化 icon=logos:typescript-icon
 import { OllamaChatModel } from "@aigne/ollama";
 
 const model = new OllamaChatModel({
-  // 您的 Ollama 实例的基础 URL。
-  // 默认为 `http://localhost:11434`。
-  baseURL: "http://localhost:11434",
-
-  // 用于补全的 Ollama 模型。
-  // 默认为 'llama3'。
+  // 指定要使用的 Ollama 模型
   model: "llama3",
+  
+  // 本地 Ollama 实例的基础 URL
+  baseURL: "http://localhost:11434/v1",
 
-  // 传递给模型的附加选项。
+  // 传递给模型的可选参数
   modelOptions: {
-    temperature: 0.8,
+    temperature: 0.7,
   },
 });
 ```
 
-构造函数接受以下选项：
+构造函数接受以下参数：
 
-| 参数 | 类型 | 描述 | 默认值 |
-| :--- | :--- | :--- | :--- |
-| `model` | `string` | 要使用的 Ollama 模型的名称。 | `llama3.2` |
-| `baseURL` | `string` | Ollama 服务器的基础 URL。也可以通过 `OLLAMA_BASE_URL` 环境变量设置。 | `http://localhost:11434/v1` |
-| `modelOptions` | `object` | 包含模型特定参数（如 `temperature`、`top_p` 等）的对象。 | `{}` |
-| `apiKey` | `string` | 用于身份验证的 API 密钥。也可以通过 `OLLAMA_API_KEY` 设置。 | `ollama` |
+<x-field-group>
+  <x-field data-name="model" data-type="string" data-default="llama3.2" data-required="false">
+    <x-field-desc markdown>要使用的模型名称（例如 `llama3`、`mistral`）。请确保您已在 Ollama 实例中拉取该模型。</x-field-desc>
+  </x-field>
+  <x-field data-name="baseURL" data-type="string" data-default="http://localhost:11434/v1" data-required="false">
+    <x-field-desc markdown>Ollama API 的基础 URL。也可以使用 `OLLAMA_BASE_URL` 环境变量进行配置。</x-field-desc>
+  </x-field>
+  <x-field data-name="apiKey" data-type="string" data-default="ollama" data-required="false">
+    <x-field-desc markdown>一个占位符 API 密钥。Ollama 默认不需要身份验证，但 AIGNE 框架要求密钥为非空。它默认为 `"ollama"`，并且可以通过 `OLLAMA_API_KEY` 环境变量进行设置。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>一个包含传递给 Ollama API 的额外参数的对象，例如 `temperature`、`top_p` 等。这些选项可用于微调模型的响应生成。</x-field-desc>
+  </x-field>
+</x-field-group>
 
 ## 基本用法
 
-要生成响应，请使用 `invoke` 方法。传递一个消息列表，它将返回一个单一、完整的响应。
+要运行模型，请使用 `invoke` 方法。传递消息负载以生成聊天补全。
 
-```typescript
+```typescript 基本调用 icon=logos:typescript-icon
 import { OllamaChatModel } from "@aigne/ollama";
 
 const model = new OllamaChatModel({
@@ -128,26 +125,27 @@ const model = new OllamaChatModel({
 });
 
 const result = await model.invoke({
-  messages: [{ role: "user", content: "Tell me what model you're using" }],
+  messages: [{ role: "user", content: "Explain the importance of local AI models." }],
 });
 
-console.log(result);
+console.log(result.text);
 ```
 
-**输出：**
+`invoke` 方法返回一个 promise，该 promise 会解析为一个包含模型响应的对象。
 
+**响应示例**
 ```json
 {
-  "text": "I'm an AI assistant running on Ollama with the llama3 model.",
+  "text": "本地 AI 模型至关重要有几个原因。首先，它们提供了增强的隐私和安全性，因为数据在设备上处理，永远不会离开用户的机器...",
   "model": "llama3"
 }
 ```
 
 ## 流式响应
 
-对于更具交互性的应用程序，您可以在响应生成时对其进行流式处理。在 `invoke` 调用中设置 `streaming: true` 选项，以接收响应块的异步流。
+对于需要实时交互的应用，您可以流式传输模型的响应。在 `invoke` 方法中将 `streaming` 选项设置为 `true`。该方法将返回一个异步迭代器，在响应块可用时生成它们。
 
-```typescript
+```typescript 流式处理示例 icon=logos:typescript-icon
 import { isAgentResponseDelta } from "@aigne/core";
 import { OllamaChatModel } from "@aigne/ollama";
 
@@ -157,42 +155,35 @@ const model = new OllamaChatModel({
 
 const stream = await model.invoke(
   {
-    messages: [{ role: "user", content: "Tell me what model you're using" }],
+    messages: [{ role: "user", content: "Tell me a short story about a robot." }],
   },
   { streaming: true },
 );
 
 let fullText = "";
-const json = {};
+process.stdout.write("Response: ");
 
 for await (const chunk of stream) {
-  // 使用 isAgentResponseDelta 类型守卫来处理增量数据
   if (isAgentResponseDelta(chunk)) {
     const text = chunk.delta.text?.text;
     if (text) {
       fullText += text;
-      process.stdout.write(text); // 在文本到达时打印
-    }
-    if (chunk.delta.json) {
-      Object.assign(json, chunk.delta.json);
+      process.stdout.write(text);
     }
   }
 }
 
-console.log("\n--- Final Data ---");
-console.log("Full Text:", fullText);
-console.log("JSON:", json);
+console.log("\n\n--- End of Stream ---");
+console.log("Full text:", fullText);
 ```
 
-**输出：**
+此示例演示了如何处理流。每个块都是完整响应的增量。您可以累积每个块的文本以重构完整的消息。
 
-```
-I'm an AI assistant running on Ollama with the llama3 model.
---- Final Data ---
-Full Text: I'm an AI assistant running on Ollama with the llama3 model.
-JSON: { "model": "llama3" }
-```
+## 总结
 
-## 许可证
+`@aigne/ollama` 包提供了一种强大而直接的方式，将本地开源模型集成到您的 AIGNE 应用中。通过遵循本指南中的步骤，您可以设置 `OllamaChatModel`，根据您的需求进行配置，并利用标准和流式补全功能。
 
-此包根据 [Elastic-2.0 许可证](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md) 获得许可。
+有关其他可用模型的更多信息，请参阅以下指南：
+- [OpenAI](./models-openai.md)
+- [Google Gemini](./models-gemini.md)
+- [Anthropic](./models-anthropic.md)

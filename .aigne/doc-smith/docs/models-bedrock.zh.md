@@ -1,244 +1,155 @@
-本文档提供了 `@aigne/bedrock` 包的全面使用指南，该 SDK 旨在将 AWS Bedrock 基础模型集成到 AIGNE 框架中。您将学习如何安装该包、使用 AWS 进行身份验证、执行基本操作以及利用流式处理和工具使用等高级功能。
+# AWS Bedrock
 
-### 目标受众
+`@aigne/bedrock` 包提供了 AIGNE 框架与 Amazon Web Services (AWS) Bedrock 之间直接而强大的集成。这使得开发者能够在他们的 AIGNE 应用程序中利用 AWS Bedrock 提供的各种基础模型，既能受益于 AWS 可扩展且安全的基础设施，又能保持一致的接口。
 
-本文档适用于希望在其基于 AIGNE 的应用程序中使用 AWS Bedrock 生成式 AI 模型的开发人员。我们假设您对 TypeScript、Node.js 和 AIGNE 框架有基本的了解。
-
-# @aigne/bedrock
-
-`@aigne/bedrock` 提供了 AIGNE 框架与 AWS Bedrock 之间的无缝连接。它提供了一个一致的、类型安全的接口，用于利用各种基础模型，使您能够在 AWS 安全且可扩展的基础设施之上构建强大的 AI 功能。
-
-<picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-bedrock-dark.png" media="(prefers-color-scheme: dark)">
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-bedrock.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-bedrock.png" alt="AIGNE Bedrock 架构">
-</picture>
-
-## 功能
-
--   **无缝 AWS Bedrock 集成**：使用官方 AWS SDK，以最少的配置连接到 AWS Bedrock。
--   **多模型支持**：支持访问各种基础模型，包括 Claude、Llama、Titan 等。
--   **聊天补全 API**：为所有支持的模型提供统一的、基于聊天的交互接口。
--   **流式响应**：内置流式传输支持，可创建响应迅速的实时应用程序。
--   **类型安全**：使用 TypeScript 完全类型化，以确保安全并改善开发者体验。
--   **AIGNE 框架兼容性**：遵循 AIGNE 框架的模型接口，以实现一致的使用方式。
--   **强大的错误处理**：包含处理错误和重试请求的机制。
--   **丰富的配置选项**：提供多种选项以微调模型行为。
+本指南系统地概述了 `BedrockChatModel` 的安装、配置和使用。有关其他模型的详细信息，请参阅主要的[模型概述](./models-overview.md)。
 
 ## 安装
 
-首先，请安装 `@aigne/bedrock` 以及核心的 AIGNE 包。
+首先，使用您偏好的包管理器安装必要的包。`@aigne/core` 包是必需的对等依赖项。
 
-**npm**
-```bash
+```bash Terminal
+# 使用 npm
 npm install @aigne/bedrock @aigne/core
-```
 
-**yarn**
-```bash
+# 使用 yarn
 yarn add @aigne/bedrock @aigne/core
-```
 
-**pnpm**
-```bash
+# 使用 pnpm
 pnpm add @aigne/bedrock @aigne/core
 ```
 
-## 身份验证
+## 配置
 
-`BedrockChatModel` 需要 AWS 凭证才能发出经身份验证的请求。您可以通过两种方式提供凭证：
+正确的配置涉及设置 AWS 凭证并使用所需参数实例化 `BedrockChatModel`。
 
-1.  **直接在构造函数中传入**：将您的凭证作为 `accessKeyId` 和 `secretAccessKey` 选项传入。
-2.  **环境变量**：如果您的环境中设置了 `AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY` 和 `AWS_REGION` 环境变量，SDK 将自动检测并使用它们。
+### AWS 凭证
 
-```typescript
-import { BedrockChatModel } from "@aigne/bedrock";
+AWS SDK 需要凭证来验证请求。您可以通过以下两种方式之一提供它们：
 
-// 选项 1：直接实例化
-const modelWithKeys = new BedrockChatModel({
-  accessKeyId: "YOUR_ACCESS_KEY_ID",
-  secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
-  region: "us-east-1", // 指定您的 AWS 区域
-});
+1.  **环境变量（推荐）**：在您的开发或部署环境中设置以下环境变量。SDK 将自动检测并使用它们。
+    *   `AWS_ACCESS_KEY_ID`：您的 AWS access key ID。
+    *   `AWS_SECRET_ACCESS_KEY`：您的 AWS secret access key。
+    *   `AWS_REGION`：您的 Bedrock 服务启用的 AWS 区域（例如 `us-east-1`）。
 
-// 选项 2：使用环境变量（生产环境推荐）
-// process.env.AWS_ACCESS_KEY_ID = "YOUR_ACCESS_KEY_ID";
-// process.env.AWS_SECRET_ACCESS_KEY = "YOUR_SECRET_ACCESS_KEY";
-// process.env.AWS_REGION = "us-east-1";
-const modelFromEnv = new BedrockChatModel();
-```
+2.  **直接实例化**：将凭证直接传递给 `BedrockChatModel` 构造函数。此方法适用于特定的使用场景，但通常不如使用环境变量安全。
 
-## 基本用法
+### BedrockChatModel 选项
 
-与 AWS Bedrock 交互的主要类是 `BedrockChatModel`。以下是一个如何实例化模型并获取响应的基本示例。
-
-```typescript
-import { BedrockChatModel } from "@aigne/bedrock";
-
-async function getChatResponse() {
-  const model = new BedrockChatModel({
-    // 假设已设置用于身份验证的环境变量
-    region: "us-east-1",
-    model: "anthropic.claude-3-sonnet-20240229-v1:0", // 指定模型 ID
-    modelOptions: {
-      temperature: 0.7,
-    },
-  });
-
-  const result = await model.invoke({
-    messages: [{ role: "user", content: "你好，什么是 AIGNE 框架？" }],
-  });
-
-  console.log(result.text);
-  console.log("Usage:", result.usage);
-}
-
-getChatResponse();
-/* 预期输出：
-你好！AIGNE 框架是一个用于...的工具包...
-用量：{ inputTokens: 15, outputTokens: 50 }
-*/
-```
-
-## API 参考
-
-### `BedrockChatModel`
-
-`BedrockChatModel` 类是使用该 SDK 的主要入口点。
-
-**构造函数选项 (`BedrockChatModelOptions`)**
+`BedrockChatModel` 是与 AWS Bedrock 交互的主要类。其构造函数接受一个选项对象来配置其行为。
 
 <x-field-group>
-  <x-field data-name="accessKeyId" data-type="string" data-required="false" data-desc="您的 AWS 访问密钥 ID。如果未提供，则使用 `AWS_ACCESS_KEY_ID` 环境变量。"></x-field>
-  <x-field data-name="secretAccessKey" data-type="string" data-required="false" data-desc="您的 AWS 秘密访问密钥。如果未提供，则使用 `AWS_SECRET_ACCESS_KEY` 环境变量。"></x-field>
-  <x-field data-name="region" data-type="string" data-required="false" data-desc="Bedrock 服务所在的 AWS 区域（例如 'us-east-1'）。如果未提供，则使用 `AWS_REGION` 环境变量。"></x-field>
-  <x-field data-name="model" data-type="string" data-required="false" data-desc="用于请求的默认模型 ID（例如 'anthropic.claude-3-haiku-20240307-v1:0'）。默认为 `us.amazon.nova-lite-v1:0`。"></x-field>
-  <x-field data-name="modelOptions" data-type="object" data-required="false" data-desc="模型推理的默认选项。">
-    <x-field data-name="temperature" data-type="number" data-required="false" data-desc="控制随机性。值越低，模型越具确定性。"></x-field>
-    <x-field data-name="topP" data-type="number" data-required="false" data-desc="核心采样参数。"></x-field>
+  <x-field data-name="accessKeyId" data-type="string" data-required="false">
+    <x-field-desc markdown>您的 AWS access key ID。如果未提供，SDK 将尝试从 `AWS_ACCESS_KEY_ID` 环境变量中读取。</x-field-desc>
   </x-field>
-  <x-field data-name="clientOptions" data-type="BedrockRuntimeClientConfig" data-required="false" data-desc="直接传递给 AWS `BedrockRuntimeClient` 的高级配置选项。"></x-field>
+  <x-field data-name="secretAccessKey" data-type="string" data-required="false">
+    <x-field-desc markdown>您的 AWS secret access key。如果未提供，SDK 将尝试从 `AWS_SECRET_ACCESS_KEY` 环境变量中读取。</x-field-desc>
+  </x-field>
+  <x-field data-name="region" data-type="string" data-required="false">
+    <x-field-desc markdown>Bedrock 服务所在的 AWS 区域。如果未提供，SDK 将尝试从 `AWS_REGION` 环境变量中读取。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false" data-default="us.amazon.nova-lite-v1:0">
+    <x-field-desc markdown>要使用的基础模型的 ID（例如 `anthropic.claude-3-sonnet-20240229-v1:0`、`meta.llama3-8b-instruct-v1:0`）。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>用于控制模型推理行为的附加选项。</x-field-desc>
+    <x-field data-name="temperature" data-type="number" data-required="false" data-desc="控制生成内容的随机性。值越高，响应越具创造性。"></x-field>
+    <x-field data-name="topP" data-type="number" data-required="false" data-desc="控制核采样。模型仅考虑概率总和为 P 的最高概率的词元。"></x-field>
+  </x-field>
+  <x-field data-name="clientOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>直接传递给底层 AWS SDK 的 `BedrockRuntimeClient` 的高级配置选项。</x-field-desc>
+  </x-field>
 </x-field-group>
 
-## 高级用法
+## 用法示例
+
+以下示例演示了如何使用 `BedrockChatModel` 进行标准调用和流式调用。
+
+### 基本用法
+
+此示例展示了如何实例化模型并调用它以获得单个完整的响应。
+
+```typescript Basic Invocation icon=logos:javascript
+import { BedrockChatModel } from "@aigne/bedrock";
+
+// 使用凭证和模型 ID 实例化模型
+const model = new BedrockChatModel({
+  accessKeyId: "YOUR_ACCESS_KEY_ID", // 或使用环境变量
+  secretAccessKey: "YOUR_SECRET_ACCESS_KEY", // 或使用环境变量
+  region: "us-east-1", // 指定您的 AWS 区域
+  model: "anthropic.claude-3-haiku-20240307-v1:0",
+  modelOptions: {
+    temperature: 0.7,
+  },
+});
+
+// 定义输入消息
+const result = await model.invoke({
+  messages: [{ role: "user", content: "Hello, what is AWS Bedrock?" }],
+});
+
+console.log(result.text);
+```
+
+输出将是一个包含模型响应的字符串。`result` 对象还包含使用情况的指标。
 
 ### 流式响应
 
-对于实时应用程序，您可以在模型生成响应时以流式方式接收它们。在 `invoke` 方法中设置 `streaming: true` 选项。
+对于需要实时反馈的应用程序，您可以在生成响应时以流的形式接收它。这对于聊天机器人和其他交互式体验非常有用。
 
-```typescript
+```typescript Streaming Invocation icon=logos:javascript
 import { BedrockChatModel } from "@aigne/bedrock";
 import { isAgentResponseDelta } from "@aigne/core";
 
-async function streamChatResponse() {
-  const model = new BedrockChatModel({
-    region: "us-east-1",
-    model: "anthropic.claude-3-sonnet-20240229-v1:0",
-  });
+const model = new BedrockChatModel({
+  accessKeyId: "YOUR_ACCESS_KEY_ID",
+  secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
+  region: "us-east-1",
+  model: "anthropic.claude-3-haiku-20240307-v1:0",
+  modelOptions: {
+    temperature: 0.7,
+  },
+});
 
-  const stream = await model.invoke(
-    {
-      messages: [{ role: "user", content: "给我讲一个关于机器人的短篇故事。" }],
-    },
-    { streaming: true },
-  );
+const stream = await model.invoke(
+  {
+    messages: [{ role: "user", content: "Hello, what is AWS Bedrock?" }],
+  },
+  { streaming: true },
+);
 
-  let fullText = "";
-  for await (const chunk of stream) {
-    if (isAgentResponseDelta(chunk)) {
-      const text = chunk.delta.text?.text;
-      if (text) {
-        fullText += text;
-        process.stdout.write(text);
-      }
+let fullText = "";
+
+for await (const chunk of stream) {
+  // 使用类型守卫检查 chunk 是否为增量
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) {
+      fullText += text;
+      process.stdout.write(text); // 在响应的每个部分到达时打印它
     }
   }
-
-  console.log("\n\n--- 流结束 ---");
-  console.log("最终文本:", fullText);
 }
 
-streamChatResponse();
+console.log("\n--- Full Response ---");
+console.log(fullText);
 ```
 
-下图说明了流式操作期间的数据流：
+此代码处理一个 `AgentResponseChunk` 对象流。每个块包含响应的增量部分，这些部分累积起来形成完整的文本。
 
-```d2
-shape: sequence_diagram
+## 支持的模型
 
-Application: {
-  label: "您的应用程序"
-}
-Aigne-Bedrock-SDK: {
-  label: "@aigne/bedrock SDK"
-}
-AWS-Bedrock: {
-  label: "AWS Bedrock"
-}
-Foundation-Model: {
-  label: "基础模型"
-}
+AWS Bedrock 提供了对来自 Anthropic、Cohere、Meta、Stability AI 和 Amazon 等领先 AI 公司的各种基础模型的访问。您可以使用其唯一的 `modelId` 来指定所需的模型。
 
-Application -> Aigne-Bedrock-SDK: "1. invoke(..., { streaming: true })"
-Aigne-Bedrock-SDK -> AWS-Bedrock: "2. 发送流式 API 请求"
-AWS-Bedrock -> Foundation-Model: "3. 将请求转发给模型"
+一些常用的模型系列包括：
+-   **Anthropic Claude**: `anthropic.claude-3-sonnet-20240229-v1:0`, `anthropic.claude-3-haiku-20240307-v1:0`
+-   **Meta Llama**: `meta.llama3-8b-instruct-v1:0`
+-   **Amazon Titan**: `amazon.titan-text-express-v1`
 
-loop: "实时响应生成" {
-  Foundation-Model -> AWS-Bedrock: "4a. 生成文本块"
-  AWS-Bedrock -> Aigne-Bedrock-SDK: "4b. 将块流式传回"
-  Aigne-Bedrock-SDK -> Application: "4c. 通过异步迭代器产生块"
-}
+有关可用模型及其相应 ID 的完整和最新列表，请参阅 [AWS Bedrock 官方文档](https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids.html)。
 
-AWS-Bedrock -> Aigne-Bedrock-SDK: "5. 流结束信号"
-Aigne-Bedrock-SDK -> Application: "6. 流关闭"
-```
+## 总结
 
-### 结构化 JSON 输出
+`@aigne/bedrock` 包提供了一种将 AWS Bedrock 强大的基础模型集成到您的 AIGNE 应用程序中的简化方法。通过遵循本指南中概述的配置步骤和使用模式，您可以高效地构建和部署由 AI 驱动的功能。
 
-您可以指示模型返回符合特定 Zod schema 的结构化 JSON 对象。这对于生成可预测的、机器可读的输出非常有用。
-
-为此，请定义一个 Zod schema，并将其传入 `invoke` 方法的 `responseFormat` 选项中。SDK 将自动提示模型使用 `generate_json` 工具来生成所需的输出。
-
-```typescript
-import { BedrockChatModel } from "@aigne/bedrock";
-import { z } from "zod";
-
-async function getStructuredResponse() {
-  const model = new BedrockChatModel({
-    region: "us-east-1",
-    model: "anthropic.claude-3-sonnet-20240229-v1:0",
-  });
-
-  const userSchema = z.object({
-    name: z.string().describe("用户的全名。"),
-    email: z.string().email().describe("用户的电子邮件地址。"),
-    age: z.number().positive().describe("用户的年龄。"),
-  });
-
-  const result = await model.invoke({
-    messages: [
-      {
-        role: "user",
-        content: "从以下文本中提取用户信息：John Doe 今年 30 岁，他的电子邮件是 john.doe@example.com。",
-      },
-    ],
-    responseFormat: {
-      type: "json_schema",
-      jsonSchema: {
-        schema: userSchema,
-      },
-    },
-  });
-
-  console.log(result.json);
-}
-
-getStructuredResponse();
-/* 预期输出：
-{
-  name: "John Doe",
-  email: "john.doe@example.com",
-  age: 30
-}
-*/
-```
+有关更高级的主题，例如工具使用和结构化输出，请参阅 [AI Agent](./developer-guide-agents-ai-agent.md) 文档。

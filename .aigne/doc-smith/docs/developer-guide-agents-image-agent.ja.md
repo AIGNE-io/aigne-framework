@@ -1,130 +1,137 @@
-# ImageAgent
+# Image Agent
 
-`ImageAgent` は、テキストの指示から画像を生成しやすくするために、ベースの `Agent` クラスを拡張した特殊な Agent です。基盤となる `ImageModel` と統合し、動的な入力に基づいて視覚コンテンツを作成します。
+`ImageAgent` は、画像の生成を担当する特殊な Agent です。`ImageModel` へのインターフェースとして機能し、入力データを処理してプロンプトを形成し、画像生成サービスに画像の作成を要求します。
 
-この Agent は、アバターの生成、芸術的なイラスト、またはデータに基づく視覚化など、自動化された画像作成を必要とするタスクに最適です。
-
-## 仕組み
-
-`ImageAgent` は、これらの主要コンポーネントを通じて画像生成プロセスを調整します。
-
-1.  **PromptBuilder**: `PromptBuilder` を使用して、画像モデル用の詳細なプロンプトを構築します。初期化時に提供される `instructions` はテンプレートとして機能し、入力からの動的データで埋めることができます。
-2.  **ImageModel**: 実行コンテキストで `ImageModel` が利用可能である必要があります。このモデルは、`PromptBuilder` から受け取ったプロンプトに基づいて、実際の画像レンダリングを担当します。
-3.  **処理**: Agent が呼び出されると、その `process` メソッドが最終的なプロンプトを構築し、プロンプトと指定されたモデルオプションで `ImageModel` を呼び出し、生成された画像出力を返します。
-
-この図は、`ImageAgent` とその主要な依存関係との関係を示しています。
+この Agent は、テキスト記述に基づいて視覚コンテンツを動的に作成する必要があるあらゆるワークフローに不可欠です。`PromptBuilder` を活用してプロンプトを構築し、テンプレートを使用して可変入力から画像を生成できます。
 
 ```d2
 direction: down
 
-ImageAgent: {
-  label: "ImageAgent"
-  shape: rectangle
+# External Actor
+User: {
+  label: "ユーザー / アプリケーション"
+  shape: c4-person
 }
 
-PromptBuilder: {
-  label: "PromptBuilder"
+# Configuration Sources
+Configuration: {
+  label: "設定方法"
   shape: rectangle
-}
+  style.stroke-dash: 2
 
-ImageModel: {
-  label: "ImageModel\n（実行コンテキストから）"
-  shape: rectangle
-}
+  TS-Config: {
+    label: "TypeScript\n`ImageAgent.from()`"
+  }
 
-ImageAgent -> PromptBuilder: "1. instructions を使用してプロンプトを構築"
-ImageAgent -> ImageModel: "2. プロンプトとオプションで呼び出す"
-ImageModel -> ImageAgent: "3. 生成された画像を返す"
-```
-
-## クラス定義
-
-`ImageAgent` クラスは、画像生成 Agent を作成および設定するための主要なインターフェースを提供します。
-
-### `ImageAgent.from(options)`
-
-`ImageAgent` の新しいインスタンスを作成するための静的メソッド。
-
-**パラメータ**
-
-<x-field-group>
-  <x-field data-name="options" data-type="ImageAgentOptions" data-required="true" data-desc="Agent の設定オプション。"></x-field>
-</x-field-group>
-
-**戻り値**
-
-<x-field data-name="" data-type="ImageAgent" data-desc="ImageAgent の新しいインスタンス。"></x-field>
-
-### `new ImageAgent(options)`
-
-`ImageAgent` クラスのコンストラクタ。
-
-**パラメータ**
-
-<x-field-group>
-  <x-field data-name="options" data-type="ImageAgentOptions" data-required="true" data-desc="Agent の設定オプション。"></x-field>
-</x-field-group>
-
-## `ImageAgentOptions`
-
-`ImageAgent` を設定するためのオプションオブジェクト。これはベースの `AgentOptions` を拡張します。
-
-<x-field-group>
-  <x-field data-name="instructions" data-type="string | PromptBuilder" data-required="true" data-desc="画像の生成指示を定義する文字列テンプレートまたは `PromptBuilder` インスタンス。プレースホルダーを使用して入力データを挿入できます（例：`{{object}}`）。"></x-field>
-  <x-field data-name="modelOptions" data-type="Record<string, any>" data-required="false" data-desc="基盤となる画像モデルに直接渡すオプションの辞書。これにより、生成プロセスを細かく制御できます（例：解像度、品質）。"></x-field>
-  <x-field data-name="outputFileType" data-type="FileType" data-required="false" data-desc="出力画像の希望ファイル形式を指定します（例：'png'、'jpeg'）。"></x-field>
-</x-field-group>
-
-## 使用例
-
-`ImageAgent` は、TypeScript を使用してプログラム的に、または YAML を使用して宣言的に定義および使用できます。
-
-### プログラマティックな使用法（TypeScript）
-
-以下は、コードで `ImageAgent` を作成して呼び出す方法です。
-
-```typescript
-import { ImageAgent } from "@AIGNE/core"; // AIGNE がパッケージ名であると仮定
-
-// 1. ImageAgent のインスタンスを作成
-const drawingAgent = new ImageAgent({
-  name: "drawing-agent",
-  description: "An agent that draws an image based on a description and style.",
-  instructions: "Draw an image of a {{object}} in the {{style}} style.",
-});
-
-// 2. Agent の入力を定義
-const input = {
-  object: "a serene lake at sunrise",
-  style: "impressionistic",
-};
-
-// 3. Agent を呼び出して画像を生成
-// invoke が呼び出されるコンテキストで imageModel が利用可能である必要があります。
-async function generateImage() {
-  try {
-    const result = await context.invoke(drawingAgent, input);
-    // result.output には生成された画像データが含まれます
-    console.log("Image generated:", result.output);
-    return result.output;
-  } catch (error) {
-    console.error("Error generating image:", error);
+  YAML-Config: {
+    label: "YAML\n`.yaml` ファイル"
   }
 }
 
-generateImage();
+# AIGNE Framework
+AIGNE-Framework: {
+  label: "AIGNE フレームワーク"
+  shape: rectangle
+
+  AIGNE: {
+    label: "AIGNE インスタンス"
+  }
+
+  Agent-Subsystem: {
+    label: "Agent サブシステム"
+    shape: rectangle
+    style.stroke-dash: 2
+
+    ImageAgent: {
+      label: "ImageAgent"
+    }
+
+    PromptBuilder: {
+      label: "PromptBuilder"
+    }
+  }
+
+  ImageModel: {
+    label: "ImageModel\n(例: dall-e-3)"
+  }
+}
+
+# Configuration Flow (defines relationships)
+Configuration.TS-Config -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "定義する"
+Configuration.YAML-Config -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "定義する"
+AIGNE-Framework.AIGNE -> AIGNE-Framework.ImageModel: {
+  label: "で設定される"
+  style.stroke-dash: 2
+}
+
+# Invocation Flow (runtime)
+User -> AIGNE-Framework.AIGNE: "1. aigne.invoke(agent, input)"
+AIGNE-Framework.AIGNE -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "2. リクエストを渡す"
+AIGNE-Framework.Agent-Subsystem.ImageAgent -> AIGNE-Framework.Agent-Subsystem.PromptBuilder: "3. instructions と input から\nプロンプトを構築"
+AIGNE-Framework.Agent-Subsystem.PromptBuilder -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "4. 最終的なプロンプトを返す"
+AIGNE-Framework.Agent-Subsystem.ImageAgent -> AIGNE-Framework.ImageModel: "5. プロンプトと modelOptions で\nモデルを呼び出す"
+AIGNE-Framework.ImageModel -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "6. ImageModelOutput を返す"
+AIGNE-Framework.Agent-Subsystem.ImageAgent -> AIGNE-Framework.AIGNE: "7. 結果を転送する"
+AIGNE-Framework.AIGNE -> User: "8. 最終的な出力\n(url/base64) を返す"
+
 ```
 
-### 宣言的な使用法（YAML）
+## 設定
 
-Agent は YAML 設定ファイルでも定義でき、これは異なる環境でそれらをロードするのに役立ちます。
+`ImageAgent` は、TypeScript を使用してプログラムで設定するか、YAML を使用して宣言的に設定できます。どちらの方法でも、画像生成のための指示を定義し、オプションでモデル固有のパラメーターを指定する必要があります。
 
-次の例では、指定されたスタイルのオブジェクトを描画する `ImageAgent` を定義しています。
+### TypeScript での設定
 
-```yaml
-# packages/core/test-agents/image.yaml
+TypeScript で `ImageAgent` を作成するには、静的メソッド `ImageAgent.from()` を使用し、`ImageAgentOptions` を提供します。
+
+```typescript "ImageAgent の設定" icon=logos:typescript
+import { AIGNE, ImageAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
+
+// 画像モデルプロバイダーを設定
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// ImageAgent のインスタンスを作成
+const architectAgent = ImageAgent.from({
+  name: "architect",
+  description: "An agent that draws architectural diagrams.",
+  instructions: "Create an architectural diagram of a {{subject}}.",
+  modelOptions: {
+    quality: "hd",
+    style: "vivid",
+  },
+});
+
+// AIGNE インスタンスには imageModel が設定されている必要があります
+const aigne = new AIGNE({
+  imageModel: openai.image("dall-e-3"),
+});
+
+async function run() {
+  const result = await aigne.invoke(architectAgent, {
+    input: {
+      subject: "microservices application",
+    },
+  });
+
+  console.log(result);
+}
+
+run();
+```
+
+上記のコードは、「architect」という名前の `ImageAgent` を定義しています。テンプレート化された `instructions` 文字列を使用してプロンプトを生成します。`modelOptions` オブジェクトは、高解像度で鮮やかな画像を要求するために、基盤となる DALL-E 3 モデルに特定のパラメーターを渡します。
+
+### YAML での設定
+
+または、`.yaml` ファイルで `ImageAgent` を定義することもできます。このアプローチは、Agent の定義をアプリケーションロジックから分離するのに役立ちます。
+
+```yaml "image-agent.yaml" icon=logos:yaml
 type: image
-name: test-image-agent
+name: style-artist
+description: 特定のスタイルのオブジェクトの画像を描画します。
 instructions: |
   Draw an image of a {{object}} in the {{style}} style.
 input_schema:
@@ -141,4 +148,57 @@ input_schema:
     - style
 ```
 
-この宣言的なアプローチは、Agent の定義をアプリケーションロジックから分離し、管理と更新を容易にします。
+この宣言的な例では、`type: image` はこれが `ImageAgent` であることを指定します。`instructions` フィールドには、呼び出し時に入力から入力されるプレースホルダー (`{{object}}`、`{{style}}`) を含む複数行の文字列が含まれています。`input_schema` は、期待される入力構造を正式に定義します。
+
+## パラメーター
+
+`ImageAgent` の動作は、構築時に提供されるオプションによって制御されます。
+
+<x-field-group>
+  <x-field data-name="instructions" data-type="string | PromptBuilder" data-required="true">
+    <x-field-desc markdown>画像生成に使用されるプロンプトテンプレートです。これは単純な文字列、またはより複雑なロジックのための `PromptBuilder` インスタンスにすることができます。`{{key}}` 形式のプレースホルダーは、入力オブジェクトの値に置き換えられます。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="Record<string, any>" data-required="false">
+    <x-field-desc markdown>基盤となる `ImageModel` に渡すプロバイダー固有のパラメーターを含むオブジェクトです。これにより、画質、サイズ、スタイルなどの生成プロセスを詳細に制御できます。利用可能なオプションについては、特定のモデルプロバイダーのドキュメントを参照してください。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputFileType" data-type="'url' | 'base64'" data-required="false">
+    <x-field-desc markdown>出力画像の希望する形式を指定します。デフォルトの動作は `ImageModel` によって決定されますが、公開 URL (`url`) または Base64 エンコードされた文字列 (`base64`) のいずれかを明示的にリクエストできます。</x-field-desc>
+  </x-field>
+</x-field-group>
+
+## 呼び出しと出力
+
+`ImageAgent` が呼び出されると、入力がその `PromptBuilder` に渡され、最終的なプロンプトが生成されます。次に、このプロンプトと指定された `modelOptions` を使用して、設定済みの `ImageModel` を呼び出します。
+
+Agent の出力は `ImageModelOutput` スキーマに準拠したオブジェクトで、生成された画像が要求された形式で含まれています。
+
+**呼び出し例**
+
+```typescript "Agent の呼び出し" icon=logos:typescript
+const result = await aigne.invoke(styleArtistAgent, { // styleArtistAgent が YAML からロードされていると仮定
+  input: {
+    object: "futuristic city",
+    style: "cyberpunk",
+  },
+});
+```
+
+**レスポンス例**
+
+```json "ImageAgent の出力" icon=mdi:code-json
+{
+  "url": "https://oaidalleapiprodscus.blob.core.windows.net/private/...",
+  "base64": null
+}
+```
+
+レスポンスには、生成された画像を指す `url` が含まれています。`outputFileType` が `'base64'` に設定されていた場合、代わりに `base64` フィールドが入力されます。
+
+## 概要
+
+`ImageAgent` は、画像生成機能を AI ワークフローに統合するための構造化された再利用可能な方法を提供します。プロンプトのロジックをモデルとのインタラクションから分離することで、明確で保守しやすい Agent の設計が可能になります。
+
+他の Agent タイプに関する詳細については、以下のドキュメントを参照してください。
+- [AI Agent](./developer-guide-agents-ai-agent.md): 言語モデルと対話するため。
+- [Team Agent](./developer-guide-agents-team-agent.md): 複数の Agent を調整するため。
+- [Function Agent](./developer-guide-agents-function-agent.md): カスタムコードを Agent としてラップするため。

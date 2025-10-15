@@ -1,162 +1,221 @@
-本文件詳細介紹了 `ChatModel` 類別，這是與大型語言模型（LLM）互動的基礎元件。內容涵蓋了該類別的架構、其輸入和輸出格式，以及支援工具呼叫和結構化資料處理等強大功能的相關資料結構。
+# 模型
+
+模型是特化的 Agent，作為一個關鍵的抽象層，為與外部 AI 服務 (例如大型語言模型 (LLM) 和圖像生成平台) 的互動提供了一個標準化介面。它們封裝了 API 通訊的複雜性，讓開發者能透過一個一致且統一的合約來與各種 AI 供應商合作。
+
+AIGNE 框架定義了一個基礎的 `Model` 類別，它被兩個主要的特化類別所擴展：`ChatModel` 用於基於文本的對話式 AI，而 `ImageModel` 則用於圖像生成任務。這些抽象是建構更高級別 Agent (如 `AIAgent` 和 `ImageAgent`) 的基礎。
+
+## 核心概念
+
+`Model` 層的設計旨在簡化與不同 AI 供應商的互動。您無需為每個服務 (如 OpenAI、Anthropic 或 Google Gemini) 編寫特定於供應商的程式碼，而是與標準化的 `ChatModel` 或 `ImageModel` 介面互動。AIGNE 框架透過特定的模型套件 (例如 `@aigne/openai`) 來處理這種標準格式與供應商原生 API 之間的轉換。
+
+這種設計提供了幾個關鍵優勢：
+- **供應商無關：** 只需最少的程式碼變更即可更換底層的 AI 模型。例如，您可以僅透過更改模型的實例化，就從 OpenAI 的 GPT-4 切換到 Anthropic 的 Claude 3。
+- **標準化的資料結構：** 所有模型都使用一致的輸入和輸出結構 (`ChatModelInput`、`ImageModelOutput` 等)，從而簡化了資料處理和 Agent 的組合。
+- **簡化的 API：** 模型提供了一個清晰、高級的 API，它抽象化了每個外部服務在驗證、請求格式化和錯誤處理方面的細微差異。
+
+下圖說明了基礎 `Agent`、`Model` 抽象以及它們所連接的外部 AI 服務之間的關係。
 
 ```d2
 direction: down
 
-User-Application: {
-  label: "使用者 / 應用程式"
-  shape: c4-person
-}
-
-ChatModel-System: {
-  label: "ChatModel 系統"
+Application-Layer: {
+  label: "應用層 (您的程式碼)"
   shape: rectangle
 
-  ChatModel: {
-    label: "ChatModel 執行個體"
+  AIAgent: {
+    label: "AIAgent"
+    shape: rectangle
   }
 
-  LLM: {
-    label: "大型語言模型"
+  ImageAgent: {
+    label: "ImageAgent"
+    shape: rectangle
+  }
+}
+
+AIGNE-Framework: {
+  label: "AIGNE 框架 (抽象層)"
+  shape: rectangle
+  style: {
+    stroke-dash: 2
+  }
+
+  Model-Abstractions: {
+    grid-columns: 2
+
+    ChatModel: {
+      label: "ChatModel"
+      shape: rectangle
+    }
+  
+    ImageModel: {
+      label: "ImageModel"
+      shape: rectangle
+    }
+  }
+}
+
+External-AI-Services: {
+  label: "外部 AI 服務"
+  shape: rectangle
+  grid-columns: 3
+
+  OpenAI: {
+    label: "OpenAI\n(GPT-4, etc.)"
     shape: cylinder
   }
 
-  Tools: {
-    label: "工具 / 函式"
+  Anthropic: {
+    label: "Anthropic\n(Claude 3, etc.)"
+    shape: cylinder
+  }
+
+  Google: {
+    label: "Google\n(Gemini, etc.)"
+    shape: cylinder
   }
 }
 
-User-Application -> ChatModel-System.ChatModel: "1. 叫用(輸入)"
-ChatModel-System.ChatModel -> ChatModel-System.LLM: "2. 傳送格式化請求"
-ChatModel-System.LLM -> ChatModel-System.ChatModel: "3. 接收 LLM 回應"
-
-# 路徑 A：簡單文字回應
-ChatModel-System.ChatModel -> User-Application: "4a. 傳回帶有文字的輸出"
-
-# 路徑 B：工具呼叫回應
-ChatModel-System.ChatModel -> ChatModel-System.Tools: "4b. 執行工具呼叫"
-ChatModel-System.Tools -> ChatModel-System.ChatModel: "5b. 傳回工具結果"
-ChatModel-System.ChatModel -> ChatModel-System.LLM: "6b. 傳送結果以取得最終答案"
-ChatModel-System.LLM -> ChatModel-System.ChatModel: "7b. 接收最終回應"
-ChatModel-System.ChatModel -> User-Application: "8b. 傳回最終輸出"
+Application-Layer.AIAgent -> AIGNE-Framework.Model-Abstractions.ChatModel: "使用 (ChatModelInput/Output)"
+Application-Layer.ImageAgent -> AIGNE-Framework.Model-Abstractions.ImageModel: "使用 (ImageModelInput/Output)"
+AIGNE-Framework.Model-Abstractions.ChatModel -> External-AI-Services: "連接至 LLM 供應商"
+AIGNE-Framework.Model-Abstractions.ImageModel -> External-AI-Services: "連接至圖像供應商"
 ```
 
-## ChatModel
+## ChatModel 抽象
 
-`ChatModel` 類別是一個用於與大型語言模型（LLM）互動的抽象基礎類別。它擴充了 `Agent` 類別，並提供了一個用於管理模型輸入、輸出和功能的標準化介面。針對特定模型（例如 OpenAI、Anthropic）的具體實作應繼承此類別。
+`ChatModel` 是一個為與大型語言模型 (LLM) 互動而設計的抽象類別。它提供了一種結構化的方式來處理對話互動，包括多輪對話、工具使用和結構化資料提取。
 
-### 核心概念
+### ChatModelInput
 
-- **可擴充性**：`ChatModel` 的設計使其易於擴充，讓開發者可以透過實作抽象的 `process` 方法，為各種 LLM 建立自訂連接器。
-- **統一介面**：它為串流和非串流回應提供了一致的 API，簡化了與不同模型的互動。
-- **工具整合**：該類別內建對工具呼叫的支援，使模型能夠與外部函式和資料來源互動。
-- **結構化輸出**：`ChatModel` 可以強制模型輸出符合 JSON 結構描述，確保資料的可靠性和結構化。
-- **自動重試**：它包含一個預設的重試機制，用於處理網路錯誤和結構化輸出生成問題。
-
-### 關鍵方法
-
-#### `constructor(options?: ChatModelOptions)`
-
-建立一個新的 `ChatModel` 執行個體。
+`ChatModelInput` 介面定義了發送給語言模型的請求的資料結構。它標準化了訊息、工具和其他設定的傳遞方式。
 
 <x-field-group>
-  <x-field data-name="options" data-type="ChatModelOptions" data-required="false" data-desc="Agent 的組態選項。">
-    <x-field data-name="model" data-type="string" data-required="false" data-desc="要使用的模型的名稱或識別碼。"></x-field>
-    <x-field data-name="modelOptions" data-type="ChatModelInputOptions" data-required="false" data-desc="每次叫用時傳遞給模型的預設選項。"></x-field>
-    <x-field data-name="retryOnError" data-type="boolean | object" data-required="false" data-desc="錯誤重試的組態。預設對網路和結構化輸出錯誤重試 3 次。"></x-field>
+  <x-field data-name="messages" data-type="ChatModelInputMessage[]" data-required="true">
+    <x-field-desc markdown>構成對話歷史和當前提示的訊息物件陣列。</x-field-desc>
+  </x-field>
+  <x-field data-name="responseFormat" data-type="ChatModelInputResponseFormat" data-required="false">
+    <x-field-desc markdown>指定模型輸出的期望格式，例如純文字或基於所提供綱要的結構化 JSON。</x-field-desc>
+  </x-field>
+  <x-field data-name="tools" data-type="ChatModelInputTool[]" data-required="false">
+    <x-field-desc markdown>模型可以請求調用以執行操作或檢索資訊的可用工具 (函式) 列表。</x-field-desc>
+  </x-field>
+  <x-field data-name="toolChoice" data-type="ChatModelInputToolChoice" data-required="false">
+    <x-field-desc markdown>控制模型如何使用提供的工具。可以設定為 `"auto"`、`"none"`、`"required"`，或強制進行特定的函式調用。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="ChatModelInputOptions" data-required="false">
+    <x-field-desc markdown>一個用於存放特定於供應商選項的容器，例如 `temperature`、`topP` 或 `parallelToolCalls`。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputFileType" data-type="'local' | 'file'" data-required="false">
+    <x-field-desc markdown>指定任何基於檔案的輸出的期望格式，可以是本地檔案路徑 (`local`) 或 base64 編碼的字串 (`file`)。</x-field-desc>
   </x-field>
 </x-field-group>
 
-#### `process(input: ChatModelInput, options: AgentInvokeOptions)`
+#### ChatModelInputMessage
 
-所有子類別都必須實作的核心抽象方法。它處理與底層 LLM 的直接通訊，包括傳送請求和處理回應。
-
-<x-field-group>
-  <x-field data-name="input" data-type="ChatModelInput" data-required="true" data-desc="包含訊息、工具和模型選項的標準化輸入。"></x-field>
-  <x-field data-name="options" data-type="AgentInvokeOptions" data-required="true" data-desc="Agent 叫用的選項，包括上下文和限制。"></x-field>
-</x-field-group>
-
-#### `preprocess(input: ChatModelInput, options: AgentInvokeOptions)`
-
-在主 `process` 方法被呼叫之前執行操作。這包括驗證權杖限制並將工具名稱標準化以與 LLM 相容。
-
-#### `postprocess(input: ChatModelInput, output: ChatModelOutput, options: AgentInvokeOptions)`
-
-在 `process` 方法完成後執行操作。其主要作用是更新叫用上下文中的權杖使用統計資料。
-
-### 輸入資料結構
-
-#### `ChatModelInput`
-
-`ChatModel` 的主要輸入介面。
+`messages` 陣列中的每條訊息都遵循定義好的結構。
 
 <x-field-group>
-  <x-field data-name="messages" data-type="ChatModelInputMessage[]" data-required="true" data-desc="要傳送給模型的訊息陣列。"></x-field>
-  <x-field data-name="responseFormat" data-type="ChatModelInputResponseFormat" data-required="false" data-desc="指定所需的輸出格式（例如，文字或 JSON）。"></x-field>
-  <x-field data-name="outputFileType" data-type="FileType" data-required="false" data-desc="檔案輸出的所需格式（'local' 或 'file'）。"></x-field>
-  <x-field data-name="tools" data-type="ChatModelInputTool[]" data-required="false" data-desc="模型可以使用的工具清單。"></x-field>
-  <x-field data-name="toolChoice" data-type="ChatModelInputToolChoice" data-required="false" data-desc="工具選擇的策略（例如，'auto'、'required'）。"></x-field>
-  <x-field data-name="modelOptions" data-type="ChatModelInputOptions" data-required="false" data-desc="模型特定的組態選項。"></x-field>
+  <x-field data-name="role" data-type="'system' | 'user' | 'agent' | 'tool'" data-required="true">
+    <x-field-desc markdown>訊息發送者的角色。`system` 提供指令，`user` 代表使用者輸入，`agent` 用於模型回應，而 `tool` 則用於工具調用的輸出。</x-field-desc>
+  </x-field>
+  <x-field data-name="content" data-type="string | UnionContent[]" data-required="false">
+    <x-field-desc markdown>訊息的內容。可以是一個簡單的字串，也可以是一個用於多模態內容的陣列，結合了文字和圖像 (`FileUnionContent`)。</x-field-desc>
+  </x-field>
+  <x-field data-name="toolCalls" data-type="object[]" data-required="false">
+    <x-field-desc markdown>在 `agent` 訊息中使用，表示由模型發起的一個或多個工具調用。</x-field-desc>
+  </x-field>
+  <x-field data-name="toolCallId" data-type="string" data-required="false">
+    <x-field-desc markdown>在 `tool` 訊息中使用，將工具的輸出連結回對應的 `toolCalls` 請求。</x-field-desc>
+  </x-field>
 </x-field-group>
 
-#### `ChatModelInputMessage`
+### ChatModelOutput
 
-代表對話歷史中的單一訊息。
+`ChatModelOutput` 介面標準化了從語言模型收到的回應。
 
 <x-field-group>
-    <x-field data-name="role" data-type="Role" data-required="true" data-desc="訊息作者的角色（'system'、'user'、'agent' 或 'tool'）。"></x-field>
-    <x-field data-name="content" data-type="ChatModelInputMessageContent" data-required="false" data-desc="訊息的內容，可以是字串或豐富內容陣列。"></x-field>
-    <x-field data-name="toolCalls" data-type="object[]" data-required="false" data-desc="對於 'agent' 角色，模型請求的工具呼叫清單。"></x-field>
-    <x-field data-name="toolCallId" data-type="string" data-required="false" data-desc="對於 'tool' 角色，此訊息所回應的工具呼叫 ID。"></x-field>
+  <x-field data-name="text" data-type="string" data-required="false">
+    <x-field-desc markdown>模型回應的基於文本的內容。</x-field-desc>
+  </x-field>
+  <x-field data-name="json" data-type="object" data-required="false">
+    <x-field-desc markdown>當 `responseFormat` 設定為 `"json_schema"` 時，模型返回的 JSON 物件。</x-field-desc>
+  </x-field>
+  <x-field data-name="toolCalls" data-type="ChatModelOutputToolCall[]" data-required="false">
+    <x-field-desc markdown>模型發出的工具調用請求陣列。每個物件都包含函式名稱和參數。</x-field-desc>
+  </x-field>
+  <x-field data-name="usage" data-type="ChatModelOutputUsage" data-required="false">
+    <x-field-desc markdown>一個包含 token 使用統計資訊的物件，包括 `inputTokens` 和 `outputTokens`。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false">
+    <x-field-desc markdown>生成回應的模型的識別碼。</x-field-desc>
+  </x-field>
+  <x-field data-name="files" data-type="FileUnionContent[]" data-required="false">
+    <x-field-desc markdown>模型生成的檔案陣列 (如果有的話)。</x-field-desc>
+  </x-field>
 </x-field-group>
 
-#### `ChatModelInputTool`
+## ImageModel 抽象
 
-定義模型可以叫用的工具。
+`ImageModel` 是一個用於與圖像生成模型互動的抽象類別。它為根據文本提示創建或編輯圖像提供了一個簡化的合約。
+
+### ImageModelInput
+
+`ImageModelInput` 介面定義了圖像生成任務的請求結構。
 
 <x-field-group>
-    <x-field data-name="type" data-type="'function'" data-required="true" data-desc="工具的類型。目前僅支援 'function'。"></x-field>
-    <x-field data-name="function" data-type="object" data-required="true" data-desc="函式定義。">
-        <x-field data-name="name" data-type="string" data-required="true" data-desc="函式的名稱。"></x-field>
-        <x-field data-name="description" data-type="string" data-required="false" data-desc="關於函式功能的描述。"></x-field>
-        <x-field data-name="parameters" data-type="object" data-required="true" data-desc="定義函式參數的 JSON 結構描述物件。"></x-field>
-    </x-field>
+  <x-field data-name="prompt" data-type="string" data-required="true">
+    <x-field-desc markdown>對所需圖像的文本描述。</x-field-desc>
+  </x-field>
+  <x-field data-name="image" data-type="FileUnionContent[]" data-required="false">
+    <x-field-desc markdown>一個可選的輸入圖像陣列，用於圖像編輯或創建變體等任務。</x-field-desc>
+  </x-field>
+  <x-field data-name="n" data-type="number" data-required="false">
+    <x-field-desc markdown>要生成的圖像數量。預設為 1。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputFileType" data-type="'local' | 'file'" data-required="false">
+    <x-field-desc markdown>指定輸出圖像應儲存為本地檔案 (`local`) 還是以 base64 編碼的字串 (`file`) 形式返回。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="ImageModelInputOptions" data-required="false">
+    <x-field-desc markdown>一個用於存放特定於供應商選項的容器，例如圖像尺寸、品質或風格預設。</x-field-desc>
+  </x-field>
 </x-field-group>
 
-### 輸出資料結構
+### ImageModelOutput
 
-#### `ChatModelOutput`
-
-`ChatModel` 的主要輸出介面。
+`ImageModelOutput` 介面定義了來自圖像生成服務的回應結構。
 
 <x-field-group>
-  <x-field data-name="text" data-type="string" data-required="false" data-desc="來自模型的文字回應。"></x-field>
-  <x-field data-name="json" data-type="object" data-required="false" data-desc="來自模型的 JSON 回應，如果請求了 JSON 結構描述。"></x-field>
-  <x-field data-name="toolCalls" data-type="ChatModelOutputToolCall[]" data-required="false" data-desc="模型想要執行的工具呼叫清單。"></x-field>
-  <x-field data-name="usage" data-type="ChatModelOutputUsage" data-required="false" data-desc="叫用的權杖使用統計資料。"></x-field>
-  <x-field data-name="model" data-type="string" data-required="false" data-desc="產生回應的模型的名稱。"></x-field>
-  <x-field data-name="files" data-type="FileUnionContent[]" data-required="false" data-desc="模型產生的檔案清單。"></x-field>
+  <x-field data-name="images" data-type="FileUnionContent[]" data-required="true">
+    <x-field-desc markdown>生成圖像的陣列。每個元素的格式取決於輸入中指定的 `outputFileType`。</x-field-desc>
+  </x-field>
+  <x-field data-name="usage" data-type="ChatModelOutputUsage" data-required="false">
+    <x-field-desc markdown>一個包含使用統計資訊的物件，其中可能包括 token 計數或其他特定於供應商的指標。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false">
+    <x-field-desc markdown>生成圖像的模型的識別碼。</x-field-desc>
+  </x-field>
 </x-field-group>
 
-#### `ChatModelOutputToolCall`
+## 檔案內容類型
 
-代表模型請求的單一工具呼叫。
+模型透過 `FileUnionContent` 類型處理多模態任務的各種檔案輸入形式。這種可辨識聯合類型允許檔案以三種方式表示：
 
-<x-field-group>
-    <x-field data-name="id" data-type="string" data-required="true" data-desc="此工具呼叫的唯一識別碼。"></x-field>
-    <x-field data-name="type" data-type="'function'" data-required="true" data-desc="工具的類型。"></x-field>
-    <x-field data-name="function" data-type="object" data-required="true" data-desc="函式呼叫的詳細資訊。">
-        <x-field data-name="name" data-type="string" data-required="true" data-desc="要呼叫的函式的名稱。"></x-field>
-        <x-field data-name="arguments" data-type="Message" data-required="true" data-desc="要傳遞給函式的參數，解析為 JSON 物件。"></x-field>
-    </x-field>
-</x-field-group>
+-   **`LocalContent`**：代表儲存在本地檔案系統上的檔案。
+    -   `type`：「local」
+    -   `path`：檔案的絕對路徑。
+-   **`UrlContent`**：代表可透過公開 URL 存取的檔案。
+    -   `type`：「url」
+    -   `url`：檔案的 URL。
+-   **`FileContent`**：代表以 base64 編碼字串形式呈現的檔案。
+    -   `type`：「file」
+    -   `data`：檔案的 base64 編碼內容。
 
-#### `ChatModelOutputUsage`
+`Model` 基礎類別包含一個 `transformFileType` 方法，可根據需要在這些格式之間自動進行轉換，從而簡化跨不同 Agent 和模型供應商的檔案處理。
 
-提供有關權杖消耗的資訊。
+## 總結
 
-<x-field-group>
-    <x-field data-name="inputTokens" data-type="number" data-required="true" data-desc="輸入提示中使用的權杖數量。"></x-field>
-    <x-field data-name="outputTokens" data-type="number" data-required="true" data-desc="輸出中產生的權杖數量。"></x-field>
-    <x-field data-name="aigneHubCredits" data-type="number" data-required="false" data-desc="如果使用 AIGNE Hub 服務，所消耗的點數。"></x-field>
-</x-field-group>
+`ChatModel` 和 `ImageModel` 抽象是使 AIGNE 框架靈活且與供應商無關的核心元件。它們為與廣泛的外部 AI 服務互動提供了一個穩定、標準化的介面。
+
+-   要了解如何在實踐中使用這些模型，請參閱 [AI Agent](./developer-guide-agents-ai-agent.md) 和 [Image Agent](./developer-guide-agents-image-agent.md) 的文件。
+-   有關設定特定供應商 (如 OpenAI、Anthropic 或 Google Gemini) 的詳細資訊，請參閱 [模型](./models.md) 部分的指南。

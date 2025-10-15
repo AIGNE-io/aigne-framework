@@ -1,162 +1,221 @@
-このドキュメントでは、大規模言語モデル (LLM) との対話における基本的なコンポーネントである `ChatModel` クラスについて詳しく解説します。クラスのアーキテクチャ、入出力形式、そしてツール呼び出しや構造化データ処理などの強力な機能を可能にする関連データ構造について説明します。
+# モデル
+
+モデルは、大規模言語モデル (LLM) や画像生成プラットフォームなどの外部 AI サービスと対話するための標準化されたインターフェースを提供する、重要な抽象化層として機能する特化した Agent です。モデルは API 通信の複雑さをカプセル化し、開発者が一貫性のある統一された契約を通じて様々な AI プロバイダーを扱えるようにします。
+
+AIGNE フレームワークは、ベースとなる `Model` クラスを定義しており、これはテキストベースの対話型 AI のための `ChatModel` と、画像生成タスクのための `ImageModel` という2つの主要な特化クラスによって拡張されます。これらの抽象化は、`AIAgent` や `ImageAgent` のような高レベルの Agent が構築される基盤となります。
+
+## コアコンセプト
+
+`Model` 層は、異なる AI プロバイダーとの対話を合理化するために設計されています。OpenAI、Anthropic、Google Gemini のような各サービスに対してプロバイダー固有のコードを書く代わりに、標準化された `ChatModel` または `ImageModel` インターフェースと対話します。AIGNE フレームワークは、特定のモデルパッケージ (例: `@aigne/openai`) を通じて、この標準フォーマットとプロバイダーのネイティブ API との間の変換を処理します。
+
+この設計には、いくつかの重要な利点があります:
+- **プロバイダー非依存:** 最小限のコード変更で、基盤となる AI モデルを交換できます。例えば、モデルのインスタンス化を変更するだけで、OpenAI の GPT-4 から Anthropic の Claude 3 に切り替えることができます。
+- **標準化されたデータ構造:** すべてのモデルは一貫した入出力スキーマ (`ChatModelInput`、`ImageModelOutput` など) を使用するため、データハンドリングと Agent の構成が簡素化されます。
+- **シンプル化された API:** モデルは、各外部サービスの認証、リクエストフォーマット、エラーハンドリングの詳細を抽象化する、クリーンで高レベルな API を提供します。
+
+以下の図は、ベースの `Agent`、`Model` の抽象化、そしてそれらが接続する外部 AI サービスとの関係を示しています。
 
 ```d2
 direction: down
 
-User-Application: {
-  label: "ユーザー / アプリケーション"
-  shape: c4-person
-}
-
-ChatModel-System: {
-  label: "ChatModel システム"
+Application-Layer: {
+  label: "アプリケーション層 (あなたのコード)"
   shape: rectangle
 
-  ChatModel: {
-    label: "ChatModel インスタンス"
+  AIAgent: {
+    label: "AIAgent"
+    shape: rectangle
   }
 
-  LLM: {
-    label: "大規模言語モデル"
+  ImageAgent: {
+    label: "ImageAgent"
+    shape: rectangle
+  }
+}
+
+AIGNE-Framework: {
+  label: "AIGNE フレームワーク (抽象化層)"
+  shape: rectangle
+  style: {
+    stroke-dash: 2
+  }
+
+  Model-Abstractions: {
+    grid-columns: 2
+
+    ChatModel: {
+      label: "ChatModel"
+      shape: rectangle
+    }
+  
+    ImageModel: {
+      label: "ImageModel"
+      shape: rectangle
+    }
+  }
+}
+
+External-AI-Services: {
+  label: "外部 AI サービス"
+  shape: rectangle
+  grid-columns: 3
+
+  OpenAI: {
+    label: "OpenAI\n(GPT-4 など)"
     shape: cylinder
   }
 
-  Tools: {
-    label: "ツール / 関数"
+  Anthropic: {
+    label: "Anthropic\n(Claude 3 など)"
+    shape: cylinder
+  }
+
+  Google: {
+    label: "Google\n(Gemini など)"
+    shape: cylinder
   }
 }
 
-User-Application -> ChatModel-System.ChatModel: "1. invoke(Input)"
-ChatModel-System.ChatModel -> ChatModel-System.LLM: "2. Send Formatted Request"
-ChatModel-System.LLM -> ChatModel-System.ChatModel: "3. Receive LLM Response"
-
-# パスA: シンプルなテキスト応答
-ChatModel-System.ChatModel -> User-Application: "4a. Return Output with Text"
-
-# パスB: ツール呼び出し応答
-ChatModel-System.ChatModel -> ChatModel-System.Tools: "4b. Execute Tool Call"
-ChatModel-System.Tools -> ChatModel-System.ChatModel: "5b. Return Tool Result"
-ChatModel-System.ChatModel -> ChatModel-System.LLM: "6b. Send Result for Final Answer"
-ChatModel-System.LLM -> ChatModel-System.ChatModel: "7b. Receive Final Response"
-ChatModel-System.ChatModel -> User-Application: "8b. Return Final Output"
+Application-Layer.AIAgent -> AIGNE-Framework.Model-Abstractions.ChatModel: "利用 (ChatModelInput/Output)"
+Application-Layer.ImageAgent -> AIGNE-Framework.Model-Abstractions.ImageModel: "利用 (ImageModelInput/Output)"
+AIGNE-Framework.Model-Abstractions.ChatModel -> External-AI-Services: "LLM プロバイダーに接続"
+AIGNE-Framework.Model-Abstractions.ImageModel -> External-AI-Services: "画像プロバイダーに接続"
 ```
 
-## ChatModel
+## ChatModel 抽象化
 
-`ChatModel` クラスは、大規模言語モデル (LLM) との対話のために設計された抽象基底クラスです。これは `Agent` クラスを拡張し、モデルの入力、出力、および機能を管理するための標準化されたインターフェースを提供します。特定のモデル (例: OpenAI, Anthropic) の具体的な実装は、このクラスを継承する必要があります。
+`ChatModel` は、大規模言語モデル (LLM) とのインターフェースのために設計された抽象クラスです。マルチターンの対話、ツールの使用、構造化されたデータ抽出など、対話型のインタラクションを構造化された方法で処理する手段を提供します。
 
-### コアコンセプト
+### ChatModelInput
 
-- **拡張性**: `ChatModel` は拡張可能に設計されており、開発者は抽象メソッド `process` を実装することで、さまざまな LLM 用のカスタムコネクタを作成できます。
-- **統一インターフェース**: ストリーミングと非ストリーミングの両方の応答に対して一貫した API を提供し、異なるモデルとの対話を簡素化します。
-- **ツール統合**: このクラスはツール呼び出しの組み込みサポートを提供し、モデルが外部の関数やデータソースと対話できるようにします。
-- **構造化出力**: `ChatModel` はモデルの出力に JSON スキーマの準拠を強制でき、信頼性の高い構造化データを保証します。
-- **自動リトライ**: ネットワークエラーや構造化出力生成の問題に対処するためのデフォルトのリトライメカニズムが含まれています。
-
-### 主要なメソッド
-
-#### `constructor(options?: ChatModelOptions)`
-
-`ChatModel` の新しいインスタンスを作成します。
+`ChatModelInput` インターフェースは、言語モデルに送信されるリクエストのデータ構造を定義します。これにより、メッセージ、ツール、その他の設定がどのように渡されるかが標準化されます。
 
 <x-field-group>
-  <x-field data-name="options" data-type="ChatModelOptions" data-required="false" data-desc="Agent の設定オプション。">
-    <x-field data-name="model" data-type="string" data-required="false" data-desc="使用するモデルの名前または識別子。"></x-field>
-    <x-field data-name="modelOptions" data-type="ChatModelInputOptions" data-required="false" data-desc="各呼び出しでモデルに渡すデフォルトのオプション。"></x-field>
-    <x-field data-name="retryOnError" data-type="boolean | object" data-required="false" data-desc="エラー時のリトライ設定。デフォルトでは、ネットワークエラーと構造化出力エラーに対して3回リトライします。"></x-field>
+  <x-field data-name="messages" data-type="ChatModelInputMessage[]" data-required="true">
+    <x-field-desc markdown>会話履歴と現在のプロンプトを形成するメッセージオブジェクトの配列です。</x-field-desc>
+  </x-field>
+  <x-field data-name="responseFormat" data-type="ChatModelInputResponseFormat" data-required="false">
+    <x-field-desc markdown>モデルの出力に望ましい形式を指定します。例えば、プレーンテキストや提供されたスキーマに基づく構造化 JSON などです。</x-field-desc>
+  </x-field>
+  <x-field data-name="tools" data-type="ChatModelInputTool[]" data-required="false">
+    <x-field-desc markdown>モデルがアクションの実行や情報の取得のために呼び出しをリクエストできる、利用可能なツール (関数) のリストです。</x-field-desc>
+  </x-field>
+  <x-field data-name="toolChoice" data-type="ChatModelInputToolChoice" data-required="false">
+    <x-field-desc markdown>モデルが提供されたツールをどのように使用するかを制御します。`"auto"`、`"none"`、`"required"` に設定したり、特定の関数呼び出しを強制したりすることができます。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="ChatModelInputOptions" data-required="false">
+    <x-field-desc markdown>`temperature`、`topP`、`parallelToolCalls` など、プロバイダー固有のオプションを格納するコンテナです。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputFileType" data-type="'local' | 'file'" data-required="false">
+    <x-field-desc markdown>ファイルベースの出力について、ローカルファイルパス (`local`) または base64 エンコードされた文字列 (`file`) のどちらの形式を望むかを指定します。</x-field-desc>
   </x-field>
 </x-field-group>
 
-#### `process(input: ChatModelInput, options: AgentInvokeOptions)`
+#### ChatModelInputMessage
 
-すべてのサブクラスで実装する必要がある中心的な抽象メソッドです。リクエストの送信やレスポンスの処理など、基盤となる LLM との直接的な通信を処理します。
-
-<x-field-group>
-  <x-field data-name="input" data-type="ChatModelInput" data-required="true" data-desc="メッセージ、ツール、モデルオプションを含む標準化された入力。"></x-field>
-  <x-field data-name="options" data-type="AgentInvokeOptions" data-required="true" data-desc="コンテキストや制限など、Agent 呼び出しのオプション。"></x-field>
-</x-field-group>
-
-#### `preprocess(input: ChatModelInput, options: AgentInvokeOptions)`
-
-メインの `process` メソッドが呼び出される前に操作を実行します。これには、トークン制限の検証や、LLM と互換性のあるツール名の正規化が含まれます。
-
-#### `postprocess(input: ChatModelInput, output: ChatModelOutput, options: AgentInvokeOptions)`
-
-`process` メソッドが完了した後に操作を実行します。その主な役割は、呼び出しコンテキスト内のトークン使用統計を更新することです。
-
-### 入力データ構造
-
-#### `ChatModelInput`
-
-`ChatModel` のメイン入力インターフェース。
+`messages` 配列内の各メッセージは、定義された構造に従います。
 
 <x-field-group>
-  <x-field data-name="messages" data-type="ChatModelInputMessage[]" data-required="true" data-desc="モデルに送信されるメッセージの配列。"></x-field>
-  <x-field data-name="responseFormat" data-type="ChatModelInputResponseFormat" data-required="false" data-desc="希望する出力形式 (例: テキストまたは JSON) を指定します。"></x-field>
-  <x-field data-name="outputFileType" data-type="FileType" data-required="false" data-desc="ファイル出力の希望する形式 ('local' または 'file')。"></x-field>
-  <x-field data-name="tools" data-type="ChatModelInputTool[]" data-required="false" data-desc="モデルが使用できるツールのリスト。"></x-field>
-  <x-field data-name="toolChoice" data-type="ChatModelInputToolChoice" data-required="false" data-desc="ツール選択の戦略 (例: 'auto', 'required')。"></x-field>
-  <x-field data-name="modelOptions" data-type="ChatModelInputOptions" data-required="false" data-desc="モデル固有の設定オプション。"></x-field>
+  <x-field data-name="role" data-type="'system' | 'user' | 'agent' | 'tool'" data-required="true">
+    <x-field-desc markdown>メッセージ送信者の役割です。`system` は指示を提供し、`user` はユーザー入力を表し、`agent` はモデルの応答用、`tool` はツール呼び出しの出力用です。</x-field-desc>
+  </x-field>
+  <x-field data-name="content" data-type="string | UnionContent[]" data-required="false">
+    <x-field-desc markdown>メッセージのコンテンツです。単純な文字列、またはテキストと画像 (`FileUnionContent`) を組み合わせたマルチモーダルコンテンツ用の配列にすることができます。</x-field-desc>
+  </x-field>
+  <x-field data-name="toolCalls" data-type="object[]" data-required="false">
+    <x-field-desc markdown>`agent` メッセージ内で使用され、モデルによって開始された1つ以上のツール呼び出しを示します。</x-field-desc>
+  </x-field>
+  <x-field data-name="toolCallId" data-type="string" data-required="false">
+    <x-field-desc markdown>`tool` メッセージ内で使用され、ツールの出力を対応する `toolCalls` リクエストにリンクさせます。</x-field-desc>
+  </x-field>
 </x-field-group>
 
-#### `ChatModelInputMessage`
+### ChatModelOutput
 
-会話履歴内の単一のメッセージを表します。
+`ChatModelOutput` インターフェースは、言語モデルから受け取った応答を標準化します。
 
 <x-field-group>
-    <x-field data-name="role" data-type="Role" data-required="true" data-desc="メッセージ作成者のロール ('system'、'user'、'agent'、または 'tool')。"></x-field>
-    <x-field data-name="content" data-type="ChatModelInputMessageContent" data-required="false" data-desc="メッセージの内容。文字列またはリッチコンテンツの配列を指定できます。"></x-field>
-    <x-field data-name="toolCalls" data-type="object[]" data-required="false" data-desc="'agent' ロールの場合、モデルによって要求されたツール呼び出しのリスト。"></x-field>
-    <x-field data-name="toolCallId" data-type="string" data-required="false" data-desc="'tool' ロールの場合、このメッセージが応答するツール呼び出しの ID。"></x-field>
+  <x-field data-name="text" data-type="string" data-required="false">
+    <x-field-desc markdown>モデルの応答のテキストベースのコンテンツです。</x-field-desc>
+  </x-field>
+  <x-field data-name="json" data-type="object" data-required="false">
+    <x-field-desc markdown>`responseFormat` が `"json_schema"` に設定されている場合にモデルから返される JSON オブジェクトです。</x-field-desc>
+  </x-field>
+  <x-field data-name="toolCalls" data-type="ChatModelOutputToolCall[]" data-required="false">
+    <x-field-desc markdown>モデルによって行われたツール呼び出しリクエストの配列です。各オブジェクトには関数名と引数が含まれます。</x-field-desc>
+  </x-field>
+  <x-field data-name="usage" data-type="ChatModelOutputUsage" data-required="false">
+    <x-field-desc markdown>`inputTokens` と `outputTokens` を含む、トークン使用統計を格納したオブジェクトです。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false">
+    <x-field-desc markdown>応答を生成したモデルの識別子です。</x-field-desc>
+  </x-field>
+  <x-field data-name="files" data-type="FileUnionContent[]" data-required="false">
+    <x-field-desc markdown>モデルによって生成されたファイルの配列です (もしあれば)。</x-field-desc>
+  </x-field>
 </x-field-group>
 
-#### `ChatModelInputTool`
+## ImageModel 抽象化
 
-モデルが呼び出すことができるツールを定義します。
+`ImageModel` は、画像生成モデルとのインターフェースのための抽象クラスです。テキストプロンプトに基づいて画像を作成または編集するための、簡素化された契約を提供します。
+
+### ImageModelInput
+
+`ImageModelInput` インターフェースは、画像生成タスクのリクエスト構造を定義します。
 
 <x-field-group>
-    <x-field data-name="type" data-type="'function'" data-required="true" data-desc="ツールのタイプ。現在サポートされているのは 'function' のみです。"></x-field>
-    <x-field data-name="function" data-type="object" data-required="true" data-desc="関数の定義。">
-        <x-field data-name="name" data-type="string" data-required="true" data-desc="関数の名前。"></x-field>
-        <x-field data-name="description" data-type="string" data-required="false" data-desc="関数が何をするかの説明。"></x-field>
-        <x-field data-name="parameters" data-type="object" data-required="true" data-desc="関数のパラメータを定義する JSON スキーマオブジェクト。"></x-field>
-    </x-field>
+  <x-field data-name="prompt" data-type="string" data-required="true">
+    <x-field-desc markdown>希望する画像のテキストによる説明です。</x-field-desc>
+  </x-field>
+  <x-field data-name="image" data-type="FileUnionContent[]" data-required="false">
+    <x-field-desc markdown>オプションの入力画像の配列で、画像編集やバリエーション作成などのタスクに使用されます。</x-field-desc>
+  </x-field>
+  <x-field data-name="n" data-type="number" data-required="false">
+    <x-field-desc markdown>生成する画像の数です。デフォルトは 1 です。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputFileType" data-type="'local' | 'file'" data-required="false">
+    <x-field-desc markdown>出力画像をローカルファイル (`local`) として保存するか、base64 エンコードされた文字列 (`file`) として返すかを指定します。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="ImageModelInputOptions" data-required="false">
+    <x-field-desc markdown>画像の寸法、品質、スタイルプリセットなど、プロバイダー固有のオプションを格納するコンテナです。</x-field-desc>
+  </x-field>
 </x-field-group>
 
-### 出力データ構造
+### ImageModelOutput
 
-#### `ChatModelOutput`
-
-`ChatModel` のメイン出力インターフェース。
+`ImageModelOutput` インターフェースは、画像生成サービスからの応答構造を定義します。
 
 <x-field-group>
-  <x-field data-name="text" data-type="string" data-required="false" data-desc="モデルからのテキスト応答。"></x-field>
-  <x-field data-name="json" data-type="object" data-required="false" data-desc="JSON スキーマが要求された場合の、モデルからの JSON 応答。"></x-field>
-  <x-field data-name="toolCalls" data-type="ChatModelOutputToolCall[]" data-required="false" data-desc="モデルが実行したいツール呼び出しのリスト。"></x-field>
-  <x-field data-name="usage" data-type="ChatModelOutputUsage" data-required="false" data-desc="呼び出しのトークン使用統計。"></x-field>
-  <x-field data-name="model" data-type="string" data-required="false" data-desc="応答を生成したモデルの名前。"></x-field>
-  <x-field data-name="files" data-type="FileUnionContent[]" data-required="false" data-desc="モデルによって生成されたファイルのリスト。"></x-field>
+  <x-field data-name="images" data-type="FileUnionContent[]" data-required="true">
+    <x-field-desc markdown>生成された画像の配列です。各要素のフォーマットは、入力で指定された `outputFileType` に依存します。</x-field-desc>
+  </x-field>
+  <x-field data-name="usage" data-type="ChatModelOutputUsage" data-required="false">
+    <x-field-desc markdown>使用統計を含むオブジェクトで、トークン数やその他のプロバイダー固有のメトリクスが含まれる場合があります。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false">
+    <x-field-desc markdown>画像を生成したモデルの識別子です。</x-field-desc>
+  </x-field>
 </x-field-group>
 
-#### `ChatModelOutputToolCall`
+## ファイルコンテンツタイプ
 
-モデルによって要求された単一のツール呼び出しを表します。
+モデルは `FileUnionContent` 型を通じて、マルチモーダルタスクのための様々な形式のファイル入力を処理します。この判別共用体により、ファイルを3つの方法で表現できます:
 
-<x-field-group>
-    <x-field data-name="id" data-type="string" data-required="true" data-desc="このツール呼び出しの一意の識別子。"></x-field>
-    <x-field data-name="type" data-type="'function'" data-required="true" data-desc="ツールのタイプ。"></x-field>
-    <x-field data-name="function" data-type="object" data-required="true" data-desc="関数呼び出しの詳細。">
-        <x-field data-name="name" data-type="string" data-required="true" data-desc="呼び出す関数の名前。"></x-field>
-        <x-field data-name="arguments" data-type="Message" data-required="true" data-desc="関数に渡す引数。JSON オブジェクトとして解析されます。"></x-field>
-    </x-field>
-</x-field-group>
+-   **`LocalContent`**: ローカルファイルシステムに保存されているファイルを表します。
+    -   `type`: "local"
+    -   `path`: ファイルへの絶対パス。
+-   **`UrlContent`**: 公開 URL 経由でアクセス可能なファイルを表します。
+    -   `type`: "url"
+    -   `url`: ファイルの URL。
+-   **`FileContent`**: base64 エンコードされた文字列としてのファイルを表します。
+    -   `type`: "file"
+    -   `data`: ファイルの base64 エンコードされたコンテンツ。
 
-#### `ChatModelOutputUsage`
+`Model` ベースクラスには `transformFileType` メソッドが含まれており、必要に応じてこれらのフォーマット間で自動的に変換できるため、異なる Agent やモデルプロバイダー間でのファイルハンドリングが簡素化されます。
 
-トークン消費に関する情報を提供します。
+## まとめ
 
-<x-field-group>
-    <x-field data-name="inputTokens" data-type="number" data-required="true" data-desc="入力プロンプトで使用されたトークンの数。"></x-field>
-    <x-field data-name="outputTokens" data-type="number" data-required="true" data-desc="出力で生成されたトークンの数。"></x-field>
-    <x-field data-name="aigneHubCredits" data-type="number" data-required="false" data-desc="AIGNE Hub サービスを使用した場合に消費されるクレジット。"></x-field>
-</x-field-group>
+`ChatModel` と `ImageModel` の抽象化は、AIGNE フレームワークを柔軟かつプロバイダー非依存にするコアコンポーネントです。これらは、広範な外部 AI サービスと対話するための、安定した標準化されたインターフェースを提供します。
+
+-   これらのモデルを実際に使用する方法については、[AI Agent](./developer-guide-agents-ai-agent.md) と [Image Agent](./developer-guide-agents-image-agent.md) のドキュメントを参照してください。
+-   OpenAI、Anthropic、Google Gemini のような特定のプロバイダーの設定詳細については、[モデル](./models.md) セクションのガイドを参照してください。

@@ -1,320 +1,245 @@
-このドキュメントは、AIGNE フレームワークの基本的な構成要素である `Agent` クラスに関する包括的なガイドを提供します。広範なタスクを実行するために、Agent の作成、設定、使用方法を学びます。
+# Function Agent
 
-## Agent クラス
+`FunctionAgent` は、既存の TypeScript または JavaScript 関数をカプセル化し、AIGNE フレームワーク内でファーストクラスの Agent に昇格させるための簡単な方法を提供します。これにより、カスタムビジネスロジック、外部 API との連携、または任意のコードを Agent ワークフローにシームレスに統合でき、広範なボイラープレートの必要性をなくします。
 
-`Agent` は、AIGNE システムのすべての Agent のベースクラスです。処理ロジックの定義、入出力スキーマの管理、および他のコンポーネントとの対話のための堅牢なフレームワークを提供します。`Agent` クラスを拡張することで、特殊な機能を持つカスタム Agent を作成できます。
+関数をラップすることにより、`FunctionAgent` は Agent エコシステムに完全に参加できます。他の Agent と同様に呼び出すことができ、`AIAgent` または `TeamAgent` 内のスキルとして組み込むことができ、AIGNE のコンテキストやライフサイクルフックと対話できます。これにより、従来のプログラムロジックと AI 駆動プロセスを橋渡しするための不可欠なコンポーネントとして位置づけられます。
 
-### 主な責務
-
--   **データ処理**: Agent は構造化された入力を受け取り、操作を実行し、構造化された出力を生成します。
--   **データ検証**: Zod スキーマを使用して、入出力データが期待される形式に準拠していることを確認します。
--   **コミュニケーション**: Agent はメッセージパッシングコンテキストを通じて互いに、またシステムと対話します。
--   **状態管理**: 過去の対話のメモリを維持し、将来の振る舞いに活かすことができます。
--   **拡張性**: Agent は他の Agent を「スキル」として使用し、タスクを委任して複雑なワークフローを構築できます。
-
-### クラス図
-
-次の図は、`Agent` クラスのアーキテクチャと、システム内の他のコアコンポーネントとの関係を示しています。
+この図は、ソース関数の提供から最終的な出力の受信まで、`FunctionAgent` の作成と呼び出しのフローを示しています。
 
 ```d2
 direction: down
 
-Agent: {
-  shape: class
-  "-inputSchema: ZodSchema"
-  "-outputSchema: ZodSchema"
-  "-skills: Agent[]"
-  "-memory: Memory"
-  "+run(input, context): any"
+Zod-Library: {
+  label: "Zod ライブラリ"
+  shape: rectangle
+  style.fill: "#f0f0f0"
 }
 
-ZodSchema: {
-  shape: class
-  "+parse(data): any"
+External-API: {
+  label: "外部 API\n(例: REST, GraphQL)"
+  shape: cylinder
 }
 
-Context: {
-  shape: class
-  "..."
+Developers-Code: {
+  label: "開発者のコード"
+  shape: rectangle
+  style: {
+    stroke: "#888"
+    stroke-width: 2
+    stroke-dash: 4
+  }
+
+  Custom-Logic: {
+    label: "カスタムロジック\n(JS/TS 関数)"
+    shape: rectangle
+  }
+
+  Agent-Config: {
+    label: "Agent 設定オブジェクト"
+    shape: rectangle
+  }
 }
 
-Memory: {
-  shape: class
-  "..."
+AIGNE-Framework: {
+  label: "AIGNE フレームワーク"
+  shape: rectangle
+
+  FunctionAgent: {
+    label: "FunctionAgent"
+    shape: rectangle
+
+    from-method: {
+      label: "from()"
+      shape: oval
+    }
+
+    invoke-method: {
+      label: "invoke()"
+      shape: oval
+    }
+  }
 }
 
-Agent -> Agent: "スキルとして使用" {
-  style.stroke-dash: 4
+Developers-Code.Custom-Logic -> AIGNE-Framework.FunctionAgent.from-method: "1a. 関数を提供する"
+Developers-Code.Agent-Config -> AIGNE-Framework.FunctionAgent.from-method: "1b. 設定を提供する"
+Zod-Library -> Developers-Code.Agent-Config: {
+  label: "スキーマを定義"
+  style.stroke-dash: 2
 }
+AIGNE-Framework.FunctionAgent.from-method -> AIGNE-Framework.FunctionAgent: "2. インスタンスを作成"
 
-Agent -> ZodSchema: "で検証"
-
-Agent -> Context: "を介して通信"
-
-Agent -> Memory: "で状態を管理"
+Developers-Code -> AIGNE-Framework.FunctionAgent.invoke-method: "3. 入力で呼び出し"
+AIGNE-Framework.FunctionAgent.invoke-method -> Developers-Code.Custom-Logic: "4. 'process' ロジックを実行"
+Developers-Code.Custom-Logic -> External-API: "5. (任意) データを取得"
+External-API -> Developers-Code.Custom-Logic: "6. データを返す"
+Developers-Code.Custom-Logic -> AIGNE-Framework.FunctionAgent.invoke-method: "7. 結果を返す"
+AIGNE-Framework.FunctionAgent.invoke-method -> Developers-Code: "8. 最終出力を返す"
 ```
 
-## Agent の作成
+## 主な概念
 
-Agent を作成するには、主に 2 つの方法があります。`Agent` クラスを拡張する方法と、よりシンプルな関数ベースの Agent のために `FunctionAgent` を使用する方法です。
+`FunctionAgent` は、`Agent` クラスの特殊な実装であり、そのコア処理ロジックをユーザー提供の関数に委任します。この Agent の主要なコンストラクタは静的メソッド `FunctionAgent.from()` であり、これによりインスタンス化が効率化されます。
 
-### `Agent` クラスの拡張
+`FunctionAgent` は 2 つの方法で作成できます:
 
-特定のロジックを持つ複雑な Agent の場合、ベースの `Agent` クラスを拡張し、抽象メソッド `process` を実装します。
+1.  **関数から直接作成:** 同期または非同期関数を `FunctionAgent.from()` に渡します。Agent は関数定義から名前などのプロパティを推測します。
+2.  **設定オブジェクトから作成:** より明示的な制御のために、`process` 関数と、`name`、`description`、`inputSchema`、`outputSchema` のような他の標準的な Agent 設定を指定するオプションオブジェクトを提供します。
 
-**コアコンセプト:**
+この設計は、迅速なアドホックな統合と、堅牢で明確に定義された Agent コンポーネントの開発の両方に柔軟性を提供します。
 
--   **`constructor(options)`**: 名前、説明、スキーマ、スキルなどの設定で Agent を初期化します。
--   **`process(input, options)`**: Agent のコアロジックです。ここで Agent が実際に *何をするか* を定義します。入力と呼び出しオプション (コンテキストを含む) を受け取り、結果を返す必要があります。
+## Function Agent の作成
 
-**例: シンプルな電卓 Agent**
+`FunctionAgent` を作成する標準的な方法は、関数または設定オブジェクトのいずれかを受け入れる `FunctionAgent.from()` ファクトリメソッドを使用することです。
 
-```typescript
-import { Agent, AgentOptions, AgentInvokeOptions, Message } from "@aigne/core";
+### 簡単な関数から作成
+
+任意の標準関数を直接ラップできます。AIGNE フレームワークは、関数の名前を Agent の名前として使用します。このアプローチは、シンプルで自己完結型の操作に最適です。
+
+```javascript 簡単な関数のラップ icon=logos:javascript
+import { FunctionAgent } from "@aigne/core";
+
+// 簡単な同期関数を定義する
+function add({ a, b }) {
+  return { result: a + b };
+}
+
+// 関数を Agent にラップする
+const addAgent = FunctionAgent.from(add);
+
+console.log(addAgent.name); // 出力: 'add'
+```
+
+この関数は、Agent の入力オブジェクトを最初の引数として受け取り、Agent の出力を構成するオブジェクトを返すことが期待されます。
+
+### 完全な設定を使用
+
+より複雑な統合のためには、完全な設定オブジェクトを提供する必要があります。これにより、検証のための入出力スキーマの定義、説明の追加、カスタム名の割り当てが可能になります。この方法は、堅牢で再利用可能な Agent を作成するために推奨されます。
+
+```javascript 設定を持つ Function Agent icon=logos:javascript
+import { FunctionAgent } from "@aigne/core";
 import { z } from "zod";
 
-// 入出力メッセージの形状を定義
-interface CalculatorInput extends Message {
-  operation: "add" | "subtract";
-  a: number;
-  b: number;
-}
-
-interface CalculatorOutput extends Message {
-  result: number;
-}
-
-// カスタム Agent を作成
-class CalculatorAgent extends Agent<CalculatorInput, CalculatorOutput> {
-  constructor(options: AgentOptions<CalculatorInput, CalculatorOutput> = {}) {
-    super({
-      // Agent のメタデータを定義
-      name: "Calculator",
-      description: "Performs basic arithmetic operations.",
-      
-      // 検証用の Zod スキーマを定義
-      inputSchema: z.object({
-        operation: z.enum(["add", "subtract"]),
-        a: z.number(),
-        b: z.number(),
-      }),
-      outputSchema: z.object({
-        result: z.number(),
-      }),
-      
-      ...options,
-    });
-  }
-
-  // コア処理ロジックを実装
-  async process(input: CalculatorInput, options: AgentInvokeOptions): Promise<CalculatorOutput> {
-    let result: number;
-    
-    if (input.operation === "add") {
-      result = input.a + input.b;
-    } else {
-      result = input.a - input.b;
+const fetchUserAgent = FunctionAgent.from({
+  name: "FetchUser",
+  description: "プレースホルダー API からユーザーデータを取得します。",
+  inputSchema: z.object({
+    userId: z.number().describe("取得するユーザーの ID。"),
+  }),
+  outputSchema: z.object({
+    id: z.number(),
+    name: z.string(),
+    email: z.string().email(),
+  }),
+  process: async ({ userId }) => {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+    if (!response.ok) {
+      throw new Error("ユーザーデータの取得に失敗しました。");
     }
-    
-    return { result };
-  }
-}
-```
-
-### `FunctionAgent` の使用
-
-よりシンプルでステートレスなタスクの場合、`FunctionAgent` はクラスを定義する定型文なしで、単一の関数から Agent を作成する便利な方法を提供します。
-
-**例: JavaScript コード評価 Agent**
-
-この Agent は JavaScript コードの文字列を受け取り、安全なサンドボックスで評価し、結果を返します。
-
-```javascript
-import { FunctionAgent } from "@aigne/core";
-import vm from "node:vm";
-
-// Agent のロジックを含む関数
-async function evaluateJs({ code }) {
-  const sandbox = {};
-  const context = vm.createContext(sandbox);
-  const result = vm.runInContext(code, context, { displayErrors: true });
-  return { result };
-}
-
-// メタデータとスキーマを個別に定義
-evaluateJs.description = "This agent evaluates JavaScript code.";
-evaluateJs.input_schema = {
-  type: "object",
-  properties: {
-    code: { type: "string", description: "JavaScript code to evaluate" },
+    const data = await response.json();
+    return {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+    };
   },
-  required: ["code"],
-};
-evaluateJs.output_schema = {
-  type: "object",
-  properties: {
-    result: { type: "any", description: "Result of the evaluated code" },
-  },
-  required: ["result"],
-};
-
-// 関数から Agent を作成
-const sandboxAgent = new FunctionAgent({
-  name: "Sandbox",
-  description: evaluateJs.description,
-  inputSchema: evaluateJs.input_schema,
-  outputSchema: evaluateJs.output_schema,
-  process: evaluateJs,
 });
 ```
 
-## Agent の呼び出し
+この例では、`zod` スキーマが定義されており、入力 `userId` が数値であること、および出力が指定された構造に準拠していることを保証します。
 
-Agent を実行するには、`invoke` メソッドを使用します。このメソッドは、入力メッセージとオプションのオプションオブジェクトを受け取ります。Agent の実行は `Context` オブジェクトによって管理され、メッセージパッシング、イベント発行、リソース追跡を処理します。
+## Function Agent の呼び出し
 
-### 通常応答とストリーミング応答
+作成された `FunctionAgent` は、他のすべての Agent タイプと同様に、標準の `.invoke()` メソッドを使用して呼び出されます。
 
-`invoke` メソッドは 2 つのモードで動作します。
+```javascript Agent の呼び出し icon=logos:javascript
+async function main() {
+  // 前の例の簡単な 'add' Agent を使用する
+  const result = await addAgent.invoke({ a: 10, b: 5 });
+  console.log(result); // { result: 15 }
 
-1.  **通常 (デフォルト)**: メソッドは `Promise` を返します。これは、Agent の処理が完了したときに、最終的で完全な出力オブジェクトで解決されます。
-2.  **ストリーミング**: オプションで `streaming: true` を設定すると、メソッドは `ReadableStream` を返します。Agent によって生成されるチャンクをこのストリームから読み取ることができ、リアルタイムの更新が可能になります。
-
-**例: 電卓 Agent の呼び出し**
-
-```typescript
-const calculator = new CalculatorAgent();
-
-// 通常の呼び出し
-async function runCalculation() {
-  const output = await calculator.invoke({
-    operation: "add",
-    a: 10,
-    b: 5,
-  });
-  
-  console.log("Result:", output.result); // 出力: Result: 15
+  // 設定済みの 'FetchUser' Agent を使用する
+  const user = await fetchUserAgent.invoke({ userId: 1 });
+  console.log(user); 
+  // { id: 1, name: 'Leanne Graham', email: 'Sincere@april.biz' }
 }
 
-runCalculation();
+main();
 ```
 
-**例: ストリーミング Agent**
+`invoke` メソッドは、スキーマに対する入力検証（提供されている場合）、基になる関数の実行、および出力スキーマに対する結果の検証を含む実行ライフサイクルを管理します。
 
-```typescript
-import { Agent, textDelta } from "@aigne/core";
+## 高度な使用法
 
-class StreamingEchoAgent extends Agent<{text: string}, {response: string}> {
-  // ... コンストラクタ ...
-  
-  async *process(input) {
-    const words = input.text.split(" ");
-    for (const word of words) {
-      // 各単語に対してデルタチャンクを生成
-      yield textDelta({ response: word + " " });
-      await new Promise(resolve => setTimeout(resolve, 100)); // 処理をシミュレート
+### ストリーミング応答
+
+`FunctionAgent` は、非同期ジェネレーターを使用してストリーミング応答をサポートします。`process` 関数は `AgentResponseChunk` オブジェクトを `yield` する `async function*` として定義でき、増分的なデータ送信を可能にします。
+
+```javascript 非同期ジェネレーターによるストリーミング icon=logos:javascript
+import { FunctionAgent, jsonDelta, textDelta } from "@aigne/core";
+import { z } from "zod";
+
+const streamNumbersAgent = FunctionAgent.from({
+  name: "StreamNumbers",
+  inputSchema: z.object({
+    count: z.number().int().positive(),
+  }),
+  outputSchema: z.object({
+    finalCount: z.number(),
+    message: z.string(),
+  }),
+  process: async function* ({ count }) {
+    for (let i = 1; i <= count; i++) {
+      yield textDelta({ message: `Processing number ${i}... ` });
+      await new Promise((resolve) => setTimeout(resolve, 200)); // 作業をシミュレートする
     }
-  }
-}
-
-const echoAgent = new StreamingEchoAgent();
-
-// ストリーミング呼び出し
-async function runStreaming() {
-  const stream = await echoAgent.invoke(
-    { text: "This is a streaming test" },
-    { streaming: true }
-  );
-  
-  const reader = stream.getReader();
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    
-    // 各チャンクが到着するたびに処理
-    if (value.delta?.text?.response) {
-      process.stdout.write(value.delta.text.response);
-    }
-  }
-}
-// 出力は単語ごとに表示されます: "This is a streaming test "
-runStreaming();
-```
-
-## Agent のライフサイクルとフック
-
-Agent の実行は定義されたライフサイクルに従い、`hooks` を使用して主要な瞬間に介入できます。フックを使用すると、Agent のコア実装を変更することなく、ロギング、モニタリング、またはカスタムロジックを追加できます。
-
-### 呼び出しフロー図
-
-この図は、Agent の呼び出し中のイベントのシーケンスを示しています。
-
-```mermaid
-flowchart TD
-    A["invoke() が呼び出される"] --> B{onStart フックを呼び出す};
-    B --> C{入力スキーマを検証};
-    C --> D["preprocess()"];
-    D --> E["process()"];
-    E --> F["postprocess()"];
-    F --> G{出力スキーマを検証};
-    G --> H{onSuccess/onError フックを呼び出す};
-    H --> I{onEnd フックを呼び出す};
-    I --> J[最終出力を返す];
-    
-    subgraph エラー処理
-        C -- 無効 --> H;
-        E -- スロー --> H;
-        G -- 無効 --> H;
-    end
-```
-
-### 主要なフック
-
--   `onStart`: 処理が開始される前に呼び出されます。入力を変更できます。
--   `onSuccess`: Agent が正常に出力を生成した後に呼び出されます。
--   `onError`: 処理中にエラーがスローされた場合に呼び出されます。
--   `onEnd`: 成功か失敗かに関わらず、呼び出しの最後に必ず呼び出されます。
--   `onSkillStart` / `onSkillEnd`: スキルが呼び出される前後に呼び出されます。
-
-**例: ロギングフックの追加**
-
-```typescript
-const calculator = new CalculatorAgent({
-  hooks: [{
-    onStart: async ({ agent, input }) => {
-      console.log(`[${agent.name}] 入力で開始:`, input);
-    },
-    onSuccess: async ({ agent, output }) => {
-      console.log(`[${agent.name}] 出力で成功:`, output);
-    },
-    onError: async ({ agent, error }) => {
-      console.error(`[${agent.name}] エラーで失敗:`, error);
-    },
-  }]
+    yield jsonDelta({ finalCount: count });
+    yield textDelta({ message: "Done." });
+  },
 });
 
-await calculator.invoke({ operation: "subtract", a: 10, b: 20 });
-// ログ:
-// [Calculator] 入力で開始: { operation: 'subtract', a: 10, b: 20 }
-// [Calculator] 出力で成功: { result: -10 }
+async function runStream() {
+  const stream = await streamNumbersAgent.invoke({ count: 5 }, { streaming: true });
+  for await (const chunk of stream) {
+    console.log(chunk);
+  }
+}
+
+runStream();
 ```
 
-## コアプロパティとメソッド
+この機能は、Agent の進行状況に関するリアルタイムのフィードバックを提供する必要がある長時間実行タスクに特に役立ちます。
 
-これは、`Agent` クラスの最も重要なプロパティとメソッドのリファレンスです。
+## 設定
 
-| メンバー                | タイプ                                    | 説明                                                                                                                              |
-| --------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`                | `string`                                | Agent の識別子。デフォルトはクラス名です。                                                                                              |
-| `description`         | `string`                                | Agent の目的を人間が読める形式で記述したもの。                                                                                             |
-| `inputSchema`         | `ZodType`                               | 入力メッセージを検証するための Zod スキーマ。                                                                                             |
-| `outputSchema`        | `ZodType`                               | 出力メッセージを検証するための Zod スキーマ。                                                                                             |
-| `skills`              | `Agent[]`                               | この Agent がタスクを委任するために呼び出すことができる他の Agent のリスト。                                                                    |
-| `memory`              | `MemoryAgent`                           | 過去の対話から情報を保存および取得するためのオプションのメモリ Agent。                                                                    |
-| `hooks`               | `AgentHooks[]`                          | Agent のライフサイクルイベントをインターセプトするためのフックオブジェクトの配列。                                                                  |
-| `retryOnError`        | `boolean \| object`                     | 失敗時に Agent の `process` メソッドを自動的に再試行するための設定。                                                                        |
-| `guideRails`          | `GuideRailAgent[]`                      | Agent の入出力を検査および検証してポリシーやルールを強制することができる特別な Agent のリスト。                                               |
-| `invoke()`            | `function`                              | **(公開メソッド)** 与えられた入力で Agent を実行します。最終結果またはストリームを返します。                                                        |
-| `process()`           | `function`                              | **(抽象メソッド)** サブクラスによって実装されるコアロジック。                                                                                    |
-| `invokeSkill()`       | `function`                              | **(保護されたメソッド)** スキルとして追加された別の Agent を呼び出すためのヘルパーメソッド。                                                      |
-| `addSkill()`          | `function`                              | この Agent のスキルリストに 1 つ以上の Agent を追加します。                                                                              |
-| `shutdown()`          | `function`                              | トピックの購読解除など、リソースをクリーンアップします。                                                                                        |
+`FunctionAgent` は、`FunctionAgent.from` またはそのコンストラクタに渡される設定オブジェクトを介して初期化されます。以下のパラメータはその設定に固有のものです。
+
+<x-field-group>
+  <x-field data-name="process" data-type="FunctionAgentFn" data-required="true">
+    <x-field-desc markdown>Agent のロジックを実装する関数。入力メッセージと呼び出しオプションを受け取り、処理結果を返します。これは同期関数、Promise を返す非同期関数、またはストリーミング用の非同期ジェネレーターにすることができます。</x-field-desc>
+  </x-field>
+  <x-field data-name="name" data-type="string" data-required="false">
+    <x-field-desc markdown>Agent の一意の名前で、識別とログ記録に使用されます。指定しない場合、デフォルトで `process` 関数の名前になります。</x-field-desc>
+  </x-field>
+  <x-field data-name="description" data-type="string" data-required="false">
+    <x-field-desc markdown>Agent が何をするかの人間が読める説明。これはドキュメントや他の Agent がその能力を理解するのに役立ちます。</x-field-desc>
+  </x-field>
+  <x-field data-name="inputSchema" data-type="ZodObject" data-required="false">
+    <x-field-desc markdown>入力メッセージの構造と型を検証するための Zod スキーマ。検証が失敗した場合、`process` 関数が呼び出される前に Agent はエラーをスローします。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputSchema" data-type="ZodObject" data-required="false">
+    <x-field-desc markdown>`process` 関数によって返される出力メッセージの構造と型を検証するための Zod スキーマ。検証が失敗した場合、エラーがスローされます。</x-field-desc>
+  </x-field>
+</x-field-group>
+
+ベースの `AgentOptions` からの他のすべてのプロパティも利用可能です。完全なリストについては、[Agent のドキュメント](./developer-guide-core-concepts-agents.md)を参照してください。
+
+## まとめ
+
+`FunctionAgent` は、従来のコードを AIGNE フレームワークに統合するための多用途なツールであり、任意の JavaScript または TypeScript 関数が標準の Agent として動作できるようにする橋渡しの役割を果たします。
+
+-   **シンプルさ:** `FunctionAgent.from()` を使用して、最小限の労力で既存の関数をラップします。
+-   **統合:** 従来のビジネスロジック、計算、または外部 API 呼び出しを Agent ワークフローにシームレスに組み込みます。
+-   **検証:** Zod で入出力スキーマを定義することにより、データコントラクトを強制し、信頼性を向上させます。
+-   **柔軟性:** 同期関数、非同期 Promise、および非同期ジェネレーターによるストリーミングをサポートします。
+
+`FunctionAgent` を活用することで、開発者は従来のコードの決定的で信頼性の高い性質と、AI Agent の動的な能力を組み合わせて、より強力で堅牢なアプリケーションを構築できます。Function Agent を含む複数の Agent をオーケストレーションする方法については、[Team Agent](./developer-guide-agents-team-agent.md) に関するドキュメントを参照してください。

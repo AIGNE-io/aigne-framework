@@ -1,99 +1,146 @@
-# @aigne/aigne-hub
+# AIGNE Hub
 
-`@aigne/aigne-hub` SDK 提供了一个统一的接口，用于访问各种用于聊天和图像生成的人工智能模型。它充当 [AIGNE Hub](https://github.com/AIGNE-io/aigne-framework) 的客户端，后者是一个强大的代理层，连接到多个大型语言模型（LLM）提供商。
+AIGNE Hub 提供了一个统一的代理层，用于访问来自多个提供商的各种大型语言模型（LLM）和图像生成服务。通过使用 `@aigne/aigne-hub` 包，您可以在不同的 AI 模型之间无缝切换，而无需更改客户端应用程序逻辑，所有请求都通过一个单一、一致的 API 端点进行定向。
 
-本指南将引导您完成该 SDK 的安装、基本设置以及在聊天补全和图像生成方面的使用。
+本指南涵盖了 `AIGNEHubChatModel` 和 `AIGNEHubImageModel` 类的安装、配置和使用，以将您的应用程序连接到 AIGNE Hub。
 
-## 简介
+## 概述
 
-`@aigne/aigne-hub` 通过 AIGNE Hub 服务路由请求，简化了与各种 AI 提供商的交互。该网关聚合了 OpenAI、Anthropic、AWS Bedrock、Google 等提供商，让您只需更改模型标识符即可在它们之间无缝切换。这种方法消除了处理不同 API 和身份验证方法的复杂性，让您可以专注于构建您的应用程序。
+AIGNE Hub 作为一个网关，聚合了 OpenAI、Anthropic、Google 等主要 AI 提供商。这种架构通过抽象每个提供商 API 的特定要求来简化集成。您只需传递模型的唯一标识符（包含提供商前缀，例如 `openai/gpt-4o-mini` 或 `anthropic/claude-3-sonnet`），即可与任何支持的模型进行交互。
 
-### 工作原理
+### 架构图
 
-SDK 将请求从您的应用程序发送到集中的 AIGNE Hub 实例。然后，Hub 根据指定的模型名称将这些请求转发给相应的下游 AI 提供商。这种架构为所有 AI 交互提供了一个单一的访问和控制点。
+下图说明了 AIGNE Hub 如何充当您的应用程序与各种 LLM 提供商之间的中介。您的应用程序向 Hub 发送统一请求，然后 Hub 根据指定的模型将其路由到相应的下游服务。
 
 ```d2
 direction: down
 
 Your-Application: {
-  label: "您的应用程序"
+  label: "你的应用"
   shape: rectangle
-
-  aigne-aigne-hub: {
-    label: "@aigne/aigne-hub SDK"
-    shape: rectangle
-  }
 }
 
 AIGNE-Hub: {
-  label: "AIGNE Hub 服务"
+  label: "AIGNE Hub"
   icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
 }
 
 LLM-Providers: {
   label: "LLM 提供商"
   shape: rectangle
-  grid-columns: 4
+  style.stroke-dash: 4
 
-  OpenAI: {}
-  Anthropic: {}
-  Google: {}
-  AWS-Bedrock: {
-    label: "AWS Bedrock"
+  OpenAI: {
+    label: "OpenAI\n(GPT-4o, DALL-E 3)"
   }
-  DeepSeek: {}
-  Ollama: {}
-  xAI: {}
-  OpenRouter: {}
+  Anthropic: {
+    label: "Anthropic\n(Claude)"
+  }
+  Google: {
+    label: "Google\n(Gemini, Imagen)"
+  }
 }
 
-Your-Application.aigne-aigne-hub -> AIGNE-Hub: "API 请求"
-AIGNE-Hub -> LLM-Providers: "聚合与路由"
+Your-Application -> AIGNE-Hub: "统一 API 请求\n(例如 'openai/gpt-4o-mini')"
+AIGNE-Hub -> LLM-Providers.OpenAI: "路由请求"
+AIGNE-Hub -> LLM-Providers.Anthropic: "路由请求"
+AIGNE-Hub -> LLM-Providers.Google: "路由请求"
 ```
 
-## 功能
+### 主要功能
 
--   🔌 **统一的 LLM 访问**：通过单一、一致的端点路由所有请求。
--   🧠 **多提供商支持**：使用简单的 `provider/model` 命名约定，访问来自 OpenAI、Anthropic、Google 等的模型。
--   🔐 **安全身份验证**：使用单一的 `accessKey` 安全地管理 API 访问。
--   💬 **聊天补全**：使用 `{ role, content }` 消息格式为聊天模型提供标准化接口。
--   🎨 **图像生成**：使用来自 OpenAI (DALL-E)、Google (Imagen) 和 Ideogram 的模型生成图像。
--   🌊 **流式传输支持**：通过启用流式传输，为聊天模型获取实时的、令牌级别的响应。
--   🧱 **框架兼容**：与更广泛的 AIGNE 框架无缝集成。
+-   **统一访问**：为所有 LLM 和图像生成请求提供单一端点。
+-   **多提供商支持**：访问来自 OpenAI、Anthropic、AWS Bedrock、Google、DeepSeek、Ollama、xAI 和 OpenRouter 的模型。
+-   **安全身份验证**：通过单个 API 密钥（`accessKey`）管理访问。
+-   **聊天和图像模型**：支持聊天补全和图像生成。
+-   **流式传输**：为聊天响应提供实时、令牌级的流式传输。
+-   **无缝集成**：旨在与更广泛的 AIGNE 框架完美协作。
+
+### 支持的提供商
+
+AIGNE Hub 通过其统一的 API 支持广泛的 AI 提供商。
+
+| 提供商 | 标识符 |
+| :---------- | :------------ |
+| OpenAI | `openai` |
+| Anthropic | `anthropic` |
+| AWS Bedrock | `bedrock` |
+| DeepSeek | `deepseek` |
+| Google | `google` |
+| Ollama | `ollama` |
+| OpenRouter | `openRouter` |
+| xAI | `xai` |
 
 ## 安装
 
-首先，使用您偏好的包管理器安装 `@aigne/aigne-hub` 和 `@aigne/core` 包。
+首先，请在您的项目中安装 `@aigne/aigne-hub` 和 `@aigne/core` 包。
 
-**npm**
-```bash
+```bash npm install icon=logos:npm
 npm install @aigne/aigne-hub @aigne/core
 ```
 
-**yarn**
-```bash
+```bash yarn add icon=logos:yarn
 yarn add @aigne/aigne-hub @aigne/core
 ```
 
-**pnpm**
-```bash
+```bash pnpm add icon=logos:pnpm
 pnpm add @aigne/aigne-hub @aigne/core
 ```
 
-## 聊天模型
+## 配置
 
-`AIGNEHubChatModel` 类是您与基于文本的 AI 模型交互的主要工具。
+聊天和图像模型都需要配置才能连接到您的 AIGNE Hub 实例。主要选项包括 Hub 的 URL、访问密钥和所需的模型标识符。
 
-### 基本用法
+### 聊天模型配置
 
-要使用聊天模型，请使用您的 AIGNE Hub 端点、访问密钥和所需的模型标识符来实例化 `AIGNEHubChatModel`。
+使用以下选项配置 `AIGNEHubChatModel`。
 
-```typescript
+<x-field-group>
+  <x-field data-name="baseUrl" data-type="string" data-required="true">
+    <x-field-desc markdown>您的 AIGNE Hub 实例的基础 URL（例如 `https://your-aigne-hub-instance/ai-kit`）。</x-field-desc>
+  </x-field>
+  <x-field data-name="apiKey" data-type="string" data-required="true">
+    <x-field-desc markdown>用于向 AIGNE Hub 进行身份验证的 API 访问密钥。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="true">
+    <x-field-desc markdown>模型标识符，以提供商为前缀（例如 `openai/gpt-4o-mini`）。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>可选的模型特定参数，将传递给提供商的 API。</x-field-desc>
+  </x-field>
+</x-field-group>
+
+### 图像模型配置
+
+`AIGNEHubImageModel` 使用类似的配置结构。
+
+<x-field-group>
+  <x-field data-name="url" data-type="string" data-required="true">
+    <x-field-desc markdown>您的 AIGNE Hub 实例的端点。</x-field-desc>
+  </x-field>
+  <x-field data-name="accessKey" data-type="string" data-required="true">
+    <x-field-desc markdown>用于身份验证的 API 访问密钥。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="true">
+    <x-field-desc markdown>模型标识符，以提供商为前缀（例如 `openai/dall-e-3`）。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>可选的模型特定参数，将传递给提供商的 API。</x-field-desc>
+  </x-field>
+</x-field-group>
+
+## 使用方法
+
+### 聊天补全
+
+要执行聊天补全，请使用您的配置实例化 `AIGNEHubChatModel` 并调用 `invoke` 方法。
+
+```typescript 基本聊天补全 icon=logos:typescript
 import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubChatModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
   model: "openai/gpt-4o-mini",
 });
 
@@ -102,28 +149,41 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* 示例输出:
-  {
-    text: "你好！今天我能为你做些什么？",
-    model: "openai/gpt-4o-mini",
-    usage: {
-      inputTokens: 8,
-      outputTokens: 9
-    }
-  }
-*/
 ```
 
-### 流式传输用法
+**响应示例**
 
-对于交互式的实时应用程序，您可以从模型中流式传输响应。在 `invoke` 调用中将 `streaming` 选项设置为 `true`，并遍历结果流以在数据块到达时进行处理。
+```json
+{
+  "text": "Hello! How can I help you today?",
+  "model": "openai/gpt-4o-mini",
+  "usage": {
+    "inputTokens": 8,
+    "outputTokens": 9
+  }
+}
+```
 
-```typescript
-import { AIGNEHubChatModel, isAgentResponseDelta } from "@aigne/aigne-hub";
+**模型示例：**
+
+*   `openai/gpt-4o-mini`
+*   `anthropic/claude-3-sonnet`
+*   `google/gemini-pro`
+*   `xai/grok-1`
+*   `openRouter/mistralai/mistral-7b-instruct`
+*   `ollama/llama3`
+
+### 流式聊天响应
+
+对于实时响应，请在 `invoke` 调用中将 `streaming` 选项设置为 `true`。这将返回一个异步迭代器，在响应块可用时生成它们。
+
+```typescript 流式示例 icon=logos:typescript
+import { AIGNEHubChatModel } from "@aigne/aigne-hub";
+import { isAgentResponseDelta } from "@aigne/core";
 
 const model = new AIGNEHubChatModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
   model: "openai/gpt-4o-mini",
 });
 
@@ -135,40 +195,27 @@ const stream = await model.invoke(
 );
 
 let fullText = "";
-const json = {};
-
 for await (const chunk of stream) {
   if (isAgentResponseDelta(chunk)) {
     const text = chunk.delta.text?.text;
-    if (text) fullText += text;
-    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+    if (text) {
+      fullText += text;
+      process.stdout.write(text);
+    }
   }
 }
 
-console.log(fullText); // "我是一个 AI 助手，随时准备帮助您解决任何问题或任务。"
-console.log(json); // { model: "openai/gpt-4o-mini", usage: { ... } }
+console.log("\n--- Response Complete ---");
+console.log(fullText);
 ```
 
-### 配置
+### 图像生成
 
-`AIGNEHubChatModel` 构造函数接受以下选项：
+AIGNE Hub 支持来自多个提供商的图像生成。实例化 `AIGNEHubImageModel` 并提供提示和模型特定参数。
 
-| Parameter      | Type     | Description                                                              |
-| -------------- | -------- | ------------------------------------------------------------------------ |
-| `url`          | `string` | 您的 AIGNE Hub 实例的端点 URL。                                          |
-| `accessKey`    | `string` | 您用于向 AIGNE Hub 进行身份验证的秘密 API 密钥。                         |
-| `model`        | `string` | 模型标识符，以提供商为前缀（例如，`openai/gpt-4o`）。                       |
-| `modelOptions` | `object` | 可选。传递给底层模型的附加参数。                                         |
+#### OpenAI DALL-E
 
-## 图像生成模型
-
-`AIGNEHubImageModel` 类允许您使用各种 AI 模型生成图像。
-
-### 基本用法
-
-使用您的 Hub 凭据和所需的图像模型实例化 `AIGNEHubImageModel`。然后，使用提示和其他特定于模型的参数调用 `invoke`。
-
-```typescript
+```typescript 使用 DALL-E 3 生成 icon=logos:typescript
 import { AIGNEHubImageModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubImageModel({
@@ -178,50 +225,21 @@ const model = new AIGNEHubImageModel({
 });
 
 const result = await model.invoke({
-  prompt: "一个充满未来感的城市景观，有飞行汽车和霓虹灯",
+  prompt: "A futuristic cityscape with flying cars and neon lights",
   n: 1,
   size: "1024x1024",
+  quality: "standard",
+  style: "natural",
 });
 
-console.log(result);
-/* 示例输出:
-  {
-    images: [{ url: "https://..." }],
-    usage: { inputTokens: 0, outputTokens: 0 },
-    model: "openai/dall-e-3"
-  }
-*/
+console.log(result.images[0].url);
 ```
 
-### 支持的提供商和参数
+-   **参考**：[OpenAI Images API 文档](https://platform.openai.com/docs/guides/images)
 
-AIGNE Hub 支持来自多个提供商的图像生成，每个提供商都有其自己的功能和参数集。
+#### Google Gemini Imagen
 
-#### OpenAI DALL-E
-
--   **模型**：`dall-e-2`、`dall-e-3`
--   **关键参数**：`prompt`、`size`、`n`、`quality`、`style`。
--   **参考**：[OpenAI 图像 API 文档](https://platform.openai.com/docs/guides/images)
-
-```typescript
-// DALL-E 3 示例
-const result = await model.invoke({
-  model: "openai/dall-e-3",
-  prompt: "一张戴着太阳镜的猫的逼真照片",
-  size: "1024x1024",
-  quality: "hd",
-  style: "vivid",
-});
-```
-
-#### Google Gemini & Imagen
-
--   **模型**：`imagen-4.0`、`gemini-pro-vision` 等。
--   **关键参数**：`prompt`、`imageSize`、`aspectRatio`、`guidanceScale`、`negativePrompt`。
--   **注意**：Gemini 图像模型目前以 `base64` 格式返回图像。
--   **参考**：[Google GenAI 模型文档](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html)
-
-```typescript
+```typescript 使用 Imagen 生成 icon=logos:typescript
 import { AIGNEHubImageModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubImageModel({
@@ -231,20 +249,19 @@ const model = new AIGNEHubImageModel({
 });
 
 const result = await model.invoke({
-  prompt: "日落时宁静的山景",
+  prompt: "A serene mountain landscape at sunset",
   n: 1,
-  imageSize: "1024x1024",
   aspectRatio: "1:1",
 });
+
+console.log(result.images[0].base64); // 注意：Gemini 模型返回 base64 数据
 ```
+
+-   **参考**：[Google AI Generative Models API](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html)
 
 #### Ideogram
 
--   **模型**：`ideogram-v3`
--   **关键参数**：`prompt`、`resolution`、`aspectRatio`、`renderingSpeed`、`styleType`。
--   **参考**：[Ideogram API 文档](https://developer.ideogram.ai/api-reference/api-reference/generate-v3)
-
-```typescript
+```typescript 使用 Ideogram 生成 icon=logos:typescript
 import { AIGNEHubImageModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubImageModel({
@@ -254,19 +271,18 @@ const model = new AIGNEHubImageModel({
 });
 
 const result = await model.invoke({
-  prompt: "一个有着发光蓝眼睛的赛博朋克角色",
-  resolution: "1024x1024",
+  prompt: "A cyberpunk character with glowing blue eyes, cinematic style",
+  aspectRatio: "1:1",
   styleType: "cinematic",
 });
+
+console.log(result.images[0].url);
 ```
 
-### 配置
+-   **参考**：[Ideogram API 文档](https://developer.ideogram.ai/api-reference/api-reference/generate-v3)
 
-`AIGNEHubImageModel` 构造函数接受以下选项：
+## 总结
 
-| Parameter      | Type     | Description                                                                 |
-| -------------- | -------- | --------------------------------------------------------------------------- |
-| `url`          | `string` | 您的 AIGNE Hub 实例的端点 URL。                                             |
-| `accessKey`    | `string` | 您用于向 AIGNE Hub 进行身份验证的秘密 API 密钥。                            |
-| `model`        | `string` | 模型标识符，以提供商为前缀（例如，`openai/dall-e-3`）。                       |
-| `modelOptions` | `object` | 可选。传递给底层模型的附加参数。                                            |
+`@aigne/aigne-hub` 包通过为 AIGNE Hub 服务提供统一的客户端，简化了多提供商 LLM 的集成。通过抽象特定于提供商的逻辑，它使开发人员能够构建更灵活、更易于维护的 AI 驱动的应用程序。
+
+有关特定模型及其功能的更多详细信息，请参阅各个 AI 提供商提供的文档。要探索其他模型集成，请参阅[模型概述](./models-overview.md)。

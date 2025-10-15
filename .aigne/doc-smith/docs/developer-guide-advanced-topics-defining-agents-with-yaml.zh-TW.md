@@ -1,217 +1,232 @@
-本文件詳細介紹 AIGNE 載入器系統，該系統負責載入和解析設定檔以建構和初始化 Agent。載入器是定義和設定 AI Agent 行為及其互動的主要進入點。
+# 使用 YAML 定義 Agent
 
-## 總覽
+AIGNE 框架支援使用 YAML 設定檔來定義 Agent 的聲明式方法。此方法將 Agent 的定義（其屬性、指令和技能）與應用程式的業務邏輯分開，從而促進了更好的組織性、可重用性，並使複雜的 Agent 系統更易於管理。
 
-AIGNE 載入器系統旨在解讀一組設定檔（從根 `aigne.yaml` 檔案開始），以建立一個完整的執行環境。此過程涉及解析專案層級的設定、探索所有指定的 Agent 和技能，並將它們實例化為可執行的物件。載入器支援使用 YAML（為求簡潔）和 JavaScript/TypeScript（用於更複雜的程式化邏輯）來定義 Agent。
+本指南全面概述了用於定義各種 Agent 類型及其屬性的 YAML 語法。
 
-載入過程可視覺化如下：
+## 基本結構
 
-```d2
-direction: down
+每個 Agent 的定義，無論其類型為何，都包含在一個 `.yaml` 檔案中。`type` 屬性是決定 Agent 行為和所需屬性的主要區分符。如果省略 `type`，則預設為 `ai`。
 
-Config-Sources: {
-  label: "設定來源"
-  shape: rectangle
+以下是一個 AI Agent 設定的基本範例：
 
-  aigne-yaml: "aigne.yaml\n(根進入點)"
-
-  definitions: {
-    label: "Agent 與技能定義"
-    shape: rectangle
-    grid-columns: 2
-
-    yaml-files: "YAML 檔案\n(.yml)"
-    ts-js-files: "TypeScript/JavaScript\n(.ts, .js)"
-  }
-}
-
-Loader: {
-  label: "AIGNE 載入器系統"
-  shape: rectangle
-}
-
-Runtime: {
-  label: "已初始化的執行環境"
-  shape: rectangle
-
-  Objects: {
-    label: "記憶體中的活動物件"
-    shape: rectangle
-    grid-columns: 2
-
-    Agent-Instances: "Agent 執行個體"
-    Skill-Instances: "技能執行個體"
-  }
-}
-
-Config-Sources.aigne-yaml -> Loader: "1. 讀取"
-Config-Sources.definitions -> Loader: "2. 探索"
-Loader -> Loader: "3. 解析與建構"
-Loader -> Runtime.Objects: "4. 實例化"
-```
-
-## 核心功能
-
-載入器系統由幾個關鍵函式協調，這些函式處理專案設定的探索、解析和實例化。
-
-### `load` 函式
-
-這是載入器系統的主要進入點。它接受您的專案目錄路徑（或特定的 `aigne.yaml` 檔案）和一個選項物件，然後回傳一個完全解析、可供使用的 `AIGNEOptions` 物件。
-
-```typescript
-// 來源：packages/core/src/loader/index.ts
-
-export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
-  // ... implementation
-}
-```
-
-### `loadAgent` 函式
-
-此函式負責從檔案中載入單一 Agent。它會自動偵測檔案類型（YAML 或 JavaScript/TypeScript）並使用適當的解析器。
-
-```typescript
-// 來源：packages/core/src/loader/index.ts
-
-export async function loadAgent(
-  path: string,
-  options?: LoadOptions,
-  agentOptions?: AgentOptions,
-): Promise<Agent> {
-  // ... implementation
-}
-```
-
-## 專案設定：`aigne.yaml`
-
-`aigne.yaml`（或 `aigne.yml`）檔案是您專案設定的根。載入器會在提供的路徑中搜尋此檔案以開始載入過程。
-
-### `aigne.yaml` 結構描述
-
-以下是您可以在 `aigne.yaml` 檔案中定義的頂層屬性：
-
-| Key | Type | Description |
-| :--- | :--- | :--- |
-| `name` | `string` | 您的專案名稱。 |
-| `description` | `string` | 您的專案簡短描述。 |
-| `model` | `string` or `object` | 所有 Agent 的預設聊天模型設定。可被個別 Agent 覆寫。 |
-| `imageModel` | `string` or `object` | 所有 Agent 的預設圖片模型設定。 |
-| `agents` | `string[]` | 要載入的 Agent 定義檔案的路徑列表。 |
-| `skills` | `string[]` | 可全域使用的技能定義檔案的路徑列表。 |
-| `mcpServer` | `object` | MCP (Multi-agent Communication Protocol) 伺服器的設定，包含要公開的 Agent 列表。 |
-| `cli` | `object` | 命令列介面的設定，定義聊天 Agent 和 Agent 命令結構。 |
-
-### `aigne.yaml` 範例
-
-此範例展示了一個典型的專案設定，定義了預設模型，並列出了要載入的各種 Agent 和技能。
-
-```yaml
-name: test_aigne_project
-description: A test project for the aigne agent
-chat_model:
-  name: gpt-4o-mini
-  temperature: 0.8
-agents:
-  - chat.yaml
-  - chat-with-prompt.yaml
-  - team.yaml
-  - image.yaml
-  - agents/test-relative-prompt-paths.yaml
+```yaml chat.yaml
+name: Basic Chat Agent
+description: A simple agent that responds to user messages.
+type: ai
+instructions: "You are a helpful assistant. Respond to the user's message concisely."
+input_key: message
 skills:
-  - sandbox.js
-mcp_server:
-  agents:
-    - chat.yaml
-cli:
-  agents:
-    - chat.yaml
-    - test-cli-agents/b.yaml
-    - url: test-cli-agents/a.yaml
-      name: a-renamed
-      description: A agent from a.yaml
-      alias: ["a", "a-agent"]
-      agents:
-        - url: test-cli-agents/a-1.yaml
-          agents:
-            - url: test-cli-agents/a-1-1.yaml
-            - url: test-cli-agents/a-1-2.yaml
-              name: a12-renamed
-              description: A agent from a-1-2.yaml
-        - test-cli-agents/a-2.yaml
+  - my-skill.js
 ```
 
-## Agent 設定 (YAML)
+### 核心屬性
 
-Agent 是 AIGNE 平台的基礎建構區塊。您可以在 YAML 檔案中定義它們，以獲得一種宣告式且易於閱讀的格式。
+以下屬性在大多數 Agent 類型中都很常見：
 
-### 通用 Agent 屬性
+<x-field-group>
+  <x-field data-name="name" data-type="string" data-required="false">
+    <x-field-desc markdown>Agent 的人類可讀名稱。</x-field-desc>
+  </x-field>
+  <x-field data-name="description" data-type="string" data-required="false">
+    <x-field-desc markdown>關於 Agent 目的和能力的簡要描述。</x-field-desc>
+  </x-field>
+  <x-field data-name="type" data-type="string" data-required="false" data-default="ai">
+    <x-field-desc markdown>指定 Agent 的類型。決定了必要的欄位和行為。有效類型包括 `ai`、`image`、`team`、`transform`、`mcp` 和 `function`。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="object | string" data-required="false">
+    <x-field-desc markdown>Agent 使用的聊天模型設定，會覆寫任何全域定義的模型。可以是一個字串或一個詳細的物件。</x-field-desc>
+  </x-field>
+  <x-field data-name="skills" data-type="array" data-required="false">
+    <x-field-desc markdown>此 Agent 可用作工具的其他 Agent 或 JavaScript/TypeScript 函數的清單。每個技能都透過其檔案路徑引用。</x-field-desc>
+  </x-field>
+  <x-field data-name="inputSchema" data-type="object | string" data-required="false">
+    <x-field-desc markdown>定義預期輸入結構的 JSON 結構定義。可以是一個內聯物件或指向外部 `.json` 或 `.yaml` 檔案的路徑。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputSchema" data-type="object | string" data-required="false">
+    <x-field-desc markdown>用於建構 Agent 輸出的 JSON 結構定義。可以是一個內聯物件或指向外部檔案的路徑。這對於啟用結構化輸出至關重要。</x-field-desc>
+  </x-field>
+  <x-field data-name="memory" data-type="boolean | object" data-required="false">
+    <x-field-desc markdown>為 Agent 啟用狀態性。設定為 `true` 可使用預設記憶體，或為特定提供者提供一個設定物件。</x-field-desc>
+  </x-field>
+  <x-field data-name="hooks" data-type="array" data-required="false">
+    <x-field-desc markdown>定義生命週期掛鉤（`onStart`、`onSuccess`、`onError`、`onEnd`），這些掛鉤會在執行的不同階段觸發其他 Agent。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-所有 Agent 類型都共用一組通用屬性：
+## 載入外部提示和結構定義
 
-| Key | Type | Description |
-| :--- | :--- | :--- |
-| `name` | `string` | Agent 的唯一名稱。 |
-| `description` | `string` | 描述 Agent 的目的與能力。 |
-| `model` | `string` or `object` | 覆寫此特定 Agent 的預設聊天模型。 |
-| `inputSchema` | `string` or `object` | 定義預期輸入的 JSON 結構描述檔案路徑或行內結構描述。 |
-| `outputSchema` | `string` or `object` | 定義預期輸出的 JSON 結構描述檔案路徑或行內結構描述。 |
-| `skills` | `(string or object)[]` | 此 Agent 可用的技能（工具）列表。可以是一個技能檔案的路徑或一個巢狀的 Agent 定義。 |
-| `memory` | `boolean` or `object` | 為 Agent 啟用記憶體。可以是一個簡單的 `true` 或用於進階設定的物件。 |
-| `hooks` | `object` or `object[]` | 定義在生命週期的不同點（例如 `onStart`、`onSuccess`）觸發其他 Agent 的掛鉤。 |
+為了維持乾淨和模組化的設定，您可以從外部檔案載入 Agent 指令和結構定義。這對於複雜的提示或可重用的資料結構特別有用。
 
-### Agent 類型
+### 外部指令
 
-`type` 屬性決定了 Agent 的核心行為。
+對於 `ai` 和 `image` Agent，指令可能會很長。您可以在一個單獨的 Markdown 或文字檔案中定義它們，並使用 `url` 鍵來引用它。
 
-#### 1. AI Agent (`type: "ai"`)
-
-最常見的類型，用於通用 AI 任務。它使用大型語言模型來處理指令並與技能互動。
-
--   **`instructions`**: 定義 Agent 的提示。可以是一個字串、一個包含 `role` 和 `content` 的物件，或使用 `url` 參考一個檔案。
--   **`inputKey`**: 輸入物件中應被視為主要使用者訊息的鍵。
--   **`toolChoice`**: 控制 Agent 如何使用工具（例如 `auto`、`required`）。
-
-**範例：**
-
-```yaml
+```yaml chat-with-prompt.yaml
 name: chat-with-prompt
-description: Chat agent
+description: An AI agent with instructions loaded from an external file.
+type: ai
 instructions:
-  url: chat-prompt.md
+  url: prompts/main-prompt.md
 input_key: message
 memory: true
 skills:
+  - skills/sandbox.js
+```
+
+`main-prompt.md` 檔案包含將用作 Agent 系統提示的原始文字。
+
+```markdown prompts/main-prompt.md
+你是一位大師級的程式設計師。當使用者要求程式碼時，請提供一個完整、可執行的範例，並解釋關鍵部分。
+```
+
+您也可以建構一個具有不同角色的多部分提示：
+
+```yaml multi-role-prompt.yaml
+instructions:
+  - role: system
+    url: prompts/system-role.md
+  - role: user
+    content: "Here is an example of a good response:"
+  - role: assistant
+    url: prompts/example-response.md
+```
+
+### 外部結構定義
+
+同樣地，`inputSchema` 和 `outputSchema` 可以引用定義結構定義結構的外部 JSON 或 YAML 檔案。
+
+```yaml structured-output-agent.yaml
+name: JSON Extractor
+type: ai
+instructions: Extract the user's name and email from the text.
+outputSchema: schemas/user-schema.yaml
+```
+
+`user-schema.yaml` 檔案將包含 JSON 結構定義：
+
+```yaml schemas/user-schema.yaml
+type: object
+properties:
+  name:
+    type: string
+    description: The full name of the user.
+  email:
+    type: string
+    description: The email address of the user.
+required:
+  - name
+  - email
+```
+
+## 特定 Agent 類型
+
+以下各節詳細介紹了每種 Agent 類型的獨特設定屬性。
+
+### AI Agent (`type: ai`)
+
+AIAgent 是最常見的類型，專為與語言模型進行通用互動而設計。
+
+```yaml ai-agent-example.yaml
+type: ai
+name: Customer Support AI
+instructions:
+  url: prompts/support-prompt.md
+input_key: customer_query
+output_key: response
+# 強制模型呼叫特定技能
+tool_choice: "sandbox"
+outputSchema: schemas/support-response.yaml
+skills:
   - sandbox.js
 ```
 
-#### 2. Image Agent (`type: "image"`)
+<x-field-group>
+  <x-field data-name="instructions" data-type="string | object | array" data-required="false">
+    <x-field-desc markdown>給 AI 模型的系統提示或指令。可以是一個簡單的字串、對外部檔案的引用 (`url`)，或是一個訊息物件的陣列 (`role`, `content`/`url`)。</x-field-desc>
+  </x-field>
+  <x-field data-name="inputKey" data-type="string" data-required="false">
+    <x-field-desc markdown>輸入物件中包含要傳送給模型的主要使用者訊息的鍵。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputKey" data-type="string" data-required="false">
+    <x-field-desc markdown>AI 的最終文字回應將放置在輸出物件中的這個鍵之下。</x-field-desc>
+  </x-field>
+  <x-field data-name="toolChoice" data-type="string" data-required="false">
+    <x-field-desc markdown>強制模型使用特定技能（工具）。該值必須與附加到 Agent 的技能名稱相符。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-專門用於根據提示生成圖片。
+### Team Agent (`type: team`)
 
--   **`instructions`**: (必填) 用於生成圖片的提示。
--   **`modelOptions`**: 針對圖片生成模型的特定選項字典。
+TeamAgent 會調度一組子 Agent（在 `skills` 下定義）來執行多步驟任務。
 
-#### 3. Team Agent (`type: "team"`)
+```yaml team-agent-example.yaml
+type: team
+name: Research and Write Team
+# Agent 將依序執行
+mode: sequential
+# 此團隊的輸出將是所有步驟的彙總輸出
+include_all_steps_output: true
+skills:
+  - url: agents/researcher.yaml
+  - url: agents/writer.yaml
+  - url: agents/editor.yaml
+```
 
-協調一組 Agent (技能) 共同完成一項任務。
+<x-field-group>
+  <x-field data-name="mode" data-type="string" data-required="false" data-default="sequential">
+    <x-field-desc markdown>團隊的執行模式。可以是 `sequential`（Agent 依序執行）或 `parallel`（Agent 並行執行）。</x-field-desc>
+  </x-field>
+  <x-field data-name="iterateOn" data-type="string" data-required="false">
+    <x-field-desc markdown>輸入物件中包含陣列的鍵。團隊將對陣列中的每個項目執行其工作流程。</x-field-desc>
+  </x-field>
+  <x-field data-name="reflection" data-type="object" data-required="false">
+    <x-field-desc markdown>設定一個自我修正循環，其中一個 `reviewer` Agent 會檢查輸出，並可以觸發重新執行，直到輸出被批准為止。</x-field-desc>
+  </x-field>
+</x-field-group>
 
--   **`mode`**: 處理模式，例如 `parallel` 或 `sequential`。
--   **`iterateOn`**: 使用技能處理時，從輸入中進行迭代的鍵。
--   **`reflection`**: 設定一個審查流程，由一個 `reviewer` Agent 批准或要求修改輸出。
+### Image Agent (`type: image`)
 
-#### 4. Transform Agent (`type: "transform"`)
+ImageAgent 專門用於使用圖像模型生成圖像。
 
-使用 JSONata 表達式轉換輸入資料。
+```yaml image-agent-example.yaml
+type: image
+name: Logo Generator
+instructions: "A minimalist, flat-design logo for a tech startup named 'Innovate'."
+# 將特定選項傳遞給圖像模型提供者
+model_options:
+  quality: hd
+  style: vivid
+```
 
--   **`jsonata`**: (必填) 一個包含要應用於輸入的 JSONata 表達式的字串。
+<x-field-group>
+  <x-field data-name="instructions" data-type="string | object" data-required="true">
+    <x-field-desc markdown>描述所需圖像的提示。與 AI Agent 不同，這是一個必填欄位。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>用於控制圖像生成的提供者特定選項的鍵值對映表（例如 `quality`、`style`、`size`）。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-#### 5. MCP Agent (`type: "mcp"`)
+### Transform Agent (`type: transform`)
 
-作為外部 Agent 或服務的用戶端。
+TransformAgent 使用 [JSONata](https://jsonata.org/) 表示式，以聲明方式對映、篩選或重組 JSON 資料，而無需編寫程式碼。
 
--   **`url`**: 外部 Agent 的 URL。
--   **`command`**: 要執行的 shell 命令。
+```yaml transform-agent-example.yaml
+type: transform
+name: User Formatter
+description: Extracts and formats user names from a list.
+jsonata: "payload.users.{'name': firstName & ' ' & lastName}"
+```
 
-#### 6. Function Agent (`type: "function"`)
+<x-field-group>
+  <x-field data-name="jsonata" data-type="string" data-required="true">
+    <x-field-desc markdown>要對輸入資料執行的 JSONata 表示式。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-在 JavaScript/TypeScript 檔案中以程式化方式定義。此類型在 JS/TS 檔案本身中指定，而不是在 YAML 中。
+## 總結
+
+透過 YAML 定義 Agent 提供了一種強大、聲明式的替代方案，以取代程式化定義。它實現了清晰的關注點分離，增強了可重用性，並簡化了 Agent 設定的管理。透過利用外部檔案來處理提示和結構定義，您可以建構複雜、模組化且可維護的 AI 系統。
+
+如需更多動手實作範例，請參閱 [進階主題](./developer-guide-advanced-topics.md) 部分的其他指南。

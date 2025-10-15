@@ -1,142 +1,135 @@
 # はじめに
 
-このガイドでは、AIGNE フレームワークをインストールし、わずか数分で実行するために必要なすべてを提供します。最後まで読み終える頃には、最初の AI 搭載 Agent を構築し、実行できるようになります。
+このガイドでは、AIGNE フレームワークを使用して開発環境をセットアップし、最初の AI Agent を実行するために必要な手順を説明します。このプロセスは30分以内に完了するように設計されており、フレームワークの基本的なワークフローを実践的かつハンズオンで紹介します。
 
-## AIGNE フレームワークとは？
+システムの前提条件、必要なパッケージのインストール、そして基本的な AI Agent の定義、設定、実行方法を示す、コピー＆ペーストですぐに使える完全な例について説明します。
 
-AIGNE フレームワーク \[ˈei dʒən] は、最新の AI 搭載アプリケーションの構築プロセスを簡素化し、加速させるために設計された関数型 AI アプリケーション開発フレームワークです。関数型プログラミング、強力な AI 機能、モジュール設計を組み合わせることで、スケーラブルで保守性の高いソリューションの作成を支援します。
+## 前提条件
 
-**主な特徴：**
+先に進む前に、お使いの開発環境が以下の要件を満たしていることを確認してください：
 
-*   **モジュール設計**: 開発効率を向上させ、メンテナンスを簡素化する明確な構造。
-*   **TypeScript サポート**: より良く、より安全な開発体験のための包括的な型定義。
-*   **複数の AI モデルのサポート**: OpenAI、Gemini、Claude などの主要な AI モデルを組み込みでサポートし、容易に拡張可能。
-*   **柔軟なワークフローパターン**: シーケンシャル、コンカレント、ルーティング、ハンドオフのワークフローパターンで複雑な操作を簡素化。
-*   **MCP プロトコルとの統合**: モデルコンテキストプロトコルを通じて外部システムとシームレスに統合。
+*   **Node.js**: バージョン 20.0 以上が必要です。
 
-## 1. 前提条件
-
-始める前に、お使いのシステムに Node.js がインストールされていることを確認してください。
-
-*   **Node.js**: バージョン 20.0 以降。
-
-ターミナルで次のコマンドを実行して、Node.js のバージョンを確認できます：
+お使いの Node.js のバージョンは、ターミナルで次のコマンドを実行して確認できます：
 
 ```bash
 node -v
 ```
 
-## 2. インストール
+## インストール
 
-お好みのパッケージマネージャーを使用して、コア AIGNE パッケージをインストールできます。
+まず、AIGNE のコアパッケージとモデルプロバイダーパッケージをインストールする必要があります。このガイドでは、公式の OpenAI モデルプロバイダーを使用します。
 
-### npm を使用する場合
+お好みのパッケージマネージャーを使用して、必要なパッケージをインストールしてください：
 
-```bash
-npm install @aigne/core
+<x-cards data-columns="3">
+  <x-card data-title="npm" data-icon="logos:npm-icon">
+    ```bash
+    npm install @aigne/core @aigne/openai
+    ```
+  </x-card>
+  <x-card data-title="yarn" data-icon="logos:yarn">
+    ```bash
+    yarn add @aigne/core @aigne/openai
+    ```
+  </x-card>
+  <x-card data-title="pnpm" data-icon="logos:pnpm">
+    ```bash
+    pnpm add @aigne/core @aigne/openai
+    ```
+  </x-card>
+</x-cards>
+
+さらに、OpenAI API キーが必要です。それを `OPENAI_API_KEY` という名前の環境変数として設定してください。
+
+```bash title=".env"
+OPENAI_API_KEY="sk-..."
 ```
 
-### yarn を使用する場合
+## クイックスタートの例
 
-```bash
-yarn add @aigne/core
-```
+この例では、シンプルな「アシスタント」Agent を作成して実行するまでの完全なプロセスを示します。
 
-### pnpm を使用する場合
+1.  `index.ts` という名前で新しい TypeScript ファイルを作成します。
+2.  次のコードをコピーしてファイルに貼り付けます。
 
-```bash
-pnpm add @aigne/core
-```
-
-## 3. 初めての AIGNE アプリケーション
-
-役立つアシスタント Agent を使って、シンプルな「Hello, World!」スタイルのアプリケーションを作成しましょう。
-
-#### ステップ 1: プロジェクトファイルの設定
-
-`index.ts` という名前の新しいファイルを作成します。
-
-#### ステップ 2: コードの追加
-
-この例では、AIGNE フレームワークの 3 つのコアコンポーネントである**モデル**、**Agent**、そして **AIGNE** を示します。
-
-*   **モデル**: Agent にパワーを供給する AI モデルのインスタンス（例：`OpenAIChatModel`）。
-*   **Agent**: AI の個性と指示の定義（例：`AIAgent`）。
-*   **AIGNE**: Agent を実行し、通信を処理するメインエグゼキューター。
-
-次のコードをコピーして `index.ts` ファイルに貼り付けます：
-
-```typescript
+```typescript index.ts icon=logos:typescript-icon
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
+// 1. AI モデルのインスタンス化
+// これにより、指定されたモデルを使用して OpenAI API への接続が作成されます。
+// API キーは OPENAI_API_KEY 環境変数から読み取られます。
+const model = new OpenAIChatModel({
+  model: "gpt-4o-mini",
+});
+
+// 2. AI Agent の定義
+// Agent は作業の単位です。この AIAgent は、
+// その人格とタスクを定義する指示で設定されます。
+const assistantAgent = AIAgent.from({
+  name: "Assistant",
+  instructions: "You are a helpful and friendly assistant.",
+});
+
+// 3. AIGNE のインスタンス化
+// AIGNE クラスは、Agent を管理・実行する中心的なオーケストレーターです。
+// Agent が使用するモデルで設定されます。
+const aigne = new AIGNE({ model });
+
 async function main() {
-  // 1. AI モデルインスタンスを作成
-  // これにより、AI プロバイダー（例：OpenAI）に接続します。
-  // API キーが環境変数として設定されていることを確認してください。
-  const model = new OpenAIChatModel({
-    apiKey: process.env.OPENAI_API_KEY,
-    model: process.env.DEFAULT_CHAT_MODEL || "gpt-4-turbo",
-  });
-
-  // 2. AI Agent を作成
-  // これにより、Agent のアイデンティティと目的を定義します。
-  const agent = AIAgent.from({
-    name: "Assistant",
-    instructions: "You are a helpful assistant.",
-  });
-
-  // 3. AIGNE を初期化
-  // これはすべてを統合するメインの実行エンジンです。
-  const aigne = new AIGNE({ model });
-
-  // 4. Agent との対話セッションを開始
-  const userAgent = aigne.invoke(agent);
-
-  // 5. Agent にメッセージを送信し、応答を取得
-  const response = await userAgent.invoke(
-    "Hello, can you help me write a short article?",
+  // 4. Agent の呼び出し
+  // invoke メソッドは、与えられた入力で Agent を実行します。
+  // フレームワークがモデルとのインタラクションを処理します。
+  const response = await aigne.invoke(
+    assistantAgent,
+    "Why is the sky blue?"
   );
 
+  // 5. レスポンスの出力
   console.log(response);
 }
 
 main();
 ```
 
-#### ステップ 3: API キーの設定
+### 例の実行
 
-スクリプトを実行する前に、OpenAI API キーを提供する必要があります。ターミナルで環境変数を設定することでこれを行うことができます。
-
-```bash
-export OPENAI_API_KEY="your-api-key-here"
-```
-
-#### ステップ 4: アプリケーションの実行
-
-`ts-node` のような TypeScript ランナーを使用してファイルを実行します。
+ターミナルからスクリプトを実行します。TypeScript を使用している場合は、`ts-node` のようなツールを使用できます。
 
 ```bash
 npx ts-node index.ts
 ```
 
-コンソールにアシスタント Agent からの役立つ応答が出力されるはずです！
+### 期待される出力
 
-## 仕組み：簡単な概要
+出力は、質問に対する Agent の応答が JSON オブジェクト形式で返されます。`message` フィールドの内容は、AI モデルによって生成されるため、毎回異なります。
 
-AIGNE フレームワークは、モジュール式で拡張可能に設計されています。`AIGNE` は、ユーザー、Agent、AI モデル間のインタラクションをオーケストレーションします。
+```json
+{
+  "message": "The sky appears blue because of a phenomenon called Rayleigh scattering..."
+}
+```
 
-<picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-dark.png" media="(prefers-color-scheme: dark)">
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne.png" alt="AIGNE アーキテクチャ図" />
-</picture>
+## コードの解説
 
-## 次のステップ
+この例は、AIGNE フレームワークのコアワークフローを表す4つの主要なステップで構成されています。
 
-これで、最初の AIGNE アプリケーションの構築と実行に成功しました。 अब आप और उन्नत सुविधाओं का पता लगाने के लिए तैयार हैं।
+1.  **モデルの初期化**: `OpenAIChatModel` のインスタンスが作成されます。このオブジェクトは、指定された OpenAI モデル（例：`gpt-4o-mini`）への直接のインターフェースとして機能します。認証には API キーが必要で、これは `OPENAI_API_KEY` 環境変数から自動的に取得されます。
 
-*   **コアコンセプトを深く理解する**: [AIGNE、Agent、モデル](./developer-guide-core-concepts.md) について深く理解します。
-*   **Agent の種類を探る**: [Agent の種類](./developer-guide-agents.md) セクションで構築できるさまざまな種類の特化された Agent について学びます。
-*   **ワークフローを簡素化する**: [シーケンシャルおよびパラレル](./developer-guide-agents-team-agent.md) 実行などのパターンをレビューして、複雑なマルチ Agent タスクをどのようにオーケストレーションするかを発見します。
-*   **完全なドキュメントを閲覧する**: 詳細なガイドと API リファレンスについては、完全な [AIGNE フレームワークドキュメント](https://www.arcblock.io/docs/aigne-framework) をご覧ください。
+2.  **Agent の定義**: 静的な `from` メソッドを使用して `AIAgent` が定義されます。これはフレームワークにおける基本的な作業単位です。その動作は `instructions` プロパティによって定義され、これはシステムプロンプトとして機能し、AI モデルの応答を誘導します。
+
+3.  **AIGNE のインスタンス化**: `AIGNE` クラスがインスタンス化されます。これはすべての Agent の実行エンジンおよびオーケストレーターとして機能します。コンストラクタに `model` インスタンスを渡すことで、この AIGNE インスタンスによって管理されるすべての Agent のデフォルトモデルを設定します。
+
+4.  **Agent の呼び出し**: `aigne.invoke()` メソッドが呼び出され、`assistantAgent` を実行します。最初の引数は実行する Agent、2番目の引数は入力メッセージです。フレームワークは、プロンプトと指示をモデルに送信し、応答を受信し、それを構造化された出力として返すという、リクエストの完全なライフサイクルを管理します。
+
+このシンプルな例は、モデル、Agent、および実行エンジンを設定・構成して強力な AI 駆動のアプリケーションを構築するという、フレームワークのモジュール性と宣言的な性質を示しています。
+
+## まとめ
+
+このガイドでは、環境のセットアップ、必要な AIGNE パッケージのインストール、そして機能する AI Agent の構築と実行を成功させました。モデルの定義、特定の指示を持つ Agent の作成、そして AIGNE を使用してユーザープロンプトでそれを呼び出すという基本的なワークフローを学びました。
+
+この基礎をもとに、より高度なトピックを探求する準備ができました。
+
+*   フレームワークの基本的な構成要素をより詳細に理解するには、[コアコンセプト](./developer-guide-core-concepts.md) のドキュメントに進んでください。
+*   さまざまな種類の特化された Agent とそのユースケースについて学ぶには、[Agent の種類](./developer-guide-agents.md) のセクションを参照してください。

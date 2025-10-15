@@ -1,168 +1,82 @@
-このガイドでは、AIGNE フレームワークをインストールし、わずか数分で最初の AI アプリケーションを実行するために必要なすべてを説明します。環境のセットアップ、必要なパッケージのインストール、そしてシンプルかつ強力なマルチ Agent ワークフローの構築手順を順を追って説明します。
+# 一般的なワークフロー
 
-## 1. 前提条件
+AIGNE フレームワークでは、単一の Agent が特定のタスクを実行できます。しかし、システムの真価は、複数の Agent が協力してより複雑な問題を解決するときに発揮されます。チームのメンバーのように、Agent は構造化された方法で連携するように組織化できます。これらの協力のパターンは「ワークフロー」と呼ばれます。
 
-開始する前に、お使いのシステムに Node.js がインストールされていることを確認してください。AIGNE フレームワークが正しく機能するには、最新バージョンの Node.js が必要です。
+ワークフローは、より大きな目標を達成するために、異なる Agent 間でタスクと情報がどのように流れるかを定義します。Agent をさまざまなパターンで配置することで、さまざまなビジネスニーズに対応する高度な自動化プロセスを作成できます。
 
-*   **Node.js**: バージョン 20.0 以上
+以下の図は、3つの基本的なワークフローパターンを示しています。
 
-ターミナルで次のコマンドを実行すると、Node.js のバージョンを確認できます。
+```d2
+direction: down
 
-```bash
-node -v
-```
-
-Node.js をインストールしていない、またはアップグレードが必要な場合は、`nvm` のようなバージョン管理ツールを使用するか、公式の [Node.js ウェブサイト](https://nodejs.org/) からダウンロードすることをお勧めします。
-
-## 2. インストール
-
-お好みのパッケージマネージャー (`npm`、`yarn`、または `pnpm`) を使用して、AIGNE フレームワークをプロジェクトに追加できます。
-
-### npm を使用する場合
-
-```bash
-npm install @aigne/core
-```
-
-### yarn を使用する場合
-
-```bash
-yarn add @aigne/core
-```
-
-### pnpm を使用する場合
-
-```bash
-pnpm add @aigne/core
-```
-
-このコマンドは、AI Agent とワークフローを作成するための基本的な構成要素を提供するコアパッケージをインストールします。
-
-## 3. 初めての AIGNE アプリケーション
-
-「ハンドオフ」ワークフローパターンを実証する簡単なアプリケーションを構築してみましょう。この例では、`AgentA` が最初のプロンプトを受け取り、その後、異なる個性を持つ `AgentB` に会話を引き継ぎます。
-
-この例では、Agent を動かすためのモデルプロバイダーも必要です。このガイドでは OpenAI を使用します。
-
-まず、OpenAI モデルパッケージをインストールします。
-
-```bash
-npm install @aigne/openai
-```
-
-次に、新しい TypeScript ファイル (例: `index.ts`) を作成し、次のコードを追加します。
-
-```ts
-import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-
-// 環境変数を読み込むため
-import * as dotenv from "dotenv";
-dotenv.config();
-
-// 1. AI モデルの設定
-// .env ファイルに OPENAI_API_KEY が設定されていることを確認してください
-const { OPENAI_API_KEY } = process.env;
-if (!OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY is not set in the environment variables.");
+Sequential-Tasks: {
+  label: "シーケンシャルタスク"
+  shape: rectangle
+  Agent-A: { label: "Agent A" }
+  Agent-B: { label: "Agent B" }
+  Agent-C: { label: "Agent C" }
 }
 
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-});
-
-// 2. 「ハンドオフ」スキルを定義
-// この関数は、AgentA から AgentB へ制御を移すための条件を定義します。
-function transferToB() {
-  return agentB;
+Parallel-Tasks: {
+  label: "パラレルタスク"
+  shape: rectangle
+  Initial-Task: { label: "初期タスク" }
+  Parallel-Agents: {
+    shape: rectangle
+    grid-columns: 3
+    Agent-A: { label: "Agent A" }
+    Agent-B: { label: "Agent B" }
+    Agent-C: { label: "Agent C" }
+  }
+  Combined-Result: { label: "結合された結果" }
 }
 
-// 3. Agent の定義
-const agentA = AIAgent.from({
-  name: "AgentA",
-  instructions: "You are a helpful agent. When the user asks to talk to agent b, use the transferToB skill.",
-  outputKey: "A",
-  skills: [transferToB], // ハンドオフスキルをアタッチ
-  inputKey: "message",
-});
-
-const agentB = AIAgent.from({
-  name: "AgentB",
-  instructions: "Only speak in Haikus.",
-  outputKey: "B",
-  inputKey: "message",
-});
-
-// 4. AIGNE フレームワークの初期化
-const aigne = new AIGNE({ model });
-
-// アプリケーションを実行するメイン関数
-async function main() {
-  // 5. AgentA とのセッションを開始
-  const userAgent = aigne.invoke(agentA);
-
-  // 6. 最初の対話: ハンドオフをトリガー
-  console.log("User: transfer to agent b");
-  const result1 = await userAgent.invoke({ message: "transfer to agent b" });
-  console.log("Agent:", result1);
-  // 期待される出力:
-  // {
-  //   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?",
-  // }
-
-  // 7. 2回目の対話: AgentB とチャット
-  // これでセッションは恒久的に AgentB とのものになります
-  console.log("\nUser: It's a beautiful day");
-  const result2 = await userAgent.invoke({ message: "It's a beautiful day" });
-  console.log("Agent:", result2);
-  // 期待される出力:
-  // {
-  //   B: "Sunshine warms the earth,  \nGentle breeze whispers softly,  \nNature sings with joy.  ",
-  // }
+Decision-Making: {
+  label: "意思決定"
+  shape: rectangle
+  Request: { label: "リクエスト" }
+  Manager-Agent: {
+    label: "Manager Agent"
+    shape: diamond
+  }
+  Specialized-Agents: {
+    shape: rectangle
+    grid-columns: 2
+    Agent-A: { label: "専門Agent A" }
+    Agent-B: { label: "専門Agent B" }
+  }
 }
 
-main().catch(console.error);
+Sequential-Tasks.Agent-A -> Sequential-Tasks.Agent-B: "結果"
+Sequential-Tasks.Agent-B -> Sequential-Tasks.Agent-C: "結果"
+
+Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-A
+Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-B
+Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-C
+
+Parallel-Tasks.Parallel-Agents.Agent-A -> Parallel-Tasks.Combined-Result
+Parallel-Tasks.Parallel-Agents.Agent-B -> Parallel-Tasks.Combined-Result
+Parallel-Tasks.Parallel-Agents.Agent-C -> Parallel-Tasks.Combined-Result
+
+Decision-Making.Request -> Decision-Making.Manager-Agent
+Decision-Making.Manager-Agent -> Decision-Making.Specialized-Agents.Agent-A: "タスクA"
+Decision-Making.Manager-Agent -> Decision-Making.Specialized-Agents.Agent-B: "タスクB"
 ```
 
-### コードの解説
+このガイドでは、最も一般的なワークフローを紹介します。これらのパターンを理解することで、Agent が複雑な多段階のプロセスをどのように自動化できるかを視覚化するのに役立ちます。
 
-1.  **AI モデルの設定**: `OpenAIChatModel` をインポートし、API キーで初期化します。API キーのような機密情報は、環境変数から読み込むのがベストプラクティスです。
-2.  **「ハンドオフ」スキルの定義**: `transferToB` 関数は *スキル* です。実行されると `agentB` の定義を返し、AIGNE にその Agent へ制御を移すべきであることを伝えます。
-3.  **Agent の定義**: `AIAgent.from()` を使用して、2つの異なる Agent を作成します。
-    *   `agentA` は最初の接点です。その `skills` 配列には `transferToB` 関数が含まれており、ハンドオフを実行できます。
-    *   `agentB` は特定の個性を持っています—俳句でのみ話します。
-4.  **AIGNE フレームワークの初期化**: `AIGNE` のインスタンスを作成し、Agent を動かすために使用するモデルを渡します。
-5.  **セッションの開始**: `aigne.invoke(agentA)` は、`agentA` から始まるステートフルなユーザーセッションを作成します。
-6.  **ハンドオフのトリガー**: 最初のメッセージ「transfer to agent b」は `agentA` の指示と一致し、`transferToB` スキルが実行されます。これにより、会話は恒久的に `agentB` に引き継がれます。出力キーは `B` であり、応答が `agentB` から来たことを示しています。
-7.  **AgentB とのチャット**: 2番目のメッセージは同じ `userAgent` セッションに送信されます。ハンドオフは既に発生しているため、`agentB` がメッセージを受け取り、指示に従って俳句で応答します。
+各ワークフローの詳細な説明を参照して、その特定のユースケースと利点についてさらに学んでください。
 
-## 4. コードの実行
+<x-cards data-columns="3">
+  <x-card data-title="シーケンシャルタスク" data-icon="lucide:list-ordered" data-href="/user-guide/common-workflows/sequential-tasks">
+    組み立てラインのように、Agent はタスクを次々と完了させ、その作業を次の Agent に渡します。これは、特定の順序で実行する必要があるプロセスに最適です。
+  </x-card>
+  <x-card data-title="パラレルタスク" data-icon="lucide:git-fork" data-href="/user-guide/common-workflows/parallel-tasks">
+    物事をより速く進めるために、複数の Agent が同時にジョブの異なる部分で作業できます。その後、個々の結果が結合され、完全なソリューションが形成されます。
+  </x-card>
+  <x-card data-title="意思決定" data-icon="lucide:git-merge" data-href="/user-guide/common-workflows/decision-making">
+    マネージャーのように、1つの Agent が受信リクエストを分析し、そのジョブを処理するのに最も適した専門 Agent にインテリジェントにルーティングできます。
+  </x-card>
+</x-cards>
 
-この例を実行するには、次の手順に従ってください。
-
-1.  **`.env` ファイルの作成**：プロジェクトのルートディレクトリに、OpenAI API キーを保存するための `.env` ファイルを作成します。
-    ```
-    OPENAI_API_KEY="your_openai_api_key_here"
-    ```
-
-2.  **`dotenv` と `ts-node` のインストール**：環境変数を管理し、TypeScript を直接実行するために、`dotenv` と `ts-node` をインストールします。
-    ```bash
-    npm install dotenv ts-node typescript
-    ```
-
-3.  **スクリプトの実行**：`ts-node` を使用してスクリプトを実行します。
-    ```bash
-    npx ts-node index.ts
-    ```
-
-Agent が対話し、ハンドオフを実行する様子がコンソールに出力されます。
-
-## 次のステップ
-
-おめでとうございます！これで、最初の AIGNE アプリケーションの構築と実行に成功しました。
-
-ここから、フレームワークのより高度な機能を探求できます。
-
-*   **主要な機能を発見する**: モジュール設計、マルチモデルサポート、コード実行機能について学びます。
-*   **ワークフローパターンを探る**: Sequential、Router、Concurrency のような他の強力なパターンを深く掘り下げ、より洗練されたアプリケーションを構築します。
-*   **API リファレンスを参照する**: 利用可能なすべてのクラス、メソッド、設定に関する詳細な情報を取得します。
+これらの基本的なパターンを組み合わせることで、特定のニーズに合わせた強力で自律的なシステムを構築できます。いずれかのカードをクリックして、各ワークフローがどのように機能するかを詳しく見てみましょう。

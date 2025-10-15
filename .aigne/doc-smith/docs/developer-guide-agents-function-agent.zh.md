@@ -1,320 +1,245 @@
-本文档全面介绍了 `Agent` 类，它是 AIGNE 框架中的基本构建模块。您将学习如何创建、配置和使用 Agent 来执行各种任务。
+# Function Agent
 
-## Agent 类
+`FunctionAgent` 提供了一种封装现有 TypeScript 或 JavaScript 函数的直接方法，从而将它们提升为 AIGNE 框架内的一等 Agent。这使得将自定义业务逻辑、外部 API 交互或任何任意代码无缝集成到 Agent 工作流中成为可能，无需编写大量样板代码。
 
-`Agent` 是 AIGNE 系统中所有 Agent 的基类。它提供了一个强大的框架，用于定义处理逻辑、管理输入/输出模式以及与其他组件交互。通过扩展 `Agent` 类，您可以创建具有特定功能的自定义 Agent。
+通过包装一个函数，`FunctionAgent` 使其能够完全参与到 Agent 生态系统中。它可以像任何其他 Agent 一样被调用，可以作为一项技能整合到 `AIAgent` 或 `TeamAgent` 中，并与 AIGNE 上下文和生命周期钩子进行交互。这使其成为连接传统编程逻辑与人工智能驱动流程的重要组件。
 
-### 主要职责
-
--   **处理数据**：Agent 接收结构化输入，执行操作，并生成结构化输出。
--   **数据验证**：它们使用 Zod 模式来确保输入和输出数据符合预期格式。
--   **通信**：Agent 通过消息传递上下文相互之间以及与系统进行交互。
--   **状态管理**：它们可以维护过去交互的记忆，为未来的行为提供信息。
--   **可扩展性**：Agent 可以将其他 Agent 用作“技能”来委托任务并构建复杂的工作流。
-
-### 类图
-
-下图说明了 `Agent` 类的架构及其与系统中其他核心组件的关系。
+此图展示了 `FunctionAgent` 的创建和调用流程，从提供源函数到接收最终输出。
 
 ```d2
 direction: down
 
-Agent: {
-  shape: class
-  "-inputSchema: ZodSchema"
-  "-outputSchema: ZodSchema"
-  "-skills: Agent[]"
-  "-memory: Memory"
-  "+run(input, context): any"
+Zod-Library: {
+  label: "Zod 库"
+  shape: rectangle
+  style.fill: "#f0f0f0"
 }
 
-ZodSchema: {
-  shape: class
-  "+parse(data): any"
+External-API: {
+  label: "外部 API\n（例如 REST、GraphQL）"
+  shape: cylinder
 }
 
-Context: {
-  shape: class
-  "..."
+Developers-Code: {
+  label: "开发者的代码"
+  shape: rectangle
+  style: {
+    stroke: "#888"
+    stroke-width: 2
+    stroke-dash: 4
+  }
+
+  Custom-Logic: {
+    label: "自定义逻辑\n（JS/TS 函数）"
+    shape: rectangle
+  }
+
+  Agent-Config: {
+    label: "Agent 配置对象"
+    shape: rectangle
+  }
 }
 
-Memory: {
-  shape: class
-  "..."
+AIGNE-Framework: {
+  label: "AIGNE 框架"
+  shape: rectangle
+
+  FunctionAgent: {
+    label: "FunctionAgent"
+    shape: rectangle
+
+    from-method: {
+      label: "from()"
+      shape: oval
+    }
+
+    invoke-method: {
+      label: "invoke()"
+      shape: oval
+    }
+  }
 }
 
-Agent -> Agent: "用作技能" {
-  style.stroke-dash: 4
+Developers-Code.Custom-Logic -> AIGNE-Framework.FunctionAgent.from-method: "1a. 提供函数"
+Developers-Code.Agent-Config -> AIGNE-Framework.FunctionAgent.from-method: "1b. 提供配置"
+Zod-Library -> Developers-Code.Agent-Config: {
+  label: "定义模式"
+  style.stroke-dash: 2
 }
+AIGNE-Framework.FunctionAgent.from-method -> AIGNE-Framework.FunctionAgent: "2. 创建实例"
 
-Agent -> ZodSchema: "使用...进行验证"
-
-Agent -> Context: "通过...进行通信"
-
-Agent -> Memory: "使用...管理状态"
+Developers-Code -> AIGNE-Framework.FunctionAgent.invoke-method: "3. 使用输入调用"
+AIGNE-Framework.FunctionAgent.invoke-method -> Developers-Code.Custom-Logic: "4. 执行 'process' 逻辑"
+Developers-Code.Custom-Logic -> External-API: "5. （可选）获取数据"
+External-API -> Developers-Code.Custom-Logic: "6. 返回数据"
+Developers-Code.Custom-Logic -> AIGNE-Framework.FunctionAgent.invoke-method: "7. 返回结果"
+AIGNE-Framework.FunctionAgent.invoke-method -> Developers-Code: "8. 返回最终输出"
 ```
 
-## 创建 Agent
+## 关键概念
 
-创建 Agent 主要有两种方式：扩展 `Agent` 类，或者对于更简单的、基于函数的 Agent，使用 `FunctionAgent`。
+`FunctionAgent` 是 `Agent` 类的一个专门实现，它将其核心处理逻辑委托给用户提供的函数。此 Agent 的主要构造函数是静态方法 `FunctionAgent.from()`，它简化了其实例化过程。
 
-### 扩展 `Agent` 类
+`FunctionAgent` 可以通过两种方式创建：
 
-对于具有特定逻辑的复杂 Agent，您可以扩展 `Agent` 基类并实现抽象的 `process` 方法。
+1.  **直接从函数创建：** 将一个同步或异步函数传递给 `FunctionAgent.from()`。Agent 将从函数定义中推断属性，例如其名称。
+2.  **从配置对象创建：** 为了更明确的控制，提供一个选项对象，该对象指定 `process` 函数以及其他标准 Agent 配置，如 `name`、`description`、`inputSchema` 和 `outputSchema`。
 
-**核心概念：**
+这种设计为快速、临时的集成以及开发健壮、定义明确的 Agent 组件提供了灵活性。
 
--   **`constructor(options)`**：使用名称、描述、模式和技能等配置来初始化 Agent。
--   **`process(input, options)`**：Agent 的核心逻辑。您在此处定义 Agent 的实际*功能*。它接收输入和调用选项（包括上下文），并且必须返回一个结果。
+## 创建 Function Agent
 
-**示例：一个简单的计算器 Agent**
+创建 `FunctionAgent` 的标准方法是通过 `FunctionAgent.from()` 工厂方法，该方法接受一个函数或一个配置对象。
 
-```typescript
-import { Agent, AgentOptions, AgentInvokeOptions, Message } from "@aigne/core";
+### 从简单函数创建
+
+任何标准函数都可以直接被包装。AIGNE 框架将使用该函数的名称作为 Agent 的名称。这种方法最适合简单、自包含的操作。
+
+```javascript 包装一个简单函数 icon=logos:javascript
+import { FunctionAgent } from "@aigne/core";
+
+// 定义一个简单的同步函数
+function add({ a, b }) {
+  return { result: a + b };
+}
+
+// 将函数包装成一个 agent
+const addAgent = FunctionAgent.from(add);
+
+console.log(addAgent.name); // 输出: 'add'
+```
+
+该函数接收 Agent 的输入对象作为其第一个参数，并期望返回一个构成 Agent 输出的对象。
+
+### 使用完整配置
+
+对于更复杂的集成，应提供一个完整的配置对象。这允许定义用于验证的输入/输出模式、包含描述以及分配自定义名称。推荐使用此方法来创建健壮且可重用的 Agent。
+
+```javascript 带有配置的 Function Agent icon=logos:javascript
+import { FunctionAgent } from "@aigne/core";
 import { z } from "zod";
 
-// 定义输入和输出消息的结构
-interface CalculatorInput extends Message {
-  operation: "add" | "subtract";
-  a: number;
-  b: number;
-}
-
-interface CalculatorOutput extends Message {
-  result: number;
-}
-
-// 创建自定义 Agent
-class CalculatorAgent extends Agent<CalculatorInput, CalculatorOutput> {
-  constructor(options: AgentOptions<CalculatorInput, CalculatorOutput> = {}) {
-    super({
-      // 定义 Agent 元数据
-      name: "Calculator",
-      description: "Performs basic arithmetic operations.",
-      
-      // 定义用于验证的 Zod 模式
-      inputSchema: z.object({
-        operation: z.enum(["add", "subtract"]),
-        a: z.number(),
-        b: z.number(),
-      }),
-      outputSchema: z.object({
-        result: z.number(),
-      }),
-      
-      ...options,
-    });
-  }
-
-  // 实现核心处理逻辑
-  async process(input: CalculatorInput, options: AgentInvokeOptions): Promise<CalculatorOutput> {
-    let result: number;
-    
-    if (input.operation === "add") {
-      result = input.a + input.b;
-    } else {
-      result = input.a - input.b;
+const fetchUserAgent = FunctionAgent.from({
+  name: "FetchUser",
+  description: "Fetches user data from a placeholder API.",
+  inputSchema: z.object({
+    userId: z.number().describe("The ID of the user to fetch."),
+  }),
+  outputSchema: z.object({
+    id: z.number(),
+    name: z.string(),
+    email: z.string().email(),
+  }),
+  process: async ({ userId }) => {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch user data.");
     }
-    
-    return { result };
-  }
-}
-```
-
-### 使用 `FunctionAgent`
-
-对于更简单的无状态任务，`FunctionAgent` 提供了一种便捷的方式，可以从单个函数创建一个 Agent，而无需定义类的样板代码。
-
-**示例：一个 JavaScript 代码评估器**
-
-此 Agent 接收一个 JavaScript 代码字符串，在一个安全的沙箱中对其进行评估，并返回结果。
-
-```javascript
-import { FunctionAgent } from "@aigne/core";
-import vm from "node:vm";
-
-// 包含 Agent 逻辑的函数
-async function evaluateJs({ code }) {
-  const sandbox = {};
-  const context = vm.createContext(sandbox);
-  const result = vm.runInContext(code, context, { displayErrors: true });
-  return { result };
-}
-
-// 分别定义元数据和模式
-evaluateJs.description = "此 Agent 用于评估 JavaScript 代码。";
-evaluateJs.input_schema = {
-  type: "object",
-  properties: {
-    code: { type: "string", description: "要评估的 JavaScript 代码" },
+    const data = await response.json();
+    return {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+    };
   },
-  required: ["code"],
-};
-evaluateJs.output_schema = {
-  type: "object",
-  properties: {
-    result: { type: "any", description: "评估代码的结果" },
-  },
-  required: ["result"],
-};
-
-// 从函数创建 Agent
-const sandboxAgent = new FunctionAgent({
-  name: "Sandbox",
-  description: evaluateJs.description,
-  inputSchema: evaluateJs.input_schema,
-  outputSchema: evaluateJs.output_schema,
-  process: evaluateJs,
 });
 ```
 
-## 调用 Agent
+在此示例中，定义了 `zod` 模式以确保输入 `userId` 是一个数字，并且输出符合指定的结构。
 
-要执行一个 Agent，您需要使用 `invoke` 方法。它接收输入消息和一个可选的选项对象。Agent 的执行由一个 `Context` 对象管理，该对象处理消息传递、事件触发和资源跟踪。
+## 调用 Function Agent
 
-### 常规响应与流式响应
+创建的 `FunctionAgent` 使用标准的 `.invoke()` 方法进行调用，与所有其他 Agent 类型保持一致。
 
-`invoke` 方法可以在两种模式下运行：
+```javascript 调用 Agent icon=logos:javascript
+async function main() {
+  // 使用前一个示例中的简单 'add' agent
+  const result = await addAgent.invoke({ a: 10, b: 5 });
+  console.log(result); // { result: 15 }
 
-1.  **常规（默认）**：该方法返回一个 `Promise`，一旦 Agent 完成处理，该 Promise 将解析为最终的、完整的输出对象。
-2.  **流式**：通过在选项中设置 `streaming: true`，该方法会返回一个 `ReadableStream`。您可以从该流中读取由 Agent 生成的数据块，从而实现实时更新。
-
-**示例：调用计算器 Agent**
-
-```typescript
-const calculator = new CalculatorAgent();
-
-// 常规调用
-async function runCalculation() {
-  const output = await calculator.invoke({
-    operation: "add",
-    a: 10,
-    b: 5,
-  });
-  
-  console.log("Result:", output.result); // 输出: Result: 15
+  // 使用配置好的 'FetchUser' agent
+  const user = await fetchUserAgent.invoke({ userId: 1 });
+  console.log(user); 
+  // { id: 1, name: 'Leanne Graham', email: 'Sincere@april.biz' }
 }
 
-runCalculation();
+main();
 ```
 
-**示例：一个流式 Agent**
+`invoke` 方法管理执行生命周期，包括根据模式（如果提供）进行输入验证、执行底层函数以及根据输出模式验证结果。
 
-```typescript
-import { Agent, textDelta } from "@aigne/core";
+## 高级用法
 
-class StreamingEchoAgent extends Agent<{text: string}, {response: string}> {
-  // ... 构造函数 ...
-  
-  async *process(input) {
-    const words = input.text.split(" ");
-    for (const word of words) {
-      // 为每个单词生成一个增量块
-      yield textDelta({ response: word + " " });
-      await new Promise(resolve => setTimeout(resolve, 100)); // 模拟工作
+### 流式响应
+
+`FunctionAgent` 通过使用异步生成器支持流式响应。`process` 函数可以定义为一个 `async function*`，它 `yield`s `AgentResponseChunk` 对象，从而实现增量数据传输。
+
+```javascript 使用异步生成器进行流式处理 icon=logos:javascript
+import { FunctionAgent, jsonDelta, textDelta } from "@aigne/core";
+import { z } from "zod";
+
+const streamNumbersAgent = FunctionAgent.from({
+  name: "StreamNumbers",
+  inputSchema: z.object({
+    count: z.number().int().positive(),
+  }),
+  outputSchema: z.object({
+    finalCount: z.number(),
+    message: z.string(),
+  }),
+  process: async function* ({ count }) {
+    for (let i = 1; i <= count; i++) {
+      yield textDelta({ message: `Processing number ${i}... ` });
+      await new Promise((resolve) => setTimeout(resolve, 200)); // 模拟工作
     }
-  }
-}
-
-const echoAgent = new StreamingEchoAgent();
-
-// 流式调用
-async function runStreaming() {
-  const stream = await echoAgent.invoke(
-    { text: "This is a streaming test" },
-    { streaming: true }
-  );
-  
-  const reader = stream.getReader();
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    
-    // 在每个数据块到达时进行处理
-    if (value.delta?.text?.response) {
-      process.stdout.write(value.delta.text.response);
-    }
-  }
-}
-// 输出将逐词显示：“This is a streaming test ”
-runStreaming();
-```
-
-## Agent 生命周期和钩子
-
-Agent 的执行遵循一个定义的生命周期，您可以使用 `hooks`（钩子）来介入关键时刻。钩子允许您添加日志记录、监控或自定义逻辑，而无需修改 Agent 的核心实现。
-
-### 调用流程图
-
-此图显示了 Agent 调用期间的事件序列。
-
-```mermaid
-flowchart TD
-    A["调用 invoke()"] --> B{调用 onStart 钩子};
-    B --> C{验证输入模式};
-    C --> D["preprocess()"];
-    D --> E["process()"];
-    E --> F["postprocess()"];
-    F --> G{验证输出模式};
-    G --> H{调用 onSuccess/onError 钩子};
-    H --> I{调用 onEnd 钩子};
-    I --> J[返回最终输出];
-    
-    subgraph 错误处理
-        C -- 无效 --> H;
-        E -- 抛出异常 --> H;
-        G -- 无效 --> H;
-    end
-```
-
-### 关键钩子
-
--   `onStart`：在任何处理开始之前调用。可以修改输入。
--   `onSuccess`：在 Agent 成功生成输出后调用。
--   `onError`：如果在处理过程中抛出错误则调用。
--   `onEnd`：总是在调用结束时调用，无论成功还是失败。
--   `onSkillStart` / `onSkillEnd`：在技能被调用之前和之后调用。
-
-**示例：添加日志钩子**
-
-```typescript
-const calculator = new CalculatorAgent({
-  hooks: [{
-    onStart: async ({ agent, input }) => {
-      console.log(`[${agent.name}] 开始处理，输入为：`, input);
-    },
-    onSuccess: async ({ agent, output }) => {
-      console.log(`[${agent.name}] 成功，输出为：`, output);
-    },
-    onError: async ({ agent, error }) => {
-      console.error(`[${agent.name}] 失败，错误为：`, error);
-    },
-  }]
+    yield jsonDelta({ finalCount: count });
+    yield textDelta({ message: "Done." });
+  },
 });
 
-await calculator.invoke({ operation: "subtract", a: 10, b: 20 });
-// 日志：
-// [Calculator] Starting with input: { operation: 'subtract', a: 10, b: 20 }
-// [Calculator] Succeeded with output: { result: -10 }
+async function runStream() {
+  const stream = await streamNumbersAgent.invoke({ count: 5 }, { streaming: true });
+  for await (const chunk of stream) {
+    console.log(chunk);
+  }
+}
+
+runStream();
 ```
 
-## 核心属性和方法
+对于需要提供有关 Agent 进度的实时反馈的长时间运行任务，此功能特别有用。
 
-这是 `Agent` 类最重要属性和方法的参考。
+## 配置
 
-| 成员 | 类型 | 描述 |
-| --- | --- | --- |
-| `name` | `string` | Agent 的标识符。默认为类名。 |
-| `description` | `string` | 对 Agent 用途的可读描述。 |
-| `inputSchema` | `ZodType` | 用于验证输入消息的 Zod 模式。 |
-| `outputSchema` | `ZodType` | 用于验证输出消息的 Zod 模式。 |
-| `skills` | `Agent[]` | 该 Agent 可调用以委托任务的其他 Agent 的列表。 |
-| `memory` | `MemoryAgent` | 一个可选的 Memory Agent，用于存储和检索过去交互的信息。 |
-| `hooks` | `AgentHooks[]` | 用于拦截 Agent 生命周期事件的钩子对象数组。 |
-| `retryOnError` | `boolean \| object` | 用于在失败时自动重试 Agent 的 `process` 方法的配置。 |
-| `guideRails` | `GuideRailAgent[]` | 一组特殊的 Agent，可以检查和验证 Agent 的输入和输出，以强制执行策略或规则。 |
-| `invoke()` | `function` | **（公共方法）** 使用给定输入执行 Agent。返回最终结果或流。 |
-| `process()` | `function` | **（抽象方法）** 需要由子类实现的核心逻辑。 |
-| `invokeSkill()` | `function` | **（受保护方法）** 用于调用已添加为技能的另一个 Agent 的辅助方法。 |
-| `addSkill()` | `function` | 将一个或多个 Agent 添加到此 Agent 的技能列表中。 |
-| `shutdown()` | `function` | 清理资源，例如取消订阅主题。 |
+`FunctionAgent` 通过传递给 `FunctionAgent.from` 或其构造函数的配置对象进行初始化。以下是其配置特有的参数。
+
+<x-field-group>
+  <x-field data-name="process" data-type="FunctionAgentFn" data-required="true">
+    <x-field-desc markdown>实现 Agent 逻辑的函数。它接收输入消息和调用选项，并返回处理结果。这可以是一个同步函数、一个返回 Promise 的异步函数，或用于流式处理的异步生成器。</x-field-desc>
+  </x-field>
+  <x-field data-name="name" data-type="string" data-required="false">
+    <x-field-desc markdown>Agent 的唯一名称，用于识别和日志记录。如果未提供，则默认为 `process` 函数的名称。</x-field-desc>
+  </x-field>
+  <x-field data-name="description" data-type="string" data-required="false">
+    <x-field-desc markdown>对 Agent 功能的人类可读描述。这对于文档记录以及其他 Agent 理解其能力很有用。</x-field-desc>
+  </x-field>
+  <x-field data-name="inputSchema" data-type="ZodObject" data-required="false">
+    <x-field-desc markdown>用于验证输入消息结构和类型的 Zod 模式。如果验证失败，Agent 将在调用 `process` 函数之前抛出错误。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputSchema" data-type="ZodObject" data-required="false">
+    <x-field-desc markdown>用于验证 `process` 函数返回的输出消息结构和类型的 Zod 模式。如果验证失败，则会抛出错误。</x-field-desc>
+  </x-field>
+</x-field-group>
+
+基础 `AgentOptions` 中的所有其他属性也可用。有关完整列表，请参阅 [Agent 文档](./developer-guide-core-concepts-agents.md)。
+
+## 总结
+
+`FunctionAgent` 是一个多功能工具，用于将传统代码集成到 AIGNE 框架中，充当一座桥梁，允许任何 JavaScript 或 TypeScript 函数作为标准 Agent 运行。
+
+-   **简单性：** 使用 `FunctionAgent.from()` 以最少的代码包装现有函数。
+-   **集成：** 将传统的业务逻辑、计算或外部 API 调用无缝地整合到 Agent 工作流中。
+-   **验证：** 通过使用 Zod 定义输入和输出模式来强制执行数据契约并提高可靠性。
+-   **灵活性：** 支持同步函数、异步 Promise 和使用异步生成器的流式处理。
+
+通过利用 `FunctionAgent`，开发者可以将传统代码的确定性和可靠性与 AI Agent 的动态能力相结合，构建更强大、更稳健的应用程序。要协调包括 Function Agent 在内的多个 Agent，请参阅有关 [Team Agent](./developer-guide-agents-team-agent.md) 的文档。

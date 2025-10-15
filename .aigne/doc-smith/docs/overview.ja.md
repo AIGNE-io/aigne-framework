@@ -1,235 +1,132 @@
-このドキュメントでは、AIGNE フレームワークの中核的なオーケストレーターである `AIGNE` クラスについて詳しく解説します。`AIGNE` インスタンスを作成、設定、使用して、Agent の管理、メッセージパッシングの処理、複雑な AI 駆動型アプリケーションの構築方法を学びます。
+# 概要
 
-### はじめに
+AIGNE フレームワークは、機能的な AI アプリケーション開発フレームワークであり、スケーラブルなエージェント型 AI アプリケーションの構築プロセスを簡素化および高速化するために設計されています。関数型プログラミングの概念、堅牢な人工知能機能、モジュラー設計を組み合わせ、開発者に構造化された環境を提供します。
 
-`AIGNE` クラスは、フレームワークの中心的なコンポーネントであり、複数の Agent とその相互作用をオーケストレーションするように設計されています。これは主要な実行エンジンとして機能し、Agent のライフサイクルを管理し、メッセージキューを介した通信を促進し、Agent ワークフローを呼び出すための統一されたエントリーポイントを提供します。
+このドキュメントでは、AIGNE フレームワークのアーキテクチャ、コアコンポーネント、および主要な機能の概要を説明します。また、技術的な背景や目的に応じて適切なドキュメントパスに誘導するナビゲーションガイドとしても機能します。
 
-`AIGNE` クラスの主な責務は次のとおりです。
--   **Agent 管理**: アプリケーションを構成する Agent の読み込み、追加、管理。
--   **実行コンテキスト**: 各ワークフローに対して分離されたコンテキストを作成し、状態の管理と制限の適用を行います。
--   **呼び出し**: Agent と対話するための柔軟な `invoke` メソッドを提供し、標準応答とストリーミング応答の両方をサポートします。
--   **メッセージパッシング**: Agent 間の疎結合な通信のために、発行/購読システムを提供します。
--   **リソース管理**: Agent と関連リソースの正常なシャットダウンを保証します。
+## コアアーキテクチャ
 
-### アーキテクチャ概要
-
-`AIGNE` クラスはフレームワークの中心に位置し、さまざまなコンポーネントを調整して複雑なタスクを実行します。次の図は、アーキテクチャにおけるその中心的な役割を示しています。
+このフレームワークは、`AIGNE` として知られる中央オーケストレーターを中心にアーキテクチャが設計されており、`Agents` と呼ばれる様々な特化コンポーネントのライフサイクルとインタラクションを管理します。Agent は作業の基本単位であり、特定のタスクを実行するように設計されています。複雑なワークフローを処理するために、チームに編成することができます。
 
 ```d2
 direction: down
-
-User-Application: {
-  label: "ユーザーアプリケーション"
-  shape: rectangle
+style: {
+  font-size: 14
 }
 
-AIGNE-Framework: {
-  label: "AIGNE フレームワーク"
+AIGNE: {
+  label: "AIGNE"
+  tooltip: "Agent とワークフローをオーケストレーションする中央実行エンジン。"
+  shape: hexagon
+  style: {
+    fill: "#F0F4EB"
+    stroke: "#C2D7A7"
+    stroke-width: 2
+  }
+}
+
+Models: {
+  label: "AI モデル"
+  tooltip: "外部の言語モデルや画像モデル（例：OpenAI、Anthropic）とのインターフェース。"
+  shape: cylinder
+  style: {
+    fill: "#FEF7E8"
+    stroke: "#F7D8A3"
+    stroke-width: 2
+  }
+}
+
+Agents: {
+  shape: package
+  label: "Agents"
+  tooltip: "タスクを実行する特化された作業単位。"
+  style: {
+    fill: "#EBF5FB"
+    stroke: "#AED6F1"
+    stroke-width: 2
+  }
+
+  AIAgent: {
+    label: "AI Agent"
+    tooltip: "言語モデルと対話します。"
+  }
+  TeamAgent: {
+    label: "Team Agent"
+    tooltip: "複数の Agent をオーケストレーションします。"
+  }
+  FunctionAgent: {
+    label: "Function Agent"
+    tooltip: "カスタムコードをラップします。"
+  }
+  OtherAgents: {
+    label: "..."
+    tooltip: "ImageAgent、MCPAgent などの他の特化 Agent。"
+  }
+}
+
+Skills: {
+  label: "スキル＆ツール"
+  tooltip: "Agent が利用できる再利用可能な関数または外部ツール。"
   shape: rectangle
   style: {
-    stroke: "#888"
+    fill: "#F4ECF7"
+    stroke: "#D7BDE2"
     stroke-width: 2
-    stroke-dash: 4
-  }
-
-  AIGNE: {
-    label: "AIGNE クラス\n(コアオーケストレーター)"
-    icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-  }
-
-  Managed-Components: {
-    grid-columns: 2
-
-    Agents: {
-      label: "管理対象 Agent"
-      shape: rectangle
-      Agent-A: "Agent A"
-      Agent-B: "Agent B"
-      Agent-C: "..."
-    }
-
-    Message-Queue: {
-      label: "メッセージキュー\n(Pub/Sub)"
-      shape: queue
-    }
   }
 }
 
-User-Application -> AIGNE-Framework.AIGNE: "invoke()"
-AIGNE-Framework.AIGNE -> AIGNE-Framework.Managed-Components.Agents: "Agent 管理"
-AIGNE-Framework.AIGNE -> AIGNE-Framework.Managed-Components.Message-Queue: "メッセージパッシング"
-AIGNE-Framework.AIGNE -> AIGNE-Framework.AIGNE: "実行コンテキストの作成"
-AIGNE-Framework.Managed-Components.Agents.Agent-A <-> AIGNE-Framework.Managed-Components.Message-Queue: "通信"
-
+AIGNE -> Agents: 管理＆呼び出し
+Agents -> Models: 利用
+Agents -> Skills: 使用
 ```
 
-### インスタンスの作成
+-   **AIGNE**: Agent のライフサイクル管理、インタラクションのオーケストレーション、および全体的な実行フローの処理を担当する中央実行エンジンです。モデル、Agent、スキルを含む構成でインスタンス化されます。
+-   **Agents**: フレームワークの基本的な構成要素です。Agent は特定のタスクを実行する自律的なユニットです。このフレームワークは、言語モデルと対話するための `AIAgent`、複数の Agent を調整するための `TeamAgent`、カスタムコードを実行するための `FunctionAgent` など、いくつかの特化された Agent タイプを提供します。
+-   **モデル**: OpenAI、Anthropic、Google などの外部 AI モデルプロバイダーとインターフェースする抽象化レイヤーです。これらは Agent によって、大規模言語モデル（LLM）や画像生成モデルの能力を活用するために使用されます。
+-   **スキル**: Agent にアタッチしてその機能を拡張できる、再利用可能な能力で、多くの場合、関数や他の Agent として表現されます。
 
-`AIGNE` インスタンスは、主に2つの方法で作成できます。コンストラクタを直接使用する方法と、ファイルシステムから設定を読み込む方法です。
+## 主な機能
 
-#### 1. コンストラクタの使用
+AIGNE フレームワークは、高度な AI アプリケーションの開発をサポートするための包括的な機能セットを備えています。
 
-最も直接的な方法は、`AIGNEOptions` オブジェクトを使用してクラスをインスタンス化することです。これにより、グローバルモデル、Agent、スキルなど、エンジンのすべての側面をプログラムで定義できます。
+<x-cards data-columns="2">
+  <x-card data-title="モジュラー設計" data-icon="lucide:blocks">
+    明確なモジュラー構造により、開発者はコードを効果的に整理でき、開発効率の向上とメンテナンスの簡素化が実現します。
+  </x-card>
+  <x-card data-title="複数 AI モデルのサポート" data-icon="lucide:bot">
+    OpenAI、Google、Anthropic などの主流 AI モデルを幅広く組み込みでサポートし、追加モデルをサポートするための拡張可能な設計を備えています。
+  </x-card>
+  <x-card data-title="柔軟なワークフローパターン" data-icon="lucide:git-merge">
+    シーケンシャル、コンカレント、ルーティングなど、様々なワークフローパターンをネイティブにサポートし、複雑なアプリケーション要件に対応します。
+  </x-card>
+  <x-card data-title="TypeScript のサポート" data-icon="lucide:file-type">
+    包括的な TypeScript の型定義を提供し、型安全性を確保し、全体的な開発者体験を向上させます。
+  </x-card>
+  <x-card data-title="コード実行" data-icon="lucide:terminal-square">
+    安全なサンドボックス内で動的に生成されたコードの実行をサポートし、強力な自動化機能を可能にします。
+  </x-card>
+  <x-card data-title="MCP プロトコル統合" data-icon="lucide:plug-zap">
+    モデルコンテキストプロトコル（MCP）を介して、外部システムやサービスとシームレスに統合します。
+  </x-card>
+</x-cards>
 
-**パラメータ (`AIGNEOptions`)**
+## 本ドキュメントの使い方
 
-| パラメータ | 型 | 説明 |
-| :--- | :--- | :--- |
-| `name` | `string` | AIGNE インスタンスの名前。 |
-| `description` | `string` | インスタンスの目的を説明する記述。 |
-| `model` | `ChatModel` | 特定のモデルが割り当てられていないすべての Agent が使用するグローバルモデル。 |
-| `imageModel` | `ImageModel` | 画像関連タスク用のオプションのグローバル画像モデル。 |
-| `skills` | `Agent[]` | インスタンスで利用可能なスキル Agent のリスト。 |
-| `agents` | `Agent[]` | インスタンスによって管理される主要な Agent のリスト。 |
-| `limits` | `ContextLimits` | タイムアウトや最大トークン数など、実行コンテキストの使用制限。 |
-| `observer` | `AIGNEObserver` | 監視とロギングのためのオブザーバー。 |
+様々なニーズに対応するため、このドキュメントは主に2つのパスに分かれています。ご自身の役割や目標に最も合ったパスを選択してください。
 
-**例**
+<x-cards data-columns="2">
+  <x-card data-title="開発者ガイド" data-icon="lucide:code" data-href="/developer-guide/getting-started" data-cta="ビルドを開始">
+    エンジニアおよび開発者向け。このガイドでは、技術的な詳細、コードファーストの例、API リファレンスなど、AIGNE フレームワークでエージェント型アプリケーションをビルド、テスト、デプロイするために必要なすべてを提供します。
+  </x-card>
+  <x-card data-title="ユーザーガイド" data-icon="lucide:user" data-href="/user-guide" data-cta="コンセプトを学ぶ">
+    非技術系のユーザー、プロダクトマネージャー、ビジネス関係者向け。このガイドでは、AI Agent とワークフローのコアコンセプトを平易な言葉で説明し、専門用語を使わずに、潜在的なアプリケーションやビジネス成果に焦点を当てています。
+  </x-card>
+</x-cards>
 
-```typescript
-import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+## まとめ
 
-// 1. モデルインスタンスを作成
-const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: "gpt-4-turbo",
-});
+この概要では、AIGNE フレームワーク、そのコアアーキテクチャ、および主な機能を紹介しました。このフレームワークは、最新のエージェントベースの AI アプリケーションを構築するための包括的なツールセットです。
 
-// 2. Agent を定義
-const assistantAgent = AIAgent.from({
-  name: "Assistant",
-  instructions: "You are a helpful assistant.",
-});
-
-// 3. AIGNE インスタンスを作成
-const aigne = new AIGNE({
-  model: model,
-  agents: [assistantAgent],
-  name: "MyFirstAIGNE",
-});
-```
-
-#### 2. 設定からの読み込み
-
-より複雑なアプリケーションでは、AIGNE の設定を YAML ファイルで定義し、静的メソッド `AIGNE.load()` を使用して読み込むことができます。このアプローチは設定をコードから分離し、アプリケーションのモジュール性を高めます。
-
-```typescript
-import { AIGNE } from '@aigne/core';
-
-// './my-aigne-app' ディレクトリに `aigne.yaml` があることを前提とします
-async function loadAigne() {
-  const aigne = await AIGNE.load('./my-aigne-app');
-  console.log(`AIGNE instance "${aigne.name}" loaded successfully.`);
-  return aigne;
-}
-```
-
-### コアメソッド
-
-`AIGNE` クラスは、Agent を管理し、対話するための強力なメソッド群を提供します。
-
-#### `invoke()`
-
-`invoke` メソッドは、Agent と対話するための主要な方法です。永続的なユーザーセッションの作成、単一メッセージの送信、ストリーミング応答など、複数のパターンをサポートしています。
-
-**1. User Agent の作成**
-
-メッセージなしで Agent を呼び出すと、一貫した対話コンテキストを維持する `UserAgent` が作成されます。
-
-```typescript
-// 'assistantAgent' との継続的な対話のために UserAgent を作成します
-const userAgent = aigne.invoke(assistantAgent);
-
-// これで userAgent を介して複数のメッセージを送信できます
-const response1 = await userAgent.invoke("Hello, what's your name?");
-const response2 = await userAgent.invoke("Can you help me with a task?");
-```
-
-**2. 単一メッセージの送信 (リクエスト/レスポンス)**
-
-単純な一度きりの対話の場合、Agent とメッセージを直接渡すことができます。
-
-```typescript
-const response = await aigne.invoke(
-  assistantAgent,
-  "Write a short poem about AI.",
-);
-console.log(response);
-```
-
-**3. ストリーミング応答**
-
-応答をチャンクのストリームとして受け取るには、`streaming` オプションを `true` に設定します。これは、チャットボットのようなリアルタイムアプリケーションに最適です。
-
-```typescript
-const stream = await aigne.invoke(
-  assistantAgent,
-  "Tell me a long story.",
-  { streaming: true }
-);
-
-for await (const chunk of stream) {
-  // ストーリーの各部分が届くたびに処理します
-  process.stdout.write(chunk.delta.text?.content || "");
-}
-```
-
-#### `addAgent()`
-
-作成後の `AIGNE` インスタンスに Agent を動的に追加できます。追加された Agent は、インスタンスのライフサイクルと通信システムにアタッチされます。
-
-```typescript
-const newAgent = AIAgent.from({ name: "NewAgent", instructions: "..." });
-aigne.addAgent(newAgent);
-```
-
-#### `publish()` & `subscribe()`
-
-フレームワークには、Agent 間の疎結合な通信のためのメッセージキューが含まれています。Agent はトピックにメッセージを発行でき、他の Agent はそれらのトピックを購読してメッセージを受信できます。
-
-**メッセージの発行**
-
-```typescript
-// 'news_updates' トピックにメッセージを発行します
-aigne.publish("news_updates", {
-  headline: "AIGNE Framework v2.0 Released",
-  content: "New features include...",
-});
-```
-
-**トピックの購読**
-
-トピックを購読して単一のメッセージを受信したり、永続的なリスナーを設定したりできます。
-
-```typescript
-// 1. トピックの次のメッセージを待機します
-const nextMessage = await aigne.subscribe('user_actions');
-console.log('Received action:', nextMessage);
-
-// 2. トピックのすべてのメッセージに対するリスナーを設定します
-const unsubscribe = aigne.subscribe('system_events', (payload) => {
-  console.log(`System Event: ${payload.message.type}`);
-});
-
-// 後でリスニングを停止する場合:
-unsubscribe();
-```
-
-#### `shutdown()`
-
-クリーンな終了を保証するため、`shutdown` メソッドはすべての Agent とスキルを正常に終了させ、それらが保持するリソースをクリーンアップします。
-
-```typescript
-await aigne.shutdown();
-console.log("AIGNE instance has been shut down.");
-```
-
-これは、最新の JavaScript/TypeScript の `Symbol.asyncDispose` 機能を使用して自動的に管理することもできます。
-
-```typescript
-async function run() {
-  await using aigne = new AIGNE({ ... });
-  // ... aigne インスタンスを使用 ...
-} // ここで aigne.shutdown() が自動的に呼び出されます
-```
+次のステップとして、以下をお勧めします。
+-   **開発者**: ハンズオンチュートリアルとして、[スタートガイド](./developer-guide-getting-started.md) に進んでください。
+-   **非技術系ユーザー**: 概念的な紹介として、[AIGNE とは？](./user-guide-what-is-aigne.md) から始めてください。

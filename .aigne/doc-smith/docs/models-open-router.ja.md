@@ -1,69 +1,90 @@
-このドキュメントは、`@aigne/open-router` パッケージを統合する開発者向けの包括的なガイドです。このパッケージをインストール、設定、使用して、統一されたインターフェースを通じて多種多様な AI モデルを活用する方法を学びます。
+# OpenRouter
 
-# @aigne/open-router
+OpenRouterは、OpenAI、Anthropic、Googleなど、さまざまなプロバイダーが提供する多様なAIモデルへの統一されたゲートウェイとして機能します。`@aigne/open-router` パッケージは、これらのモデルをAIGNEフレームワークに統合するための標準化されたインターフェースを提供します。これにより、開発者は最小限のコード変更で異なるモデル間を切り替え、堅牢なフォールバックメカニズムを実装できます。
 
-<p align="center">
-  <picture>
-    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)"/>
-    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)"/>
-    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE ロゴ" width="400" />
-  </picture>
-</p>
+このガイドでは、`@aigne/open-router` パッケージをインストール、設定、および利用して、複数のAIモデルを活用するプロセスを詳しく説明します。
 
-`@aigne/open-router` は、AIGNE フレームワークと OpenRouter の統一 API とのシームレスな統合を提供します。これにより、開発者は OpenAI、Anthropic、Google のようなプロバイダーからの広範な AI モデルに、単一で一貫したインターフェースを通じてアクセスでき、モデル選択を簡素化し、堅牢なフォールバック設定を可能にします。
+```d2
+direction: down
 
-<picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-openrouter-dark.png" media="(prefers-color-scheme: dark)"/>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-openrouter.png" media="(prefers-color-scheme: light)"/>
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-openrouter.png" alt="AIGNE OpenRouter アーキテクチャ図" />
-</picture>
+Application: {
+  label: "あなたのアプリケーション"
+  shape: rectangle
+}
 
-## 特徴
+aigne-open-router: {
+  label: "@aigne/open-router"
+  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
+}
 
-*   **統一 API**: 数十のプロバイダーのモデルに、単一で一貫したインターフェースでアクセスします。
-*   **モデルフォールバック**: プライマリモデルが失敗した場合、自動的にバックアップモデルに切り替えます。
-*   **ストリーミングサポート**: ストリーミングレスポンスにより、リアルタイムで応答性の高いアプリケーションを実現します。
-*   **AIGNE フレームワーク互換性**: `@aigne/core` のモデルインターフェースと完全に統合します。
-*   **広範な設定**: 幅広いオプションでモデルの動作を微調整します。
-*   **タイプセーフ**: すべての API とモデルに対する包括的な TypeScript の型付けの恩恵を受けられます。
+OpenRouter-Service: {
+  label: "OpenRouterサービス"
+  shape: rectangle
+}
+
+Providers: {
+  label: "モデルプロバイダー"
+  shape: rectangle
+  style: {
+    stroke-dash: 2
+  }
+
+  OpenAI: {
+    shape: rectangle
+    "GPT-4": {}
+    "GPT-3.5": {}
+  }
+
+  Google: {
+    shape: rectangle
+    "Gemini Pro": {}
+  }
+
+  Anthropic: {
+    shape: rectangle
+    "Claude 3": {}
+  }
+}
+
+Application -> aigne-open-router: "1. APIキーで設定"
+aigne-open-router -> OpenRouter-Service: "2. モデルIDを含むAPIリクエスト"
+OpenRouter-Service -> Providers: "3. プロバイダーへのルーティング"
+Providers -> OpenRouter-Service: "4. プロバイダーからのレスポンス"
+OpenRouter-Service -> aigne-open-router: "5. 統一されたレスポンス"
+aigne-open-router -> Application: "6. 結果を返す"
+```
 
 ## インストール
 
-始めるには、お好みのパッケージマネージャーを使用して必要なパッケージをインストールしてください。
+まず、`@aigne/open-router` と `@aigne/core` パッケージをインストールします。以下のコマンドは、npm、yarn、pnpm を使用したインストール方法を示しています。
 
-### npm
-
-```bash
+```bash npm
 npm install @aigne/open-router @aigne/core
 ```
 
-### yarn
-
-```bash
+```bash yarn
 yarn add @aigne/open-router @aigne/core
 ```
 
-### pnpm
-
-```bash
+```bash pnpm
 pnpm add @aigne/open-router @aigne/core
 ```
 
-## 設定と基本的な使用法
+## 設定と使用方法
 
-このパッケージのプライマリエクスポートは `OpenRouterChatModel` です。これは `@aigne/openai` パッケージの `OpenAIChatModel` を拡張しているため、同じオプションを受け入れます。
+`OpenRouterChatModel` クラスは、OpenRouter API と対話するための主要なインターフェースです。これを使用するには、OpenRouter API キーを提供する必要があります。これは、コンストラクタで `apiKey` オプションを介して直接行うか、`OPEN_ROUTER_API_KEY` 環境変数を設定することで行えます。
 
-モデルを設定するには、OpenRouter API キーを提供する必要があります。コンストラクタに直接渡すか、`OPEN_ROUTER_API_KEY` 環境変数を設定することで行えます。
+### 基本的な例
 
-以下は、モデルをインスタンス化して使用する基本的な例です。
+以下は、チャットリクエストを送信するための `OpenRouterChatModel` の標準的な実装です。この例では、Anthropic の `claude-3-opus` モデルを使用しています。
 
-```typescript
+```typescript Basic Usage icon=logos:typescript
 import { OpenRouterChatModel } from "@aigne/open-router";
 
 const model = new OpenRouterChatModel({
-  // API キーを直接提供するか、環境変数 OPEN_ROUTER_API_KEY を使用します
+  // APIキーを直接提供するか、環境変数 OPEN_ROUTER_API_KEY を使用します
   apiKey: "your-api-key", // 環境変数に設定されている場合はオプションです
-  // モデルを指定します (デフォルトは 'openai/gpt-4o')
+  // モデルを指定します（デフォルトは'openai/gpt-4o'）
   model: "anthropic/claude-3-opus",
   modelOptions: {
     temperature: 0.7,
@@ -75,23 +96,74 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* 出力:
-  {
-    text: "I'm powered by OpenRouter, using the Claude 3 Opus model from Anthropic.",
-    model: "anthropic/claude-3-opus",
-    usage: {
-      inputTokens: 5,
-      outputTokens: 14
-    }
-  }
-*/
 ```
 
-## ストリーミングレスポンス
+期待される出力には、テキストの応答、モデル識別子、およびトークン使用量のメトリクスが含まれます。
 
-リアルタイムのインタラクションが必要なアプリケーションでは、ストリーミングを有効にして、生成されるレスポンスチャンクを受け取ることができます。`invoke` メソッドで `streaming: true` オプションを設定してください。
+```json Output icon=mdi:code-json
+{
+  "text": "I am currently using the anthropic/claude-3-opus model, accessed through OpenRouter.",
+  "model": "anthropic/claude-3-opus",
+  "usage": {
+    "inputTokens": 15,
+    "outputTokens": 23
+  }
+}
+```
 
-```typescript
+### コンストラクタのオプション
+
+`OpenRouterChatModel` は `@aigne/openai` パッケージの `OpenAIChatModel` を拡張しており、同じコンストラクタオプションを受け入れます。
+
+<x-field-group>
+  <x-field data-name="apiKey" data-type="string" data-required="false">
+    <x-field-desc markdown>OpenRouter APIキー。指定しない場合、クライアントは環境変数 `OPEN_ROUTER_API_KEY` を確認します。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-default="openai/gpt-4o" data-required="false">
+    <x-field-desc markdown>使用したいモデルの識別子（例：`anthropic/claude-3-opus`）。</x-field-desc>
+  </x-field>
+  <x-field data-name="fallbackModels" data-type="string[]" data-required="false">
+    <x-field-desc markdown>プライマリモデルが失敗した場合にフォールバックとして使用するモデル識別子の配列。</x-field-desc>
+  </x-field>
+  <x-field data-name="baseURL" data-type="string" data-default="https://openrouter.ai/api/v1" data-required="false">
+    <x-field-desc markdown>OpenRouter API のベース URL。テストやプロキシ用に上書きできます。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>モデルプロバイダーに渡すパラメータを含むオブジェクト。例えば `temperature`、`max_tokens`、`top_p` など。</x-field-desc>
+  </x-field>
+</x-field-group>
+
+## フォールバック付きで複数のモデルを使用する
+
+`@aigne/open-router` パッケージの主要な機能の1つは、フォールバックモデルを指定する機能です。プライマリモデルのリクエストが失敗した場合、システムは自動的に `fallbackModels` リストの次のモデルでリクエストを再試行します。これにより、アプリケーションの信頼性が向上します。
+
+```typescript Model Fallbacks icon=logos:typescript
+import { OpenRouterChatModel } from "@aigne/open-router";
+
+const modelWithFallbacks = new OpenRouterChatModel({
+  apiKey: "your-api-key",
+  model: "openai/gpt-4o",
+  fallbackModels: ["anthropic/claude-3-opus", "google/gemini-1.5-pro"], // フォールバックの順序
+  modelOptions: {
+    temperature: 0.7,
+  },
+});
+
+// まず gpt-4o を試し、それが失敗した場合は claude-3-opus、次に gemini-1.5-pro を試します
+const fallbackResult = await modelWithFallbacks.invoke({
+  messages: [{ role: "user", content: "Which model are you using?" }],
+});
+
+console.log(fallbackResult);
+```
+
+## ストリーミング応答
+
+リアルタイムな対話を必要とするアプリケーションでは、ストリーミングを有効にして、応答チャンクが利用可能になったときに処理できます。`invoke` メソッドで `streaming: true` オプションを設定します。
+
+応答ストリームは、完全なメッセージを組み立てるためにイテレートする必要があります。
+
+```typescript Streaming Example icon=logos:typescript
 import { isAgentResponseDelta } from "@aigne/core";
 import { OpenRouterChatModel } from "@aigne/open-router";
 
@@ -118,108 +190,19 @@ for await (const chunk of stream) {
   }
 }
 
-console.log(fullText); // 出力: "I'm powered by OpenRouter, using the Claude 3 Opus model from Anthropic."
-console.log(json); // { model: "anthropic/claude-3-opus", usage: { inputTokens: 5, outputTokens: 14 } }
+console.log(fullText);
+console.log(json);
 ```
 
-## 複数のモデルとフォールバックの使用
+最終的な `fullText` と `json` オブジェクトには、集約された応答データが含まれます。
 
-`@aigne/open-router` の主要な機能の1つは、フォールバックモデルを設定する機能です。プライマリモデルが何らかの理由（例：API エラー、レート制限）で失敗した場合、システムは指定されたリスト内の次のモデルを自動的に試行します。
-
-`fallbackModels` オプションを使用してフォールバック順序を定義できます。
-
-```typescript
-const modelWithFallbacks = new OpenRouterChatModel({
-  apiKey: "your-api-key",
-  model: "openai/gpt-4o",
-  fallbackModels: ["anthropic/claude-3-opus", "google/gemini-1.5-pro"], // フォールバック順序
-  modelOptions: {
-    temperature: 0.7,
-  },
-});
-
-// まず gpt-4o を試行し、失敗した場合は claude-3-opus、次に gemini-1.5-pro を試行します
-const fallbackResult = await modelWithFallbacks.invoke({
-  messages: [{ role: "user", content: "Which model are you using?" }],
-});
+```text Output icon=mdi:console
+I am currently using the anthropic/claude-3-opus model, accessed through OpenRouter.
+{ model: 'anthropic/claude-3-opus', usage: { inputTokens: 15, outputTokens: 23 } }
 ```
 
-次の図は、フォールバックロジックを示しています。
+## まとめ
 
-```d2
-direction: down
+`@aigne/open-router` パッケージは、統一された弾力性のあるインターフェースを通じて、幅広い言語モデルへのアクセスを簡素化します。モデルのフォールバックやストリーミングなどの機能を活用することで、より堅牢で応答性の高いAIアプリケーションを構築できます。
 
-Your-App: {
-  label: "あなたのアプリ"
-  shape: rectangle
-}
-
-AIGNE-Framework: {
-  label: "AIGNE フレームワーク"
-  shape: rectangle
-
-  aigne-open-router: {
-    label: "@aigne/open-router"
-  }
-}
-
-OpenRouter-API: {
-  label: "OpenRouter API"
-  shape: rectangle
-}
-
-Model-Providers: {
-  label: "モデルプロバイダー"
-  shape: rectangle
-  grid-columns: 3
-
-  OpenAI: {
-    label: "OpenAI\n(gpt-4o)"
-    shape: cylinder
-  }
-  Anthropic: {
-    label: "Anthropic\n(claude-3-opus)"
-    shape: cylinder
-  }
-  Google: {
-    label: "Google\n(gemini-1.5-pro)"
-    shape: cylinder
-  }
-}
-
-Your-App -> AIGNE-Framework.aigne-open-router: "1. invoke()"
-
-AIGNE-Framework.aigne-open-router -> OpenRouter-API: "2. プライマリモデルを試行"
-OpenRouter-API -> Model-Providers.OpenAI
-
-Model-Providers.OpenAI -> AIGNE-Framework.aigne-open-router: {
-  label: "3. 失敗"
-  style: {
-    stroke-dash: 2
-  }
-}
-AIGNE-Framework.aigne-open-router -> OpenRouter-API: {
-  label: "4. フォールバック1を試行"
-  style: {
-    stroke-dash: 2
-  }
-}
-OpenRouter-API -> Model-Providers.Anthropic
-
-Model-Providers.Anthropic -> AIGNE-Framework.aigne-open-router: {
-  label: "5. 失敗"
-  style: {
-    stroke-dash: 2
-  }
-}
-AIGNE-Framework.aigne-open-router -> OpenRouter-API: {
-  label: "6. フォールバック2を試行"
-  style: {
-    stroke-dash: 2
-  }
-}
-OpenRouter-API -> Model-Providers.Google
-
-Model-Providers.Google -> AIGNE-Framework.aigne-open-router: "7. 成功"
-AIGNE-Framework.aigne-open-router -> Your-App: "8. レスポンスを返す"
-```
+AIGNEフレームワークにおけるモデルの基本概念に関する詳細については、[モデルの概要](./models-overview.md)を参照してください。

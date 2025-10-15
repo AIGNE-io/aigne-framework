@@ -1,364 +1,239 @@
-This document provides a detailed guide to the `AIGNE` class, the central orchestrator in the AIGNE framework. You will learn how to initialize, configure, and use the `AIGNE` class to manage agents, handle messaging, and execute complex AI workflows.
+# AIGNE
 
-### System Architecture
+The `AIGNE` class is the central execution engine of the framework. It orchestrates multiple agents to build complex AI applications, serving as the main coordination point for agent interactions, message passing, and the overall execution flow.
 
-To understand how the `AIGNE` class fits within the broader ecosystem, let's visualize its core components and their interactions. The `AIGNE` class acts as the central hub, managing agents, skills, and communication channels.
-
-This document provides a detailed guide to the `AIGNE` class, the central orchestrator in the AIGNE framework. You will learn how to initialize, configure, and use the `AIGNE` class to manage agents, handle messaging, and execute complex AI workflows.
-
-### System Architecture
-
-To understand how the `AIGNE` class fits within the broader ecosystem, let's visualize its core components and their interactions. The `AIGNE` class acts as the central hub, managing agents, skills, and communication channels.
+This guide covers how to instantiate and configure the `AIGNE` engine, execute agents using the `invoke` method, and manage the application lifecycle.
 
 ```d2
 direction: down
 
-AIGNE-Ecosystem: {
-  label: "AIGNE System Architecture"
+Developer: {
+  shape: c4-person
+}
+
+Instantiation: {
+  label: "Instantiation Methods"
+  shape: rectangle
+  style.stroke-dash: 2
+
+  Constructor: {
+    label: "`new AIGNE()`\n(Programmatic)"
+  }
+
+  Load-Method: {
+    label: "`AIGNE.load()`\n(From Directory)"
+  }
+}
+
+AIGNE-Engine: {
+  label: "AIGNE Engine"
   shape: rectangle
 
-  AIGNE-Class: {
-    label: "AIGNE Class\n(Orchestrator)"
-    icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-  }
-
-  Agents: {
-    label: "Agents"
+  Core: {
+    label: "Core Responsibilities"
     shape: rectangle
-    Agent-1: "Agent 1"
-    Agent-2: "Agent 2"
-    Agent-N: "..."
-  }
+    style.stroke-dash: 4
 
-  Skills: {
-    label: "Skills"
-    shape: rectangle
-    Skill-A: "Skill A"
-    Skill-B: "Skill B"
-  }
-
-  Communication-Channels: {
-    label: "Communication Channels"
-    shape: rectangle
-    Messaging: {}
-    API: {}
+    Agent-Management: {
+      label: "Agent & Skill\nManagement"
+    }
+    Model-Configuration: {
+      label: "Global Model\nConfiguration"
+    }
+    Execution-Context: {
+      label: "Execution Context"
+    }
   }
 }
 
-AIGNE-Ecosystem.AIGNE-Class <-> AIGNE-Ecosystem.Agents: "Manages"
-AIGNE-Ecosystem.AIGNE-Class <-> AIGNE-Ecosystem.Skills: "Utilizes"
-AIGNE-Ecosystem.AIGNE-Class <-> AIGNE-Ecosystem.Communication-Channels: "Handles"
+Invocation-Results: {
+  label: "`invoke()` Results"
+  shape: rectangle
+  style.stroke-dash: 2
+
+  Standard-Response: {
+    label: "Standard Response\n(Promise)"
+  }
+
+  Streaming-Response: {
+    label: "Streaming Response\n(AgentResponseStream)"
+  }
+
+  User-Agent: {
+    label: "Stateful UserAgent\n(Maintains Context)"
+  }
+}
+
+Developer -> Instantiation: "Initializes via"
+Instantiation.Constructor -> AIGNE-Engine
+Instantiation.Load-Method -> AIGNE-Engine
+
+Developer -> AIGNE-Engine: "Calls `invoke()`"
+
+AIGNE-Engine -> Invocation-Results.Standard-Response: "Returns"
+AIGNE-Engine -> Invocation-Results.Streaming-Response: "Returns"
+AIGNE-Engine -> Invocation-Results.User-Agent: "Returns"
+
+Invocation-Results -> Developer: "Receives result"
 
 ```
 
-## Initialization and Configuration
+## Overview
 
-The `AIGNE` class can be instantiated directly or loaded from a configuration file. This provides flexibility for both programmatic and declarative setup.
+AIGNE acts as the container for your entire agentic application. Its primary responsibilities include:
 
-### Constructor
+-   **Agent Management**: Manages the lifecycle of all registered agents and skills.
+-   **Model Configuration**: Provides a global default configuration for chat and image models, which can be inherited or overridden by individual agents.
+-   **Execution Context**: Creates and manages isolated contexts for each invocation, ensuring that concurrent operations do not interfere with each other.
+-   **Lifecycle Control**: Offers methods to gracefully start and stop the application, ensuring all resources are properly handled.
 
-The constructor allows you to create an `AIGNE` instance with a specified configuration.
+## Instantiation
 
-**Parameters**
+There are two primary ways to create an `AIGNE` instance: programmatically using the constructor or by loading a configuration from a directory.
 
-<x-field-group>
-  <x-field data-name="options" data-type="AIGNEOptions" data-required="false" data-desc="Configuration options for the AIGNE instance."></x-field>
-</x-field-group>
+### Using the Constructor
 
-**`AIGNEOptions`**
+The most direct method is to use the `AIGNE` constructor, passing in an options object. This approach is ideal for applications where configuration is managed dynamically in code.
 
-<x-field-group>
-  <x-field data-name="rootDir" data-type="string" data-required="false" data-desc="The root directory to resolve relative paths for agents and skills."></x-field>
-  <x-field data-name="name" data-type="string" data-required="false" data-desc="The name of the AIGNE instance."></x-field>
-  <x-field data-name="description" data-type="string" data-required="false" data-desc="A description of the AIGNE instance."></x-field>
-  <x-field data-name="model" data-type="ChatModel" data-required="false" data-desc="The global chat model for agents that do not have a model specified."></x-field>
-  <x-field data-name="imageModel" data-type="ImageModel" data-required="false" data-desc="The image model for image processing tasks."></x-field>
-  <x-field data-name="skills" data-type="Agent[]" data-required="false" data-desc="A list of skills to be used by the AIGNE instance."></x-field>
-  <x-field data-name="agents" data-type="Agent[]" data-required="false" data-desc="A list of agents to be used by the AIGNE instance."></x-field>
-  <x-field data-name="limits" data-type="ContextLimits" data-required="false" data-desc="Usage limits for the AIGNE instance, such as timeouts and token counts."></x-field>
-  <x-field data-name="observer" data-type="AIGNEObserver" data-required="false" data-desc="An observer for monitoring the AIGNE instance."></x-field>
-</x-field-group>
-
-**Example**
-
-```typescript
-import { AIGNE, AIAgent } from '@aigne/core';
-
-const travelAgent = new AIAgent({
-  name: 'TravelAgent',
-  description: 'An agent that helps with travel planning.',
-  model: yourChatModel, // Assuming yourChatModel is an instance of a ChatModel
-});
+```typescript Instantiating AIGNE icon=logos:typescript
+import { AIGNE } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/openai";
 
 const aigne = new AIGNE({
-  name: 'MyAIGNE',
-  description: 'A simple AIGNE instance.',
-  agents: [travelAgent],
+  name: "MyFirstAIGNEApp",
+  model: new OpenAIChatModel({
+    apiKey: process.env.OPENAI_API_KEY,
+    model: "gpt-4o-mini",
+  }),
 });
-
-console.log('AIGNE instance created:', aigne.name);
 ```
 
-### `load()`
+### Loading from Configuration
 
-The static `load` method provides a convenient way to initialize an `AIGNE` system from a directory containing an `aigne.yaml` file and agent definitions.
+For more complex projects, it is best practice to define your application structure in a directory containing an `aigne.yaml` file and other agent definitions. The static `AIGNE.load()` method reads this directory and constructs a fully configured instance. This promotes separation of configuration from logic.
 
-**Parameters**
+```typescript Loading AIGNE from a Directory icon=logos:typescript
+import { AIGNE } from "@aigne/core";
+import { join } from "node:path";
 
-<x-field-group>
-  <x-field data-name="path" data-type="string" data-required="true" data-desc="The path to the directory containing the aigne.yaml file."></x-field>
-  <x-field data-name="options" data-type="Omit<AIGNEOptions, keyof LoadOptions> & LoadOptions" data-required="false" data-desc="Options to override the loaded configuration."></x-field>
-</x-field-group>
-
-**Returns**
-
-<x-field data-name="Promise<AIGNE>" data-type="Promise" data-desc="A fully initialized AIGNE instance with configured agents and skills."></x-field>
-
-**Example**
-
-```typescript
-import { AIGNE } from '@aigne/core';
-
-async function loadAIGNE() {
-  try {
-    const aigne = await AIGNE.load('./path/to/your/aigne/config');
-    console.log('AIGNE instance loaded:', aigne.name);
-  } catch (error) {
-    console.error('Error loading AIGNE instance:', error);
-  }
-}
-
-loadAIGNE();
+const configPath = join(process.cwd(), "my-aigne-project");
+const aigne = await AIGNE.load(configPath);
 ```
 
-## Core Components
+## Configuration Options
 
-The `AIGNE` class is composed of several key components that work together to create a powerful AI system.
-
-### `agents`
-
-The `agents` property is a collection of primary agents managed by the `AIGNE` instance. It provides indexed access by agent name.
-
-<x-field data-name="agents" data-type="AccessorArray<Agent>" data-desc="A collection of primary agents."></x-field>
-
-### `skills`
-
-The `skills` property is a collection of skill agents available to the `AIGNE` instance. It provides indexed access by skill name.
-
-<x-field data-name="skills" data-type="AccessorArray<Agent>" data-desc="A collection of skill agents."></x-field>
-
-### `model`
-
-The `model` property is the global chat model used for all agents that do not specify their own model.
-
-<x-field data-name="model" data-type="ChatModel" data-desc="The global chat model."></x-field>
-
-## Agent Management
-
-The `AIGNE` class provides methods for managing the agents within the system.
-
-### `addAgent()`
-
-The `addAgent` method allows you to add one or more agents to the `AIGNE` instance. Each agent is attached to the `AIGNE` instance, allowing it to access its resources.
-
-**Parameters**
+The `AIGNE` constructor accepts an `AIGNEOptions` object to control its behavior.
 
 <x-field-group>
-  <x-field data-name="...agents" data-type="Agent[]" data-required="true" data-desc="One or more Agent instances to add."></x-field>
+  <x-field data-name="name" data-type="string" data-required="false" data-desc="A unique name for the AIGNE instance."></x-field>
+  <x-field data-name="description" data-type="string" data-required="false" data-desc="A brief description of the instance's purpose."></x-field>
+  <x-field data-name="rootDir" data-type="string" data-required="false" data-desc="The root directory for resolving relative paths for agents and skills."></x-field>
+  <x-field data-name="model" data-type="ChatModel" data-required="false">
+    <x-field-desc markdown>A global default chat model for all agents that do not specify their own. See [Models](./developer-guide-core-concepts-models.md) for more details.</x-field-desc>
+  </x-field>
+  <x-field data-name="imageModel" data-type="ImageModel" data-required="false" data-desc="A global default image model for image generation tasks."></x-field>
+  <x-field data-name="agents" data-type="Agent[]" data-required="false" data-desc="An array of agent instances to register with the engine upon initialization."></x-field>
+  <x-field data-name="skills" data-type="Agent[]" data-required="false" data-desc="An array of skill agents to make available to other agents."></x-field>
+  <x-field data-name="limits" data-type="ContextLimits" data-required="false" data-desc="Execution limits, such as timeouts or maximum tokens, to apply to all invocations."></x-field>
+  <x-field data-name="observer" data-type="AIGNEObserver" data-required="false" data-desc="An observer instance for monitoring and logging execution traces."></x-field>
 </x-field-group>
 
-**Example**
+## Agent and Lifecycle Management
 
-```typescript
-import { AIGNE, AIAgent } from '@aigne/core';
+Once an instance is created, you can manage agents and control the application lifecycle.
 
+### Adding Agents
+
+While agents can be provided in the constructor, you can also add them dynamically using the `addAgent` method. Each agent is attached to the AIGNE instance, giving it access to shared resources like the global model.
+
+```typescript Dynamically Adding an Agent icon=logos:typescript
+import { AIAgent } from "@aigne/core";
+import { AIGNE } from "@aigne/core";
+
+// Assuming 'aigne' is an existing AIGNE instance
 const aigne = new AIGNE();
 
-const weatherAgent = new AIAgent({
-  name: 'WeatherAgent',
-  description: 'An agent that provides weather forecasts.',
-  model: yourChatModel, // Assuming yourChatModel is an instance of a ChatModel
+const myAgent = new AIAgent({
+  instructions: "You are a helpful assistant.",
 });
 
-aigne.addAgent(weatherAgent);
-console.log('Agent added:', aigne.agents[0].name);
+aigne.addAgent(myAgent);
 ```
 
-## Invocation
+### Shutting Down
 
-The `invoke` method is the primary way to interact with agents. It has several overloads to support different invocation patterns.
+To ensure a clean exit and proper resource cleanup, call the `shutdown` method. This is crucial for long-running applications to prevent resource leaks. The engine also automatically handles process exit signals like `SIGINT`.
 
-### `invoke(agent)`
+```typescript Graceful Shutdown icon=logos:typescript
+// Assuming 'aigne' is an existing AIGNE instance
+await aigne.shutdown();
+```
 
-This overload creates a `UserAgent`, which is a wrapper around an agent for repeated invocations.
+## Invoking Agents
 
-**Parameters**
+The `invoke` method is the primary entry point for executing an agent. It is an overloaded method that supports several patterns, from simple request-response to real-time streaming.
 
-<x-field-group>
-  <x-field data-name="agent" data-type="Agent<I, O>" data-required="true" data-desc="The target agent to be wrapped."></x-field>
-</x-field-group>
+### Standard Invocation
 
-**Returns**
+The most common use case is to provide an agent and an input message. This returns a promise that resolves with the agent's final output.
 
-<x-field data-name="UserAgent<I, O>" data-type="UserAgent" data-desc="A user agent instance."></x-field>
+```typescript Standard Agent Invocation icon=logos:typescript
+// Assuming 'aigne' and 'myAgent' are configured
+const result = await aigne.invoke(myAgent, {
+  message: "What is the AIGNE Framework?",
+});
 
-### `invoke(agent, message, options)`
+console.log(result.message);
+// Expected output: A descriptive answer about the framework.
+```
 
-This is the standard way to invoke an agent with a message and receive a response.
+### Streaming Responses
 
-**Parameters**
+For interactive applications like chatbots, you can enable streaming to receive the response incrementally. Setting `streaming: true` in the options returns an `AgentResponseStream`. You can then iterate over the stream to process chunks of data as they arrive.
 
-<x-field-group>
-  <x-field data-name="agent" data-type="Agent<I, O>" data-required="true" data-desc="The target agent to invoke."></x-field>
-  <x-field data-name="message" data-type="I & Message" data-required="true" data-desc="The input message to send to the agent."></x-field>
-  <x-field data-name="options" data-type="InvokeOptions<U>" data-required="false" data-desc="Optional configuration parameters for the invocation."></x-field>
-</x-field-group>
+```typescript Streaming Agent Responses icon=logos:typescript
+import { isAgentResponseDelta } from "@aigne/core";
 
-**Returns**
+// Assuming 'aigne' and 'myAgent' are configured
+const stream = await aigne.invoke(
+  myAgent,
+  { message: "Tell me a short story." },
+  { streaming: true }
+);
 
-<x-field data-name="Promise<O>" data-type="Promise" data-desc="A promise that resolves to the agent's complete response."></x-field>
-
-**Example**
-
-```typescript
-import { AIGNE, AIAgent } from '@aigne/core';
-
-async function invokeAgent() {
-  const travelAgent = new AIAgent({
-    name: 'TravelAgent',
-    description: 'An agent that helps with travel planning.',
-    model: yourChatModel, // Assuming yourChatModel is an instance of a ChatModel
-  });
-
-  const aigne = new AIGNE({
-    agents: [travelAgent],
-  });
-
-  try {
-    const response = await aigne.invoke(travelAgent, { content: 'Plan a trip to Paris.' });
-    console.log('Agent response:', response.content);
-  } catch (error) {
-    console.error('Error invoking agent:', error);
+let fullResponse = "";
+for await (const chunk of stream) {
+  if (isAgentResponseDelta(chunk)) {
+    const textDelta = chunk.delta.text?.message ?? "";
+    fullResponse += textDelta;
+    process.stdout.write(textDelta);
   }
 }
 
-invokeAgent();
+console.log("\n--- End of Story ---");
 ```
 
-### Streaming
+### Creating a User Agent
 
-The `invoke` method also supports streaming responses by setting the `streaming` option to `true`.
+Invoking an agent without a message creates a `UserAgent`. This is a stateful wrapper that preserves the conversation context across multiple calls, making it ideal for building conversational experiences.
 
-**Example**
+```typescript Creating a Stateful UserAgent icon=logos:typescript
+// Assuming 'aigne' and 'myAgent' are configured
 
-```typescript
-import { AIGNE, AIAgent } from '@aigne/core';
+// Create a UserAgent to maintain context
+const userAgent = aigne.invoke(myAgent);
 
-async function invokeStreamingAgent() {
-  const travelAgent = new AIAgent({
-    name: 'TravelAgent',
-    description: 'An agent that helps with travel planning.',
-    model: yourChatModel, // Assuming yourChatModel is an instance of a ChatModel
-  });
+// First interaction
+const response1 = await userAgent.invoke({ message: "My name is Bob." });
+console.log(response1.message); // e.g., "Nice to meet you, Bob!"
 
-  const aigne = new AIGNE({
-    agents: [travelAgent],
-  });
-
-  try {
-    const stream = await aigne.invoke(travelAgent, { content: 'Plan a trip to Paris.' }, { streaming: true });
-    for await (const chunk of stream) {
-      console.log('Stream chunk:', chunk.content);
-    }
-  } catch (error) {
-    console.error('Error invoking agent:', error);
-  }
-}
-
-invokeStreamingAgent();
+// Second interaction preserves context
+const response2 = await userAgent.invoke({ message: "What is my name?" });
+console.log(response2.message); // e.g., "Your name is Bob."
 ```
 
-## Messaging
+The `invoke` method offers additional overloads for advanced scenarios, such as returning the final active agent in a multi-agent team. Refer to the API reference for a complete list of signatures.
 
-The `AIGNE` class provides a message queue for inter-agent communication.
+---
 
-### `publish()`
-
-The `publish` method broadcasts a message to all subscribers of a specified topic.
-
-**Parameters**
-
-<x-field-group>
-  <x-field data-name="topic" data-type="string | string[]" data-required="true" data-desc="The topic or topics to publish the message to."></x-field>
-  <x-field data-name="payload" data-type="Omit<MessagePayload, 'context'> | Message" data-required="true" data-desc="The message payload."></x-field>
-  <x-field data-name="options" data-type="InvokeOptions<U>" data-required="false" data-desc="Optional configuration parameters."></x-field>
-</x-field-group>
-
-### `subscribe()`
-
-The `subscribe` method allows you to listen for messages on a specific topic. It can be used with a listener callback or as a promise that resolves with the next message.
-
-**Parameters**
-
-<x-field-group>
-  <x-field data-name="topic" data-type="string | string[]" data-required="true" data-desc="The topic to subscribe to."></x-field>
-  <x-field data-name="listener" data-type="MessageQueueListener" data-required="false" data-desc="An optional callback function to handle incoming messages."></x-field>
-</x-field-group>
-
-**Returns**
-
-<x-field data-name="Unsubscribe | Promise<MessagePayload>" data-type="Function | Promise" data-desc="An unsubscribe function if a listener is provided, otherwise a promise that resolves with the next message."></x-field>
-
-### `unsubscribe()`
-
-The `unsubscribe` method removes a previously registered listener from a topic.
-
-**Parameters**
-
-<x-field-group>
-  <x-field data-name="topic" data-type="string | string[]" data-required="true" data-desc="The topic to unsubscribe from."></x-field>
-  <x-field data-name="listener" data-type="MessageQueueListener" data-required="true" data-desc="The listener function to remove."></x-field>
-</x-field-group>
-
-**Example**
-
-```typescript
-import { AIGNE } from '@aigne/core';
-
-const aigne = new AIGNE();
-
-const listener = (payload) => {
-  console.log('Received message:', payload.content);
-};
-
-aigne.subscribe('news', listener);
-aigne.publish('news', { content: 'AIGNE version 2.0 released!' });
-aigne.unsubscribe('news', listener);
-```
-
-## Lifecycle Management
-
-The `AIGNE` class provides a `shutdown` method for gracefully terminating the instance and all its agents and skills.
-
-### `shutdown()`
-
-The `shutdown` method ensures proper cleanup of resources before termination.
-
-**Returns**
-
-<x-field data-name="Promise<void>" data-type="Promise" data-desc="A promise that resolves when shutdown is complete."></x-field>
-
-**Example**
-
-```typescript
-import { AIGNE } from '@aigne/core';
-
-async function shutdownAIGNE() {
-  const aigne = new AIGNE();
-  // ... your AIGNE logic ...
-  await aigne.shutdown();
-  console.log('AIGNE instance shut down.');
-}
-
-shutdownAIGNE();
-```
+With a clear understanding of the `AIGNE` engine, you are now prepared to explore the different types of [Agents](./developer-guide-core-concepts-agents.md) that form the building blocks of your application.

@@ -1,289 +1,257 @@
-# MCPAgent
+# MCP Agent
 
-The `MCPAgent` is a specialized agent designed to interact with servers that implement the Model Context Protocol (MCP). It acts as a bridge between your application and MCP servers, allowing you to seamlessly connect to them, discover their capabilities, and utilize their tools, prompts, and resources.
+The `MCPAgent` is a specialized agent designed to interact with external systems that adhere to the **Model Context Protocol (MCP)**. It acts as a bridge, allowing your AIGNE application to connect to remote MCP servers and utilize their capabilities—such as tools, prompts, and resources—as if they were native components of the framework.
 
-This agent simplifies the integration of external services by providing a standardized interface for communication, whether the server is running as a local command-line process or is available over the network via HTTP.
+This enables seamless integration with a wide range of external services, from database connectors and web automation tools to proprietary enterprise systems, provided they expose an MCP-compliant interface.
 
-## Architecture Overview
+Key functionalities include:
+- **Multiple Transport Protocols**: Connect to MCP servers via standard I/O (`stdio`), Server-Sent Events (`sse`), or `streamableHttp`.
+- **Automatic Discovery**: Automatically discovers and registers the tools, prompts, and resources available on the connected MCP server.
+- **Robust Connection Management**: Features automatic reconnection for network-based transports to handle transient connectivity issues.
 
-`MCPAgent` extends the base `Agent` class and encapsulates an MCP `Client` to manage the connection and communication with the remote server. It automatically discovers the server's offerings and represents them as native AIGNE components like skills, prompts, and resources.
+## How MCPAgent Works
 
-# MCPAgent
+The `MCPAgent` encapsulates the logic for connecting to an MCP server and translating its offerings into AIGNE constructs. When an `MCPAgent` is initialized, it connects to the specified server and queries for its available tools, prompts, and resources. These are then dynamically attached to the agent instance as `skills`, `prompts`, and `resources`, respectively, making them directly accessible within your AIGNE workflows.
 
-The `MCPAgent` is a specialized agent designed to interact with servers that implement the Model Context Protocol (MCP). It acts as a bridge between your application and MCP servers, allowing you to seamlessly connect to them, discover their capabilities, and utilize their tools, prompts, and resources.
-
-This agent simplifies the integration of external services by providing a standardized interface for communication, whether the server is running as a local command-line process or is available over the network via HTTP.
-
-## Architecture Overview
-
-`MCPAgent` extends the base `Agent` class and encapsulates an MCP `Client` to manage the connection and communication with the remote server. It automatically discovers the server's offerings and represents them as native AIGNE components like skills, prompts, and resources.
 ```d2
-direction: down
-
-Application: {
-  label: "Your Application"
-  shape: rectangle
+direction: right
+style: {
+  font-size: 14
 }
 
-MCPAgent: {
-  label: "MCPAgent"
-  shape: rectangle
+"AIGNE Application" -> aigne.invoke
 
-  MCP-Client: {
-    label: "MCP Client\n(Manages Connection)"
+subgraph "AIGNE Framework" {
+  aigne.invoke -> mcp_agent: "MCPAgent" {
+    shape: hexagon
+    style.fill: "#D1E7DD"
   }
 }
 
-Agent-Base: {
-  label: "Agent (Base Class)"
+subgraph "Transport Layer (Network / Stdio)" {
+  mcp_agent -> transport: "MCP Request"
+  transport -> mcp_agent: "MCP Response"
 }
 
-MCP-Server: {
-  label: "MCP Server\n(Local CLI or Remote HTTP)"
-  shape: rectangle
-  style.stroke-dash: 4
+transport -> "External MCP Server"
 
-  Server-Offerings: {
-    label: "Server Offerings"
-    grid-columns: 3
-    Skills: {}
-    Prompts: {}
-    Resources: {}
-  }
+subgraph "External System" {
+ "External MCP Server" -> "Tools"
+ "External MCP Server" -> "Prompts"
+ "External MCP Server" -> "Resources"
 }
-
-Application -> MCPAgent: "1. Uses"
-MCPAgent -> Agent-Base: "extends" {
-  style.stroke-dash: 2
-}
-MCPAgent.MCP-Client -> MCP-Server: "2. Connects & Communicates"
-MCP-Server.Server-Offerings -> MCPAgent: "3. Discovers" {
-  style.stroke-dash: 2
-}
-MCPAgent -> Application: "4. Provides components\n(Skills, Prompts, Resources)"
-
 ```
 
 ## Creating an MCPAgent
 
-There are two primary ways to create an `MCPAgent`: by establishing a new connection to an MCP server or by using a pre-configured MCP client instance.
+You can create an `MCPAgent` instance using the static `MCPAgent.from()` method. This factory method supports several configuration patterns depending on how you need to connect to the MCP server.
 
-### 1. From a Server Connection
+### 1. Connecting via Standard I/O (Stdio)
 
-The static `MCPAgent.from()` method is the most common way to create an agent. It handles the connection process and automatically discovers the server's capabilities.
-
-#### Using SSE Transport
-
-You can connect to a remote MCP server using Server-Sent Events (SSE). This is the default transport mechanism when a URL is provided.
-
-**Parameters**
+This method is ideal for running an MCP server as a local child process. The `MCPAgent` communicates with the server through its standard input and output streams.
 
 <x-field-group>
-  <x-field data-name="url" data-type="string" data-required="true" data-desc="The URL of the remote MCP server."></x-field>
-  <x-field data-name="transport" data-type="'sse' | 'streamableHttp'" data-default="'sse'" data-desc="Specifies the transport protocol. Defaults to 'sse'."></x-field>
-  <x-field data-name="timeout" data-type="number" data-default="60000" data-desc="Request timeout in milliseconds."></x-field>
-  <x-field data-name="maxReconnects" data-type="number" data-default="10" data-desc="The maximum number of automatic reconnection attempts if the connection is lost. Set to 0 to disable."></x-field>
-  <x-field data-name="shouldReconnect" data-type="(error: Error) => boolean" data-desc="A function to determine if a reconnect should be attempted based on the error received. Defaults to true for all errors."></x-field>
-  <x-field data-name="opts" data-type="SSEClientTransportOptions" data-desc="Additional options to pass to the underlying SSEClientTransport."></x-field>
+  <x-field data-name="command" data-type="string" data-required="true" data-desc="The command to execute to start the MCP server process."></x-field>
+  <x-field data-name="args" data-type="string[]" data-required="false" data-desc="An array of string arguments to pass to the command."></x-field>
+  <x-field data-name="env" data-type="Record<string, string>" data-required="false" data-desc="Environment variables to set for the child process."></x-field>
 </x-field-group>
 
-**Example**
-
-```typescript
+```javascript Connecting to a Local Filesystem Server icon=logos:javascript
 import { MCPAgent } from "@aigne/core";
 
-// Example of creating an MCPAgent with SSE transport
-const agent = await MCPAgent.from({
-  url: "http://example.com/mcp-server",
+// Create an MCPAgent by running a command-line server
+await using mcpAgent = await MCPAgent.from({
+  command: "npx",
+  args: ["-y", "@modelcontextprotocol/server-filesystem", "."],
 });
 
-console.log("MCPAgent created from SSE server:", agent.name);
+console.log('Connected to:', mcpAgent.name);
+
+// Access the skills provided by the filesystem server
+const fileReader = mcpAgent.skills.read_file;
+if (fileReader) {
+  const result = await fileReader.invoke({ path: "./package.json" });
+  console.log(result);
+}
 ```
 
-#### Using StreamableHTTP Transport
+### 2. Connecting via Network (SSE or StreamableHTTP)
 
-For servers that support it, you can use the `streamableHttp` transport, which can offer performance benefits.
+This is the standard method for connecting to remote MCP servers over a network. You can choose between two transport protocols:
+*   `sse`: Server-Sent Events, a simple and widely supported protocol for streaming.
+*   `streamableHttp`: A more advanced, bidirectional streaming protocol.
 
-**Example**
+<x-field-group>
+  <x-field data-name="url" data-type="string" data-required="true" data-desc="The URL of the remote MCP server endpoint."></x-field>
+  <x-field data-name="transport" data-type="'sse' | 'streamableHttp'" data-default="sse" data-required="false">
+    <x-field-desc markdown>The transport protocol to use. Defaults to `sse`.</x-field-desc>
+  </x-field>
+  <x-field data-name="opts" data-type="object" data-required="false" data-desc="Additional options to pass to the underlying transport client (e.g., for headers and authentication)."></x-field>
+  <x-field data-name="timeout" data-type="number" data-default="60000" data-required="false">
+    <x-field-desc markdown>Request timeout in milliseconds.</x-field-desc>
+  </x-field>
+  <x-field data-name="maxReconnects" data-type="number" data-default="10" data-required="false">
+    <x-field-desc markdown>The maximum number of times to attempt reconnection if the connection is lost. Set to `0` to disable.</x-field-desc>
+  </x-field>
+  <x-field data-name="shouldReconnect" data-type="(error: Error) => boolean" data-required="false">
+    <x-field-desc markdown>A function that returns `true` if a reconnect should be attempted based on the error received.</x-field-desc>
+  </x-field>
+</x-field-group>
 
-```typescript
+```javascript Connecting via StreamableHTTP icon=logos:javascript
 import { MCPAgent } from "@aigne/core";
 
-// Example of creating an MCPAgent with StreamableHTTP transport
-const agent = await MCPAgent.from({
-  url: "http://example.com/mcp-server",
+// Create an MCPAgent using a StreamableHTTP server connection
+await using mcpAgent = await MCPAgent.from({
+  url: `http://localhost:3000/mcp`,
   transport: "streamableHttp",
 });
 
-console.log("MCPAgent created from StreamableHTTP server:", agent.name);
+console.log('Connected to:', mcpAgent.name);
+
+const echoSkill = mcpAgent.skills.echo;
+if (echoSkill) {
+  const result = await echoSkill.invoke({ message: "Hello, World!" });
+  console.log(result);
+}
 ```
 
-#### Using Stdio Transport
+### 3. Using a Pre-configured Client
 
-To connect to a local MCP server that communicates over standard input/output (stdio), you can specify the command to execute.
-
-**Parameters**
+If you have already instantiated and configured an MCP `Client` object, you can pass it directly to create an `MCPAgent`. This is useful for advanced scenarios where you need fine-grained control over the client's configuration.
 
 <x-field-group>
-    <x-field data-name="command" data-type="string" data-required="true" data-desc="The command to execute to start the MCP server process."></x-field>
-    <x-field data-name="args" data-type="string[]" data-desc="An array of string arguments to pass to the command."></x-field>
-    <x-field data-name="env" data-type="Record<string, string>" data-desc="Environment variables to set for the process."></x-field>
+  <x-field data-name="client" data-type="Client" data-required="true" data-desc="A pre-configured instance of an MCP Client."></x-field>
+  <x-field data-name="prompts" data-type="MCPPrompt[]" data-required="false" data-desc="An optional array of pre-defined MCP prompts."></x-field>
+  <x-field data-name="resources" data-type="MCPResource[]" data-required="false" data-desc="An optional array of pre-defined MCP resources."></x-field>
 </x-field-group>
 
-**Example**
-
-```typescript
-import { MCPAgent } from "@aigne/core";
-
-// Example of creating an MCPAgent with Stdio transport
-const agent = await MCPAgent.from({
-  command: "npx",
-  args: ["-y", "@mcpfun/mcp-server-ccxt"],
-});
-
-console.log("MCPAgent created from stdio server:", agent.name);
-```
-
-### 2. From a Pre-configured Client
-
-If you have an existing MCP `Client` instance, you can pass it directly to the `MCPAgent` constructor. This is useful for scenarios where you need to manage the client's lifecycle or configuration separately.
-
-**Parameters**
-
-<x-field-group>
-    <x-field data-name="client" data-type="Client" data-required="true" data-desc="A pre-configured MCP Client instance."></x-field>
-    <x-field data-name="prompts" data-type="MCPPrompt[]" data-desc="An optional array of pre-defined MCP prompts."></x-field>
-    <x-field data-name="resources" data-type="MCPResource[]" data-desc="An optional array of pre-defined MCP resources."></x-field>
-</x-field-group>
-
-**Example**
-
-```typescript
+```javascript Creating from a Client Instance icon=logos:javascript
 import { MCPAgent } from "@aigne/core";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
-// Example of creating an MCPAgent with a direct client instance
-const client = new Client({ name: "MyClient", version: "1.0.0" });
-await client.connect(new SSEClientTransport(new URL("http://example.com/mcp-server")));
+// Create and configure the client manually
+const client = new Client({ name: "test-client", version: "1.0.0" });
+const transport = new StdioClientTransport({
+  command: "bun",
+  args: ["./mock-mcp-server.ts"],
+});
+await client.connect(transport);
 
-const agent = new MCPAgent({
-  name: "MyDirectAgent",
+// Create an MCPAgent from the existing client instance
+await using mcpAgent = MCPAgent.from({
+  name: client.getServerVersion()?.name,
   client,
 });
 
-console.log("MCPAgent created from direct client:", agent.name);
+console.log('Connected to:', mcpAgent.name);
 ```
 
-## Properties
+## Accessing Server Capabilities
 
-An `MCPAgent` instance provides access to the server's capabilities through several properties.
+Once an `MCPAgent` is connected, it exposes the server's tools, prompts, and resources through its properties.
 
-### `client`
+### Accessing Skills
 
-The underlying `Client` instance used for all communication with the MCP server.
+Server-side tools are exposed as `skills` on the `MCPAgent` instance. You can access them by name and use their `invoke` method. These skills can then be passed to other agents, such as an `AIAgent`, to grant them new capabilities.
 
-<x-field data-name="client" data-type="Client" data-desc="The MCP client instance."></x-field>
+```javascript Using a Skill from an MCPAgent icon=logos:javascript
+// Assuming `mcpAgent` is an initialized MCPAgent
+const echoSkill = mcpAgent.skills.echo;
 
-### `skills`
-
-The tools exposed by the MCP server are automatically discovered and made available as an array of `Agent` instances in the `skills` property. You can access skills by their index or by their name.
-
-<x-field data-name="skills" data-type="Agent[]" data-desc="An array of invokable skills discovered from the server."></x-field>
-
-**Example: Accessing Skills**
-
-```typescript
-// List all available skill names
-const skillNames = agent.skills.map(skill => skill.name);
-console.log("Available skills:", skillNames);
-
-// Access a specific skill by its name
-const getTickerSkill = agent.skills["get-ticker"];
-if (getTickerSkill) {
-  console.log("Found skill:", getTickerSkill.description);
+if (echoSkill) {
+  const result = await echoSkill.invoke({ message: "Hello from AIGNE!" });
+  console.log(result);
+  // Expected output:
+  // {
+  //   "content": [
+  //     { "text": "Tool echo: Hello from AIGNE!", "type": "text" }
+  //   ]
+  // }
 }
 ```
 
-### `prompts`
+### Accessing Prompts
 
-Prompts available from the server can be accessed via the `prompts` array.
+Server-defined prompts are available under the `prompts` property. These are useful for retrieving pre-defined, complex prompt structures from the server.
 
-<x-field data-name="prompts" data-type="MCPPrompt[]" data-desc="Array of MCP prompts available from the server."></x-field>
+```javascript Accessing a Server-Side Prompt icon=logos:javascript
+// Assuming `mcpAgent` is an initialized MCPAgent
+const echoPrompt = mcpAgent.prompts.echo;
 
-**Example: Accessing Prompts**
-
-```typescript
-// Access a prompt by name
-const examplePrompt = agent.prompts['example-prompt'];
-
-if (examplePrompt) {
-    const result = await examplePrompt.invoke({
-        variable1: "value1"
-    });
-    console.log(result.content);
+if (echoPrompt) {
+  const result = await echoPrompt.invoke({ message: "Hello!" });
+  console.log(result);
+  // Expected output:
+  // {
+  //   "messages": [
+  //     {
+  //       "content": { "text": "Please process this message: Hello!", "type": "text" },
+  //       "role": "user"
+  //     },
+  //     ...
+  //   ]
+  // }
 }
 ```
 
-### `resources`
+### Accessing Resources
 
-Resources, including resource templates, are available in the `resources` array.
+Server-hosted resources or resource templates can be accessed via the `resources` property. This allows you to read data from the server by expanding a URI template.
 
-<x-field data-name="resources" data-type="MCPResource[]" data-desc="Array of MCP resources available from the server."></x-field>
+```javascript Reading a Server-Side Resource icon=logos:javascript
+// Assuming `mcpAgent` is an initialized MCPAgent
+const echoResource = mcpAgent.resources.echo;
 
-**Example: Accessing Resources**
-
-```typescript
-// Access a resource by name
-const userDataResource = agent.resources['user-data'];
-
-if (userDataResource) {
-    const result = await userDataResource.invoke({
-        userId: "123"
-    });
-    console.log(result.content);
+if (echoResource) {
+  const result = await echoResource.invoke({ message: "Hello!" });
+  console.log(result);
+  // Expected output:
+  // {
+  //   "contents": [
+  //     { "text": "Resource echo: Hello!", "uri": "echo://Hello!" }
+  //   ]
+  // }
 }
 ```
 
-## Methods
+## Connection Teardown
 
-### `shutdown()`
+It is important to properly close the connection to the MCP server to release resources.
 
-This method cleanly shuts down the agent by closing its connection to the MCP server. It's crucial to call this method to release resources when you are finished with the agent.
+### Manual Shutdown
 
-**Example: Shutting Down an Agent**
+You can explicitly call the `shutdown()` method.
 
-```typescript
-// It's recommended to use a finally block to ensure shutdown is called
-try {
-  // Use the agent...
-  const ticker = await agent.skills['get-ticker'].invoke({
-    exchange: "coinbase",
-    symbol: "BTC/USD",
+```javascript Manually Shutting Down an Agent icon=logos:javascript
+const mcpAgent = await MCPAgent.from({
+  url: `http://localhost:3000/mcp`,
+});
+
+// ... use the agent
+
+await mcpAgent.shutdown();
+```
+
+### Automatic Shutdown with `using`
+
+For environments that support the `using` declaration (ES2023), the agent's connection will be closed automatically when it goes out of scope. This is the recommended approach for managing the agent's lifecycle.
+
+```javascript Automatic Shutdown with 'using' icon=logos:javascript
+async function connectAndUseAgent() {
+  await using mcpAgent = await MCPAgent.from({
+    url: `http://localhost:3000/mcp`,
   });
-  console.log(ticker);
-} finally {
-  await agent.shutdown();
-  console.log("Agent has been shut down.");
-}
+
+  // The agent is used here...
+  const echo = mcpAgent.skills.echo;
+  if (echo) await echo.invoke({ message: "Test" });
+} // <-- mcpAgent.shutdown() is called automatically here.
 ```
 
-The `MCPAgent` also supports the `Symbol.asyncDispose` method, allowing you to use it with the `using` statement for automatic resource management.
+## Summary
 
-**Example: Using `await using` for Automatic Shutdown**
+The `MCPAgent` is a crucial component for extending the AIGNE framework's capabilities by integrating with external systems. By abstracting the connection and communication logic, it allows you to treat external tools and data sources as first-class citizens in your agentic workflows.
 
-```typescript
-import { MCPAgent } from "@aigne/core";
-
-async function main() {
-    await using agent = await MCPAgent.from({
-        url: "http://example.com/mcp-server",
-    });
-    
-    // The agent will be automatically shut down at the end of this block
-    const skills = agent.skills.map(s => s.name);
-    console.log("Available skills:", skills);
-}
-
-main();
-```
+For more information on how to use the skills provided by an `MCPAgent`, see the [AI Agent](./developer-guide-agents-ai-agent.md) documentation.

@@ -1,63 +1,84 @@
-This document provides a comprehensive guide for developers integrating the `@aigne/open-router` package. You will learn how to install, configure, and use this package to leverage a wide variety of AI models through a unified interface.
+# OpenRouter
 
-# @aigne/open-router
+OpenRouter serves as a unified gateway to a diverse range of AI models from various providers, including OpenAI, Anthropic, and Google. The `@aigne/open-router` package provides a standardized interface for integrating these models into the AIGNE Framework. This allows developers to switch between different models with minimal code changes and implement robust fallback mechanisms.
 
-<p align="center">
-  <picture>
-    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo-dark.svg" media="(prefers-color-scheme: dark)"/>
-    <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" media="(prefers-color-scheme: light)"/>
-    <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/logo.svg" alt="AIGNE Logo" width="400" />
-  </picture>
-</p>
+This guide details the process of installing, configuring, and utilizing the `@aigne/open-router` package to leverage multiple AI models.
 
-`@aigne/open-router` provides seamless integration between the AIGNE Framework and OpenRouter's unified API. This allows developers to access a vast array of AI models from providers like OpenAI, Anthropic, and Google through a single, consistent interface, simplifying model selection and enabling robust fallback configurations.
+```d2
+direction: down
 
-<picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-openrouter-dark.png" media="(prefers-color-scheme: dark)"/>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-openrouter.png" media="(prefers-color-scheme: light)"/>
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-openrouter.png" alt="AIGNE OpenRouter Architecture Diagram" />
-</picture>
+Application: {
+  label: "Your Application"
+  shape: rectangle
+}
 
-## Features
+aigne-open-router: {
+  label: "@aigne/open-router"
+  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
+}
 
-*   **Unified API**: Access models from dozens of providers with a single, consistent interface.
-*   **Model Fallbacks**: Automatically switch to backup models if a primary model fails.
-*   **Streaming Support**: Enable real-time, responsive applications with streaming responses.
-*   **AIGNE Framework Compatibility**: Integrates perfectly with the `@aigne/core` model interface.
-*   **Extensive Configuration**: Fine-tune model behavior with a wide range of options.
-*   **Type-Safe**: Benefit from comprehensive TypeScript typings for all APIs and models.
+OpenRouter-Service: {
+  label: "OpenRouter Service"
+  shape: rectangle
+}
+
+Providers: {
+  label: "Model Providers"
+  shape: rectangle
+  style: {
+    stroke-dash: 2
+  }
+
+  OpenAI: {
+    shape: rectangle
+    "GPT-4": {}
+    "GPT-3.5": {}
+  }
+
+  Google: {
+    shape: rectangle
+    "Gemini Pro": {}
+  }
+
+  Anthropic: {
+    shape: rectangle
+    "Claude 3": {}
+  }
+}
+
+Application -> aigne-open-router: "1. Configure with API Key"
+aigne-open-router -> OpenRouter-Service: "2. API request with model ID"
+OpenRouter-Service -> Providers: "3. Route to provider"
+Providers -> OpenRouter-Service: "4. Provider Response"
+OpenRouter-Service -> aigne-open-router: "5. Unified Response"
+aigne-open-router -> Application: "6. Return result"
+```
 
 ## Installation
 
-To get started, install the necessary packages using your preferred package manager:
+To begin, install the `@aigne/open-router` and `@aigne/core` packages. The following commands demonstrate installation using npm, yarn, and pnpm.
 
-### npm
-
-```bash
+```bash npm
 npm install @aigne/open-router @aigne/core
 ```
 
-### yarn
-
-```bash
+```bash yarn
 yarn add @aigne/open-router @aigne/core
 ```
 
-### pnpm
-
-```bash
+```bash pnpm
 pnpm add @aigne/open-router @aigne/core
 ```
 
-## Configuration and Basic Usage
+## Configuration and Usage
 
-The primary export of this package is the `OpenRouterChatModel`. It extends the `@aigne/openai` package's `OpenAIChatModel`, so it accepts the same options.
+The `OpenRouterChatModel` class is the primary interface for interacting with the OpenRouter API. To use it, you must provide your OpenRouter API key. This can be done directly in the constructor via the `apiKey` option or by setting the `OPEN_ROUTER_API_KEY` environment variable.
 
-To configure the model, you need to provide your OpenRouter API key. You can do this by passing it directly to the constructor or by setting the `OPEN_ROUTER_API_KEY` environment variable.
+### Basic Example
 
-Here is a basic example of how to instantiate and use the model:
+Below is a standard implementation of the `OpenRouterChatModel` to send a chat request. This example uses Anthropic's `claude-3-opus` model.
 
-```typescript
+```typescript Basic Usage icon=logos:typescript
 import { OpenRouterChatModel } from "@aigne/open-router";
 
 const model = new OpenRouterChatModel({
@@ -75,23 +96,74 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* Output:
-  {
-    text: "I'm powered by OpenRouter, using the Claude 3 Opus model from Anthropic.",
-    model: "anthropic/claude-3-opus",
-    usage: {
-      inputTokens: 5,
-      outputTokens: 14
-    }
+```
+
+The expected output will contain the text response, the model identifier, and token usage metrics.
+
+```json Output icon=mdi:code-json
+{
+  "text": "I am currently using the anthropic/claude-3-opus model, accessed through OpenRouter.",
+  "model": "anthropic/claude-3-opus",
+  "usage": {
+    "inputTokens": 15,
+    "outputTokens": 23
   }
-*/
+}
+```
+
+### Constructor Options
+
+The `OpenRouterChatModel` is extended from the `@aigne/openai` package's `OpenAIChatModel` and accepts the same constructor options.
+
+<x-field-group>
+  <x-field data-name="apiKey" data-type="string" data-required="false">
+    <x-field-desc markdown>Your OpenRouter API key. If not provided, the client will check for the `OPEN_ROUTER_API_KEY` environment variable.</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-default="openai/gpt-4o" data-required="false">
+    <x-field-desc markdown>The identifier for the model you wish to use (e.g., `anthropic/claude-3-opus`).</x-field-desc>
+  </x-field>
+  <x-field data-name="fallbackModels" data-type="string[]" data-required="false">
+    <x-field-desc markdown>An array of model identifiers to use as fallbacks in case the primary model fails.</x-field-desc>
+  </x-field>
+  <x-field data-name="baseURL" data-type="string" data-default="https://openrouter.ai/api/v1" data-required="false">
+    <x-field-desc markdown>The base URL for the OpenRouter API. Can be overridden for testing or proxies.</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>An object containing parameters to pass to the model provider, such as `temperature`, `max_tokens`, or `top_p`.</x-field-desc>
+  </x-field>
+</x-field-group>
+
+## Using Multiple Models with Fallbacks
+
+A key feature of the `@aigne/open-router` package is the ability to specify fallback models. If the primary model request fails, the system will automatically retry the request with the next model in the `fallbackModels` list. This ensures greater application reliability.
+
+```typescript Model Fallbacks icon=logos:typescript
+import { OpenRouterChatModel } from "@aigne/open-router";
+
+const modelWithFallbacks = new OpenRouterChatModel({
+  apiKey: "your-api-key",
+  model: "openai/gpt-4o",
+  fallbackModels: ["anthropic/claude-3-opus", "google/gemini-1.5-pro"], // Fallback order
+  modelOptions: {
+    temperature: 0.7,
+  },
+});
+
+// Will try gpt-4o first, then claude-3-opus if that fails, then gemini-1.5-pro
+const fallbackResult = await modelWithFallbacks.invoke({
+  messages: [{ role: "user", content: "Which model are you using?" }],
+});
+
+console.log(fallbackResult);
 ```
 
 ## Streaming Responses
 
-For applications requiring real-time interaction, you can enable streaming to receive response chunks as they are generated. Set the `streaming: true` option in the `invoke` method.
+For applications requiring real-time interaction, you can enable streaming to process response chunks as they become available. Set the `streaming: true` option in the `invoke` method.
 
-```typescript
+The response stream must be iterated over to assemble the complete message.
+
+```typescript Streaming Example icon=logos:typescript
 import { isAgentResponseDelta } from "@aigne/core";
 import { OpenRouterChatModel } from "@aigne/open-router";
 
@@ -118,109 +190,19 @@ for await (const chunk of stream) {
   }
 }
 
-console.log(fullText); // Output: "I'm powered by OpenRouter, using the Claude 3 Opus model from Anthropic."
-console.log(json); // { model: "anthropic/claude-3-opus", usage: { inputTokens: 5, outputTokens: 14 } }
+console.log(fullText);
+console.log(json);
 ```
 
-## Using Multiple Models with Fallbacks
+The final `fullText` and `json` objects will contain the aggregated response data.
 
-One of the key features of `@aigne/open-router` is the ability to configure fallback models. If the primary model fails for any reason (e.g., API error, rate limiting), the system will automatically try the next model in the specified list.
-
-You can define the fallback order using the `fallbackModels` option.
-
-```typescript
-const modelWithFallbacks = new OpenRouterChatModel({
-  apiKey: "your-api-key",
-  model: "openai/gpt-4o",
-  fallbackModels: ["anthropic/claude-3-opus", "google/gemini-1.5-pro"], // Fallback order
-  modelOptions: {
-    temperature: 0.7,
-  },
-});
-
-// Will try gpt-4o first, then claude-3-opus if that fails, then gemini-1.5-pro
-const fallbackResult = await modelWithFallbacks.invoke({
-  messages: [{ role: "user", content: "Which model are you using?" }],
-});
+```text Output icon=mdi:console
+I am currently using the anthropic/claude-3-opus model, accessed through OpenRouter.
+{ model: 'anthropic/claude-3-opus', usage: { inputTokens: 15, outputTokens: 23 } }
 ```
 
-The following diagram illustrates the fallback logic:
+## Summary
 
-```d2
-direction: down
+The `@aigne/open-router` package simplifies access to a wide array of language models through a unified and resilient interface. By leveraging features like model fallbacks and streaming, you can build more robust and responsive AI applications.
 
-Your-App: {
-  label: "Your App"
-  shape: rectangle
-}
-
-AIGNE-Framework: {
-  label: "AIGNE Framework"
-  shape: rectangle
-
-  aigne-open-router: {
-    label: "@aigne/open-router"
-  }
-}
-
-OpenRouter-API: {
-  label: "OpenRouter API"
-  shape: rectangle
-}
-
-Model-Providers: {
-  label: "Model Providers"
-  shape: rectangle
-  grid-columns: 3
-
-  OpenAI: {
-    label: "OpenAI\n(gpt-4o)"
-    shape: cylinder
-  }
-  Anthropic: {
-    label: "Anthropic\n(claude-3-opus)"
-    shape: cylinder
-  }
-  Google: {
-    label: "Google\n(gemini-1.5-pro)"
-    shape: cylinder
-  }
-}
-
-Your-App -> AIGNE-Framework.aigne-open-router: "1. invoke()"
-
-AIGNE-Framework.aigne-open-router -> OpenRouter-API: "2. Try Primary Model"
-OpenRouter-API -> Model-Providers.OpenAI
-
-Model-Providers.OpenAI -> AIGNE-Framework.aigne-open-router: {
-  label: "3. Failure"
-  style: {
-    stroke-dash: 2
-  }
-}
-AIGNE-Framework.aigne-open-router -> OpenRouter-API: {
-  label: "4. Try Fallback 1"
-  style: {
-    stroke-dash: 2
-  }
-}
-OpenRouter-API -> Model-Providers.Anthropic
-
-Model-Providers.Anthropic -> AIGNE-Framework.aigne-open-router: {
-  label: "5. Failure"
-  style: {
-    stroke-dash: 2
-  }
-}
-AIGNE-Framework.aigne-open-router -> OpenRouter-API: {
-  label: "6. Try Fallback 2"
-  style: {
-    stroke-dash: 2
-  }
-}
-OpenRouter-API -> Model-Providers.Google
-
-Model-Providers.Google -> AIGNE-Framework.aigne-open-router: "7. Success"
-AIGNE-Framework.aigne-open-router -> Your-App: "8. Return Response"
-
-```
+For more information on the fundamental concepts of models in the AIGNE Framework, refer to the [Models overview](./models-overview.md).

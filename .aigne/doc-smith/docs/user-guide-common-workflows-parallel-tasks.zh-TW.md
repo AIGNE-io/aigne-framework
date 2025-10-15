@@ -1,186 +1,101 @@
-# 反思工作流程
+# 並行任務
 
-`反思` 工作流程模式能夠實現 Agent 輸出的自我改進和迭代優化。在此模式中，會先生成一個初始輸出，然後將其傳遞給一個獨立的 `reviewer` Agent 進行評估。如果輸出未達到所需標準，它會連同回饋意見一起被送回，以進行另一次迭代。這個循環會持續進行，直到輸出被核准或達到最大迭代次數為止。
+在某些情況下，您需要同時執行多個獨立的任務以提高效率。並行任務工作流程就是為此目的而設計的。它允許多個 AI Agent 同時處理相同的初始資訊，並在最後收集和合併它們各自的結果。
 
-此模式對於需要高品質、經驗證輸出的情境特別有效，例如：
-- **程式碼生成與審查**：由一個 `coder` Agent 編寫程式碼，再由一個 `reviewer` Agent 檢查其正確性、效率和安全性。
-- **內容品質控制**：由一個 `writer` Agent 生成內容，再由一個 `editor` Agent 檢查其風格、文法和準確性。
-- **自我修正系統**：Agent 可以從回饋中學習，並在特定任務上迭代地提升其表現。
+這種方法就像聘請一個專家團隊來分析一份商業提案。一位專家可能專注於財務可行性，另一位專注於市場趨勢，第三位則專注於法律風險。他們都從同一份提案開始，同時進行工作，最終他們的報告會被匯總起來，以提供一個完整的畫面。這比他們必須等待彼此完成工作要快得多。
 
-## 運作方式
-
-反思過程遵循一個循環：一個或多個 Agent 生成解決方案，然後由一個 `reviewer` Agent 提供回饋。初始的 Agent 接著會利用這些回饋來優化下一次的嘗試。
-
-# 反思工作流程
-
-`反思` 工作流程模式能夠實現 Agent 輸出的自我改進和迭代優化。在此模式中，會先生成一個初始輸出，然後將其傳遞給一個獨立的 `reviewer` Agent 進行評估。如果輸出未達到所需標準，它會連同回饋意見一起被送回，以進行另一次迭代。這個循環會持續進行，直到輸出被核准或達到最大迭代次數為止。
-
-此模式對於需要高品質、經驗證輸出的情境特別有效，例如：
-- **程式碼生成與審查**：由一個 `coder` Agent 編寫程式碼，再由一個 `reviewer` Agent 檢查其正確性、效率和安全性。
-- **內容品質控制**：由一個 `writer` Agent 生成內容，再由一個 `editor` Agent 檢查其風格、文法和準確性。
-- **自我修正系統**：Agent 可以從回饋中學習，並在特定任務上迭代地提升其表現。
+此工作流程由一個設定為並行模式運作的 [Agent Team](./user-guide-understanding-agents-agent-teams.md) 管理。若想了解任務依序執行的不同方法，請參閱 [循序任務](./user-guide-common-workflows-sequential-tasks.md) 工作流程。
 
 ## 運作方式
 
-反思過程遵循一個循環：一個或多個 Agent 生成解決方案，然後由一個 `reviewer` Agent 提供回饋。初始的 Agent 接著會利用這些回饋來優化下一次的嘗試。
+並行工作流程遵循一個清晰、高效的流程來處理彼此不依賴的任務。該流程旨在透過一次執行所有 Agent 來最大化速度。
+
+1.  **單一輸入**：流程從單一資訊開始，例如一份文件、一個使用者查詢或一組資料。
+2.  **同步分發**：Agent Team 接收此輸入，並將*完全相同的資訊*分發給團隊中的每一個 Agent。
+3.  **獨立處理**：所有 Agent 同時開始工作。每個 Agent 根據其獨特的指令執行其專門的任務，無需等待其他 Agent 或與之互動。
+4.  **結果彙整**：當每個 Agent 完成其工作時，其輸出會被收集起來。然後 Agent Team 將這些個別的輸出彙整成一個單一的組合結果。如果多個 Agent 為同一個欄位產生輸出，系統通常會接受最先完成的 Agent 的結果。
+
+這種結構確保了完成所有任務所需的總時間取決於運行時間最長的 Agent，而不是所有 Agent 時間的總和。
 
 ```d2
 direction: down
 
-start: { 
-  label: "開始"
-  shape: oval 
-}
-
-generator: {
-  label: "生成器 Agent\n生成初始輸出"
+Input: {
+  label: "1. 單一輸入"
   shape: rectangle
 }
 
-reviewer: {
-  label: "審查者 Agent\n評估輸出"
+Agent-Team: {
+  label: "Agent Team (並行模式)"
+  style.stroke-dash: 4
+
+  Distribution: {
+    label: "2. 分發任務"
+    shape: diamond
+  }
+
+  Agents: {
+    label: "3. 獨立處理"
+    style.stroke-width: 0
+    grid-columns: 3
+
+    Agent-1: { 
+      label: "Agent 1"
+      shape: rectangle 
+    }
+    Agent-2: { 
+      label: "Agent 2"
+      shape: rectangle 
+    }
+    Agent-N: {
+      label: "Agent N..."
+      shape: rectangle
+    }
+  }
+
+  Aggregation: {
+    label: "4. 彙整結果"
+    shape: diamond
+  }
+}
+
+Output: {
+  label: "5. 組合結果"
   shape: rectangle
 }
 
-decision: {
-  label: "輸出是否\n符合標準？"
-  shape: diamond
-}
+Input -> Agent-Team.Distribution
+Agent-Team.Distribution -> Agent-Team.Agents.Agent-1
+Agent-Team.Distribution -> Agent-Team.Agents.Agent-2
+Agent-Team.Distribution -> Agent-Team.Agents.Agent-N
+Agent-Team.Agents.Agent-1 -> Agent-Team.Aggregation
+Agent-Team.Agents.Agent-2 -> Agent-Team.Aggregation
+Agent-Team.Agents.Agent-N -> Agent-Team.Aggregation
+Agent-Team.Aggregation -> Output
 
-end: {
-  label: "結束\n(已核准的輸出)"
-  shape: oval
-}
-
-start -> generator
-generator -> reviewer: "提交審查"
-reviewer -> decision
-decision -> end: "是"
-decision -> generator: "否 (提供回饋)"
 ```
 
-## 設定
+## 常見使用案例
 
-若要啟用反思模式，您需要在 `TeamAgentOptions` 中設定 `reflection` 屬性。此屬性接受一個 `ReflectionMode` 物件，用以定義審查和核准流程。
+並行工作流程最適用於需要在同一份資訊上進行多個獨立分析或任務，且速度是優先考量的情境。
 
-**ReflectionMode 參數**
+<x-cards data-columns="2">
+  <x-card data-title="多視角內容分析" data-icon="lucide:scan-text">
+    在分析一份文件時，一個 Agent 可以提取關鍵特徵，另一個可以分析情感基調（情緒），第三個則可以識別目標受眾。這三項任務可以同時進行。
+  </x-card>
+  <x-card data-title="並行資料查詢" data-icon="lucide:database-zap">
+    如果您需要在不同來源（例如，客戶資料庫、產品目錄和知識庫）中搜尋資訊，您可以為每個來源派遣一個 Agent 同時進行搜尋。
+  </x-card>
+  <x-card data-title="競爭分析" data-icon="lucide:bar-chart-3">
+    為了分析競爭對手的產品，一個 Agent 可以收集近期的客戶評論，另一個可以尋找定價資訊，第三個可以查詢技術規格，所有這些都可以並行進行。
+  </x-card>
+  <x-card data-title="程式碼審查" data-icon="lucide:code-2">
+    對於一段程式碼，一個 Agent 可以檢查安全漏洞，而另一個則檢查是否符合風格指南。然後將這些回饋結合起來提供給開發者。
+  </x-card>
+</x-cards>
 
-<x-field-group>
-  <x-field data-name="reviewer" data-type="Agent" data-required="true" data-desc="負責審查輸出並提供回饋的 Agent。"></x-field>
-  <x-field data-name="isApproved" data-type="((output: Message) => PromiseOrValue<boolean | unknown>) | string" data-required="true" data-desc="一個函式或審查者輸出中的欄位名稱，用以決定結果是否被核准。若為函式，它會接收審查者的輸出，並應回傳一個真值 (truthy value) 表示核准。若為字串，則會檢查輸出中對應欄位的真值性 (truthiness)。"></x-field>
-  <x-field data-name="maxIterations" data-type="number" data-required="false" data-default="3" data-desc="在流程終止前，審查-回饋循環的最大次數。這可以防止無限循環。"></x-field>
-  <x-field data-name="returnLastOnMaxIterations" data-type="boolean" data-required="false" data-default="false" data-desc="若設為 `true`，當達到 `maxIterations` 時，工作流程會回傳最後一次生成的輸出，即使它未被核准。若為 `false`，則會拋出錯誤。"></x-field>
-</x-field-group>
+## 總結
 
-## 範例：程式碼生成與審查
+並行任務工作流程是提高效率的強大模式。透過允許多個 Agent 獨立且同時工作，它顯著減少了完成涉及多個不相關子任務的複雜工作所需的時間。這使其成為建構反應迅速且功能強大的 AI 應用程式的基礎工作流程。
 
-此範例示範了一個反思工作流程，其中 `coder` Agent 編寫一個 Python 函式，而 `reviewer` Agent 則對其進行評估。此過程會持續進行，直到 `reviewer` 核准該程式碼為止。
-
-### 1. 定義 Coder Agent
-
-`coder` Agent 負責根據使用者的請求編寫初始程式碼。它的設計旨在接收來自審查者的回饋，以便在後續的迭代中改進其解決方案。
-
-```typescript
-import { TeamAgent, AIAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-import { z } from "zod";
-
-const { OPENAI_API_KEY } = process.env;
-
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-});
-
-const coder = AIAgent.from({
-  name: "Coder",
-  instructions: `
-You are a proficient coder. You write Python code to solve problems.
-Work with the reviewer to improve your code.
-Always put all finished code in a single Markdown code block.
-
-Respond using the following format:
-Thoughts: <Your comments>
-Code: <Your code>
-
-Previous review result:
-{{feedback}}
-
-User's question:
-{{question}}
-`,
-  outputSchema: z.object({
-    code: z.string().describe("Your code"),
-  }),
-  inputKey: "question",
-});
-```
-
-### 2. 定義 Reviewer Agent
-
-`reviewer` Agent 評估由 `coder` 生成的程式碼。它會檢查程式碼的正確性、效率和安全性，並提供結構化的回饋。其輸出包含一個布林值 `approval` 欄位，用於控制反思循環。
-
-```typescript
-const reviewer = AIAgent.from({
-  name: "Reviewer",
-  instructions: `
-You are a code reviewer. You focus on correctness, efficiency and safety of the code.
-
-The problem statement is: {{question}}
-The code is:
-\`\`\`
-{{code}}
-\`\`\`
-
-Please review the code. If previous feedback was provided, see if it was addressed.
-`,
-  outputSchema: z.object({
-    approval: z.boolean().describe("Set to true to APPROVE or false to REVISE"),
-    feedback: z.object({
-      correctness: z.string().describe("Your comments on correctness"),
-      efficiency: z.string().describe("Your comments on efficiency"),
-      safety: z.string().describe("Your comments on safety"),
-      suggested_changes: z
-        .string()
-        .describe("Your comments on suggested changes"),
-    }),
-  }),
-});
-```
-
-### 3. 建立並叫用 TeamAgent
-
-設定一個 `TeamAgent` 來協調此工作流程。將 `coder` 設定為主要 Agent (技能)，並在 `reflection` 屬性中設定 `reviewer`。`isApproved` 條件指向 `reviewer` 輸出中的 `approval` 欄位。
-
-```typescript
-const reflectionTeam = TeamAgent.from({
-  skills: [coder],
-  reflection: {
-    reviewer,
-    isApproved: "approval",
-    maxIterations: 3,
-  },
-});
-
-async function run() {
-  const result = await reflectionTeam.invoke(
-    {
-      question: "Write a function to find the sum of all even numbers in a list.",
-    },
-    { model }
-  );
-  
-  console.log(JSON.stringify(result, null, 2));
-}
-
-run();
-```
-
-### 範例輸出
-
-經過一次或多次迭代後，`reviewer` Agent 會核准程式碼，並回傳 `coder` Agent 的最終輸出。
-
-```json
-{
-  "code": "def sum_of_even_numbers(numbers):\n    \"\"\"Function to calculate the sum of all even numbers in a list.\"\"\"\n    return sum(number for number in numbers if number % 2 == 0)"
-}
-```
+要了解 Agent 如何以不同方式協同工作，請接著閱讀 [循序任務](./user-guide-common-workflows-sequential-tasks.md) 工作流程。

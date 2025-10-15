@@ -1,22 +1,20 @@
-このドキュメントでは、LM Studio経由でローカルにホストされたAIモデルと統合するためのAIGNEモデルアダプターである`@aigne/lmstudio`パッケージの使用方法について包括的にガイドします。
+# LMStudio
 
-## 概要
+`@aigne/lmstudio` パッケージは、[LM Studio](https://lmstudio.ai/) を介してローカルでホストされる大規模言語モデル (LLM) と AIGNE を統合するためのモデルアダプターを提供します。これにより、開発者は AIGNE フレームワーク内でローカルモデルの能力を活用でき、プライバシー、コントロール、コスト効率が向上します。
 
-`@aigne/lmstudio`モデルアダプターは、LM StudioのOpenAI互換APIとのシームレスな統合を提供し、AIGNEフレームワークを通じてローカルの大規模言語モデル（LLM）を実行できるようにします。LM Studioは、ローカルAIモデルをダウンロード、管理、実行するためのユーザーフレンドリーなインターフェースを提供し、OpenAI APIを模倣する組み込みサーバーを備えています。
-
-このアダプターは`@aigne/openai`パッケージから継承しているため、チャット、ストリーミング、ツール/関数呼び出し、構造化出力などの操作において、使い慣れたOpenAI API構造をサポートしています。
+このガイドでは、LM Studio に必要な設定について説明し、`LMStudioChatModel` を使用してローカルモデルと対話する方法を示します。他のローカルモデルプロバイダーに関する情報については、[Ollama](./models-ollama.md) のドキュメントを参照してください。
 
 ## 前提条件
 
 このパッケージを使用する前に、以下の手順を完了する必要があります。
 
-1.  **LM Studioのインストール**: 公式ウェブサイトからLM Studioアプリケーションをダウンロードしてインストールします： [https://lmstudio.ai/](https://lmstudio.ai/)
-2.  **モデルのダウンロード**: LM Studioのインターフェースを使用してローカルモデルを検索し、ダウンロードします。人気のある選択肢には、Llama 3.2、Mistral、Phi-3などがあります。
-3.  **ローカルサーバーの起動**: LM Studioの「Local Server」タブに移動し、ダウンロードしたモデルを選択して「Start Server」をクリックします。これにより、アダプターが接続するローカルエンドポイント（通常は`http://localhost:1234/v1`）が公開されます。
+1.  **LM Studio のインストール**: 公式ウェブサイト [https://lmstudio.ai/](https://lmstudio.ai/) から LM Studio アプリケーションをダウンロードしてインストールします。
+2.  **モデルのダウンロード**: LM Studio のインターフェースを使用してモデルを検索し、ダウンロードします。Llama 3.2、Mistral、Phi-3 の派生モデルなどが人気です。
+3.  **ローカルサーバーの起動**: LM Studio の「Local Server」タブ (サーバーアイコン) に移動し、ドロップダウンからダウンロードしたモデルを選択して、「Start Server」をクリックします。これにより、OpenAI 互換の API エンドポイントが公開されます。通常は `http://localhost:1234/v1` です。
 
 ## インストール
 
-お好みのパッケージマネージャーを使用して、パッケージをプロジェクトにインストールします。
+LMStudio パッケージをプロジェクトに追加するには、ターミナルで次のいずれかのコマンドを実行します。
 
 ```bash
 npm install @aigne/lmstudio
@@ -32,118 +30,146 @@ yarn add @aigne/lmstudio
 
 ## クイックスタート
 
-次の例は、`LMStudioChatModel`のインスタンスを作成し、基本的なリクエストを行う方法を示しています。
+LM Studio サーバーが実行されたら、`LMStudioChatModel` を使用してローカルモデルと対話できます。次の例は、モデルをインスタンス化し、簡単なリクエストを送信する方法を示しています。
 
-```typescript
+```typescript Quick Start icon=logos:typescript
 import { LMStudioChatModel } from "@aigne/lmstudio";
 
-// 1. 新しいLM Studioチャットモデルインスタンスを作成します
+// 1. モデルをインスタンス化します
+// モデル名が LM Studio にロードされたものと一致することを確認してください。
 const model = new LMStudioChatModel({
-  // baseURLは、LM Studioローカルサーバーのアドレスと一致する必要があります
-  baseURL: "http://localhost:1234/v1",
-  // モデル名は、LM Studioでロードされたものと完全に一致する必要があります
   model: "llama-3.2-3b-instruct",
-  modelOptions: {
-    temperature: 0.7,
-    maxTokens: 2048,
-  },
 });
 
-// 2. ユーザーメッセージでモデルを呼び出します
-const response = await model.invoke({
-  messages: [
-    { role: "user", content: "What is the capital of France?" }
-  ],
-});
+// 2. モデルを呼び出します
+async function main() {
+  try {
+    const response = await model.invoke({
+      messages: [
+        { role: "user", content: "What is the capital of France?" }
+      ],
+    });
 
-// 3. 応答テキストを出力します
-console.log(response.text);
-// 期待される出力: "The capital of France is Paris."
+    console.log(response.text);
+  } catch (error) {
+    console.error("Error invoking model:", error);
+  }
+}
+
+main();
+```
+
+リクエストが成功した場合、出力は次のようになります。
+
+```text
+フランスの首都はパリです。
 ```
 
 ## 設定
 
-`LMStudioChatModel`は、コンストラクタまたは環境変数を使用して設定できます。
+`LMStudioChatModel` は、コンストラクターまたは環境変数を通じて設定できます。
 
-### コンストラクタオプション
+### コンストラクターオプション
 
-`LMStudioChatModel`は`OpenAIChatModel`を拡張しているため、標準のOpenAIオプションを受け入れます。
+`LMStudioChatModel` は標準の `OpenAIChatModel` を拡張し、以下のオプションを受け入れます。
 
-```typescript
+<x-field-group>
+  <x-field data-name="model" data-type="string" data-required="false">
+    <x-field-desc markdown>使用するモデルの名前。LM Studio サーバーにロードされたモデルファイルと一致する必要があります。デフォルトは `llama-3.2-3b-instruct` です。</x-field-desc>
+  </x-field>
+  <x-field data-name="baseURL" data-type="string" data-required="false">
+    <x-field-desc markdown>LM Studio サーバーのベース URL。デフォルトは `http://localhost:1234/v1` です。</x-field-desc>
+  </x-field>
+  <x-field data-name="apiKey" data-type="string" data-required="false">
+    <x-field-desc markdown>API キー。LM Studio サーバーで認証を設定している場合に必要です。デフォルトでは、LM Studio は認証なしで実行され、キーはプレースホルダー値 `not-required` に設定されます。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>モデル生成を制御するための追加オプション。</x-field-desc>
+    <x-field data-name="temperature" data-type="number" data-required="false" data-desc="ランダム性を制御します。低い値 (例: 0.2) は出力をより決定論的にします。デフォルトは 0.7 です。"></x-field>
+    <x-field data-name="maxTokens" data-type="number" data-required="false" data-desc="レスポンスで生成するトークンの最大数。"></x-field>
+    <x-field data-name="topP" data-type="number" data-required="false" data-desc="Nucleus サンプリングパラメーター。"></x-field>
+    <x-field data-name="frequencyPenalty" data-type="number" data-required="false" data-desc="既存の頻度に基づいて新しいトークンにペナルティを課します。"></x-field>
+    <x-field data-name="presencePenalty" data-type="number" data-required="false" data-desc="これまでのテキストに表示されるかどうかに基づいて新しいトークンにペナルティを課します。"></x-field>
+  </x-field>
+</x-field-group>
+
+以下はカスタム設定の例です。
+
+```typescript Configuration Example icon=logos:typescript
+import { LMStudioChatModel } from "@aigne/lmstudio";
+
 const model = new LMStudioChatModel({
-  // LM StudioサーバーのベースURL（デフォルトは http://localhost:1234/v1）
   baseURL: "http://localhost:1234/v1",
-  
-  // モデル識別子。LM Studioでロードされたものと一致する必要があります
-  model: "llama-3.2-3b-instruct",
-
-  // ローカルのLM StudioインスタンスにはAPIキーは不要です
-  // デフォルトは "not-required" です
-  // apiKey: "your-key-if-needed",
-
-  // 標準モデルオプション
+  model: "Mistral-7B-Instruct-v0.2-GGUF",
   modelOptions: {
-    temperature: 0.7,     // ランダム性を制御します（0.0から2.0）
-    maxTokens: 2048,      // 応答の最大トークン数
-    topP: 0.9,            // 核サンプリング
-    frequencyPenalty: 0,  // 新しいトークンをその頻度に基づいてペナルティを与えます
-    presencePenalty: 0,   // 新しいトークンをその存在に基づいてペナルティを与えます
+    temperature: 0.8,
+    maxTokens: 4096,
   },
 });
 ```
 
 ### 環境変数
 
-より柔軟な設定を行うために、環境変数を使用できます。
+環境変数を設定してモデルを設定することもできます。両方が提供されている場合、コンストラクターオプションが優先されます。
 
-```bash
-# LM StudioサーバーのURLを設定します（デフォルト: http://localhost:1234/v1）
+-   `LM_STUDIO_BASE_URL`: サーバーのベース URL を設定します。デフォルトは `http://localhost:1234/v1` です。
+-   `LM_STUDIO_API_KEY`: API キーを設定します。サーバーが認証を必要とする場合にのみ必要です。
+
+```bash .env
 LM_STUDIO_BASE_URL=http://localhost:1234/v1
-
-# デフォルトでは、ローカルのLM StudioにAPIキーは不要です。
-# サーバーで認証を設定している場合にのみ、これを設定してください。
-# LM_STUDIO_API_KEY=your-key-if-needed
+# LM_STUDIO_API_KEY=必要に応じてキーを入力
 ```
-
-**注意:** LM Studioは通常、認証なしでローカルで実行されます。APIキーは、基礎となるOpenAIクライアントを満たすために、デフォルトでプレースホルダー値`"not-required"`に設定されています。
 
 ## 機能
 
-このアダプターは、ストリーミング、ツール呼び出し、構造化JSON出力など、いくつかの高度な機能をサポートしています。
+`LMStudioChatModel` は、ストリーミング、ツール呼び出し、構造化出力など、いくつかの高度な機能をサポートしています。
 
-### ストリーミングのサポート
+### ストリーミング
 
-リアルタイムの応答を得るために、モデルからの出力をストリーミングできます。これは、応答が生成されている間に表示したいチャットボットのようなアプリケーションに便利です。
+リアルタイムアプリケーション向けに、生成中のレスポンスをストリーミングできます。`invoke` メソッドで `streaming: true` オプションを設定します。
 
-```typescript
-const model = new LMStudioChatModel();
+```typescript Streaming Example icon=logos:typescript
+import { LMStudioChatModel } from "@aigne/lmstudio";
 
-const stream = await model.invoke(
-  {
-    messages: [{ role: "user", content: "Tell me a short story about a robot who discovers music." }],
-  },
-  { streaming: true }
-);
+const model = new LMStudioChatModel({
+  model: "llama-3.2-3b-instruct",
+});
 
-for await (const chunk of stream) {
-  if (chunk.type === "delta" && chunk.delta.text) {
-    process.stdout.write(chunk.delta.text.text);
+async function streamStory() {
+  const stream = await model.invoke(
+    {
+      messages: [{ role: "user", content: "Tell me a short story about a robot who discovers music." }],
+    },
+    { streaming: true }
+  );
+
+  for await (const chunk of stream) {
+    if (chunk.type === "delta" && chunk.delta.text) {
+      process.stdout.write(chunk.delta.text.text);
+    }
   }
 }
+
+streamStory();
 ```
 
-### ツールと関数の呼び出し
+### ツール呼び出し
 
-このアダプターはOpenAI互換の関数呼び出しをサポートしており、モデルが外部ツールの呼び出しをリクエストできます。
+多くのローカルモデルは、OpenAI 互換のツール呼び出し (関数呼び出しとしても知られています) をサポートしています。モデルにツールのリストを提供すると、モデルはそれらを呼び出すために必要な引数を生成します。
 
-```typescript
-// ツール仕様を定義します
+```typescript Tool Calling Example icon=logos:typescript
+import { LMStudioChatModel } from "@aigne/lmstudio";
+
+const model = new LMStudioChatModel({
+  model: "llama-3.2-3b-instruct",
+});
+
 const tools = [
   {
     type: "function" as const,
     function: {
       name: "get_weather",
-      description: "Get the current weather information for a specified location",
+      description: "Get the current weather for a specified location.",
       parameters: {
         type: "object",
         properties: {
@@ -158,28 +184,33 @@ const tools = [
   },
 ];
 
-// ツールを使ってモデルを呼び出します
-const response = await model.invoke({
-  messages: [
-    { role: "user", content: "What's the weather like in New York?" }
-  ],
-  tools,
-});
+async function checkWeather() {
+  const response = await model.invoke({
+    messages: [
+      { role: "user", content: "What's the weather like in New York?" }
+    ],
+    tools,
+  });
 
-// モデルがツール呼び出しをリクエストしたかどうかを確認します
-if (response.toolCalls?.length) {
-  console.log("Tool calls:", response.toolCalls);
-  // 出力例:
-  // Tool calls: [ { id: '...', type: 'function', function: { name: 'get_weather', arguments: '{"location":"New York"}' } } ]
+  if (response.toolCalls?.length) {
+    console.log("Tool calls:", JSON.stringify(response.toolCalls, null, 2));
+  }
 }
+
+checkWeather();
 ```
 
-### 構造化出力（JSON）
+### 構造化出力
 
-モデルに、特定のJSONスキーマに準拠した応答を生成するように指示できます。
+モデルの出力が特定の JSON スキーマに準拠するように、`responseFormat` を定義できます。これは、信頼性の高い、機械可読なデータを必要とするタスクに役立ちます。
 
-```typescript
-// 出力に必要なJSONスキーマを定義します
+```typescript Structured Output Example icon=logos:typescript
+import { LMStudioChatModel } from "@aigne/lmstudio";
+
+const model = new LMStudioChatModel({
+  model: "llama-3.2-3b-instruct",
+});
+
 const responseFormat = {
   type: "json_schema" as const,
   json_schema: {
@@ -196,58 +227,71 @@ const responseFormat = {
   },
 };
 
-// 応答形式を指定してモデルを呼び出します
-const response = await model.invoke({
-  messages: [
-    { role: "user", content: "Get the current weather for Paris in JSON format." }
-  ],
-  responseFormat,
-});
+async function getWeatherAsJson() {
+  const response = await model.invoke({
+    messages: [
+      { role: "user", content: "What is the weather in Paris? Respond in the requested JSON format." }
+    ],
+    responseFormat,
+  });
 
-// パースされたJSONオブジェクトは `response.json` フィールドで利用可能です
-console.log(response.json);
+  console.log(response.json);
+}
+
+getWeatherAsJson();
 ```
 
 ## サポートされているモデル
 
-LM Studioは、多種多様なオープンソースモデルをサポートしています。設定で使用されるモデル名は、LM Studioインターフェースに表示されるものと完全に一致する必要があります。人気のある選択肢は次のとおりです。
+LM Studio は、さまざまな GGUF 形式のモデルをサポートしています。正確なモデル名は、LM Studio のユーザーインターフェースに表示されるものと一致する必要があります。互換性のある人気のモデルには、次のものがあります。
 
--   **Llama 3.2** (3B、8B、70Bバリアント)
--   **Llama 3.1** (8B、70B、405Bバリアント)
--   **Mistral** (7B、8x7Bバリアント)
--   **CodeLlama** (7B、13B、34Bバリアント)
--   **Qwen** (さまざまなサイズ)
--   **Phi-3** (mini、small、mediumバリアント)
+| モデルファミリー | バリアント |
+| :----------- | :------------------------------------- |
+| **Llama 3.2**  | 3B, 8B, 70B Instruct                   |
+| **Llama 3.1**  | 8B, 70B, 405B Instruct                 |
+| **Mistral**    | 7B, 8x7B Instruct                      |
+| **Phi-3**      | Mini, Small, Medium Instruct           |
+| **CodeLlama**  | 7B, 13B, 34B Instruct                  |
+| **Qwen**       | Various sizes                          |
 
-## エラーハンドリング
+## トラブルシューティング
 
-ローカルサーバーと対話する際には、潜在的な接続エラーを処理することが重要です。一般的な問題は、LM Studioサーバーがアクティブでないことです。
+問題が発生した場合は、以下の一般的な問題と解決策のリストを参照してください。
 
-```typescript
+| 問題 | 解決策 |
+| :------------------ | :--------------------------------------------------------------------------------------------------------- |
+| **接続拒否** | LM Studio のローカルサーバーが実行中であり、コード内の `baseURL` が正しいことを確認してください。 |
+| **モデルが見つからない** | コード内の `model` 名が、LM Studio サーバーにロードされたモデルファイル名と完全に一致することを確認してください。 |
+| **応答が遅い** | 利用可能な場合は、LM Studio のサーバー設定で GPU アクセラレーションを有効にしてください。より小さなモデルを使用することも役立ちます。 |
+| **メモリ不足** | モデルがシステムで利用可能な RAM よりも多くの RAM を必要とする場合があります。より小さなモデルを使用するか、コンテキスト長を短くしてみてください。 |
+
+### エラー処理
+
+ネットワークの問題など、潜在的なランタイムエラーを処理するために、モデルの呼び出しを `try...catch` ブロックで囲むことをお勧めします。
+
+```typescript Error Handling Example icon=logos:typescript
 import { LMStudioChatModel } from "@aigne/lmstudio";
 
 const model = new LMStudioChatModel();
 
-try {
-  const response = await model.invoke({
-    messages: [{ role: "user", content: "Hello!" }],
-  });
-  console.log(response.text);
-} catch (error) {
-  // 接続拒否エラーを具体的にチェックします
-  if (error.code === "ECONNREFUSED") {
-    console.error("Connection failed: The LM Studio server is not running. Please start the local server.");
-  } else {
-    console.error("An unexpected error occurred:", error.message);
+async function safeInvoke() {
+  try {
+    const response = await model.invoke({
+      messages: [{ role: "user", content: "Hello!" }],
+    });
+    console.log(response.text);
+  } catch (error) {
+    if (error.code === "ECONNREFUSED") {
+      console.error("Connection failed. Please ensure the LM Studio server is running.");
+    } else {
+      console.error("An unexpected error occurred:", error.message);
+    }
   }
 }
+
+safeInvoke();
 ```
 
-## トラブルシューティング
+---
 
-一般的な問題とその解決策は次のとおりです。
-
-1.  **接続拒否**: このエラー（`ECONNREFUSED`）は、LM Studioローカルサーバーが実行されていない場合に発生します。LM Studioアプリケーションの「Local Server」タブからサーバーを起動したことを確認してください。
-2.  **モデルが見つかりません**: 「model not found」エラーが表示された場合は、設定の`model`名がLM Studioにロードされたモデルファイル名と完全に一致していることを確認してください。
-3.  **メモリ不足**: 大規模なモデルは、かなりのシステムリソースを消費する可能性があります。クラッシュやメモリの問題が発生した場合は、より小さなモデル（例：3Bまたは8Bパラメータのバリアント）を使用するか、コンテキスト長（`maxTokens`）を減らしてみてください。
-4.  **応答が遅い**: 応答速度は、ハードウェア（CPU/GPU）とモデルサイズに依存します。より高速な推論のためには、ハードウェアがサポートしており、LM Studioで正しく設定されている場合は、GPUアクセラレーションの使用を検討してください。
+詳細については、公式の [LM Studio ドキュメント](https://lmstudio.ai/docs) を参照してください。他のモデル統合を調べるには、[AIGNE Hub](./models-aigne-hub.md) のドキュメントに進むことができます。

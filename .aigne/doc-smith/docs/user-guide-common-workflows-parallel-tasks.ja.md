@@ -1,186 +1,101 @@
-# ワークフローリフレクション
+# 並列タスク
 
-リフレクションワークフローパターンは、Agent の出力の自己改善と反復的な改良を可能にします。このパターンでは、初期出力が生成され、評価のために別の `reviewer` Agent に渡されます。出力が必要な基準を満たしていない場合、フィードバックとともに再度処理に送られ、次のイテレーションが行われます。このサイクルは、出力が承認されるか、最大反復回数に達するまで続きます。
+状況によっては、効率を上げるために複数の独立したタスクを同時に実行する必要があります。並列タスクワークフローは、この目的のために設計されています。これにより、複数のAI Agentが同じ初期情報に対して同時に作業でき、個々の結果が最後に収集・結合されます。
 
-このパターンは、高品質で検証済みの出力が必要なシナリオで特に効果的です。例えば、以下のようなケースが挙げられます。
-- **コード生成とレビュー**: coder Agent がコードを書き、reviewer Agent がその正確性、効率性、安全性を検査します。
-- **コンテンツの品質管理**: writer Agent がコンテンツを生成し、editor Agent がスタイル、文法、正確性をチェックします。
-- **自己修正システム**: Agent はフィードバックから学習し、特定のタスクにおけるパフォーマンスを反復的に向上させることができます。
+このアプローチは、ビジネス提案を分析するために専門家チームを雇うようなものです。ある専門家は財務的な実行可能性に、別の専門家は市場動向に、そして3人目は法務リスクに焦点を当てるかもしれません。彼らは全員が同じ提案から始め、同時に作業を進め、最終的なレポートがまとめられて全体像が示されます。これは、互いの作業が終わるのを待たなければならない場合に比べて、はるかに高速です。
 
-## 仕組み
-
-リフレクションプロセスは、1つ以上の Agent が解決策を生成し、reviewer Agent がフィードバックを提供するというループに従います。その後、初期の Agent はこのフィードバックを使用して、次の試みを改良します。
-
-# ワークフローリフレクション
-
-リフレクションワークフローパターンは、Agent の出力の自己改善と反復的な改良を可能にします。このパターンでは、初期出力が生成され、評価のために別の `reviewer` Agent に渡されます。出力が必要な基準を満たしていない場合、フィードバックとともに再度処理に送られ、次のイテレーションが行われます。このサイクルは、出力が承認されるか、最大反復回数に達するまで続きます。
-
-このパターンは、高品質で検証済みの出力が必要なシナリオで特に効果的です。例えば、以下のようなケースが挙げられます。
-- **コード生成とレビュー**: coder Agent がコードを書き、reviewer Agent がその正確性、効率性、安全性を検査します。
-- **コンテンツの品質管理**: writer Agent がコンテンツを生成し、editor Agent がスタイル、文法、正確性をチェックします。
-- **自己修正システム**: Agent はフィードバックから学習し、特定のタスクにおけるパフォーマンスを反復的に向上させることができます。
+このワークフローは、並列モードで動作するように構成された [Agentチーム](./user-guide-understanding-agents-agent-teams.md) によって管理されます。タスクを次々と実行する別のアプローチについては、[シーケンシャルタスク](./user-guide-common-workflows-sequential-tasks.md) ワークフローを参照してください。
 
 ## 仕組み
 
-リフレクションプロセスは、1つ以上の Agent が解決策を生成し、reviewer Agent がフィードバックを提供するというループに従います。その後、初期の Agent はこのフィードバックを使用して、次の試みを改良します。
+並列ワークフローは、互いに依存しないタスクを処理するための、明確で効率的なプロセスに従います。このフローは、すべてのAgentを一度に実行することで速度を最大化するように設計されています。
+
+1.  **単一の入力**: プロセスは、ドキュメント、ユーザーからのクエリ、またはデータセットといった単一の情報から始まります。
+2.  **同時配信**: Agentチームはこの入力を受け取り、チーム内のすべてのAgentに*全く同じ情報*を配信します。
+3.  **独立した処理**: すべてのAgentが同時に作業を開始します。各Agentは、他のAgentを待ったり、相互作用したりすることなく、独自の指示に基づいて専門のタスクを実行します。
+4.  **結果の集約**: 各Agentが作業を終えると、その出力が収集されます。その後、Agentチームはこれらの個々の出力を単一の結合された結果に集約します。複数のAgentが同じフィールドの出力を生成した場合、通常、システムは最初に完了したAgentの結果を受け入れます。
+
+この構造により、すべてのタスクを完了するために必要な合計時間は、全Agentの時間の合計ではなく、最も長く実行されているAgentによって決定されます。
 
 ```d2
 direction: down
 
-start: { 
-  label: "開始"
-  shape: oval 
-}
-
-generator: {
-  label: "Generator Agent\n初期出力を生成"
+Input: {
+  label: "1. 単一の入力"
   shape: rectangle
 }
 
-reviewer: {
-  label: "Reviewer Agent\n出力を評価"
+Agent-Team: {
+  label: "Agentチーム (並列モード)"
+  style.stroke-dash: 4
+
+  Distribution: {
+    label: "2. タスクの配信"
+    shape: diamond
+  }
+
+  Agents: {
+    label: "3. 独立した処理"
+    style.stroke-width: 0
+    grid-columns: 3
+
+    Agent-1: { 
+      label: "Agent 1"
+      shape: rectangle 
+    }
+    Agent-2: { 
+      label: "Agent 2"
+      shape: rectangle 
+    }
+    Agent-N: {
+      label: "Agent N..."
+      shape: rectangle
+    }
+  }
+
+  Aggregation: {
+    label: "4. 結果の集約"
+    shape: diamond
+  }
+}
+
+Output: {
+  label: "5. 結合された結果"
   shape: rectangle
 }
 
-decision: {
-  label: "出力は\n基準を満たしているか？"
-  shape: diamond
-}
+Input -> Agent-Team.Distribution
+Agent-Team.Distribution -> Agent-Team.Agents.Agent-1
+Agent-Team.Distribution -> Agent-Team.Agents.Agent-2
+Agent-Team.Distribution -> Agent-Team.Agents.Agent-N
+Agent-Team.Agents.Agent-1 -> Agent-Team.Aggregation
+Agent-Team.Agents.Agent-2 -> Agent-Team.Aggregation
+Agent-Team.Agents.Agent-N -> Agent-Team.Aggregation
+Agent-Team.Aggregation -> Output
 
-end: {
-  label: "終了\n(承認された出力)"
-  shape: oval
-}
-
-start -> generator
-generator -> reviewer: "レビューのために提出"
-reviewer -> decision
-decision -> end: "はい"
-decision -> generator: "いいえ (フィードバックを提供)"
 ```
 
-## 設定
+## 一般的なユースケース
 
-リフレクションパターンを有効にするには、`TeamAgentOptions` 内の `reflection` プロパティを設定します。このプロパティは、レビューと承認のプロセスを定義する `ReflectionMode` オブジェクトを受け取ります。
+並列ワークフローは、同じ情報に対して複数の独立した分析やタスクが必要で、かつ速度が優先されるシナリオに最適です。
 
-**ReflectionMode パラメータ**
+<x-cards data-columns="2">
+  <x-card data-title="多角的なコンテンツ分析" data-icon="lucide:scan-text">
+    ドキュメントを分析する際、あるAgentは主要な特徴を抽出し、別のAgentは感情的なトーン（センチメント）を分析し、3番目のAgentはターゲットオーディエンスを特定することができます。これら3つのタスクはすべて同時に実行可能です。
+  </x-card>
+  <x-card data-title="並列データクエリ" data-icon="lucide:database-zap">
+    異なるソース（例：顧客データベース、製品カタログ、ナレッジベース）にまたがって情報を検索する必要がある場合、各ソースに対してAgentを派遣し、同時に検索させることができます。
+  </x-card>
+  <x-card data-title="競合分析" data-icon="lucide:bar-chart-3">
+    競合他社の製品を分析するために、あるAgentは最近の顧客レビューを収集し、別のAgentは価格情報を見つけ、3番目のAgentは技術仕様を調べるといったことを、すべて並行して行うことができます。
+  </x-card>
+  <x-card data-title="コードレビュー" data-icon="lucide:code-2">
+    あるコードに対して、1つのAgentがセキュリティの脆弱性をチェックし、別のAgentがスタイルガイドラインへの準拠をチェックします。その後、フィードバックは開発者のために結合されます。
+  </x-card>
+</x-cards>
 
-<x-field-group>
-  <x-field data-name="reviewer" data-type="Agent" data-required="true" data-desc="出力のレビューとフィードバックの提供を担当する Agent。"></x-field>
-  <x-field data-name="isApproved" data-type="((output: Message) => PromiseOrValue<boolean | unknown>) | string" data-required="true" data-desc="結果が承認されたかどうかを判断する、reviewer の出力内の関数またはフィールド名。関数の場合、reviewer の出力を受け取り、承認には truthy な値を返す必要があります。文字列の場合、出力内の対応するフィールドが truthy かどうかがチェックされます。"></x-field>
-  <x-field data-name="maxIterations" data-type="number" data-required="false" data-default="3" data-desc="プロセスが終了するまでのレビューとフィードバックのサイクルの最大数。これにより、無限ループを防ぎます。"></x-field>
-  <x-field data-name="returnLastOnMaxIterations" data-type="boolean" data-required="false" data-default="false" data-desc="`true` に設定すると、`maxIterations` に達したときに、承認されていなくても最後に生成された出力が返されます。`false` の場合、エラーがスローされます。"></x-field>
-</x-field-group>
+## まとめ
 
-## 例: コード生成とレビュー
+並列タスクワークフローは、効率を向上させるための強力なパターンです。複数のAgentが独立して同時に作業できるようにすることで、関連性のない複数のサブタスクを含む複雑なジョブを完了するのに必要な時間を大幅に短縮します。これにより、応答性が高く強力なAIアプリケーションを構築するための基本的なワークフローとなります。
 
-この例では、`coder` Agent が Python 関数を書き、`reviewer` Agent がそれを評価するリフレクションワークフローを示します。このプロセスは、`reviewer` がコードを承認するまで続きます。
-
-### 1. Coder Agent の定義
-
-`coder` Agent は、ユーザーのリクエストに基づいて初期コードを作成する責任を負います。後続のイテレーションで解決策を改善するために、reviewer からのフィードバックを受け取るように設計されています。
-
-```typescript
-import { TeamAgent, AIAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-import { z } from "zod";
-
-const { OPENAI_API_KEY } = process.env;
-
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-});
-
-const coder = AIAgent.from({
-  name: "Coder",
-  instructions: `
-あなたは熟練したコーダーです。問題を解決するために Python コードを作成します。
-reviewer と協力してコードを改善してください。
-完成したコードはすべて、単一の Markdown コードブロックにまとめてください。
-
-次の形式を使用して応答してください:
-思考: <あなたのコメント>
-コード: <あなたのコード>
-
-前回のレビュー結果:
-{{feedback}}
-
-ユーザーの質問:
-{{question}}
-`,
-  outputSchema: z.object({
-    code: z.string().describe("あなたのコード"),
-  }),
-  inputKey: "question",
-});
-```
-
-### 2. Reviewer Agent の定義
-
-`reviewer` Agent は、`coder` によって生成されたコードを評価します。正確性、効率性、安全性をチェックし、構造化されたフィードバックを提供します。その出力には、リフレクションループを制御するブール値の `approval` フィールドが含まれます。
-
-```typescript
-const reviewer = AIAgent.from({
-  name: "Reviewer",
-  instructions: `
-あなたはコードレビュアーです。コードの正確性、効率性、安全性に重点を置いています。
-
-問題提起は次のとおりです: {{question}}
-コードは次のとおりです:
-\`\`\`
-{{code}}
-\`\`\`
-
-コードをレビューしてください。以前のフィードバックが提供されている場合は、それに対応しているか確認してください。
-`,
-  outputSchema: z.object({
-    approval: z.boolean().describe("承認するには true、修正するには false に設定してください"),
-    feedback: z.object({
-      correctness: z.string().describe("正確性に関するあなたのコメント"),
-      efficiency: z.string().describe("効率性に関するあなたのコメント"),
-      safety: z.string().describe("安全性に関するあなたのコメント"),
-      suggested_changes: z
-        .string()
-        .describe("提案された変更に関するあなたのコメント"),
-    }),
-  }),
-});
-```
-
-### 3. TeamAgent の作成と呼び出し
-
-`TeamAgent` は、ワークフローを調整するために設定されます。`coder` は主要な Agent (スキル) として設定され、`reviewer` は `reflection` プロパティで設定されます。`isApproved` 条件は、`reviewer` の出力内の `approval` フィールドを指します。
-
-```typescript
-const reflectionTeam = TeamAgent.from({
-  skills: [coder],
-  reflection: {
-    reviewer,
-    isApproved: "approval",
-    maxIterations: 3,
-  },
-});
-
-async function run() {
-  const result = await reflectionTeam.invoke(
-    {
-      question: "リスト内のすべての偶数の合計を求める関数を書いてください。",
-    },
-    { model }
-  );
-  
-  console.log(JSON.stringify(result, null, 2));
-}
-
-run();
-```
-
-### 出力例
-
-1回以上のイテレーションの後、`reviewer` Agent がコードを承認し、`coder` Agent からの最終的な出力が返されます。
-
-```json
-{
-  "code": "def sum_of_even_numbers(numbers):\n    \"\"\"Function to calculate the sum of all even numbers in a list.\"\"\"\n    return sum(number for number in numbers if number % 2 == 0)"
-}
-```
+Agentが異なる方法で連携する様子を確認するには、次に[シーケンシャルタスク](./user-guide-common-workflows-sequential-tasks.md)ワークフローについてお読みください。

@@ -1,29 +1,25 @@
-# メモリ管理
+# メモリ
 
-Memory モジュールは、Agent が情報を永続化および想起できるようにするための堅牢なフレームワークを提供し、ステートフルでコンテキストを認識するシステムを構築します。これにより、Agent は対話の履歴を維持し、過去のイベントから学習し、より多くの情報に基づいた意思決定を行うことができます。
+`MemoryAgent` は、Agent が対話を通じて状態を維持し、情報を記憶するためのメカニズムを提供します。これは、メッセージを直接処理するのではなく、情報を保存するための `Recorder` とそれを呼び出すための `Retriever` という 2 つの主要なコンポーネントを通じてメモリ操作を管理する、特化したオーケストレーターとして機能します。この関心の分離により、柔軟でプラグイン可能なメモリストレージソリューションが可能になります。
 
-メモリシステムの中心にあるのは `MemoryAgent` であり、すべてのメモリ関連操作の中心的コーディネーターとして機能します。実際の書き込みと読み取りのタスクは、`MemoryRecorder` と `MemoryRetriever` という 2 つの特化したコンポーネントに委任されます。この関心の分離により、柔軟でスケーラブルなメモリソリューションが可能になります。
+## コアコンポーネント
 
-- **MemoryAgent**: メモリ操作の主要なエントリーポイント。記録および検索プロセスを調整します。
-- **MemoryRecorder**: メモリを永続的なバックエンド（データベース、ファイルシステム、インメモリストアなど）に書き込むか保存する役割を担う Agent スキル。
-- **MemoryRetriever**: ストレージバックエンドからメモリをクエリおよび取得する役割を担う Agent スキル。
+メモリシステムは、主に 3 つのクラスで構成されています。
 
-このガイドでは、各コンポーネントについて順を追って説明し、それぞれの役割を解説し、Agent システムでそれらを実装して使用する方法の実用的な例を提供します。
-
-## アーキテクチャ概要
-
-以下の図は、主要なメモリコンポーネント間の関係を示しています。アプリケーションロジックは `MemoryAgent` と対話し、`MemoryAgent` は `MemoryRecorder` と `MemoryRetriever` スキルを使用して永続ストレージバックエンドと対話します。
+1.  **`MemoryAgent`**: メモリ操作を管理する中心的な Agent。レコーダーとリトリーバーで構成され、メモリストアと対話するための `record()` および `retrieve()` メソッドを提供します。
+2.  **`MemoryRecorder`**: 永続的なストレージバックエンド（例：データベース、ファイルシステム、ベクトルストア）に情報を書き込む役割を担う Agent。データの保存方法と場所に関する実装を提供する必要があります。
+3.  **`MemoryRetriever`**: 検索クエリや制限などの指定された基準に基づいてストレージバックエンドから情報を取得する役割を担う Agent。取得ロジックの実装を提供する必要があります。
 
 ```d2
 direction: down
 
-Agent-System: {
-  label: "Agent システム\n(アプリケーション)"
+AIGNE-Engine: {
+  label: "AIGNE\n(アプリケーションロジック)"
   shape: rectangle
 }
 
-Memory-Module: {
-  label: "Memory モジュール"
+Memory-Agent: {
+  label: "MemoryAgent (オーケストレーター)"
   shape: rectangle
   style: {
     stroke: "#888"
@@ -31,276 +27,197 @@ Memory-Module: {
     stroke-dash: 4
   }
 
-  MemoryAgent: {
-    label: "MemoryAgent\n(コーディネーター)"
-  }
-
   MemoryRecorder: {
-    label: "MemoryRecorder\n(Agent スキル)"
+    label: "MemoryRecorder"
+    shape: rectangle
   }
 
   MemoryRetriever: {
-    label: "MemoryRetriever\n(Agent スキル)"
+    label: "MemoryRetriever"
+    shape: rectangle
   }
 }
 
-Persistent-Backend: {
-  label: "永続バックエンド\n(DB、ファイルシステムなど)"
+Storage-Backend: {
+  label: "ストレージバックエンド\n(データベース、ベクトルストアなど)"
   shape: cylinder
 }
 
-Agent-System -> Memory-Module.MemoryAgent: "1. record() / retrieve()"
+# 記録フロー
+AIGNE-Engine -> Memory-Agent: "1. invoke(record)"
+Memory-Agent -> Memory-Agent.MemoryRecorder: "2. Recorder に委任"
+Memory-Agent.MemoryRecorder -> Storage-Backend: "3. データを書き込み"
 
-Memory-Module.MemoryAgent -> Memory-Module.MemoryRecorder: "2a. 書き込みを委任"
-Memory-Module.MemoryRecorder -> Persistent-Backend: "3a. メモリを保存"
-
-Memory-Module.MemoryAgent -> Memory-Module.MemoryRetriever: "2b. 読み取りを委任"
-Memory-Module.MemoryRetriever -> Persistent-Backend: "3b. メモリをクエリ"
-Persistent-Backend -> Memory-Module.MemoryRetriever: "4b. メモリを返す"
+# 取得フロー
+AIGNE-Engine -> Memory-Agent: "4. invoke(retrieve)" {
+  style.stroke-dash: 2
+}
+Memory-Agent -> Memory-Agent.MemoryRetriever: "5. Retriever に委任" {
+  style.stroke-dash: 2
+}
+Storage-Backend -> Memory-Agent.MemoryRetriever: "6. データを返す" {
+  style.stroke-dash: 2
+}
 ```
 
-## コアコンポーネント
+## 仕組み
 
-### MemoryAgent
+`MemoryAgent` は、タスクをその下位 Agent に委任します。`MemoryAgent` の `record()` メソッドを呼び出すと、設定された `MemoryRecorder` を呼び出してデータを永続化します。同様に、`retrieve()` を呼び出すと、`MemoryRetriever` を呼び出して保存された情報をクエリし、返します。
 
-`MemoryAgent` は、メモリの管理、保存、検索のための主要なインターフェースとして機能する特化した Agent です。他の Agent のようにメッセージ処理のために直接呼び出されるようには設計されておらず、代わりにシステムのメモリと対話するためのコアメソッド `record()` および `retrieve()` を提供します。
+このアーキテクチャにより、開発者はコアの Agent ワークフローを変更することなく、カスタムのストレージおよび取得ロジックを定義できます。例えば、会話履歴を PostgreSQL データベースに保存するレコーダーや、ベクトル埋め込みを使用して意味的に類似した過去の対話を見つけるリトリーバーを実装できます。
 
-`MemoryAgent` を構成するには、`recorder` と `retriever` を提供します。これらは、事前に構築されたインスタンスでも、特定のストレージロジックを定義するカスタム関数でもかまいません。
+## `MemoryAgent`
 
-**主な機能:**
+`MemoryAgent` は、メモリ管理の主要なインターフェースです。処理 Agent のチェーン内で直接呼び出されるように設計されているのではなく、他の Agent やアプリケーションロジックから利用可能なステートフルなサービスとして設計されています。
 
-- **一元管理**: メモリ操作の単一の窓口として機能します。
-- **委任**: ストレージと検索のロジックを、専用の `MemoryRecorder` および `MemoryRetriever` Agent にオフロードします。
-- **自動記録**: `autoUpdate` を設定することで、観測したすべてのメッセージを自動的に記録し、シームレスな対話履歴を作成できます。
+### 設定
 
-**例: MemoryAgent の作成**
+`MemoryAgent` を作成するには、`recorder` と `retriever` を提供します。これらは `MemoryRecorder` と `MemoryRetriever` のインスタンス、またはそれぞれの `process` メソッドの関数定義にすることができます。
 
-```typescript
-import { MemoryAgent, MemoryRecorder, MemoryRetriever } from "@core/memory";
-import { Agent, type AgentInvokeOptions, type Message } from "@core/agents";
+```typescript Agent の初期化 icon=logos:typescript
+import { MemoryAgent, MemoryRecorder, MemoryRetriever } from "@aigne/core";
+import { v7 as uuidv7 } from "@aigne/uuid";
 
-// メモリの記録と検索のためのカスタムロジックを定義
-const myRecorder = new MemoryRecorder({
-  process: async (input, options) => {
-    // データベースにメモリを保存するカスタムロジック
-    console.log("Recording memories:", input.content);
-    // ... 実装 ...
-    return { memories: [] }; // 作成されたメモリを返す
+// 1. デモンストレーション用にシンプルなインメモリ ストアを定義
+const memoryStore: Map<string, any> = new Map();
+
+// 2. レコーダーのロジックを実装
+const recorder = new MemoryRecorder({
+  async process({ content }) {
+    const memories = content.map((item) => {
+      const memory = {
+        id: uuidv7(),
+        content: item,
+        createdAt: new Date().toISOString(),
+      };
+      memoryStore.set(memory.id, memory);
+      return memory;
+    });
+    return { memories };
   },
 });
 
-const myRetriever = new MemoryRetriever({
-  process: async (input, options) => {
-    // データベースからメモリを取得するカスタムロジック
-    console.log("Retrieving memories with search:", input.search);
-    // ... 実装 ...
-    return { memories: [] }; // 見つかったメモリを返す
+// 3. リトリーバーのロジックを実装
+const retriever = new MemoryRetriever({
+  async process({ search, limit = 10 }) {
+    // これは単純な検索です。実際の 実装では、データベースクエリやベクトル検索を使用することがあります。
+    const allMemories = Array.from(memoryStore.values());
+    const filteredMemories = search
+      ? allMemories.filter((m) => JSON.stringify(m.content).includes(search as string))
+      : allMemories;
+
+    return { memories: filteredMemories.slice(0, limit) };
   },
 });
 
-// MemoryAgent を作成
+// 4. MemoryAgent をインスタンス化
 const memoryAgent = new MemoryAgent({
-  recorder: myRecorder,
-  retriever: myRetriever,
-  autoUpdate: true, // 購読しているトピックからのメッセージを自動的に記録
-  subscribeTopic: "user-input",
+  recorder,
+  retriever,
 });
 ```
 
-### MemoryRecorder
+上記の例では、シンプルなインメモリのストレージメカニズムを持つ `MemoryAgent` を作成する方法を示しています。本番環境では、これをデータベースのようなより堅牢なソリューションに置き換えることになります。
 
-`MemoryRecorder` は、メモリの保存を担当する抽象 Agent クラスです。これを使用するには、メモリデータをどのように、どこに永続化するかのロジックを含む `process` メソッドの具体的な実装を提供する必要があります。この設計により、単純なインメモリ配列から高度なベクトルデータベースまで、あらゆるストレージバックエンドに接続できます。
+### `MemoryAgentOptions`
 
-**入力 (`MemoryRecorderInput`)**
+<x-field-group>
+  <x-field data-name="recorder" data-type="MemoryRecorder | MemoryRecorderOptions['process'] | MemoryRecorderOptions" data-required="false">
+    <x-field-desc markdown>メモリの保存を担当する Agent または関数。完全な `MemoryRecorder` インスタンス、設定オブジェクト、または単なる処理関数を指定できます。</x-field-desc>
+  </x-field>
+  <x-field data-name="retriever" data-type="MemoryRetriever | MemoryRetrieverOptions['process'] | MemoryRetrieverOptions" data-required="false">
+    <x-field-desc markdown>メモリの取得を担当する Agent または関数。完全な `MemoryRetriever` インスタンス、設定オブジェクト、または単なる処理関数を指定できます。</x-field-desc>
+  </x-field>
+  <x-field data-name="autoUpdate" data-type="boolean" data-required="false">
+    <x-field-desc markdown>`true` の場合、Agent は操作完了後に自動的に情報を記録し、対話の履歴を作成します。</x-field-desc>
+  </x-field>
+  <x-field data-name="subscribeTopic" data-type="string | string[]" data-required="false" data-desc="自動メッセージ記録のためにサブスクライブするトピック。"></x-field>
+  <x-field data-name="skills" data-type="Agent[]" data-required="false" data-desc="スキルとして利用可能にする他の Agent の配列。レコーダーとリトリーバーは自動的にこのリストに追加されます。"></x-field>
+</x-field-group>
 
-`process` 関数は、`content` 配列を含む入力オブジェクトを受け取ります。配列の各項目は保存されるべき情報の断片を表し、`input` メッセージ、`output` メッセージ、および `source` Agent の ID を含むことができます。
+## `MemoryRecorder`
 
-```typescript
-interface MemoryRecorderInput extends Message {
-  content: {
-    input?: Message;
-    output?: Message;
-    source?: string;
-  }[];
-}
-```
+`MemoryRecorder` は、メモリを保存するためのコントラクトを定義する抽象 Agent クラスです。その `process` メソッドの具体的な実装を提供する必要があります。
 
-**出力 (`MemoryRecorderOutput`)**
+### `MemoryRecorderInput`
 
-この関数は、正常に作成された `memories` の配列を含むオブジェクトに解決されるプロミスを返す必要があります。
+`MemoryRecorder` の `process` メソッドは、`MemoryRecorderInput` オブジェクトを受け取ります。
 
-```typescript
-interface MemoryRecorderOutput extends Message {
-  memories: Memory[];
-}
-```
+<x-field-group>
+  <x-field data-name="content" data-type="array" data-required="true">
+    <x-field-desc markdown>メモリとして保存されるオブジェクトの配列。各オブジェクトには、メモリを文脈化するための `input`、`output`、および `source` を含めることができます。</x-field-desc>
+    <x-field data-name="input" data-type="Message" data-required="false" data-desc="このメモリにつながった入力メッセージ（例：ユーザーのプロンプト）。"></x-field>
+    <x-field data-name="output" data-type="Message" data-required="false" data-desc="生成された出力メッセージ（例：AI の応答）。"></x-field>
+    <x-field data-name="source" data-type="string" data-required="false" data-desc="出力を生成した Agent またはシステムの識別子。"></x-field>
+  </x-field>
+</x-field-group>
 
-**例: シンプルなインメモリレコーダーの実装**
+### `MemoryRecorderOutput`
 
-ここでは、ローカル配列にメモリを保存するシンプルなレコーダーを作成する方法を示します。
+`process` メソッドは、`MemoryRecorderOutput` オブジェクトを返さなければなりません。
 
-```typescript
-import {
-  MemoryRecorder,
-  type MemoryRecorderInput,
-  type MemoryRecorderOutput,
-  type Memory,
-  newMemoryId,
-} from "@core/memory";
-import { type AgentInvokeOptions, type AgentProcessResult } from "@core/agents";
+<x-field-group>
+  <x-field data-name="memories" data-type="Memory[]" data-required="true" data-desc="新しく作成されたメモリオブジェクトの配列。それぞれに一意の ID、元のコンテンツ、および作成タイムスタンプが含まれます。"></x-field>
+</x-field-group>
 
-// シンプルなインメモリ配列をデータベースとして使用
-const memoryDB: Memory[] = [];
+## `MemoryRetriever`
 
-const inMemoryRecorder = new MemoryRecorder({
-  process: async (
-    input: MemoryRecorderInput,
-    options: AgentInvokeOptions
-  ): Promise<AgentProcessResult<MemoryRecorderOutput>> => {
-    const newMemories: Memory[] = input.content.map((item) => ({
-      id: newMemoryId(),
-      content: item,
-      createdAt: new Date().toISOString(),
-    }));
+`MemoryRetriever` は、ストレージからメモリを取得するためのコントラクトを定義する抽象 Agent クラスです。その `process` メソッドの具体的な実装を提供する必要があります。
 
-    // 新しいメモリを「データベース」に追加
-    memoryDB.push(...newMemories);
-    console.log("Current memory count:", memoryDB.length);
+### `MemoryRetrieverInput`
 
-    return { memories: newMemories };
-  },
-});
-```
+`MemoryRetriever` の `process` メソッドは、結果をフィルタリングおよび制限するための `MemoryRetrieverInput` オブジェクトを受け取ります。
 
-### MemoryRetriever
+<x-field-group>
+  <x-field data-name="limit" data-type="number" data-required="false">
+    <x-field-desc markdown>返されるメモリの最大数。ページネーションやコンテキストウィンドウを小さく保つのに役立ちます。</x-field-desc>
+  </x-field>
+  <x-field data-name="search" data-type="string | Message" data-required="false">
+    <x-field-desc markdown>メモリをフィルタリングするための検索語またはメッセージオブジェクト。この値がどのように使用されるか（例：キーワード検索、ベクトル類似性）は実装によって決まります。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-`MemoryRetriever` はレコーダーの対となる存在です。これは、ストレージからメモリを取得する役割を担う抽象 Agent クラスです。レコーダーと同様に、検索ロジックを定義するために `process` メソッドのカスタム実装が必要です。
+### `MemoryRetrieverOutput`
 
-**入力 (`MemoryRetrieverInput`)**
+`process` メソッドは、`MemoryRetrieverOutput` オブジェクトを返さなければなりません。
 
-`process` 関数は、`search` クエリと結果の数を制御するための `limit` を含むことができる入力オブジェクトを受け取ります。検索の実行方法（キーワードマッチング、ベクトル類似性など）は実装によって決まります。
+<x-field-group>
+  <x-field data-name="memories" data-type="Memory[]" data-required="true" data-desc="取得条件に一致したメモリオブジェクトの配列。"></x-field>
+</x-field-group>
 
-```typescript
-interface MemoryRetrieverInput extends Message {
-  limit?: number;
-  search?: string | Message;
-}
-```
+## 使用例
 
-**出力 (`MemoryRetrieverOutput`)**
+`MemoryAgent` が設定されると、アプリケーションのコンテキスト内でそれを使用して情報を記録および取得できます。
 
-この関数は、クエリに一致する `memories` の配列を含むオブジェクトに解決されるプロミスを返す必要があります。
+```typescript AIGNE との対話 icon=logos:typescript
+import { AIGNE } from "@aigne/core";
 
-```typescript
-interface MemoryRetrieverOutput extends Message {
-  memories: Memory[];
-}
-```
-
-**例: シンプルなインメモリリトリーバーの実装**
-
-このリトリーバーは、上記の `inMemoryRecorder` の例と連携し、ローカル配列で一致するコンテンツを検索します。
-
-```typescript
-import {
-  MemoryRetriever,
-  type MemoryRetrieverInput,
-  type MemoryRetrieverOutput,
-  type Memory,
-} from "@core/memory";
-import { type AgentInvokeOptions, type AgentProcessResult } from "@core/agents";
-
-// memoryDB はレコーダーが使用するのと同じ配列であると仮定
-declare const memoryDB: Memory[];
-
-const inMemoryRetriever = new MemoryRetriever({
-  process: async (
-    input: MemoryRetrieverInput,
-    options: AgentInvokeOptions
-  ): Promise<AgentProcessResult<MemoryRetrieverOutput>> => {
-    let results: Memory[] = [...memoryDB];
-
-    // 検索クエリに基づいて結果をフィルタリング
-    if (input.search && typeof input.search === "string") {
-      const searchTerm = input.search.toLowerCase();
-      results = results.filter((mem) =>
-        JSON.stringify(mem.content).toLowerCase().includes(searchTerm)
-      );
-    }
-
-    // limit を適用
-    if (input.limit) {
-      results = results.slice(-input.limit); // 最新の項目を取得
-    }
-
-    return { memories: results };
-  },
-});
-```
-
-## すべてをまとめる
-
-では、これらのコンポーネントを組み合わせて、完全に機能するメモリシステムを作成しましょう。カスタムのインメモリレコーダーとリトリーバーを使用して `MemoryAgent` をインスタンス化し、それを使用して情報を記録および検索します。
-
-```typescript
-import { MemoryAgent, MemoryRecorder, MemoryRetriever } from "@core/memory";
-import { Aigne, type Context } from "@core/aigne";
-
-// --- inMemoryRecorder と inMemoryRetriever は上記で定義されているものと仮定 ---
-
-// 1. MemoryAgent を初期化
-const memoryAgent = new MemoryAgent({
-  recorder: inMemoryRecorder,
-  retriever: inMemoryRetriever,
+// memoryAgent が最初の例で示したように設定されていると仮定
+const aigne = new AIGNE({
+  // ...other configurations
 });
 
-// 2. Agent を実行するためのコンテキストを作成
-const context = new Aigne().createContext();
+async function run() {
+  // 新しいメモリを記録
+  const recordedMemory = await aigne.invoke(memoryAgent.record.bind(memoryAgent), {
+    content: [{ input: { query: "What is the capital of France?" } }],
+  });
+  console.log("Recorded:", recordedMemory.memories[0].id);
 
-// 3. 新しいメモリを記録
-async function runMemoryExample(context: Context) {
-  console.log("Recording a new memory...");
-  await memoryAgent.record(
-    {
-      content: [
-        {
-          input: { text: "What is the capital of France?" },
-          output: { text: "The capital of France is Paris." },
-          source: "GeographyAgent",
-        },
-      ],
-    },
-    context
-  );
-
-  // 4. メモリを検索
-  console.log("\nRetrieving memories about 'France'...");
-  const retrieved = await memoryAgent.retrieve({ search: "France" }, context);
-
-  console.log("Found memories:", retrieved.memories);
+  // メモリを取得
+  const retrievedMemories = await aigne.invoke(memoryAgent.retrieve.bind(memoryAgent), {
+    search: "France",
+    limit: 5,
+  });
+  console.log("Retrieved:", retrievedMemories.memories);
 }
 
-runMemoryExample(context);
-
-/**
- * 期待される出力:
- *
- * Recording a new memory...
- * Current memory count: 1
- *
- * Retrieving memories about 'France'...
- * Found memories: [
- *   {
- *     id: '...',
- *     content: {
- *       input: { text: 'What is the capital of France?' },
- *       output: { text: 'The capital of France is Paris.' },
- *       source: 'GeographyAgent'
- *     },
- *     createdAt: '...'
- *   }
- * ]
- */
+run();
 ```
+この例は、`aigne.invoke` メソッドを使用して `memoryAgent` インスタンスの `record` および `retrieve` 関数を呼び出し、対話を通じて Agent の状態を効果的に管理する方法を示しています。
 
-この完全な例は、カスタムストレージロジックの定義、それを `MemoryAgent` に組み込む、そしてその Agent を使用してシステムのメモリを管理するという、エンドツーエンドのフローを示しています。
+## まとめ
+
+`MemoryAgent` は、Agent アプリケーションにおける状態管理のための強力で柔軟な抽象化を提供します。オーケストレーション (`MemoryAgent`) を実装詳細 (`MemoryRecorder`、`MemoryRetriever`) から分離することで、単純なインメモリ配列から高度なベクトルデータベースまで、さまざまなストレージバックエンドを簡単に統合できます。
+
+コア実行エンジンに関する詳細については、[AIGNE](./developer-guide-core-concepts-aigne-engine.md) のドキュメントを参照してください。作業の基本的な構成要素を理解するには、[Agents](./developer-guide-core-concepts-agents.md) のページを参照してください。

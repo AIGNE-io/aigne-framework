@@ -1,16 +1,16 @@
-# @aigne/aigne-hub
+# AIGNE Hub
 
-`@aigne/aigne-hub` SDK は、チャットおよび画像生成用の幅広い AI モデルにアクセスするための統一されたインターフェースを提供します。これは、複数の大規模言語モデル (LLM) プロバイダーに接続する強力なプロキシレイヤーである [AIGNE Hub](https://github.com/AIGNE-io/aigne-framework) のクライアントとして機能します。
+AIGNE Hubは、複数のプロバイダーが提供するさまざまな大規模言語モデル（LLM）や画像生成サービスにアクセスするための統一されたプロキシレイヤーを提供します。`@aigne/aigne-hub` パッケージを使用することで、クライアント側のアプリケーションロジックを変更することなく、異なるAIモデル間をシームレスに切り替え、すべてのリクエストを単一の一貫したAPIエンドポイント経由で送信できます。
 
-このガイドでは、チャット補完と画像生成の両方について、SDK のインストール、基本的なセットアップ、および使用方法を説明します。
+このガイドでは、アプリケーションをAIGNE Hubに接続するための `AIGNEHubChatModel` および `AIGNEHubImageModel` クラスのインストール、設定、使用方法について説明します。
 
-## はじめに
+## 概要
 
-`@aigne/aigne-hub` は、AIGNE Hub サービスを介してリクエストをルーティングすることで、さまざまな AI プロバイダーとの対話を簡素化します。このゲートウェイは、OpenAI、Anthropic、AWS Bedrock、Google などのプロバイダーを集約し、モデル識別子を変更するだけでシームレスに切り替えることができます。このアプローチは、さまざまな API や認証方法を扱う複雑さを抽象化し、アプリケーションの構築に集中できるようにします。
+AIGNE Hubは、OpenAI、Anthropic、Googleなどの主要なAIプロバイダーを集約するゲートウェイとして機能します。このアーキテクチャは、各プロバイダーのAPI固有の要件を抽象化することで、統合を簡素化します。プロバイダーのプレフィックスを含む一意の識別子（例：`openai/gpt-4o-mini` や `anthropic/claude-3-sonnet`）を渡すだけで、サポートされている任意のモデルと対話できます。
 
-### 仕組み
+### アーキテクチャ図
 
-SDK は、アプリケーションからのリクエストを中央集権的な AIGNE Hub インスタンスに送信します。その後、Hub は指定されたモデル名に基づいて、これらのリクエストを適切な下流の AI プロバイダーに転送します。このアーキテクチャは、すべての AI インタラクションに対して単一のアクセスポイントと制御を提供します。
+以下の図は、AIGNE Hubがアプリケーションと様々なLLMプロバイダーとの間でどのように仲介役として機能するかを示しています。アプリケーションは統一されたリクエストをHubに送信し、Hubは指定されたモデルに基づいて適切な下流サービスにリクエストをルーティングします。
 
 ```d2
 direction: down
@@ -18,82 +18,129 @@ direction: down
 Your-Application: {
   label: "あなたのアプリケーション"
   shape: rectangle
-
-  aigne-aigne-hub: {
-    label: "@aigne/aigne-hub SDK"
-    shape: rectangle
-  }
 }
 
 AIGNE-Hub: {
-  label: "AIGNE Hub サービス"
+  label: "AIGNE Hub"
   icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
 }
 
 LLM-Providers: {
   label: "LLM プロバイダー"
   shape: rectangle
-  grid-columns: 4
+  style.stroke-dash: 4
 
-  OpenAI: {}
-  Anthropic: {}
-  Google: {}
-  AWS-Bedrock: {
-    label: "AWS Bedrock"
+  OpenAI: {
+    label: "OpenAI\n(GPT-4o, DALL-E 3)"
   }
-  DeepSeek: {}
-  Ollama: {}
-  xAI: {}
-  OpenRouter: {}
+  Anthropic: {
+    label: "Anthropic\n(Claude)"
+  }
+  Google: {
+    label: "Google\n(Gemini, Imagen)"
+  }
 }
 
-Your-Application.aigne-aigne-hub -> AIGNE-Hub: "API リクエスト"
-AIGNE-Hub -> LLM-Providers: "集約とルーティング"
+Your-Application -> AIGNE-Hub: "統一 API リクエスト\n(例: 'openai/gpt-4o-mini')"
+AIGNE-Hub -> LLM-Providers.OpenAI: "リクエストをルーティング"
+AIGNE-Hub -> LLM-Providers.Anthropic: "リクエストをルーティング"
+AIGNE-Hub -> LLM-Providers.Google: "リクエストをルーティング"
 ```
 
-## 機能
+### 主な機能
 
--   🔌 **統一された LLM アクセス**: すべてのリクエストを単一の一貫したエンドポイント経由でルーティングします。
--   🧠 **マルチプロバイダーサポート**: シンプルな `provider/model` 命名規則を使用して、OpenAI、Anthropic、Google などのモデルにアクセスします。
--   🔐 **セキュアな認証**: 単一の `accessKey` を使用して API アクセスを安全に管理します。
--   💬 **チャット補完**: `{ role, content }` メッセージ形式を使用したチャットモデル用の標準化されたインターフェース。
--   🎨 **画像生成**: OpenAI (DALL-E)、Google (Imagen)、Ideogram のモデルで画像を生成します。
--   🌊 **ストリーミングサポート**: ストリーミングを有効にすることで、チャットモデルのリアルタイムなトークンレベルの応答を取得します。
--   🧱 **フレームワーク互換**: より広範な AIGNE フレームワークとシームレスに統合します。
+-   **統一アクセス**: すべてのLLMおよび画像生成リクエストに対応する単一のエンドポイント。
+-   **マルチプロバイダーサポート**: OpenAI、Anthropic、AWS Bedrock、Google、DeepSeek、Ollama、xAI、OpenRouterのモデルにアクセス可能。
+-   **セキュアな認証**: 単一のAPIキー（`accessKey`）でアクセスを管理。
+-   **チャットおよび画像モデル**: チャット補完と画像生成の両方をサポート。
+-   **ストリーミング**: チャット応答のリアルタイム、トークンレベルのストリーミング。
+-   **シームレスな統合**: 広範なAIGNEフレームワークと完全に連携するように設計。
+
+### サポートされているプロバイダー
+
+AIGNE Hubは、統一APIを通じて幅広いAIプロバイダーをサポートしています。
+
+| プロバイダー | 識別子 |
+| :---------- | :------------ |
+| OpenAI      | `openai`      |
+| Anthropic   | `anthropic`   |
+| AWS Bedrock | `bedrock`     |
+| DeepSeek    | `deepseek`    |
+| Google      | `google`      |
+| Ollama      | `ollama`      |
+| OpenRouter  | `openRouter`  |
+| xAI         | `xai`         |
 
 ## インストール
 
-まず、お好みのパッケージマネージャーを使用して `@aigne/aigne-hub` と `@aigne/core` パッケージをインストールします。
+始めるには、プロジェクトに `@aigne/aigne-hub` と `@aigne/core` パッケージをインストールします。
 
-**npm**
-```bash
+```bash npm install icon=logos:npm
 npm install @aigne/aigne-hub @aigne/core
 ```
 
-**yarn**
-```bash
+```bash yarn add icon=logos:yarn
 yarn add @aigne/aigne-hub @aigne/core
 ```
 
-**pnpm**
-```bash
+```bash pnpm add icon=logos:pnpm
 pnpm add @aigne/aigne-hub @aigne/core
 ```
 
-## チャットモデル
+## 設定
 
-`AIGNEHubChatModel` クラスは、テキストベースの AI モデルと対話するための主要なツールです。
+チャットモデルと画像モデルの両方で、AIGNE Hubインスタンスに接続するための設定が必要です。主なオプションには、HubのURL、アクセスキー、および目的のモデル識別子が含まれます。
 
-### 基本的な使用方法
+### チャットモデルの設定
 
-チャットモデルを使用するには、AIGNE Hub のエンドポイント、アクセスキー、および目的のモデル識別子を使用して `AIGNEHubChatModel` をインスタンス化します。
+`AIGNEHubChatModel` は、以下のオプションを使用して設定します。
 
-```typescript
+<x-field-group>
+  <x-field data-name="baseUrl" data-type="string" data-required="true">
+    <x-field-desc markdown>AIGNE Hub インスタンスのベース URL（例：`https://your-aigne-hub-instance/ai-kit`）。</x-field-desc>
+  </x-field>
+  <x-field data-name="apiKey" data-type="string" data-required="true">
+    <x-field-desc markdown>AIGNE Hub での認証に使用する API アクセスキー。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="true">
+    <x-field-desc markdown>プロバイダーのプレフィックスが付いたモデル識別子（例：`openai/gpt-4o-mini`）。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>プロバイダーの API に渡すオプションのモデル固有パラメータ。</x-field-desc>
+  </x-field>
+</x-field-group>
+
+### 画像モデルの設定
+
+`AIGNEHubImageModel` は、同様の設定構造を使用します。
+
+<x-field-group>
+  <x-field data-name="url" data-type="string" data-required="true">
+    <x-field-desc markdown>AIGNE Hub インスタンスのエンドポイント。</x-field-desc>
+  </x-field>
+  <x-field data-name="accessKey" data-type="string" data-required="true">
+    <x-field-desc markdown>認証用の API アクセスキー。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="true">
+    <x-field-desc markdown>プロバイダーのプレフィックスが付いたモデル識別子（例：`openai/dall-e-3`）。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>プロバイダーの API に渡すオプションのモデル固有パラメータ。</x-field-desc>
+  </x-field>
+</x-field-group>
+
+## 使用方法
+
+### チャット補完
+
+チャット補完を実行するには、設定を使用して `AIGNEHubChatModel` をインスタンス化し、`invoke` メソッドを呼び出します。
+
+```typescript 基本的なチャット補完 icon=logos:typescript
 import { AIGNEHubChatModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubChatModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
   model: "openai/gpt-4o-mini",
 });
 
@@ -102,28 +149,41 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* Example Output:
-  {
-    text: "Hello! How can I help you today?",
-    model: "openai/gpt-4o-mini",
-    usage: {
-      inputTokens: 8,
-      outputTokens: 9
-    }
-  }
-*/
 ```
 
-### ストリーミングの使用方法
+**レスポンス例**
 
-インタラクティブなリアルタイムアプリケーションの場合、モデルからの応答をストリーミングできます。`invoke` 呼び出しで `streaming` オプションを `true` に設定し、結果のストリームを反復処理して、到着したチャンクを処理します。
+```json
+{
+  "text": "Hello! How can I help you today?",
+  "model": "openai/gpt-4o-mini",
+  "usage": {
+    "inputTokens": 8,
+    "outputTokens": 9
+  }
+}
+```
 
-```typescript
-import { AIGNEHubChatModel, isAgentResponseDelta } from "@aigne/aigne-hub";
+**モデル例：**
+
+*   `openai/gpt-4o-mini`
+*   `anthropic/claude-3-sonnet`
+*   `google/gemini-pro`
+*   `xai/grok-1`
+*   `openRouter/mistralai/mistral-7b-instruct`
+*   `ollama/llama3`
+
+### チャット応答のストリーミング
+
+リアルタイムの応答を得るには、`invoke` 呼び出しで `streaming` オプションを `true` に設定します。これにより、応答チャンクが利用可能になるたびにそれを生成する非同期イテレータが返されます。
+
+```typescript ストリーミングの例 icon=logos:typescript
+import { AIGNEHubChatModel } from "@aigne/aigne-hub";
+import { isAgentResponseDelta } from "@aigne/core";
 
 const model = new AIGNEHubChatModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
   model: "openai/gpt-4o-mini",
 });
 
@@ -135,40 +195,27 @@ const stream = await model.invoke(
 );
 
 let fullText = "";
-const json = {};
-
 for await (const chunk of stream) {
   if (isAgentResponseDelta(chunk)) {
     const text = chunk.delta.text?.text;
-    if (text) fullText += text;
-    if (chunk.delta.json) Object.assign(json, chunk.delta.json);
+    if (text) {
+      fullText += text;
+      process.stdout.write(text);
+    }
   }
 }
 
-console.log(fullText); // "I am an AI assistant, ready to help you with any questions or tasks you have."
-console.log(json); // { model: "openai/gpt-4o-mini", usage: { ... } }
+console.log("\n--- Response Complete ---");
+console.log(fullText);
 ```
 
-### 設定
+### 画像生成
 
-`AIGNEHubChatModel` コンストラクターは、次のオプションを受け入れます。
+AIGNE Hubは、複数のプロバイダーからの画像生成をサポートしています。`AIGNEHubImageModel` をインスタンス化し、プロンプトとモデル固有のパラメータを提供します。
 
-| Parameter      | Type     | Description                                                              |
-| -------------- | -------- | ------------------------------------------------------------------------ |
-| `url`          | `string` | AIGNE Hub インスタンスのエンドポイント URL。                             |
-| `accessKey`    | `string` | AIGNE Hub で認証するためのシークレット API キー。               |
-| `model`        | `string` | プロバイダーでプレフィックスが付けられたモデル識別子（例：`openai/gpt-4o`）。 |
-| `modelOptions` | `object` | 任意。基盤となるモデルに渡す追加のパラメーター。         |
+#### OpenAI DALL-E
 
-## 画像生成モデル
-
-`AIGNEHubImageModel` クラスを使用すると、さまざまな AI モデルを使用して画像を生成できます。
-
-### 基本的な使用方法
-
-Hub の認証情報と目的の画像モデルで `AIGNEHubImageModel` をインスタンス化します。次に、プロンプトやその他のモデル固有のパラメーターを指定して `invoke` を呼び出します。
-
-```typescript
+```typescript DALL-E 3 で生成 icon=logos:typescript
 import { AIGNEHubImageModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubImageModel({
@@ -181,47 +228,18 @@ const result = await model.invoke({
   prompt: "A futuristic cityscape with flying cars and neon lights",
   n: 1,
   size: "1024x1024",
+  quality: "standard",
+  style: "natural",
 });
 
-console.log(result);
-/* Example Output:
-  {
-    images: [{ url: "https://..." }],
-    usage: { inputTokens: 0, outputTokens: 0 },
-    model: "openai/dall-e-3"
-  }
-*/
+console.log(result.images[0].url);
 ```
 
-### サポートされているプロバイダーとパラメーター
-
-AIGNE Hub は、それぞれが独自の機能とパラメーターを持つ複数のプロバイダーからの画像生成をサポートしています。
-
-#### OpenAI DALL-E
-
--   **モデル**: `dall-e-2`, `dall-e-3`
--   **主要なパラメーター**: `prompt`, `size`, `n`, `quality`, `style`。
 -   **リファレンス**: [OpenAI Images API ドキュメント](https://platform.openai.com/docs/guides/images)
 
-```typescript
-// DALL-E 3 の例
-const result = await model.invoke({
-  model: "openai/dall-e-3",
-  prompt: "A photorealistic image of a cat wearing sunglasses",
-  size: "1024x1024",
-  quality: "hd",
-  style: "vivid",
-});
-```
+#### Google Gemini Imagen
 
-#### Google Gemini & Imagen
-
--   **モデル**: `imagen-4.0`, `gemini-pro-vision` など。
--   **主要なパラメーター**: `prompt`, `imageSize`, `aspectRatio`, `guidanceScale`, `negativePrompt`。
--   **注**: Gemini 画像モデルは現在、画像を `base64` 形式で返します。
--   **リファレンス**: [Google GenAI Models ドキュメント](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html)
-
-```typescript
+```typescript Imagen で生成 icon=logos:typescript
 import { AIGNEHubImageModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubImageModel({
@@ -233,18 +251,17 @@ const model = new AIGNEHubImageModel({
 const result = await model.invoke({
   prompt: "A serene mountain landscape at sunset",
   n: 1,
-  imageSize: "1024x1024",
   aspectRatio: "1:1",
 });
+
+console.log(result.images[0].base64); // 注意: Gemini モデルは base64 データを返します
 ```
+
+-   **リファレンス**: [Google AI Generative Models API](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html)
 
 #### Ideogram
 
--   **モデル**: `ideogram-v3`
--   **主要なパラメーター**: `prompt`, `resolution`, `aspectRatio`, `renderingSpeed`, `styleType`。
--   **リファレンス**: [Ideogram API ドキュメント](https://developer.ideogram.ai/api-reference/api-reference/generate-v3)
-
-```typescript
+```typescript Ideogram で生成 icon=logos:typescript
 import { AIGNEHubImageModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubImageModel({
@@ -254,19 +271,18 @@ const model = new AIGNEHubImageModel({
 });
 
 const result = await model.invoke({
-  prompt: "A cyberpunk character with glowing blue eyes",
-  resolution: "1024x1024",
+  prompt: "A cyberpunk character with glowing blue eyes, cinematic style",
+  aspectRatio: "1:1",
   styleType: "cinematic",
 });
+
+console.log(result.images[0].url);
 ```
 
-### 設定
+-   **リファレンス**: [Ideogram API ドキュメント](https://developer.ideogram.ai/api-reference/api-reference/generate-v3)
 
-`AIGNEHubImageModel` コンストラクターは、次のオプションを受け入れます。
+## まとめ
 
-| Parameter      | Type     | Description                                                                 |
-| -------------- | -------- | --------------------------------------------------------------------------- |
-| `url`          | `string` | AIGNE Hub インスタンスのエンドポイント URL。                                |
-| `accessKey`    | `string` | AIGNE Hub で認証するためのシークレット API キー。                  |
-| `model`        | `string` | プロバイダーでプレフィックスが付けられたモデル識別子（例：`openai/dall-e-3`）。 |
-| `modelOptions` | `object` | 任意。基盤となるモデルに渡す追加のパラメーター。            |
+`@aigne/aigne-hub` パッケージは、AIGNE Hubサービス用の統一クライアントを提供することで、マルチプロバイダーのLLM統合を簡素化します。プロバイダー固有のロジックを抽象化することにより、開発者はより柔軟で保守性の高いAI搭載アプリケーションを構築できます。
+
+特定のモデルとその機能に関する詳細情報については、各AIプロバイダーが提供するドキュメントを参照してください。他のモデル統合を調べるには、[モデル概要](./models-overview.md) を参照してください。

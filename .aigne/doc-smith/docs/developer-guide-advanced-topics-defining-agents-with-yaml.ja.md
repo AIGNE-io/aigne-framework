@@ -1,217 +1,232 @@
-このドキュメントでは、AIGNE ローダーシステムについて詳しく解説します。このシステムは、設定ファイルをロード・解析して Agent を構築・初期化する役割を担います。ローダーは、AI Agent の振る舞いや相互作用を定義・設定するための主要なエントリーポイントです。
+# YAMLによるAgentの定義
 
-## 概要
+AIGNEフレームワークは、YAML設定ファイルを使用したAgentの宣言的な定義アプローチをサポートしています。この方法では、Agentの定義（プロパティ、指示、スキル）をアプリケーションのビジネスロジックから分離し、複雑なAgentシステムのより良い整理、再利用性、および容易な管理を促進します。
 
-AIGNE ローダーシステムは、ルートの `aigne.yaml` ファイルから始まる一連の設定ファイルを解釈し、完全なランタイム環境を構築するように設計されています。このプロセスには、プロジェクトレベルの設定の解析、指定されたすべての Agent とスキルの検出、そしてそれらを実行可能なオブジェクトとしてインスタンス化することが含まれます。ローダーは、シンプルな YAML 形式と、より複雑でプログラム的なロジックを記述できる JavaScript/TypeScript の両方で Agent を定義することをサポートしています。
+このガイドでは、さまざまなAgentタイプとそのプロパティを定義するためのYAML構文の包括的な概要を説明します。
 
-ロードプロセスは次のように視覚化できます。
+## 基本構造
 
-```d2
-direction: down
+すべてのAgent定義は、そのタイプに関わらず、`.yaml`ファイル内に含まれます。`type`属性は、Agentの動作と必要なプロパティを決定する主要な識別子です。`type`が省略された場合、デフォルトで`ai`になります。
 
-Config-Sources: {
-  label: "設定ソース"
-  shape: rectangle
+以下は、AI Agent設定の基本的な例です。
 
-  aigne-yaml: "aigne.yaml\n(ルートエントリポイント)"
-
-  definitions: {
-    label: "Agent とスキルの定義"
-    shape: rectangle
-    grid-columns: 2
-
-    yaml-files: "YAML ファイル\n(.yml)"
-    ts-js-files: "TypeScript/JavaScript\n(.ts, .js)"
-  }
-}
-
-Loader: {
-  label: "AIGNE ローダーシステム"
-  shape: rectangle
-}
-
-Runtime: {
-  label: "初期化されたランタイム環境"
-  shape: rectangle
-
-  Objects: {
-    label: "メモリ上のライブオブジェクト"
-    shape: rectangle
-    grid-columns: 2
-
-    Agent-Instances: "Agent インスタンス"
-    Skill-Instances: "スキルインスタンス"
-  }
-}
-
-Config-Sources.aigne-yaml -> Loader: "1. 読み込み"
-Config-Sources.definitions -> Loader: "2. 検出"
-Loader -> Loader: "3. 解析と構築"
-Loader -> Runtime.Objects: "4. インスタンス化"
-```
-
-## コア機能
-
-ローダーシステムは、プロジェクト設定の検出、解析、インスタンス化を処理するいくつかの主要な関数によって構成されています。
-
-### `load` 関数
-
-これはローダーシステムのメインエントリポイントです。プロジェクトディレクトリ（または特定の `aigne.yaml` ファイル）へのパスとオプションオブジェクトを受け取り、完全に解決された `AIGNEOptions` オブジェクトを返します。このオブジェクトはすぐに使用できます。
-
-```typescript
-// From: packages/core/src/loader/index.ts
-
-export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
-  // ... implementation
-}
-```
-
-### `loadAgent` 関数
-
-この関数は、単一の Agent をファイルからロードする役割を担います。ファイルタイプ（YAML または JavaScript/TypeScript）を自動的に検出し、適切なパーサーを使用します。
-
-```typescript
-// From: packages/core/src/loader/index.ts
-
-export async function loadAgent(
-  path: string,
-  options?: LoadOptions,
-  agentOptions?: AgentOptions,
-): Promise<Agent> {
-  // ... implementation
-}
-```
-
-## プロジェクト設定: `aigne.yaml`
-
-`aigne.yaml`（または `aigne.yml`）ファイルは、プロジェクト設定のルートです。ローダーは、指定されたパスでこのファイルを検索し、ロードプロセスを開始します。
-
-### `aigne.yaml` スキーマ
-
-`aigne.yaml` ファイルで定義できるトップレベルのプロパティは次のとおりです。
-
-| キー | タイプ | 説明 |
-| :--- | :--- | :--- |
-| `name` | `string` | プロジェクトの名前。 |
-| `description` | `string` | プロジェクトの簡単な説明。 |
-| `model` | `string` or `object` | すべての Agent のデフォルトのチャットモデル設定。個々の Agent によって上書き可能です。 |
-| `imageModel` | `string` or `object` | すべての Agent のデフォルトの画像モデル設定。 |
-| `agents` | `string[]` | ロードする Agent 定義ファイルへのパスのリスト。 |
-| `skills` | `string[]` | グローバルに利用可能にするスキル定義ファイルへのパスのリスト。 |
-| `mcpServer` | `object` | MCP (Multi-agent Communication Protocol) サーバーの設定。公開する Agent のリストを含みます。 |
-| `cli` | `object` | コマンドラインインターフェースの設定。チャット Agent と Agent コマンド構造を定義します。 |
-
-### `aigne.yaml` の例
-
-この例では、典型的なプロジェクト設定を示し、デフォルトモデルを定義し、ロードする様々な Agent とスキルをリストアップしています。
-
-```yaml
-name: test_aigne_project
-description: A test project for the aigne agent
-chat_model:
-  name: gpt-4o-mini
-  temperature: 0.8
-agents:
-  - chat.yaml
-  - chat-with-prompt.yaml
-  - team.yaml
-  - image.yaml
-  - agents/test-relative-prompt-paths.yaml
+```yaml chat.yaml
+name: Basic Chat Agent
+description: A simple agent that responds to user messages.
+type: ai
+instructions: "You are a helpful assistant. Respond to the user's message concisely."
+input_key: message
 skills:
-  - sandbox.js
-mcp_server:
-  agents:
-    - chat.yaml
-cli:
-  agents:
-    - chat.yaml
-    - test-cli-agents/b.yaml
-    - url: test-cli-agents/a.yaml
-      name: a-renamed
-      description: A agent from a.yaml
-      alias: ["a", "a-agent"]
-      agents:
-        - url: test-cli-agents/a-1.yaml
-          agents:
-            - url: test-cli-agents/a-1-1.yaml
-            - url: test-cli-agents/a-1-2.yaml
-              name: a12-renamed
-              description: A agent from a-1-2.yaml
-        - test-cli-agents/a-2.yaml
+  - my-skill.js
 ```
 
-## Agent の設定 (YAML)
+### コアプロパティ
 
-Agent は AIGNE プラットフォームの基本的な構成要素です。宣言的で読みやすい形式の YAML ファイルで定義できます。
+以下のプロパティは、ほとんどのAgentタイプで共通です。
 
-### 共通の Agent プロパティ
+<x-field-group>
+  <x-field data-name="name" data-type="string" data-required="false">
+    <x-field-desc markdown>Agentの人間が判読可能な名前。</x-field-desc>
+  </x-field>
+  <x-field data-name="description" data-type="string" data-required="false">
+    <x-field-desc markdown>Agentの目的と能力に関する簡単な説明。</x-field-desc>
+  </x-field>
+  <x-field data-name="type" data-type="string" data-required="false" data-default="ai">
+    <x-field-desc markdown>Agentのタイプを指定します。必須フィールドと動作を決定します。有効なタイプには `ai`、`image`、`team`、`transform`、`mcp`、`function` が含まれます。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="object | string" data-required="false">
+    <x-field-desc markdown>Agentが使用するチャットモデルの設定で、グローバルに定義されたモデルを上書きします。文字列または詳細なオブジェクトを指定できます。</x-field-desc>
+  </x-field>
+  <x-field data-name="skills" data-type="array" data-required="false">
+    <x-field-desc markdown>このAgentがツールとして使用できる他のAgentまたはJavaScript/TypeScript関数のリスト。各スキルはファイルパスで参照されます。</x-field-desc>
+  </x-field>
+  <x-field data-name="inputSchema" data-type="object | string" data-required="false">
+    <x-field-desc markdown>期待される入力構造を定義するJSONスキーマ。インラインオブジェクトまたは外部の `.json` や `.yaml` ファイルへのパスを指定できます。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputSchema" data-type="object | string" data-required="false">
+    <x-field-desc markdown>Agentの出力を構造化するためのJSONスキーマ。インラインオブジェクトまたは外部ファイルへのパスを指定できます。これは構造化された出力を可能にするために重要です。</x-field-desc>
+  </x-field>
+  <x-field data-name="memory" data-type="boolean | object" data-required="false">
+    <x-field-desc markdown>Agentの状態保持を有効にします。デフォルトのメモリを使用する場合は `true` に設定するか、特定のプロバイダー用の設定オブジェクトを提供します。</x-field-desc>
+  </x-field>
+  <x-field data-name="hooks" data-type="array" data-required="false">
+    <x-field-desc markdown>実行の異なる段階で他のAgentをトリガーするライフサイクルフック（`onStart`、`onSuccess`、`onError`、`onEnd`）を定義します。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-すべての Agent タイプは、共通のプロパティセットを共有します。
+## 外部プロンプトとスキーマの読み込み
 
-| キー | タイプ | 説明 |
-| :--- | :--- | :--- |
-| `name` | `string` | Agent の一意の名前。 |
-| `description` | `string` | Agent の目的と能力に関する説明。 |
-| `model` | `string` or `object` | この特定の Agent のデフォルトチャットモデルを上書きします。 |
-| `inputSchema` | `string` or `object` | 期待される入力を定義する JSON スキーマファイルへのパス、またはインラインスキーマ。 |
-| `outputSchema` | `string` or `object` | 期待される出力を定義する JSON スキーマファイルへのパス、またはインラインスキーマ。 |
-| `skills` | `(string or object)[]` | この Agent が利用できるスキル（ツール）のリスト。スキルファイルへのパス、またはネストされた Agent 定義を指定できます。 |
-| `memory` | `boolean` or `object` | Agent のメモリを有効にします。単純な `true` または高度な設定のためのオブジェクトを指定できます。 |
-| `hooks` | `object` or `object[]` | ライフサイクルのさまざまな時点（例：`onStart`、`onSuccess`）で他の Agent をトリガーするフックを定義します。 |
+クリーンでモジュール化された設定を維持するために、Agentの指示とスキーマを外部ファイルから読み込むことができます。これは、複雑なプロンプトや再利用可能なデータ構造に特に便利です。
 
-### Agent タイプ
+### 外部の指示
 
-`type` プロパティは Agent の中核的な振る舞いを決定します。
+`ai` および `image` Agentでは、指示が長くなることがあります。これらを別のMarkdownまたはテキストファイルで定義し、`url`キーを使用して参照できます。
 
-#### 1. AI Agent (`type: "ai"`)
-
-最も一般的なタイプで、汎用的な AI タスクに使用されます。大規模言語モデルを使用して指示を処理し、スキルと対話します。
-
--   **`instructions`**: Agent のプロンプトを定義します。文字列、`role` と `content` を持つオブジェクト、または `url` を使用したファイル参照が可能です。
--   **`inputKey`**: 入力オブジェクト内で、メインのユーザーメッセージとして扱われるべきキー。
--   **`toolChoice`**: Agent がツールをどのように使用するかを制御します（例：`auto`、`required`）。
-
-**例:**
-
-```yaml
+```yaml chat-with-prompt.yaml
 name: chat-with-prompt
-description: Chat agent
+description: An AI agent with instructions loaded from an external file.
+type: ai
 instructions:
-  url: chat-prompt.md
+  url: prompts/main-prompt.md
 input_key: message
 memory: true
 skills:
+  - skills/sandbox.js
+```
+
+`main-prompt.md`ファイルには、Agentのシステムプロンプトとして使用される生のテキストが含まれています。
+
+```markdown prompts/main-prompt.md
+You are a master programmer. When the user asks for code, provide a complete, runnable example and explain the key parts.
+```
+
+異なるロールを持つマルチパートプロンプトを構築することもできます。
+
+```yaml multi-role-prompt.yaml
+instructions:
+  - role: system
+    url: prompts/system-role.md
+  - role: user
+    content: "Here is an example of a good response:"
+  - role: assistant
+    url: prompts/example-response.md
+```
+
+### 外部スキーマ
+
+同様に、`inputSchema`と`outputSchema`は、スキーマ構造を定義する外部のJSONまたはYAMLファイルを参照できます。
+
+```yaml structured-output-agent.yaml
+name: JSON Extractor
+type: ai
+instructions: Extract the user's name and email from the text.
+outputSchema: schemas/user-schema.yaml
+```
+
+`user-schema.yaml`ファイルには、JSONスキーマの定義が含まれます。
+
+```yaml schemas/user-schema.yaml
+type: object
+properties:
+  name:
+    type: string
+    description: The full name of the user.
+  email:
+    type: string
+    description: The email address of the user.
+required:
+  - name
+  - email
+```
+
+## Agentタイプ別の詳細
+
+以下のセクションでは、各Agentタイプ固有の設定プロパティについて詳しく説明します。
+
+### AI Agent (`type: ai`)
+
+`AIAgent`は最も一般的なタイプで、言語モデルとの汎用的な対話のために設計されています。
+
+```yaml ai-agent-example.yaml
+type: ai
+name: Customer Support AI
+instructions:
+  url: prompts/support-prompt.md
+input_key: customer_query
+output_key: response
+# モデルに特定のスキルを呼び出すように強制する
+tool_choice: "sandbox"
+outputSchema: schemas/support-response.yaml
+skills:
   - sandbox.js
 ```
 
-#### 2. Image Agent (`type: "image"`)
+<x-field-group>
+  <x-field data-name="instructions" data-type="string | object | array" data-required="false">
+    <x-field-desc markdown>AIモデルへのシステムプロンプトまたは指示。単純な文字列、外部ファイルへの参照（`url`）、またはメッセージオブジェクト（`role`、`content`/`url`）の配列を指定できます。</x-field-desc>
+  </x-field>
+  <x-field data-name="inputKey" data-type="string" data-required="false">
+    <x-field-desc markdown>入力オブジェクト内で、モデルに送信される主要なユーザーメッセージを含むキー。</x-field-desc>
+  </x-field>
+  <x-field data-name="outputKey" data-type="string" data-required="false">
+    <x-field-desc markdown>AIの最終的なテキスト応答が配置される出力オブジェクトのキー。</x-field-desc>
+  </x-field>
+  <x-field data-name="toolChoice" data-type="string" data-required="false">
+    <x-field-desc markdown>モデルに特定のスキル（ツール）の使用を強制します。値はAgentにアタッチされたスキルの名前と一致する必要があります。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-プロンプトに基づいて画像を生成することに特化しています。
+### Team Agent (`type: team`)
 
--   **`instructions`**: (必須) 画像生成に使用されるプロンプト。
--   **`modelOptions`**: 画像生成モデルに固有のオプションの辞書。
+`TeamAgent`は、子Agent（`skills`で定義）のコレクションを調整して、マルチステップのタスクを実行します。
 
-#### 3. Team Agent (`type: "team"`)
+```yaml team-agent-example.yaml
+type: team
+name: Research and Write Team
+# Agentは次々に実行されます
+mode: sequential
+# このチームの出力は、すべてのステップの出力を集めたものになります
+include_all_steps_output: true
+skills:
+  - url: agents/researcher.yaml
+  - url: agents/writer.yaml
+  - url: agents/editor.yaml
+```
 
-Agent（スキル）のグループを組織し、タスクに共同で取り組ませます。
+<x-field-group>
+  <x-field data-name="mode" data-type="string" data-required="false" data-default="sequential">
+    <x-field-desc markdown>チームの実行モード。`sequential`（Agentが順次実行）または`parallel`（Agentが並行実行）を指定できます。</x-field-desc>
+  </x-field>
+  <x-field data-name="iterateOn" data-type="string" data-required="false">
+    <x-field-desc markdown>配列を含む入力オブジェクトのキー。チームは配列内の各アイテムに対してワークフローを実行します。</x-field-desc>
+  </x-field>
+  <x-field data-name="reflection" data-type="object" data-required="false">
+    <x-field-desc markdown>`reviewer` Agentが出力を検査し、出力が承認されるまで再実行をトリガーできる自己修正ループを設定します。</x-field-desc>
+  </x-field>
+</x-field-group>
 
--   **`mode`**: 処理モード（`parallel` や `sequential` など）。
--   **`iterateOn`**: スキルで処理する際、反復処理の対象となる入力からのキー。
--   **`reflection`**: `reviewer` Agent が出力を承認または変更要求を行うレビュープロセスを設定します。
+### Image Agent (`type: image`)
 
-#### 4. Transform Agent (`type: "transform"`)
+`ImageAgent`は、画像モデルを使用して画像を生成することに特化しています。
 
-JSONata 式を使用して入力データを変換します。
+```yaml image-agent-example.yaml
+type: image
+name: Logo Generator
+instructions: "A minimalist, flat-design logo for a tech startup named 'Innovate'."
+# 画像モデルプロバイダーに特定のオプションを渡す
+model_options:
+  quality: hd
+  style: vivid
+```
 
--   **`jsonata`**: (必須) 入力に適用する JSONata 式を含む文字列。
+<x-field-group>
+  <x-field data-name="instructions" data-type="string | object" data-required="true">
+    <x-field-desc markdown>望ましい画像を説明するプロンプト。AI Agentとは異なり、これは必須フィールドです。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>画像生成を制御するためのプロバイダー固有のオプションのキーと値のマップ（例：`quality`、`style`、`size`）。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-#### 5. MCP Agent (`type: "mcp"`)
+### Transform Agent (`type: transform`)
 
-外部の Agent またはサービスへのクライアントとして機能します。
+`TransformAgent`は、[JSONata](https://jsonata.org/)式を使用して、コードを書かずに宣言的にJSONデータをマッピング、フィルタリング、または再構築します。
 
--   **`url`**: 外部 Agent の URL。
--   **`command`**: 実行するシェルコマンド。
+```yaml transform-agent-example.yaml
+type: transform
+name: User Formatter
+description: Extracts and formats user names from a list.
+jsonata: "payload.users.{'name': firstName & ' ' & lastName}"
+```
 
-#### 6. Function Agent (`type: "function"`)
+<x-field-group>
+  <x-field data-name="jsonata" data-type="string" data-required="true">
+    <x-field-desc markdown>入力データに対して実行するJSONata式。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-JavaScript/TypeScript ファイルでプログラム的に定義されます。このタイプは YAML ではなく、JS/TS ファイル自体で指定されます。
+## まとめ
+
+YAMLによるAgentの定義は、プログラムによる定義に代わる強力で宣言的な方法を提供します。これにより、関心事の明確な分離、再利用性の向上、Agent設定の管理の簡素化が可能になります。プロンプトやスキーマに外部ファイルを利用することで、複雑でモジュール化され、保守性の高いAIシステムを構築できます。
+
+より実践的な例については、[高度なトピック](./developer-guide-advanced-topics.md)セクションの他のガイドを参照してください。

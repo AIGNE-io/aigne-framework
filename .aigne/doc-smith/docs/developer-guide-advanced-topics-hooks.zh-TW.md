@@ -1,195 +1,310 @@
-# Agent 掛鉤
+# 鉤子
 
-Agent 掛鉤提供了一種強大的機制，讓您能介入 Agent 的執行生命週期。它們允許您在關鍵節點——例如 Agent 啟動前、成功後或發生錯誤時——插入自訂邏輯，而無需修改 Agent 的核心實作。這使得掛鉤成為實現日誌記錄、監控、追蹤、修改輸入/輸出以及實作自訂錯誤處理策略的理想選擇。
+鉤子提供了一種強大的機制，用於觀察、攔截和注入自訂邏輯到 agent 的執行生命週期中。它們讓您可以在不更改 agent 核心實作的情況下，新增日誌記錄、監控、輸入/輸出轉換和自訂錯誤處理等功能。
 
-## 核心概念
+本指南將詳細介紹 agent 的執行生命週期、可用的鉤子，以及如何有效地實作它們。
 
-### 生命週期事件
+## Agent 執行生命週期
 
-您可以將自訂邏輯附加到 Agent 的各種生命週期事件上。每個掛鉤在執行過程中的特定時間點被觸發，並接收相關的上下文，例如輸入、輸出或錯誤。
+要正確使用鉤子，了解 agent 的執行生命週期至關重要。當 agent 被調用時，它會經過一系列步驟，並在特定時間點觸發鉤子。
 
-以下是可用的生命週期掛鉤：
+下圖說明了在 agent 調用期間發生的事件順序以及相應被呼叫的鉤子。
 
-| 掛鉤 | 觸發時機 | 目的 |
-| :------------- | :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `onStart` | 在 Agent 的 `process` 方法被呼叫前。 | 對輸入進行預處理或驗證、記錄執行的開始，或設定所需資源。它可以在 Agent 接收輸入前對其進行修改。 |
-| `onSuccess` | 在 Agent 的 `process` 方法成功完成後。 | 對輸出進行後處理或驗證、記錄成功結果，或執行清理工作。它可以修改最終的輸出。 |
-| `onError` | 在 Agent 執行期間拋出錯誤時。 | 記錄錯誤、發送通知，或實作自訂的重試邏輯。它可以向 Agent 發出重試操作的訊號。 |
-| `onEnd` | 在 `onSuccess` 或 `onError` 被呼叫後。 | 無論結果如何，都執行清理操作，例如關閉連線或釋放資源。它也可以修改最終輸出或觸發重試。 |
-| `onSkillStart` | 在目前 Agent 呼叫一個技能（一個子 Agent）之前。 | 攔截並記錄技能的呼叫，或修改傳遞給技能的輸入。 |
-| `onSkillEnd` | 在一個技能完成其執行（無論成功與否）後。 | 記錄技能的結果或錯誤、執行特定於該技能的清理工作，或處理特定於技能的錯誤。 |
-| `onHandoff` | 當一個 Agent 將控制權轉移給另一個 Agent 時。 | 在多 Agent 系統中追蹤控制流，並監控任務如何在 Agent 之間委派。 |
+```d2 AIGNE 鉤子生命週期 icon=material-symbols:account-tree-outline
+direction: down
+style: {
+  font-size: 14
+}
 
-### 掛鉤優先級
+InvokeAgent: "AIGNE.invoke(agent, input)" {
+  shape: step
+  style.fill: "#D5E8D4"
+}
 
-可以為掛鉤指定一個 `priority`，以在為同一事件註冊了多個掛鉤時控制它們的執行順序。這對於確保某些掛鉤（如身份驗證或驗證）在其他掛鉤之前執行非常有用。
+onStart: "onStart 鉤子" {
+  shape: hexagon
+  style.fill: "#F8CECC"
+}
 
-可用的優先級別為：
-- `high`
-- `medium`
-- `low` (預設)
+InputValidation: "輸入結構驗證" {
+  shape: step
+}
 
-掛鉤會按照從 `high` 到 `low` 的優先級順序執行。這是由 `sortHooks` 工具程式處理的，確保了可預測的執行序列。
+Preprocess: "agent.preprocess()" {
+  shape: step
+}
 
-```typescript
-// 來源：packages/core/src/utils/agent-utils.ts
-const priorities: NonNullable<AgentHooks["priority"]>[] = ["high", "medium", "low"];
+Process: "agent.process()" {
+  shape: rectangle
+  style.fill: "#DAE8FC"
+}
 
-export function sortHooks(hooks: AgentHooks[]): AgentHooks[] {
-  return hooks
-    .slice(0)
-    .sort(({ priority: a = "low" }, { priority: b = "low" }) =>
-      a === b ? 0 : priorities.indexOf(a) - priorities.indexOf(b),
-    );
+Postprocess: "agent.postprocess()" {
+  shape: step
+}
+
+OutputValidation: "輸出結構驗證" {
+  shape: step
+}
+
+Result: {
+  shape: diamond
+  style.fill: "#E1D5E7"
+}
+
+onSuccess: "onSuccess 鉤子" {
+  shape: hexagon
+  style.fill: "#F8CECC"
+}
+
+onError: "onError 鉤子" {
+  shape: hexagon
+  style.fill: "#F8CECC"
+}
+
+onEnd: "onEnd 鉤子" {
+  shape: hexagon
+  style.fill: "#F8CECC"
+}
+
+ReturnOutput: "回傳輸出" {
+  shape: step
+  style.fill: "#D5E8D4"
+}
+
+ThrowError: "拋出錯誤" {
+  shape: step
+  style.fill: "#F8CECC"
+}
+
+InvokeAgent -> onStart -> InputValidation -> Preprocess -> Process
+
+Process -> Postprocess -> OutputValidation -> Result
+
+Result -> "成功" -> onSuccess -> onEnd -> ReturnOutput
+Result -> "失敗" -> onError -> onEnd -> ThrowError
+
+subgraph "技能調用 (在 process 內部)" {
+  label: "技能調用 (在 process 內部)"
+  direction: down
+  style.stroke-dash: 2
+
+  onSkillStart: "onSkillStart 鉤子" {
+    shape: hexagon
+    style.fill: "#FFF2CC"
+  }
+
+  InvokeSkill: "invokeSkill()" {
+    shape: rectangle
+  }
+
+  onSkillEnd: "onSkillEnd 鉤子" {
+    shape: hexagon
+    style.fill: "#FFF2CC"
+  }
+
+  onSkillStart -> InvokeSkill -> onSkillEnd
 }
 ```
 
-## 實作掛鉤
+## 可用的鉤子
 
-掛鉤可以透過兩種方式實作：作為簡單的回呼函式，或作為獨立、可重用的 `Agent` 實例。
+鉤子定義在一個 `AgentHooks` 物件中。每個鉤子可以實作為一個函式，或是一個獨立的專用 agent。
 
-### 1. 函式掛鉤
+<x-field-group>
+  <x-field data-name="onStart" data-type="function | Agent">
+    <x-field-desc markdown>在 agent 調用的最開始，輸入驗證之前觸發。可用於修改初始的 `input` 或 `options`。</x-field-desc>
+  </x-field>
+  <x-field data-name="onSuccess" data-type="function | Agent">
+    <x-field-desc markdown>在 agent 的 `process` 方法成功完成且輸出已通過驗證後觸發。可用於轉換最終的 `output`。</x-field-desc>
+  </x-field>
+  <x-field data-name="onError" data-type="function | Agent">
+    <x-field-desc markdown>在執行的任何階段拋出錯誤時觸發。可用於實作自訂的錯誤日誌記錄，或透過回傳 `{ retry: true }` 來實作重試機制。</x-field-desc>
+  </x-field>
+  <x-field data-name="onEnd" data-type="function | Agent">
+    <x-field-desc markdown>在 agent 調用的最末端觸發，無論成功或失敗。適用於清理任務、最終日誌記錄或指標收集。</x-field-desc>
+  </x-field>
+  <x-field data-name="onSkillStart" data-type="function | Agent">
+    <x-field-desc markdown>在 agent 調用其技能（一個子 agent）之前觸發。這對於追蹤 agent 之間的任務委派很有用。</x-field-desc>
+  </x-field>
+  <x-field data-name="onSkillEnd" data-type="function | Agent">
+    <x-field-desc markdown>在技能調用完成後觸發，無論成功或失敗。它會接收到技能的結果或錯誤。</x-field-desc>
+  </x-field>
+  <x-field data-name="onHandoff" data-type="function | Agent">
+    <x-field-desc markdown>當 agent 的 `process` 方法回傳另一個 agent 實例，有效地交接控制權時觸發。這允許監控 agent 之間的轉移。</x-field-desc>
+  </x-field>
+</x-field-group>
 
-對於直接的邏輯，您可以直接在 `AgentOptions` 物件中將掛鉤定義為一個函式。這是使用掛鉤最常見和最直接的方式。
+## 實作鉤子
 
-**範例：一個簡單的日誌記錄掛鉤**
+鉤子可以透過三種方式附加到 agent 上：
+1.  在 agent 實例化期間，透過 `AgentOptions` 中的 `hooks` 屬性。
+2.  在調用時，透過 `AgentInvokeOptions` 中的 `hooks` 屬性。
+3.  在 `AIGNEContext` 實例上全域設定。
 
-此範例展示了一個基本的掛鉤，用於記錄 Agent 執行的開始和結束。
+### 範例 1：基本日誌記錄
 
-```typescript
-import { Agent, AgentOptions, Message } from "./agent"; // 假設 agent.ts 的路徑
+這是一個簡單的鉤子範例，用於記錄 agent 執行的開始與結束。
 
-// 定義一個日誌記錄掛鉤物件
-const loggingHook = {
-  priority: "high",
+```typescript Agent 日誌記錄鉤子 icon=logos:typescript
+import { Agent, AIGNE, type AgentHooks } from "@aigne/core";
+
+// 定義日誌記錄鉤子
+const loggingHook: AgentHooks = {
   onStart: ({ agent, input }) => {
-    console.log(`[INFO] Agent '${agent.name}' started with input:`, JSON.stringify(input));
+    console.log(`[${agent.name}] Starting execution with input:`, input);
   },
-  onEnd: ({ agent, output, error }) => {
+  onEnd: ({ agent, input, output, error }) => {
     if (error) {
-      console.error(`[ERROR] Agent '${agent.name}' failed with error:`, error.message);
+      console.error(`[${agent.name}] Execution failed for input:`, input, "Error:", error);
     } else {
-      console.log(`[INFO] Agent '${agent.name}' succeeded with output:`, JSON.stringify(output));
+      console.log(`[${agent.name}] Execution succeeded with output:`, output);
     }
-  }
+  },
 };
 
-// 建立一個新的 Agent 並附加掛鉤
-const myAgent = new Agent({
-  name: "DataProcessor",
-  hooks: [loggingHook],
-  // ... 其他 Agent 選項
-});
-```
-
-### 2. Agent 掛鉤
-
-對於更複雜或可重用的邏輯，您可以將掛鉤實作為其自身的 `Agent`。這允許您封裝掛鉤邏輯、管理其狀態，並在多個 Agent 之間重用它。掛鉤 Agent 的輸入將是事件的負載（例如 `{ agent, input, error }`）。
-
-**範例：一個基於 Agent 的錯誤處理器**
-
-在這裡，`ErrorHandlingAgent` 是一個被設計用來作為 `onError` 掛鉤的 Agent。它可以包含向監控服務發送警報的邏輯。
-
-```typescript
-import { FunctionAgent, Agent, Message } from "./agent"; // 假設 agent.ts 的路徑
-
-// 一個透過發送警報來處理錯誤的 Agent
-const errorHandlingAgent = new FunctionAgent({
-  name: "ErrorAlerter",
-  process: async ({ agent, error }) => {
-    console.log(`Alert! Agent ${agent.name} encountered an error: ${error.message}`);
-    // 在實際情境中，您可能會在這裡呼叫一個外部監控 API。
-  }
-});
-
-// 一個可能會失敗的 Agent
-class RiskyAgent extends Agent<{ command: string }, { result: string }> {
-  async process(input) {
-    if (input.command === "fail") {
-      throw new Error("This operation was designed to fail.");
-    }
-    return { result: "Success!" };
+// 定義一個簡單的 agent
+class MyAgent extends Agent {
+  async process(input: { message: string }) {
+    return { reply: `You said: ${input.message}` };
   }
 }
 
-// 將錯誤處理 Agent 作為掛鉤附加
-const riskyAgent = new RiskyAgent({
-  name: "RiskyOperation",
-  hooks: [
-    {
-      onError: errorHandlingAgent,
-    }
-  ],
+// 使用鉤子將 agent 實例化
+const myAgent = new MyAgent({
+  name: "EchoAgent",
+  hooks: [loggingHook],
 });
+
+const aigne = new AIGNE();
+await aigne.invoke(myAgent, { message: "hello" });
+
+// 主控台輸出：
+// [EchoAgent] Starting execution with input: { message: 'hello' }
+// [EchoAgent] Execution succeeded with output: { reply: 'You said: hello' }
 ```
 
-## 修改執行流程
+### 範例 2：使用 `onStart` 修改輸入
 
-掛鉤不僅用於觀察；它們還可以主動修改 Agent 的執行流程。
+`onStart` 鉤子可以回傳一個物件來修改 agent 將收到的 `input`。
 
-- **修改輸入**：一個 `onStart` 掛鉤可以回傳一個帶有新 `input` 屬性的物件，這將取代傳遞給 Agent 的 `process` 方法的原始輸入。
-- **修改輸出**：一個 `onSuccess` 或 `onEnd` 掛鉤可以回傳一個帶有新 `output` 屬性的物件，這將取代 Agent 的原始結果。
-- **觸發重試**：一個 `onError` 或 `onEnd` 掛鉤可以回傳 `{ retry: true }` 來指示 Agent 重新執行其 `process` 方法。這對於處理暫時性錯誤很有用。
+```typescript 修改 Agent 輸入 icon=logos:typescript
+import { Agent, AIGNE, type AgentHooks } from "@aigne/core";
 
-**範例：輸入轉換與重試邏輯**
-
-```typescript
-import { Agent, AgentOptions, Message } from "./agent"; // 假設 agent.ts 的路徑
-
-const transformationAndRetryHook = {
+const inputModificationHook: AgentHooks = {
   onStart: ({ input }) => {
-    // 在處理前將輸入標準化
-    const transformedInput = { ...input, data: input.data.toLowerCase() };
-    return { input: transformedInput };
+    // 將時間戳新增到輸入訊息中
+    const newInput = {
+      ...input,
+      timestamp: new Date().toISOString(),
+    };
+    return { input: newInput };
   },
-  onError: ({ error }) => {
-    // 遇到網路錯誤時重試
-    if (error.message.includes("network")) {
-      console.log("Network error detected. Retrying...");
+};
+
+class GreeterAgent extends Agent {
+  async process(input: { name: string; timestamp?: string }) {
+    return { greeting: `Hello, ${input.name}! (processed at ${input.timestamp})` };
+  }
+}
+
+const agent = new GreeterAgent({ hooks: [inputModificationHook] });
+
+const aigne = new AIGNE();
+const result = await aigne.invoke(agent, { name: "Alice" });
+
+console.log(result);
+// {
+//   greeting: "Hello, Alice! (processed at 2023-10-27T10:00:00.000Z)"
+// }
+```
+
+### 範例 3：使用 `onError` 進行自訂重試
+
+`onError` 鉤子可以回傳 `{ retry: true }` 來告知 AIGNE 應重新嘗試執行 agent 的 `process` 方法。這對於處理暫時性失敗很有用。
+
+```typescript 自訂重試鉤子 icon=logos:typescript
+import { Agent, AIGNE, type AgentHooks } from "@aigne/core";
+
+let attempt = 0;
+
+const retryHook: AgentHooks = {
+  onError: ({ agent, error }) => {
+    console.log(`[${agent.name}] Attempt failed: ${error.message}. Retrying...`);
+    // 回傳 true 表示重試，但僅限於前 2 次嘗試
+    if (attempt < 2) {
       return { retry: true };
     }
-  }
+    // 不回傳任何東西，讓錯誤繼續傳播
+  },
 };
 
-const myAgent = new Agent({
-  name: "NetworkAgent",
-  hooks: [transformationAndRetryHook],
-  // ... 其他 Agent 選項
+class UnreliableAgent extends Agent {
+  async process() {
+    attempt++;
+    if (attempt <= 2) {
+      throw new Error("Service temporarily unavailable");
+    }
+    return { status: "OK" };
+  }
+}
+
+const agent = new UnreliableAgent({ hooks: [retryHook] });
+
+const aigne = new AIGNE();
+const result = await aigne.invoke(agent, {});
+
+console.log(result); // { status: 'OK' }
+```
+
+這個 agent 會失敗兩次，而 `retryHook` 會攔截錯誤並每次都觸發重試。在第三次嘗試時，agent 會成功。
+
+## 鉤子優先級
+
+鉤子可以在 agent 上、調用時以及在 context 中定義。為了管理執行順序，鉤子可以設定一個 `priority` 屬性，值可以是 `"high"`、`"medium"` 或 `"low"`（預設值）。
+
+鉤子會按照其優先級順序執行：`high` > `medium` > `low`。
+
+```typescript 鉤子優先級範例 icon=logos:typescript
+const highPriorityHook: AgentHooks = {
+  priority: 'high',
+  onStart: () => console.log('High priority hook executed.'),
+};
+
+const mediumPriorityHook: AgentHooks = {
+  priority: 'medium',
+  onStart: () => console.log('Medium priority hook executed.'),
+};
+
+const lowPriorityHook: AgentHooks = {
+  // priority 預設為 'low'
+  onStart: () => console.log('Low priority hook executed.'),
+};
+
+class MonitoredAgent extends Agent {
+  async process(input: {}) {
+    console.log('Agent processing...');
+    return { success: true };
+  }
+}
+
+const agent = new MonitoredAgent({
+  hooks: [lowPriorityHook, highPriorityHook, mediumPriorityHook],
 });
+
+const aigne = new AIGNE();
+await aigne.invoke(agent, {});
+
+
+// 主控台輸出：
+// High priority hook executed.
+// Medium priority hook executed.
+// Low priority hook executed.
+// Agent processing...
 ```
 
-## 宣告式設定 (YAML)
+當一個鉤子的邏輯依賴於另一個鉤子的結果時，這種可預測的執行順序至關重要。
 
-掛鉤也可以在 YAML 設定檔中以宣告方式定義，這在使用 AIGNE CLI 時特別有用。您可以內嵌定義掛鉤或從其他檔案中引用它們。
+## 總結
 
-**來自 `test-agent-with-hooks.yaml` 的範例**
-
-此範例展示了一個團隊 Agent，它使用了多種掛鉤，包括一個內嵌的 AI Agent 和在外部檔案（`test-hooks.yaml`）中定義的掛鉤。
-
-```yaml
-# 來源：packages/core/test-agents/test-agent-with-hooks.yaml
-type: team
-name: test_agent_with_default_input
-hooks:
-  priority: high
-  on_start:
-    type: ai
-    name: test_hooks_inline # 一個作為掛鉤的內嵌 Agent
-  on_success: test-hooks.yaml # 引用外部掛鉤定義
-  on_error: test-hooks.yaml
-  on_end: test-hooks.yaml
-  on_skill_start: test-hooks.yaml
-  on_skill_end: test-hooks.yaml
-  on_handoff: test-hooks.yaml
-skills:
-  - url: ./test-agent-with-default-input-skill.yaml
-    hooks:
-      # 掛鉤也可以附加到特定的技能上
-      on_start: test-hooks.yaml
-  - type: ai
-    name: test_agent_with_default_input_skill2.yaml
-    hooks:
-      on_start: test-hooks.yaml
-```
-
-這種宣告式方法允許關注點的清晰分離，其中 Agent 的邏輯與日誌記錄、安全性和錯誤處理等橫切關注點解耦。
+鉤子是建構穩健且可觀察的 agent 系統的必要工具。它們提供了一種乾淨、非侵入性的方式，為您的 agent 新增如日誌記錄、監控和彈性模式等橫切關注點。透過了解 agent 的生命週期和每個鉤子的功能，您可以建立複雜、可用於生產環境的 AI 應用程式。

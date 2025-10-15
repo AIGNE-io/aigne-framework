@@ -1,177 +1,135 @@
-# AIGNE 框架入門指南
+# 什麼是 AIGNE？
 
-歡迎使用 AIGNE 框架！本指南旨在協助您在 30 分鐘內啟動並執行您的第一個 AI 應用程式。我們將逐步引導您設定環境、安裝必要的套件，並建立一個簡單的 AI Agent。
+AIGNE（發音為 `[ˈei dʒən]`，類似 "agent" 去掉 "t" 的音）是一個用於開發 AI 應用程式的函式化框架。它旨在透過結合函式化程式設計、模組化設計和強大的人工智慧功能，來簡化和加速建構可擴展的現代應用程式的過程。
 
-本指南專為希望將 AIGNE 整合到其專案中的開發人員所設計。我們將著重於可直接複製貼上的程式碼優先範例，幫助您盡快上手。
+AIGNE 的核心概念是使用 **agents**——專門的 AI 助理——可以將它們組織成團隊，以自動化複雜、多步驟的任務。AIGNE 並不依賴單一、龐大的 AI，而是提供了一個建立數位勞動力的結構，讓不同的 agents 協同合作，每個 agent 處理一個更大問題的特定部分。
 
-## 先決條件
+本文件以淺顯易懂的語言介紹 AIGNE 框架，解釋什麼是 AI agents、它們解決了什麼問題，以及它們如何協同工作以自動化複雜的工作流程。
 
-在開始之前，請確保您的系統上已安裝以下軟體：
+## 什麼是 AI Agent？
 
-*   **Node.js**：AIGNE 框架需要 Node.js 20.0 或更高版本。
+AI Agent 是一種專門的數位助理，旨在執行特定功能。每個 agent 根據一組給定的指令運作，並可配備特定的工具來執行其任務。與通用聊天機器人不同，AIGNE agent 是某個狹窄領域的專家。
 
-您可以在終端機中執行以下指令來驗證您的 Node.js 版本：
+您可以將 agents 視為一個高效專案團隊中的個別成員：
 
-```bash
-node -v
-```
+*   **研究員：** 一個可以存取外部資訊來源以收集資料的 agent。
+*   **寫手：** 一個可以處理原始資訊並起草結構化文件的 agent。
+*   **程式設計師：** 一個能夠編寫和執行程式碼以執行技術功能的 agent。
+*   **分析師：** 一個可以解讀資料、識別模式並提供洞見的 agent。
 
-## 1. 安裝
+雖然單一 agent 對於簡單、明確的任務很有效，但 AIGNE 框架的主要優勢在於其能夠將多個 agents 組織成一個有凝聚力的團隊，以實現複雜的目標。
 
-首先，建立一個新的專案目錄並初始化一個 Node.js 專案：
+## AIGNE 解決的問題
 
-```bash
-mkdir aigne-quickstart
-cd aigne-quickstart
-npm init -y
-```
+單一大型語言模型 (LLM) 是執行回答問題或生成文本等任務的強大工具。然而，當面臨需要多個不同步驟、不同技能組合或來自多個來源的資訊的流程時，其能力就受到限制。
 
-現在，您可以使用您偏好的套件管理器（npm、yarn 或 pnpm）來安裝 AIGNE 核心套件和 OpenAI 模型提供者。
+例如，像「分析我們最新的銷售報告，將其與公開的競爭對手表現數據進行比較，並為行銷團隊起草一份簡報」這樣的要求，對標準的聊天機器人來說會很有挑戰性。這個過程涉及幾個獨立的階段：
 
-<tabs>
-<tab-item label="npm">
+1.  **資料分析：** 閱讀和解讀內部銷售報告。
+2.  **外部研究：** 尋找並提取競爭對手的表現數據。
+3.  **綜合分析：** 比較這兩組數據集，以找出關鍵洞見。
+4.  **內容創作：** 將研究結果組織成一份連貫的簡報。
 
-```bash
-npm install @aigne/core @aigne/openai dotenv
-```
+AIGNE 透過提供一個框架來解決這個問題，將這樣複雜的請求分解為可管理的子任務。每個子任務隨後被分配給一個專門的 agent，而該框架則管理它們之間的資訊流，確保最終輸出完整且準確。
 
-</tab-item>
-<tab-item label="yarn">
+## Agents 如何協同工作以自動化任務
 
-```bash
-yarn add @aigne/core @aigne/openai dotenv
-```
+AIGNE 將 agents 組織成**工作流程**，這些是執行任務的結構化流程。透過連接 agents，您可以自動化那些原本需要大量手動協調的流程。該框架支援多種協作模式，從而實現靈活而強大的自動化。
 
-</tab-item>
-<tab-item label="pnpm">
+下圖說明了 AIGNE 框架如何分解複雜任務並管理一個 agents 團隊以產生最終結果。
 
-```bash
-pnpm add @aigne/core @aigne/openai dotenv
-```
-
-</tab-item>
-</tabs>
-
-## 2. 設定您的第一個 AI Agent
-
-框架安裝完成後，讓我們來建立您的第一個 AI 應用程式。此範例將使用 OpenAI API 來驅動我們的 Agent，因此您需要一個 OpenAI API 金鑰。
-
-### a. 設定環境變數
-
-使用環境變數來管理 API 金鑰是最佳實踐。在您的專案根目錄中建立一個名為 `.env` 的檔案，並將您的 OpenAI API 金鑰加入其中：
-
-```bash
-# .env
-OPENAI_API_KEY="your_openai_api_key_here"
-```
-
-我們已經安裝了 `dotenv` 套件，它會將此變數載入到我們應用程式的環境中。
-
-### b. 建立應用程式檔案
-
-建立一個名為 `index.js` 的檔案並加入以下程式碼。此腳本將初始化框架、定義一個簡單的 Agent，並向其傳送一個提示。
-
-```javascript
-// index.js
-import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-import "dotenv/config";
-
-// 1. 建立一個 AI 模型實例
-const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: "gpt-4-turbo",
-});
-
-// 2. 建立一個帶有指令的 AI Agent
-const agent = AIAgent.from({
-  name: "Assistant",
-  instructions: "You are a helpful assistant who is an expert in creative writing.",
-});
-
-// 3. 初始化 AIGNE 執行引擎
-const aigne = new AIGNE({ model });
-
-// 4. 定義一個非同步函式來執行 Agent
-async function main() {
-  // 使用 AIGNE 引擎來叫用 Agent
-  const userAgent = await aigne.invoke(agent);
-
-  // 向 Agent 傳送訊息並取得回應
-  const response = await userAgent.invoke(
-    "Hello, can you help me write a short poem about the sunrise?",
-  );
-  
-  console.log(response);
-}
-
-// 5. 執行應用程式
-main();
-```
-
-### c. 程式碼解析
-
-讓我們一步步解析 `index.js` 檔案：
-
-1.  **模型初始化**：我們建立一個 `OpenAIChatModel` 的實例，並從環境變數中傳入我們的 API 金鑰。此物件負責與 OpenAI API 進行通訊。
-2.  **Agent 建立**：我們定義一個 `AIAgent`。該 Agent 具有 `name` 和 `instructions`，用來告知 AI 模型如何行動。在此範例中，它是一個專精於創意寫作的實用助理。
-3.  **引擎初始化**：`AIGNE` 類別是主要的執行引擎。它將 `model` 作為參數，並管理不同元件之間的通訊。
-4.  **Agent 叫用**：我們使用 `aigne.invoke(agent)` 來準備 Agent 進行互動。然後，`userAgent.invoke(...)` 會將我們的提示傳送給 Agent 並等待回應。
-5.  **執行**：呼叫 `main` 函式來執行整個流程。
-
-### d. 執行應用程式
-
-從您的終端機執行該檔案。請確保您的 `package.json` 包含 `"type": "module"` 以使用 ES 模組語法。
-
-```bash
-node index.js
-```
-
-您應該會在主控台中看到由 AI Agent 產生的一首關於日出的創意詩作。
-
-## 核心概念互動
-
-這個「入門」範例展示了 AIGNE 框架的基本工作流程。使用者的提示會透過 AIGNE 處理，AIGNE 會利用已定義的 Agent 和底層的 AI 模型來產生最終的回應。
-
-<d2>
+```d2
 direction: down
 
-User-Prompt: {
-  label: "使用者提示\n'寫一首詩...'"
+Complex-Task: {
+  label: "複雜、多步驟的任務"
+  shape: oval
+}
+
+AIGNE: {
+  label: "AIGNE 框架"
+  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
+}
+
+Decomposition: {
+  label: "將任務分解為子任務"
   shape: rectangle
+  style: {
+    stroke-dash: 2
+  }
 }
 
-AIGNE-Engine: {
-  label: "AIGNE"
-  shape: rectangle
+Orchestration-Patterns: {
+  label: "使用協作模式來調度 Agents"
+  grid-columns: 3
+  grid-gap: 50
+
+  Sequential-Workflow: {
+    label: "循序式 (流水線)"
+    shape: rectangle
+    direction: down
+    Researcher: "Researcher Agent"
+    Summarizer: "Summarizer Agent"
+    Report-Writer: "Report Writer Agent"
+  }
+
+  Parallel-Workflow: {
+    label: "平行式 (團隊合作)"
+    shape: rectangle
+    Task: "分析回饋"
+    Agent-A: "處理正面回饋"
+    Agent-B: "處理負面回饋"
+  }
+
+  Routing-Workflow: {
+    label: "路由式 (管理者)"
+    shape: rectangle
+    Request: "傳入的請求"
+    Manager: {
+      label: "Manager Agent"
+      shape: diamond
+    }
+    Coder: "Coder Agent"
+    Writer: "Writer Agent"
+  }
 }
 
-AIAgent: {
-  label: "AIAgent\n(指令)"
-  shape: rectangle
+Final-Goal: {
+  label: "連貫、完整的輸出"
+  shape: oval
 }
 
-AI-Model: {
-  label: "AI 模型\n(例如 OpenAIChatModel)"
-  shape: rectangle
-}
+Complex-Task -> AIGNE: "輸入"
+AIGNE -> Decomposition
+Decomposition -> Orchestration-Patterns
+Orchestration-Patterns -> Final-Goal: "輸出"
+Orchestration-Patterns.Sequential-Workflow.Researcher -> Orchestration-Patterns.Sequential-Workflow.Summarizer -> Orchestration-Patterns.Sequential-Workflow.Report-Writer
+Orchestration-Patterns.Parallel-Workflow.Task -> Orchestration-Patterns.Parallel-Workflow.Agent-A
+Orchestration-Patterns.Parallel-Workflow.Task -> Orchestration-Patterns.Parallel-Workflow.Agent-B
+Orchestration-Patterns.Routing-Workflow.Request -> Orchestration-Patterns.Routing-Workflow.Manager
+Orchestration-Patterns.Routing-Workflow.Manager -> Orchestration-Patterns.Routing-Workflow.Coder: "路由"
+Orchestration-Patterns.Routing-Workflow.Manager -> Orchestration-Patterns.Routing-Workflow.Writer: "路由"
 
-OpenAI-API: {
-  label: "外部 LLM API\n(例如 OpenAI)"
-  shape: cylinder
-}
+```
 
-Final-Response: {
-  label: "最終回應\n(產生的詩作)"
-  shape: rectangle
-}
+常見的工作流程模式包括：
 
-User-Prompt -> AIGNE-Engine: "1. 輸入"
-AIAgent -> AIGNE-Engine: "2. 結合"
-AIGNE-Engine -> AI-Model: "3. 傳遞組合後的提示"
-AI-Model -> OpenAI-API: "4. 進行 API 呼叫"
-OpenAI-API -> AI-Model: "5. 接收結果"
-AI-Model -> AIGNE-Engine: "6. 回傳結果"
-AIGNE-Engine -> Final-Response: "7. 輸出"
+*   **循序式工作流程 (流水線)：** 一個 agent 完成其任務後，將結果直接傳遞給下一個 agent。這適用於有必要操作順序的流程，例如收集資料、進行摘要，然後起草報告。
+*   **平行式工作流程 (團隊合作)：** 多個 agents 同時處理任務的不同部分以提高效率。例如，為了分析客戶回饋，一個 agent 可以處理正面評論，而另一個 agent 同時處理負面評論，最後再將結果匯總。
+*   **路由式工作流程 (管理者)：** 一個「管理者」agent 分析傳入的請求，並決定哪個專家 agent 最適合處理它。這種模式對於建立能夠處理各種查詢的智慧助理或服務台非常有效。
 
-</d2>
+透過結合這些工作流程模式，開發人員可以建構複雜的系統來自動化廣泛的數位流程。
+
+## 總結
+
+AIGNE 是一個用於建構和管理由專業 AI agents 組成的數位勞動力的框架。它提供了以下工具：
+
+*   **分解**複雜問題為更小、定義明確的任務。
+*   **分配**每個任務給具備合適技能的 AI agent。
+*   **調度** agents 之間的協作，以達成最終、連貫的目標。
+
+這種基於 agent 的方法克服了單一 AI 模型的限制，能夠以更高的可靠性和精確度自動化複雜的真實世界業務流程。
+
+要了解更多關於 agents 在系統中可以扮演的不同角色，請繼續閱讀下一節。
+
+*   **下一步：** [了解 Agents](./user-guide-understanding-agents.md)

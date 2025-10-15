@@ -1,177 +1,135 @@
-# Getting Started with AIGNE Framework
+# What is AIGNE?
 
-Welcome to the AIGNE Framework! This guide is designed to help you get your first AI application up and running in under 30 minutes. We will walk through setting up your environment, installing the necessary packages, and creating a simple AI agent.
+AIGNE (pronounced `[ˈei dʒən]`, like "agent" without the "t") is a functional framework for developing AI applications. It is designed to simplify and accelerate the process of building scalable, modern applications by combining functional programming, modular design, and powerful artificial intelligence capabilities.
 
-This guide is for developers who want to integrate AIGNE into their projects. We'll focus on code-first, copy-paste-ready examples to get you started as quickly as possible.
+The core concept of AIGNE is the use of **agents**—specialized AI assistants—that can be organized into teams to automate complex, multi-step tasks. Instead of relying on a single, monolithic AI, AIGNE provides the structure to create a digital workforce where different agents collaborate, each handling a specific part of a larger problem.
 
-## Prerequisites
+This document provides a plain-language introduction to the AIGNE Framework, explaining what AI agents are, the problems they solve, and how they work together to automate sophisticated workflows.
 
-Before you begin, ensure you have the following installed on your system:
+## What is an AI Agent?
 
-*   **Node.js**: AIGNE Framework requires Node.js version 20.0 or higher.
+An AI Agent is a specialized digital assistant designed to perform a specific function. Each agent operates based on a given set of instructions and can be equipped with specific tools to execute its tasks. Unlike a general-purpose chatbot, an AIGNE agent is an expert in a narrow domain.
 
-You can verify your Node.js version by running the following command in your terminal:
+Consider agents as individual members of a highly efficient project team:
 
-```bash
-node -v
-```
+*   **The Researcher:** An agent that can access external information sources to gather data.
+*   **The Writer:** An agent that processes raw information and drafts a structured document.
+*   **The Coder:** An agent capable of writing and executing code to perform a technical function.
+*   **The Analyst:** An agent that can interpret data, identify patterns, and provide insights.
 
-## 1. Installation
+While a single agent is effective for simple, defined tasks, the primary strength of the AIGNE Framework is its ability to orchestrate multiple agents into a cohesive team to achieve a complex objective.
 
-First, create a new project directory and initialize a Node.js project:
+## The Problem AIGNE Solves
 
-```bash
-mkdir aigne-quickstart
-cd aigne-quickstart
-npm init -y
-```
+A single Large Language Model (LLM) is a powerful tool for tasks like answering questions or generating text. However, its capabilities are limited when faced with processes that require multiple distinct steps, different skill sets, or information from various sources.
 
-Now, you can install the AIGNE core package and the OpenAI model provider using your preferred package manager (npm, yarn, or pnpm).
+For instance, a request such as, "Analyze our latest sales report, compare it to public competitor performance data, and draft a presentation for the marketing team," would be challenging for a standard chatbot. This process involves several discrete stages:
 
-<tabs>
-<tab-item label="npm">
+1.  **Data Analysis:** Reading and interpreting the internal sales report.
+2.  **External Research:** Locating and extracting competitor performance data.
+3.  **Synthesis:** Comparing the two datasets to identify key insights.
+4.  **Content Creation:** Structuring the findings into a coherent presentation.
 
-```bash
-npm install @aigne/core @aigne/openai dotenv
-```
+AIGNE addresses this by providing a framework to deconstruct such a complex request into manageable sub-tasks. Each sub-task is then assigned to a specialized agent, and the framework manages the flow of information between them, ensuring a complete and accurate final output.
 
-</tab-item>
-<tab-item label="yarn">
+## How Agents Work Together to Automate Tasks
 
-```bash
-yarn add @aigne/core @aigne/openai dotenv
-```
+AIGNE orchestrates agents into **workflows**, which are structured processes for executing tasks. By connecting agents, you can automate processes that would otherwise require significant manual coordination. The framework supports several patterns of collaboration, allowing for flexible and powerful automation.
 
-</tab-item>
-<tab-item label="pnpm">
+The following diagram illustrates how the AIGNE Framework breaks down a complex task and manages a team of agents to produce a final result.
 
-```bash
-pnpm add @aigne/core @aigne/openai dotenv
-```
-
-</tab-item>
-</tabs>
-
-## 2. Setting Up Your First AI Agent
-
-With the framework installed, let's create your first AI application. This example will use the OpenAI API to power our agent, so you will need an OpenAI API key.
-
-### a. Configure Environment Variables
-
-It's best practice to manage API keys using environment variables. Create a file named `.env` in your project's root directory and add your OpenAI API key to it:
-
-```bash
-# .env
-OPENAI_API_KEY="your_openai_api_key_here"
-```
-
-We've already installed the `dotenv` package, which will load this variable into our application's environment.
-
-### b. Create the Application File
-
-Create a file named `index.js` and add the following code. This script will initialize the framework, define a simple agent, and send it a prompt.
-
-```javascript
-// index.js
-import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-import "dotenv/config";
-
-// 1. Create an AI model instance
-const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: "gpt-4-turbo",
-});
-
-// 2. Create an AI agent with instructions
-const agent = AIAgent.from({
-  name: "Assistant",
-  instructions: "You are a helpful assistant who is an expert in creative writing.",
-});
-
-// 3. Initialize the AIGNE execution engine
-const aigne = new AIGNE({ model });
-
-// 4. Define an async function to run the agent
-async function main() {
-  // Use the AIGNE engine to invoke the agent
-  const userAgent = await aigne.invoke(agent);
-
-  // Send a message to the agent and get a response
-  const response = await userAgent.invoke(
-    "Hello, can you help me write a short poem about the sunrise?",
-  );
-  
-  console.log(response);
-}
-
-// 5. Run the application
-main();
-```
-
-### c. Code Breakdown
-
-Let's break down the `index.js` file step-by-step:
-
-1.  **Model Initialization**: We create an instance of `OpenAIChatModel`, passing our API key from the environment variables. This object is responsible for communicating with the OpenAI API.
-2.  **Agent Creation**: We define an `AIAgent`. The agent has a `name` and `instructions` that tell the AI model how to behave. In this case, it's a helpful assistant specializing in creative writing.
-3.  **Engine Initialization**: The `AIGNE` class is the main execution engine. It takes the `model` as a parameter and manages the communication between different components.
-4.  **Agent Invocation**: We use `aigne.invoke(agent)` to prepare the agent for interaction. Then, `userAgent.invoke(...)` sends our prompt to the agent and waits for a response.
-5.  **Execution**: The `main` function is called to run the entire process.
-
-### d. Run the Application
-
-Execute the file from your terminal. Make sure your `package.json` includes `"type": "module"` to use ES module syntax.
-
-```bash
-node index.js
-```
-
-You should see a creative poem about the sunrise printed in your console, generated by the AI agent.
-
-## Core Concepts Interaction
-
-The "Getting Started" example demonstrates the fundamental workflow of the AIGNE Framework. A user's prompt is processed through the AIGNE engine, which leverages a defined agent and an underlying AI model to generate a final response.
-
-<d2>
+```d2
 direction: down
 
-User-Prompt: {
-  label: "User Prompt\n'write a poem...'"
+Complex-Task: {
+  label: "Complex, Multi-Step Task"
+  shape: oval
+}
+
+AIGNE: {
+  label: "AIGNE Framework"
+  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
+}
+
+Decomposition: {
+  label: "Decomposes Task into Sub-tasks"
   shape: rectangle
+  style: {
+    stroke-dash: 2
+  }
 }
 
-AIGNE-Engine: {
-  label: "AIGNE Engine"
-  shape: rectangle
+Orchestration-Patterns: {
+  label: "Orchestrates Agents Using Collaboration Patterns"
+  grid-columns: 3
+  grid-gap: 50
+
+  Sequential-Workflow: {
+    label: "Sequential (Assembly Line)"
+    shape: rectangle
+    direction: down
+    Researcher: "Researcher Agent"
+    Summarizer: "Summarizer Agent"
+    Report-Writer: "Report Writer Agent"
+  }
+
+  Parallel-Workflow: {
+    label: "Parallel (Teamwork)"
+    shape: rectangle
+    Task: "Analyze Feedback"
+    Agent-A: "Process Positive"
+    Agent-B: "Process Negative"
+  }
+
+  Routing-Workflow: {
+    label: "Routing (Manager)"
+    shape: rectangle
+    Request: "Incoming Request"
+    Manager: {
+      label: "Manager Agent"
+      shape: diamond
+    }
+    Coder: "Coder Agent"
+    Writer: "Writer Agent"
+  }
 }
 
-AIAgent: {
-  label: "AIAgent\n(Instructions)"
-  shape: rectangle
+Final-Goal: {
+  label: "Coherent, Complete Output"
+  shape: oval
 }
 
-AI-Model: {
-  label: "AI Model\n(e.g., OpenAIChatModel)"
-  shape: rectangle
-}
+Complex-Task -> AIGNE: "Input"
+AIGNE -> Decomposition
+Decomposition -> Orchestration-Patterns
+Orchestration-Patterns -> Final-Goal: "Output"
+Orchestration-Patterns.Sequential-Workflow.Researcher -> Orchestration-Patterns.Sequential-Workflow.Summarizer -> Orchestration-Patterns.Sequential-Workflow.Report-Writer
+Orchestration-Patterns.Parallel-Workflow.Task -> Orchestration-Patterns.Parallel-Workflow.Agent-A
+Orchestration-Patterns.Parallel-Workflow.Task -> Orchestration-Patterns.Parallel-Workflow.Agent-B
+Orchestration-Patterns.Routing-Workflow.Request -> Orchestration-Patterns.Routing-Workflow.Manager
+Orchestration-Patterns.Routing-Workflow.Manager -> Orchestration-Patterns.Routing-Workflow.Coder: "Route"
+Orchestration-Patterns.Routing-Workflow.Manager -> Orchestration-Patterns.Routing-Workflow.Writer: "Route"
 
-OpenAI-API: {
-  label: "External LLM API\n(e.g., OpenAI)"
-  shape: cylinder
-}
+```
 
-Final-Response: {
-  label: "Final Response\n(Generated Poem)"
-  shape: rectangle
-}
+Common workflow patterns include:
 
-User-Prompt -> AIGNE-Engine: "1. Input"
-AIAgent -> AIGNE-Engine: "2. Combines with"
-AIGNE-Engine -> AI-Model: "3. Passes combined prompt"
-AI-Model -> OpenAI-API: "4. Makes API call"
-OpenAI-API -> AI-Model: "5. Receives result"
-AI-Model -> AIGNE-Engine: "6. Returns result"
-AIGNE-Engine -> Final-Response: "7. Output"
+*   **Sequential Workflow (Assembly Line):** One agent completes its task and passes the result directly to the next agent. This is suitable for processes with a required order of operations, such as gathering data, summarizing it, and then drafting a report.
+*   **Parallel Workflow (Teamwork):** Multiple agents work on different parts of a task simultaneously to improve efficiency. For example, to analyze customer feedback, one agent could process positive reviews while another processes negative reviews at the same time, with the results aggregated at the end.
+*   **Routing Workflow (Manager):** A "manager" agent analyzes an incoming request and determines which specialist agent is best equipped to handle it. This pattern is effective for creating intelligent assistants or helpdesks that can address a wide variety of queries.
 
-</d2>
+By combining these workflow patterns, developers can construct sophisticated systems to automate a vast range of digital processes.
+
+## Summary
+
+AIGNE is a framework for building and managing a digital workforce of specialized AI agents. It provides the tools to:
+
+*   **Decompose** complex problems into smaller, well-defined tasks.
+*   **Assign** each task to an appropriate AI agent with the right skills.
+*   **Orchestrate** the collaboration between agents to achieve a final, coherent goal.
+
+This agent-based approach overcomes the limitations of single AI models, enabling the automation of complex, real-world business processes with greater reliability and precision.
+
+To learn more about the different roles agents can play within the system, proceed to the next section.
+
+*   **Next:** [Understanding Agents](./user-guide-understanding-agents.md)

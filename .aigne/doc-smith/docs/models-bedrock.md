@@ -1,244 +1,155 @@
-This document provides a comprehensive guide to using the `@aigne/bedrock` package, an SDK designed to integrate AWS Bedrock foundation models into the AIGNE Framework. You will learn how to install the package, authenticate with AWS, perform basic operations, and leverage advanced features like streaming and tool usage.
+# AWS Bedrock
 
-### Target Audience
+The `@aigne/bedrock` package provides a direct and robust integration between the AIGNE Framework and Amazon Web Services (AWS) Bedrock. This allows developers to leverage the diverse range of foundation models available through AWS Bedrock within their AIGNE applications, benefiting from AWS's scalable and secure infrastructure while maintaining a consistent interface.
 
-This documentation is intended for developers who want to use AWS Bedrock's generative AI models within their AIGNE-based applications. A basic understanding of TypeScript, Node.js, and the AIGNE Framework is assumed.
-
-# @aigne/bedrock
-
-`@aigne/bedrock` offers a seamless connection between the AIGNE Framework and AWS Bedrock. It provides a consistent, type-safe interface for leveraging a wide range of foundation models, allowing you to build powerful AI features on top of AWS's secure and scalable infrastructure.
-
-<picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-bedrock-dark.png" media="(prefers-color-scheme: dark)">
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-bedrock.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne-bedrock.png" alt="AIGNE Bedrock Architecture">
-</picture>
-
-## Features
-
--   **Seamless AWS Bedrock Integration**: Connect to AWS Bedrock with minimal configuration using the official AWS SDK.
--   **Multi-Model Support**: Access a variety of foundation models, including Claude, Llama, Titan, and more.
--   **Chat Completions API**: A unified interface for chat-based interactions across all supported models.
--   **Streaming Responses**: Built-in support for streaming to create responsive, real-time applications.
--   **Type-Safe**: Fully typed with TypeScript to ensure safety and improve developer experience.
--   **AIGNE Framework Compatibility**: Adheres to the AIGNE Framework's model interface for consistent usage.
--   **Robust Error Handling**: Includes mechanisms for handling errors and retrying requests.
--   **Extensive Configuration**: Offers a wide range of options for fine-tuning model behavior.
+This guide provides a systematic overview of the installation, configuration, and usage of the `BedrockChatModel`. For details on other models, please refer to the main [Models overview](./models-overview.md).
 
 ## Installation
 
-To get started, install `@aigne/bedrock` along with the core AIGNE package.
+To begin, install the necessary packages using your preferred package manager. The `@aigne/core` package is a required peer dependency.
 
-**npm**
-```bash
+```bash Terminal
+# Using npm
 npm install @aigne/bedrock @aigne/core
-```
 
-**yarn**
-```bash
+# Using yarn
 yarn add @aigne/bedrock @aigne/core
-```
 
-**pnpm**
-```bash
+# Using pnpm
 pnpm add @aigne/bedrock @aigne/core
 ```
 
-## Authentication
+## Configuration
 
-The `BedrockChatModel` requires AWS credentials to make authenticated requests. You can provide them in two ways:
+Proper configuration involves setting up AWS credentials and instantiating the `BedrockChatModel` with the desired parameters.
 
-1.  **Directly in the constructor**: Pass your credentials as `accessKeyId` and `secretAccessKey` options.
-2.  **Environment variables**: The SDK will automatically detect and use the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_REGION` environment variables if they are set in your environment.
+### AWS Credentials
 
-```typescript
-import { BedrockChatModel } from "@aigne/bedrock";
+The AWS SDK requires credentials to authenticate requests. You can provide them in one of two ways:
 
-// Option 1: Direct instantiation
-const modelWithKeys = new BedrockChatModel({
-  accessKeyId: "YOUR_ACCESS_KEY_ID",
-  secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
-  region: "us-east-1", // Specify your AWS region
-});
+1.  **Environment Variables (Recommended)**: Set the following environment variables in your development or deployment environment. The SDK will automatically detect and use them.
+    *   `AWS_ACCESS_KEY_ID`: Your AWS access key ID.
+    *   `AWS_SECRET_ACCESS_KEY`: Your AWS secret access key.
+    *   `AWS_REGION`: The AWS region where your Bedrock service is enabled (e.g., `us-east-1`).
 
-// Option 2: Using environment variables (recommended for production)
-// process.env.AWS_ACCESS_KEY_ID = "YOUR_ACCESS_KEY_ID";
-// process.env.AWS_SECRET_ACCESS_KEY = "YOUR_SECRET_ACCESS_KEY";
-// process.env.AWS_REGION = "us-east-1";
-const modelFromEnv = new BedrockChatModel();
-```
+2.  **Direct Instantiation**: Pass the credentials directly to the `BedrockChatModel` constructor. This method is suitable for specific use cases but is generally less secure than using environment variables.
 
-## Basic Usage
+### BedrockChatModel Options
 
-The primary class for interacting with AWS Bedrock is `BedrockChatModel`. Here is a basic example of how to instantiate the model and get a response.
-
-```typescript
-import { BedrockChatModel } from "@aigne/bedrock";
-
-async function getChatResponse() {
-  const model = new BedrockChatModel({
-    // Assumes environment variables are set for authentication
-    region: "us-east-1",
-    model: "anthropic.claude-3-sonnet-20240229-v1:0", // Specify the model ID
-    modelOptions: {
-      temperature: 0.7,
-    },
-  });
-
-  const result = await model.invoke({
-    messages: [{ role: "user", content: "Hello, what is the AIGNE Framework?" }],
-  });
-
-  console.log(result.text);
-  console.log("Usage:", result.usage);
-}
-
-getChatResponse();
-/* Expected Output:
-Hello! The AIGNE Framework is a toolkit for...
-Usage: { inputTokens: 15, outputTokens: 50 }
-*/
-```
-
-## API Reference
-
-### `BedrockChatModel`
-
-The `BedrockChatModel` class is the main entry point for using the SDK.
-
-**Constructor Options (`BedrockChatModelOptions`)**
+The `BedrockChatModel` is the primary class for interacting with AWS Bedrock. Its constructor accepts an options object to configure its behavior.
 
 <x-field-group>
-  <x-field data-name="accessKeyId" data-type="string" data-required="false" data-desc="Your AWS access key ID. If not provided, `AWS_ACCESS_KEY_ID` environment variable is used."></x-field>
-  <x-field data-name="secretAccessKey" data-type="string" data-required="false" data-desc="Your AWS secret access key. If not provided, `AWS_SECRET_ACCESS_KEY` environment variable is used."></x-field>
-  <x-field data-name="region" data-type="string" data-required="false" data-desc="The AWS region for the Bedrock service (e.g., 'us-east-1'). If not provided, `AWS_REGION` environment variable is used."></x-field>
-  <x-field data-name="model" data-type="string" data-required="false" data-desc="The default model ID to use for requests (e.g., 'anthropic.claude-3-haiku-20240307-v1:0'). Defaults to `us.amazon.nova-lite-v1:0`."></x-field>
-  <x-field data-name="modelOptions" data-type="object" data-required="false" data-desc="Default options for model inference.">
-    <x-field data-name="temperature" data-type="number" data-required="false" data-desc="Controls randomness. A lower value makes the model more deterministic."></x-field>
-    <x-field data-name="topP" data-type="number" data-required="false" data-desc="Nucleus sampling parameter."></x-field>
+  <x-field data-name="accessKeyId" data-type="string" data-required="false">
+    <x-field-desc markdown>Your AWS access key ID. If not provided, the SDK will attempt to read it from the `AWS_ACCESS_KEY_ID` environment variable.</x-field-desc>
   </x-field>
-  <x-field data-name="clientOptions" data-type="BedrockRuntimeClientConfig" data-required="false" data-desc="Advanced configuration options passed directly to the AWS `BedrockRuntimeClient`."></x-field>
+  <x-field data-name="secretAccessKey" data-type="string" data-required="false">
+    <x-field-desc markdown>Your AWS secret access key. If not provided, the SDK will attempt to read it from the `AWS_SECRET_ACCESS_KEY` environment variable.</x-field-desc>
+  </x-field>
+  <x-field data-name="region" data-type="string" data-required="false">
+    <x-field-desc markdown>The AWS region for the Bedrock service. If not provided, the SDK will attempt to read it from the `AWS_REGION` environment variable.</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false" data-default="us.amazon.nova-lite-v1:0">
+    <x-field-desc markdown>The ID of the foundation model to use (e.g., `anthropic.claude-3-sonnet-20240229-v1:0`, `meta.llama3-8b-instruct-v1:0`).</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>Additional options to control model inference behavior.</x-field-desc>
+    <x-field data-name="temperature" data-type="number" data-required="false" data-desc="Controls randomness in the generation. Higher values mean more creative responses."></x-field>
+    <x-field data-name="topP" data-type="number" data-required="false" data-desc="Controls nucleus sampling. The model considers only the tokens with the top P probability mass."></x-field>
+  </x-field>
+  <x-field data-name="clientOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>Advanced configuration options passed directly to the underlying `BedrockRuntimeClient` from the AWS SDK.</x-field-desc>
+  </x-field>
 </x-field-group>
 
-## Advanced Usage
+## Usage Examples
+
+The following examples demonstrate how to use the `BedrockChatModel` for both standard and streaming invocations.
+
+### Basic Usage
+
+This example shows how to instantiate the model and invoke it to get a single, complete response.
+
+```typescript Basic Invocation icon=logos:javascript
+import { BedrockChatModel } from "@aigne/bedrock";
+
+// Instantiate the model with credentials and model ID
+const model = new BedrockChatModel({
+  accessKeyId: "YOUR_ACCESS_KEY_ID", // Or use environment variables
+  secretAccessKey: "YOUR_SECRET_ACCESS_KEY", // Or use environment variables
+  region: "us-east-1", // Specify your AWS region
+  model: "anthropic.claude-3-haiku-20240307-v1:0",
+  modelOptions: {
+    temperature: 0.7,
+  },
+});
+
+// Define the input messages
+const result = await model.invoke({
+  messages: [{ role: "user", content: "Hello, what is AWS Bedrock?" }],
+});
+
+console.log(result.text);
+```
+
+The output will be a string containing the model's response. The `result` object also contains usage metrics.
 
 ### Streaming Responses
 
-For real-time applications, you can stream responses as they are generated by the model. Set the `streaming: true` option in the `invoke` method.
+For applications requiring real-time feedback, you can stream the response as it is generated. This is useful for chatbots and other interactive experiences.
 
-```typescript
+```typescript Streaming Invocation icon=logos:javascript
 import { BedrockChatModel } from "@aigne/bedrock";
 import { isAgentResponseDelta } from "@aigne/core";
 
-async function streamChatResponse() {
-  const model = new BedrockChatModel({
-    region: "us-east-1",
-    model: "anthropic.claude-3-sonnet-20240229-v1:0",
-  });
+const model = new BedrockChatModel({
+  accessKeyId: "YOUR_ACCESS_KEY_ID",
+  secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
+  region: "us-east-1",
+  model: "anthropic.claude-3-haiku-20240307-v1:0",
+  modelOptions: {
+    temperature: 0.7,
+  },
+});
 
-  const stream = await model.invoke(
-    {
-      messages: [{ role: "user", content: "Tell me a short story about a robot." }],
-    },
-    { streaming: true },
-  );
+const stream = await model.invoke(
+  {
+    messages: [{ role: "user", content: "Hello, what is AWS Bedrock?" }],
+  },
+  { streaming: true },
+);
 
-  let fullText = "";
-  for await (const chunk of stream) {
-    if (isAgentResponseDelta(chunk)) {
-      const text = chunk.delta.text?.text;
-      if (text) {
-        fullText += text;
-        process.stdout.write(text);
-      }
+let fullText = "";
+
+for await (const chunk of stream) {
+  // Use the type guard to check if the chunk is a delta
+  if (isAgentResponseDelta(chunk)) {
+    const text = chunk.delta.text?.text;
+    if (text) {
+      fullText += text;
+      process.stdout.write(text); // Print each part of the response as it arrives
     }
   }
-
-  console.log("\n\n--- End of Stream ---");
-  console.log("Final Text:", fullText);
 }
 
-streamChatResponse();
+console.log("\n--- Full Response ---");
+console.log(fullText);
 ```
 
-The following diagram illustrates the data flow during a streaming operation:
+This code processes a stream of `AgentResponseChunk` objects. Each chunk contains a delta of the response, which is accumulated to form the complete text.
 
-```d2
-shape: sequence_diagram
+## Supported Models
 
-Application: {
-  label: "Your Application"
-}
-Aigne-Bedrock-SDK: {
-  label: "@aigne/bedrock SDK"
-}
-AWS-Bedrock: {
-  label: "AWS Bedrock"
-}
-Foundation-Model: {
-  label: "Foundation Model"
-}
+AWS Bedrock provides access to a wide variety of foundation models from leading AI companies like Anthropic, Cohere, Meta, Stability AI, and Amazon. You can specify the desired model using its unique `modelId`.
 
-Application -> Aigne-Bedrock-SDK: "1. invoke(..., { streaming: true })"
-Aigne-Bedrock-SDK -> AWS-Bedrock: "2. Sends streaming API request"
-AWS-Bedrock -> Foundation-Model: "3. Forwards request to model"
+Some commonly used model families include:
+-   **Anthropic Claude**: `anthropic.claude-3-sonnet-20240229-v1:0`, `anthropic.claude-3-haiku-20240307-v1:0`
+-   **Meta Llama**: `meta.llama3-8b-instruct-v1:0`
+-   **Amazon Titan**: `amazon.titan-text-express-v1`
 
-loop: "Real-time response generation" {
-  Foundation-Model -> AWS-Bedrock: "4a. Generates text chunk"
-  AWS-Bedrock -> Aigne-Bedrock-SDK: "4b. Streams chunk back"
-  Aigne-Bedrock-SDK -> Application: "4c. Yields chunk via async iterator"
-}
+For a complete and up-to-date list of available models and their corresponding IDs, please refer to the [official AWS Bedrock documentation](https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids.html).
 
-AWS-Bedrock -> Aigne-Bedrock-SDK: "5. End-of-stream signal"
-Aigne-Bedrock-SDK -> Application: "6. Stream closes"
-```
+## Summary
 
-### Structured JSON Output
+The `@aigne/bedrock` package offers a streamlined way to integrate powerful foundation models from AWS Bedrock into your AIGNE applications. By following the configuration steps and usage patterns outlined in this guide, you can efficiently build and deploy AI-driven features.
 
-You can instruct the model to return a structured JSON object that conforms to a specific Zod schema. This is useful for generating predictable, machine-readable output.
-
-To do this, define a Zod schema and pass it in the `responseFormat` option of the `invoke` method. The SDK will automatically prompt the model to use a `generate_json` tool to produce the desired output.
-
-```typescript
-import { BedrockChatModel } from "@aigne/bedrock";
-import { z } from "zod";
-
-async function getStructuredResponse() {
-  const model = new BedrockChatModel({
-    region: "us-east-1",
-    model: "anthropic.claude-3-sonnet-20240229-v1:0",
-  });
-
-  const userSchema = z.object({
-    name: z.string().describe("The full name of the user."),
-    email: z.string().email().describe("The user's email address."),
-    age: z.number().positive().describe("The age of the user."),
-  });
-
-  const result = await model.invoke({
-    messages: [
-      {
-        role: "user",
-        content: "Extract user information from the following text: John Doe is 30 years old and his email is john.doe@example.com.",
-      },
-    ],
-    responseFormat: {
-      type: "json_schema",
-      jsonSchema: {
-        schema: userSchema,
-      },
-    },
-  });
-
-  console.log(result.json);
-}
-
-getStructuredResponse();
-/* Expected Output:
-{
-  name: "John Doe",
-  email: "john.doe@example.com",
-  age: 30
-}
-*/
-```
+For more advanced topics, such as tool usage and structured outputs, please refer to the [AI Agent](./developer-guide-agents-ai-agent.md) documentation.

@@ -1,53 +1,324 @@
-This document provides a detailed guide to the `TeamAgent` class, a powerful component for orchestrating multiple agents to work together. It covers its configuration, processing modes, and special features like reflection and iteration.
+# Team Agent
 
-### Overview
+A `TeamAgent` is a specialized agent that orchestrates a group of other agents (referred to as "skills") to perform complex tasks. It acts as a manager, directing the flow of information and coordinating the execution of its skills according to a defined strategy. This allows for the creation of sophisticated workflows where multiple specialized agents collaborate to achieve a goal that a single agent could not accomplish alone.
 
-The `TeamAgent` coordinates a group of agents (referred to as "skills") to accomplish complex tasks. It manages the execution of these agents according to a specified processing mode, allowing them to work sequentially (one after another) or in parallel (all at once). This is particularly useful for building sophisticated workflows where the output of one agent serves as the input for another, or when multiple tasks need to be executed simultaneously to combine their results.
+The `TeamAgent` supports several key patterns of agent orchestration:
+-   **Sequential Execution**: Agents run one after another, forming a processing pipeline.
+-   **Parallel Execution**: Agents run simultaneously, and their results are merged.
+-   **Iterative Processing**: The team processes each item in a list, ideal for batch operations.
+-   **Reflection**: The team's output is reviewed and refined in a loop until it meets specific criteria.
 
-### Configuration (`TeamAgentOptions`)
+This component is fundamental for building modular and powerful AI systems. For details on the individual agents that can be part of a team, refer to the documentation for [AI Agent](./developer-guide-agents-ai-agent.md) and [Function Agent](./developer-guide-agents-function-agent.md).
 
-To create a `TeamAgent`, you provide a `TeamAgentOptions` object to its constructor. These options allow you to customize the behavior of the team.
+```d2
+direction: down
 
-| Parameter | Type | Description | Default |
-| --- | --- | --- | --- |
-| `mode` | `ProcessMode` | The method to process the agents in the team. Can be `sequential` or `parallel`. | `sequential` |
-| `reflection` | `ReflectionMode` | Configuration for enabling an iterative review and refinement process for the team's output. | `undefined` |
-| `iterateOn` | `string` | The key of an input field containing an array. The team will iterate over each item in the array. | `undefined` |
-| `concurrency` | `number` | The maximum number of concurrent operations when using `iterateOn`. | `1` |
-| `iterateWithPreviousOutput` | `boolean` | If `true`, the output of an iteration is merged back into the input for the next iteration. Requires `concurrency` to be `1`. | `false` |
-| `includeAllStepsOutput` | `boolean` | If `true` in sequential mode, the output from all intermediate steps is included in the final result. | `false` |
+Team-Agent-Orchestration: {
+  label: "Team Agent Orchestration Workflows"
+  grid-columns: 2
+  grid-gap: 100
 
-### Processing Modes
+  Sequential-Execution: {
+    label: "Sequential Execution (Pipeline)"
+    shape: rectangle
+    style.fill: "#f0f4f8"
 
-The `ProcessMode` enum determines how the agents within a team are executed.
+    Input: { shape: oval }
+    Skill-A: "Skill A"
+    Skill-B: "Skill B"
+    Output: { shape: oval }
+  }
 
-#### `sequential`
-In this mode, agents are processed one by one. The output of each agent is passed as additional input to the next agent in the sequence. This is the default mode and is ideal for creating linear workflows.
+  Parallel-Execution: {
+    label: "Parallel Execution"
+    shape: rectangle
+    style.fill: "#f0f4f8"
 
-#### `parallel`
-In this mode, all agents are processed simultaneously. Each agent receives the same initial input, and their outputs are merged. This mode is useful for tasks that can be performed independently and then combined.
+    Input: { shape: oval }
+    Skill-A: "Skill A"
+    Skill-B: "Skill B"
+    Merge: "Merge Results"
+    Output: { shape: oval }
+  }
 
-### Key Features
+  Iterative-Processing: {
+    label: "Iterative Processing (Batch)"
+    shape: rectangle
+    style.fill: "#f0f4f8"
 
-#### Reflection Mode
-Reflection mode provides a mechanism for iterative self-correction and refinement of the team's output. When enabled, a designated `reviewer` agent evaluates the team's result. If the output is not approved, the process repeats, using the previous output and the reviewer's feedback as context for the next iteration. This cycle continues until the output is approved or the `maxIterations` limit is reached.
+    Input-List: { label: "Input List"; shape: oval }
+    Process-Item: { label: "Process Item\n(with skills)" }
+    Output-List: { label: "Output List"; shape: oval }
+  }
 
-**Configuration (`ReflectionMode`)**
+  Reflection: {
+    label: "Reflection (Refinement Loop)"
+    shape: rectangle
+    style.fill: "#f0f4f8"
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `reviewer` | `Agent` | The agent responsible for reviewing the team's output and providing feedback. |
-| `isApproved` | `((output: Message) => PromiseOrValue<boolean \| unknown>) \| string` | A function or a field name in the reviewer's output that determines if the result is approved. A truthy value indicates approval. |
-| `maxIterations` | `number` | The maximum number of review iterations before stopping. Defaults to `3`. |
-| `returnLastOnMaxIterations` | `boolean` | If `true`, the agent returns the last generated output when `maxIterations` is reached, even if not approved. If `false`, it throws an error. Defaults to `false`. |
+    Generate-Draft: "Generate Draft"
+    Review: { label: "Review Draft"; shape: diamond }
+    Refine-Draft: "Refine Draft"
+    Final-Output: { label: "Final Output"; shape: oval }
+  }
+}
 
-**Example (`team-agent-with-reflection.yaml`)**
-```yaml
+# Connections
+seq: Team-Agent-Orchestration.Sequential-Execution
+seq.Input -> seq.Skill-A -> seq.Skill-B -> seq.Output
+
+par: Team-Agent-Orchestration.Parallel-Execution
+par.Input -> par.Skill-A
+par.Input -> par.Skill-B
+par.Skill-A -> par.Merge
+par.Skill-B -> par.Merge
+par.Merge -> par.Output
+
+iter: Team-Agent-Orchestration.Iterative-Processing
+iter.Input-List -> iter.Process-Item: "For each item"
+iter.Process-Item -> iter.Process-Item: "Next item"
+iter.Process-Item -> iter.Output-List: "Done"
+
+refl: Team-Agent-Orchestration.Reflection
+refl.Generate-Draft -> refl.Review
+refl.Review -> refl.Final-Output: "Meets criteria"
+refl.Review -> refl.Refine-Draft: "Needs refinement"
+refl.Refine-Draft -> refl.Generate-Draft
+```
+
+## Configuration
+
+A `TeamAgent` is configured with a set of options that define its behavior, execution mode, and advanced features like iteration and reflection.
+
+<x-field-group>
+  <x-field data-name="skills" data-type="Agent[]" data-required="true" data-desc="An array of agent instances that form the team."></x-field>
+  <x-field data-name="mode" data-type="ProcessMode" data-default="sequential" data-required="false">
+    <x-field-desc markdown>The execution strategy for the agents. Can be `sequential` or `parallel`.</x-field-desc>
+  </x-field>
+  <x-field data-name="reflection" data-type="ReflectionMode" data-required="false" data-desc="Configuration for enabling the iterative self-correction process."></x-field>
+  <x-field data-name="iterateOn" data-type="string" data-required="false">
+    <x-field-desc markdown>The key of an input field containing an array. The team will execute once for each item in the array.</x-field-desc>
+  </x-field>
+  <x-field data-name="concurrency" data-type="number" data-default="1" data-required="false">
+    <x-field-desc markdown>When using `iterateOn`, this sets the number of items to process concurrently.</x-field-desc>
+  </x-field>
+  <x-field data-name="iterateWithPreviousOutput" data-type="boolean" data-default="false" data-required="false">
+    <x-field-desc markdown>If `true`, the output from processing one item in an `iterateOn` loop is merged back and made available to the next item's execution. This requires `concurrency` to be 1.</x-field-desc>
+  </x-field>
+  <x-field data-name="includeAllStepsOutput" data-type="boolean" data-default="false" data-required="false">
+    <x-field-desc markdown>In `sequential` mode, if `true`, the output from every intermediate agent is included in the final result, not just the last one.</x-field-desc>
+  </x-field>
+</x-field-group>
+
+## Execution Modes
+
+The `mode` property determines the fundamental workflow of the team.
+
+### Sequential Mode
+
+In `sequential` mode, agents execute one by one. The output of each agent is merged with the initial input and passed to the next agent in the sequence. This creates a pipeline, suitable for tasks that require a series of transformations or steps.
+
+```typescript team-agent-sequential.ts icon=logos:typescript
+import { AIAgent, TeamAgent, ProcessMode } from "@aigne/core";
+import { model } from "./model"; // Assume model is an initialized ChatModel
+
+const writerAgent = new AIAgent({
+  name: "writer",
+  model,
+  instructions: "You are a creative writer. Write a short story based on the topic: {{topic}}.",
+  outputKey: "story",
+});
+
+const editorAgent = new AIAgent({
+  name: "editor",
+  model,
+  instructions: "You are an editor. Review the following story and correct any grammatical errors: {{story}}.",
+  outputKey: "editedStory",
+});
+
+const sequentialTeam = new TeamAgent({
+  name: "writingTeam",
+  mode: ProcessMode.sequential,
+  skills: [writerAgent, editorAgent],
+});
+
+// To invoke:
+// const result = await aigne.invoke(sequentialTeam, { topic: "a journey to the moon" });
+// console.log(result.editedStory);
+```
+
+In this example, `writerAgent` first generates a `story`. The output, containing the `story` key, is then passed to `editorAgent`, which uses it to produce the final `editedStory`.
+
+### Parallel Mode
+
+In `parallel` mode, all agents execute simultaneously with the same initial input. Their outputs are then merged into a single result. This is efficient for tasks where multiple independent pieces of information need to be generated at the same time.
+
+If multiple agents attempt to write to the same output key, the first agent to produce a value for that key "claims" it, and subsequent writes to that key from other agents are ignored.
+
+```typescript team-agent-parallel.ts icon=logos:typescript
+import { AIAgent, TeamAgent, ProcessMode } from "@aigne/core";
+import { model } from "./model"; // Assume model is an initialized ChatModel
+
+const researcherAgent = new AIAgent({
+  name: "researcher",
+  model,
+  instructions: "Research the key facts about {{topic}}.",
+  outputKey: "facts",
+});
+
+const summaryAgent = new AIAgent({
+  name: "summarizer",
+  model,
+  instructions: "Provide a brief, one-paragraph summary of {{topic}}.",
+  outputKey: "summary",
+});
+
+const parallelTeam = new TeamAgent({
+  name: "researchTeam",
+  mode: ProcessMode.parallel,
+  skills: [researcherAgent, summaryAgent],
+});
+
+// To invoke:
+// const result = await aigne.invoke(parallelTeam, { topic: "the Roman Empire" });
+// console.log(result.facts);
+// console.log(result.summary);
+```
+Here, both agents start at the same time. The final result will contain both `facts` and `summary` once both agents have completed their work.
+
+## Advanced Features
+
+### Iteration with `iterateOn`
+
+The `iterateOn` property enables batch processing. You provide the name of an input key that holds an array. The `TeamAgent` will then execute its entire workflow for each item in that array. This is highly effective for processing multiple data records with the same set of agents.
+
+```typescript team-agent-iteration.ts icon=logos:typescript
+import { AIAgent, TeamAgent, ProcessMode } from "@aigne/core";
+import { model } from "./model"; // Assume model is an initialized ChatModel
+
+const translatorAgent = new AIAgent({
+  name: "translator",
+  model,
+  instructions: "Translate the following text to French: {{text}}.",
+  outputKey: "translatedText",
+});
+
+const sentimentAgent = new AIAgent({
+  name: "sentiment",
+  model,
+  instructions: "Analyze the sentiment of the following text (positive, negative, or neutral): {{text}}.",
+  outputKey: "sentiment",
+});
+
+const processingTeam = new TeamAgent({
+  name: "batchProcessor",
+  mode: ProcessMode.parallel,
+  skills: [translatorAgent, sentimentAgent],
+  iterateOn: "reviews", // The key holding the array
+});
+
+const inputData = {
+  reviews: [
+    { text: "This product is amazing!" },
+    { text: "I am very disappointed with the quality." },
+    { text: "It works as expected." },
+  ],
+};
+
+// To invoke:
+// const result = await aigne.invoke(processingTeam, inputData);
+// console.log(result.reviews);
+/*
+Output would be:
+[
+  { translatedText: "Ce produit est incroyable !", sentiment: "positive" },
+  { translatedText: "Je suis très déçu de la qualité.", sentiment: "negative" },
+  { translatedText: "Cela fonctionne comme prévu.", sentiment: "neutral" }
+]
+*/
+```
+
+### Reflection
+
+Reflection provides a mechanism for self-correction and quality assurance. When configured, a `TeamAgent`'s output is passed to a designated `reviewer` agent. The reviewer assesses the output against certain criteria. If the output is not "approved," the entire process runs again, feeding the previous output and the reviewer's feedback into the next iteration. This loop continues until the output is approved or a `maxIterations` limit is reached.
+
+The configuration for reflection is provided under the `reflection` key.
+
+<x-field-group>
+  <x-field data-name="reviewer" data-type="Agent" data-required="true" data-desc="The agent responsible for evaluating the team's output."></x-field>
+  <x-field data-name="isApproved" data-type="string | Function" data-required="true">
+    <x-field-desc markdown>A condition for approval. If a `string`, it's the name of a boolean field in the reviewer's output. If a `function`, it receives the reviewer's output and must return a truthy value for approval.</x-field-desc>
+  </x-field>
+  <x-field data-name="maxIterations" data-type="number" data-default="3" data-required="false" data-desc="The maximum number of review-refine cycles before failing."></x-field>
+  <x-field data-name="returnLastOnMaxIterations" data-type="boolean" data-default="false" data-required="false">
+    <x-field-desc markdown>If `true`, the process returns the last generated output upon hitting `maxIterations` instead of throwing an error.</x-field-desc>
+  </x-field>
+  <x-field data-name="customErrorMessage" data-type="string" data-required="false" data-desc="A custom error message to throw when max iterations are reached without approval."></x-field>
+</x-field-group>
+
+```typescript team-agent-reflection.ts icon=logos:typescript
+import { AIAgent, TeamAgent } from "@aigne/core";
+import { model } from "./model"; // Assume model is an initialized ChatModel
+
+const planGenerator = new AIAgent({
+  name: "planGenerator",
+  model,
+  instructions: `Generate a 3-step marketing plan for a new {{product}}. 
+  If you received feedback, incorporate it. Feedback: {{feedback}}`,
+  outputKey: "plan",
+});
+
+const planReviewer = new AIAgent({
+  name: "planReviewer",
+  model,
+  instructions: `Review the marketing plan: {{plan}}. 
+  Does it include a budget allocation? If not, provide feedback to add one. 
+  Output JSON with an 'approved' (boolean) and 'feedback' (string) field.`,
+  output: {
+    json: {
+      schema: {
+        type: "object",
+        properties: {
+          approved: { type: "boolean" },
+          feedback: { type: "string" },
+        },
+      },
+    },
+  },
+});
+
+const reflectionTeam = new TeamAgent({
+  name: "planningTeam",
+  skills: [planGenerator],
+  reflection: {
+    reviewer: planReviewer,
+    isApproved: "approved", // Check the 'approved' field in the reviewer's output
+    maxIterations: 3,
+  },
+});
+
+// To invoke:
+// const result = await aigne.invoke(reflectionTeam, { product: "smart watch" });
+// console.log(result.plan);
+```
+
+In this flow, `planGenerator` creates an initial plan. `planReviewer` checks it. If no budget is mentioned, it sets `approved` to `false` and provides feedback. The `TeamAgent` then re-runs `planGenerator`, this time including the feedback, until the plan is approved.
+
+## YAML Definition
+
+You can also define a `TeamAgent` declaratively using YAML.
+
+```yaml team-agent-definition.yaml icon=mdi:language-yaml
 type: team
-name: test-team-agent-with-reflection
-description: Test team agent with reflection
+name: test-team-agent
+description: Test team agent
 skills:
+  - sandbox.js # Path to another agent definition
   - chat.yaml
+mode: parallel
+iterate_on: sections
+concurrency: 2
+include-all-steps-output: true
 reflection:
   reviewer: team-agent-reviewer.yaml
   is_approved: approved
@@ -55,81 +326,10 @@ reflection:
   return_last_on_max_iterations: true
 ```
 
-#### Iteration (`iterateOn`)
+This YAML defines a parallel team that iterates over an input field named `sections` and also includes a reflection step for quality control.
 
-The `iterateOn` feature enables the `TeamAgent` to perform batch processing on an array within the input message. When you specify an input field key with `iterateOn`, the agent iterates over each element of that array, processing each one individually through the team's workflow.
+## Summary
 
-This is highly effective for scenarios where the same set of operations needs to be applied to multiple data items, such as processing sections of a document, analyzing a list of user comments, or enriching a dataset.
+The `TeamAgent` is a powerful tool for orchestrating multiple agents to solve complex problems. By combining agents in `sequential` or `parallel` workflows and leveraging advanced features like `iterateOn` for batch processing and `reflection` for self-correction, you can build robust and sophisticated AI applications.
 
-**Example (`team.yaml`)**
-This example demonstrates a team agent configured to iterate over a `sections` array.
-
-```yaml
-type: team
-name: test-team-agent
-description: Test team agent
-skills:
-  - sandbox.js
-  - chat.yaml
-mode: parallel
-input_schema:
-  type: object
-  properties:
-    sections:
-      type: array
-      description: Sections to iterate over
-      items:
-        # ... item properties
-iterate_on: sections
-concurrency: 2
-iterate-with-previous-output: false
-include-all-steps-output: true
-```
-
-### Methods
-
-#### `constructor(options: TeamAgentOptions<I, O>)`
-Creates a new instance of `TeamAgent`.
-
--   **Parameters:**
-    -   `options`: The configuration options for the team agent.
-
-#### `process(input: I, options: AgentInvokeOptions): PromiseOrValue<AgentProcessResult<O>>`
-Processes an input message by routing it through the team's agents based on the configured `mode`.
-
--   **Parameters:**
-    -   `input`: The message to process.
-    -   `options`: The invocation options.
--   **Returns:** A stream of message chunks that constitute the final response.
-
-### Examples
-
-Here are examples of how to create a `TeamAgent`.
-
-**Sequential TeamAgent**
-```typescript
-import { TeamAgent, ProcessMode } from "./team-agent";
-import { Agent } from "./agent";
-
-const agent1 = new Agent({ /* ... */ });
-const agent2 = new Agent({ /* ... */ });
-
-const sequentialTeam = TeamAgent.from({
-  skills: [agent1, agent2],
-  mode: ProcessMode.sequential,
-});
-```
-
-**Parallel TeamAgent**
-```typescript
-import { TeamAgent, ProcessMode } from "./team-agent";
-import { Agent } from "./agent";
-
-const agentA = new Agent({ /* ... */ });
-const agentB = new Agent({ /* ... */ });
-
-const parallelTeam = TeamAgent.from({
-  skills: [agentA, agentB],
-  mode: ProcessMode.parallel,
-});
-```
+To learn more about the building blocks of a team, see the [AI Agent](./developer-guide-agents-ai-agent.md) and [Function Agent](./developer-guide-agents-function-agent.md) documentation.

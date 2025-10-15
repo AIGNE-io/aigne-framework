@@ -1,233 +1,76 @@
-```d2
-direction: down
+# Basic Agents
 
-Invocation: {
-  label: "Invocation\n(User Input, History)"
-  shape: oval
+Think of a basic agent as a specialized digital assistant, like a helpful chatbot or a focused data entry clerk. Each agent is designed to perform one specific type of task and do it well. It operates based on a clear set of instructions, receives a specific input to work on, and produces a result.
+
+These single-purpose agents are the fundamental building blocks of AIGNE. While simple on their own, they can be combined to handle much more complex workflows, which we will explore in the [Agent Teams](./user-guide-understanding-agents-agent-teams.md) section.
+
+## The Anatomy of an Agent
+
+Every basic agent, regardless of its function, is defined by a few core components. Understanding these parts helps clarify how an agent knows what to do.
+
+<x-cards data-columns="2">
+  <x-card data-title="Instructions" data-icon="lucide:book-marked">
+    This is the agent's permanent rulebook or job description. It's a detailed guide that tells the agent who it is, what its purpose is, and how it should behave. For example, the instructions for a customer service agent might be: "You are a friendly and helpful assistant. Your goal is to answer customer questions accurately."
+  </x-card>
+  <x-card data-title="Input" data-icon="lucide:arrow-right-to-line">
+    This is the specific piece of information or the task you give the agent at a particular moment. If the agent is a chatbot, the input would be the user's question, like "What are your business hours?".
+  </x-card>
+  <x-card data-title="Output" data-icon="lucide:arrow-left-from-line">
+    This is the result the agent produces after processing the input according to its instructions. For the chatbot example, the output would be the answer: "Our business hours are from 9 AM to 5 PM, Monday to Friday."
+  </x-card>
+  <x-card data-title="Skills" data-icon="lucide:sparkles">
+    These are special tools or abilities an agent can use to perform its task. For instance, a "Weather Agent" might have a skill that allows it to access real-time weather data from an external service.
+  </x-card>
+</x-cards>
+
+## How an Agent Works
+
+The process is straightforward. A user provides an input to an agent. The agent then consults its core instructions to understand the context and rules, uses any skills it might have if necessary, and generates an output.
+
+```d2 icon=material-symbols:robot-2-outline
+direction: right
+
+User: {
+  label: "User"
+  shape: person
 }
 
-AIAgent: {
-  label: "AIAgent Core Logic"
-  shape: rectangle
-  style: {
-    stroke-width: 2
-    stroke-dash: 4
-  }
-
-  PromptBuilder: {
-    label: "1. Build Prompt"
-    shape: rectangle
-  }
-
-  Response-Handler: {
-    label: "3. Handle Response"
-    shape: diamond
-  }
-
-  Tool-Executor: {
-    label: "4a. Execute Tool"
-    shape: rectangle
-  }
-
-  Output-Processor: {
-    label: "4b. Process Final Answer\n(Structured Data Extraction)"
-    shape: rectangle
-  }
+Agent: {
+  label: "Basic Agent"
+  shape: hexagon
+  style.fill: "#f0f4f8"
 }
 
-Language-Model: {
-  label: "Language Model"
-  shape: cylinder
+Instructions: {
+  label: "Core Instructions\n(Rulebook)"
+  shape: document
 }
 
-Tools: {
-  label: "Available Tools"
-  shape: rectangle
-  Tool-A: "Tool A"
-  Tool-B: "Tool B"
+Output: {
+  label: "Result"
+  shape: document
 }
 
-Final-Response: {
-  label: "Streamed Response"
-  shape: oval
-}
-
-Invocation -> AIAgent.PromptBuilder
-AIAgent.PromptBuilder -> Language-Model: "2. Send Prompt"
-Language-Model -> AIAgent.Response-Handler: "LLM Raw Output"
-AIAgent.Response-Handler -> AIAgent.Tool-Executor: "Tool Call"
-AIAgent.Tool-Executor -> Tools
-Tools -> AIAgent.PromptBuilder: "Return Tool Result to context" {
-  style.stroke-dash: 2
-}
-AIAgent.Response-Handler -> AIAgent.Output-Processor: "Final Answer"
-AIAgent.Output-Processor -> Final-Response
+User -> Agent: "Input (e.g., a specific question)"
+Agent -> Instructions: "Consults"
+Instructions -> Agent: "Provides guidance"
+Agent -> Output: "Produces Output (e.g., an answer)"
 ```
 
-## Creating an AIAgent
+## Example: A Simple Chat Agent
 
-You can create an `AIAgent` instance using the `AIAgent.from()` factory method or by directly using the constructor. At a minimum, an agent requires instructions or an `inputKey` to function.
+Let's look at a practical example of a "Chat Agent." This agent is designed to be a helpful assistant that answers questions. Its configuration would look something like this:
 
-Here is a basic example of creating a chat agent:
+| Property | Value | Description |
+| :--- | :--- | :--- |
+| **Name** | `chat` | A simple identifier for the agent. |
+| **Description** | `Chat agent` | A brief explanation of its purpose. |
+| **Instructions**| `You are a helpful assistant...` | This tells the agent to be friendly and informative. |
+| **Input Key** | `message` | The agent expects the user's question to be labeled as "message". |
+| **Output Key** | `message` | The agent will label its answer as "message". |
 
-```typescript
-import { AIAgent } from "@core/agents/ai-agent";
-import { GoogleChatModel } from "@core/models/google";
+When you send this agent an input like `message: "How does an agent work?"`, it follows its instructions to be helpful and provides a clear, informative answer based on its programming.
 
-// Assumes the model is configured elsewhere, e.g., in a central context
-const model = new GoogleChatModel({ model: "gemini-1.5-flash" });
+## Summary
 
-const chatAgent = AIAgent.from({
-  name: "chat-bot",
-  description: "A helpful assistant that can answer questions.",
-  instructions: "You are a helpful assistant. Your goal is to assist users in finding the information they need and to engage in friendly conversation.",
-  inputKey: "message",
-  model: model,
-});
-
-async function runChat() {
-  const responseStream = await chatAgent.invoke({ message: "Hello, world!" });
-  for await (const chunk of responseStream) {
-    if (chunk.delta.text?.message) {
-      process.stdout.write(chunk.delta.text.message);
-    }
-  }
-}
-
-runChat();
-```
-
-This example creates a simple agent that uses the provided instructions to respond to user input passed in the `message` field.
-
-## Configuration Options (`AIAgentOptions`)
-
-The `AIAgentOptions` interface provides extensive configuration possibilities to tailor the agent's behavior.
-
-<x-field-group>
-  <x-field data-name="name" data-type="string" data-required="true" data-desc="A unique name for the agent."></x-field>
-  <x-field data-name="description" data-type="string" data-required="true" data-desc="A description of the agent's purpose and capabilities."></x-field>
-  <x-field data-name="model" data-type="ChatModel" data-required="false" data-desc="The language model instance the agent will use. This can also be provided at invocation time."></x-field>
-  <x-field data-name="instructions" data-type="string | PromptBuilder" data-required="false" data-desc="Instructions to guide the AI model's behavior. Can be a simple string or a `PromptBuilder` instance for complex templates."></x-field>
-  <x-field data-name="inputKey" data-type="string" data-required="false" data-desc="Specifies which key from the input message should be treated as the primary user message."></x-field>
-  <x-field data-name="outputKey" data-type="string" data-default="message" data-desc="Custom key to use for the text output in the response object. Defaults to `message`."></x-field>
-  <x-field data-name="toolChoice" data-type="AIAgentToolChoice | Agent" data-default="auto" data-desc="Controls how the agent uses tools. See the 'Tool Usage' section for details."></x-field>
-  <x-field data-name="keepTextInToolUses" data-type="boolean" data-required="false" data-desc="If true, text generated by the model alongside a tool call is preserved in the final output."></x-field>
-  <x-field data-name="catchToolsError" data-type="boolean" data-default="true" data-desc="If false, the agent will throw an error if a tool execution fails. Defaults to true, allowing the agent to handle the error."></x-field>
-  <x-field data-name="structuredStreamMode" data-type="boolean" data-default="false" data-desc="Enables a mode to extract structured metadata (e.g., JSON) from the model's streaming response."></x-field>
-  <x-field data-name="customStructuredStreamInstructions" data-type="object" data-required="false" data-desc="Allows full customization of the structured stream behavior, including prompt instructions and metadata parsing logic."></x-field>
-  <x-field data-name="memoryAgentsAsTools" data-type="boolean" data-default="false" data-desc="When true, memory agents are made available as tools that the model can call to explicitly retrieve or store information."></x-field>
-</x-field-group>
-
-## Tool Usage
-
-A key feature of `AIAgent` is its ability to use other agents as tools. This allows you to build complex systems where an AI agent can delegate tasks to specialized agents for performing actions. The `toolChoice` option controls this behavior.
-
-### `AIAgentToolChoice` Enum
-
--   **`auto` (Default)**: The language model decides whether to call a tool based on the context of the conversation. This is the most flexible option.
--   **`none`**: Disables all tool usage for the agent, forcing it to rely solely on its own knowledge.
--   **`required`**: Forces the agent to use one of the available tools. The model must make a tool call.
--   **`router`**: A specialized mode where the agent's single purpose is to choose the most appropriate tool and route the user's input directly to it. The `AIAgent` itself does not respond; the chosen tool's output becomes the final response.
-
-### Example: Using a Tool
-
-```typescript
-import { Agent } from "@core/agents/agent";
-import { AIAgent, AIAgentToolChoice } from "@core/agents/ai-agent";
-
-// A simple tool (an Agent) that gets weather information
-const weatherTool = new Agent({
-  name: "get_weather",
-  description: "Get the current weather for a specific location.",
-  inputSchema: {
-    type: "object",
-    properties: {
-      location: { type: "string", description: "The city and state, e.g., San Francisco, CA" },
-    },
-    required: ["location"],
-  },
-  async *process(input) {
-    yield {
-      delta: {
-        json: {
-          weather: `The weather in ${input.location} is sunny.`,
-        },
-      },
-    };
-  },
-});
-
-// An AIAgent configured to use the tool
-const weatherAssistant = AIAgent.from({
-  name: "weather-assistant",
-  description: "An assistant that can provide weather forecasts.",
-  instructions: "You are a weather assistant. Use the available tools to answer questions about the weather.",
-  tools: [weatherTool],
-  toolChoice: AIAgentToolChoice.auto,
-});
-
-async function getWeather() {
-  const responseStream = await weatherAssistant.invoke({
-    message: "What's the weather like in New York?",
-  });
-
-  for await (const chunk of responseStream) {
-    // The final output will be a synthesis of the tool's result
-    console.log(chunk);
-  }
-}
-
-getWeather();
-```
-
-## Structured Data Extraction
-
-The `structuredStreamMode` is a powerful feature for scenarios where you need to extract structured information (like JSON) from a language model's response, in addition to plain text. When enabled, the agent looks for special metadata tags in the model's output and parses the content within them.
-
-### Enabling Structured Stream Mode
-
-To use this feature, you must:
-1.  Set `structuredStreamMode: true` in the agent's options.
-2.  Instruct the model (via the `instructions` prompt) to format its structured output within specific tags (default is `<metadata>...</metadata>`).
-
-### Example: Extracting JSON
-
-```typescript
-import { AIAgent } from "@core/agents/ai-agent";
-
-const sentimentAnalyzer = AIAgent.from({
-  name: "sentiment-analyzer",
-  description: "Analyzes the sentiment of a message and provides a rating.",
-  instructions: `
-    Analyze the sentiment of the user's message.
-    Respond with a brief explanation, and then provide a structured sentiment analysis in a <metadata> tag.
-    The metadata should be a YAML object with 'sentiment' (positive, negative, or neutral) and 'score' (0-1) fields.
-  `,
-  structuredStreamMode: true,
-});
-
-async function analyzeSentiment() {
-  const responseStream = await sentimentAnalyzer.invoke({
-    message: "I am absolutely thrilled with the new update! It's fantastic.",
-  });
-
-  for await (const chunk of responseStream) {
-    if (chunk.delta.text?.message) {
-      // Stream the text part of the response
-      process.stdout.write(chunk.delta.text.message);
-    }
-    if (chunk.delta.json) {
-      // The parsed JSON object will appear here
-      console.log("\n[METADATA]:", chunk.delta.json);
-    }
-  }
-}
-
-// Expected output would stream the text explanation,
-// followed by the parsed JSON object:
-// [METADATA]: { sentiment: 'positive', score: 0.95 }
-
-analyzeSentiment();
-```
-
-You can further customize the metadata tags and parsing logic using the `customStructuredStreamInstructions` option for formats other than YAML, such as JSON.
+A basic agent is a single-task digital worker defined by its instructions, the input it receives, and the output it produces. They are the essential, foundational components of AIGNE. While powerful for specific tasks, their true potential is unlocked when they are assembled into [Agent Teams](./user-guide-understanding-agents-agent-teams.md) to tackle more complex challenges.

@@ -1,107 +1,101 @@
-# @aigne/xai
+# xAI
 
-`@aigne/xai` 包提供了 AIGNE 框架与 XAI 语言模型（如 Grok）之间的无缝集成。它提供了一个标准化的接口，用于在您的 AIGNE 应用中利用 XAI 先进的 AI 功能，确保提供一致的开发体验。
+本指南介绍了如何在 AIGNE 框架内配置和使用 xAI 的语言模型，特别是 Grok。内容涵盖了必要软件包的安装、API 密钥的配置、模型的实例化，以及标准和流式调用的示例。
 
-该 SDK 基于 X.AI 提供的 OpenAI 兼容 API 格式构建，可以轻松与 `grok-2-latest` 等模型进行交互。
-
-## 架构概述
-
-`@aigne/xai` 包充当核心 AIGNE 框架与 XAI API 之间的连接器，让您可以通过一致的接口将 XAI 模型集成到您的应用中。
+`@aigne/xai` 软件包作为 xAI API 的直接接口，允许开发者通过 AIGNE 框架提供的标准化 `ChatModel` 接口，将 Grok 的功能集成到他们的应用程序中。
 
 ```d2
 direction: down
 
-AIGNE-Application: {
-  label: "AIGNE 应用"
+Developer: {
+  shape: c4-person
+}
+
+aigne-xai: {
+  label: "@aigne/xai 软件包"
+  shape: rectangle
+}
+
+xAI-Platform: {
+  label: "xAI 平台"
   shape: rectangle
 
-  aigne-xai: {
-    label: "@aigne/xai SDK"
-    shape: rectangle
+  API-Key: {
+    label: "API 密钥"
+  }
+
+  Grok-Models: {
+    label: "Grok 模型"
   }
 }
 
-XAI-API: {
-  label: "XAI API"
-  shape: rectangle
+Developer -> xAI-Platform.API-Key: "1. 获取 API 密钥"
+Developer -> aigne-xai: "2. 配置软件包\n（API 密钥，模型选择）"
+aigne-xai -> xAI-Platform.Grok-Models: "3. 发送 API 请求"
+xAI-Platform.Grok-Models -> aigne-xai: "4. 返回响应"
+aigne-xai -> Developer: "5. 交付结果"
 
-  XAI-Models: {
-    label: "XAI 模型\n（例如，Grok）"
-    shape: cylinder
-  }
-}
-
-AIGNE-Application.aigne-xai -> XAI-API: "通过\nOpenAI 兼容 API 通信"
-XAI-API -> XAI-API.XAI-Models: "提供访问"
 ```
-
-## 功能特性
-
-*   **XAI API 集成**：直接连接到 XAI 的 API 服务。
-*   **聊天补全**：支持 XAI 的聊天补全 API，兼容所有可用模型。
-*   **函数调用**：内置对函数调用功能的支持。
-*   **流式响应**：支持处理流式响应，以实现响应更及时的应用。
-*   **类型安全**：为所有 API 和模型提供全面的 TypeScript 类型定义。
-*   **一致的接口**：与 AIGNE 框架的模型接口完全兼容。
-*   **错误处理**：包含强大的错误处理和重试机制。
-*   **全面配置**：提供丰富的配置选项，用于微调模型行为。
 
 ## 安装
 
-您可以使用 npm、yarn 或 pnpm 安装该包。
+首先，请使用您偏好的包管理器安装 `@aigne/xai` 软件包以及 AIGNE 核心库。
 
-### npm
-
-```bash
-npm install @aigne/xai @aigne/core
-```
-
-### yarn
-
-```bash
-yarn add @aigne/xai @aigne/core
-```
-
-### pnpm
-
-```bash
-pnpm add @aigne/xai @aigne/core
-```
+<x-cards data-columns="3">
+  <x-card data-title="npm" data-icon="logos:npm-icon">
+    ```bash
+    npm install @aigne/xai @aigne/core
+    ```
+  </x-card>
+  <x-card data-title="yarn" data-icon="logos:yarn">
+    ```bash
+    yarn add @aigne/xai @aigne/core
+    ```
+  </x-card>
+  <x-card data-title="pnpm" data-icon="logos:pnpm">
+    ```bash
+    pnpm add @aigne/xai @aigne/core
+    ```
+  </x-card>
+</x-cards>
 
 ## 配置
 
-开始使用前，您需要配置 `XAIChatModel`。该模型可以使用多种选项进行初始化，以自定义其行为。
+`XAIChatModel` 类是与 xAI API 交互的主要接口。要使用它，您必须使用您的 xAI API 密钥对其进行配置。
 
-```typescript
-import { XAIChatModel } from "@aigne/xai";
+您可以通过两种方式提供 API 密钥：
+1.  **直接在构造函数中传入**：通过 `apiKey` 属性传递密钥。
+2.  **环境变量**：设置 `XAI_API_KEY` 环境变量。模型将自动检测并使用它。
 
-const model = new XAIChatModel({
-  // 直接提供 API 密钥，或使用 XAI_API_KEY 环境变量
-  apiKey: "your-xai-api-key", // 如果设置了环境变量，则此项为可选
+### 构造函数选项
 
-  // 指定要使用的模型。默认为 'grok-2-latest'
-  model: "grok-2-latest",
+在创建 `XAIChatModel` 实例时，您可以提供以下选项：
 
-  // 传递给模型的附加选项
-  modelOptions: {
-    temperature: 0.7,
-    max_tokens: 1024,
-  },
-});
-```
-
-`apiKey` 可以直接传递给构造函数，也可以设置为名为 `XAI_API_KEY` 的环境变量。SDK 会自动识别。
+<x-field-group>
+  <x-field data-name="apiKey" data-type="string" data-required="false">
+    <x-field-desc markdown>您的 xAI API 密钥。如果未提供，系统将回退使用 `XAI_API_KEY` 环境变量。</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-required="false" data-default="grok-2-latest">
+    <x-field-desc markdown>用于聊天补全的特定 xAI 模型。默认为 `grok-2-latest`。</x-field-desc>
+  </x-field>
+  <x-field data-name="baseURL" data-type="string" data-required="false" data-default="https://api.x.ai/v1">
+    <x-field-desc markdown>xAI API 的基础 URL。该项已预先配置，通常无需更改。</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>传递给 xAI API 的其他选项，例如 `temperature`、`topP` 等。</x-field-desc>
+  </x-field>
+</x-field-group>
 
 ## 基本用法
 
-以下示例演示了如何使用 `invoke` 方法向 XAI 模型发送一个简单的请求并接收响应。
+以下示例演示了如何实例化 `XAIChatModel` 并调用它以获取响应。
 
-```typescript
+```typescript 基本调用 icon=logos:typescript
 import { XAIChatModel } from "@aigne/xai";
 
 const model = new XAIChatModel({
-  // 直接提供 API 密钥，或使用环境变量 XAI_API_KEY
-  apiKey: "your-api-key", // 如果在环境变量中设置，则此项为可选
+  // 直接提供 API 密钥或使用环境变量 XAI_API_KEY
+  apiKey: "your-api-key", // 如果已在环境变量中设置，则此项为可选
   // 指定模型（默认为 'grok-2-latest'）
   model: "grok-2-latest",
   modelOptions: {
@@ -114,23 +108,28 @@ const result = await model.invoke({
 });
 
 console.log(result);
-/* Output:
-  {
-    text: "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!",
-    model: "grok-2-latest",
-    usage: {
-      inputTokens: 6,
-      outputTokens: 17
-    }
+```
+
+### 响应示例
+
+`invoke` 方法返回一个包含模型响应和使用元数据的对象。
+
+```json 响应对象 icon=mdi:code-json
+{
+  "text": "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!",
+  "model": "grok-2-latest",
+  "usage": {
+    "inputTokens": 6,
+    "outputTokens": 17
   }
-  */
+}
 ```
 
 ## 流式响应
 
-对于需要实时交互的应用，您可以从模型流式传输响应。这对于创建对话式界面非常有用，用户可以在响应生成时看到它。
+对于实时应用程序，您可以从模型中流式传输响应。在 `invoke` 方法中设置 `streaming: true` 选项，以便在数据可用时以数据块的形式接收。
 
-```typescript
+```typescript 流式传输示例 icon=logos:typescript
 import { isAgentResponseDelta } from "@aigne/core";
 import { XAIChatModel } from "@aigne/xai";
 
@@ -157,10 +156,26 @@ for await (const chunk of stream) {
   }
 }
 
-console.log(fullText); // 输出: "I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!"
-console.log(json); // { model: "grok-2-latest", usage: { inputTokens: 6, outputTokens: 17 } }
+console.log(fullText);
+console.log(json);
 ```
 
-## 许可证
+### 流式输出
 
-本软件包在 Elastic-2.0 许可下发布。
+在遍历流时，您可以累积文本增量以形成完整的消息，并合并 JSON 部分以获取最终的元数据。
+
+```text 文本输出 icon=mdi:text-box
+I'm Grok, an AI assistant from X.AI. I'm here to assist with a touch of humor and wit!
+```
+
+```json JSON 输出 icon=mdi:code-json
+{
+  "model": "grok-2-latest",
+  "usage": {
+    "inputTokens": 6,
+    "outputTokens": 17
+  }
+}
+```
+
+关于 `@aigne/xai` 软件包的使用指南到此结束。有关其他可用模型的更多信息，请参阅[模型概述](./models-overview.md)。

@@ -1,579 +1,78 @@
-# AIGNE 模型
-
-AIGNE 提供了一套全面的 SDK，旨在与众多 AI 模型提供商无缝集成。这些软件包在整个 AIGNE 框架中提供了一致、统一的接口，使开发人员能够轻松利用不同 AI 模型的强大功能，而无需更改其核心应用程序逻辑。
-
-无论您是使用 OpenAI 的 GPT 模型、Anthropic 的 Claude、Google 的 Gemini，还是通过 Ollama 本地托管的模型，AIGNE 模型 SDK 都能简化开发流程。每个 SDK 都针对特定提供商的 API 进行定制，同时遵循标准化的 `invoke` 方法，以实现聊天补全、流式传输和其他功能。
-
-此外，借助 `@aigne/aigne-hub`，您可以通过单一网关访问多个提供商，从而简化 API 密钥管理，并支持动态模型切换和回退。本介绍概述了可用的模型，并指导您完成其安装和使用。
-
-```d2
-direction: down
-
-Developer-Application: {
-  label: "开发者的应用程序"
-  shape: rectangle
-}
-
-AIGNE-Ecosystem: {
-  label: "AIGNE SDK 生态系统"
-  shape: rectangle
-  style: {
-    stroke-dash: 4
-  }
-  grid-gap: 100
-
-  AIGNE-SDKs: {
-    label: "AIGNE SDK"
-    shape: rectangle
-    grid-columns: 4
-    grid-gap: 40
-
-    aigne-core: {
-      label: "@aigne/core\n（基础）"
-      style.fill: "#d1e7dd"
-    }
-
-    aigne-hub: {
-      label: "@aigne/aigne-hub\n（网关）"
-      style.fill: "#cfe2ff"
-    }
-    aigne-open-router: {
-      label: "@aigne/open-router\n（网关）"
-      style.fill: "#cfe2ff"
-    }
-    aigne-poe: {
-      label: "@aigne/poe\n（网关）"
-      style.fill: "#cfe2ff"
-    }
-
-    aigne-openai: { label: "@aigne/openai" }
-    aigne-anthropic: { label: "@aigne/anthropic" }
-    aigne-gemini: { label: "@aigne/gemini" }
-    aigne-bedrock: { label: "@aigne/bedrock" }
-    aigne-deepseek: { label: "@aigne/deepseek" }
-    aigne-doubao: { label: "@aigne/doubao" }
-    aigne-ideogram: { label: "@aigne/ideogram" }
-    aigne-ollama: { label: "@aigne/ollama" }
-    aigne-xai: { label: "@aigne/xai" }
-  }
-
-  AI-Model-Providers: {
-    label: "AI 模型提供商（外部服务）"
-    shape: rectangle
-    grid-columns: 4
-    grid-gap: 40
-
-    OpenAI: { label: "OpenAI\n（GPT、DALL-E）" }
-    Anthropic: { label: "Anthropic\n（Claude）" }
-    Google: { label: "Google\n（Gemini、Imagen）" }
-    AWS-Bedrock: { label: "AWS Bedrock" }
-    Deepseek: { label: "Deepseek" }
-    Doubao: { label: "豆包" }
-    Ideogram: { label: "Ideogram" }
-    Ollama: { label: "Ollama\n（本地服务）" }
-    OpenRouter: { label: "OpenRouter" }
-    Poe: { label: "Poe" }
-    xAI: { label: "xAI\n（Grok）" }
-  }
-}
-
-Developer-Application -> AIGNE-Ecosystem.AIGNE-SDKs: "使用 SDK"
-
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-openai -> AIGNE-Ecosystem.AI-Model-Providers.OpenAI
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-anthropic -> AIGNE-Ecosystem.AI-Model-Providers.Anthropic
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-gemini -> AIGNE-Ecosystem.AI-Model-Providers.Google
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-bedrock -> AIGNE-Ecosystem.AI-Model-Providers.AWS-Bedrock
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-deepseek -> AIGNE-Ecosystem.AI-Model-Providers.Deepseek
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-doubao -> AIGNE-Ecosystem.AI-Model-Providers.Doubao
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-ideogram -> AIGNE-Ecosystem.AI-Model-Providers.Ideogram
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-ollama -> AIGNE-Ecosystem.AI-Model-Providers.Ollama
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-open-router -> AIGNE-Ecosystem.AI-Model-Providers.OpenRouter
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-poe -> AIGNE-Ecosystem.AI-Model-Providers.Poe
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-xai -> AIGNE-Ecosystem.AI-Model-Providers.xAI
-
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-hub -> AIGNE-Ecosystem.AI-Model-Providers.OpenAI
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-hub -> AIGNE-Ecosystem.AI-Model-Providers.Anthropic
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-hub -> AIGNE-Ecosystem.AI-Model-Providers.Google
-AIGNE-Ecosystem.AIGNE-SDKs.aigne-hub -> AIGNE-Ecosystem.AI-Model-Providers.Ideogram
-```
-
-## 快速入门
-
-首先，您需要安装核心的 AIGNE 包以及您希望使用的 AI 模型提供商的特定 SDK。
-
-### 安装
-
-使用您偏好的包管理器安装必要的软件包。例如，要使用 OpenAI SDK：
-
-**使用 npm**
-```bash
-npm install @aigne/openai @aigne/core
-```
-
-**使用 yarn**
-```bash
-yarn add @aigne/openai @aigne/core
-```
-
-**使用 pnpm**
-```bash
-pnpm add @aigne/openai @aigne/core
-```
-
-## 支持的提供商
-
-AIGNE 支持多种 AI 模型提供商，每个提供商都有其专用的 SDK 以实现最佳集成。以下是每个受支持提供商的详细指南。
-
-### AIGNE Hub
-
-`@aigne/aigne-hub` 通过单一网关服务提供对多个 LLM 提供商的统一访问。它允许您在 OpenAI、Anthropic 和 Google 等提供商的模型之间切换，而无需更改客户端代码。
-
-**主要功能：**
-- 通过单个端点将请求路由到任何受支持的提供商。
-- 使用单个 `accessKey` 安全地管理 API 密钥。
-- 支持聊天补全、流式传输和图像生成。
-
-#### 安装
-```bash
-npm install @aigne/aigne-hub @aigne/core
-```
-
-#### 基本聊天用法
-```typescript
-import { AIGNEHubChatModel } from "@aigne/aigne-hub";
-
-const model = new AIGNEHubChatModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
-  model: "openai/gpt-4o-mini",
-});
-
-const result = await model.invoke({
-  messages: [{ role: "user", content: "Hello, world!" }],
-});
-
-console.log(result);
-/* 示例输出：
-  {
-    text: "Hello! How can I help you today?",
-    model: "openai/gpt-4o-mini",
-    usage: {
-      inputTokens: 8,
-      outputTokens: 9
-    }
-  }
-*/
-```
-
-#### 图像生成
-AIGNE Hub 支持从多个提供商生成图像。只需指定模型名称即可在它们之间切换。
-
-**OpenAI DALL-E 示例**
-```typescript
-import { AIGNEHubImageModel } from "@aigne/aigne-hub";
-
-const model = new AIGNEHubImageModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
-  model: "openai/dall-e-3",
-});
-
-const result = await model.invoke({
-  prompt: "A futuristic cityscape with flying cars and neon lights",
-  n: 1,
-  size: "1024x1024",
-});
-```
-
-**Google Imagen 示例**
-```typescript
-import { AIGNEHubImageModel } from "@aigne/aigne-hub";
-
-const model = new AIGNEHubImageModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
-  model: "google/imagen-4.0-generate-001",
-});
-
-const result = await model.invoke({
-  prompt: "A serene mountain landscape at sunset",
-});
-```
-
-**Ideogram 示例**
-```typescript
-import { AIGNEHubImageModel } from "@aigne/aigne-hub";
-
-const model = new AIGNEHubImageModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
-  model: "ideogram/ideogram-v3",
-});
-
-const result = await model.invoke({
-  prompt: "A cyberpunk character with glowing blue eyes",
-  resolution: "1024x1024",
-});
-```
-
-### OpenAI
-
-`@aigne/openai` SDK 提供了与 OpenAI GPT 模型的无缝集成。它支持聊天补全、函数调用和流式响应。
-
-#### 安装
-```bash
-npm install @aigne/openai @aigne/core
-```
-
-#### 基本用法
-```typescript
-import { OpenAIChatModel } from "@aigne/openai";
-
-const model = new OpenAIChatModel({
-  // 直接提供 API 密钥或使用环境变量 OPENAI_API_KEY
-  apiKey: "your-api-key", // 如果在环境变量中设置了，则为可选
-  model: "gpt-4o", // 如果未指定，则默认为 "gpt-4o-mini"
-  modelOptions: {
-    temperature: 0.7,
-  },
-});
-
-const result = await model.invoke({
-  messages: [{ role: "user", content: "Hello, who are you?" }],
-});
-
-console.log(result);
-```
-
-#### 流式响应
-```typescript
-import { isAgentResponseDelta } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
-
-const model = new OpenAIChatModel({
-  apiKey: "your-api-key",
-  model: "gpt-4o",
-});
-
-const stream = await model.invoke(
-  {
-    messages: [{ role: "user", content: "Hello, who are you?" }],
-  },
-  { streaming: true },
-);
-
-let fullText = "";
-for await (const chunk of stream) {
-  if (isAgentResponseDelta(chunk)) {
-    const text = chunk.delta.text?.text;
-    if (text) fullText += text;
-  }
-}
-console.log(fullText);
-```
-
-### Anthropic
-
-`@aigne/anthropic` SDK 与 Anthropic 的 Claude AI 模型集成，支持聊天补全、工具调用和流式传输。
-
-#### 安装
-```bash
-npm install @aigne/anthropic @aigne/core
-```
-
-#### 基本用法
-```typescript
-import { AnthropicChatModel } from "@aigne/anthropic";
-
-const model = new AnthropicChatModel({
-  // 直接提供 API 密钥或使用环境变量 ANTHROPIC_API_KEY
-  apiKey: "your-api-key", // 如果在环境变量中设置了，则为可选
-  model: "claude-3-haiku-20240307", // 默认为 'claude-3-7-sonnet-latest'
-  modelOptions: {
-    temperature: 0.7,
-  },
-});
-
-const result = await model.invoke({
-  messages: [{ role: "user", content: "Tell me about yourself" }],
-});
-
-console.log(result);
-```
-
-### Google Gemini
-
-`@aigne/gemini` SDK 连接到 Google 的 Gemini AI 模型，支持多模态输入、函数调用以及使用 Imagen 进行图像生成。
-
-#### 安装
-```bash
-npm install @aigne/gemini @aigne/core
-```
-
-#### 基本聊天用法
-```typescript
-import { GeminiChatModel } from "@aigne/gemini";
-
-const model = new GeminiChatModel({
-  // 直接提供 API 密钥或使用环境变量 GOOGLE_API_KEY
-  apiKey: "your-api-key", // 如果在环境变量中设置了，则为可选
-  model: "gemini-1.5-flash", // 默认为 'gemini-1.5-pro'
-  modelOptions: {
-    temperature: 0.7,
-  },
-});
-
-const result = await model.invoke({
-  messages: [{ role: "user", content: "Hi there, introduce yourself" }],
-});
-
-console.log(result);
-```
-
-#### 图像生成
-```typescript
-import { GeminiImageModel } from "@aigne/gemini";
-
-const model = new GeminiImageModel({
-  apiKey: "your-api-key", 
-  model: "imagen-4.0-generate-001", // 默认 Imagen 模型
-});
-
-const result = await model.invoke({
-  prompt: "A serene mountain landscape at sunset with golden light",
-  n: 1,
-});
-
-console.log(result);
-```
-
-### AWS Bedrock
-
-`@aigne/bedrock` SDK 与 AWS Bedrock 上托管的基础模型（包括 Claude、Llama 和 Titan）集成，提供了一个安全且可扩展的解决方案。
-
-#### 安装
-```bash
-npm install @aigne/bedrock @aigne/core
-```
-
-#### 基本用法
-```typescript
-import { BedrockChatModel } from "@aigne/bedrock";
-
-const model = new BedrockChatModel({
-  // 使用环境变量 AWS_ACCESS_KEY_ID 和 AWS_SECRET_ACCESS_KEY
-  accessKeyId: "YOUR_ACCESS_KEY_ID",
-  secretAccessKey: "YOUR_SECRET_ACCESS_KEY",
-  model: "us.amazon.nova-premier-v1:0",
-  modelOptions: {
-    temperature: 0.7,
-  },
-});
-
-const result = await model.invoke({
-  messages: [{ role: "user", content: "Hello, who are you?" }],
-});
-
-console.log(result);
-```
-
-### Deepseek
-
-`@aigne/deepseek` SDK 连接到 Deepseek 的语言模型，为聊天补全提供了一个功能强大且经济高效的选择。
-
-#### 安装
-```bash
-npm install @aigne/deepseek @aigne/core
-```
-
-#### 基本用法
-```typescript
-import { DeepSeekChatModel } from "@aigne/deepseek";
-
-const model = new DeepSeekChatModel({
-  // 直接提供 API 密钥或使用环境变量 DEEPSEEK_API_KEY
-  apiKey: "your-api-key",
-  model: "deepseek-chat", // 默认为 'deepseek-chat'
-  modelOptions: {
-    temperature: 0.7,
-  },
-});
-
-const result = await model.invoke({
-  messages: [{ role: "user", content: "Introduce yourself" }],
-});
-
-console.log(result);
-```
-
-### 豆包
-
-`@aigne/doubao` SDK 提供了与豆包语言模型的集成。
-
-#### 安装
-```bash
-npm install @aigne/doubao @aigne/core
-```
-
-#### 基本用法
-```typescript
-import { DoubaoChatModel } from "@aigne/doubao";
-
-const model = new DoubaoChatModel({
-  // 直接提供 API 密钥或使用环境变量 DOUBAO_API_KEY
-  apiKey: "your-api-key",
-  model: "doubao-seed-1-6-250615", // 默认模型
-  modelOptions: {
-    temperature: 0.7,
-  },
-});
-
-const result = await model.invoke({
-  messages: [{ role: "user", content: "Introduce yourself" }],
-});
-
-console.log(result);
-```
-
-### Ideogram
-
-`@aigne/ideogram` SDK 专门用于与 Ideogram 的高级图像生成模型集成。
-
-#### 安装
-```bash
-npm install @aigne/ideogram @aigne/core
-```
-
-#### 基本用法
-```typescript
-import { IdeogramImageModel } from "@aigne/ideogram";
-
-const model = new IdeogramImageModel({
-  apiKey: "your-api-key", // 如果在环境变量中设置了，则为可选
-});
-
-const result = await model.invoke({
-  model: "ideogram-v3",
-  prompt: "A serene mountain landscape at sunset with golden light",
-});
-
-console.log(result);
-```
-
-### Ollama
-
-`@aigne/ollama` SDK 允许您通过 Ollama 连接到本地托管的开源模型，确保隐私和对 AI 功能的离线访问。
-
-#### 安装
-```bash
-npm install @aigne/ollama @aigne/core
-```
-
-#### 先决条件
-确保 [Ollama](https://ollama.ai/) 已在您的机器上安装并运行。
-
-#### 基本用法
-```typescript
-import { OllamaChatModel } from "@aigne/ollama";
-
-const model = new OllamaChatModel({
-  baseURL: "http://localhost:11434", // 默认为 localhost
-  model: "llama3", // 默认为 'llama3'
-  modelOptions: {
-    temperature: 0.8,
-  },
-});
-
-const result = await model.invoke({
-  messages: [{ role: "user", content: "Tell me what model you're using" }],
-});
-
-console.log(result);
-```
-
-### OpenRouter
-
-`@aigne/open-router` SDK 提供了一个统一的 API，通过单一集成访问来自 OpenAI、Anthropic 和 Google 等多个提供商的模型。
-
-#### 安装
-```bash
-npm install @aigne/open-router @aigne/core
-```
-
-#### 基本用法
-```typescript
-import { OpenRouterChatModel } from "@aigne/open-router";
-
-const model = new OpenRouterChatModel({
-  // 直接提供 API 密钥或使用环境变量 OPEN_ROUTER_API_KEY
-  apiKey: "your-api-key",
-  model: "anthropic/claude-3-opus", // 默认为 'openai/gpt-4o'
-  modelOptions: {
-    temperature: 0.7,
-  },
-});
-
-const result = await model.invoke({
-  messages: [{ role: "user", content: "Which model are you using?" }],
-});
-
-console.log(result);
-```
-
-### Poe
-
-`@aigne/poe` SDK 与 Poe 的 API 集成，让您可以访问该平台上的各种语言模型。
-
-#### 安装
-```bash
-npm install @aigne/poe @aigne/core
-```
-
-#### 基本用法
-```typescript
-import { PoeChatModel } from "@aigne/poe";
-
-const model = new PoeChatModel({
-  // 直接提供 API 密钥或使用环境变量 POE_API_KEY
-  apiKey: "your-api-key",
-  model: "claude-3-opus", // 默认为 'openai/gpt-4o'
-  modelOptions: {
-    temperature: 0.7,
-  },
-});
-
-const result = await model.invoke({
-  messages: [{ role: "user", content: "Which model are you using?" }],
-});
-
-console.log(result);
-```
-
-### xAI
-
-`@aigne/xai` SDK 连接到 XAI 的语言模型，包括以其独特的个性和实时信息访问能力而闻名的 Grok。
-
-#### 安装
-```bash
-npm install @aigne/xai @aigne/core
-```
-
-#### 基本用法
-```typescript
-import { XAIChatModel } from "@aigne/xai";
-
-const model = new XAIChatModel({
-  // 直接提供 API 密钥或使用环境变量 XAI_API_KEY
-  apiKey: "your-api-key",
-  model: "grok-2-latest", // 默认为 'grok-2-latest'
-  modelOptions: {
-    temperature: 0.8,
-  },
-});
-
-const result = await model.invoke({
-  messages: [{ role: "user", content: "Tell me about yourself" }],
-});
-
-console.log(result);
-```
+# 模型
+
+AIGNE 框架被设计为模型无关的，允许您连接到各种第三方 AI 模型提供商。这种灵活性是通过模型适配器系统实现的，每个适配器都为特定服务（如 OpenAI、Anthropic 或 Google Gemini）提供标准化的接口。
+
+本节为每个官方支持的模型提供商提供了安装、配置和使用的详细指南。无论您需要强大的语言模型、专业的图像生成，还是本地托管模型的隐私性，都可以在这里找到合适的集成方案。
+
+## 支持的模型提供商
+
+以下是支持的提供商精选列表。每个卡片都链接到一份专门的指南，其中包含安装说明、配置详情和实用的代码示例。
+
+### 基础模型
+
+这些是与主要 AI 模型提供商的直接集成。
+
+<x-cards data-columns="2">
+  <x-card data-title="OpenAI" data-icon="simple-icons:openai" data-href="/models/openai">
+    与 OpenAI 的模型套件集成，包括强大的 GPT-4o，用于聊天补全和函数调用。
+  </x-card>
+  <x-card data-title="Anthropic" data-icon="simple-icons:anthropic" data-href="/models/anthropic">
+    利用 Anthropic 的 Claude 模型，该模型以其在复杂推理和对话方面的强大性能而闻名。
+  </x-card>
+  <x-card data-title="Google Gemini" data-icon="simple-icons:googlegemini" data-href="/models/gemini">
+    连接到 Google 的 Gemini 多模态模型系列，以实现高级文本和图像理解。
+  </x-card>
+  <x-card data-title="AWS Bedrock" data-icon="simple-icons:amazonaws" data-href="/models/bedrock">
+    通过 AWS Bedrock 访问来自 Anthropic、Cohere 和 Amazon 等提供商的各种基础模型。
+  </x-card>
+  <x-card data-title="DeepSeek" data-icon="lucide:brain-circuit" data-href="/models/deepseek">
+    利用 DeepSeek 强大而高效的语言模型，执行一系列自然语言处理任务。
+  </x-card>
+    <x-card data-title="Doubao" data-icon="lucide:bot" data-href="/models/doubao">
+    与豆包的语言模型集成，用于构建对话式 AI 和其他基于文本的应用。
+  </x-card>
+  <x-card data-title="xAI" data-icon="lucide:sparkles" data-href="/models/xai">
+    连接到 xAI 的 Grok 模型，该模型专为实时信息处理和独特的对话风格而设计。
+  </x-card>
+</x-cards>
+
+### 图像生成模型
+
+用于创建视觉内容的专业集成。
+
+<x-cards data-columns="2">
+  <x-card data-title="Ideogram" data-icon="lucide:image" data-href="/models/ideogram">
+    使用 Ideogram 的高级图像合成模型，通过文本提示生成高质量图像。
+  </x-card>
+    <x-card data-title="Google Gemini" data-icon="simple-icons:googlegemini" data-href="/models/gemini">
+    使用 Gemini 和 Imagen 模型，在其语言功能之外，还提供多功能的图像生成能力。
+  </x-card>
+</x-cards>
+
+### 本地和聚合器服务
+
+连接到本地实例或通过单一 API 提供对多个模型访问的服务。
+
+<x-cards data-columns="2">
+  <x-card data-title="Ollama" data-icon="lucide:server" data-href="/models/ollama">
+    在您自己的硬件上本地运行像 Llama 3 这样的开源模型，以实现最大程度的隐私和离线访问。
+  </x-card>
+  <x-card data-title="LMStudio" data-icon="lucide:laptop" data-href="/models/lmstudio">
+    通过 LMStudio 应用程序连接到本地运行的模型，为体验开源 AI 提供了一种简单的方式。
+  </x-card>
+  <x-card data-title="OpenRouter" data-icon="lucide:route" data-href="/models/open-router">
+    通过单一、统一的 API 访问来自不同提供商的各种模型，并提供回退选项。
+  </x-card>
+  <x-card data-title="Poe" data-icon="lucide:message-square-plus" data-href="/models/poe">
+    与 Poe 平台上提供的各种模型集成，获取多样化的 AI 功能。
+  </x-card>
+  <x-card data-title="AIGNE Hub" data-icon="lucide:hub" data-href="/models/aigne-hub">
+    使用 AIGNE Hub 作为统一代理，在多个 LLM 提供商之间无缝切换，而无需更改客户端代码。
+  </x-card>
+</x-cards>
+
+## 总结
+
+AIGNE 框架的模块化设计使其能够轻松地与最适合您特定需求的 AI 模型集成。每个提供商都有一个专用包来处理底层 API 的复杂性，为您提供一个一致且直接的接口。
+
+要开始使用，请从上面的列表中选择一个提供商，并按照链接的指南获取详细说明。有关模型适配器在框架内工作原理的概览，请参阅[概述](./models-overview.md)页面。

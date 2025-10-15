@@ -1,263 +1,312 @@
-# 流
+# 流式传输
 
-本节提供了 AIGNE Core 包中流处理工具的详细文档。这些工具对于处理异步数据流至关重要，特别是用于管理 `Agent` 响应以及在不同格式（如 `ReadableStream`、`AsyncGenerator` 和服务器发送事件 (SSE)）之间转换数据。
+AIGNE 框架为处理来自 Agent 的流式响应提供了强大的支持。这对于需要实时数据处理的应用尤其有用，例如聊天机器人、实时数据源或任何受益于即时增量更新的用户界面。通过在数据可用时立即处理，您可以创建响应更迅速、交互性更强的用户体验。
 
-## 概述
+本指南详细介绍了在框架内启用和消费流式响应的方法。
 
-流工具旨在提供一种强大而灵活的方式来处理各种流类型。主要功能包括：
+## 启用流式传输
 
--   **转换**：在对象、数组、字符串和不同流格式之间无缝转换数据。
--   **操作**：合并多个流、处理数据块以及处理流生命周期事件。
--   **事件解析**：解析服务器发送事件 (SSE) 并转换 Agent 响应流。
--   **数据提取**：从文本流中提取结构化元数据。
+要从 Agent 接收流式响应，您必须在 `invoke` 调用中将 `stream` 选项设置为 `true`。启用此选项后，`invoke` 方法将返回一个 `AgentResponseStream`，它是一个由 `AgentResponseChunk` 对象组成的 `ReadableStream`，而不是一个完全成形的响应对象。
 
-这些工具是构建与 AI Agent 交互的响应式实时应用程序的基础。
+```typescript AIGNE Invoke with Streaming icon=logos:typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
 
-## 核心流工具
+const llm = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  model: "gpt-4o",
+});
 
-主要的流工具位于 `packages/core/src/utils/stream-utils.ts` 中。它们为创建、转换和管理流提供了基础。
+const agent = new AIAgent({
+  model: llm,
+  instructions: "You are a helpful assistant.",
+});
 
-### 流转换
+const aigne = new AIGNE({
+  model: llm,
+  agents: { agent },
+});
 
-这些函数允许您将数据与基于流的格式进行相互转换。
+async function run() {
+  // 通过将 `stream` 选项设置为 true 来启用流式传输
+  const stream = await aigne.invoke("agent", {
+    prompt: "Tell me a short story.",
+  }, { stream: true });
 
-#### `objectToAgentResponseStream`
+  // 'stream' 变量现在是一个 ReadableStream
+  for await (const chunk of stream) {
+    // 在每个数据块到达时进行处理
+    process.stdout.write(chunk.delta.text?.text || "");
+  }
+}
 
-将一个 JSON 对象转换为 `AgentResponseStream`。这对于将一个完整的对象作为单数据块流返回，并符合 Agent 响应格式非常有用。
-
-**示例**
-
-```typescript
-import { objectToAgentResponseStream } from '@aigene/core/utils';
-
-const userMessage = { id: 'user-123', text: 'Hello, agent!' };
-const stream = objectToAgentResponseStream(userMessage);
-
-// 该流将发出一个包含完整对象的数据块，然后关闭。
+run();
 ```
 
-#### `agentResponseStreamToObject`
+## 消费流
 
-聚合来自 `AgentResponseStream` 或 `AgentProcessAsyncGenerator` 的所有数据块，并将它们合并成一个单一对象。
+返回的流由 `AgentResponseChunk` 对象组成。每个数据块代表总响应的一部分。数据块的 `delta` 中主要有两种类型的数据：
 
-**示例**
+- `delta.text`：包含部分文本内容。用于从语言模型流式传输文本。
+- `delta.json`：包含部分 JSON 数据。当 Agent 配置为返回结构化输出时使用。框架会增量构建最终的 JSON 对象。
 
-```typescript
-import { agentResponseStreamToObject, objectToAgentResponseStream } from '@aigene/core/utils';
+### 处理数据块
+
+您可以使用 `for await...of` 循环遍历流，以便在每个数据块到达时进行处理。以下示例演示了如何从流中累积文本和最终的结构化 JSON。
+
+```typescript Processing Stream Chunks icon=logos:typescript
+import { AIGNE, AIAgent, Message } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
+import { agentResponseStreamToObject } from "@aigne/core/utils";
+
+// 假设 aigne 和 agent 的配置与前一个示例相同
+
+interface StoryOutput extends Message {
+  protagonist: string;
+  setting: string;
+  plotSummary: string;
+  storyText: string;
+}
 
 async function processStream() {
-  const message = { result: 'This is the final object.' };
-  const stream = objectToAgentResponseStream(message);
+  const aigne = new AIGNE({
+    model: new OpenAI(),
+    agents: {
+      agent: new AIAgent({
+        model: new OpenAI(),
+      })
+    },
+  });
+  const stream = await aigne.invoke<StoryOutput>("agent", {
+      prompt: "Write a short story about a robot who discovers music. Return the protagonist's name, the setting, a plot summary, and the full story text.",
+      // 假设 Agent 已配置为结构化输出
+    },
+    { stream: true }
+  );
 
-  const finalObject = await agentResponseStreamToObject(stream);
-  console.log(finalObject); // { result: 'This is the final object.' }
+  let fullText = "";
+  const finalResult: Partial<StoryOutput> = {};
+
+  for await (const chunk of stream) {
+    if (chunk.delta.text?.storyText) {
+      const partialText = chunk.delta.text.storyText;
+      fullText += partialText;
+      process.stdout.write(partialText); // 用文本实时更新 UI
+    }
+
+    if (chunk.delta.json) {
+      // 框架在每个相关的数据块中提供部分合并的 JSON 对象
+      Object.assign(finalResult, chunk.delta.json);
+    }
+  }
+
+  console.log("\n\n--- Final Structured Output ---");
+  console.log(finalResult);
+
+  // 您也可以使用一个实用工具直接获取最终对象
+  // 注意：这将消费整个流，因此应替代循环使用
+  // const finalObject = await agentResponseStreamToObject(stream);
+  // console.log(finalObject);
 }
 
 processStream();
 ```
 
-#### `asyncGeneratorToReadableStream`
+## 实用工具：`agentResponseStreamToObject`
 
-将 `AgentProcessAsyncGenerator` 转换为标准的 `ReadableStream` (`AgentResponseStream`)。
+如果您只需要最终完全形成的对象，而不需要处理中间的数据块，框架提供了 `agentResponseStreamToObject` 实用工具。该函数会消费整个流，并返回一个解析为完整响应对象的 Promise。
 
-**示例**
+当您希望在后端享受流式传输的好处（例如，从 LLM 获得更低的首页字节时间），但只需要向调用者交付最终结果时，这非常有用。
 
-```typescript
-import { asyncGeneratorToReadableStream, type AgentProcessAsyncGenerator, type AgentResponseChunk } from '@aigene/core/utils';
+```typescript Using agentResponseStreamToObject icon=logos:typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
+import { agentResponseStreamToObject } from "@aigne/core/utils";
+// ... 设置 aigne 和 agent
 
-async function* myGenerator(): AgentProcessAsyncGenerator<{ text: string }> {
-  yield { delta: { text: { text: 'Hel' } } };
-  yield { delta: { text: { text: 'lo' } } };
-  return { text: 'Hello' };
+async function getFinalObject() {
+  const aigne = new AIGNE({
+    model: new OpenAI(),
+    agents: {
+      agent: new AIAgent({
+        model: new OpenAI(),
+      })
+    },
+  });
+  const stream = await aigne.invoke("agent", {
+    prompt: "Tell me a short story.",
+  }, { stream: true });
+
+  // 消费流并返回最终的聚合对象
+  const result = await agentResponseStreamToObject(stream);
+
+  console.log("--- Complete Response ---");
+  console.log(result.text);
 }
 
-const stream = asyncGeneratorToReadableStream(myGenerator());
-// 此流现在可以与其他兼容 ReadableStream 的 API 一起使用。
+getFinalObject();
 ```
 
-#### `readableStreamToArray`
+## 使用服务器发送事件 (SSE) 将流传输到前端
 
-读取整个 `ReadableStream` 并将其所有数据块收集到一个数组中。它可以选择性地捕获错误并将其包含在结果数组中。
+流式传输的一个常见用例是向 Web 前端发送实时更新。AIGNE 框架通过提供 `AgentResponseStreamSSE` 类简化了这一过程，该类可将 `AgentResponseStream` 转换为与服务器发送事件 (SSE) 兼容的格式。
 
-**示例**
+### 数据流图
 
-```typescript
-import { readableStreamToArray, arrayToReadableStream } from '@aigene/core/utils';
+下图说明了使用 SSE 时从后端 AIGNE 到前端应用程序的数据流。
 
-async function streamToArrayExample() {
-  const chunks = [1, 2, 3, new Error('Stream failed')];
-  const stream = arrayToReadableStream(chunks);
+```d2
+direction: down
 
-  // 不捕获错误（将抛出异常）
-  try {
-    const result = await readableStreamToArray(stream);
-  } catch (e) {
-    console.error(e.message); // "Stream failed"
+Frontend: {
+  label: "前端应用程序"
+  shape: rectangle
+
+  EventSource-Client: {
+    label: "EventSource 客户端"
+    shape: rectangle
   }
 
-  // 捕获错误
-  const stream2 = arrayToReadableStream(chunks);
-  const resultWithErrors = await readableStreamToArray(stream2, { catchError: true });
-  console.log(resultWithErrors); // [1, 2, 3, Error: Stream failed]
+  UI-Component: {
+    label: "UI 组件"
+    shape: rectangle
+  }
 }
 
-streamToArrayExample();
-```
+Backend: {
+  label: "后端服务器"
+  shape: rectangle
 
-### 流操作
+  SSE-Endpoint: {
+    label: "SSE 端点"
+  }
 
-这些函数提供了用于修改和组合流的工具。
+  AIGNE-Core: {
+    label: "AIGNE 框架"
 
-#### `mergeReadableStreams`
-
-将多个 `ReadableStream` 实例合并成一个单一的流。生成的流会随着输入流中数据块的可用而转发它们。只有在所有输入流都关闭后，它才会关闭。
-
-**示例**
-
-```typescript
-import { mergeReadableStreams, arrayToReadableStream } from '@aigene/core/utils';
-
-const stream1 = arrayToReadableStream(['A', 'B']);
-const stream2 = arrayToReadableStream([1, 2]);
-
-const mergedStream = mergeReadableStreams(stream1, stream2);
-
-// 来自 mergedStream 的数据块可能是 'A', 1, 'B', 2（顺序取决于时间）
-```
-
-#### `onAgentResponseStreamEnd`
-
-向 `AgentResponseStream` 附加监听器，以处理数据块处理、流完成 (`onResult`) 和错误等事件。这允许您在流关闭前检查或修改最终结果。
-
-**示例**
-
-```typescript
-import { onAgentResponseStreamEnd, objectToAgentResponseStream } from '@aigene/core/utils';
-
-async function monitorStream() {
-  const stream = objectToAgentResponseStream({ count: 10 });
-
-  const monitoredStream = onAgentResponseStreamEnd(stream, {
-    onResult: (result) => {
-      console.log('Stream finished. Final result:', result);
-      // 如果需要，您可以修改最终结果
-      return { ...result, status: 'completed' };
-    },
-    onChunk: (chunk) => {
-      console.log('Processing chunk...');
-    },
-    onError: (error) => {
-      console.error('An error occurred:', error);
-      return error;
+    invoke: {
+        label: "aigne.invoke(..., { stream: true })"
     }
+
+    AgentResponseStream: {
+        label: "AgentResponseStream\n(ReadableStream)"
+    }
+
+    AgentResponseStreamSSE: {
+        label: "AgentResponseStreamSSE\n(实用工具)"
+    }
+  }
+}
+
+LLM: {
+  label: "LLM 服务"
+  shape: cylinder
+}
+
+Frontend.EventSource-Client -> Backend.SSE-Endpoint: "1. POST /api/chat-stream"
+Backend.SSE-Endpoint -> Backend.AIGNE-Core.invoke: "2. 调用 Agent"
+Backend.AIGNE-Core.invoke -> LLM: "3. 请求 LLM API"
+LLM -> Backend.AIGNE-Core.invoke: "4. 流式传输响应"
+Backend.AIGNE-Core.invoke -> Backend.AIGNE-Core.AgentResponseStream: "5. 返回流"
+Backend.AIGNE-Core.AgentResponseStream -> Backend.AIGNE-Core.AgentResponseStreamSSE: "6. 管道传输至 SSE 实用工具"
+Backend.AIGNE-Core.AgentResponseStreamSSE -> Backend.SSE-Endpoint: "7. 生成 SSE 格式的数据块"
+Backend.SSE-Endpoint -> Frontend.EventSource-Client: "8. 通过 HTTP 流式传输响应"
+Frontend.EventSource-Client -> Frontend.UI-Component: "9. 'onmessage' 事件触发 UI 更新"
+Frontend.UI-Component -> Frontend.UI-Component: "10. 增量渲染文本"
+```
+
+### 后端实现
+
+在您的服务器上，创建一个端点来发起启用了流式传输的 Agent `invoke` 调用。然后，将生成的 `AgentResponseStream` 通过管道传输到 `AgentResponseStreamSSE` 中，并将其输出写入 HTTP 响应。
+
+以下示例使用了一个通用的 Web 服务器结构。
+
+```typescript SSE Backend Endpoint icon=logos:typescript
+import { AIGNE, AIAgent } from "@aigne/core";
+import { OpenAI } from "@aigne/openai";
+import { AgentResponseStreamSSE } from "@aigne/core/utils";
+// ... 设置 aigne
+
+// 示例使用通用服务器上下文（例如 Express、Hono 等）
+async function handleSseRequest(req, res) {
+  const aigne = new AIGNE({
+    model: new OpenAI(),
+    agents: {
+      agent: new AIAgent({
+        model: new OpenAI(),
+      })
+    },
+  });
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Connection": "keep-alive",
+    "Cache-Control": "no-cache",
   });
 
-  // 消费流以触发处理程序
-  for await (const chunk of monitoredStream) {
-    // ...
+  try {
+    const stream = await aigne.invoke("agent", {
+      prompt: req.body.prompt,
+    }, { stream: true });
+
+    // 将 Agent 流转换为 SSE 流
+    const sseStream = new AgentResponseStreamSSE(stream);
+
+    // 将 SSE 流通过管道传输到 HTTP 响应
+    for await (const sseChunk of sseStream) {
+      res.write(sseChunk);
+    }
+  } catch (error) {
+    console.error("SSE stream error:", error);
+    const sseError = `event: error\ndata: ${JSON.stringify({ message: error.message })}\n\n`;
+    res.write(sseError);
+  } finally {
+    res.end();
   }
 }
-
-monitorStream();
 ```
 
-## 事件流处理
+### 前端实现
 
-这些类位于 `packages/core/src/utils/event-stream.ts` 中，专为处理服务器发送事件 (SSE) 和解析 Agent 特定的事件流而设计。
+在前端，使用原生的 `EventSource` API 连接到您的 SSE 端点。然后，您可以监听 `message` 事件以接收数据块，监听 `error` 事件以处理问题。
 
-### `AgentResponseStreamSSE`
+```javascript SSE Frontend Client icon=logos:javascript
+const promptInput = document.getElementById('prompt-input');
+const submitButton = document.getElementById('submit-button');
+const responseContainer = document.getElementById('response');
 
-包装一个 `AgentResponseStream`，并将其输出转换为 SSE 格式字符串的 `ReadableStream`。这非常适合将 Agent 响应直接发送到 Web 客户端。
+submitButton.addEventListener('click', async () => {
+  const prompt = promptInput.value;
+  responseContainer.innerHTML = ''; // 清除先前的响应
 
-**示例**
+  const eventSource = new EventSource('/api/chat-stream', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
+  });
 
-```typescript
-import { AgentResponseStreamSSE, objectToAgentResponseStream } from '@aigene/core/utils/event-stream';
+  eventSource.onmessage = (event) => {
+    const chunk = JSON.parse(event.data);
 
-// 假设 `agentStream` 是来自 Agent 调用的 AgentResponseStream
-const agentStream = objectToAgentResponseStream({ delta: { text: { content: 'Live update!' } } });
+    if (chunk.delta?.text?.text) {
+      responseContainer.innerHTML += chunk.delta.text.text;
+    }
+  };
 
-const sseStream = new AgentResponseStreamSSE(agentStream);
+  eventSource.onerror = (error) => {
+    console.error('EventSource failed:', error);
+    responseContainer.innerHTML += '<p style="color: red;">Error receiving stream.</p>';
+    eventSource.close();
+  };
 
-// sseStream 现在将生成如下字符串：
-// 'data: {"delta":{"text":{"content":"Live update!"}}}\n\n'
-```
-
-### `AgentResponseStreamParser`
-
-一个处理来自 `AgentResponseStream` 数据块的 `TransformStream`。它智能地合并 `text` 和 `json` 字段的增量，确保每个下游数据块都包含 JSON 对象的完整累积状态。
-
-**示例**
-
-```typescript
-import { AgentResponseStreamParser, arrayToReadableStream } from '@aigene/core/utils/event-stream';
-
-const sourceStream = arrayToReadableStream([
-  { delta: { json: { id: '123' } } },
-  { delta: { json: { status: 'pending' } } },
-  { delta: { text: { message: 'In progress...' } } }
-]);
-
-const parser = new AgentResponseStreamParser();
-const processedStream = sourceStream.pipeThrough(parser);
-
-// 输出的数据块在每一步都会包含完整的 JSON 对象：
-// 1st chunk: { delta: { json: { id: '123' } } }
-// 2nd chunk: { delta: { json: { id: '123', status: 'pending' } } }
-// 3rd chunk: { delta: { json: { id: '123', status: 'pending' }, text: { message: '...' } } }
-```
-
-### `AgentResponseProgressStream`
-
-通过监听给定 `Context` 实例上的生命周期事件（`agentStarted`、`agentSucceed`、`agentFailed`），创建一个 `AgentResponseProgress` 事件的 `ReadableStream`。这允许您监控整个 Agent 执行流程的进度。
-
-**示例**
-
-```typescript
-import { AgentResponseProgressStream, Context } from '@aigene/core';
-
-// 假设 `context` 是一个活跃的 Agent 执行上下文
-const context = new Context();
-const progressStream = new AgentResponseProgressStream(context);
-
-// 您现在可以从 progressStream 读取数据，以获取 Agent 任务的实时更新。
-progressStream.on('data', (progress) => {
-  console.log(`Agent event: ${progress.event}`, progress.agent.name);
+  // 连接建立时触发 'open' 事件
+  eventSource.onopen = () => {
+    console.log('Connection to server opened.');
+  };
 });
 ```
 
-## 高级：结构化数据提取
+这种架构能够构建高度响应的用户界面，其中文本会逐字显示，与 AI 模型生成文本的方式完全一致。
 
-`ExtractMetadataTransform` 类提供了一种专门的机制，用于解析和提取嵌入在文本流中的结构化数据（例如，JSON 元数据）。
+## 总结
 
-### `ExtractMetadataTransform`
-
-这个 `TransformStream` 会扫描文本流以查找开始和结束标记，并尝试将它们之间的内容解析为结构化数据。提取的数据随后会作为一个与周围文本分离的 `json` 增量发出。
-
-**用例**：一个 Agent 可能会输出混合了结构化元数据的文本，例如：`Here is some text... <metadata>{"key": "value"}</metadata> ...and the text continues.` 这个转换流可以将文本与元数据分离开来。
-
-**示例**
-
-```typescript
-import { ExtractMetadataTransform } from '@aigene/core/utils/structured-stream-extractor';
-import { arrayToReadableStream } from '@aigene/core/utils';
-
-const stream = arrayToReadableStream([
-  { delta: { text: { text: 'Some initial text ' } } },
-  { delta: { text: { text: 'START_JSON{"id":1}END_JSON' } } },
-  { delta: { text: { text: ' and some final text.' } } },
-]);
-
-const extractor = new ExtractMetadataTransform({
-  start: 'START_JSON',
-  end: 'END_JSON',
-  parse: (raw) => JSON.parse(raw),
-});
-
-const processedStream = stream.pipeThrough(extractor);
-
-// 来自 processedStream 的数据块将是：
-// 1. { delta: { text: { text: 'Some initial text' } } }
-// 2. { delta: { json: { json: { id: 1 } } } }
-// 3. { delta: { text: { text: ' and some final text.' } } }
-```
+AIGNE 框架的流式传输功能对于构建现代化的实时 AI 应用至关重要。通过在 `invoke` 方法中启用 `stream` 选项，您可以增量处理数据、提高感知性能，并使用服务器发送事件高效地将 Agent 响应通过管道传输到前端。有关 Agent 调用的更多详细信息，请参阅 [AI Agent](./developer-guide-agents-ai-agent.md) 文档。

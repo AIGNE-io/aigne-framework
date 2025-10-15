@@ -1,142 +1,135 @@
-# 入門指南
+# 快速入門
 
-本指南提供了您在幾分鐘內安裝並執行 AIGNE Framework 所需的一切。讀完本指南後，您將能夠建立並執行您的第一個由 AI 驅動的 Agent。
+本指南提供設定開發環境並使用 AIGNE 框架執行您的第一個 AI agent 所需的步驟。整個過程設計在 30 分鐘內完成，為您提供一個實用、動手的入門體驗，以了解該框架的基本工作流程。
 
-## 什麼是 AIGNE Framework？
+我們將涵蓋系統先決條件、必要套件的安裝，以及一個完整、可直接複製貼上的範例，該範例將示範如何定義、設定和執行一個基本的 AI agent。
 
-AIGNE Framework \[ˈei dʒən] 是一個功能性 AI 應用程式開發框架，旨在簡化和加速建構現代 AI 驅動應用程式的過程。它結合了函數式程式設計、強大的 AI 功能和模組化設計，可協助您建立可擴展且可維護的解決方案。
+## 先決條件
 
-**主要功能：**
+在繼續之前，請確保您的開發環境符合以下要求：
 
-*   **模組化設計**：清晰的結構，可提高開發效率並簡化維護。
-*   **支援 TypeScript**：全面的型別定義，提供更好、更安全的開發體驗。
-*   **支援多種 AI 模型**：內建支援 OpenAI、Gemini 和 Claude 等主要 AI 模型，並易於擴展。
-*   **彈性的工作流程模式**：透過順序、並行、路由和交接等工作流程模式，簡化複雜操作。
-*   **整合 MCP 協定**：透過模型內容協定（Model Context Protocol）與外部系統無縫整合。
+*   **Node.js**：需要 20.0 或更高版本。
 
-## 1. 先決條件
-
-在開始之前，請確保您的系統已安裝 Node.js。
-
-*   **Node.js**：版本 20.0 或更高。
-
-您可以在終端機中執行以下命令來驗證您的 Node.js 版本：
+您可以透過在終端機中執行以下指令來驗證您的 Node.js 版本：
 
 ```bash
 node -v
 ```
 
-## 2. 安裝
+## 安裝
 
-您可以使用您偏好的套件管理器來安裝核心 AIGNE 套件。
+首先，您需要安裝核心的 AIGNE 套件和一個模型提供者套件。在本指南中，我們將使用官方的 OpenAI 模型提供者。
 
-### 使用 npm
+請使用您偏好的套件管理器安裝必要的套件：
 
-```bash
-npm install @aigne/core
+<x-cards data-columns="3">
+  <x-card data-title="npm" data-icon="logos:npm-icon">
+    ```bash
+    npm install @aigne/core @aigne/openai
+    ```
+  </x-card>
+  <x-card data-title="yarn" data-icon="logos:yarn">
+    ```bash
+    yarn add @aigne/core @aigne/openai
+    ```
+  </x-card>
+  <x-card data-title="pnpm" data-icon="logos:pnpm">
+    ```bash
+    pnpm add @aigne/core @aigne/openai
+    ```
+  </x-card>
+</x-cards>
+
+此外，您還需要一個 OpenAI API 金鑰。請將其設定為名為 `OPENAI_API_KEY` 的環境變數。
+
+```bash title=".env"
+OPENAI_API_KEY="sk-..."
 ```
 
-### 使用 yarn
+## 快速入門範例
 
-```bash
-yarn add @aigne/core
-```
+此範例示範了建立並執行一個簡單的「助理」agent 的完整過程。
 
-### 使用 pnpm
+1.  建立一個名為 `index.ts` 的新 TypeScript 檔案。
+2.  複製以下程式碼並貼到該檔案中。
 
-```bash
-pnpm add @aigne/core
-```
-
-## 3. 您的第一個 AIGNE 應用程式
-
-讓我們用一個樂於助人的 assistant Agent 來建立一個簡單的「Hello, World!」風格的應用程式。
-
-#### 步驟 1：設定您的專案檔案
-
-建立一個名為 `index.ts` 的新檔案。
-
-#### 步驟 2：新增程式碼
-
-此範例展示了 AIGNE Framework 的三個核心元件：**模型 (Model)**、**Agent** 和 **AIGNE**。
-
-*   **模型 (Model)**：一個 AI 模型（例如 `OpenAIChatModel`）的實例，它將為您的 Agent 提供動力。
-*   **Agent**：定義您的 AI 的個性和指令（例如 `AIAgent`）。
-*   **AIGNE**：運行 Agent 並處理通訊的主要執行器。
-
-將以下程式碼複製並貼到您的 `index.ts` 檔案中：
-
-```typescript
+```typescript index.ts icon=logos:typescript-icon
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
+// 1. 實例化 AI 模型
+// 這會使用指定的模型建立與 OpenAI API 的連線。
+// API 金鑰會從 OPENAI_API_KEY 環境變數中讀取。
+const model = new OpenAIChatModel({
+  model: "gpt-4o-mini",
+});
+
+// 2. 定義 AI Agent
+// Agent 是一個工作單元。此 AIAgent 透過
+// 指令進行設定，這些指令定義了其個性和任務。
+const assistantAgent = AIAgent.from({
+  name: "Assistant",
+  instructions: "You are a helpful and friendly assistant.",
+});
+
+// 3. 實例化 AIGNE
+// AIGNE 類別是管理和執行 agent 的中央協調器。
+// 它會設定其 agent 將使用的模型。
+const aigne = new AIGNE({ model });
+
 async function main() {
-  // 1. 建立一個 AI 模型實例
-  // 這會連接到 AI 供應商（例如 OpenAI）。
-  // 確保您已將 API 金鑰設定為環境變數。
-  const model = new OpenAIChatModel({
-    apiKey: process.env.OPENAI_API_KEY,
-    model: process.env.DEFAULT_CHAT_MODEL || "gpt-4-turbo",
-  });
-
-  // 2. 建立一個 AI Agent
-  // 這定義了 Agent 的身份和目的。
-  const agent = AIAgent.from({
-    name: "Assistant",
-    instructions: "You are a helpful assistant.",
-  });
-
-  // 3. 初始化 AIGNE
-  // 這是將所有部分組合在一起的主要執行引擎。
-  const aigne = new AIGNE({ model });
-
-  // 4. 與 Agent 啟動一個互動式會話
-  const userAgent = aigne.invoke(agent);
-
-  // 5. 向 Agent 發送訊息並取得回應
-  const response = await userAgent.invoke(
-    "Hello, can you help me write a short article?",
+  // 4. 叫用 Agent
+  // invoke 方法會使用給定的輸入來執行 agent。
+  // 該框架會處理與模型的互動。
+  const response = await aigne.invoke(
+    assistantAgent,
+    "Why is the sky blue?"
   );
 
+  // 5. 印出回應
   console.log(response);
 }
 
 main();
 ```
 
-#### 步驟 3：設定您的 API 金鑰
+### 執行範例
 
-在執行腳本之前，您需要提供您的 OpenAI API 金鑰。您可以透過在終端機中設定環境變數來完成此操作。
-
-```bash
-export OPENAI_API_KEY="your-api-key-here"
-```
-
-#### 步驟 4：執行應用程式
-
-使用像 `ts-node` 這樣的 TypeScript 執行器來執行檔案。
+從您的終端機執行此腳本。如果您正在使用 TypeScript，您可以使用像 `ts-node` 這樣的工具。
 
 ```bash
 npx ts-node index.ts
 ```
 
-您應該會在主控台中看到您的 assistant Agent 輸出的有用回應！
+### 預期輸出
 
-## 運作原理：快速概覽
+輸出將是 agent 對問題的回應，格式為一個 JSON 物件。`message` 欄位的內容會有所不同，因為它是由 AI 模型產生的。
 
-AIGNE Framework 的設計是模組化且可擴展的。`AIGNE` 負責協調使用者、Agents 和 AI 模型之間的互動。
+```json
+{
+  "message": "The sky appears blue because of a phenomenon called Rayleigh scattering..."
+}
+```
 
-<picture>
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne-dark.png" media="(prefers-color-scheme: dark)">
-  <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne.png" media="(prefers-color-scheme: light)">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne.png" alt="AIGNE Architecture Diagram" />
-</picture>
+## 程式碼解析
 
-## 後續步驟
+此範例由四個主要步驟組成，代表了 AIGNE 框架的核心工作流程。
 
-您已成功建立並執行了您的第一個 AIGNE 應用程式。現在您可以開始探索更多進階功能。
+1.  **模型初始化**：建立一個 `OpenAIChatModel` 的實例。此物件作為與指定 OpenAI 模型（例如 `gpt-4o-mini`）的直接介面。它需要一個 API 金鑰進行驗證，該金鑰會自動從 `OPENAI_API_KEY` 環境變數中取得。
 
-*   **深入了解核心概念**：深入了解 [AIGNE、Agents 和模型](./developer-guide-core-concepts.md)。
-*   **探索 Agent 類型**：在 [Agent 類型](./developer-guide-agents.md) 部分中，了解您可以建立的不同類型的專門 Agent。
-*   **簡化工作流程**：透過檢視 [順序和平行](./developer-guide-agents-team-agent.md) 執行等模式，了解如何協調複雜的多 Agent 任務。
-*   **瀏覽完整文件**：如需深入的指南和 API 參考，請造訪完整的 [AIGNE Framework 文件](https://www.arcblock.io/docs/aigne-framework)。
+2.  **Agent 定義**：使用靜態的 `from` 方法定義一個 `AIAgent`。這是框架中的基本工作單元。其行為由 `instructions` 屬性定義，該屬性作為系統提示，引導 AI 模型的回應。
+
+3.  **AIGNE 實例化**：`AIGNE` 類別被實例化。它作為所有 agent 的執行引擎和協調器。透過將 `model` 實例傳入其建構函式，我們為由此 AIGNE 實例管理的所有 agent 建立了一個預設模型。
+
+4.  **Agent 叫用**：呼叫 `aigne.invoke()` 方法以執行 `assistantAgent`。第一個參數是要執行的 agent，第二個是輸入訊息。該框架管理請求的完整生命週期：將提示和指令傳送給模型、接收回應，並將其作為結構化輸出回傳。
+
+這個簡單的範例說明了該框架的模組化和宣告式特性，其中模型、agent 和執行引擎被設定和組合，以建構強大的 AI 驅動應用程式。
+
+## 總結
+
+在本指南中，您已成功設定好您的環境、安裝了必要的 AIGNE 套件，並建立和執行了一個功能性的 AI agent。您已學會了基本的工作流程：定義模型、建立帶有特定指令的 agent，以及使用 AIGNE 透過使用者提示來叫用它。
+
+有了這個基礎，您現在可以開始探索更進階的主題。
+
+*   若要更詳細地了解框架的基本建構模組，請參閱 [核心概念](./developer-guide-core-concepts.md) 文件。
+*   若要了解不同類型的特化 agent 及其使用案例，請參閱 [Agent 類型](./developer-guide-agents.md) 章節。

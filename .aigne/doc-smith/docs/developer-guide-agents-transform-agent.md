@@ -1,79 +1,141 @@
-This document provides a comprehensive guide to using the `TransformAgent`, a specialized agent designed for data transformation using JSONata expressions. You will learn how to configure and use this agent to perform tasks like data format conversion, field mapping, and API response normalization.
+# Transform Agent
 
-## Overview
+The `TransformAgent` is a specialized agent that provides a declarative way to transform structured data using [JSONata](https://jsonata.org/) expressions. It is ideal for scenarios where data needs to be mapped, restructured, or converted from one format to another without requiring complex imperative logic.
 
-The `TransformAgent` is a specialized agent that transforms input data into a desired output format using [JSONata](https://jsonata.org/) expressions. It provides a declarative and powerful way to handle structured data manipulation without writing complex custom logic.
+Common use cases include:
+- Normalizing API responses to a consistent format.
+- Mapping fields between different data schemas (e.g., database results to an application model).
+- Restructuring configuration data.
+- Converting data formats, such as changing field names from `snake_case` to `camelCase`.
+- Performing simple aggregations, calculations, or filtering on data.
 
-This agent is particularly useful for:
--   API response normalization and field mapping
--   Database query result transformation
--   Configuration data restructuring
--   Converting data formats (e.g., snake_case to camelCase)
--   Performing aggregation and calculation operations
--   Filtering and conditional data processing
-
-## How It Works
-
-The `TransformAgent` processes incoming data by applying a user-defined JSONata expression. The core logic involves taking a structured input message, evaluating it against the expression, and returning a new message with the transformed structure and data.
+For transformations that require more complex, custom logic, consider using the [Function Agent](./developer-guide-agents-function-agent.md).
 
 ```d2
 direction: down
 
-Input-Data: {
-  label: "Structured Input\n(e.g., API Response, DB Result)"
-  shape: rectangle
+Developer: {
+  shape: c4-person
 }
 
-TransformAgent: {
-  label: "TransformAgent"
+Transform-Agent-Workflow: {
+  label: "Transform Agent Workflow"
   shape: rectangle
+  style: {
+    stroke-dash: 2
+  }
 
-  Transformation-Engine: {
-    label: "Transformation Engine"
+  Input-Data: {
+    label: "Input Data\n(e.g., snake_case)"
     shape: rectangle
   }
 
-  JSONata-Expression: {
-    label: "JSONata Expression\n(User-defined logic)"
-    shape: rectangle
-    style: {
-      stroke: "#888"
-      stroke-width: 2
-      stroke-dash: 4
+  Agent-Core: {
+    label: "Transformation Logic"
+
+    Transform-Agent: {
+      label: "Transform Agent"
+      shape: rectangle
+    }
+
+    JSONata-Expression: {
+      label: "JSONata Expression"
+      shape: rectangle
+      style: {
+        fill: "#f0f0f0"
+      }
     }
   }
+
+  Output-Data: {
+    label: "Output Data\n(e.g., camelCase)"
+    shape: rectangle
+  }
 }
 
-Output-Data: {
-  label: "Transformed Output\n(Normalized Data)"
-  shape: rectangle
-}
+Developer -> Transform-Agent-Workflow.Agent-Core.JSONata-Expression: "1. Defines transformation"
+Transform-Agent-Workflow.Agent-Core.JSONata-Expression -> Transform-Agent-Workflow.Agent-Core.Transform-Agent: "Configures"
+Developer -> Transform-Agent-Workflow.Input-Data: "2. Provides input"
+Transform-Agent-Workflow.Input-Data -> Transform-Agent-Workflow.Agent-Core.Transform-Agent: "3. Processes"
+Transform-Agent-Workflow.Agent-Core.Transform-Agent -> Transform-Agent-Workflow.Output-Data: "4. Produces"
+Transform-Agent-Workflow.Output-Data -> Developer: "5. Returns result"
 
-Input-Data -> TransformAgent.Transformation-Engine: "1. Receives data"
-TransformAgent.JSONata-Expression -> TransformAgent.Transformation-Engine: "2. Applies logic"
-TransformAgent.Transformation-Engine -> Output-Data: "3. Returns transformed data"
 ```
 
 ## Configuration
 
-To use the `TransformAgent`, you need to define its configuration in a YAML file. Here are the key fields:
+The `TransformAgent` is configured using the following options.
 
-| Field           | Type                                                               | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| --------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`          | `string`                                                           | Specifies the agent type. Must be set to `transform`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `name`          | `string`                                                           | A unique name for the agent instance.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `description`   | `string`                                                           | A brief description of the agent's purpose.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `input_schema`  | `object`                                                           | Defines the expected structure of the input data using JSON Schema.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `output_schema` | `object`                                                           | Defines the expected structure of the output data using JSON Schema.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `jsonata`       | `string`                                                           | A [JSONata](https://jsonata.org/) expression that specifies how to transform the input data into the output format. This is the core of the agent's logic. <br><br> **Common Patterns:**<ul><li>**Field Mapping:** `{ "newField": oldField }`</li><li>**Array Transformation:** `items.{ "name": product_name }`</li><li>**Calculations:** `$sum(items.price)`</li><li>**Conditional Logic:** `condition ? value1 : value2`</li></ul> For more details, refer to the [official JSONata documentation](https://docs.jsonata.org/overview.html) and experiment in the [JSONata Playground](https://try.jsonata.org/). |
+<x-field-group>
+  <x-field data-name="jsonata" data-type="string" data-required="true">
+    <x-field-desc markdown>
+      A [JSONata](https://jsonata.org/) expression string that defines the data transformation logic. JSONata is a lightweight query and transformation language for JSON data. The expression dictates how the input message is transformed into the output message. You can experiment with expressions in the [JSONata Playground](https://try.jsonata.org/).
 
-## Example
+      **Common Patterns:**
+      - **Field Mapping:** `{ "newField": oldField }`
+      - **Array Transformation:** `items.{ "name": product_name, "price": price }`
+      - **Calculations:** `$sum(items.price)`
+      - **Conditional Logic:** `condition ? value1 : value2`
+      - **String Operations:** `$uppercase(name)`
+    </x-field-desc>
+  </x-field>
+</x-field-group>
 
-This example demonstrates how to configure a `TransformAgent` to convert user data from `snake_case` to `camelCase`.
+## Usage
 
-### Configuration (`transform.yaml`)
+The `TransformAgent` can be defined either programmatically using TypeScript or declaratively using YAML.
 
-```yaml
+### TypeScript Example
+
+This example demonstrates how to create a `TransformAgent` that converts field names from snake_case to camelCase.
+
+```typescript Transform Agent Example icon=logos:typescript
+import { TransformAgent } from "@aigne/core";
+
+// 1. Define the TransformAgent
+const snakeToCamelAgent = TransformAgent.from({
+  name: "snake-to-camel-converter",
+  description: "Converts user data fields from snake_case to camelCase.",
+  jsonata: `{
+    "userId": user_id,
+    "userName": user_name,
+    "createdAt": created_at
+  }`,
+});
+
+// 2. Define the input data
+const inputData = {
+  user_id: "usr_12345",
+  user_name: "John Doe",
+  created_at: "2023-10-27T10:00:00Z",
+};
+
+// 3. Invoke the agent to perform the transformation
+async function runTransform() {
+  const result = await snakeToCamelAgent.invoke(inputData);
+  console.log(result);
+}
+
+runTransform();
+```
+
+The agent applies the JSONata expression to the `inputData`, renaming the keys as specified.
+
+**Output**
+
+```json icon=mdi:code-json
+{
+  "userId": "usr_12345",
+  "userName": "John Doe",
+  "createdAt": "2023-10-27T10:00:00Z"
+}
+```
+
+### YAML Example
+
+The same agent can be defined declaratively in a YAML file. This is useful for defining agents as part of a larger configuration.
+
+```yaml transform.yaml icon=mdi:language-yaml
 type: transform
 name: transform-agent
 description: |
@@ -118,28 +180,10 @@ jsonata: |
   }
 ```
 
-### Usage
+This YAML definition specifies the agent's type, name, schemas, and the core `jsonata` transformation expression, achieving the same result as the TypeScript example.
 
-When the agent receives an input message matching the `input_schema`, it applies the `jsonata` expression to transform the data.
+## Summary
 
-**Input Data:**
+The `TransformAgent` offers a powerful and concise method for handling structured data transformations. By leveraging JSONata, it separates data mapping and restructuring logic from your main application code, leading to cleaner and more maintainable agentic workflows.
 
-```json
-{
-  "user_id": "usr_12345",
-  "user_name": "John Doe",
-  "created_at": "2023-10-27T10:00:00Z"
-}
-```
-
-**Output Data:**
-
-After processing, the agent will produce the following output, which conforms to the `output_schema`:
-
-```json
-{
-  "userId": "usr_12345",
-  "userName": "John Doe",
-  "createdAt": "2023-10-27T10:00:00Z"
-}
-```
+For orchestrating this agent with others, see the [Team Agent](./developer-guide-agents-team-agent.md) documentation.

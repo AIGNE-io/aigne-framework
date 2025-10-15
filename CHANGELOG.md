@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.81.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.7...aigne-framework-v1.81.0-beta.8) (2025-10-15)
+
+
+### Features
+
+* **blocklet:** support remark for observability trace item ([#620](https://github.com/AIGNE-io/aigne-framework/issues/620)) ([d91c42c](https://github.com/AIGNE-io/aigne-framework/commit/d91c42c0c9286cd6e39beace740f8ea61dff3f50))
+
+
+### Bug Fixes
+
+* **blocklet:** tune observability detail list ux ([#618](https://github.com/AIGNE-io/aigne-framework/issues/618)) ([3ad83b6](https://github.com/AIGNE-io/aigne-framework/commit/3ad83b6be347831125806be7bee19294aa85ed58))
+* **models:** add imageConfig to gemini image model ([#621](https://github.com/AIGNE-io/aigne-framework/issues/621)) ([252de7a](https://github.com/AIGNE-io/aigne-framework/commit/252de7a10701c4f5302c2fff977c88e5e833b7b1))
+
 ## [1.81.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.6...aigne-framework-v1.81.0-beta.7) (2025-10-13)
 
 

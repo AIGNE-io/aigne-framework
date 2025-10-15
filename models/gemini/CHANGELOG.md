@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.14.2-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.2-beta.5...gemini-v0.14.2-beta.6) (2025-10-15)
+
+
+### Bug Fixes
+
+* **models:** add imageConfig to gemini image model ([#621](https://github.com/AIGNE-io/aigne-framework/issues/621)) ([252de7a](https://github.com/AIGNE-io/aigne-framework/commit/252de7a10701c4f5302c2fff977c88e5e833b7b1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.2-beta.6
+  * devDependencies
+    * @aigne/core bumped to 1.63.0-beta.6
+    * @aigne/test-utils bumped to 0.5.55-beta.6
+
 ## [0.14.2-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.2-beta.4...gemini-v0.14.2-beta.5) (2025-10-13)
 
 

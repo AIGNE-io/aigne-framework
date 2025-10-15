@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.10.2-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.2-beta.5...aigne-hub-v0.10.2-beta.6) (2025-10-15)
+
+
+### Bug Fixes
+
+* **blocklet:** tune observability detail list ux ([#618](https://github.com/AIGNE-io/aigne-framework/issues/618)) ([3ad83b6](https://github.com/AIGNE-io/aigne-framework/commit/3ad83b6be347831125806be7bee19294aa85ed58))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.2-beta.6
+    * @aigne/bedrock bumped to 0.10.7-beta.6
+    * @aigne/core bumped to 1.63.0-beta.6
+    * @aigne/deepseek bumped to 0.7.48-beta.6
+    * @aigne/doubao bumped to 1.1.2-beta.6
+    * @aigne/gemini bumped to 0.14.2-beta.6
+    * @aigne/ideogram bumped to 0.4.2-beta.6
+    * @aigne/ollama bumped to 0.7.48-beta.6
+    * @aigne/open-router bumped to 0.7.48-beta.6
+    * @aigne/openai bumped to 0.16.2-beta.6
+    * @aigne/poe bumped to 1.0.28-beta.6
+    * @aigne/transport bumped to 0.15.11-beta.6
+    * @aigne/xai bumped to 0.7.48-beta.6
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta.6
+
 ## [0.10.2-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.2-beta.4...aigne-hub-v0.10.2-beta.5) (2025-10-13)
 
 

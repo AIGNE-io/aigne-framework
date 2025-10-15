@@ -1,6 +1,6 @@
 {
   "name": "@aigne/anthropic",
-  "version": "0.14.2-beta.5",
+  "version": "0.14.2-beta.6",
   "description": "AIGNE Anthropic SDK for integrating with Claude AI models",
   "publishConfig": {
     "access": "public"

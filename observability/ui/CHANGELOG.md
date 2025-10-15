@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta.1...observability-ui-v0.11.1-beta.2) (2025-10-15)
+
+
+### Features
+
+* **blocklet:** support remark for observability trace item ([#620](https://github.com/AIGNE-io/aigne-framework/issues/620)) ([d91c42c](https://github.com/AIGNE-io/aigne-framework/commit/d91c42c0c9286cd6e39beace740f8ea61dff3f50))
+
+
+### Bug Fixes
+
+* **blocklet:** tune observability detail list ux ([#618](https://github.com/AIGNE-io/aigne-framework/issues/618)) ([3ad83b6](https://github.com/AIGNE-io/aigne-framework/commit/3ad83b6be347831125806be7bee19294aa85ed58))
+
 ## [0.11.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta...observability-ui-v0.11.1-beta.1) (2025-10-13)
 
 

@@ -1,6 +1,7 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ErrorIcon from "@mui/icons-material/Error";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
@@ -21,6 +22,10 @@ type TraceItemProps = {
   hasChildren?: boolean;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
+  status?: {
+    code: number;
+    message: string;
+  };
 };
 
 function TraceItem({
@@ -34,7 +39,10 @@ function TraceItem({
   hasChildren,
   isExpanded,
   onToggleExpand,
+  status,
 }: TraceItemProps) {
+  const hasError = status && status.code === 2;
+
   return (
     <Box
       sx={{
@@ -83,10 +91,22 @@ function TraceItem({
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
+            color: hasError ? "error.light" : "inherit",
           }}
         >
           {name}
         </Typography>
+
+        {hasError && (
+          <ErrorIcon
+            sx={{
+              fontSize: 16,
+              color: "error.light",
+              opacity: 0.8,
+              flexShrink: 0,
+            }}
+          />
+        )}
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -166,6 +186,7 @@ export function formatTraceStepsAndTotalDuration({
       run: step,
       agentTag: step.attributes?.agentTag,
       totalDuration,
+      status: step.status,
     };
 
     if (!isSameStartTimeWithNextStep) {
@@ -212,6 +233,7 @@ export function renderTraceItems({
         hasChildren={hasChildren}
         isExpanded={isExpanded}
         onToggleExpand={() => onToggleExpand(itemKey)}
+        status={item.status}
       />,
       ...(hasChildren && isExpanded && item.children
         ? renderTraceItems({

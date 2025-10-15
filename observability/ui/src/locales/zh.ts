@@ -99,4 +99,5 @@ export default flatten({
   save: "保存",
   saving: "保存中...",
   cancel: "取消",
+  traceTimeline: "Trace 时间线",
 });

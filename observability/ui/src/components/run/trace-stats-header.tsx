@@ -4,41 +4,8 @@ import Toast from "@arcblock/ux/lib/Toast";
 import CloseIcon from "@mui/icons-material/Close";
 import ShareIcon from "@mui/icons-material/Share";
 import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-
-interface StatsItemProps {
-  label: string;
-  value: string | number;
-}
-
-function StatsItem({ label, value }: StatsItemProps) {
-  return (
-    <Box
-      sx={{
-        textAlign: "center",
-        px: 2,
-        minWidth: 120,
-        display: "flex",
-        flexDirection: "column",
-        gap: 0.5,
-      }}
-    >
-      <Typography
-        variant="body2"
-        sx={{
-          color: "text.primary",
-        }}
-      >
-        {label}
-      </Typography>
-      <Typography variant="body1" sx={{ fontFamily: "monospace", color: "text.secondary" }}>
-        {value}
-      </Typography>
-    </Box>
-  );
-}
 
 interface RunStatsHeaderProps {
   inputTokens: number;
@@ -66,15 +33,16 @@ export default function RunStatsHeader({
   onClose,
 }: RunStatsHeaderProps) {
   const { t } = useLocaleContext();
+
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
-        px: 3,
-        py: 1.5,
+        px: 2,
+        py: 1,
+        gap: 1.5,
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
-        gap: 1,
       }}
     >
       <IconButton
@@ -93,33 +61,74 @@ export default function RunStatsHeader({
         <CloseIcon />
       </IconButton>
 
-      <Divider orientation="vertical" flexItem />
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        {t("inputTokens")}{" "}
+        <Typography component="span" sx={{ fontWeight: 600, color: "text.primary", ml: 0.5 }}>
+          {inputTokens.toLocaleString()}
+        </Typography>
+        {inputCost && (
+          <Typography component="span" sx={{ color: "text.secondary", ml: 0.5 }}>
+            ({inputCost})
+          </Typography>
+        )}
+      </Typography>
 
-      <StatsItem label={t("inputTokens")} value={`${inputTokens} ${inputCost}`} />
-      <Typography>+</Typography>
-      <StatsItem label={t("outputTokens")} value={`${outputTokens} ${outputCost}`} />
-      <Typography>=</Typography>
-      <StatsItem label={t("tokens")} value={`${totalTokens} ${totalCost}`} />
+      <Typography sx={{ color: "text.secondary" }}>+</Typography>
+
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        {t("outputTokens")}{" "}
+        <Typography component="span" sx={{ fontWeight: 600, color: "text.primary", ml: 0.5 }}>
+          {outputTokens.toLocaleString()}
+        </Typography>
+        {outputCost && (
+          <Typography component="span" sx={{ color: "text.secondary", ml: 0.5 }}>
+            ({outputCost})
+          </Typography>
+        )}
+      </Typography>
+
+      <Typography sx={{ color: "text.secondary" }}>=</Typography>
+
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        {t("tokens")}{" "}
+        <Typography component="span" sx={{ fontWeight: 600, color: "text.primary", ml: 0.5 }}>
+          {totalTokens.toLocaleString()}
+        </Typography>
+        {totalCost && (
+          <Typography component="span" sx={{ color: "text.secondary", ml: 0.5 }}>
+            ({totalCost})
+          </Typography>
+        )}
+      </Typography>
+
       <Box sx={{ flex: 1 }} />
-      <StatsItem label={t("count")} value={count} />
-      <StatsItem label={t("latency")} value={latency} />
 
-      <Divider orientation="vertical" flexItem />
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        {t("count")}{" "}
+        <Typography component="span" sx={{ fontWeight: 600, color: "text.primary", ml: 0.5 }}>
+          {count}
+        </Typography>
+      </Typography>
 
-      <Typography variant="body2" sx={{ pl: 2 }}>
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        {t("latency")}{" "}
+        <Typography component="span" sx={{ fontWeight: 600, color: "text.primary", ml: 0.5 }}>
+          {latency}
+        </Typography>
+      </Typography>
+
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
         <RelativeTime value={timestamp} type="all" disableTimezone useShortTimezone />
       </Typography>
 
-      <Box>
-        <IconButton
-          onClick={() => {
-            navigator.clipboard.writeText(window.location.href);
-            Toast.success(t("copied"));
-          }}
-        >
-          <ShareIcon fontSize="small" />
-        </IconButton>
-      </Box>
+      <IconButton
+        onClick={() => {
+          navigator.clipboard.writeText(window.location.href);
+          Toast.success(t("copied"));
+        }}
+      >
+        <ShareIcon fontSize="small" />
+      </IconButton>
     </Box>
   );
 }

@@ -122,8 +122,8 @@ AIGNE Hub supports multiple image generation models from different providers. He
 import { AIGNEHubImageModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubImageModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
   model: "openai/dall-e-3",
 });
 
@@ -158,8 +158,8 @@ console.log(result);
 import { AIGNEHubImageModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubImageModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
   model: "google/imagen-4.0-generate-001",
 });
 
@@ -187,7 +187,7 @@ console.log(result);
 
 **Note:** Gemini image models currently only support base64 format output.
 
-**Reference:** 
+**Reference:**
 - **Imagen Models**: Refer to [Google GenAI Models.generateImages()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generateimages)
 - **Gemini Models**: Refer to [Google GenAI Models.generateContent()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generatecontent)
 
@@ -197,8 +197,8 @@ console.log(result);
 import { AIGNEHubImageModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubImageModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
   model: "ideogram/ideogram-v3",
 });
 

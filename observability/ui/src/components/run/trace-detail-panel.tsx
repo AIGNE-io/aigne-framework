@@ -158,8 +158,19 @@ export default function TraceDetailPanel({
   const outputTokens = trace.attributes.output?.usage?.outputTokens || 0;
 
   return (
-    <Box sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column", ...sx }}>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+    <Box
+      sx={{
+        p: 2,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        bgcolor: (theme) => `${theme.palette.background.paper}`,
+        borderRadius: 1,
+        border: (theme) => `1px solid ${theme.palette.divider}`,
+        ...sx,
+      }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
         <Typography sx={{ fontSize: 20, color: "text.primary" }}>{`${trace?.name}`}</Typography>
         <AgentTag agentTag={trace?.attributes?.agentTag} model={trace?.attributes?.output?.model} />
       </Box>
@@ -330,14 +341,10 @@ export default function TraceDetailPanel({
       >
         {!isLoading ? (
           <Box sx={{ color: "common.white", height: "100%" }}>
-            {value === undefined || value === null ? (
+            {!value ? (
               <Typography sx={{ color: "grey.500", fontSize: 14, p: 2 }}>{t("noData")}</Typography>
-            ) : typeof value === "object" ? (
-              <JsonView value={value} />
             ) : (
-              <Typography sx={{ whiteSpace: "break-spaces", p: 2, fontSize: 14 }} component="pre">
-                {JSON.stringify(value, null, 2)}
-              </Typography>
+              <JsonView value={value} />
             )}
           </Box>
         ) : (

@@ -90,11 +90,13 @@ function TraceItem({
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <AgentTag agentTag={agentTag} model={model} />
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <AgentTag agentTag={agentTag} model={model} />
+        </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, minWidth: 80 }}>
-          <AccessTimeIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-          <Typography variant="body2" sx={{ color: "text.secondary", fontSize: 13 }}>
+          <AccessTimeIcon sx={{ fontSize: 14, color: "text.secondary" }} />
+          <Typography variant="body2" sx={{ color: "text.secondary", fontSize: 12 }}>
             {parseDurationTime(duration * 1000)}
           </Typography>
         </Box>

@@ -5,10 +5,13 @@ import {
   AIAgent,
   AIAgentToolChoice,
   AIGNE,
+  ChatMessagesTemplate,
   FunctionAgent,
   MCPAgent,
   PromptBuilder,
+  SystemMessageTemplate,
   TeamAgent,
+  UserMessageTemplate,
 } from "@aigne/core";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
@@ -43,9 +46,13 @@ test("PromptBuilder should build messages correctly", async () => {
   expect(prompt1.messages).toMatchInlineSnapshot(`
     [
       {
+        "content": "Test instructions",
+        "name": undefined,
+        "role": "system",
+      },
+      {
         "content": 
-    "Test instructions
-    <related-memories>
+    "<related-memories>
     - input:
         message: Hello, How can I help you?
       source: TestAgent
@@ -402,9 +409,13 @@ test("PromptBuilder should build with afs correctly", async () => {
   expect(result.messages).toMatchInlineSnapshot(`
     [
       {
+        "content": "Test instructions",
+        "name": undefined,
+        "role": "system",
+      },
+      SystemMessageTemplate {
         "content": 
-    "Test instructions
-
+    "
     <afs_usage>
     AFS (AIGNE File System) provides tools to interact with a virtual file system, allowing you to list, search, read, and write files. Use these tools to manage and retrieve files as needed.
 
@@ -423,6 +434,8 @@ test("PromptBuilder should build with afs correctly", async () => {
     </afs_usage>
     "
     ,
+        "name": undefined,
+        "options": undefined,
         "role": "system",
       },
     ]
@@ -473,9 +486,13 @@ test("PromptBuilder should build with afs correctly", async () => {
     {
       "messages": [
         {
+          "content": "Test instructions",
+          "name": undefined,
+          "role": "system",
+        },
+        SystemMessageTemplate {
           "content": 
-    "Test instructions
-
+    "
     <afs_usage>
     AFS (AIGNE File System) provides tools to interact with a virtual file system, allowing you to list, search, read, and write files. Use these tools to manage and retrieve files as needed.
 
@@ -494,6 +511,8 @@ test("PromptBuilder should build with afs correctly", async () => {
     </afs_usage>
     "
     ,
+          "name": undefined,
+          "options": undefined,
           "role": "system",
         },
         {
@@ -667,4 +686,78 @@ test("PromptBuilder should build with afs correctly", async () => {
     }
   `,
   );
+});
+
+test("PromptBuilder should'nt reorder system messages", async () => {
+  const builder = new PromptBuilder({
+    instructions: ChatMessagesTemplate.from([
+      SystemMessageTemplate.from("System message 1"),
+      UserMessageTemplate.from("User message 1"),
+      SystemMessageTemplate.from("System message 2"),
+    ]),
+  });
+
+  const agent = AIAgent.from({
+    autoMergeSystemMessages: false,
+    autoReorderSystemMessages: false,
+  });
+
+  expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": "System message 1",
+        "name": undefined,
+        "role": "system",
+      },
+      {
+        "content": "User message 1",
+        "name": undefined,
+        "role": "user",
+      },
+      {
+        "content": "System message 2",
+        "name": undefined,
+        "role": "system",
+      },
+    ]
+  `);
+
+  agent.autoReorderSystemMessages = true;
+  expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": "System message 1",
+        "name": undefined,
+        "role": "system",
+      },
+      {
+        "content": "System message 2",
+        "name": undefined,
+        "role": "system",
+      },
+      {
+        "content": "User message 1",
+        "name": undefined,
+        "role": "user",
+      },
+    ]
+  `);
+
+  agent.autoMergeSystemMessages = true;
+  expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": 
+    "System message 1
+    System message 2"
+    ,
+        "role": "system",
+      },
+      {
+        "content": "User message 1",
+        "name": undefined,
+        "role": "user",
+      },
+    ]
+  `);
 });

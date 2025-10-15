@@ -6,6 +6,8 @@ exports[`loadAgentFromYaml should load AIAgent correctly 1`] = `
     "chat-bot",
     "bot",
   ],
+  "auto_merge_system_messages": true,
+  "auto_reorder_system_messages": true,
   "description": "Chat agent",
   "includeInputInOutput": true,
   "input_file_key": "message_file",
@@ -73,6 +75,7 @@ Output in English
 
 "
 ,
+      "name": undefined,
       "role": "system",
     },
   ],

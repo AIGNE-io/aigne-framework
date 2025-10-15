@@ -273,6 +273,7 @@ test("loadAgent should support nested relative prompt paths", async () => {
 
     "
     ,
+          "name": undefined,
           "role": "system",
         },
       ],
@@ -309,6 +310,7 @@ test("loadAgent should load agent with multi roles instructions", async () => {
     </topic>
     "
     ,
+          "name": undefined,
           "role": "system",
         },
         {

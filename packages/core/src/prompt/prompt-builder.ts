@@ -221,11 +221,22 @@ export class PromptBuilder {
       messages.push({ role: "user", content });
     }
 
-    return this.mergeSystemMessages(messages);
+    return this.refineMessages(options, messages);
   }
 
-  private mergeSystemMessages(messages: ChatModelInputMessage[]): ChatModelInputMessage[] {
+  private refineMessages(
+    options: PromptBuildOptions,
+    messages: ChatModelInputMessage[],
+  ): ChatModelInputMessage[] {
+    const { autoReorderSystemMessages, autoMergeSystemMessages } = options.agent ?? {};
+
+    if (!autoReorderSystemMessages && !autoMergeSystemMessages) return messages;
+
     const [systemMessages, otherMessages] = partition(messages, (m) => m.role === "system");
+
+    if (!autoMergeSystemMessages) {
+      return systemMessages.concat(otherMessages);
+    }
 
     const result: ChatModelInputMessage[] = [];
 

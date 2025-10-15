@@ -34,6 +34,8 @@ test("loadAgentFromYaml should load AIAgent correctly", async () => {
     alias: agent.alias,
     description: agent.description,
     instructions: extractInstructions(agent.instructions),
+    auto_reorder_system_messages: agent.autoReorderSystemMessages,
+    auto_merge_system_messages: agent.autoMergeSystemMessages,
     input_key: agent.inputKey,
     output_key: agent.outputKey,
     input_file_key: agent.inputFileKey,

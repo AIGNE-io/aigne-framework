@@ -445,6 +445,7 @@ exports[`TeamAgent should process reflection mode correctly 1`] = `
 </feedback>
 "
 ,
+        "name": undefined,
         "role": "system",
       },
     ],
@@ -465,6 +466,7 @@ generated content:
 AIGNE in 2025 is a framework for building AI agents.
 "
 ,
+        "name": undefined,
         "role": "system",
       },
     ],
@@ -510,6 +512,7 @@ The article is well-written and informative. However, it could use more examples
 </feedback>
 "
 ,
+        "name": undefined,
         "role": "system",
       },
     ],
@@ -530,6 +533,7 @@ generated content:
 AIGNE in 2025 is a framework for building AI agents. For example, it allows developers to create agents that can interact with users in a natural way, using natural language processing and machine learning techniques.
 "
 ,
+        "name": undefined,
         "role": "system",
       },
     ],

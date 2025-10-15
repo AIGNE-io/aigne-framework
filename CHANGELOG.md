@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.81.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.8...aigne-framework-v1.81.0-beta.9) (2025-10-15)
+
+
+### Bug Fixes
+
+* add options for system message reordering and merging ([#624](https://github.com/AIGNE-io/aigne-framework/issues/624)) ([8ca466d](https://github.com/AIGNE-io/aigne-framework/commit/8ca466d49d1e4ed08bc90922f39c0d3ed60c4fd5))
+* **blocklet:** add expand/collapse all functionality to trace visualization ([#623](https://github.com/AIGNE-io/aigne-framework/issues/623)) ([b66a2a0](https://github.com/AIGNE-io/aigne-framework/commit/b66a2a050463bb7f69ded7f67c318b10ed9319d9))
+
 ## [1.81.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.7...aigne-framework-v1.81.0-beta.8) (2025-10-15)
 
 

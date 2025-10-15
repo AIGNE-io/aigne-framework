@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta.2...observability-ui-v0.11.1-beta.3) (2025-10-15)
+
+
+### Bug Fixes
+
+* **blocklet:** add expand/collapse all functionality to trace visualization ([#623](https://github.com/AIGNE-io/aigne-framework/issues/623)) ([b66a2a0](https://github.com/AIGNE-io/aigne-framework/commit/b66a2a050463bb7f69ded7f67c318b10ed9319d9))
+
 ## [0.11.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta.1...observability-ui-v0.11.1-beta.2) (2025-10-15)
 
 

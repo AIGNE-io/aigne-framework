@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.11-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.11-beta.6...default-memory-v1.2.11-beta.7) (2025-10-15)
+
+
+### Bug Fixes
+
+* add options for system message reordering and merging ([#624](https://github.com/AIGNE-io/aigne-framework/issues/624)) ([8ca466d](https://github.com/AIGNE-io/aigne-framework/commit/8ca466d49d1e4ed08bc90922f39c0d3ed60c4fd5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.7
+  * devDependencies
+    * @aigne/openai bumped to 0.16.2-beta.7
+
 ## [1.2.11-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.11-beta.5...default-memory-v1.2.11-beta.6) (2025-10-15)
 
 

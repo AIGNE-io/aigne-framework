@@ -688,7 +688,7 @@ test("PromptBuilder should build with afs correctly", async () => {
   );
 });
 
-test("PromptBuilder should'nt reorder system messages", async () => {
+test("PromptBuilder should refine system messages by config", async () => {
   const builder = new PromptBuilder({
     instructions: ChatMessagesTemplate.from([
       SystemMessageTemplate.from("System message 1"),

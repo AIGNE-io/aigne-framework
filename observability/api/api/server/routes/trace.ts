@@ -76,6 +76,7 @@ export default ({
       like(Trace.name, `%${searchText}%`),
       like(Trace.id, `%${searchText}%`),
       like(Trace.userId, `%${(searchText || "").replace("did:abt:", "")}%`),
+      like(Trace.remark, `%${searchText}%`),
     );
     let whereClause = searchText ? and(rootFilter, searchFilter) : rootFilter;
 

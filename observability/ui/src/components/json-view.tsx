@@ -33,7 +33,7 @@ function getLocalizedFilename(prefix = "data", locale = "en-US") {
   return `${prefix}-${formatted}-${offsetLabel}.json`;
 }
 
-export default function JsonView({ value: data }: { value: object }) {
+export default function JsonView({ value: data }: { value: any }) {
   const [copied, setCopied] = useState(false);
   const { t, locale } = useLocaleContext();
 

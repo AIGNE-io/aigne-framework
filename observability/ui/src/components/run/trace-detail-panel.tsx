@@ -341,14 +341,10 @@ export default function TraceDetailPanel({
       >
         {!isLoading ? (
           <Box sx={{ color: "common.white", height: "100%" }}>
-            {value === undefined || value === null ? (
+            {!value ? (
               <Typography sx={{ color: "grey.500", fontSize: 14, p: 2 }}>{t("noData")}</Typography>
-            ) : typeof value === "object" ? (
-              <JsonView value={value} />
             ) : (
-              <Typography sx={{ whiteSpace: "break-spaces", p: 2, fontSize: 14 }} component="pre">
-                {JSON.stringify(value, null, 2)}
-              </Typography>
+              <JsonView value={value} />
             )}
           </Box>
         ) : (

@@ -2,7 +2,9 @@ import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Box, IconButton, Typography } from "@mui/material";
+import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import { type ReactElement, useState } from "react";
 import { parseDurationMs, parseDurationTime } from "../../utils/latency.ts";
 import { AgentTag } from "./agent-tag.tsx";
@@ -179,6 +181,7 @@ export function renderTraceItems({
   onSelect,
   expandedItems,
   onToggleExpand,
+  parentPath = "",
 }: {
   traceId: string;
   items: TraceStep[];
@@ -186,9 +189,11 @@ export function renderTraceItems({
   onSelect?: (step?: TraceData) => void;
   expandedItems: Set<string>;
   onToggleExpand: (itemKey: string) => void;
+  parentPath?: string;
 }): ReactElement<any>[] {
-  return items.flatMap((item) => {
-    const itemKey = `${item.name}-${item.duration}-${item.agentTag}-${traceId}-${depth}`;
+  return items.flatMap((item, index) => {
+    const itemPath = parentPath ? `${parentPath}-${index}` : `${index}`;
+    const itemKey = item.run?.id || `${traceId}-${itemPath}`;
     const isExpanded = expandedItems.has(itemKey);
     const hasChildren = !!item.children && item.children.length > 0;
 
@@ -214,6 +219,7 @@ export function renderTraceItems({
             onSelect,
             expandedItems,
             onToggleExpand,
+            parentPath: itemPath,
           })
         : []),
     ];
@@ -233,23 +239,26 @@ export default function TraceItemList({
 }) {
   const { t } = useLocaleContext();
   const traceSteps = formatTraceStepsAndTotalDuration({ steps, start: 0, selectedTrace });
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(() => {
-    // default expand first two levels
+
+  const collectAllExpandableKeys = (items: TraceStep[], parentPath = ""): Set<string> => {
     const allKeys = new Set<string>();
-    const collectKeys = (items: TraceStep[], depth: number) => {
-      items.forEach((item) => {
-        if (depth < 2) {
-          const itemKey = `${item.name}-${item.duration}-${item.agentTag}-${traceId}-${depth}`;
+    const collectKeys = (items: TraceStep[], parentPath: string) => {
+      items.forEach((item, index) => {
+        if (item.children && item.children.length > 0) {
+          const itemPath = parentPath ? `${parentPath}-${index}` : `${index}`;
+          const itemKey = item.run?.id || `${traceId}-${itemPath}`;
           allKeys.add(itemKey);
-        }
-        if (item.children && depth < 2) {
-          collectKeys(item.children, depth + 1);
+          collectKeys(item.children, itemPath);
         }
       });
     };
-    collectKeys(traceSteps, 0);
+    collectKeys(items, parentPath);
     return allKeys;
-  });
+  };
+
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(() =>
+    collectAllExpandableKeys(traceSteps),
+  );
 
   const toggleExpand = (itemKey: string) => {
     setExpandedItems((prev) => {
@@ -261,6 +270,14 @@ export default function TraceItemList({
       }
       return next;
     });
+  };
+
+  const expandAll = () => {
+    setExpandedItems(collectAllExpandableKeys(traceSteps));
+  };
+
+  const collapseAll = () => {
+    setExpandedItems(new Set());
   };
 
   return (
@@ -279,6 +296,24 @@ export default function TraceItemList({
         <Typography variant="h6" sx={{ fontWeight: 600 }}>
           {t("traceTimeline")}
         </Typography>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            size="small"
+            startIcon={<UnfoldMoreIcon />}
+            onClick={expandAll}
+            sx={{ textTransform: "none" }}
+          >
+            {t("expandAll")}
+          </Button>
+          <Button
+            size="small"
+            startIcon={<UnfoldLessIcon />}
+            onClick={collapseAll}
+            sx={{ textTransform: "none" }}
+          >
+            {t("collapseAll")}
+          </Button>
+        </Box>
       </Box>
 
       <Box>

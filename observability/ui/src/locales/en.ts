@@ -101,4 +101,6 @@ export default flatten({
   saving: "Saving...",
   cancel: "Cancel",
   traceTimeline: "Trace Timeline",
+  expandAll: "Expand All",
+  collapseAll: "Collapse All",
 });

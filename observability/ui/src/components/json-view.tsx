@@ -123,6 +123,7 @@ export default function JsonView({ value: data }: { value: any }) {
         options={{
           readOnly: true,
           minimap: { enabled: false },
+          wordWrap: "on",
         }}
       />
     </Box>

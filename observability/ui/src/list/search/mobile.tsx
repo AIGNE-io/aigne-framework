@@ -7,11 +7,9 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
-import { joinURL } from "ufo";
 import { BlockletComponent, type SearchState } from "../../components/blocklet-comp.tsx";
+import LiveSwitch from "../../components/live-switch.tsx";
 import SwitchComponent from "../../components/switch.tsx";
-import { origin } from "../../utils/index.ts";
 
 const MobileSearch = ({
   handleSearchReset,
@@ -35,37 +33,6 @@ const MobileSearch = ({
 }) => {
   const { t } = useLocaleContext();
   const isBlocklet = !!window.blocklet?.prefix;
-  const [liveLoading, setLiveLoading] = useState(false);
-
-  const fetchSettings = async () => {
-    fetch(joinURL(origin, "/api/settings"))
-      .then((res) => res.json() as Promise<{ data: { live: boolean } }>)
-      .then(({ data }) => {
-        setLive(data.live);
-      });
-  };
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
-  useEffect(() => {
-    fetchSettings();
-  }, []);
-
-  const handleLiveChange = async (checked: boolean) => {
-    setLiveLoading(true);
-
-    try {
-      await fetch(joinURL(origin, "/api/settings"), {
-        method: "POST",
-        body: JSON.stringify({ live: checked }),
-        headers: { "Content-Type": "application/json" },
-      });
-      setLive(checked);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLiveLoading(false);
-    }
-  };
 
   return (
     <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
@@ -132,12 +99,7 @@ const MobileSearch = ({
         </Box> */}
 
         <Box sx={{ mb: 3 }}>
-          <SwitchComponent
-            checked={live}
-            onChange={handleLiveChange}
-            label={live ? t("liveUpdatesOn") : t("liveUpdatesOff")}
-            disabled={liveLoading}
-          />
+          <LiveSwitch live={live} setLive={setLive} />
         </Box>
 
         {!isBlocklet && (

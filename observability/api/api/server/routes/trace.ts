@@ -564,9 +564,7 @@ export default ({
         return;
       }
 
-      // Check for existing traces with same (id, rootId, parentId) combination
       const uploadIds = traces.map((t) => t.id);
-
       const existingTraces = await db
         .select({
           id: Trace.id,
@@ -577,12 +575,10 @@ export default ({
         .where(inArray(Trace.id, uploadIds))
         .execute();
 
-      // Build a set of existing trace keys for fast lookup
       const existingKeys = new Set(
         existingTraces.map((t) => `${t.id}|${t.rootId}|${t.parentId ?? ""}`),
       );
 
-      // Filter out conflicting traces
       const tracesToInsert = traces.filter(
         (t) => !existingKeys.has(`${t.id}|${t.rootId}|${t.parentId ?? ""}`),
       );

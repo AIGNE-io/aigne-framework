@@ -5,12 +5,11 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
-import { useEffect, useState } from "react";
-import { joinURL } from "ufo";
+import { useState } from "react";
 import { BlockletComponent, type SearchState } from "../../components/blocklet-comp.tsx";
 import CustomDateRangePicker from "../../components/date-picker.tsx";
+import LiveSwitch from "../../components/live-switch.tsx";
 import SwitchComponent from "../../components/switch.tsx";
-import { origin } from "../../utils/index.ts";
 import Delete from "../delete.tsx";
 import Upload from "../upload.tsx";
 
@@ -36,37 +35,6 @@ const PcSearch = ({
   const isBlocklet = !!window.blocklet?.prefix;
   const { t } = useLocaleContext();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [liveLoading, setLiveLoading] = useState(false);
-
-  const fetchSettings = async () => {
-    fetch(joinURL(origin, "/api/settings"))
-      .then((res) => res.json() as Promise<{ data: { live: boolean } }>)
-      .then(({ data }) => {
-        setLive(data.live);
-      });
-  };
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
-  useEffect(() => {
-    fetchSettings();
-  }, []);
-
-  const handleLiveChange = async (checked: boolean) => {
-    setLiveLoading(true);
-
-    try {
-      await fetch(joinURL(origin, "/api/settings"), {
-        method: "POST",
-        body: JSON.stringify({ live: checked }),
-        headers: { "Content-Type": "application/json" },
-      });
-      setLive(checked);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLiveLoading(false);
-    }
-  };
 
   return (
     <>
@@ -113,16 +81,7 @@ const PcSearch = ({
 
       <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
 
-      <Tooltip title={t("toggleLive")}>
-        <Box>
-          <SwitchComponent
-            checked={live}
-            onChange={handleLiveChange}
-            label={live ? t("liveUpdatesOn") : t("liveUpdatesOff")}
-            disabled={liveLoading}
-          />
-        </Box>
-      </Tooltip>
+      <LiveSwitch live={live} setLive={setLive} />
 
       {!isBlocklet && (
         <SwitchComponent

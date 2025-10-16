@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.51.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.51.0-beta.8...cli-v1.51.0-beta.9) (2025-10-16)
+
+
+### Bug Fixes
+
+* ensure tips are only printed once during AIGNE loading ([#628](https://github.com/AIGNE-io/aigne-framework/issues/628)) ([7d49508](https://github.com/AIGNE-io/aigne-framework/commit/7d4950882436169986eedab75c232db2c0a30732))
+
 ## [1.51.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.51.0-beta.7...cli-v1.51.0-beta.8) (2025-10-15)
 
 

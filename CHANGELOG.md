@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.81.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.9...aigne-framework-v1.81.0-beta.10) (2025-10-16)
+
+
+### Bug Fixes
+
+* **blocklet:** disabled editor context menu ([#626](https://github.com/AIGNE-io/aigne-framework/issues/626)) ([e6f4a6b](https://github.com/AIGNE-io/aigne-framework/commit/e6f4a6b3ef2581ec6c7f1174d65b15df6ccd31c6))
+* ensure tips are only printed once during AIGNE loading ([#628](https://github.com/AIGNE-io/aigne-framework/issues/628)) ([7d49508](https://github.com/AIGNE-io/aigne-framework/commit/7d4950882436169986eedab75c232db2c0a30732))
+
 ## [1.81.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.8...aigne-framework-v1.81.0-beta.9) (2025-10-15)
 
 

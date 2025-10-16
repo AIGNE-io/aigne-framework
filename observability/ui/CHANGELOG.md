@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta.3...observability-ui-v0.11.1-beta.4) (2025-10-16)
+
+
+### Bug Fixes
+
+* **blocklet:** disabled editor context menu ([#626](https://github.com/AIGNE-io/aigne-framework/issues/626)) ([e6f4a6b](https://github.com/AIGNE-io/aigne-framework/commit/e6f4a6b3ef2581ec6c7f1174d65b15df6ccd31c6))
+
 ## [0.11.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta.2...observability-ui-v0.11.1-beta.3) (2025-10-15)
 
 

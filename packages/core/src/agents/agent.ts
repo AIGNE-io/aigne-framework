@@ -797,7 +797,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
             shouldRetry,
           } = this.retryOnError;
 
-          if (attempt++ < retries && (!shouldRetry || (await shouldRetry(error)))) {
+          if (attempt < retries && (!shouldRetry || (await shouldRetry(error)))) {
+            attempt++;
             const timeout =
               minTimeout * factor ** (attempt - 1) * (randomize ? 1 + Math.random() : 1);
             logger.warn(

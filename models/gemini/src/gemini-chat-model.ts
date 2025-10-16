@@ -30,14 +30,14 @@ const OUTPUT_JSON_FUNCTION_NAME = "output_json";
 
 export interface GeminiChatModelOptions extends ChatModelOptions {
   /**
-   * API key for Anthropic's Claude API
+   * API key for Gemini API
    *
-   * If not provided, will look for ANTHROPIC_API_KEY or CLAUDE_API_KEY in environment variables
+   * If not provided, will look for GEMINI_API_KEY or GOOGLE_API_KEY in environment variables
    */
   apiKey?: string;
 
   /**
-   * Optional client options for the Anthropic SDK
+   * Optional client options for the Gemini SDK
    */
   clientOptions?: Partial<GoogleGenAIOptions>;
 }
@@ -85,7 +85,10 @@ export class GeminiChatModel extends ChatModel {
 
   override get credential() {
     const apiKey =
-      this.options?.apiKey || process.env[this.apiKeyEnvName] || process.env.CLAUDE_API_KEY;
+      this.options?.apiKey ||
+      process.env[this.apiKeyEnvName] ||
+      process.env.GEMINI_API_KEY ||
+      process.env.GOOGLE_API_KEY;
 
     return {
       apiKey,

@@ -388,7 +388,12 @@ test("PromptBuilder should build image prompt correctly", async () => {
 });
 
 test("PromptBuilder should build with afs correctly", async () => {
-  const builder = PromptBuilder.from("Test instructions");
+  const builder = new PromptBuilder({
+    instructions: ChatMessagesTemplate.from([
+      SystemMessageTemplate.from("Test instructions"),
+      UserMessageTemplate.from("User message is: {{message}}"),
+    ]),
+  });
 
   const afs = new AFS();
 
@@ -404,6 +409,7 @@ test("PromptBuilder should build with afs correctly", async () => {
   // Build without AFS history
   const result = await builder.build({
     agent,
+    input: { message: "Hello, I'm Bob, I'm from ArcBlock" },
   });
 
   expect(result.messages).toMatchInlineSnapshot(`
@@ -413,7 +419,7 @@ test("PromptBuilder should build with afs correctly", async () => {
         "name": undefined,
         "role": "system",
       },
-      SystemMessageTemplate {
+      {
         "content": 
     "
     <afs_usage>
@@ -435,8 +441,12 @@ test("PromptBuilder should build with afs correctly", async () => {
     "
     ,
         "name": undefined,
-        "options": undefined,
         "role": "system",
+      },
+      {
+        "content": "User message is: Hello, I'm Bob, I'm from ArcBlock",
+        "name": undefined,
+        "role": "user",
       },
     ]
   `);
@@ -461,6 +471,7 @@ test("PromptBuilder should build with afs correctly", async () => {
 
   const result1 = await builder.build({
     agent,
+    input: { message: "Hello, I'm Bob, I'm from ArcBlock" },
   });
 
   expect(listSpy.mock.calls).toMatchInlineSnapshot(`
@@ -490,7 +501,7 @@ test("PromptBuilder should build with afs correctly", async () => {
           "name": undefined,
           "role": "system",
         },
-        SystemMessageTemplate {
+        {
           "content": 
     "
     <afs_usage>
@@ -512,7 +523,6 @@ test("PromptBuilder should build with afs correctly", async () => {
     "
     ,
           "name": undefined,
-          "options": undefined,
           "role": "system",
         },
         {
@@ -550,6 +560,11 @@ test("PromptBuilder should build with afs correctly", async () => {
             },
           ],
           "role": "agent",
+        },
+        {
+          "content": "User message is: Hello, I'm Bob, I'm from ArcBlock",
+          "name": undefined,
+          "role": "user",
         },
       ],
       "modelOptions": undefined,
@@ -710,14 +725,14 @@ test("PromptBuilder should refine system messages by config", async () => {
         "role": "system",
       },
       {
-        "content": "User message 1",
-        "name": undefined,
-        "role": "user",
-      },
-      {
         "content": "System message 2",
         "name": undefined,
         "role": "system",
+      },
+      {
+        "content": "User message 1",
+        "name": undefined,
+        "role": "user",
       },
     ]
   `);

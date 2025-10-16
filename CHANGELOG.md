@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.81.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.10...aigne-framework-v1.81.0-beta.11) (2025-10-16)
+
+
+### Bug Fixes
+
+* update observability api ([#629](https://github.com/AIGNE-io/aigne-framework/issues/629)) ([5024262](https://github.com/AIGNE-io/aigne-framework/commit/50242620e904922b07168751a4477f1e60347fcf))
+
 ## [1.81.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.9...aigne-framework-v1.81.0-beta.10) (2025-10-16)
 
 

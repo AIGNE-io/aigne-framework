@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.2-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.2-beta.2...observability-api-v0.11.2-beta.3) (2025-10-16)
+
+
+### Bug Fixes
+
+* update observability api ([#629](https://github.com/AIGNE-io/aigne-framework/issues/629)) ([5024262](https://github.com/AIGNE-io/aigne-framework/commit/50242620e904922b07168751a4477f1e60347fcf))
+
 ## [0.11.2-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.2-beta.1...observability-api-v0.11.2-beta.2) (2025-10-15)
 
 

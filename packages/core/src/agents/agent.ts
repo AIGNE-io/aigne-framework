@@ -55,7 +55,8 @@ const DEFAULT_RETRY_FACTOR = 2;
  */
 export interface Message extends Record<string, unknown> {
   $meta?: {
-    usage: ContextUsage;
+    usage?: ContextUsage;
+    [key: string]: unknown;
   };
 }
 
@@ -774,7 +775,11 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
           yield chunk as AgentResponseChunk<O>;
         }
 
-        const result = await this.processAgentOutput(input, output, options);
+        let result = await this.processAgentOutput(input, output, options);
+
+        if (attempt > 0) {
+          result = { ...result, $meta: { ...result.$meta, retries: attempt } };
+        }
 
         if (result && !equal(result, output)) {
           yield { delta: { json: result } };

@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.63.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.8...core-v1.63.0-beta.9) (2025-10-16)
+
+
+### Bug Fixes
+
+* allow custom user messages and prevent duplicate user content ([#632](https://github.com/AIGNE-io/aigne-framework/issues/632)) ([6c883b2](https://github.com/AIGNE-io/aigne-framework/commit/6c883b2d57a65e9b46232cece91fc6aa1de03aba))
+* **models:** auto retry when got emtpy response from gemini ([#636](https://github.com/AIGNE-io/aigne-framework/issues/636)) ([9367cef](https://github.com/AIGNE-io/aigne-framework/commit/9367cef49ea4c0c87b8a36b454deb2efaee6886f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.2-beta.4
+
 ## [1.63.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.7...core-v1.63.0-beta.8) (2025-10-16)
 
 

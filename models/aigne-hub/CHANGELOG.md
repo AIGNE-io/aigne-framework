@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.10.2-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.2-beta.8...aigne-hub-v0.10.2-beta.9) (2025-10-16)
+
+
+### Bug Fixes
+
+* **models:** enhance gemini model tool use with status fields ([#634](https://github.com/AIGNE-io/aigne-framework/issues/634)) ([067b175](https://github.com/AIGNE-io/aigne-framework/commit/067b175c8e31bb5b1a6d0fc5a5cfb2d070d8d709))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.2-beta.9
+    * @aigne/bedrock bumped to 0.10.7-beta.9
+    * @aigne/core bumped to 1.63.0-beta.9
+    * @aigne/deepseek bumped to 0.7.48-beta.9
+    * @aigne/doubao bumped to 1.1.2-beta.9
+    * @aigne/gemini bumped to 0.14.2-beta.9
+    * @aigne/ideogram bumped to 0.4.2-beta.9
+    * @aigne/ollama bumped to 0.7.48-beta.9
+    * @aigne/open-router bumped to 0.7.48-beta.9
+    * @aigne/openai bumped to 0.16.2-beta.9
+    * @aigne/poe bumped to 1.0.28-beta.9
+    * @aigne/transport bumped to 0.15.11-beta.9
+    * @aigne/xai bumped to 0.7.48-beta.9
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta.9
+
 ## [0.10.2-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.2-beta.7...aigne-hub-v0.10.2-beta.8) (2025-10-16)
 
 

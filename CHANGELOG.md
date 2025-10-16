@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.81.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.11...aigne-framework-v1.81.0-beta.12) (2025-10-16)
+
+
+### Bug Fixes
+
+* allow custom user messages and prevent duplicate user content ([#632](https://github.com/AIGNE-io/aigne-framework/issues/632)) ([6c883b2](https://github.com/AIGNE-io/aigne-framework/commit/6c883b2d57a65e9b46232cece91fc6aa1de03aba))
+* **blocklet:** tune observability ui build script ([#631](https://github.com/AIGNE-io/aigne-framework/issues/631)) ([8d23d39](https://github.com/AIGNE-io/aigne-framework/commit/8d23d39875f6f4e2bf42b52ffb9c806ad8e184de))
+* **models:** auto retry when got emtpy response from gemini ([#636](https://github.com/AIGNE-io/aigne-framework/issues/636)) ([9367cef](https://github.com/AIGNE-io/aigne-framework/commit/9367cef49ea4c0c87b8a36b454deb2efaee6886f))
+* **models:** enhance gemini model tool use with status fields ([#634](https://github.com/AIGNE-io/aigne-framework/issues/634)) ([067b175](https://github.com/AIGNE-io/aigne-framework/commit/067b175c8e31bb5b1a6d0fc5a5cfb2d070d8d709))
+
 ## [1.81.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.10...aigne-framework-v1.81.0-beta.11) (2025-10-16)
 
 

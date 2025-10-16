@@ -1467,6 +1467,9 @@ importers:
         specifier: ^3.25.67
         version: 3.25.67
     devDependencies:
+      '@aigne/observability-ui':
+        specifier: workspace:^
+        version: link:../ui
       '@eslint/js':
         specifier: ^9.35.0
         version: 9.35.0

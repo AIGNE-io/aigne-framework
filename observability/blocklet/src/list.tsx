@@ -8,8 +8,6 @@ export default function ListPage() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
-    appRef.current?.refetch?.();
-
     if (!session?.user) {
       session.login();
     }

@@ -83,6 +83,11 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     }
   };
 
+  const handleSearchTextUpdate = (data: Partial<SearchState>) => {
+    setSearch((x) => ({ ...x, ...data }));
+    setPage({ ...page, page: 1 });
+  };
+
   const fetchTraces = async ({
     page,
     pageSize,
@@ -122,7 +127,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     if (documentVisibility === "visible") {
       setLoading(true);
       fetchTraces({
-        page: page.page - 1,
+        page: Math.max(0, page.page - 1),
         pageSize: page.pageSize,
         searchText: search.searchText,
         dateRange: search.dateRange,
@@ -136,11 +141,6 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     documentVisibility,
     search.componentId,
   ]);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
-  useEffect(() => {
-    setPage({ page: 1, pageSize: page.pageSize });
-  }, [search.searchText, search.dateRange, live, search.componentId]);
 
   useRafInterval(() => {
     if (!live) return;
@@ -199,7 +199,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   }, [page.pageSize]);
 
   const onDateRangeChange = (value: [Date, Date]) => {
-    setSearch((x) => ({ ...x, dateRange: value, page: 1 }));
+    handleSearchTextUpdate({ dateRange: value });
   };
 
   const handleSearchApply = () => {
@@ -215,7 +215,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   };
 
   const handleSearchReset = () => {
-    setSearch({
+    handleSearchTextUpdate({
       componentId: "",
       searchText: "",
       dateRange: [
@@ -256,8 +256,8 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
               }}
               search={search.searchText}
               searchText={search.searchText}
-              searchTextUpdate={(text: string) => setSearch((x) => ({ ...x, searchText: text }))}
-              searchClose={() => setSearch((x) => ({ ...x, searchText: "" }))}
+              searchTextUpdate={(text: string) => handleSearchTextUpdate({ searchText: text })}
+              searchClose={() => handleSearchTextUpdate({ searchText: "" })}
             />
 
             {isMobile ? (
@@ -268,7 +268,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
               <DesktopSearch
                 components={components || { data: [] }}
                 search={search}
-                setSearch={setSearch}
+                setSearch={(data) => handleSearchTextUpdate(data)}
                 onDateRangeChange={onDateRangeChange}
                 live={live}
                 setLive={setLive}
@@ -336,7 +336,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           toggleDrawer={toggleDrawer}
           components={components || { data: [] }}
           search={search}
-          setSearch={setSearch}
+          setSearch={(data) => handleSearchTextUpdate(data)}
           onDateRangeChange={onDateRangeChange}
           live={live}
           setLive={setLive}

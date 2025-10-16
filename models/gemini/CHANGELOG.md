@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.2-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.2-beta.9...gemini-v0.14.2-beta.10) (2025-10-16)
+
+
+### Bug Fixes
+
+* correct calculate token usage for gemini model ([7fd1328](https://github.com/AIGNE-io/aigne-framework/commit/7fd13289d3d0f8e062211f7c6dd5cb56e5318c1b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.10
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta.10
+
 ## [0.14.2-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.2-beta.8...gemini-v0.14.2-beta.9) (2025-10-16)
 
 

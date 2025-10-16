@@ -1,6 +1,6 @@
 {
   "name": "@blocklet/observability",
-  "version": "1.14.2-beta.7",
+  "version": "1.14.2-beta.8",
   "description": "Blocklet Observability for tracing and observability",
   "publishConfig": {
     "access": "public"

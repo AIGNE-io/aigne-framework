@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.81.0-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.12...aigne-framework-v1.81.0-beta.13) (2025-10-16)
+
+
+### Features
+
+* **observability:** support import and export trace items ([#635](https://github.com/AIGNE-io/aigne-framework/issues/635)) ([27acadf](https://github.com/AIGNE-io/aigne-framework/commit/27acadfca49adb653a78007daa0a41ee90468047))
+
+
+### Bug Fixes
+
+* correct calculate token usage for gemini model ([7fd1328](https://github.com/AIGNE-io/aigne-framework/commit/7fd13289d3d0f8e062211f7c6dd5cb56e5318c1b))
+
 ## [1.81.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.11...aigne-framework-v1.81.0-beta.12) (2025-10-16)
 
 

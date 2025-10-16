@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.11.2-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.2-beta.4...observability-api-v0.11.2-beta.5) (2025-10-16)
+
+
+### Features
+
+* **observability:** support import and export trace items ([#635](https://github.com/AIGNE-io/aigne-framework/issues/635)) ([27acadf](https://github.com/AIGNE-io/aigne-framework/commit/27acadfca49adb653a78007daa0a41ee90468047))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.1-beta.6
+
 ## [0.11.2-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.2-beta.3...observability-api-v0.11.2-beta.4) (2025-10-16)
 
 

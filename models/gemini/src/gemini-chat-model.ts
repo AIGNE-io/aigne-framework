@@ -1,9 +1,9 @@
 import {
-  type AgentInvokeOptions,
   type AgentProcessAsyncGenerator,
   type AgentProcessResult,
+  ChatModel,
   type ChatModelInput,
-  type ChatModelInputMessage,
+  type ChatModelOptions,
   type ChatModelOutput,
   type ChatModelOutputToolCall,
   type ChatModelOutputUsage,
@@ -11,26 +11,39 @@ import {
   safeParseJSON,
 } from "@aigne/core";
 import { isNonNullable, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
-import { OpenAIChatModel, type OpenAIChatModelOptions } from "@aigne/openai";
 import { v7 } from "@aigne/uuid";
 import {
   type Content,
   type FunctionCallingConfig,
   FunctionCallingConfigMode,
+  type GenerateContentConfig,
   type GenerateContentParameters,
   GoogleGenAI,
+  type GoogleGenAIOptions,
   type Part,
   type ToolListUnion,
 } from "@google/genai";
 
-const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai";
 const GEMINI_DEFAULT_CHAT_MODEL = "gemini-2.0-flash";
+
+const OUTPUT_JSON_FUNCTION_NAME = "output_json";
+
+export interface GeminiChatModelOptions extends ChatModelOptions {
+  /**
+   * API key for Anthropic's Claude API
+   *
+   * If not provided, will look for ANTHROPIC_API_KEY or CLAUDE_API_KEY in environment variables
+   */
+  apiKey?: string;
+
+  /**
+   * Optional client options for the Anthropic SDK
+   */
+  clientOptions?: Partial<GoogleGenAIOptions>;
+}
 
 /**
  * Implementation of the ChatModel interface for Google's Gemini API
- *
- * This model uses OpenAI-compatible API format to interact with Google's Gemini models,
- * providing access to models like Gemini 1.5 and Gemini 2.0.
  *
  * @example
  * Here's how to create and use a Gemini chat model:
@@ -40,20 +53,15 @@ const GEMINI_DEFAULT_CHAT_MODEL = "gemini-2.0-flash";
  * Here's an example with streaming response:
  * {@includeCode ../test/gemini-chat-model.test.ts#example-gemini-chat-model-streaming}
  */
-export class GeminiChatModel extends OpenAIChatModel {
-  constructor(options?: OpenAIChatModelOptions) {
+export class GeminiChatModel extends ChatModel {
+  constructor(public override options?: GeminiChatModelOptions) {
     super({
       ...options,
       model: options?.model || GEMINI_DEFAULT_CHAT_MODEL,
-      baseURL: options?.baseURL || GEMINI_BASE_URL,
     });
   }
 
-  protected override apiKeyEnvName = "GEMINI_API_KEY";
-  protected override supportsToolsUseWithJsonSchema = false;
-  protected override supportsParallelToolCalls = false;
-  protected override supportsToolStreaming = false;
-  protected override optionalFieldMode = "optional" as const;
+  protected apiKeyEnvName = "GEMINI_API_KEY";
 
   protected _googleClient?: GoogleGenAI;
 
@@ -67,28 +75,38 @@ export class GeminiChatModel extends OpenAIChatModel {
         `${this.name} requires an API key. Please provide it via \`options.apiKey\`, or set the \`${this.apiKeyEnvName}\` environment variable`,
       );
 
-    this._googleClient ??= new GoogleGenAI({ apiKey });
+    this._googleClient ??= new GoogleGenAI({
+      apiKey,
+      ...this.options?.clientOptions,
+    });
 
     return this._googleClient;
   }
 
-  override process(
-    input: ChatModelInput,
-    options: AgentInvokeOptions,
-  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    const model = input.modelOptions?.model || this.credential.model;
-    if (!model.includes("image")) return super.process(input, options);
-    return this.handleImageModelProcessing(input);
+  override get credential() {
+    const apiKey =
+      this.options?.apiKey || process.env[this.apiKeyEnvName] || process.env.CLAUDE_API_KEY;
+
+    return {
+      apiKey,
+      model: this.options?.model || GEMINI_DEFAULT_CHAT_MODEL,
+    };
   }
 
-  private async *handleImageModelProcessing(
-    input: ChatModelInput,
-  ): AgentProcessAsyncGenerator<ChatModelOutput> {
+  get modelOptions() {
+    return this.options?.modelOptions;
+  }
+
+  override process(input: ChatModelInput): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+    return this.processInput(input);
+  }
+
+  private async *processInput(input: ChatModelInput): AgentProcessAsyncGenerator<ChatModelOutput> {
     const model = input.modelOptions?.model || this.credential.model;
     const { contents, config } = await this.buildContents(input);
 
     const parameters: GenerateContentParameters = {
-      model: model,
+      model,
       contents,
       config: {
         responseModalities: input.modelOptions?.modalities,
@@ -98,7 +116,6 @@ export class GeminiChatModel extends OpenAIChatModel {
           input.modelOptions?.frequencyPenalty || this.modelOptions?.frequencyPenalty,
         presencePenalty: input.modelOptions?.presencePenalty || this.modelOptions?.presencePenalty,
         ...config,
-        ...(await this.buildTools(input)),
         ...(await this.buildConfig(input)),
       },
     };
@@ -114,6 +131,7 @@ export class GeminiChatModel extends OpenAIChatModel {
     const files: FileUnionContent[] = [];
     const toolCalls: ChatModelOutputToolCall[] = [];
     let text = "";
+    let json: any;
 
     for await (const chunk of response) {
       if (!responseModel && chunk.modelVersion) {
@@ -140,16 +158,20 @@ export class GeminiChatModel extends OpenAIChatModel {
             }
 
             if (part.functionCall?.name) {
-              toolCalls.push({
-                id: part.functionCall.id || v7(),
-                type: "function",
-                function: {
-                  name: part.functionCall.name,
-                  arguments: part.functionCall.args || {},
-                },
-              });
+              if (part.functionCall.name === OUTPUT_JSON_FUNCTION_NAME) {
+                json = part.functionCall.args;
+              } else {
+                toolCalls.push({
+                  id: part.functionCall.id || v7(),
+                  type: "function",
+                  function: {
+                    name: part.functionCall.name,
+                    arguments: part.functionCall.args || {},
+                  },
+                });
 
-              yield { delta: { json: { toolCalls } } };
+                yield { delta: { json: { toolCalls } } };
+              }
             }
           }
         }
@@ -162,24 +184,58 @@ export class GeminiChatModel extends OpenAIChatModel {
     }
 
     if (input.responseFormat?.type === "json_schema") {
-      yield { delta: { json: { json: safeParseJSON(text) } } };
+      if (json) {
+        yield { delta: { json: { json } } };
+      } else if (text) {
+        yield { delta: { json: { json: safeParseJSON(text) } } };
+      } else {
+        throw new Error("No JSON response from the model");
+      }
+    } else if (!toolCalls.length) {
+      if (!text) {
+        throw new Error("No text response from the model");
+      }
     }
 
-    yield { delta: { json: { usage, files } } };
+    yield { delta: { json: { usage, files: files.length ? files : undefined } } };
   }
 
   private async buildConfig(input: ChatModelInput): Promise<GenerateContentParameters["config"]> {
     const config: GenerateContentParameters["config"] = {};
 
+    const { tools, toolConfig } = await this.buildTools(input);
+
+    config.tools = tools;
+    config.toolConfig = toolConfig;
+
     if (input.responseFormat?.type === "json_schema") {
-      config.responseJsonSchema = input.responseFormat.jsonSchema.schema;
-      config.responseMimeType = "application/json";
+      if (config.tools?.length) {
+        config.tools.push({
+          functionDeclarations: [
+            {
+              name: OUTPUT_JSON_FUNCTION_NAME,
+              description: "Output the final response in JSON format",
+              parametersJsonSchema: input.responseFormat.jsonSchema.schema,
+            },
+          ],
+        });
+
+        config.toolConfig = {
+          ...config.toolConfig,
+          functionCallingConfig: { mode: FunctionCallingConfigMode.ANY },
+        };
+      } else {
+        config.responseJsonSchema = input.responseFormat.jsonSchema.schema;
+        config.responseMimeType = "application/json";
+      }
     }
 
     return config;
   }
 
-  private async buildTools(input: ChatModelInput): Promise<GenerateContentParameters["config"]> {
+  private async buildTools(
+    input: ChatModelInput,
+  ): Promise<Pick<GenerateContentConfig, "tools" | "toolConfig">> {
     const tools: ToolListUnion = [];
 
     for (const tool of input.tools ?? []) {
@@ -238,7 +294,7 @@ export class GeminiChatModel extends OpenAIChatModel {
           }
 
           const content: Content = {
-            role: msg.role === "agent" ? "model" : "user",
+            role: msg.role === "agent" ? "model" : msg.role === "user" ? "user" : undefined,
           };
 
           if (msg.toolCalls) {
@@ -255,12 +311,21 @@ export class GeminiChatModel extends OpenAIChatModel {
               .find((c) => c?.id === msg.toolCallId);
             if (!call) throw new Error(`Tool call not found: ${msg.toolCallId}`);
 
+            const output = JSON.parse(msg.content as string);
+
+            const isError = "error" in output && Boolean(input.error);
+
             content.parts = [
               {
                 functionResponse: {
                   id: msg.toolCallId,
                   name: call.function.name,
-                  response: JSON.parse(msg.content as string),
+                  // NOTE: base on the documentation of gemini api, the content should include `output` field for successful result or `error` field for failed result,
+                  // and base on the actual test, add a tool field presenting the tool name can improve the LLM understanding that which tool is called.
+                  response: {
+                    tool: call.function.name,
+                    ...(isError ? { status: "error", ...output } : { status: "success", output }),
+                  },
                 },
               },
             ];
@@ -290,29 +355,18 @@ export class GeminiChatModel extends OpenAIChatModel {
       )
     ).filter(isNonNullable);
 
+    if (!result.contents.length && systemParts.length) {
+      const system = systemParts.pop();
+      if (system) {
+        result.contents.push({ role: "user", parts: [system] });
+      }
+    }
+
     if (systemParts.length) {
       result.config ??= {};
       result.config.systemInstruction = systemParts;
     }
 
     return result;
-  }
-
-  override async getRunMessages(
-    input: ChatModelInput,
-  ): ReturnType<OpenAIChatModel["getRunMessages"]> {
-    const messages = await super.getRunMessages(input);
-
-    if (!messages.some((i) => i.role === "user")) {
-      for (const msg of messages) {
-        if (msg.role === "system") {
-          // Ensure the last message is from the user
-          (msg as ChatModelInputMessage).role = "user";
-          break;
-        }
-      }
-    }
-
-    return messages;
   }
 }

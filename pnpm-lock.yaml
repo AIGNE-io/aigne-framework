@@ -1164,9 +1164,9 @@ importers:
 
   models/gemini:
     dependencies:
-      '@aigne/openai':
+      '@aigne/core':
         specifier: workspace:^
-        version: link:../openai
+        version: link:../../packages/core
       '@aigne/platform-helpers':
         specifier: workspace:^
         version: link:../../packages/platform-helpers
@@ -1180,9 +1180,6 @@ importers:
         specifier: ^3.25.67
         version: 3.25.67
     devDependencies:
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../../packages/core
       '@aigne/test-utils':
         specifier: workspace:^
         version: link:../../packages/test-utils

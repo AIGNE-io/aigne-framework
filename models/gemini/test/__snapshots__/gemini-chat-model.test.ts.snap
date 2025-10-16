@@ -3,88 +3,107 @@
 exports[`GeminiChatModel.invoke should use tool result correctly 1`] = `
 [
   {
-    "frequency_penalty": undefined,
-    "messages": [
-      {
-        "content": 
-"Output must be a JSON object containing the following fields only.
-<json_fields>
-{"type":"object","properties":{"text":{"type":"string"}},"required":["text"],"additionalProperties":false}
-</json_fields>
-Do not include any explanations, comments, or Markdown formatting (such as triple backticks). Return only the raw JSON."
-,
-        "role": "system",
+    "config": {
+      "frequencyPenalty": undefined,
+      "presencePenalty": undefined,
+      "responseModalities": undefined,
+      "systemInstruction": [
+        {
+          "text": "You are a chatbot",
+        },
+      ],
+      "temperature": undefined,
+      "toolConfig": {
+        "functionCallingConfig": {
+          "mode": "ANY",
+        },
       },
+      "tools": [
+        {
+          "functionDeclarations": [
+            {
+              "description": undefined,
+              "name": "get_weather",
+              "parametersJsonSchema": {
+                "properties": {
+                  "city": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "city",
+                ],
+                "type": "object",
+              },
+            },
+          ],
+        },
+        {
+          "functionDeclarations": [
+            {
+              "description": "Output the final response in JSON format",
+              "name": "output_json",
+              "parametersJsonSchema": {
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "text",
+                ],
+                "type": "object",
+              },
+            },
+          ],
+        },
+      ],
+      "topP": undefined,
+    },
+    "contents": [
       {
-        "content": "You are a chatbot",
-        "name": undefined,
-        "role": "system",
-        "tool_call_id": undefined,
-        "tool_calls": undefined,
-      },
-      {
-        "content": [
+        "parts": [
           {
             "text": "What is the weather in New York?",
-            "type": "text",
           },
         ],
-        "name": undefined,
         "role": "user",
-        "tool_call_id": undefined,
-        "tool_calls": undefined,
       },
       {
-        "content": undefined,
-        "name": undefined,
-        "role": "assistant",
-        "tool_call_id": undefined,
-        "tool_calls": [
+        "parts": [
           {
-            "function": {
-              "arguments": "{"city":"New York"}",
+            "functionCall": {
+              "args": {
+                "city": "New York",
+              },
+              "id": "get_weather",
               "name": "get_weather",
             },
-            "id": "get_weather",
-            "type": "function",
           },
         ],
+        "role": "model",
       },
       {
-        "content": "{"temperature":20}",
-        "name": undefined,
-        "role": "tool",
-        "tool_call_id": "get_weather",
-        "tool_calls": undefined,
-      },
-    ],
-    "model": "gemini-2.0-flash",
-    "presence_penalty": undefined,
-    "response_format": {
-      "json_schema": {
-        "name": "output",
-        "schema": {
-          "additionalProperties": false,
-          "properties": {
-            "text": {
-              "type": "string",
+        "parts": [
+          {
+            "functionResponse": {
+              "id": "get_weather",
+              "name": "get_weather",
+              "response": {
+                "output": {
+                  "temperature": 20,
+                },
+                "status": "success",
+                "tool": "get_weather",
+              },
             },
           },
-          "required": [
-            "text",
-          ],
-          "type": "object",
-        },
-        "strict": true,
+        ],
+        "role": undefined,
       },
-      "type": "json_schema",
-    },
-    "stream": true,
-    "stream_options": {
-      "include_usage": true,
-    },
-    "temperature": undefined,
-    "top_p": undefined,
+    ],
+    "model": "gemini-2.5-flash",
   },
 ]
 `;

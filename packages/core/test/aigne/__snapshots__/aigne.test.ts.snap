@@ -231,7 +231,7 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
       "agent": {
         "name": "OpenAIChatModel",
       },
-      "error": [Error: Test error],
+      "error": [Error: Test error (after 1 retries)],
       "event": "agentFailed",
     },
   },
@@ -240,11 +240,11 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
       "agent": {
         "name": "chat",
       },
-      "error": [Error: Test error],
+      "error": [Error: Test error (after 1 retries)],
       "event": "agentFailed",
     },
   },
-  [Error: Test error],
+  [Error: Test error (after 1 retries)],
 ]
 `;
 

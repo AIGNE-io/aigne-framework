@@ -947,12 +947,14 @@ test("Agent should not emit agentFailed event if error is handled and is being r
     { newContext: false },
   );
 
-  expect(result1).rejects.toThrowErrorMatchingInlineSnapshot(`"Model failed during second call"`);
+  expect(result1).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"Model failed during second call (after 1 retries)"`,
+  );
   expect(onAgentFailed.mock.calls.length).toBe(2);
   expect(onAgentFailed.mock.calls.map((i) => i.at(0).error)).toMatchInlineSnapshot(`
     [
-      [Error: Model failed during second call],
-      [Error: Model failed during second call],
+      [Error: Model failed during second call (after 1 retries)],
+      [Error: Model failed during second call (after 1 retries)],
     ]
   `);
 

@@ -132,7 +132,7 @@ async function loadApplication(path: string) {
   // Load env files in the aigne directory
   config({ path: dir, silent: true });
 
-  const aigne = await loadAIGNE({ path: dir, printTips: false });
+  const aigne = await loadAIGNE({ path: dir });
 
   return { aigne, path: dir };
 }

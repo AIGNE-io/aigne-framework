@@ -47,7 +47,7 @@ export async function loadAIGNE({
   path,
   modelOptions,
   imageModelOptions,
-  printTips = true,
+  printTips = false,
   skipModelLoading = false,
 }: {
   path?: string;

@@ -71,6 +71,7 @@ export async function invokeCLIAgentFromDirInChildProcess(options: {
   const aigne = await loadAIGNE({
     path: options.dir,
     modelOptions: options.input,
+    printTips: true,
     imageModelOptions: {
       model: options.input.imageModel,
     },

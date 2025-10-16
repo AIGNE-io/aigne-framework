@@ -25,7 +25,7 @@ const MobileSearch = ({
   toggleDrawer: (open: boolean) => () => void;
   components: { data: string[] };
   search: SearchState;
-  setSearch: (search: SearchState | ((search: SearchState) => SearchState)) => void;
+  setSearch: (data: Partial<SearchState>) => void;
   onDateRangeChange: (dateRange: [Date, Date]) => void;
   live: boolean;
   setLive: (live: boolean) => void;
@@ -65,9 +65,7 @@ const MobileSearch = ({
               fullWidth
               options={components?.data || []}
               value={search.componentId || null}
-              onChange={(_, value) =>
-                setSearch((x: SearchState) => ({ ...x, componentId: value || "" }))
-              }
+              onChange={(_, value) => setSearch({ componentId: value ?? "" })}
               getOptionLabel={(option) => {
                 if (!option) return "";
                 const comp = window.blocklet.componentMountPoints?.find((c) => c.did === option);

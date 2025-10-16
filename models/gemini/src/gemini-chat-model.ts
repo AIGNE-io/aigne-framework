@@ -11,6 +11,7 @@ import {
   StructuredOutputError,
   safeParseJSON,
 } from "@aigne/core";
+import { logger } from "@aigne/core/utils/logger.js";
 import { isNonNullable, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { v7 } from "@aigne/uuid";
 import {
@@ -198,6 +199,7 @@ export class GeminiChatModel extends ChatModel {
       }
     } else if (!toolCalls.length) {
       if (!text) {
+        logger.error("No text response from the model", parameters);
         // NOTE: Trigger retry of chat model
         throw new StructuredOutputError("No text response from the model");
       }

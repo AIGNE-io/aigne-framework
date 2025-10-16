@@ -28,6 +28,7 @@ import Status from "../components/status.tsx";
 import formatNumber from "../utils/format-number.ts";
 import { origin } from "../utils/index.ts";
 import { parseDuration } from "../utils/latency.ts";
+import Download from "./download.tsx";
 
 const Table = ({
   traces,
@@ -266,7 +267,7 @@ const Table = ({
                 size="small"
                 color={map[item.status?.code as keyof typeof map]?.color ?? "default"}
                 variant="outlined"
-                sx={{ height: 21 }}
+                sx={{ height: 21, borderRadius: "4px" }}
               />
             </Box>
           );
@@ -404,10 +405,11 @@ const Table = ({
     if (!_selectedRows.data.length) return null;
 
     return (
-      <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <IconButton onClick={() => setOpen(true)}>
           <TrashIcon sx={{ color: "error.main" }} />
         </IconButton>
+        <Download selectedIds={selectedRows} />
       </Box>
     );
   };

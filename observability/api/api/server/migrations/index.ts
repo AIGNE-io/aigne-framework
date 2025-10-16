@@ -79,6 +79,16 @@ const migrations = [
       }
     },
   },
+  {
+    hash: "20251016_add_isImport_column",
+    async sql(db: DB) {
+      const hasImportColumn = await columnExists(db, "Trace", "isImport");
+
+      if (!hasImportColumn) {
+        await db.run(sql`ALTER TABLE Trace ADD COLUMN isImport INTEGER DEFAULT 0;`);
+      }
+    },
+  },
 ];
 
 export default migrations;

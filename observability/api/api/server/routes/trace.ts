@@ -11,8 +11,6 @@ import type { FileData, ImageData } from "../base.js";
 import { Trace } from "../models/trace.js";
 import { getGlobalSettingPath } from "../utils/index.js";
 
-const router = express.Router();
-
 const traceTreeQuerySchema = z.object({
   page: z.coerce
     .number()
@@ -30,6 +28,11 @@ const traceTreeQuerySchema = z.object({
   componentId: z.string().optional().default(""),
   startDate: z.string().optional().default(""),
   endDate: z.string().optional().default(""),
+  showImportedOnly: z
+    .string()
+    .optional()
+    .transform((val) => val === "true")
+    .default("false"),
 });
 
 import { createTraceBatchSchema } from "../../core/schema.js";
@@ -46,6 +49,8 @@ export default ({
     formatOutputImages?: (images: ImageData[]) => Promise<ImageData[]>;
   };
 }): Router => {
+  const router = express.Router();
+
   router.get("/tree", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
 
@@ -58,7 +63,8 @@ export default ({
       return;
     }
 
-    const { page, pageSize, searchText, componentId, startDate, endDate } = queryResult.data;
+    const { page, pageSize, searchText, componentId, startDate, endDate, showImportedOnly } =
+      queryResult.data;
     const offset = page * pageSize;
 
     if (!Number.isSafeInteger(offset) || offset > Number.MAX_SAFE_INTEGER) {
@@ -92,6 +98,10 @@ export default ({
 
     if (componentId) {
       whereClause = and(whereClause, eq(Trace.componentId, componentId));
+    }
+
+    if (showImportedOnly) {
+      whereClause = and(whereClause, eq(Trace.isImport, 1));
     }
 
     const count = await db
@@ -488,6 +498,123 @@ export default ({
     } catch (error) {
       console.error("Failed to update remark:", error);
       res.status(500).json({ error: "Failed to update remark" });
+    }
+  });
+
+  router.post("/download", ...middleware, async (req: Request, res: Response) => {
+    const db = req.app.locals.db as LibSQLDatabase;
+
+    try {
+      const ids = req.body?.ids;
+
+      if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        res.status(400).json({ error: "ids array is required" });
+        return;
+      }
+
+      const selectedTraces = await db.select().from(Trace).where(inArray(Trace.id, ids)).execute();
+
+      if (selectedTraces.length === 0) {
+        res.status(404).json({ error: "No traces found for provided ids" });
+        return;
+      }
+
+      const rootIds = selectedTraces.map((t) => t.rootId).filter((id): id is string => !!id);
+
+      const allTraces =
+        rootIds.length > 0
+          ? await db.select().from(Trace).where(inArray(Trace.rootId, rootIds)).execute()
+          : selectedTraces;
+
+      const now = new Date().toISOString();
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader("Content-Disposition", `attachment; filename=traces-${now}.json`);
+
+      res.json(allTraces);
+    } catch (error) {
+      console.error("Failed to download traces:", error);
+      res.status(500).json({ error: "Failed to download traces" });
+    }
+  });
+
+  router.post("/upload", ...middleware, async (req: Request, res: Response) => {
+    const db = req.app.locals.db as LibSQLDatabase;
+
+    try {
+      const { traces } = req.body;
+
+      if (!traces || !Array.isArray(traces)) {
+        res.status(400).json({ error: "Invalid data format: traces array is required" });
+        return;
+      }
+
+      const invalidTraces: string[] = [];
+      for (const trace of traces) {
+        if (!trace.id || !trace.rootId || !trace.name || trace.startTime === undefined) {
+          invalidTraces.push(trace.id || "unknown");
+        }
+      }
+
+      if (invalidTraces.length > 0) {
+        res.status(400).json({
+          error: "Invalid trace data: missing required fields",
+          invalidTraces,
+          details: "Each trace must have id, rootId, name, and startTime",
+        });
+        return;
+      }
+
+      // Check for existing traces with same (id, rootId, parentId) combination
+      const uploadIds = traces.map((t) => t.id);
+
+      const existingTraces = await db
+        .select({
+          id: Trace.id,
+          rootId: Trace.rootId,
+          parentId: Trace.parentId,
+        })
+        .from(Trace)
+        .where(inArray(Trace.id, uploadIds))
+        .execute();
+
+      // Build a set of existing trace keys for fast lookup
+      const existingKeys = new Set(
+        existingTraces.map((t) => `${t.id}|${t.rootId}|${t.parentId ?? ""}`),
+      );
+
+      // Filter out conflicting traces
+      const tracesToInsert = traces.filter(
+        (t) => !existingKeys.has(`${t.id}|${t.rootId}|${t.parentId ?? ""}`),
+      );
+
+      const skippedCount = traces.length - tracesToInsert.length;
+
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const trace of tracesToInsert) {
+        trace.isImport = 1;
+
+        try {
+          await insertTrace(db, trace);
+          successCount++;
+        } catch (err) {
+          console.error(`Failed to insert trace ${trace.id}:`, err);
+          failCount++;
+        }
+      }
+
+      res.json({
+        code: 0,
+        message: "Upload completed",
+        successCount,
+        failCount,
+        skippedCount,
+        total: traces.length,
+      });
+    } catch (error) {
+      console.error("Failed to upload traces:", error);
+      res.status(500).json({ error: "Failed to upload traces" });
     }
   });
 

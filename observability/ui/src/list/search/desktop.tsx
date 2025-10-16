@@ -5,11 +5,14 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { joinURL } from "ufo";
 import { BlockletComponent, type SearchState } from "../../components/blocklet-comp.tsx";
 import CustomDateRangePicker from "../../components/date-picker.tsx";
 import SwitchComponent from "../../components/switch.tsx";
+import { origin } from "../../utils/index.ts";
 import Delete from "../delete.tsx";
+import Upload from "../upload.tsx";
 
 const PcSearch = ({
   components,
@@ -33,22 +36,65 @@ const PcSearch = ({
   const isBlocklet = !!window.blocklet?.prefix;
   const { t } = useLocaleContext();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [liveLoading, setLiveLoading] = useState(false);
+
+  const fetchSettings = async () => {
+    fetch(joinURL(origin, "/api/settings"))
+      .then((res) => res.json() as Promise<{ data: { live: boolean } }>)
+      .then(({ data }) => {
+        setLive(data.live);
+      });
+  };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const handleLiveChange = async (checked: boolean) => {
+    setLiveLoading(true);
+
+    try {
+      await fetch(joinURL(origin, "/api/settings"), {
+        method: "POST",
+        body: JSON.stringify({ live: checked }),
+        headers: { "Content-Type": "application/json" },
+      });
+      setLive(checked);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLiveLoading(false);
+    }
+  };
 
   return (
     <>
       {isBlocklet && (
         <Autocomplete
           size="small"
-          sx={{ minWidth: 240 }}
+          sx={{
+            minWidth: 160,
+            maxWidth: 240,
+            "& .MuiInputBase-root": {
+              height: 36,
+            },
+          }}
           options={components?.data || []}
           value={search.componentId || null}
           onChange={(_, value) => setSearch({ componentId: value ?? "" })}
           getOptionLabel={(option) => {
-            if (!option) return "";
+            if (!option) return t("allComponents");
             const comp = window.blocklet.componentMountPoints?.find((c) => c.did === option);
             return comp?.title ?? comp?.name ?? option;
           }}
-          renderInput={(params) => <TextField {...params} placeholder={t("selectComponent")} />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder={t("selectComponent") || t("allComponents")}
+              size="small"
+            />
+          )}
           renderOption={(props, option) => {
             const comp = window.blocklet.componentMountPoints?.find((c) => c.did === option);
             if (!comp) return null;
@@ -65,20 +111,35 @@ const PcSearch = ({
         />
       )}
 
-      <Box key="date-picker" sx={{ mx: 1 }}>
-        <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
-      </Box>
+      <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
 
       <Tooltip title={t("toggleLive")}>
-        <Box sx={{ display: "flex" }}>
-          <SwitchComponent live={live} setLive={setLive} />
+        <Box>
+          <SwitchComponent
+            checked={live}
+            onChange={handleLiveChange}
+            label={live ? t("liveUpdatesOn") : t("liveUpdatesOff")}
+            disabled={liveLoading}
+          />
         </Box>
       </Tooltip>
 
       {!isBlocklet && (
-        <IconButton onClick={() => setDialogOpen(true)}>
-          <TrashIcon sx={{ color: "error.main" }} />
-        </IconButton>
+        <SwitchComponent
+          checked={search.showImportedOnly ?? false}
+          onChange={(checked) => setSearch({ showImportedOnly: checked })}
+          label={t("showImportedOnly")}
+        />
+      )}
+
+      {!isBlocklet && <Upload fetchTraces={fetchTraces} pageSize={page.pageSize} />}
+
+      {!isBlocklet && (
+        <Tooltip title={t("deleteAll")}>
+          <IconButton onClick={() => setDialogOpen(true)} size="small">
+            <TrashIcon sx={{ color: "error.main" }} />
+          </IconButton>
+        </Tooltip>
       )}
 
       {dialogOpen && (

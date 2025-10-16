@@ -80,7 +80,7 @@ const migrations = [
     },
   },
   {
-    hash: "20251016_add_isImport_column",
+    hash: "20251016_add_trace_is_import_column",
     async sql(db: DB) {
       const hasImportColumn = await columnExists(db, "Trace", "isImport");
 

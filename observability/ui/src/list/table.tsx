@@ -409,7 +409,8 @@ const Table = ({
         <IconButton onClick={() => setOpen(true)}>
           <TrashIcon sx={{ color: "error.main" }} />
         </IconButton>
-        <Download selectedIds={selectedRows} />
+
+        <Download selectedIds={selectedRows} onReset={() => setSelectedRows([])} />
       </Box>
     );
   };

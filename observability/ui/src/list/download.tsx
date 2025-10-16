@@ -9,9 +9,10 @@ import { origin } from "../utils/index.ts";
 
 interface DownloadProps {
   selectedIds: string[];
+  onReset: () => void;
 }
 
-const Download = ({ selectedIds }: DownloadProps) => {
+const Download = ({ selectedIds, onReset }: DownloadProps) => {
   const { t } = useLocaleContext();
   const [downloading, setDownloading] = useState(false);
 
@@ -35,10 +36,7 @@ const Download = ({ selectedIds }: DownloadProps) => {
       const downloadUrl = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = downloadUrl;
-      const now = new Date()
-        .toLocaleString("sv-SE", { hour12: false })
-        .replace(" ", "_")
-        .replace(/[:]/g, "-");
+      const now = new Date().toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
       a.download = `traces-selected-${now}.json`;
       document.body.appendChild(a);
       a.click();
@@ -50,6 +48,7 @@ const Download = ({ selectedIds }: DownloadProps) => {
       Toast.error((error as Error)?.message || t("downloadFailed"));
     } finally {
       setDownloading(false);
+      onReset();
     }
   };
 

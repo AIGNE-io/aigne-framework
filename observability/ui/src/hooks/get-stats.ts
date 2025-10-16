@@ -42,10 +42,10 @@ export default function useGetStats({ traceInfo }: { traceInfo: TraceData }) {
       inputTokens,
       outputTokens,
       totalTokens: inputTokens + outputTokens,
-      inputCost: inputCost.gt(new Decimal(0)) ? `($${inputCost.toString()})` : "",
-      outputCost: outputCost.gt(new Decimal(0)) ? `($${outputCost.toString()})` : "",
+      inputCost: inputCost.gt(new Decimal(0)) ? `$${inputCost.toString()}` : "",
+      outputCost: outputCost.gt(new Decimal(0)) ? `$${outputCost.toString()}` : "",
       totalCost: inputCost.add(outputCost).gt(new Decimal(0))
-        ? `($${inputCost.add(outputCost).toString()})`
+        ? `$${inputCost.add(outputCost).toString()}`
         : "",
     };
   };

@@ -124,6 +124,7 @@ export default function JsonView({ value: data }: { value: any }) {
           readOnly: true,
           minimap: { enabled: false },
           wordWrap: "on",
+          contextmenu: false,
         }}
       />
     </Box>

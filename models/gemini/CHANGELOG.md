@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.14.2-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.2-beta.8...gemini-v0.14.2-beta.9) (2025-10-16)
+
+
+### Bug Fixes
+
+* **models:** auto retry when got emtpy response from gemini ([#636](https://github.com/AIGNE-io/aigne-framework/issues/636)) ([9367cef](https://github.com/AIGNE-io/aigne-framework/commit/9367cef49ea4c0c87b8a36b454deb2efaee6886f))
+* **models:** enhance gemini model tool use with status fields ([#634](https://github.com/AIGNE-io/aigne-framework/issues/634)) ([067b175](https://github.com/AIGNE-io/aigne-framework/commit/067b175c8e31bb5b1a6d0fc5a5cfb2d070d8d709))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.9
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta.9
+
 ## [0.14.2-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.2-beta.7...gemini-v0.14.2-beta.8) (2025-10-16)
 
 

@@ -404,7 +404,17 @@ test("ChatModel should retry after network errors or structured output validatio
     .mockRejectedValueOnce(new TypeError("terminated") as never)
     .mockReturnValueOnce({ json: { name: 30 } })
     .mockReturnValueOnce({ json: { name: "Alice", age: 25 } });
-  expect(await model.invoke(input)).toEqual({ json: { name: "Alice", age: 25 } });
+  expect(await model.invoke(input)).toMatchInlineSnapshot(`
+    {
+      "$meta": {
+        "retries": 2,
+      },
+      "json": {
+        "age": 25,
+        "name": "Alice",
+      },
+    }
+  `);
 });
 
 test("ChatModel should retry after tool not found error", async () => {
@@ -454,6 +464,9 @@ test("ChatModel should retry after tool not found error", async () => {
     });
   expect(await model.invoke(input)).toMatchInlineSnapshot(`
     {
+      "$meta": {
+        "retries": 2,
+      },
       "toolCalls": [
         {
           "function": {

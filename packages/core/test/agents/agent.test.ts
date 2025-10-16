@@ -828,7 +828,14 @@ test("Agent should support retrying on errors", async () => {
     .mockRejectedValueOnce(new Error("Network error") as never)
     .mockReturnValueOnce({ result: "success" });
 
-  expect(await agent.invoke({})).toEqual({ result: "success" });
+  expect(await agent.invoke({})).toMatchInlineSnapshot(`
+    {
+      "$meta": {
+        "retries": 1,
+      },
+      "result": "success",
+    }
+  `);
 });
 
 test("Agent should support default retry options", async () => {
@@ -843,7 +850,14 @@ test("Agent should support default retry options", async () => {
     .mockRejectedValueOnce(new Error("Network error") as never)
     .mockReturnValueOnce({ result: "success" });
 
-  expect(await agent.invoke({})).toEqual({ result: "success" });
+  expect(await agent.invoke({})).toMatchInlineSnapshot(`
+    {
+      "$meta": {
+        "retries": 1,
+      },
+      "result": "success",
+    }
+  `);
 });
 
 test("Agent should support disable retry options", async () => {
@@ -875,7 +889,14 @@ test("Agent should support custom retry condition", async () => {
     .mockReturnValueOnce({ result: "success" });
 
   expect(agent.invoke({})).rejects.toThrow("Network error");
-  expect(await agent.invoke({})).toEqual({ result: "success" });
+  expect(await agent.invoke({})).toMatchInlineSnapshot(`
+    {
+      "$meta": {
+        "retries": 1,
+      },
+      "result": "success",
+    }
+  `);
 });
 
 test("Agent should not emit agentFailed event if error is handled and is being retried", async () => {

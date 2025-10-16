@@ -87,7 +87,11 @@ export function availableModels(): LoadableModel[] {
     {
       name: [GeminiChatModel.name, "google"],
       apiKeyEnvName: ["GEMINI_API_KEY", "GOOGLE_API_KEY"],
-      create: (params) => new GeminiChatModel({ ...params, clientOptions }),
+      create: (params) =>
+        new GeminiChatModel({
+          ...params,
+          clientOptions: { httpOptions: clientOptions.fetchOptions },
+        }),
     },
     {
       name: OllamaChatModel.name,

@@ -8,6 +8,7 @@ import {
   type ChatModelOutputToolCall,
   type ChatModelOutputUsage,
   type FileUnionContent,
+  StructuredOutputError,
   safeParseJSON,
 } from "@aigne/core";
 import { isNonNullable, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
@@ -192,11 +193,13 @@ export class GeminiChatModel extends ChatModel {
       } else if (text) {
         yield { delta: { json: { json: safeParseJSON(text) } } };
       } else {
-        throw new Error("No JSON response from the model");
+        // NOTE: Trigger retry of chat model
+        throw new StructuredOutputError("No JSON response from the model");
       }
     } else if (!toolCalls.length) {
       if (!text) {
-        throw new Error("No text response from the model");
+        // NOTE: Trigger retry of chat model
+        throw new StructuredOutputError("No text response from the model");
       }
     }
 
@@ -318,17 +321,29 @@ export class GeminiChatModel extends ChatModel {
 
             const isError = "error" in output && Boolean(input.error);
 
+            const response: Record<string, any> = {
+              tool: call.function.name,
+            };
+
+            // NOTE: base on the documentation of gemini api, the content should include `output` field for successful result or `error` field for failed result,
+            // and base on the actual test, add a tool field presenting the tool name can improve the LLM understanding that which tool is called.
+            if (isError) {
+              Object.assign(response, { status: "error" }, output);
+            } else {
+              Object.assign(response, { status: "success" });
+              if ("output" in output) {
+                Object.assign(response, output);
+              } else {
+                Object.assign(response, { output });
+              }
+            }
+
             content.parts = [
               {
                 functionResponse: {
                   id: msg.toolCallId,
                   name: call.function.name,
-                  // NOTE: base on the documentation of gemini api, the content should include `output` field for successful result or `error` field for failed result,
-                  // and base on the actual test, add a tool field presenting the tool name can improve the LLM understanding that which tool is called.
-                  response: {
-                    tool: call.function.name,
-                    ...(isError ? { status: "error", ...output } : { status: "success", output }),
-                  },
+                  response,
                 },
               },
             ];

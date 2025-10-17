@@ -1,6 +1,7 @@
 import {
   type AgentProcessAsyncGenerator,
   type AgentProcessResult,
+  agentProcessResultToObject,
   ChatModel,
   type ChatModelInput,
   type ChatModelOptions,
@@ -12,6 +13,7 @@ import {
   safeParseJSON,
 } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
+import { mergeUsage } from "@aigne/core/utils/model-utils.js";
 import { isNonNullable, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { v7 } from "@aigne/uuid";
 import {
@@ -25,6 +27,8 @@ import {
   type Part,
   type ToolListUnion,
 } from "@google/genai";
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 
 const GEMINI_DEFAULT_CHAT_MODEL = "gemini-2.0-flash";
 
@@ -127,7 +131,7 @@ export class GeminiChatModel extends ChatModel {
 
     const response = await this.googleClient.models.generateContentStream(parameters);
 
-    const usage: ChatModelOutputUsage = {
+    let usage: ChatModelOutputUsage = {
       inputTokens: 0,
       outputTokens: 0,
     };
@@ -196,14 +200,64 @@ export class GeminiChatModel extends ChatModel {
       } else if (text) {
         yield { delta: { json: { json: safeParseJSON(text) } } };
       } else {
-        // NOTE: Trigger retry of chat model
-        throw new StructuredOutputError("No JSON response from the model");
+        throw new Error("No JSON response from the model");
       }
     } else if (!toolCalls.length) {
+      // NOTE: gemini-2.5-pro sometimes returns empty response,
+      // so we check it here and retry with structured output mode (this issue: empty response seems less likely to happen with tool calls)
       if (!text) {
-        logger.error("No text response from the model", parameters);
-        // NOTE: Trigger retry of chat model
-        throw new StructuredOutputError("No text response from the model");
+        logger.warn("Empty response from Gemini, retrying with structured output mode");
+
+        try {
+          const outputSchema = z.object({
+            output: z.string().describe("The final answer from the model"),
+          });
+
+          const response = await this.process({
+            ...input,
+            responseFormat: {
+              type: "json_schema",
+              jsonSchema: {
+                name: "output",
+                schema: zodToJsonSchema(outputSchema),
+              },
+            },
+          });
+
+          const result = await agentProcessResultToObject(response);
+
+          // Merge retry usage with the original usage
+          usage = mergeUsage(usage, result.usage);
+
+          // Return the tool calls if retry has tool calls
+          if (result.toolCalls?.length) {
+            toolCalls.push(...result.toolCalls);
+            yield { delta: { json: { toolCalls } } };
+          }
+          // Return the text from structured output of retry
+          else {
+            if (!result.json)
+              throw new Error("Retrying with structured output mode got no json response");
+
+            const parsed = outputSchema.safeParse(result.json);
+
+            if (!parsed.success)
+              throw new Error("Retrying with structured output mode got invalid json response");
+
+            text = parsed.data.output;
+            yield { delta: { text: { text } } };
+
+            logger.warn(
+              "Empty response from Gemini, retried with structured output mode successfully",
+            );
+          }
+        } catch (error) {
+          logger.error(
+            "Empty response from Gemini, retrying with structured output mode failed",
+            error,
+          );
+          throw new StructuredOutputError("No response from the model");
+        }
       }
     }
 

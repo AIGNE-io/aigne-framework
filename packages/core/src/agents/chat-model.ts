@@ -24,7 +24,7 @@ import {
 } from "./model.js";
 
 const CHAT_MODEL_DEFAULT_RETRY_OPTIONS: Agent["retryOnError"] = {
-  retries: 10,
+  retries: 3,
   shouldRetry: async (error) =>
     error instanceof StructuredOutputError || (await import("is-network-error")).default(error),
 };

@@ -48,7 +48,8 @@
     "@aigne/platform-helpers": "workspace:^",
     "@aigne/uuid": "^13.0.1",
     "@google/genai": "^1.24.0",
-    "zod": "^3.25.67"
+    "zod": "^3.25.67",
+    "zod-to-json-schema": "^3.24.6"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",

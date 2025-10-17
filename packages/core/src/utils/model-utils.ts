@@ -5,5 +5,9 @@ export function mergeUsage(...usages: Nullish<ChatModelOutputUsage>[]): ChatMode
   return {
     inputTokens: usages.reduce((acc, usage) => (usage ? acc + usage.inputTokens : acc), 0),
     outputTokens: usages.reduce((acc, usage) => (usage ? acc + usage.outputTokens : acc), 0),
+    aigneHubCredits: usages.reduce(
+      (acc, usage) => (usage?.aigneHubCredits ? acc + usage.aigneHubCredits : acc),
+      0,
+    ),
   };
 }

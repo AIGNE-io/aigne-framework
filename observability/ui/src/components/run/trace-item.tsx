@@ -79,7 +79,7 @@ function TraceItem({
         "&::before":
           totalDuration && totalDuration > 0
             ? {
-                content: " ",
+                content: '""',
                 position: "absolute",
                 left: `${marginLeftPercent}%`,
                 top: 0,

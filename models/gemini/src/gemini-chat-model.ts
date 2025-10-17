@@ -199,7 +199,7 @@ export class GeminiChatModel extends ChatModel {
         yield { delta: { json: { json } } };
       } else if (text) {
         yield { delta: { json: { json: safeParseJSON(text) } } };
-      } else {
+      } else if (!toolCalls.length) {
         throw new Error("No JSON response from the model");
       }
     } else if (!toolCalls.length) {

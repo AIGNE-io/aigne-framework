@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.28-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.28-beta.11...poe-v1.0.28-beta.12) (2025-10-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.2-beta.12
+  * devDependencies
+    * @aigne/core bumped to 1.63.0-beta.12
+    * @aigne/test-utils bumped to 0.5.55-beta.12
+
 ## [1.0.28-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.28-beta.10...poe-v1.0.28-beta.11) (2025-10-17)
 
 

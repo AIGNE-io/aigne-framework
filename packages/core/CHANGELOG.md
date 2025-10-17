@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.63.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.11...core-v1.63.0-beta.12) (2025-10-17)
+
+
+### Bug Fixes
+
+* custom queue instead of fastq to compatible with browser ([#640](https://github.com/AIGNE-io/aigne-framework/issues/640)) ([51e0f8f](https://github.com/AIGNE-io/aigne-framework/commit/51e0f8fdeaf26f2765f392218f04a2af4c0d2e1a))
+
 ## [1.63.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.10...core-v1.63.0-beta.11) (2025-10-17)
 
 

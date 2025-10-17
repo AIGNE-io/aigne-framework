@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.81.0-beta.15](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.14...aigne-framework-v1.81.0-beta.15) (2025-10-17)
+
+
+### Bug Fixes
+
+* custom queue instead of fastq to compatible with browser ([#640](https://github.com/AIGNE-io/aigne-framework/issues/640)) ([51e0f8f](https://github.com/AIGNE-io/aigne-framework/commit/51e0f8fdeaf26f2765f392218f04a2af4c0d2e1a))
+
 ## [1.81.0-beta.14](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.13...aigne-framework-v1.81.0-beta.14) (2025-10-17)
 
 

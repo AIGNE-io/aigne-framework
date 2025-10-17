@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-mcp-puppeteer",
-  "version": "1.18.65-beta.14",
+  "version": "1.18.65-beta.15",
   "description": "A demonstration of using AIGNE Framework and Puppeteer MCP Server to extract content from websites using Puppeteer",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-puppeteer",

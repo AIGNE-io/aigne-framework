@@ -230,7 +230,6 @@ export function formatTraceStepsAndTotalDuration({
 
     const totalDuration = duration;
     const annotated = {
-      isParallel,
       maxDuration,
 
       ...step,

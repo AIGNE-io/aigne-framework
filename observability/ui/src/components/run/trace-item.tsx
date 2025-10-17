@@ -45,7 +45,7 @@ function TraceItem({
   totalDuration,
   start = 0,
 }: TraceItemProps) {
-  const hasError = status && status.code === 2;
+  const hasError = status?.code === 2;
 
   const widthPercent = totalDuration
     ? Math.min(Math.max((duration / totalDuration) * 100 || 0, 0.5), 100)
@@ -213,7 +213,7 @@ export function formatTraceStepsAndTotalDuration({
     }
 
     const duration = parseDurationMs(step.startTime, step.endTime);
-    const isParallel = children?.length ? childrenTotal > duration : false;
+    const isParallel = Boolean(children?.length ? childrenTotal > duration : false);
     const maxDuration = Math.max(
       ...(children || []).map((c) => c.totalDuration ?? c.duration),
       duration,

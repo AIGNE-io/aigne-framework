@@ -78,6 +78,7 @@ export default function RunDetailDrawer({
           const format = await init(false, controller.signal);
           if (format?.status?.code) {
             cancelled = true;
+            break;
           }
         } catch {
           break;

@@ -16,7 +16,7 @@ export default function JsonView({ value: data }: { value: any }) {
       }}
     >
       <Editor
-        path={`${jsonString.slice(0, 5)}}.json`}
+        path={`${jsonString.slice(0, 5)}.json`}
         height="100%"
         language="json"
         theme="vs-dark"

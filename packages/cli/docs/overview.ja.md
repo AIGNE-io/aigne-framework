@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["リファレンス"]
----
-
 # 概要
 
 <p align="center">

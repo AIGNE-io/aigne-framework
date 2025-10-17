@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["Reference"]
----
-
 # 运行远程 Agent
 
 AIGNE CLI 不仅限于运行本地文件系统中的项目。它还提供了一个强大的功能，可以直接从远程 URL 执行 Agent。这对于测试、共享和运行 Agent 非常有用，无需克隆代码仓库或手动下载文件。

@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["リファレンス"]
----
-
 # aigne deploy
 
 `aigne deploy` コマンドは、AIGNE アプリケーションをパッケージ化し、指定された Blocklet Server エンドポイントに [Blocklet](https://www.blocklet.dev/) としてデプロイします。これは、Agent を本番環境で使用するために公開する標準的な方法であり、自己完結型の実行可能なサービスとしてアクセスできるようにします。
@@ -29,13 +25,13 @@ aigne deploy --path <path-to-project> --endpoint <deploy-endpoint>
 ```d2 デプロイワークフロー
 direction: down
 
-開発者: { 
-  shape: c4-person 
+開発者: {
+  shape: c4-person
 }
 
 CLI: {
   label: "`aigne deploy`"
-  
+
   task-1: { label: "1. 環境の準備" }
   task-2: { label: "2. Blocklet CLI の確認" }
   task-3: { label: "3. Blocklet の設定\n(名前と DID)" }

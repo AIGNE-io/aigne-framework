@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["參考"]
----
-
 # 入門指南
 
 本指南將引導您完成安裝 AIGNE CLI、建立新專案以及執行您的第一個 AI agent 的基本步驟。完成後，您將擁有一個在本機運行的 agent。

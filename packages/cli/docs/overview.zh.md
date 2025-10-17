@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["Reference"]
----
-
 # 概述
 
 <p align="center">

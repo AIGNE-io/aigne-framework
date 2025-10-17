@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["Reference"]
----
-
 # aigne test
 
 `aigne test` コマンドは、Agent とスキルの自動テストを実行します。これは、ユニットテストと統合テストのための組み込みメカニズムを提供し、Agent とそれが依存するツールがデプロイ前に正しく機能することを確認します。

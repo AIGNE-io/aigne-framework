@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["參考"]
----
-
 # aigne hub
 
 `aigne hub` 指令是您管理 AIGNE Hub 連線的中央工具。Hub 提供對受管理大型語言模型的存取、處理 API 金鑰管理，並追蹤您的信用額度使用情況。正確設定您的 Hub 連線對於執行使用 Hub 所提供模型的 Agent 至關重要。

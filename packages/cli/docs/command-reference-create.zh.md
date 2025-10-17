@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["Reference"]
----
-
 # aigne create
 
 `aigne create` 命令从模板中搭建一个新的 AIGNE 项目。它会设置必要的目录结构和配置文件，让您可以立即开始开发您的 agent。

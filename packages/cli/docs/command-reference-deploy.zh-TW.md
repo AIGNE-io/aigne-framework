@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["參考"]
----
-
 # aigne deploy
 
 `aigne deploy` 命令會將您的 AIGNE 應用程式打包並部署為 [Blocklet](https://www.blocklet.dev/) 到指定的 Blocklet Server 端點。這是將您的 agent 發布以供生產使用的標準方法，使其作為一個獨立、可執行的服務來存取。
@@ -29,13 +25,13 @@ aigne deploy --path <path-to-project> --endpoint <deploy-endpoint>
 ```d2 部署工作流程
 direction: down
 
-開發者: { 
-  shape: c4-person 
+開發者: {
+  shape: c4-person
 }
 
 CLI: {
   label: "`aigne deploy`"
-  
+
   task-1: { label: "1. 準備環境" }
   task-2: { label: "2. 檢查 Blocklet CLI" }
   task-3: { label: "3. 設定 Blocklet\n(名稱 & DID)" }

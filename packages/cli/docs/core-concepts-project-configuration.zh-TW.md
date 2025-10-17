@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["Reference"]
----
-
 # 專案設定 (aigne.yaml)
 
 `aigne.yaml` 檔案是您 AIGNE 專案的核心。它作為中央清單，定義了專案的元資料、語言模型設定，以及其核心組件（如 agents 和技能）之間的關係。一個結構良好的 `aigne.yaml` 是建立一個強大且有組織的 agent 的第一步。

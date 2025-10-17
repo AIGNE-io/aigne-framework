@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["參考"]
----
-
 # aigne create
 
 `aigne create` 指令會從範本建立一個新的 AIGNE 專案。它會設定必要的目錄結構和設定檔，讓您可以立即開始開發您的 Agent。

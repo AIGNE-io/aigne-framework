@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["Reference"]
----
-
 # 部署 Agent
 
 部署您的 AIGNE 專案，會將其從本地開發環境轉變為一個稱為 Blocklet 的獨立、可分發的應用程式。這讓您的 agent 能夠在生產環境中運行、與他人分享，並無縫地整合到更廣泛的 Blocklet 生態系統中。`aigne deploy` 指令會自動化整個打包與部署流程。

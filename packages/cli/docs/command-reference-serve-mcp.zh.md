@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["参考"]
----
-
 # aigne serve-mcp
 
 将 AIGNE 项目中的 Agent 作为模型上下文协议（MCP）服务器提供服务。此命令通过可流式传输的 HTTP 端点暴露您的 Agent，从而实现与支持 MCP 标准的外部系统和应用程序的无缝集成。

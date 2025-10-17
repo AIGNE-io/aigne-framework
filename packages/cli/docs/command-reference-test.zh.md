@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["参考"]
----
-
 # aigne test
 
 `aigne test` 命令为您的 agent 和技能执行自动化测试。它提供了一个内置的单元和集成测试机制，以确保您的 agent 及其依赖的工具在部署前能够正常工作。

@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["Reference"]
----
-
 # aigne test
 
 `aigne test` 指令為您的 agents 和技能執行自動化測試。它提供了一個內建的單元和整合測試機制，以確保您的 agents 及其所依賴的工具在部署前能正常運作。

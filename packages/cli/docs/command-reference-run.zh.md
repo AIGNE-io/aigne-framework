@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["Reference"]
----
-
 # aigne run
 
 `aigne run` 命令是执行 AIGNE agent 的主要方式。它可以从本地项目目录或直接从远程 URL 运行 agent。它提供了一套灵活的选项，用于提供输入、配置 AI 模型和处理输出，包括用于对话式 agent 的交互式聊天模式。
@@ -34,7 +30,7 @@ User: {
 
 CLI: {
   label: "@aigne/cli"
-  
+
   Download: {
     label: "下载包"
   }

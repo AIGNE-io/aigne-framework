@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["Reference"]
----
-
 # aigne serve-mcp
 
 將 AIGNE 專案中的 Agent 作為模型上下文協定（MCP）伺服器來運行。此命令會透過一個可串流的 HTTP 端點公開您的 Agent，使其能與支援 MCP 標準的外部系統和應用程式無縫整合。

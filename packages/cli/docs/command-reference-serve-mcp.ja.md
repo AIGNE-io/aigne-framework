@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["リファレンス"]
----
-
 # aigne serve-mcp
 
 AIGNEプロジェクト内のエージェントをModel Context Protocol (MCP) サーバーとして提供します。このコマンドは、ストリーム可能なHTTPエンドポイント経由でエージェントを公開し、MCP標準をサポートする外部システムやアプリケーションとのシームレスな統合を可能にします。

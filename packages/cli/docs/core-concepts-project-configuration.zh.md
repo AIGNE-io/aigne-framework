@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["参考"]
----
-
 # 项目配置 (aigne.yaml)
 
 `aigne.yaml` 文件是 AIGNE 项目的核心。它作为中央清单文件，定义了项目的元数据、语言模型设置以及其核心组件（如 agent 和技能）之间的关系。一个结构良好的 `aigne.yaml` 是构建强大且有组织的 agent 的第一步。

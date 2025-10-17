@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["Reference"]
----
-
 # aigne create
 
 `aigne create` コマンドは、テンプレートから新しい AIGNE プロジェクトをスキャフォールディングします。必要なディレクトリ構造と設定ファイルをセットアップし、すぐに Agent の開発を開始できます。

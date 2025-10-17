@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["参考"]
----
-
 # aigne hub
 
 `aigne hub` 命令是您管理与 AIGNE Hub 连接的中心工具。Hub 提供对托管大语言模型的访问、处理 API 密钥管理并跟踪您的积分使用情况。正确配置您的 Hub 连接对于运行使用 Hub 提供的模型的 Agent 至关重要。

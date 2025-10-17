@@ -2,10 +2,14 @@ import InfoRow from "@arcblock/ux/lib/InfoRow";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import Tag from "@arcblock/ux/lib/Tag";
+import CheckIcon from "@mui/icons-material/Check";
+import CopyAllIcon from "@mui/icons-material/CopyAll";
+import DownloadIcon from "@mui/icons-material/Download";
 import type { SxProps } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
 import { styled } from "@mui/material/styles";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
@@ -16,6 +20,7 @@ import { isUndefined, omitBy } from "lodash";
 import { useEffect, useMemo, useState } from "react";
 import { joinURL } from "ufo";
 import useGetTokenPrice from "../../hooks/get-token-price.ts";
+import { getLocalizedFilename } from "../../libs/index.ts";
 import { origin } from "../../utils/index.ts";
 import { parseDuration } from "../../utils/latency.ts";
 import JsonView from "../json-view.tsx";
@@ -31,11 +36,12 @@ export default function TraceDetailPanel({
   sx?: SxProps;
 }) {
   const [tab, setTab] = useState("input");
-  const { t } = useLocaleContext();
+  const { t, locale } = useLocaleContext();
   const getPrices = useGetTokenPrice();
   const [trace, setTrace] = useState<TraceData | undefined | null>(originalTrace);
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
   const [isLoading, setIsLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
   const hasError = trace?.status?.code === 2;
   const hasUserContext =
     trace?.attributes?.userContext && Object.keys(trace?.attributes?.userContext).length > 0;
@@ -143,6 +149,30 @@ export default function TraceDetailPanel({
     ...(hasMemories ? [{ label: t("memories"), value: "memories" }] : []),
     { label: t("metadata"), value: "metadata" },
   ];
+
+  const handleCopy = async () => {
+    try {
+      const jsonString = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+      await navigator.clipboard.writeText(jsonString);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  const handleDownload = () => {
+    const jsonString = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = getLocalizedFilename("data", locale);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   if (!trace) return null;
 
@@ -316,17 +346,69 @@ export default function TraceDetailPanel({
           </Box>
         </Box>
       </Box>
-      <Box sx={{ position: "relative" }}>
+
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: 1,
+          borderColor: "divider",
+        }}
+      >
         <Tabs
           value={tab}
           onChange={(_, v) => setTab(v)}
           textColor="inherit"
-          indicatorColor="primary"
+          sx={{
+            minHeight: 40,
+            "& .MuiTab-root": {
+              minHeight: 40,
+              textTransform: "none",
+              fontSize: 14,
+              fontWeight: 400,
+              py: 1,
+              px: 2,
+            },
+          }}
         >
           {tabs.map((t) => (
             <Tab key={t.value} label={t.label} value={t.value} />
           ))}
         </Tabs>
+
+        <Box sx={{ display: "flex", gap: 0.5, pr: 1 }}>
+          <Tooltip title={copied ? t("copied") : t("copyJson")}>
+            <IconButton
+              size="small"
+              onClick={handleCopy}
+              disabled={!value}
+              sx={{
+                color: "text.secondary",
+                "&:hover": {
+                  color: "text.primary",
+                },
+              }}
+            >
+              {copied ? <CheckIcon fontSize="small" /> : <CopyAllIcon fontSize="small" />}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t("downloadJson")}>
+            <IconButton
+              size="small"
+              onClick={handleDownload}
+              disabled={!value}
+              sx={{
+                color: "text.secondary",
+                "&:hover": {
+                  color: "text.primary",
+                },
+              }}
+            >
+              <DownloadIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
       </Box>
       <Box
         sx={{

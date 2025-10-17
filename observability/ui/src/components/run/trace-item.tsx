@@ -26,6 +26,8 @@ type TraceItemProps = {
     code: number;
     message: string;
   };
+  totalDuration: number;
+  start: number;
 };
 
 function TraceItem({
@@ -40,12 +42,23 @@ function TraceItem({
   isExpanded,
   onToggleExpand,
   status,
+  totalDuration,
+  start = 0,
 }: TraceItemProps) {
-  const hasError = status && status.code === 2;
+  const hasError = status?.code === 2;
+
+  const widthPercent = totalDuration
+    ? Math.min(Math.max((duration / totalDuration) * 100 || 0, 0.5), 100)
+    : 0;
+  let marginLeftPercent = totalDuration ? Math.min((start / totalDuration) * 100, 100) : 0;
+  if (marginLeftPercent >= 100) {
+    marginLeftPercent -= widthPercent;
+  }
 
   return (
     <Box
       sx={{
+        position: "relative",
         display: "flex",
         alignItems: "center",
         py: 1,
@@ -56,16 +69,42 @@ function TraceItem({
         cursor: "pointer",
         transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
         backgroundColor: selected ? "action.selected" : "transparent",
-        borderRadius: 1,
+        borderRadius: 0.5,
+        overflow: "hidden",
+
         "&:hover": {
           backgroundColor: selected ? "action.selected" : "action.hover",
-          transform: "translateX(4px)",
-          boxShadow: selected ? 0 : "0 2px 8px rgba(0, 0, 0, 0.08)",
         },
+
+        "&::before":
+          totalDuration && totalDuration > 0
+            ? {
+                content: '""',
+                position: "absolute",
+                left: `${marginLeftPercent}%`,
+                top: 0,
+                width: `${widthPercent}%`,
+                height: "100%",
+                backgroundColor: "primary.main",
+                opacity: 0.04,
+                borderRadius: 0.5,
+                zIndex: 0,
+              }
+            : {},
       }}
       onClick={() => onSelect?.()}
     >
-      <Box sx={{ display: "flex", alignItems: "center", flex: 1, minWidth: 0, gap: 1 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          flex: 1,
+          minWidth: 0,
+          gap: 1,
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
         {hasChildren ? (
           <IconButton
             size="small"
@@ -109,7 +148,7 @@ function TraceItem({
         )}
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2, position: "relative", zIndex: 1 }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <AgentTag agentTag={agentTag} model={model} />
         </Box>
@@ -144,10 +183,12 @@ export function formatTraceStepsAndTotalDuration({
   steps,
   start = 0,
   selectedTrace,
+  parallel = false,
 }: {
   steps: TraceData[];
   start: number;
   selectedTrace?: TraceData | null;
+  parallel?: boolean;
 }): TraceStep[] {
   let current = start;
 
@@ -167,17 +208,30 @@ export function formatTraceStepsAndTotalDuration({
         start: current,
         selectedTrace,
       });
+
       childrenTotal = children.reduce((sum, c) => sum + (c.totalDuration ?? 0), 0);
     }
 
     const duration = parseDurationMs(step.startTime, step.endTime);
-    const isParallel = (children || []).every((c) => c.start === current);
+    const isParallel = Boolean(children?.length ? childrenTotal > duration : false);
     const maxDuration = Math.max(
       ...(children || []).map((c) => c.totalDuration ?? c.duration),
       duration,
     );
-    const totalDuration = isParallel ? maxDuration : children ? childrenTotal : duration;
+
+    if (isParallel) {
+      children = formatTraceStepsAndTotalDuration({
+        steps: step.children ?? [],
+        start: current,
+        selectedTrace,
+        parallel: isParallel,
+      });
+    }
+
+    const totalDuration = duration;
     const annotated = {
+      maxDuration,
+
       ...step,
       selected: step.id === selectedTrace?.id,
       start: current,
@@ -189,7 +243,7 @@ export function formatTraceStepsAndTotalDuration({
       status: step.status,
     };
 
-    if (!isSameStartTimeWithNextStep) {
+    if (!isSameStartTimeWithNextStep && !parallel) {
       current += annotated.duration;
     }
 
@@ -200,6 +254,7 @@ export function formatTraceStepsAndTotalDuration({
 export function renderTraceItems({
   traceId,
   items,
+  totalDuration,
   depth = 0,
   onSelect,
   expandedItems,
@@ -208,6 +263,7 @@ export function renderTraceItems({
 }: {
   traceId: string;
   items: TraceStep[];
+  totalDuration: number;
   depth?: number;
   onSelect?: (step?: TraceData) => void;
   expandedItems: Set<string>;
@@ -234,11 +290,14 @@ export function renderTraceItems({
         isExpanded={isExpanded}
         onToggleExpand={() => onToggleExpand(itemKey)}
         status={item.status}
+        totalDuration={totalDuration}
+        start={item.start ?? 0}
       />,
       ...(hasChildren && isExpanded && item.children
         ? renderTraceItems({
             traceId,
             items: item.children,
+            totalDuration,
             depth: depth + 1,
             onSelect,
             expandedItems,
@@ -344,6 +403,7 @@ export default function TraceItemList({
         {renderTraceItems({
           traceId,
           items: traceSteps,
+          totalDuration: traceSteps[0]?.totalDuration ?? 0,
           depth: 0,
           onSelect,
           expandedItems,

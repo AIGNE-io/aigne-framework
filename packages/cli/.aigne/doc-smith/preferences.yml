@@ -1,4 +1,10 @@
 rules:
+  - id: pref_fd6643bfe933eadd
+    active: true
+    scope: translation
+    rule: 代码块中的输入和输出内容不应被翻译。
+    feedback: code block 中的输入和输出均不应该翻译
+    createdAt: 2025-10-17T12:50:24.804Z
   - id: pref_b0d2aeb2add152e1
     active: true
     scope: document

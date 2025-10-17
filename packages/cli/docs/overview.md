@@ -41,29 +41,6 @@ labels: ["Reference"]
   </x-card>
 </x-cards>
 
-## Core Commands at a Glance
-
-The CLI provides a set of intuitive commands to manage your AIGNE projects. Here are the main commands you'll be using:
-
-```bash Basic Commands icon=lucide:terminal
-# Create a new AIGNE project
-aigne create [path]
-
-# Run an agent locally
-aigne run --path <agent-path>
-
-# Run automated tests for your agents
-aigne test --path <agent-path>
-
-# Serve agents as an MCP server
-aigne serve-mcp --path <agent-path>
-
-# Start the observability and monitoring server
-aigne observe
-```
-
-This toolset forms the foundation of the AIGNE development experience, providing everything you need from inception to production.
-
 ---
 
 Ready to get started? Follow our [Getting Started](./getting-started.md) guide to install the CLI and create your first AIGNE agent.

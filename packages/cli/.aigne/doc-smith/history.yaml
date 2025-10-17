@@ -1,0 +1,21 @@
+entries:
+  - timestamp: 2025-10-17T12:59:34.865Z
+    operation: document_update
+    feedback: aigne web 没有 create page 命令，改为 generate 命令说明. 去掉参数
+    documentPath: /command-reference/built-in-apps
+  - timestamp: 2025-10-17T12:50:13.482Z
+    operation: translation_update
+    feedback: code block 中的输入和输出均不应该翻译
+    documentPath: /command-reference/hub
+  - timestamp: 2025-10-17T12:50:00.301Z
+    operation: translation_update
+    feedback: code block 中的输入和输出均不应该翻译
+    documentPath: /command-reference/serve-mcp
+  - timestamp: 2025-10-17T12:50:00.009Z
+    operation: translation_update
+    feedback: code block 中的输入和输出均不应该翻译
+    documentPath: /command-reference/create
+  - timestamp: 2025-10-17T12:44:42.493Z
+    operation: document_update
+    feedback: overview 不需要代码示例
+    documentPath: /overview

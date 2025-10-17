@@ -40,11 +40,11 @@ Web Smith is an application focused on generating and maintaining web pages for 
 
 Similar to Doc Smith, you use the `aigne web` command followed by the name of an agent within the Web Smith application.
 
-For example, to generate a new feature page for your website:
+For example, to generate a new web page:
 
-```bash title="Generate a new feature page" icon=lucide:terminal
-# Run an agent to create a new page based on a prompt
-aigne web create-page --prompt "A page explaining our new AI-powered search feature"
+```bash title="Generate a new web page" icon=lucide:terminal
+# Run an agent to create a new page
+aigne web generate
 ```
 
 ## Common Commands
@@ -64,7 +64,7 @@ aigne doc upgrade
 You can expose an application's agents as a standard Model Context Protocol (MCP) service, allowing other systems to interact with them over HTTP.
 
 ```bash title="Serve Doc Smith agents" icon=lucide:terminal
-aigne doc serve-mcp --port 8080
+aigne doc serve-mcp
 ```
 
 For a full list of server options, see the [`aigne serve-mcp`](./command-reference-serve-mcp.md) command reference.

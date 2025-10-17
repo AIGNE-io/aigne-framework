@@ -14,15 +14,15 @@ labels: ["Reference"]
   <center>Agent 開発のコマンドセンター</center>
 </p>
 
-`@aigne/cli` は、[AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) の公式コマンドラインツールであり、Agent 開発のライフサイクル全体を効率化するために設計されています。プロジェクトの作成、ローカルでの実行、テスト、デプロイを簡素化するための包括的なコマンドスイートを提供し、AIGNE アプリケーションを簡単に構築、実行、管理できるようにします。
+`@aigne/cli` は、[AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) の公式コマンドラインツールであり、Agent 開発のライフサイクル全体を効率化するように設計されています。プロジェクトの作成、ローカルでの実行、テスト、デプロイを簡素化するための包括的なコマンドスイートを提供し、AIGNE アプリケーションの構築、実行、管理を容易にします。
 
 ## 主な機能
 
-`@aigne/cli` には、Agent 開発のワークフローを加速するための機能が満載です。
+`@aigne/cli` には、Agent 開発ワークフローを加速するための機能が満載です。
 
 <x-cards data-columns="3">
-  <x-card data-title="プロジェクトのひな形作成" data-icon="lucide:folder-plus">
-    `aigne create` コマンドを使用して、定義済みのファイル構造と設定を持つ新しい AIGNE プロジェクトを迅速に作成します。
+  <x-card data-title="プロジェクトの雛形作成" data-icon="lucide:folder-plus">
+    `aigne create` コマンドを使用して、定義済みのファイル構造と構成を持つ新しい AIGNE プロジェクトを迅速に作成します。
   </x-card>
   <x-card data-title="ローカルでの Agent 実行" data-icon="lucide:play-circle">
     `aigne run` を介して、ローカルのチャットループで Agent を簡単に実行し、対話することで、迅速なテストとデバッグが可能です。
@@ -37,33 +37,10 @@ labels: ["Reference"]
     `aigne observe` でローカルサーバーを起動し、Agent の実行トレースとパフォーマンスデータを表示・分析します。
   </x-card>
   <x-card data-title="マルチモデル対応" data-icon="lucide:bot">
-    OpenAI、Claude、XAI など、さまざまな AI モデルプロバイダーをシームレスに切り替えます。
+    OpenAI、Claude、XAI など、さまざまな AI モデルプロバイダーをシームレスに切り替えることができます。
   </x-card>
 </x-cards>
 
-## 主要コマンド一覧
-
-CLI は、AIGNE プロジェクトを管理するための一連の直感的なコマンドを提供します。以下は、使用する主なコマンドです。
-
-```bash 基本コマンド icon=lucide:terminal
-# 新しい AIGNE プロジェクトを作成
-aigne create [path]
-
-# Agent をローカルで実行
-aigne run --path <agent-path>
-
-# Agent の自動テストを実行
-aigne test --path <agent-path>
-
-# Agent を MCP サーバーとして提供
-aigne serve-mcp --path <agent-path>
-
-# 可観測性および監視サーバーを起動
-aigne observe
-```
-
-このツールセットは AIGNE 開発体験の基盤を形成し、構想から本番稼働まで必要なすべてを提供します。
-
 ---
 
-準備はいいですか？[スタートガイド](./getting-started.md) に従って CLI をインストールし、最初の AIGNE Agent を作成してください。
+始める準備はできましたか？ [スタートガイド](./getting-started.md) に従って CLI をインストールし、最初の AIGNE agent を作成してください。

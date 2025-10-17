@@ -1,5 +1,52 @@
 # Changelog
 
+## [0.11.1-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta.5...observability-ui-v0.11.1-beta.6) (2025-10-16)
+
+
+### Features
+
+* **observability:** support import and export trace items ([#635](https://github.com/AIGNE-io/aigne-framework/issues/635)) ([27acadf](https://github.com/AIGNE-io/aigne-framework/commit/27acadfca49adb653a78007daa0a41ee90468047))
+
+## [0.11.1-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta.4...observability-ui-v0.11.1-beta.5) (2025-10-16)
+
+
+### Bug Fixes
+
+* **blocklet:** tune observability ui build script ([#631](https://github.com/AIGNE-io/aigne-framework/issues/631)) ([8d23d39](https://github.com/AIGNE-io/aigne-framework/commit/8d23d39875f6f4e2bf42b52ffb9c806ad8e184de))
+
+## [0.11.1-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta.3...observability-ui-v0.11.1-beta.4) (2025-10-16)
+
+
+### Bug Fixes
+
+* **blocklet:** disabled editor context menu ([#626](https://github.com/AIGNE-io/aigne-framework/issues/626)) ([e6f4a6b](https://github.com/AIGNE-io/aigne-framework/commit/e6f4a6b3ef2581ec6c7f1174d65b15df6ccd31c6))
+
+## [0.11.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta.2...observability-ui-v0.11.1-beta.3) (2025-10-15)
+
+
+### Bug Fixes
+
+* **blocklet:** add expand/collapse all functionality to trace visualization ([#623](https://github.com/AIGNE-io/aigne-framework/issues/623)) ([b66a2a0](https://github.com/AIGNE-io/aigne-framework/commit/b66a2a050463bb7f69ded7f67c318b10ed9319d9))
+
+## [0.11.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta.1...observability-ui-v0.11.1-beta.2) (2025-10-15)
+
+
+### Features
+
+* **blocklet:** support remark for observability trace item ([#620](https://github.com/AIGNE-io/aigne-framework/issues/620)) ([d91c42c](https://github.com/AIGNE-io/aigne-framework/commit/d91c42c0c9286cd6e39beace740f8ea61dff3f50))
+
+
+### Bug Fixes
+
+* **blocklet:** tune observability detail list ux ([#618](https://github.com/AIGNE-io/aigne-framework/issues/618)) ([3ad83b6](https://github.com/AIGNE-io/aigne-framework/commit/3ad83b6be347831125806be7bee19294aa85ed58))
+
+## [0.11.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta...observability-ui-v0.11.1-beta.1) (2025-10-13)
+
+
+### Bug Fixes
+
+* add copy and download  in observability detail and optimize the detail rendering ([#610](https://github.com/AIGNE-io/aigne-framework/issues/610)) ([b1885f2](https://github.com/AIGNE-io/aigne-framework/commit/b1885f2b969d7ca28a0cb1ac2b4707e7c785308b))
+
 ## [0.11.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.0...observability-ui-v0.11.1-beta) (2025-10-11)
 
 

@@ -1,5 +1,86 @@
 # Changelog
 
+## [1.81.0-beta.15](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.14...aigne-framework-v1.81.0-beta.15) (2025-10-17)
+
+
+### Bug Fixes
+
+* custom queue instead of fastq to compatible with browser ([#640](https://github.com/AIGNE-io/aigne-framework/issues/640)) ([51e0f8f](https://github.com/AIGNE-io/aigne-framework/commit/51e0f8fdeaf26f2765f392218f04a2af4c0d2e1a))
+
+## [1.81.0-beta.14](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.13...aigne-framework-v1.81.0-beta.14) (2025-10-17)
+
+
+### Bug Fixes
+
+* **gemini:** implement retry mechanism for empty responses with structured output fallback ([#638](https://github.com/AIGNE-io/aigne-framework/issues/638)) ([d33c8bb](https://github.com/AIGNE-io/aigne-framework/commit/d33c8bb9711aadddef9687d6cf472a179cd8ed9c))
+
+## [1.81.0-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.12...aigne-framework-v1.81.0-beta.13) (2025-10-16)
+
+
+### Features
+
+* **observability:** support import and export trace items ([#635](https://github.com/AIGNE-io/aigne-framework/issues/635)) ([27acadf](https://github.com/AIGNE-io/aigne-framework/commit/27acadfca49adb653a78007daa0a41ee90468047))
+
+
+### Bug Fixes
+
+* correct calculate token usage for gemini model ([7fd1328](https://github.com/AIGNE-io/aigne-framework/commit/7fd13289d3d0f8e062211f7c6dd5cb56e5318c1b))
+
+## [1.81.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.11...aigne-framework-v1.81.0-beta.12) (2025-10-16)
+
+
+### Bug Fixes
+
+* allow custom user messages and prevent duplicate user content ([#632](https://github.com/AIGNE-io/aigne-framework/issues/632)) ([6c883b2](https://github.com/AIGNE-io/aigne-framework/commit/6c883b2d57a65e9b46232cece91fc6aa1de03aba))
+* **blocklet:** tune observability ui build script ([#631](https://github.com/AIGNE-io/aigne-framework/issues/631)) ([8d23d39](https://github.com/AIGNE-io/aigne-framework/commit/8d23d39875f6f4e2bf42b52ffb9c806ad8e184de))
+* **models:** auto retry when got emtpy response from gemini ([#636](https://github.com/AIGNE-io/aigne-framework/issues/636)) ([9367cef](https://github.com/AIGNE-io/aigne-framework/commit/9367cef49ea4c0c87b8a36b454deb2efaee6886f))
+* **models:** enhance gemini model tool use with status fields ([#634](https://github.com/AIGNE-io/aigne-framework/issues/634)) ([067b175](https://github.com/AIGNE-io/aigne-framework/commit/067b175c8e31bb5b1a6d0fc5a5cfb2d070d8d709))
+
+## [1.81.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.10...aigne-framework-v1.81.0-beta.11) (2025-10-16)
+
+
+### Bug Fixes
+
+* update observability api ([#629](https://github.com/AIGNE-io/aigne-framework/issues/629)) ([5024262](https://github.com/AIGNE-io/aigne-framework/commit/50242620e904922b07168751a4477f1e60347fcf))
+
+## [1.81.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.9...aigne-framework-v1.81.0-beta.10) (2025-10-16)
+
+
+### Bug Fixes
+
+* **blocklet:** disabled editor context menu ([#626](https://github.com/AIGNE-io/aigne-framework/issues/626)) ([e6f4a6b](https://github.com/AIGNE-io/aigne-framework/commit/e6f4a6b3ef2581ec6c7f1174d65b15df6ccd31c6))
+* ensure tips are only printed once during AIGNE loading ([#628](https://github.com/AIGNE-io/aigne-framework/issues/628)) ([7d49508](https://github.com/AIGNE-io/aigne-framework/commit/7d4950882436169986eedab75c232db2c0a30732))
+
+## [1.81.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.8...aigne-framework-v1.81.0-beta.9) (2025-10-15)
+
+
+### Bug Fixes
+
+* add options for system message reordering and merging ([#624](https://github.com/AIGNE-io/aigne-framework/issues/624)) ([8ca466d](https://github.com/AIGNE-io/aigne-framework/commit/8ca466d49d1e4ed08bc90922f39c0d3ed60c4fd5))
+* **blocklet:** add expand/collapse all functionality to trace visualization ([#623](https://github.com/AIGNE-io/aigne-framework/issues/623)) ([b66a2a0](https://github.com/AIGNE-io/aigne-framework/commit/b66a2a050463bb7f69ded7f67c318b10ed9319d9))
+
+## [1.81.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.7...aigne-framework-v1.81.0-beta.8) (2025-10-15)
+
+
+### Features
+
+* **blocklet:** support remark for observability trace item ([#620](https://github.com/AIGNE-io/aigne-framework/issues/620)) ([d91c42c](https://github.com/AIGNE-io/aigne-framework/commit/d91c42c0c9286cd6e39beace740f8ea61dff3f50))
+
+
+### Bug Fixes
+
+* **blocklet:** tune observability detail list ux ([#618](https://github.com/AIGNE-io/aigne-framework/issues/618)) ([3ad83b6](https://github.com/AIGNE-io/aigne-framework/commit/3ad83b6be347831125806be7bee19294aa85ed58))
+* **models:** add imageConfig to gemini image model ([#621](https://github.com/AIGNE-io/aigne-framework/issues/621)) ([252de7a](https://github.com/AIGNE-io/aigne-framework/commit/252de7a10701c4f5302c2fff977c88e5e833b7b1))
+
+## [1.81.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.6...aigne-framework-v1.81.0-beta.7) (2025-10-13)
+
+
+### Bug Fixes
+
+* add copy and download  in observability detail and optimize the detail rendering ([#610](https://github.com/AIGNE-io/aigne-framework/issues/610)) ([b1885f2](https://github.com/AIGNE-io/aigne-framework/commit/b1885f2b969d7ca28a0cb1ac2b4707e7c785308b))
+* **cli:** suppress error message for CTRL+C ([#617](https://github.com/AIGNE-io/aigne-framework/issues/617)) ([01f0ea7](https://github.com/AIGNE-io/aigne-framework/commit/01f0ea74affa5653dd94048e68b62b7d7e649d4a))
+* **core:** auto merge multiple system messages ([#619](https://github.com/AIGNE-io/aigne-framework/issues/619)) ([e9e62c0](https://github.com/AIGNE-io/aigne-framework/commit/e9e62c03c45f5a9b75d44a07588b2b179e262aad))
+
 ## [1.81.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0-beta.5...aigne-framework-v1.81.0-beta.6) (2025-10-12)
 
 

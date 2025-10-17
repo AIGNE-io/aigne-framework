@@ -72,6 +72,8 @@ export type Instructions = { role: Exclude<Role, "tool">; content: string; path:
 export interface AIAgentSchema extends BaseAgentSchema {
   type: "ai";
   instructions?: Instructions;
+  autoReorderSystemMessages?: boolean;
+  autoMergeSystemMessages?: boolean;
   inputKey?: string;
   inputFileKey?: string;
   outputKey?: string;
@@ -264,6 +266,8 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
           .object({
             type: z.literal("ai"),
             instructions: optionalize(instructionsSchema),
+            autoReorderSystemMessages: optionalize(z.boolean()),
+            autoMergeSystemMessages: optionalize(z.boolean()),
             inputKey: optionalize(z.string()),
             outputKey: optionalize(z.string()),
             inputFileKey: optionalize(z.string()),

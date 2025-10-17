@@ -83,7 +83,8 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
       componentId,
       action,
       token,
-      cost
+      cost,
+      isImport
     ) VALUES (
       ${trace.id},
       ${trace.rootId},
@@ -98,7 +99,8 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
       ${trace.componentId || null},
       ${trace.action || null},
       ${trace.token || 0},
-      ${trace.cost || 0}
+      ${trace.cost || 0},
+      ${trace.isImport || 0}
     )
     ON CONFLICT(id)
     DO UPDATE SET
@@ -112,7 +114,8 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
       componentId = excluded.componentId,
       action = excluded.action,
       token = excluded.token,
-      cost = excluded.cost;
+      cost = excluded.cost,
+      isImport = excluded.isImport;
   `;
 
   await db?.run?.(insertSql);

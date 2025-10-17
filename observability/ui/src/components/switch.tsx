@@ -1,70 +1,52 @@
-import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
-import Switch from "@arcblock/ux/lib/Switch";
-import { Box } from "@mui/material";
-import { useEffect, useState } from "react";
-import { joinURL } from "ufo";
-import { origin } from "../utils/index.ts";
+import { Box, FormControlLabel, Switch } from "@mui/material";
+import type { ReactNode } from "react";
 
-const SwitchComponent = ({ ...props }: { live: boolean; setLive: (live: boolean) => void }) => {
-  const { t } = useLocaleContext();
-  const [loading, setLoading] = useState(false);
-  const { live, setLive } = props;
-
-  const fetchSettings = async () => {
-    fetch(joinURL(origin, "/api/settings"))
-      .then((res) => res.json() as Promise<{ data: { live: boolean } }>)
-      .then(({ data }) => {
-        setLive(data.live);
-      });
-  };
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
-  useEffect(() => {
-    fetchSettings();
-  }, []);
-
-  const handleLiveChange = async (checked: boolean) => {
-    setLoading(true);
-
-    try {
-      await fetch(joinURL(origin, "/api/settings"), {
-        method: "POST",
-        body: JSON.stringify({ live: checked }),
-        headers: { "Content-Type": "application/json" },
-      });
-      setLive(checked);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+const SwitchComponent = ({
+  checked,
+  onChange,
+  label,
+  disabled = false,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label: ReactNode;
+  disabled?: boolean;
+}) => {
   return (
-    <Switch
-      disabled={loading}
-      checked={live}
-      onChange={(e) => handleLiveChange(e.target.checked)}
-      color="primary"
-      // @ts-ignore
-      labelProps={{
-        label: (
+    <Box
+      sx={{
+        border: "1px solid",
+        borderColor: "divider",
+        borderRadius: 1,
+        px: 1.5,
+        py: 0.5,
+        display: "inline-flex",
+        alignItems: "center",
+        minHeight: 36,
+      }}
+    >
+      <FormControlLabel
+        control={
+          <Switch
+            disabled={disabled}
+            checked={checked}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.checked)}
+            color="primary"
+            size="small"
+          />
+        }
+        label={
           <Box
             component="span"
-            sx={{
-              mr: 1,
-              fontSize: 14,
-              color: live ? "text.primary" : "text.hint",
-              fontWeight: 400,
-            }}
+            sx={{ fontSize: 13, color: "text.primary", fontWeight: 400, mr: 0.5 }}
           >
-            {live ? t("liveUpdatesOn") : t("liveUpdatesOff")}
+            {label}
           </Box>
-        ),
-        labelPlacement: "start",
-        style: { margin: 0 },
-      }}
-    />
+        }
+        labelPlacement="start"
+        sx={{ m: 0, mr: 0.5 }}
+      />
+    </Box>
   );
 };
 

@@ -5,10 +5,13 @@ import {
   AIAgent,
   AIAgentToolChoice,
   AIGNE,
+  ChatMessagesTemplate,
   FunctionAgent,
   MCPAgent,
   PromptBuilder,
+  SystemMessageTemplate,
   TeamAgent,
+  UserMessageTemplate,
 } from "@aigne/core";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
@@ -40,20 +43,36 @@ test("PromptBuilder should build messages correctly", async () => {
     context,
   });
 
-  expect(prompt1.messages).toEqual([
-    {
-      role: "system",
-      content: "Test instructions",
-    },
-    {
-      role: "system",
-      content: expect.stringContaining("Hello, How can I help you?"),
-    },
-    {
-      role: "user",
-      content: [{ type: "text", text: "Hello" }],
-    },
-  ]);
+  expect(prompt1.messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": "Test instructions",
+        "name": undefined,
+        "role": "system",
+      },
+      {
+        "content": 
+    "<related-memories>
+    - input:
+        message: Hello, How can I help you?
+      source: TestAgent
+
+    </related-memories>
+    "
+    ,
+        "role": "system",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+    ]
+  `);
 
   const prompt2 = await builder.build({
     input: { name: "foo" },
@@ -369,7 +388,12 @@ test("PromptBuilder should build image prompt correctly", async () => {
 });
 
 test("PromptBuilder should build with afs correctly", async () => {
-  const builder = PromptBuilder.from("Test instructions");
+  const builder = new PromptBuilder({
+    instructions: ChatMessagesTemplate.from([
+      SystemMessageTemplate.from("Test instructions"),
+      UserMessageTemplate.from("User message is: {{message}}"),
+    ]),
+  });
 
   const afs = new AFS();
 
@@ -385,6 +409,7 @@ test("PromptBuilder should build with afs correctly", async () => {
   // Build without AFS history
   const result = await builder.build({
     agent,
+    input: { message: "Hello, I'm Bob, I'm from ArcBlock" },
   });
 
   expect(result.messages).toMatchInlineSnapshot(`
@@ -394,7 +419,7 @@ test("PromptBuilder should build with afs correctly", async () => {
         "name": undefined,
         "role": "system",
       },
-      SystemMessageTemplate {
+      {
         "content": 
     "
     <afs_usage>
@@ -416,8 +441,12 @@ test("PromptBuilder should build with afs correctly", async () => {
     "
     ,
         "name": undefined,
-        "options": undefined,
         "role": "system",
+      },
+      {
+        "content": "User message is: Hello, I'm Bob, I'm from ArcBlock",
+        "name": undefined,
+        "role": "user",
       },
     ]
   `);
@@ -442,6 +471,7 @@ test("PromptBuilder should build with afs correctly", async () => {
 
   const result1 = await builder.build({
     agent,
+    input: { message: "Hello, I'm Bob, I'm from ArcBlock" },
   });
 
   expect(listSpy.mock.calls).toMatchInlineSnapshot(`
@@ -471,7 +501,7 @@ test("PromptBuilder should build with afs correctly", async () => {
           "name": undefined,
           "role": "system",
         },
-        SystemMessageTemplate {
+        {
           "content": 
     "
     <afs_usage>
@@ -493,7 +523,6 @@ test("PromptBuilder should build with afs correctly", async () => {
     "
     ,
           "name": undefined,
-          "options": undefined,
           "role": "system",
         },
         {
@@ -531,6 +560,11 @@ test("PromptBuilder should build with afs correctly", async () => {
             },
           ],
           "role": "agent",
+        },
+        {
+          "content": "User message is: Hello, I'm Bob, I'm from ArcBlock",
+          "name": undefined,
+          "role": "user",
         },
       ],
       "modelOptions": undefined,
@@ -667,4 +701,78 @@ test("PromptBuilder should build with afs correctly", async () => {
     }
   `,
   );
+});
+
+test("PromptBuilder should refine system messages by config", async () => {
+  const builder = new PromptBuilder({
+    instructions: ChatMessagesTemplate.from([
+      SystemMessageTemplate.from("System message 1"),
+      UserMessageTemplate.from("User message 1"),
+      SystemMessageTemplate.from("System message 2"),
+    ]),
+  });
+
+  const agent = AIAgent.from({
+    autoMergeSystemMessages: false,
+    autoReorderSystemMessages: false,
+  });
+
+  expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": "System message 1",
+        "name": undefined,
+        "role": "system",
+      },
+      {
+        "content": "System message 2",
+        "name": undefined,
+        "role": "system",
+      },
+      {
+        "content": "User message 1",
+        "name": undefined,
+        "role": "user",
+      },
+    ]
+  `);
+
+  agent.autoReorderSystemMessages = true;
+  expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": "System message 1",
+        "name": undefined,
+        "role": "system",
+      },
+      {
+        "content": "System message 2",
+        "name": undefined,
+        "role": "system",
+      },
+      {
+        "content": "User message 1",
+        "name": undefined,
+        "role": "user",
+      },
+    ]
+  `);
+
+  agent.autoMergeSystemMessages = true;
+  expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": 
+    "System message 1
+    System message 2"
+    ,
+        "role": "system",
+      },
+      {
+        "content": "User message 1",
+        "name": undefined,
+        "role": "user",
+      },
+    ]
+  `);
 });

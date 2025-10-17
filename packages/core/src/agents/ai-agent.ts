@@ -1,8 +1,8 @@
-import fastq from "fastq";
 import { type ZodObject, type ZodType, z } from "zod";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "../prompt/prompts/structured-stream-instructions.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
+import * as fastq from "../utils/queue.js";
 import { ExtractMetadataTransform } from "../utils/structured-stream-extractor.js";
 import { checkArguments, isEmpty } from "../utils/type-utils.js";
 import {
@@ -48,6 +48,10 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    * more complex prompt templates
    */
   instructions?: string | PromptBuilder;
+
+  autoReorderSystemMessages?: boolean;
+
+  autoMergeSystemMessages?: boolean;
 
   /**
    * Pick a message from input to use as the user's message
@@ -280,6 +284,8 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
       typeof options.instructions === "string"
         ? PromptBuilder.from(options.instructions)
         : (options.instructions ?? new PromptBuilder());
+    this.autoReorderSystemMessages = options.autoReorderSystemMessages ?? false;
+    this.autoMergeSystemMessages = options.autoMergeSystemMessages ?? false;
     this.inputKey = options.inputKey;
     this.inputFileKey = options.inputFileKey;
     this.outputKey = options.outputKey || DEFAULT_OUTPUT_KEY;
@@ -320,6 +326,10 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-prompt-builder}
    */
   instructions: PromptBuilder;
+
+  autoReorderSystemMessages?: boolean;
+
+  autoMergeSystemMessages?: boolean;
 
   /**
    * Pick a message from input to use as the user's message

@@ -29,4 +29,6 @@ export const Trace = sqliteTable("Trace", {
   action: integer("action"),
   token: integer("token").$defaultFn(() => 0),
   cost: real("cost").$defaultFn(() => 0),
+  remark: text("remark"),
+  isImport: integer("isImport").$defaultFn(() => 0),
 });

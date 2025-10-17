@@ -8,8 +8,10 @@ import Tooltip from "@mui/material/Tooltip";
 import { useState } from "react";
 import { BlockletComponent, type SearchState } from "../../components/blocklet-comp.tsx";
 import CustomDateRangePicker from "../../components/date-picker.tsx";
+import LiveSwitch from "../../components/live-switch.tsx";
 import SwitchComponent from "../../components/switch.tsx";
 import Delete from "../delete.tsx";
+import Upload from "../upload.tsx";
 
 const PcSearch = ({
   components,
@@ -23,7 +25,7 @@ const PcSearch = ({
 }: {
   components: { data: string[] };
   search: SearchState;
-  setSearch: (search: SearchState | ((search: SearchState) => SearchState)) => void;
+  setSearch: (data: Partial<SearchState>) => void;
   onDateRangeChange: (dateRange: [Date, Date]) => void;
   live: boolean;
   setLive: (live: boolean) => void;
@@ -39,16 +41,28 @@ const PcSearch = ({
       {isBlocklet && (
         <Autocomplete
           size="small"
-          sx={{ minWidth: 240 }}
+          sx={{
+            minWidth: 160,
+            maxWidth: 240,
+            "& .MuiInputBase-root": {
+              height: 36,
+            },
+          }}
           options={components?.data || []}
           value={search.componentId || null}
-          onChange={(_, value) => setSearch((x) => ({ ...x, componentId: value || "" }))}
+          onChange={(_, value) => setSearch({ componentId: value ?? "" })}
           getOptionLabel={(option) => {
-            if (!option) return "";
+            if (!option) return t("allComponents");
             const comp = window.blocklet.componentMountPoints?.find((c) => c.did === option);
             return comp?.title ?? comp?.name ?? option;
           }}
-          renderInput={(params) => <TextField {...params} placeholder={t("selectComponent")} />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder={t("selectComponent") || t("allComponents")}
+              size="small"
+            />
+          )}
           renderOption={(props, option) => {
             const comp = window.blocklet.componentMountPoints?.find((c) => c.did === option);
             if (!comp) return null;
@@ -65,20 +79,26 @@ const PcSearch = ({
         />
       )}
 
-      <Box key="date-picker" sx={{ mx: 1 }}>
-        <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
-      </Box>
+      <CustomDateRangePicker value={search.dateRange} onChange={onDateRangeChange} />
 
-      <Tooltip title={t("toggleLive")}>
-        <Box sx={{ display: "flex" }}>
-          <SwitchComponent live={live} setLive={setLive} />
-        </Box>
-      </Tooltip>
+      <LiveSwitch live={live} setLive={setLive} />
 
       {!isBlocklet && (
-        <IconButton onClick={() => setDialogOpen(true)}>
-          <TrashIcon sx={{ color: "error.main" }} />
-        </IconButton>
+        <SwitchComponent
+          checked={search.showImportedOnly ?? false}
+          onChange={(checked) => setSearch({ showImportedOnly: checked })}
+          label={t("showImportedOnly")}
+        />
+      )}
+
+      {!isBlocklet && <Upload fetchTraces={fetchTraces} pageSize={page.pageSize} />}
+
+      {!isBlocklet && (
+        <Tooltip title={t("deleteAll")}>
+          <IconButton onClick={() => setDialogOpen(true)} size="small">
+            <TrashIcon sx={{ color: "error.main" }} />
+          </IconButton>
+        </Tooltip>
       )}
 
       {dialogOpen && (

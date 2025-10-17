@@ -52,6 +52,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     componentId: "",
     searchText: "",
     dateRange: [dayjs().subtract(1, "week").startOf("day").toDate(), dayjs().endOf("day").toDate()],
+    showImportedOnly: false,
   });
 
   const [traces, setTraces] = useState<TraceData[]>([]);
@@ -79,8 +80,14 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
         pageSize: page.pageSize,
         searchText: search.searchText,
         dateRange: search.dateRange,
+        showImportedOnly: search.showImportedOnly,
       });
     }
+  };
+
+  const handleSearchTextUpdate = (data: Partial<SearchState>) => {
+    setSearch((x) => ({ ...x, ...data }));
+    setPage({ ...page, page: 1 });
   };
 
   const fetchTraces = async ({
@@ -88,11 +95,13 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     pageSize,
     searchText = "",
     dateRange,
+    showImportedOnly,
   }: {
     page: number;
     pageSize: number;
     searchText?: string;
     dateRange?: [Date, Date];
+    showImportedOnly?: boolean;
   }) => {
     try {
       const res = await fetch(
@@ -103,6 +112,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           startDate: dateRange?.[0]?.toISOString() ?? "",
           endDate: dateRange?.[1]?.toISOString() ?? "",
           componentId: search.componentId,
+          showImportedOnly: showImportedOnly ?? search.showImportedOnly ?? false,
         }),
       ).then((r) => r.json() as Promise<TracesResponse>);
       const formatted: TraceData[] = res.data.map((trace) => ({
@@ -122,10 +132,11 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     if (documentVisibility === "visible") {
       setLoading(true);
       fetchTraces({
-        page: page.page - 1,
+        page: Math.max(0, page.page - 1),
         pageSize: page.pageSize,
         searchText: search.searchText,
         dateRange: search.dateRange,
+        showImportedOnly: search.showImportedOnly,
       });
     }
   }, [
@@ -135,12 +146,8 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     search.dateRange,
     documentVisibility,
     search.componentId,
+    search.showImportedOnly,
   ]);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
-  useEffect(() => {
-    setPage({ page: 1, pageSize: page.pageSize });
-  }, [search.searchText, search.dateRange, live, search.componentId]);
 
   useRafInterval(() => {
     if (!live) return;
@@ -150,7 +157,11 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       .then((res) => res.json() as Promise<{ data: { lastTraceChanged: boolean } }>)
       .then(({ data }) => {
         if (data?.lastTraceChanged) {
-          fetchTraces({ page: 0, pageSize: page.pageSize });
+          fetchTraces({
+            page: 0,
+            pageSize: page.pageSize,
+            showImportedOnly: search.showImportedOnly,
+          });
         }
       });
   }, 3000);
@@ -162,7 +173,11 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       refetch: () => {
         setTotal(0);
         setTraces([]);
-        fetchTraces({ page: 0, pageSize: page.pageSize });
+        fetchTraces({
+          page: 0,
+          pageSize: page.pageSize,
+          showImportedOnly: search.showImportedOnly,
+        });
       },
     }),
     [page.pageSize],
@@ -187,8 +202,13 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
+
         if (value?.type === "event") {
-          fetchTraces({ page: 0, pageSize: page.pageSize });
+          fetchTraces({
+            page: 0,
+            pageSize: page.pageSize,
+            showImportedOnly: search.showImportedOnly,
+          });
         }
       }
     })();
@@ -199,7 +219,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   }, [page.pageSize]);
 
   const onDateRangeChange = (value: [Date, Date]) => {
-    setSearch((x) => ({ ...x, dateRange: value, page: 1 }));
+    handleSearchTextUpdate({ dateRange: value });
   };
 
   const handleSearchApply = () => {
@@ -211,17 +231,19 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       pageSize: page.pageSize,
       searchText: search.searchText,
       dateRange: search.dateRange,
+      showImportedOnly: search.showImportedOnly,
     });
   };
 
   const handleSearchReset = () => {
-    setSearch({
+    handleSearchTextUpdate({
       componentId: "",
       searchText: "",
       dateRange: [
         dayjs().subtract(1, "week").startOf("day").toDate(),
         dayjs().endOf("day").toDate(),
       ],
+      showImportedOnly: false,
     });
     setLive(false);
   };
@@ -236,7 +258,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: !isMobile ? "flex-end" : "space-between",
-              gap: 1,
+              gap: 1.5,
 
               ".search-always-open": isMobile
                 ? {
@@ -256,8 +278,8 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
               }}
               search={search.searchText}
               searchText={search.searchText}
-              searchTextUpdate={(text: string) => setSearch((x) => ({ ...x, searchText: text }))}
-              searchClose={() => setSearch((x) => ({ ...x, searchText: "" }))}
+              searchTextUpdate={(text: string) => handleSearchTextUpdate({ searchText: text })}
+              searchClose={() => handleSearchTextUpdate({ searchText: "" })}
             />
 
             {isMobile ? (
@@ -268,7 +290,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
               <DesktopSearch
                 components={components || { data: [] }}
                 search={search}
-                setSearch={setSearch}
+                setSearch={(data) => handleSearchTextUpdate(data)}
                 onDateRangeChange={onDateRangeChange}
                 live={live}
                 setLive={setLive}
@@ -296,6 +318,19 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           onDelete={onDelete}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
+          onRemarkUpdate={(id, remark) => {
+            setTraces((prev) =>
+              prev.map((trace) => (trace.id === id ? { ...trace, remark } : trace)),
+            );
+
+            fetchTraces({
+              page: page.page - 1,
+              pageSize: page.pageSize,
+              searchText: search.searchText,
+              dateRange: search.dateRange,
+              showImportedOnly: search.showImportedOnly,
+            });
+          }}
         />
       </Box>
 
@@ -324,7 +359,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           toggleDrawer={toggleDrawer}
           components={components || { data: [] }}
           search={search}
-          setSearch={setSearch}
+          setSearch={(data) => handleSearchTextUpdate(data)}
           onDateRangeChange={onDateRangeChange}
           live={live}
           setLive={setLive}

@@ -95,6 +95,7 @@ export const AgentTag = ({ agentTag, model }: { agentTag?: string; model?: strin
         color: `${agentColors[agentTag as keyof typeof agentColors]?.color} !important`,
         border: 0,
         fontSize: 10,
+        borderRadius: "4px",
       }}
     />
   );

@@ -1,5 +1,75 @@
 # Changelog
 
+## [1.63.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.11...core-v1.63.0-beta.12) (2025-10-17)
+
+
+### Bug Fixes
+
+* custom queue instead of fastq to compatible with browser ([#640](https://github.com/AIGNE-io/aigne-framework/issues/640)) ([51e0f8f](https://github.com/AIGNE-io/aigne-framework/commit/51e0f8fdeaf26f2765f392218f04a2af4c0d2e1a))
+
+## [1.63.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.10...core-v1.63.0-beta.11) (2025-10-17)
+
+
+### Bug Fixes
+
+* **gemini:** implement retry mechanism for empty responses with structured output fallback ([#638](https://github.com/AIGNE-io/aigne-framework/issues/638)) ([d33c8bb](https://github.com/AIGNE-io/aigne-framework/commit/d33c8bb9711aadddef9687d6cf472a179cd8ed9c))
+
+## [1.63.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.9...core-v1.63.0-beta.10) (2025-10-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.2-beta.5
+
+## [1.63.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.8...core-v1.63.0-beta.9) (2025-10-16)
+
+
+### Bug Fixes
+
+* allow custom user messages and prevent duplicate user content ([#632](https://github.com/AIGNE-io/aigne-framework/issues/632)) ([6c883b2](https://github.com/AIGNE-io/aigne-framework/commit/6c883b2d57a65e9b46232cece91fc6aa1de03aba))
+* **models:** auto retry when got emtpy response from gemini ([#636](https://github.com/AIGNE-io/aigne-framework/issues/636)) ([9367cef](https://github.com/AIGNE-io/aigne-framework/commit/9367cef49ea4c0c87b8a36b454deb2efaee6886f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.2-beta.4
+
+## [1.63.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.7...core-v1.63.0-beta.8) (2025-10-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.2-beta.3
+
+## [1.63.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.6...core-v1.63.0-beta.7) (2025-10-15)
+
+
+### Bug Fixes
+
+* add options for system message reordering and merging ([#624](https://github.com/AIGNE-io/aigne-framework/issues/624)) ([8ca466d](https://github.com/AIGNE-io/aigne-framework/commit/8ca466d49d1e4ed08bc90922f39c0d3ed60c4fd5))
+
+## [1.63.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.5...core-v1.63.0-beta.6) (2025-10-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.2-beta.2
+
+## [1.63.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.4...core-v1.63.0-beta.5) (2025-10-13)
+
+
+### Bug Fixes
+
+* **core:** auto merge multiple system messages ([#619](https://github.com/AIGNE-io/aigne-framework/issues/619)) ([e9e62c0](https://github.com/AIGNE-io/aigne-framework/commit/e9e62c03c45f5a9b75d44a07588b2b179e262aad))
+
 ## [1.63.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.3...core-v1.63.0-beta.4) (2025-10-12)
 
 

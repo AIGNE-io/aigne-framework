@@ -8,6 +8,8 @@ description: Chat agent
 instructions: |
   You are a helpful assistant that can answer questions and provide information on a wide range of topics.
   Your goal is to assist users in finding the information they need and to engage in friendly conversation.
+auto_reorder_system_messages: true
+auto_merge_system_messages: true
 input_key: message
 output_key: message
 input_file_key: message_file

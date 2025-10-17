@@ -1,13 +1,58 @@
 # Changelog
 
+## [0.11.2-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.2-beta.4...observability-api-v0.11.2-beta.5) (2025-10-16)
+
+
+### Features
+
+* **observability:** support import and export trace items ([#635](https://github.com/AIGNE-io/aigne-framework/issues/635)) ([27acadf](https://github.com/AIGNE-io/aigne-framework/commit/27acadfca49adb653a78007daa0a41ee90468047))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.1-beta.6
+
+## [0.11.2-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.2-beta.3...observability-api-v0.11.2-beta.4) (2025-10-16)
+
+
+### Bug Fixes
+
+* **blocklet:** tune observability ui build script ([#631](https://github.com/AIGNE-io/aigne-framework/issues/631)) ([8d23d39](https://github.com/AIGNE-io/aigne-framework/commit/8d23d39875f6f4e2bf42b52ffb9c806ad8e184de))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.1-beta.5
+
+## [0.11.2-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.2-beta.2...observability-api-v0.11.2-beta.3) (2025-10-16)
+
+
+### Bug Fixes
+
+* update observability api ([#629](https://github.com/AIGNE-io/aigne-framework/issues/629)) ([5024262](https://github.com/AIGNE-io/aigne-framework/commit/50242620e904922b07168751a4477f1e60347fcf))
+
+## [0.11.2-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.2-beta.1...observability-api-v0.11.2-beta.2) (2025-10-15)
+
+
+### Features
+
+* **blocklet:** support remark for observability trace item ([#620](https://github.com/AIGNE-io/aigne-framework/issues/620)) ([d91c42c](https://github.com/AIGNE-io/aigne-framework/commit/d91c42c0c9286cd6e39beace740f8ea61dff3f50))
+
+
+### Bug Fixes
+
+* **blocklet:** tune observability detail list ux ([#618](https://github.com/AIGNE-io/aigne-framework/issues/618)) ([3ad83b6](https://github.com/AIGNE-io/aigne-framework/commit/3ad83b6be347831125806be7bee19294aa85ed58))
+
 ## [0.11.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.2-beta...observability-api-v0.11.2-beta.1) (2025-10-11)
 
 
 ### Bug Fixes
 
-* add ability to delete individual trace records ([f853cec](https://github.com/AIGNE-io/aigne-framework/commit/f853cec0557600788f2da1e5be4935360372dc99))
 * add ability to delete individual trace records ([#606](https://github.com/AIGNE-io/aigne-framework/issues/606)) ([f853cec](https://github.com/AIGNE-io/aigne-framework/commit/f853cec0557600788f2da1e5be4935360372dc99))
-* observability list query setting ([#605](https://github.com/AIGNE-io/aigne-framework/issues/605)) ([0952d39](https://github.com/AIGNE-io/aigne-framework/commit/0952d398955702276956da963710f8bfd85a86ce))
 * observability list query setting ([#605](https://github.com/AIGNE-io/aigne-framework/issues/605)) ([0952d39](https://github.com/AIGNE-io/aigne-framework/commit/0952d398955702276956da963710f8bfd85a86ce))
 
 ## [0.11.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.1...observability-api-v0.11.2-beta) (2025-10-07)
@@ -56,7 +101,6 @@
 
 ### Bug Fixes
 
-* **blocklet:** observability blocklet start failure ([#554](https://github.com/AIGNE-io/aigne-framework/issues/554)) ([8431d4d](https://github.com/AIGNE-io/aigne-framework/commit/8431d4d89a4b96f735f23e774e9545bbe1fd811c))
 * **blocklet:** observability blocklet start failure ([#554](https://github.com/AIGNE-io/aigne-framework/issues/554)) ([8431d4d](https://github.com/AIGNE-io/aigne-framework/commit/8431d4d89a4b96f735f23e774e9545bbe1fd811c))
 
 ## [0.11.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.10.5-beta...observability-api-v0.11.0-beta) (2025-09-25)

@@ -4,6 +4,7 @@ export interface SearchState {
   componentId: string;
   searchText: string;
   dateRange: [Date, Date];
+  showImportedOnly?: boolean;
 }
 
 export const BlockletComponent = ({

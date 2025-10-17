@@ -1,5 +1,103 @@
 # Changelog
 
+## [1.2.11-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.11-beta.11...default-memory-v1.2.11-beta.12) (2025-10-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.12
+  * devDependencies
+    * @aigne/openai bumped to 0.16.2-beta.12
+
+## [1.2.11-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.11-beta.10...default-memory-v1.2.11-beta.11) (2025-10-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.11
+  * devDependencies
+    * @aigne/openai bumped to 0.16.2-beta.11
+
+## [1.2.11-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.11-beta.9...default-memory-v1.2.11-beta.10) (2025-10-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.10
+  * devDependencies
+    * @aigne/openai bumped to 0.16.2-beta.10
+
+## [1.2.11-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.11-beta.8...default-memory-v1.2.11-beta.9) (2025-10-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.9
+  * devDependencies
+    * @aigne/openai bumped to 0.16.2-beta.9
+
+## [1.2.11-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.11-beta.7...default-memory-v1.2.11-beta.8) (2025-10-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.8
+  * devDependencies
+    * @aigne/openai bumped to 0.16.2-beta.8
+
+## [1.2.11-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.11-beta.6...default-memory-v1.2.11-beta.7) (2025-10-15)
+
+
+### Bug Fixes
+
+* add options for system message reordering and merging ([#624](https://github.com/AIGNE-io/aigne-framework/issues/624)) ([8ca466d](https://github.com/AIGNE-io/aigne-framework/commit/8ca466d49d1e4ed08bc90922f39c0d3ed60c4fd5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.7
+  * devDependencies
+    * @aigne/openai bumped to 0.16.2-beta.7
+
+## [1.2.11-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.11-beta.5...default-memory-v1.2.11-beta.6) (2025-10-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.6
+  * devDependencies
+    * @aigne/openai bumped to 0.16.2-beta.6
+
+## [1.2.11-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.11-beta.4...default-memory-v1.2.11-beta.5) (2025-10-13)
+
+
+### Bug Fixes
+
+* **core:** auto merge multiple system messages ([#619](https://github.com/AIGNE-io/aigne-framework/issues/619)) ([e9e62c0](https://github.com/AIGNE-io/aigne-framework/commit/e9e62c03c45f5a9b75d44a07588b2b179e262aad))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.5
+  * devDependencies
+    * @aigne/openai bumped to 0.16.2-beta.5
+
 ## [1.2.11-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.11-beta.3...default-memory-v1.2.11-beta.4) (2025-10-12)
 
 

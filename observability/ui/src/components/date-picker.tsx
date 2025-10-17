@@ -1,7 +1,8 @@
 import dayjs from "@abtnode/util/lib/dayjs";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import Toast from "@arcblock/ux/lib/Toast";
-import { Button, Popover, Typography } from "@mui/material";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import { Box, Popover } from "@mui/material";
 import { type DateRange, DateRangePicker } from "mui-daterange-picker";
 import { useCallback, useRef, useState } from "react";
 import { formatToDate, getDefaultRanges } from "../utils/index.ts";
@@ -50,16 +51,27 @@ export default function CustomDateRangePicker({ value, onChange }: CustomDateRan
 
   return (
     <>
-      <Typography ref={ref} component="div" sx={{ color: "text.secondary", mb: 0 }}>
-        <Button
-          onClick={onTriggerClick}
-          variant="outlined"
-          sx={{ height: 40, width: 1 }}
-          color="inherit"
-        >
+      <Box
+        ref={ref}
+        sx={{
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 1,
+          px: 1.5,
+          py: 0.5,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 1,
+          cursor: "pointer",
+          minHeight: 36,
+        }}
+        onClick={onTriggerClick}
+      >
+        <CalendarTodayIcon sx={{ fontSize: 16, color: "text.secondary" }} />
+        <Box component="span" sx={{ fontSize: 13, color: "text.primary", fontWeight: 400 }}>
           {formatToDate(value[0], locale)} - {formatToDate(value[1], locale)}
-        </Button>
-      </Typography>
+        </Box>
+      </Box>
 
       <Popover
         open={open}

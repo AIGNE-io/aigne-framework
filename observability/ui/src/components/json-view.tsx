@@ -6,7 +6,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 function getLocalizedFilename(prefix = "data", locale = "en-US") {
   const now = new Date();
@@ -33,33 +33,9 @@ function getLocalizedFilename(prefix = "data", locale = "en-US") {
   return `${prefix}-${formatted}-${offsetLabel}.json`;
 }
 
-export default function JsonView({ value: data }: { value: object }) {
-  const editorRef = useRef<any>(null);
+export default function JsonView({ value: data }: { value: any }) {
   const [copied, setCopied] = useState(false);
   const { t, locale } = useLocaleContext();
-
-  const handleEditorMount = (editor: any) => {
-    editorRef.current = editor;
-
-    editor.onDidScrollChange(() => {
-      editor.render(true);
-      requestAnimationFrame(() => {
-        editor.render(true);
-      });
-    });
-
-    editor.onDidLayoutChange(() => {
-      editor.render(true);
-    });
-  };
-
-  useEffect(() => {
-    if (editorRef.current) {
-      setTimeout(() => {
-        editorRef.current.render(true);
-      }, 50);
-    }
-  }, []);
 
   const jsonString = typeof data === "string" ? data : JSON.stringify(data, null, 2);
 
@@ -100,7 +76,7 @@ export default function JsonView({ value: data }: { value: object }) {
         sx={{
           position: "absolute",
           top: 16,
-          right: 32,
+          right: 36,
           zIndex: 10001,
           display: "flex",
           gap: 0.5,
@@ -139,47 +115,16 @@ export default function JsonView({ value: data }: { value: object }) {
       </Box>
 
       <Editor
+        path={`${jsonString.slice(0, 5)}}.json`}
         height="100%"
-        defaultLanguage="json"
+        language="json"
         theme="vs-dark"
         value={jsonString}
-        onMount={handleEditorMount}
         options={{
           readOnly: true,
-          folding: true,
-          glyphMargin: false,
-          // Optimize rendering
-          renderWhitespace: "none",
-          renderControlCharacters: false,
-          renderLineHighlight: "none",
-          // Scroll optimization
-          scrollbar: {
-            verticalHasArrows: true,
-            alwaysConsumeMouseWheel: false,
-            verticalScrollbarSize: 12,
-            horizontalScrollbarSize: 12,
-          },
-          scrollBeyondLastLine: false,
-          smoothScrolling: false,
-          // Performance optimization
-          wordWrap: "off",
           minimap: { enabled: false },
-          overviewRulerLanes: 0,
-          hideCursorInOverviewRuler: true,
-          // Disable unnecessary functions
-          occurrencesHighlight: "off",
-          selectionHighlight: false,
-          codeLens: false,
+          wordWrap: "on",
           contextmenu: false,
-          links: false,
-          quickSuggestions: false,
-          parameterHints: { enabled: false },
-          suggestOnTriggerCharacters: false,
-          acceptSuggestionOnEnter: "off",
-          tabCompletion: "off",
-          wordBasedSuggestions: "off",
-          showFoldingControls: "always",
-          automaticLayout: true,
         }}
       />
     </Box>

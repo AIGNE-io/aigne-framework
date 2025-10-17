@@ -1,5 +1,97 @@
 # Changelog
 
+## [1.4.21-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.21-beta.11...aigne-runtime-v1.4.21-beta.12) (2025-10-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.2-beta.12
+    * @aigne/core bumped to 1.63.0-beta.12
+    * @aigne/transport bumped to 0.15.11-beta.12
+
+## [1.4.21-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.21-beta.10...aigne-runtime-v1.4.21-beta.11) (2025-10-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.2-beta.11
+    * @aigne/core bumped to 1.63.0-beta.11
+    * @aigne/transport bumped to 0.15.11-beta.11
+
+## [1.4.21-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.21-beta.9...aigne-runtime-v1.4.21-beta.10) (2025-10-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.2-beta.10
+    * @aigne/core bumped to 1.63.0-beta.10
+    * @aigne/observability-api bumped to 0.11.2-beta.5
+    * @aigne/transport bumped to 0.15.11-beta.10
+
+## [1.4.21-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.21-beta.8...aigne-runtime-v1.4.21-beta.9) (2025-10-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.2-beta.9
+    * @aigne/core bumped to 1.63.0-beta.9
+    * @aigne/observability-api bumped to 0.11.2-beta.4
+    * @aigne/transport bumped to 0.15.11-beta.9
+
+## [1.4.21-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.21-beta.7...aigne-runtime-v1.4.21-beta.8) (2025-10-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.2-beta.8
+    * @aigne/core bumped to 1.63.0-beta.8
+    * @aigne/observability-api bumped to 0.11.2-beta.3
+    * @aigne/transport bumped to 0.15.11-beta.8
+
+## [1.4.21-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.21-beta.6...aigne-runtime-v1.4.21-beta.7) (2025-10-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.2-beta.7
+    * @aigne/core bumped to 1.63.0-beta.7
+    * @aigne/transport bumped to 0.15.11-beta.7
+
+## [1.4.21-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.21-beta.5...aigne-runtime-v1.4.21-beta.6) (2025-10-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.2-beta.6
+    * @aigne/core bumped to 1.63.0-beta.6
+    * @aigne/observability-api bumped to 0.11.2-beta.2
+    * @aigne/transport bumped to 0.15.11-beta.6
+
+## [1.4.21-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.21-beta.4...aigne-runtime-v1.4.21-beta.5) (2025-10-13)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.2-beta.5
+    * @aigne/core bumped to 1.63.0-beta.5
+    * @aigne/transport bumped to 0.15.11-beta.5
+
 ## [1.4.21-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.21-beta.3...aigne-runtime-v1.4.21-beta.4) (2025-10-12)
 
 

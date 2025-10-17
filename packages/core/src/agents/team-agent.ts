@@ -1,6 +1,6 @@
 import assert from "node:assert";
-import fastq from "fastq";
 import { produce } from "immer";
+import * as fastq from "../utils/queue.js";
 import { mergeAgentResponseChunk } from "../utils/stream-utils.js";
 import { isEmpty, isNil, isRecord, omit, type PromiseOrValue } from "../utils/type-utils.js";
 import {

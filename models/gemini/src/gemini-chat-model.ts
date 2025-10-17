@@ -203,8 +203,8 @@ export class GeminiChatModel extends ChatModel {
         throw new Error("No JSON response from the model");
       }
     } else if (!toolCalls.length) {
-      // NOTE: gemini-2.5-pro sometimes returns empty response,
-      // so we check it here and retry with structured output mode (this issue: empty response seems less likely to happen with tool calls)
+      // NOTE: gemini-2.5-pro sometimes returns an empty response,
+      // so we check here and retry with structured output mode (empty responses occur less frequently with tool calls)
       if (!text) {
         logger.warn("Empty response from Gemini, retrying with structured output mode");
 

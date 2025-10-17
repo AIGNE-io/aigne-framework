@@ -1,7 +1,7 @@
 {
   "name": "aigne-runtime",
   "private": true,
-  "version": "1.4.21-beta.10",
+  "version": "1.4.21-beta.11",
   "scripts": {
     "dev": "blocklet dev",
     "lint": "tsc --noEmit && tsc -p tsconfig.api.json --noEmit && biome check",

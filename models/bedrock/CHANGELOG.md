@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.10.7-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.7-beta.10...bedrock-v0.10.7-beta.11) (2025-10-17)
+
+
+### Bug Fixes
+
+* **gemini:** implement retry mechanism for empty responses with structured output fallback ([#638](https://github.com/AIGNE-io/aigne-framework/issues/638)) ([d33c8bb](https://github.com/AIGNE-io/aigne-framework/commit/d33c8bb9711aadddef9687d6cf472a179cd8ed9c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.63.0-beta.11
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.55-beta.11
+
 ## [0.10.7-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.7-beta.9...bedrock-v0.10.7-beta.10) (2025-10-16)
 
 

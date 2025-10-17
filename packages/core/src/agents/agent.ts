@@ -812,7 +812,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
         const res = await this.processAgentError(input, error, options);
         if (!res.retry) {
           const e = res.error ?? error;
-          if (attempt > 0) e.message += ` (after ${attempt} retries)`;
+          if (attempt > 0) e.message += ` (after ${attempt + 1} retries)`;
           throw e;
         }
       }

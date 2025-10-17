@@ -1,26 +1,19 @@
 name: publish docs
 
-env: 
+env:
   AIGNE_HUB_API_KEY: ${{ secrets.AIGNE_HUB_API_KEY }}
 
 permissions:
   contents: write
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - master
       - main
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - edited
-      - synchronize
-    branches:
-      - master
-      - main
-      - dev
+    paths:
+      - ".aigne/**"
+      - "packages/cli/.aigne/**"
 
 jobs:
   publish-docs:

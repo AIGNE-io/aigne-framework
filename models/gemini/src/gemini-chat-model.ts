@@ -32,7 +32,7 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 
 const GEMINI_DEFAULT_CHAT_MODEL = "gemini-2.0-flash";
 
-const OUTPUT_JSON_FUNCTION_NAME = "output_json";
+const OUTPUT_FUNCTION_NAME = "output";
 
 export interface GeminiChatModelOptions extends ChatModelOptions {
   /**
@@ -167,7 +167,7 @@ export class GeminiChatModel extends ChatModel {
             }
 
             if (part.functionCall?.name) {
-              if (part.functionCall.name === OUTPUT_JSON_FUNCTION_NAME) {
+              if (part.functionCall.name === OUTPUT_FUNCTION_NAME) {
                 json = part.functionCall.args;
               } else {
                 toolCalls.push({
@@ -277,8 +277,8 @@ export class GeminiChatModel extends ChatModel {
         config.tools.push({
           functionDeclarations: [
             {
-              name: OUTPUT_JSON_FUNCTION_NAME,
-              description: "Output the final response in JSON format",
+              name: OUTPUT_FUNCTION_NAME,
+              description: "Output the final response",
               parametersJsonSchema: input.responseFormat.jsonSchema.schema,
             },
           ],

@@ -33,6 +33,7 @@ exports[`BedrockChatModel.invoke with tool call and structured output 2`] = `
   },
   "model": "us.amazon.nova-lite-v1:0",
   "usage": {
+    "aigneHubCredits": 0,
     "inputTokens": 926,
     "outputTokens": 75,
   },

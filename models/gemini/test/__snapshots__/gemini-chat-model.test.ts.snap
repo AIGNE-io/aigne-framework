@@ -41,8 +41,8 @@ exports[`GeminiChatModel.invoke should use tool result correctly 1`] = `
         {
           "functionDeclarations": [
             {
-              "description": "Output the final response in JSON format",
-              "name": "output_json",
+              "description": "Output the final response",
+              "name": "output",
               "parametersJsonSchema": {
                 "additionalProperties": false,
                 "properties": {

@@ -2,11 +2,11 @@ import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AIAgent, AIGNE, FunctionAgent, type Message } from "@aigne/core";
 import { ProcessMode, type ReflectionMode, TeamAgent } from "@aigne/core/agents/team-agent.js";
+import * as fastq from "@aigne/core/utils/queue.js";
 import {
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
-import fastq from "fastq";
 import { z } from "zod";
 import { OpenAIChatModel } from "../_mocks/mock-models.js";
 

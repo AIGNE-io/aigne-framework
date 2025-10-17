@@ -1,0 +1,17 @@
+AIGNE CLI:
+  en: AIGNE CLI
+  zh: AIGNE CLI
+  zh-TW: AIGNE CLI
+  ja: AIGNE CLI
+"@aigne/cli is the official command-line tool for AIGNE Framework, designed to simplify the development, testing, and deployment processes for AIGNE applications. It provides a series of useful commands to help developers quickly create projects, run agents, test code, and deploy applications.":
+  en: "@aigne/cli is the official command-line tool for AIGNE Framework, designed
+    to simplify the development, testing, and deployment processes for AIGNE
+    applications. It provides a series of useful commands to help developers
+    quickly create projects, run agents, test code, and deploy applications."
+  zh: "@aigne/cli 是 AIGNE 框架的官方命令行工具，旨在简化 AIGNE
+    应用程序的开发、测试和部署流程。它提供了一系列有用的命令，帮助开发者快速创建项目、运行代理、测试代码和部署应用。"
+  zh-TW: "@aigne/cli 是 AIGNE 框架的官方命令列工具，其設計旨在簡化 AIGNE
+    應用程式的開發、測試與部署流程。它提供了一系列實用指令，可協助開發者快速建立專案、執行代理、測試程式碼及部署應用程式。"
+  ja: "@aigne/cliはAIGNEフレームワークの公式コマンドラインツールで、AIGNEアプリケーションの開発、テスト、デプロイのプロセスを簡素化する\
+    よう設計されています。このツールは、開発者が迅速にプロジェクトを作成し、エージェントを実行し、コードをテストし、アプリケーションをデプロイするのに役立\
+    つ一連の便利なコマンドを提供します。"

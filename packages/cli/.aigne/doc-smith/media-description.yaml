@@ -1,0 +1,56 @@
+descriptions:
+  c48e4ceaa98674a806d9315ec531ed14881d370b1e1e7df1a5968873b59da325:
+    path: ../assets/run-mcp-service.png
+    description: A terminal screenshot displays the successful output of the `aigne
+      serve-mcp` command, indicating a server startup. The output includes the
+      Aigne CLI version (v1.38.0), a tip for starting the observability server,
+      and a configuration summary for an OpenAI provider using the `gpt-4o-mini`
+      model. It confirms the MCP server is running locally on
+      `http://localhost:3000/mcp`.
+    generatedAt: 2025-10-17T12:44:01.710Z
+  7259ac6078e7393b41080a0b0e47f2c9c45847404c534a8bdc822f96e2d5d346:
+    path: ../assets/run/run-default-template-project-in-chat-mode.png
+    description: This screenshot depicts a terminal output showcasing the successful
+      initialization of the AIGNE agent via the `aigne run --chat` command. It
+      highlights the agent's version (v1.38.0), its configuration with an OpenAI
+      `gpt-4o-mini` model, and a detailed list of its capabilities, such as
+      answering questions, code evaluation, and file management. This image
+      serves to illustrate the initial setup and core functionalities of the
+      AIGNE tool for users.
+    generatedAt: 2025-10-17T12:44:01.712Z
+  dacdbcdeba96a78e1c39f57c37c5a88c1a42f7d7a423b558270850938fa9ed0d:
+    path: ../assets/create/create-project-using-default-template-success-message.png
+    description: This screenshot depicts a terminal output illustrating the
+      successful creation of an AIGNE project using the `aigne create
+      my-aigne-project` command. It shows the AIGNE CLI logo with version
+      `v1.38.0`, a prompt for selecting the "default" template, a green
+      checkmark indicating successful project creation, and subsequent commands
+      to navigate and run the new agent.
+    generatedAt: 2025-10-17T12:44:01.712Z
+  06e97c00fd2a53ff7d82080839bca39af167415098fef751097945db51d08687:
+    path: ../assets/create/create-project-interactive-project-name-prompt.png
+    description: This is a screenshot of a terminal window displaying the output of
+      a command-line interface (CLI) tool. The image shows the `aigne create`
+      command being executed, presenting a colorful ASCII art logo, the tool's
+      version (v1.38.0), and an interactive prompt asking for the "Project name"
+      with a default value. It illustrates the initial steps of project creation
+      via a CLI, awaiting user input.
+    generatedAt: 2025-10-17T12:44:01.712Z
+  eb45cd17811ac2c51879194821356603ba97fe502d042afc395a0fac6bd60373:
+    path: ../assets/observe/observe-view-call-details.png
+    description: A screenshot of the AIGNE Observability "Traces" view displays the
+      detailed execution of an AI model call. The expanded "OpenAIChatModel"
+      trace shows its output in a JSON pane, outlining the capabilities of the
+      `gpt-4o-mini-2024-07-18` model, along with performance metrics like token
+      usage and duration for various agents involved in the trace.
+    generatedAt: 2025-10-17T12:44:01.712Z
+  6cd148bb88444bcbae7b3a697b45c2acc75baf5ffd5472d2b3ddf240be811677:
+    path: ../assets/observe/observe-running-interface.png
+    description: A screenshot of the AIGNE Observability web interface presents the
+      "Traces" view, detailing agent activities in a comprehensive table. The
+      table columns display information such as ID, Agent Name, Input, Output,
+      Latency, Status (Success, Running, Failed), and timestamps for trace start
+      and end, illustrating comprehensive monitoring of agent interactions and
+      performance.
+    generatedAt: 2025-10-17T12:44:01.712Z
+lastUpdated: 2025-10-17T12:44:01.712Z

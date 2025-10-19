@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.48](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.48-beta.12...xai-v0.7.48) (2025-10-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.2
+  * devDependencies
+    * @aigne/core bumped to 1.63.0
+    * @aigne/test-utils bumped to 0.5.55
+
 ## [0.7.48-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.48-beta.11...xai-v0.7.48-beta.12) (2025-10-17)
 
 

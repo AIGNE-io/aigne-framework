@@ -13,7 +13,7 @@ import {
   type MessageQueueListener,
   type Unsubscribe,
 } from "./message-queue.js";
-import type { AIGNECLIAgents } from "./type.js";
+import type { AIGNECLIAgents, AIGNEMetadata } from "./type.js";
 import type { ContextLimits } from "./usage.js";
 
 /**
@@ -71,6 +71,8 @@ export interface AIGNEOptions {
    * Observer for the AIGNE instance.
    */
   observer?: AIGNEObserver;
+
+  metadata?: AIGNEMetadata;
 }
 
 /**
@@ -106,6 +108,7 @@ export class AIGNE<U extends UserContext = UserContext> {
       imageModel,
       agents: agents.concat(options?.agents ?? []),
       skills: skills.concat(options?.skills ?? []),
+      metadata: options?.metadata,
     });
   }
 
@@ -134,6 +137,7 @@ export class AIGNE<U extends UserContext = UserContext> {
 
     this.observer?.serve();
     this.initProcessExitHandler();
+    this.metadata = options?.metadata ?? {};
   }
 
   /**
@@ -195,6 +199,11 @@ export class AIGNE<U extends UserContext = UserContext> {
    * Observer for the AIGNE instance.
    */
   readonly observer?: AIGNEObserver;
+
+  /**
+   * Metadata for the AIGNE instance.
+   */
+  readonly metadata: AIGNEMetadata = {};
 
   /**
    * Adds one or more agents to this AIGNE instance.

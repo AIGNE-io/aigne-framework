@@ -93,8 +93,29 @@ const Table = ({
                 "&:hover .edit-remark-btn": { opacity: 1 },
               }}
             >
-              <Box sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {value}
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mr: 4 }}>
+                <Box sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {value}
+                </Box>
+                {item.attributes?.metadata?.cliVersion && (
+                  <Chip
+                    label={`cli@${item.attributes?.metadata?.cliVersion}`}
+                    size="small"
+                    color={"default"}
+                    variant="outlined"
+                    sx={{ height: 21, borderRadius: "4px" }}
+                  />
+                )}
+
+                {item.attributes?.metadata?.appName && (
+                  <Chip
+                    label={`${item.attributes?.metadata?.appName}@${item.attributes?.metadata?.appVersion}`}
+                    size="small"
+                    color={"default"}
+                    variant="outlined"
+                    sx={{ height: 21, borderRadius: "4px" }}
+                  />
+                )}
               </Box>
               {item.remark && (
                 <Box
@@ -121,6 +142,7 @@ const Table = ({
                   transform: "translateY(-50%)",
                   opacity: 0,
                   transition: "opacity 0.2s",
+                  zIndex: 1,
                 }}
                 onClick={(e) => {
                   e.stopPropagation();

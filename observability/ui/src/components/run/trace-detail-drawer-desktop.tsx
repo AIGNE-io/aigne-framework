@@ -28,6 +28,7 @@ export default function RunDetailDrawer({
   return (
     <Box sx={{ height: "100vh", display: "flex", flexDirection: "column", position: "relative" }}>
       <RunStatsHeader
+        traceInfo={traceInfo}
         inputTokens={stats.inputTokens}
         inputCost={stats.inputCost}
         outputTokens={stats.outputTokens}

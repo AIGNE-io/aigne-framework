@@ -1,4 +1,5 @@
 import { isAbsolute, resolve } from "node:path";
+import type { AIGNEMetadata } from "@aigne/core/aigne/type.js";
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import type { CommandModule } from "yargs";
 import { loadAIGNE } from "../utils/load-aigne.js";
@@ -74,12 +75,14 @@ export async function serveMCPServerFromDir(options: {
   port?: number;
   pathname: string;
   aigneHubUrl?: string;
+  metadata?: AIGNEMetadata;
 }) {
   const port = options.port || DEFAULT_PORT();
 
   const aigne = await loadAIGNE({
     path: options.dir,
     modelOptions: { aigneHubUrl: options.aigneHubUrl },
+    metadata: options.metadata,
   });
 
   await serveMCPServer({

@@ -86,7 +86,7 @@ export const formatModelName = async (
     process.exit(0);
   }
 
-  if (!envs.default?.AIGNE_HUB_API_URL) {
+  if (envs && Object.keys(envs).length > 0 && !envs.default?.AIGNE_HUB_API_URL) {
     const host = new URL(AIGNE_HUB_URL).host;
 
     const defaultEnv = envs[host]?.AIGNE_HUB_API_URL

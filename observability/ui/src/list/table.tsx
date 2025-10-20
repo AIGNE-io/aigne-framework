@@ -93,7 +93,7 @@ const Table = ({
                 "&:hover .edit-remark-btn": { opacity: 1 },
               }}
             >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mr: 4 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mr: 3 }}>
                 <Box sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {value}
                 </Box>

@@ -97,7 +97,7 @@ const Table = ({
                 <Box sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {value}
                 </Box>
-                {item.attributes?.metadata?.cliVersion && (
+                {item?.attributes?.metadata?.cliVersion && (
                   <Chip
                     label={`cli@${item.attributes?.metadata?.cliVersion}`}
                     size="small"
@@ -107,7 +107,7 @@ const Table = ({
                   />
                 )}
 
-                {item.attributes?.metadata?.appName && (
+                {item?.attributes?.metadata?.appName && (
                   <Chip
                     label={`${item.attributes?.metadata?.appName}@${item.attributes?.metadata?.appVersion}`}
                     size="small"

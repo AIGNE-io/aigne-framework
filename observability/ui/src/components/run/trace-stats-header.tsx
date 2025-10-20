@@ -105,7 +105,7 @@ export default function RunStatsHeader({
         )}
       </Typography>
 
-      {traceInfo.attributes?.metadata?.cliVersion && (
+      {traceInfo?.attributes?.metadata?.cliVersion && (
         <Chip
           label={`cli@${traceInfo.attributes?.metadata?.cliVersion}`}
           size="small"
@@ -115,7 +115,7 @@ export default function RunStatsHeader({
         />
       )}
 
-      {traceInfo.attributes?.metadata?.appName && (
+      {traceInfo?.attributes?.metadata?.appName && (
         <Chip
           label={`${traceInfo.attributes?.metadata?.appName}@${traceInfo.attributes?.metadata?.appVersion}`}
           size="small"

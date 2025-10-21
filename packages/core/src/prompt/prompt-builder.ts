@@ -124,13 +124,13 @@ export class PromptBuilder {
   }
 
   async buildImagePrompt(
-    options: Pick<PromptBuildOptions, "input"> & { agent: ImageAgent },
+    options: Pick<PromptBuildOptions, "input" | "context"> & { agent: ImageAgent },
   ): Promise<{ prompt: string; image?: FileUnionContent[] }> {
     const messages =
       (await (typeof this.instructions === "string"
         ? ChatMessagesTemplate.from([SystemMessageTemplate.from(this.instructions)])
         : this.instructions
-      )?.format(options.input, { workingDir: this.workingDir })) ?? [];
+      )?.format(this.getTemplateVariables(options), { workingDir: this.workingDir })) ?? [];
 
     const inputFileKey = options.agent?.inputFileKey;
     const files = flat(
@@ -145,7 +145,15 @@ export class PromptBuilder {
 
     return {
       prompt: messages.map((i) => i.content).join("\n"),
-      image: files,
+      image: files.length ? files : undefined,
+    };
+  }
+
+  private getTemplateVariables(options: Pick<PromptBuildOptions, "input" | "context">) {
+    return {
+      userContext: options.context?.userContext,
+      ...options.context?.userContext,
+      ...options.input,
     };
   }
 
@@ -159,7 +167,7 @@ export class PromptBuilder {
       (await (typeof this.instructions === "string"
         ? ChatMessagesTemplate.from([SystemMessageTemplate.from(this.instructions)])
         : this.instructions
-      )?.format(options.input, { workingDir: this.workingDir })) ?? [],
+      )?.format(this.getTemplateVariables(options), { workingDir: this.workingDir })) ?? [],
       (i) => i.role === "system",
     );
 

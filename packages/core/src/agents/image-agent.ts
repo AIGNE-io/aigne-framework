@@ -67,7 +67,11 @@ export class ImageAgent<I extends Message = any, O extends ImageModelOutput = an
     const imageModel = this.imageModel || options.imageModel || options.context.imageModel;
     if (!imageModel) throw new Error("image model is required to run ImageAgent");
 
-    const { prompt, image } = await this.instructions.buildImagePrompt({ input, agent: this });
+    const { prompt, image } = await this.instructions.buildImagePrompt({
+      ...options,
+      input,
+      agent: this,
+    });
 
     return (await this.invokeChildAgent(
       imageModel,

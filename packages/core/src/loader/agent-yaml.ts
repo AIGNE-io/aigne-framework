@@ -77,6 +77,7 @@ export interface AIAgentSchema extends BaseAgentSchema {
   inputKey?: string;
   inputFileKey?: string;
   outputKey?: string;
+  outputFileKey?: string;
   toolChoice?: AIAgentToolChoice;
   toolCallsConcurrency?: number;
   keepTextInToolUses?: boolean;
@@ -85,6 +86,7 @@ export interface AIAgentSchema extends BaseAgentSchema {
 export interface ImageAgentSchema extends BaseAgentSchema {
   type: "image";
   instructions: Instructions;
+  inputFileKey?: string;
   modelOptions?: Record<string, any>;
 }
 
@@ -282,6 +284,7 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
           .object({
             type: z.literal("image"),
             instructions: instructionsSchema,
+            inputFileKey: optionalize(z.string()),
             modelOptions: optionalize(camelizeSchema(z.record(z.any()))),
           })
           .extend(baseAgentSchema.shape),

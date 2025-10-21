@@ -10,6 +10,7 @@ export * from "./agents/team-agent.js";
 export * from "./agents/transform-agent.js";
 export * from "./agents/types.js";
 export * from "./agents/user-agent.js";
+export * from "./agents/video-model.js";
 export * from "./aigne/index.js";
 export * from "./memory/index.js";
 export * from "./prompt/prompt-builder.js";

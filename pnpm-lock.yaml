@@ -1332,8 +1332,8 @@ importers:
         specifier: ^13.0.1
         version: 13.0.1
       openai:
-        specifier: ^5.20.3
-        version: 5.20.3(ws@8.18.2)(zod@3.25.67)
+        specifier: ^6.5.0
+        version: 6.5.0(ws@8.18.2)(zod@3.25.67)
       zod:
         specifier: ^3.25.67
         version: 3.25.67
@@ -1920,9 +1920,6 @@ importers:
       open:
         specifier: ^10.2.0
         version: 10.2.0
-      openai:
-        specifier: ^5.20.3
-        version: 5.20.3(ws@8.18.2)(zod@3.25.67)
       p-wait-for:
         specifier: ^5.0.2
         version: 5.0.2
@@ -9670,12 +9667,12 @@ packages:
     resolution: {integrity: sha512-YgBpdJHPyQ2UE5x+hlSXcnejzAvD0b22U2OuAP+8OnlJT+PjWPxtgmGqKKc+RgTM63U9gN0YzrYc71R2WT/hTA==}
     engines: {node: '>=18'}
 
-  openai@5.20.3:
-    resolution: {integrity: sha512-8V0KgAcPFppDIP8uMBOkhRrhDBuxNQYQxb9IovP4NN4VyaYGISAzYexyYYuAwVul2HB75Wpib0xDboYJqRMNow==}
+  openai@6.5.0:
+    resolution: {integrity: sha512-bNqJ15Ijbs41KuJ2iYz/mGAruFHzQQt7zXo4EvjNLoB64aJdgn1jlMeDTsXjEg+idVYafg57QB/5Rd16oqvZ6A==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
-      zod: ^3.23.8
+      zod: ^3.25 || ^4.0
     peerDependenciesMeta:
       ws:
         optional: true
@@ -11123,6 +11120,7 @@ packages:
   sitemap@8.0.0:
     resolution: {integrity: sha512-+AbdxhM9kJsHtruUF39bwS/B0Fytw6Fr1o4ZAIAEqA6cke2xcoO2GleBw9Zw7nRzILVEgz7zBM5GiTJjie1G9A==}
     engines: {node: '>=14.0.0', npm: '>=6.0.0'}
+    deprecated: 'SECURITY: Multiple vulnerabilities fixed in 8.0.1 (XML injection, path traversal, command injection, protocol injection). Upgrade immediately: npm install sitemap@8.0.1'
     hasBin: true
 
   skin-tone@2.0.0:
@@ -22437,7 +22435,7 @@ snapshots:
       is-inside-container: 1.0.0
       wsl-utils: 0.1.0
 
-  openai@5.20.3(ws@8.18.2)(zod@3.25.67):
+  openai@6.5.0(ws@8.18.2)(zod@3.25.67):
     optionalDependencies:
       ws: 8.18.2
       zod: 3.25.67

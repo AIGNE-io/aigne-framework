@@ -5,7 +5,7 @@ import { AIGNE_HUB_BLOCKLET_DID, aigneHubBaseUrl } from "./constants.js";
 
 export interface GetModelsOptions {
   baseURL?: string;
-  type?: "image" | "chat" | "embedding";
+  type?: "image" | "chat" | "embedding" | "video";
 }
 
 const modelsSchema = z.array(
@@ -36,10 +36,12 @@ export async function getModels(options: GetModelsOptions) {
       type: options.type,
     }),
   );
+
   if (!response.ok) {
     const text = await response.text().catch(() => "");
     throw new Error(`Failed to fetch models: ${response.status} ${response.statusText} ${text}`);
   }
+
   const json = await response.json().catch((error) => {
     throw new Error(`Failed to parse response as JSON from ${url}: ${error.message}`);
   });

@@ -47,7 +47,7 @@
     "@aigne/core": "workspace:^",
     "@aigne/platform-helpers": "workspace:^",
     "@aigne/uuid": "^13.0.1",
-    "openai": "^5.20.3",
+    "openai": "^6.5.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {

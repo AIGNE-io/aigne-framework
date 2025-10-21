@@ -6,5 +6,7 @@ export const AIGNE_HUB_DEFAULT_MODEL = "openai/gpt-5-mini";
 
 export const AIGNE_HUB_IMAGE_MODEL = "openai/gpt-image-1";
 
+export const AIGNE_HUB_VIDEO_MODEL = "openai/sora-2";
+
 export const aigneHubBaseUrl = () =>
   process.env.BLOCKLET_AIGNE_API_URL || process.env.AIGNE_HUB_API_URL || AIGNE_HUB_URL;

@@ -6,6 +6,7 @@ import type {
   ChatModelInputOptions,
   ImageModel,
   ImageModelInputOptions,
+  VideoModel,
 } from "@aigne/core";
 import { DeepSeekChatModel } from "@aigne/deepseek";
 import { DoubaoChatModel, DoubaoImageModel } from "@aigne/doubao";
@@ -13,13 +14,19 @@ import { GeminiChatModel, GeminiImageModel } from "@aigne/gemini";
 import { IdeogramImageModel } from "@aigne/ideogram";
 import { OllamaChatModel } from "@aigne/ollama";
 import { OpenRouterChatModel } from "@aigne/open-router";
-import { OpenAIChatModel, type OpenAIChatModelOptions, OpenAIImageModel } from "@aigne/openai";
+import {
+  OpenAIChatModel,
+  type OpenAIChatModelOptions,
+  OpenAIImageModel,
+  OpenAIVideoModel,
+} from "@aigne/openai";
 import { PoeChatModel } from "@aigne/poe";
 import { XAIChatModel } from "@aigne/xai";
 import { NodeHttpHandler, streamCollector } from "@smithy/node-http-handler";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { AIGNEHubImageModel } from "../aigne-hub-image-model.js";
 import { AIGNEHubChatModel } from "../aigne-hub-model.js";
+import { AIGNEHubVideoModel } from "../aigne-hub-video-model.js";
 
 const getClientOptions = () => {
   const proxy = ["HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"]
@@ -137,6 +144,17 @@ export interface LoadableImageModel {
   }) => ImageModel;
 }
 
+export interface LoadableVideoModel {
+  name: string | string[];
+  apiKeyEnvName: string;
+  create: (options: {
+    apiKey?: string;
+    baseURL?: string;
+    model?: string;
+    modelOptions?: { [key: string]: any };
+  }) => VideoModel;
+}
+
 export function availableImageModels(): LoadableImageModel[] {
   const { clientOptions } = getClientOptions();
 
@@ -169,6 +187,23 @@ export function availableImageModels(): LoadableImageModel[] {
   ];
 }
 
+export function availableVideoModels(): LoadableVideoModel[] {
+  const { clientOptions } = getClientOptions();
+
+  return [
+    {
+      name: OpenAIVideoModel.name,
+      apiKeyEnvName: "OPENAI_API_KEY",
+      create: (params) => new OpenAIVideoModel({ ...params, clientOptions }),
+    },
+    {
+      name: AIGNEHubVideoModel.name,
+      apiKeyEnvName: "AIGNE_HUB_API_KEY",
+      create: (params) => new AIGNEHubVideoModel({ ...params, clientOptions }),
+    },
+  ];
+}
+
 export function findModel(provider: string): {
   all: LoadableModel[];
   match: LoadableModel | undefined;
@@ -195,6 +230,25 @@ export function findImageModel(provider: string): {
   provider = provider.toLowerCase().replace(/-/g, "");
 
   const all = availableImageModels();
+
+  const match = all.find((m) => {
+    if (typeof m.name === "string") {
+      return m.name.toLowerCase().includes(provider);
+    }
+
+    return m.name.some((n) => n.toLowerCase().includes(provider));
+  });
+
+  return { all, match };
+}
+
+export function findVideoModel(provider: string): {
+  all: LoadableVideoModel[];
+  match: LoadableVideoModel | undefined;
+} {
+  provider = provider.toLowerCase().replace(/-/g, "");
+
+  const all = availableVideoModels();
 
   const match = all.find((m) => {
     if (typeof m.name === "string") {

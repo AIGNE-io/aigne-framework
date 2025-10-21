@@ -2,6 +2,7 @@ import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { z } from "zod";
 import { convertJsonSchemaToZod, type JSONSchema } from "zod-from-json-schema";
 import { wrapAutoParseJsonSchema } from "../utils/json-schema.js";
+import { logger } from "../utils/logger.js";
 import { checkArguments, isNil, omitByDeep, type PromiseOrValue } from "../utils/type-utils.js";
 import {
   type Agent,
@@ -248,7 +249,12 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
     options: AgentInvokeOptions,
   ): Promise<void> {
     super.postprocess(input, output, options);
-    const { usage } = output;
+    const { usage, thoughts, model } = output;
+
+    if (thoughts) {
+      logger.info(`Model Thoughts (${model}): ${thoughts}`);
+    }
+
     if (usage) {
       options.context.usage.outputTokens += usage.outputTokens;
       options.context.usage.inputTokens += usage.inputTokens;

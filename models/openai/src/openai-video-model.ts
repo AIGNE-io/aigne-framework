@@ -141,6 +141,7 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
   async downloadToFile(videoId: string, filePath: string): Promise<string> {
     const fs = await import("node:fs");
 
+    console.log("Downloading video content...");
     const content = await this.client.videos.downloadContent(videoId);
     const arrayBuffer = await content.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);

@@ -14,7 +14,7 @@ import { type FileUnionContent, fileUnionContentSchema, Model } from "./model.js
 export interface VideoModelOptions<
   I extends VideoModelInput = VideoModelInput,
   O extends VideoModelOutput = VideoModelOutput,
-> extends Omit<AgentOptions<I, O>, "model" | "inputSchema" | "outputSchema"> {
+> extends Omit<AgentOptions<I, O>, "model"> {
   model?: string;
 }
 

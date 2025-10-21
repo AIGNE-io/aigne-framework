@@ -99,7 +99,8 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
       ...options,
       description: options?.description ?? "Generate videos using OpenAI Sora models",
       inputSchema: openAIVideoModelInputSchema,
-    } as any);
+    });
+
     if (options) checkArguments(this.name, openAIVideoModelOptionsSchema, options);
   }
 
@@ -140,13 +141,11 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
   async downloadToFile(videoId: string, filePath: string): Promise<string> {
     const fs = await import("node:fs");
 
-    console.log("Downloading video content...");
     const content = await this.client.videos.downloadContent(videoId);
     const arrayBuffer = await content.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
     fs.writeFileSync(filePath, buffer);
-    console.log(`Video saved to: ${filePath}`);
     return filePath;
   }
 
@@ -188,7 +187,6 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
       throw new Error(`Unexpected video status: ${video.status}`);
     }
 
-    console.log(`Video generation completed: ${video.id}`);
     const dir = nodejs.path.join(nodejs.os.tmpdir(), options?.context?.id);
     await nodejs.fs.mkdir(dir, { recursive: true });
     const localPath = nodejs.path.join(dir, `${video.id}.mp4`);

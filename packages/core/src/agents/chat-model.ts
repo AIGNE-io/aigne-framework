@@ -696,6 +696,11 @@ export interface ChatModelOutput extends Message {
   text?: string;
 
   /**
+   * Model's internal thoughts (if supported)
+   */
+  thoughts?: string;
+
+  /**
    * JSON format response content
    */
   json?: object;
@@ -793,6 +798,7 @@ export const chatModelOutputUsageSchema = z.object({
 
 const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({
   text: z.string().optional(),
+  thoughts: z.string().optional(),
   json: z.record(z.string(), z.unknown()).optional(),
   toolCalls: z.array(chatModelOutputToolCallSchema).optional(),
   usage: chatModelOutputUsageSchema.optional(),

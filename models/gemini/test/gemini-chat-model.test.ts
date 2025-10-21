@@ -316,6 +316,7 @@ test("GeminiChatModel should support image mode", async () => {
             "image",
           ],
           "temperature": undefined,
+          "thinkingConfig": undefined,
           "toolConfig": {
             "functionCallingConfig": undefined,
           },
@@ -416,6 +417,9 @@ What is the weather in New York?
       "responseMimeType": "application/json",
       "responseModalities": undefined,
       "temperature": undefined,
+      "thinkingConfig": {
+        "includeThoughts": true,
+      },
       "toolConfig": {
         "functionCallingConfig": undefined,
       },

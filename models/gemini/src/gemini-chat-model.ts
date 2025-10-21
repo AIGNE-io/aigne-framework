@@ -205,7 +205,7 @@ export class GeminiChatModel extends ChatModel {
     } else if (!toolCalls.length) {
       // NOTE: gemini-2.5-pro sometimes returns an empty response,
       // so we check here and retry with structured output mode (empty responses occur less frequently with tool calls)
-      if (!text) {
+      if (!text && !files.length) {
         logger.warn("Empty response from Gemini, retrying with structured output mode");
 
         try {

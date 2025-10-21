@@ -1920,6 +1920,9 @@ importers:
       open:
         specifier: ^10.2.0
         version: 10.2.0
+      openai:
+        specifier: ^6.6.0
+        version: 6.6.0(ws@8.18.2)(zod@3.25.67)
       p-wait-for:
         specifier: ^5.0.2
         version: 5.0.2
@@ -9669,6 +9672,18 @@ packages:
 
   openai@6.5.0:
     resolution: {integrity: sha512-bNqJ15Ijbs41KuJ2iYz/mGAruFHzQQt7zXo4EvjNLoB64aJdgn1jlMeDTsXjEg+idVYafg57QB/5Rd16oqvZ6A==}
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      ws:
+        optional: true
+      zod:
+        optional: true
+
+  openai@6.6.0:
+    resolution: {integrity: sha512-1yWk4cBsHF5Bq9TreHYOHY7pbqdlT74COnm8vPx7WKn36StS+Hyk8DdAitnLaw67a5Cudkz5EmlFQjSrNnrA2w==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
@@ -22436,6 +22451,11 @@ snapshots:
       wsl-utils: 0.1.0
 
   openai@6.5.0(ws@8.18.2)(zod@3.25.67):
+    optionalDependencies:
+      ws: 8.18.2
+      zod: 3.25.67
+
+  openai@6.6.0(ws@8.18.2)(zod@3.25.67):
     optionalDependencies:
       ws: 8.18.2
       zod: 3.25.67

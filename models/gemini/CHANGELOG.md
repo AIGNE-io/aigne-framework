@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.14.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.2...gemini-v0.14.3-beta) (2025-10-21)
+
+
+### Features
+
+* add thinking support to Gemini chat models ([#650](https://github.com/AIGNE-io/aigne-framework/issues/650)) ([09b828b](https://github.com/AIGNE-io/aigne-framework/commit/09b828ba668d90cc6aac68a5e8190adb146b5e45))
+
+
+### Bug Fixes
+
+* **gemini:** handle empty responses when files are present ([#648](https://github.com/AIGNE-io/aigne-framework/issues/648)) ([f4e259c](https://github.com/AIGNE-io/aigne-framework/commit/f4e259c5e5c687c347bb5cf29cbb0b5bf4d0d4a1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.64.0-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.56-beta
+
 ## [0.14.2](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.2-beta.12...gemini-v0.14.2) (2025-10-19)
 
 

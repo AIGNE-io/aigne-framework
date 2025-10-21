@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.52.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.51.0...cli-v1.52.0-beta) (2025-10-21)
+
+
+### Features
+
+* **cli:** add metadata traces including CLI version, app name, and version ([#646](https://github.com/AIGNE-io/aigne-framework/issues/646)) ([c64bd76](https://github.com/AIGNE-io/aigne-framework/commit/c64bd761ba4c9f3854be5feee208c711bff7a170))
+
+
+### Bug Fixes
+
+* **cli:** prevent potential crashes when environment configurations are incomplete ([#645](https://github.com/AIGNE-io/aigne-framework/issues/645)) ([8ab3a1e](https://github.com/AIGNE-io/aigne-framework/commit/8ab3a1e208a2774987d5d23c7239971c41edfd25))
+* **observability:** support time line as background ([#642](https://github.com/AIGNE-io/aigne-framework/issues/642)) ([6f47870](https://github.com/AIGNE-io/aigne-framework/commit/6f478702090e8106ddcfe318a4766e1246257503))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-system-fs bumped to 1.0.2-beta
+    * @aigne/agent-library bumped to 1.21.49-beta
+    * @aigne/agentic-memory bumped to 1.0.49-beta
+    * @aigne/aigne-hub bumped to 0.10.3-beta
+    * @aigne/core bumped to 1.64.0-beta
+    * @aigne/default-memory bumped to 1.2.12-beta
+    * @aigne/observability-api bumped to 0.11.3-beta
+    * @aigne/openai bumped to 0.16.3-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.56-beta
+
 ## [1.51.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.51.0-beta.14...cli-v1.51.0) (2025-10-19)
 
 

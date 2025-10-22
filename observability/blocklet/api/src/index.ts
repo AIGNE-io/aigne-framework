@@ -2,8 +2,8 @@ import path from "node:path";
 import { startObservabilityBlockletServer } from "@aigne/observability-api/server";
 import { v7 } from "@aigne/uuid";
 import { getComponentMountPoint } from "@blocklet/sdk/lib/component";
-import middleware from "@blocklet/sdk/lib/middlewares";
-import fallback from "@blocklet/sdk/lib/middlewares/fallback";
+import { fallback } from "@blocklet/sdk/lib/middlewares/fallback";
+import { sessionMiddleware } from "@blocklet/sdk/lib/middlewares/session";
 import dotenv from "dotenv-flow";
 import express, { type NextFunction, type Request, type Response } from "express";
 import mime from "mime";
@@ -59,7 +59,7 @@ const startServer = async () => {
   const { app, server } = await startObservabilityBlockletServer({
     port: Number(process.env.BLOCKLET_PORT) || 3000,
     dbUrl: path.join("file:", process.env.BLOCKLET_DATA_DIR || "", "observer.db"),
-    traceTreeMiddleware: [middleware.session({ accessKey: true }), requireAdminRole],
+    traceTreeMiddleware: [sessionMiddleware({ accessKey: true }), requireAdminRole],
     options: {
       formatOutputFiles: (files) =>
         formatAndUpload(

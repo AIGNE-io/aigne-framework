@@ -1,5 +1,6 @@
 import assert from "node:assert";
 import type { Agent, Message } from "@aigne/core";
+import type { AIGNEMetadata } from "@aigne/core/aigne/type.js";
 import { findCliAgent, mapCliAgent } from "@aigne/core/utils/agent-utils.js";
 import { type LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { loadAIGNE } from "../load-aigne.js";
@@ -67,14 +68,14 @@ export async function invokeCLIAgentFromDirInChildProcess(options: {
   parent?: string[];
   agent: string;
   input: Message & AgentRunCommonOptions;
+  metadata?: AIGNEMetadata;
 }) {
   const aigne = await loadAIGNE({
     path: options.dir,
     modelOptions: options.input,
     printTips: true,
-    imageModelOptions: {
-      model: options.input.imageModel,
-    },
+    imageModelOptions: { model: options.input.imageModel },
+    metadata: options.metadata,
   });
 
   try {

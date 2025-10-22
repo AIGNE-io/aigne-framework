@@ -42,7 +42,7 @@ const Upload = ({ fetchTraces, pageSize }: UploadProps) => {
         throw new Error("Invalid file format: traces array not found");
       }
 
-      const BATCH_SIZE = 1;
+      const BATCH_SIZE = 20;
       const batches: any[][] = [];
       for (let i = 0; i < traces.length; i += BATCH_SIZE) {
         batches.push(traces.slice(i, i + BATCH_SIZE));

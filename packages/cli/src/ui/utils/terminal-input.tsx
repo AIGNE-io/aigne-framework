@@ -1,27 +1,39 @@
 import { ExitPromptError } from "@inquirer/core";
 import chalk from "chalk";
 import { Box, render, Text, useInput } from "ink";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTextBuffer } from "./text-buffer.js";
 
-export async function terminalInput(
-  options: { message?: string; default?: string; inline?: boolean } = {},
-): Promise<string> {
+export async function terminalInput({
+  render: r = render,
+  ...options
+}: {
+  message?: string;
+  default?: string;
+  inline?: boolean;
+  required?: boolean;
+  validate?: (input: string) => string | boolean | Promise<string | boolean>;
+  render?: typeof render;
+} = {}): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    process.addListener("SIGINT", () => {
+    const handleSigInt = () => {
       reject(new Error("Input aborted"));
-    });
+    };
+    process.addListener("SIGINT", handleSigInt);
+    const clean = () => process.removeListener("SIGINT", handleSigInt);
 
-    const app = render(
-      <Input
+    const app = r(
+      <TerminalInput
         {...options}
         onSubmit={(value) => {
           app.unmount();
           resolve(value);
+          clean();
         }}
         onError={(error) => {
           app.unmount();
           reject(error);
+          clean();
         }}
       />,
       { exitOnCtrlC: false },
@@ -29,10 +41,12 @@ export async function terminalInput(
   });
 }
 
-function Input(props: {
+export function TerminalInput(props: {
   message?: string;
   default?: string;
   inline?: boolean;
+  required?: boolean;
+  validate?: (input: string) => string | boolean | Promise<string | boolean>;
   onSubmit: (input: string) => void;
   onError: (error: Error) => void;
 }) {
@@ -43,7 +57,12 @@ function Input(props: {
     viewport: { width: 80, height: 1 },
   });
 
-  const [status, setStatus] = useState<"input" | "success" | "error">("input");
+  const textRef = useRef(buffer.text);
+
+  textRef.current = buffer.text;
+
+  const [status, setStatus] = useState<"input" | "success" | "error" | "validating">("input");
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
   useInput((character, key) => {
     if (character === "c" && key.ctrl) {
@@ -54,10 +73,42 @@ function Input(props: {
       return;
     }
     if (key.return) {
-      setStatus("success");
-      setTimeout(() => {
-        props.onSubmit(buffer.text);
-      });
+      const input = textRef.current || props.default || "";
+      setStatus("validating");
+      setErrorMessage(undefined);
+
+      // Handle validation
+      const validateInput = async () => {
+        try {
+          // Check required validation first
+          if (props.required && !input.trim()) {
+            setErrorMessage("You must provide a value");
+            setStatus("input");
+            return;
+          }
+
+          // Run custom validation if provided
+          if (props.validate) {
+            const result = await props.validate(input);
+            if (result !== true) {
+              setErrorMessage(
+                typeof result === "string" ? result : "You must provide a valid value",
+              );
+              setStatus("input");
+              return;
+            }
+          }
+
+          // Validation passed
+          setStatus("success");
+          props.onSubmit(input);
+        } catch (error) {
+          setErrorMessage(error instanceof Error ? error.message : "Validation error");
+          setStatus("input");
+        }
+      };
+
+      validateInput();
       return;
     } else if (key.backspace) buffer.backspace();
     else if (key.delete) buffer.backspace();
@@ -69,6 +120,7 @@ function Input(props: {
     else if (character === "e" && key.ctrl) buffer.move("end");
     else {
       buffer.handleInput({ ...key, name: character, sequence: character, paste: false });
+      setErrorMessage(undefined);
     }
   });
 
@@ -87,22 +139,30 @@ function Input(props: {
   const inline = props.inline !== false;
 
   return (
-    <Box flexDirection={inline ? "row" : "column"}>
-      <Text>
-        {PREFIX[status]} {!inline && label}
-      </Text>
-      <Box flexShrink={1} flexGrow={1} marginLeft={inline ? 0 : 2} marginRight={1}>
+    <Box flexDirection="column">
+      <Box flexDirection={inline ? "row" : "column"}>
         <Text>
-          {!!label && inline && `${label} `}
-          {lines.join("\n")}
+          {PREFIX[status]} {!inline && label}
         </Text>
+        <Box flexShrink={1} flexGrow={1} marginLeft={inline ? 0 : 2} marginRight={1}>
+          <Text>
+            {!!label && inline && `${label} `}
+            {lines.join("\n")}
+          </Text>
+        </Box>
       </Box>
+      {errorMessage && (
+        <Box marginLeft={2}>
+          <Text color="red">{errorMessage}</Text>
+        </Box>
+      )}
     </Box>
   );
 }
 
 const PREFIX = {
   input: chalk.blue("?"),
+  validating: chalk.yellow("⋯"),
   success: chalk.green("✔"),
   error: chalk.red("✘"),
 };

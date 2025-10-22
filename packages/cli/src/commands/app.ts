@@ -8,6 +8,7 @@ import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
 import type { CommandModule } from "yargs";
+import { AIGNE_CLI_VERSION } from "../constants.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { withSpinner } from "../utils/spinner.js";
 import {
@@ -63,20 +64,26 @@ export function createAppCommands({ argv }: { argv?: string[] } = {}): CommandMo
 
         if (aigne.cli?.chat) {
           y.command({
-            ...agentCommandModule({ dir, agent: aigne.cli.chat, chat: true }),
+            ...agentCommandModule({
+              dir,
+              agent: aigne.cli.chat,
+              chat: true,
+              version,
+              packageName: app.name,
+            }),
             command: "$0",
           });
         }
 
         for (const cliAgent of aigne.cli?.agents ?? []) {
-          y.command(cliAgentCommandModule({ dir, cliAgent }));
+          y.command(cliAgentCommandModule({ dir, cliAgent, version, packageName: app.name }));
         }
 
         y.option("model", {
           type: "string",
           description:
             "Model to use for the application, example: openai:gpt-4.1 or google:gemini-2.5-flash",
-        }).command(serveMcpCommandModule({ name: app.name, dir }));
+        }).command(serveMcpCommandModule({ name: app.name, version, dir }));
 
         y.version(`${app.name} v${version}`).alias("version", "v");
       }
@@ -90,9 +97,11 @@ export function createAppCommands({ argv }: { argv?: string[] } = {}): CommandMo
 const serveMcpCommandModule = ({
   name,
   dir,
+  version,
 }: {
   name: string;
   dir: string;
+  version?: string;
 }): CommandModule<unknown, { host: string; port?: number; pathname: string }> => ({
   command: "serve-mcp",
   describe: `Serve ${name} a MCP server (streamable http)`,
@@ -114,7 +123,14 @@ const serveMcpCommandModule = ({
       });
   },
   handler: async (options) => {
-    await serveMCPServerFromDir({ ...options, dir });
+    await serveMCPServerFromDir({
+      ...options,
+      dir,
+      metadata: {
+        appName: name,
+        appVersion: version,
+      },
+    });
   },
 });
 
@@ -182,10 +198,14 @@ export const agentCommandModule = ({
   dir,
   agent,
   chat,
+  version,
+  packageName,
 }: {
   dir: string;
   agent: AgentInChildProcess;
   chat?: boolean;
+  version?: string;
+  packageName?: string;
 }): CommandModule<unknown, AgentRunCommonOptions> => {
   return {
     command: agent.name,
@@ -201,6 +221,11 @@ export const agentCommandModule = ({
         dir,
         agent: agent.name,
         input: { ...options, chat: chat ?? options.chat },
+        metadata: {
+          cliVersion: AIGNE_CLI_VERSION,
+          appName: packageName,
+          appVersion: version,
+        },
       });
 
       process.exit(0);
@@ -212,10 +237,14 @@ export const cliAgentCommandModule = ({
   dir,
   parent,
   cliAgent,
+  version,
+  packageName,
 }: {
   dir: string;
   parent?: string[];
   cliAgent: CLIAgentInChildProcess;
+  version?: string;
+  packageName?: string;
 }): CommandModule<unknown, AgentRunCommonOptions> => {
   const { agent, agents } = cliAgent;
 
@@ -233,7 +262,13 @@ export const cliAgentCommandModule = ({
       if (agents?.length) {
         for (const cmd of agents) {
           yargs.command(
-            cliAgentCommandModule({ dir, parent: (parent ?? []).concat(name), cliAgent: cmd }),
+            cliAgentCommandModule({
+              dir,
+              parent: (parent ?? []).concat(name),
+              cliAgent: cmd,
+              version,
+              packageName,
+            }),
           );
         }
       }
@@ -252,6 +287,11 @@ export const cliAgentCommandModule = ({
         parent,
         agent: name,
         input: options,
+        metadata: {
+          cliVersion: AIGNE_CLI_VERSION,
+          appName: packageName,
+          appVersion: version,
+        },
       });
 
       process.exit(0);
@@ -288,6 +328,10 @@ export async function loadApplication(
     const aigne = await runAIGNEInChildProcess("loadAIGNE", {
       path: dir,
       skipModelLoading: true,
+      metadata: {
+        appName: packageName,
+        appVersion: check?.version,
+      },
     }).catch(async (error) => {
       logger.error(`⚠️ Failed to load ${packageName}, trying to reinstall:`, error.message);
 
@@ -307,7 +351,14 @@ export async function loadApplication(
   const result = await installApp({ dir, packageName, beta: check?.version?.includes("beta") });
 
   return {
-    aigne: await runAIGNEInChildProcess("loadAIGNE", { path: dir, skipModelLoading: true }),
+    aigne: await runAIGNEInChildProcess("loadAIGNE", {
+      path: dir,
+      skipModelLoading: true,
+      metadata: {
+        appName: packageName,
+        appVersion: result.version,
+      },
+    }),
     version: result.version,
   };
 }

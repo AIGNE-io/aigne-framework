@@ -51,6 +51,7 @@ import {
   toMessagePayload,
   type Unsubscribe,
 } from "./message-queue.js";
+import type { AIGNEMetadata } from "./type.js";
 import { type ContextLimits, type ContextUsage, newEmptyContextUsage } from "./usage.js";
 
 /**
@@ -134,6 +135,8 @@ export interface Context<U extends UserContext = UserContext>
   agents: Agent[];
 
   observer?: AIGNEObserver;
+
+  metadata?: AIGNEMetadata;
 
   span?: Span;
 
@@ -497,6 +500,7 @@ export class AIGNEContext implements Context {
             span.setAttribute("custom.parent_id", this.parentId);
           }
 
+          span.setAttribute("metadata", JSON.stringify(this.internal.metadata ?? {}));
           span.setAttribute("custom.started_at", b.timestamp);
           span.setAttribute("input", JSON.stringify(input));
           span.setAttribute("agentTag", agent.tag ?? "UnknownAgent");
@@ -570,7 +574,7 @@ class AIGNEContextShared {
   constructor(
     private readonly parent?: Pick<
       Context,
-      "model" | "imageModel" | "agents" | "skills" | "limits" | "observer"
+      "model" | "imageModel" | "agents" | "skills" | "limits" | "observer" | "metadata"
     > & {
       messageQueue?: MessageQueue;
       events?: Emitter<any>;
@@ -602,6 +606,10 @@ class AIGNEContextShared {
 
   get observer() {
     return this.parent?.observer;
+  }
+
+  get metadata() {
+    return this.parent?.metadata;
   }
 
   get limits() {

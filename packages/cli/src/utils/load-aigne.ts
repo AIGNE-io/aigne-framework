@@ -4,10 +4,11 @@ import {
   type ChatModelInputOptions,
   type ImageModelInputOptions,
 } from "@aigne/core";
+import type { AIGNEMetadata } from "@aigne/core/aigne/type.js";
 import { isNil, omitBy } from "@aigne/core/utils/type-utils.js";
 import boxen from "boxen";
 import chalk from "chalk";
-import { availableMemories } from "../constants.js";
+import { AIGNE_CLI_VERSION, availableMemories } from "../constants.js";
 import { loadChatModel, loadImageModel, maskApiKey } from "./aigne-hub/model.js";
 import type { LoadCredentialOptions } from "./aigne-hub/type.js";
 import { getUrlOrigin } from "./get-url-origin.js";
@@ -49,12 +50,14 @@ export async function loadAIGNE({
   imageModelOptions,
   printTips = false,
   skipModelLoading = false,
+  metadata,
 }: {
   path?: string;
   modelOptions?: ChatModelInputOptions & LoadCredentialOptions;
   imageModelOptions?: ImageModelInputOptions & LoadCredentialOptions;
   printTips?: boolean;
   skipModelLoading?: boolean;
+  metadata?: AIGNEMetadata;
 }) {
   let aigne: AIGNE;
 
@@ -86,10 +89,14 @@ export async function loadAIGNE({
           },
         ],
       },
+      metadata: { ...metadata, cliVersion: AIGNE_CLI_VERSION },
     });
   } else {
     const chatModel = await loadChatModel({ ...modelOptions });
-    aigne = new AIGNE({ model: chatModel });
+    aigne = new AIGNE({
+      model: chatModel,
+      metadata: { ...metadata, cliVersion: AIGNE_CLI_VERSION },
+    });
   }
 
   if (printTips && !printed) {

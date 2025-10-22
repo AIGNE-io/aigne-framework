@@ -118,6 +118,9 @@ export class GeminiChatModel extends ChatModel {
       model,
       contents,
       config: {
+        thinkingConfig: this.supportThinkingModels.includes(model)
+          ? { includeThoughts: true }
+          : undefined,
         responseModalities: input.modelOptions?.modalities,
         temperature: input.modelOptions?.temperature || this.modelOptions?.temperature,
         topP: input.modelOptions?.topP || this.modelOptions?.topP,
@@ -152,9 +155,13 @@ export class GeminiChatModel extends ChatModel {
         if (content?.parts) {
           for (const part of content.parts) {
             if (part.text) {
-              text += part.text;
-              if (input.responseFormat?.type !== "json_schema") {
-                yield { delta: { text: { text: part.text } } };
+              if (part.thought) {
+                yield { delta: { text: { thoughts: part.text } } };
+              } else {
+                text += part.text;
+                if (input.responseFormat?.type !== "json_schema") {
+                  yield { delta: { text: { text: part.text } } };
+                }
               }
             }
             if (part.inlineData?.data) {
@@ -205,7 +212,7 @@ export class GeminiChatModel extends ChatModel {
     } else if (!toolCalls.length) {
       // NOTE: gemini-2.5-pro sometimes returns an empty response,
       // so we check here and retry with structured output mode (empty responses occur less frequently with tool calls)
-      if (!text) {
+      if (!text && !files.length) {
         logger.warn("Empty response from Gemini, retrying with structured output mode");
 
         try {
@@ -263,6 +270,8 @@ export class GeminiChatModel extends ChatModel {
 
     yield { delta: { json: { usage, files: files.length ? files : undefined } } };
   }
+
+  protected supportThinkingModels = ["gemini-2.5-pro", "gemini-2.5-flash"];
 
   private async buildConfig(input: ChatModelInput): Promise<GenerateContentParameters["config"]> {
     const config: GenerateContentParameters["config"] = {};

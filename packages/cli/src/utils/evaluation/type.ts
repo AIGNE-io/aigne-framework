@@ -20,6 +20,7 @@ export interface Dataset {
 export interface RunOptions {
   timeoutMs?: number;
   concurrency?: number;
+  iterations?: number;
   hooks?: {
     onBeforeRun?: (item: DatasetItem) => void;
     onAfterRun?: (result: RunResult) => void;

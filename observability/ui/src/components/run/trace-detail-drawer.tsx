@@ -41,6 +41,7 @@ export default function RunDetailDrawer({
         setSelectedTrace(format);
         setLoading(false);
       }
+      return format;
     } catch {
       setLoading(false);
     }
@@ -74,7 +75,11 @@ export default function RunDetailDrawer({
           await new Promise((resolve) => setTimeout(resolve, 3000));
           if (cancelled) break;
 
-          await init(false, controller.signal);
+          const format = await init(false, controller.signal);
+          if (format?.status?.code) {
+            cancelled = true;
+            break;
+          }
         } catch {
           break;
         }

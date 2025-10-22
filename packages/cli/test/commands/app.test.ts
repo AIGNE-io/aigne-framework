@@ -189,6 +189,11 @@ test("app command should register doc-smith to yargs", async () => {
         "title": "test title to generate",
         "topic": "test topic to generate",
       },
+      "metadata": {
+        "appName": "doc-smith",
+        "appVersion": "1.1.1",
+        "cliVersion": "1.52.0-beta",
+      },
       "parent": undefined,
     }
   `,
@@ -244,6 +249,10 @@ test("app command should support serve-mcp subcommand", async () => {
       ],
       "dir": Any<String>,
       "host": "localhost",
+      "metadata": {
+        "appName": "doc-smith",
+        "appVersion": "1.1.1",
+      },
       "pathname": "/mcp",
     }
   `,

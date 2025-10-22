@@ -7,6 +7,7 @@ import {
   AIGNE,
   ChatMessagesTemplate,
   FunctionAgent,
+  ImageAgent,
   MCPAgent,
   PromptBuilder,
   SystemMessageTemplate,
@@ -21,7 +22,19 @@ import { MockMemory } from "../_mocks/mock-memory.js";
 test("PromptBuilder should build messages correctly", async () => {
   const context = new AIGNE().newContext();
 
-  const builder = PromptBuilder.from("Test instructions");
+  context.userContext = {
+    name: "Alice",
+  };
+
+  const builder = PromptBuilder.from(`\
+Test instructions
+
+question: {{question}}
+
+name (from userContext): {{name}}
+
+userContext.name: {{userContext.name}}
+`);
 
   const memory = new MockMemory({});
   await memory.record(
@@ -39,14 +52,23 @@ test("PromptBuilder should build messages correctly", async () => {
 
   const prompt1 = await builder.build({
     agent,
-    input: { message: "Hello" },
+    input: { message: "Hello", question: "What is AI?" },
     context,
   });
 
   expect(prompt1.messages).toMatchInlineSnapshot(`
     [
       {
-        "content": "Test instructions",
+        "content": 
+    "Test instructions
+
+    question: What is AI?
+
+    name (from userContext): Alice
+
+    userContext.name: Alice
+    "
+    ,
         "name": undefined,
         "role": "system",
       },
@@ -78,12 +100,24 @@ test("PromptBuilder should build messages correctly", async () => {
     input: { name: "foo" },
     context,
   });
-  expect(prompt2.messages).toEqual([
-    {
-      role: "system",
-      content: "Test instructions",
-    },
-  ]);
+  expect(prompt2.messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": 
+    "Test instructions
+
+    question: 
+
+    name (from userContext): foo
+
+    userContext.name: Alice
+    "
+    ,
+        "name": undefined,
+        "role": "system",
+      },
+    ]
+  `);
 });
 
 test("PromptBuilder should build response format correctly", async () => {
@@ -382,7 +416,12 @@ test("PromptBuilder from file", async () => {
 test("PromptBuilder should build image prompt correctly", async () => {
   const builder = PromptBuilder.from("Draw an image about {{topic}}");
 
-  expect(await builder.buildImagePrompt({ input: { topic: "a cat" } })).toEqual({
+  expect(
+    await builder.buildImagePrompt({
+      input: { topic: "a cat" },
+      agent: ImageAgent.from({ instructions: builder }),
+    }),
+  ).toEqual({
     prompt: "Draw an image about a cat",
   });
 });

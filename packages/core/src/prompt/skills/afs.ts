@@ -19,7 +19,14 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
           .optional(),
       }),
       process: async (input) => {
-        return afs.list(input.path, input.options);
+        const result = await afs.list(input.path, input.options);
+
+        return {
+          status: "success",
+          tool: "afs_list",
+          options: input.options,
+          ...result,
+        };
       },
     }),
     FunctionAgent.from({
@@ -40,7 +47,15 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
           .optional(),
       }),
       process: async (input) => {
-        return afs.search(input.path, input.query, input.options);
+        const result = await afs.search(input.path, input.query, input.options);
+
+        return {
+          status: "success",
+          tool: "afs_search",
+          query: input.query,
+          options: input.options,
+          ...result,
+        };
       },
     }),
     FunctionAgent.from({
@@ -55,9 +70,13 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
           ),
       }),
       process: async (input) => {
-        const file = await afs.read(input.path);
+        const result = await afs.read(input.path);
+
         return {
-          file,
+          status: "success",
+          tool: "afs_read",
+          path: input.path,
+          ...result,
         };
       },
     }),
@@ -74,11 +93,16 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
         content: z.string().describe("The text content to write to the file"),
       }),
       process: async (input) => {
-        const file = await afs.write(input.path, {
+        const result = await afs.write(input.path, {
           content: input.content,
         });
 
-        return { file };
+        return {
+          status: "success",
+          tool: "afs_write",
+          path: input.path,
+          ...result,
+        };
       },
     }),
   ];

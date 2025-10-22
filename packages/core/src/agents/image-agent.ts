@@ -15,6 +15,8 @@ export interface ImageAgentOptions<I extends Message = any, O extends ImageModel
   extends Omit<AgentOptions<I, O>, "outputSchema"> {
   instructions: string | PromptBuilder;
 
+  inputFileKey?: string;
+
   modelOptions?: Record<string, any>;
 
   outputFileType?: FileType;
@@ -48,11 +50,14 @@ export class ImageAgent<I extends Message = any, O extends ImageModelOutput = an
       typeof options.instructions === "string"
         ? PromptBuilder.from(options.instructions)
         : options.instructions;
+    this.inputFileKey = options.inputFileKey;
     this.modelOptions = options.modelOptions;
     this.outputFileType = options.outputFileType;
   }
 
   instructions: PromptBuilder;
+
+  inputFileKey?: string;
 
   modelOptions?: Record<string, any>;
 
@@ -62,11 +67,21 @@ export class ImageAgent<I extends Message = any, O extends ImageModelOutput = an
     const imageModel = this.imageModel || options.imageModel || options.context.imageModel;
     if (!imageModel) throw new Error("image model is required to run ImageAgent");
 
-    const { prompt } = await this.instructions.buildImagePrompt({ input });
+    const { prompt, image } = await this.instructions.buildImagePrompt({
+      ...options,
+      input,
+      agent: this,
+    });
 
     return (await this.invokeChildAgent(
       imageModel,
-      { ...input, modelOptions: this.modelOptions, prompt, outputFileType: this.outputFileType },
+      {
+        ...input,
+        modelOptions: this.modelOptions,
+        prompt,
+        image,
+        outputFileType: this.outputFileType,
+      },
       { ...options, streaming: false },
     )) as O;
   }

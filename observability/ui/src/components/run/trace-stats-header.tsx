@@ -4,10 +4,13 @@ import Toast from "@arcblock/ux/lib/Toast";
 import CloseIcon from "@mui/icons-material/Close";
 import ShareIcon from "@mui/icons-material/Share";
 import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import type { TraceData } from "./types.ts";
 
 interface RunStatsHeaderProps {
+  traceInfo: TraceData;
   inputTokens: number;
   outputTokens: number;
   totalTokens: number;
@@ -21,6 +24,7 @@ interface RunStatsHeaderProps {
 }
 
 export default function RunStatsHeader({
+  traceInfo,
   inputTokens,
   outputTokens,
   totalTokens,
@@ -100,6 +104,26 @@ export default function RunStatsHeader({
           </Typography>
         )}
       </Typography>
+
+      {traceInfo?.attributes?.metadata?.cliVersion && (
+        <Chip
+          label={`cli@${traceInfo.attributes?.metadata?.cliVersion}`}
+          size="small"
+          color={"default"}
+          variant="outlined"
+          sx={{ height: 21, borderRadius: "4px" }}
+        />
+      )}
+
+      {traceInfo?.attributes?.metadata?.appName && (
+        <Chip
+          label={`${traceInfo.attributes?.metadata?.appName}@${traceInfo.attributes?.metadata?.appVersion}`}
+          size="small"
+          color={"default"}
+          variant="outlined"
+          sx={{ height: 21, borderRadius: "4px" }}
+        />
+      )}
 
       <Box sx={{ flex: 1 }} />
 

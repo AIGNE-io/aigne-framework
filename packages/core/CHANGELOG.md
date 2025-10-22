@@ -1,5 +1,43 @@
 # Changelog
 
+## [1.64.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.64.0-beta...core-v1.64.0-beta.1) (2025-10-22)
+
+
+### Bug Fixes
+
+* standardize AFS skills return format with status and metadata ([#653](https://github.com/AIGNE-io/aigne-framework/issues/653)) ([66b6b00](https://github.com/AIGNE-io/aigne-framework/commit/66b6b005a846ab795e65e9f20b950c854a69ffd2))
+
+## [1.64.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0...core-v1.64.0-beta) (2025-10-21)
+
+
+### Features
+
+* add thinking support to Gemini chat models ([#650](https://github.com/AIGNE-io/aigne-framework/issues/650)) ([09b828b](https://github.com/AIGNE-io/aigne-framework/commit/09b828ba668d90cc6aac68a5e8190adb146b5e45))
+* add user context support to prompt template variables ([#649](https://github.com/AIGNE-io/aigne-framework/issues/649)) ([a02d9b4](https://github.com/AIGNE-io/aigne-framework/commit/a02d9b412878050b8c1e32127b505c0346f19bba))
+* **cli:** add metadata traces including CLI version, app name, and version ([#646](https://github.com/AIGNE-io/aigne-framework/issues/646)) ([c64bd76](https://github.com/AIGNE-io/aigne-framework/commit/c64bd761ba4c9f3854be5feee208c711bff7a170))
+
+
+### Bug Fixes
+
+* **gemini:** handle empty responses when files are present ([#648](https://github.com/AIGNE-io/aigne-framework/issues/648)) ([f4e259c](https://github.com/AIGNE-io/aigne-framework/commit/f4e259c5e5c687c347bb5cf29cbb0b5bf4d0d4a1))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.3-beta
+
+## [1.63.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.12...core-v1.63.0) (2025-10-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.1.0
+    * @aigne/observability-api bumped to 0.11.2
+
 ## [1.63.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0-beta.11...core-v1.63.0-beta.12) (2025-10-17)
 
 

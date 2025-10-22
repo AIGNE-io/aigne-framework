@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.11.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1...observability-ui-v0.11.2-beta) (2025-10-21)
+
+
+### Features
+
+* **cli:** add metadata traces including CLI version, app name, and version ([#646](https://github.com/AIGNE-io/aigne-framework/issues/646)) ([c64bd76](https://github.com/AIGNE-io/aigne-framework/commit/c64bd761ba4c9f3854be5feee208c711bff7a170))
+
+
+### Bug Fixes
+
+* **observability:** support time line as background ([#642](https://github.com/AIGNE-io/aigne-framework/issues/642)) ([6f47870](https://github.com/AIGNE-io/aigne-framework/commit/6f478702090e8106ddcfe318a4766e1246257503))
+
+## [0.11.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta.6...observability-ui-v0.11.1) (2025-10-19)
+
 ## [0.11.1-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1-beta.5...observability-ui-v0.11.1-beta.6) (2025-10-16)
 
 

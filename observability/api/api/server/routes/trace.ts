@@ -122,7 +122,7 @@ export default ({
         status: Trace.status,
         attributes: sql<string>`
           CASE
-            WHEN ${Trace.attributes} IS NULL THEN JSON_OBJECT('input', '', 'output', '')
+            WHEN ${Trace.attributes} IS NULL THEN JSON_OBJECT('input', '', 'output', '', 'metadata', NULL)
             ELSE JSON_OBJECT(
               'input',
               CASE
@@ -137,7 +137,9 @@ export default ({
                 THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT), 1, 150) ||
                 CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT)) > 150 THEN '...' ELSE '' END
                 ELSE ''
-              END
+              END,
+              'metadata',
+              JSON_EXTRACT(${Trace.attributes}, '$.metadata')
             )
           END
         `,
@@ -369,11 +371,13 @@ export default ({
                   'usage', JSON_EXTRACT(${Trace.attributes}, '$.output.usage'),
                   'model', JSON_EXTRACT(${Trace.attributes}, '$.output.model')
                 ),
-                'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag')
+                'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag'),
+                'metadata', JSON_EXTRACT(${Trace.attributes}, '$.metadata')
               )
             ELSE JSON_OBJECT(
               'output', JSON_OBJECT(),
-              'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag')
+              'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag'),
+              'metadata', JSON_EXTRACT(${Trace.attributes}, '$.metadata')
             )
           END
         `,

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.64.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.64.0-beta...core-v1.64.0-beta.1) (2025-10-22)
+
+
+### Bug Fixes
+
+* standardize AFS skills return format with status and metadata ([#653](https://github.com/AIGNE-io/aigne-framework/issues/653)) ([66b6b00](https://github.com/AIGNE-io/aigne-framework/commit/66b6b005a846ab795e65e9f20b950c854a69ffd2))
+
 ## [1.64.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.63.0...core-v1.64.0-beta) (2025-10-21)
 
 

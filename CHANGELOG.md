@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.82.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.82.0-beta...aigne-framework-v1.82.0-beta.1) (2025-10-22)
+
+
+### Bug Fixes
+
+* add validate/required support for terminal input ([#651](https://github.com/AIGNE-io/aigne-framework/issues/651)) ([3d7f94c](https://github.com/AIGNE-io/aigne-framework/commit/3d7f94c32c8ec7bebb8f71fb16ddd3dd74a2d255))
+* improve model name parsing to handle complex model identifiers ([#654](https://github.com/AIGNE-io/aigne-framework/issues/654)) ([4b7faea](https://github.com/AIGNE-io/aigne-framework/commit/4b7faea97f33db34a51c49dde3d6c1cf2679f0cd))
+* standardize AFS skills return format with status and metadata ([#653](https://github.com/AIGNE-io/aigne-framework/issues/653)) ([66b6b00](https://github.com/AIGNE-io/aigne-framework/commit/66b6b005a846ab795e65e9f20b950c854a69ffd2))
+
 ## [1.82.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.81.0...aigne-framework-v1.82.0-beta) (2025-10-21)
 
 

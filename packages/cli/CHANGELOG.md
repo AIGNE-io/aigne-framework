@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.52.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.52.0-beta...cli-v1.52.0-beta.1) (2025-10-22)
+
+
+### Bug Fixes
+
+* add validate/required support for terminal input ([#651](https://github.com/AIGNE-io/aigne-framework/issues/651)) ([3d7f94c](https://github.com/AIGNE-io/aigne-framework/commit/3d7f94c32c8ec7bebb8f71fb16ddd3dd74a2d255))
+* improve model name parsing to handle complex model identifiers ([#654](https://github.com/AIGNE-io/aigne-framework/issues/654)) ([4b7faea](https://github.com/AIGNE-io/aigne-framework/commit/4b7faea97f33db34a51c49dde3d6c1cf2679f0cd))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-system-fs bumped to 1.0.2-beta.1
+    * @aigne/agent-library bumped to 1.21.49-beta.1
+    * @aigne/agentic-memory bumped to 1.0.49-beta.1
+    * @aigne/aigne-hub bumped to 0.10.3-beta.1
+    * @aigne/core bumped to 1.64.0-beta.1
+    * @aigne/default-memory bumped to 1.2.12-beta.1
+    * @aigne/openai bumped to 0.16.3-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.56-beta.1
+
 ## [1.52.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.51.0...cli-v1.52.0-beta) (2025-10-21)
 
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.2](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-system-fs-v1.0.2-beta.1...example-afs-system-fs-v1.0.2) (2025-10-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-system-fs bumped to 1.0.2
+    * @aigne/cli bumped to 1.52.0
+    * @aigne/core bumped to 1.64.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.56
+
 ## [1.0.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-system-fs-v1.0.2-beta...example-afs-system-fs-v1.0.2-beta.1) (2025-10-22)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@aigne/agentic-memory",
-  "version": "1.0.49-beta.1",
+  "version": "1.0.49",
   "description": "Agentic memory for AIGNE framework",
   "publishConfig": {
     "access": "public"

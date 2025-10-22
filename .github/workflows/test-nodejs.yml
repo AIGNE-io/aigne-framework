@@ -50,6 +50,8 @@ jobs:
           corepack prepare npm@latest --activate
 
       - name: Install dependencies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm install
 
       - name: Build project

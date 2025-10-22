@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { findImageModel, findModel } from "../../src/utils/model.js";
+import { findImageModel, findModel, parseModel } from "../../src/utils/model.js";
 
 describe("findModel", async () => {
   describe("findModel function", () => {
@@ -214,5 +214,55 @@ describe("findImageModel", async () => {
         ]
       `);
     });
+  });
+});
+
+describe("parseModel", () => {
+  test("should parse model with provider and name", () => {
+    expect(parseModel("openai:gpt-4")).toMatchInlineSnapshot(`
+      {
+        "model": "gpt-4",
+        "provider": "openai",
+      }
+    `);
+  });
+
+  test("should parse model with only provider", () => {
+    expect(parseModel("openai")).toMatchInlineSnapshot(`
+      {
+        "model": undefined,
+        "provider": "openai",
+      }
+    `);
+  });
+
+  test("should handle complex model names", () => {
+    expect(parseModel("anthropic:claude-3-sonnet-20240229-v1:0")).toMatchInlineSnapshot(`
+      {
+        "model": "claude-3-sonnet-20240229-v1:0",
+        "provider": "anthropic",
+      }
+    `);
+    expect(parseModel("anthropic/claude-3-sonnet-20240229-v1:0")).toMatchInlineSnapshot(`
+      {
+        "model": "claude-3-sonnet-20240229-v1:0",
+        "provider": "anthropic",
+      }
+    `);
+  });
+
+  test("should handle model names with special characters", () => {
+    expect(parseModel("bedrock:anthropic.claude-3-sonnet-20240229-v1:0")).toMatchInlineSnapshot(`
+      {
+        "model": "anthropic.claude-3-sonnet-20240229-v1:0",
+        "provider": "bedrock",
+      }
+    `);
+    expect(parseModel("bedrock/anthropic.claude-3-sonnet-20240229-v1:0")).toMatchInlineSnapshot(`
+      {
+        "model": "anthropic.claude-3-sonnet-20240229-v1:0",
+        "provider": "bedrock",
+      }
+    `);
   });
 });

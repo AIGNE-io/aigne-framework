@@ -5,7 +5,6 @@ import {
   formatModelName,
   loadChatModel as loadModel,
   maskApiKey,
-  parseModelOption,
 } from "@aigne/cli/utils/aigne-hub/model.js";
 import { stringify } from "yaml";
 import { createHonoServer } from "../../_mocks_/server.js";
@@ -27,36 +26,6 @@ describe("maskApiKey", () => {
   test("should mask api key", () => {
     const result = maskApiKey("123");
     expect(result).toBe("123");
-  });
-});
-
-describe("parseModelOption", () => {
-  test("should parse model with provider and name", () => {
-    const result = parseModelOption("openai:gpt-4");
-
-    expect(result.provider).toBe("openai");
-    expect(result.model).toBe("gpt-4");
-  });
-
-  test("should parse model with only provider", () => {
-    const result = parseModelOption("openai");
-
-    expect(result.provider).toBe("openai");
-    expect(result.model).toBeUndefined();
-  });
-
-  test("should handle complex model names", () => {
-    const result = parseModelOption("anthropic:claude-3-sonnet-20240229-v1:0");
-
-    expect(result.provider).toBe("anthropic");
-    expect(result.model).toBe("claude-3-sonnet-20240229-v1:0");
-  });
-
-  test("should handle model names with special characters", () => {
-    const result = parseModelOption("bedrock:anthropic.claude-3-sonnet-20240229-v1:0");
-
-    expect(result.provider).toBe("bedrock");
-    expect(result.model).toBe("anthropic.claude-3-sonnet-20240229-v1:0");
   });
 });
 

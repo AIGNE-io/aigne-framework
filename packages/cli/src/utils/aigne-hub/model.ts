@@ -4,6 +4,7 @@ import {
   AIGNE_HUB_URL,
   findImageModel,
   findModel,
+  parseModel,
 } from "@aigne/aigne-hub";
 import type {
   ChatModel,
@@ -26,17 +27,11 @@ export function maskApiKey(apiKey?: string) {
   return `${start}${"*".repeat(8)}${end}`;
 }
 
-export const parseModelOption = (model: string) => {
-  model = model.replace(":", "/");
-  const { provider, name } = model.match(/(?<provider>[^/]*)(\/(?<name>.*))?/)?.groups ?? {};
-  return { provider: provider?.replace(/-/g, ""), model: name };
-};
-
 export const formatModelName = async (
   model: string,
   inquirerPrompt: NonNullable<LoadCredentialOptions["inquirerPromptFn"]>,
 ): Promise<{ provider: string; model?: string }> => {
-  let { provider, model: name } = parseModelOption(model);
+  let { provider, model: name } = parseModel(model);
   provider ||= AIGNE_HUB_PROVIDER;
 
   const { match, all } = findModel(provider);

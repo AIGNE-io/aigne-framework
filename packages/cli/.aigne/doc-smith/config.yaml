@@ -73,3 +73,5 @@ appUrl: https://docsmith.aigne.io
 boardId: "aigne-cli"
 # Checkout ID for document deployment service
 checkoutId: ""
+# Should sync branding for documentation
+shouldSyncBranding: ""

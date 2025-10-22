@@ -165,6 +165,11 @@ test("AFS'skill list should invoke afs.list", async () => {
   expect(await list.invoke({ path: "/foo/bar", options: { maxDepth: 2 } })).toMatchInlineSnapshot(`
     {
       "list": [],
+      "options": {
+        "maxDepth": 2,
+      },
+      "status": "success",
+      "tool": "afs_list",
     }
   `);
 
@@ -192,13 +197,14 @@ test("AFS'skill read should invoke afs.read", async () => {
   assert(read);
   expect(await read.invoke({ path: "/foo" })).toMatchInlineSnapshot(`
     {
-      "file": {
-        "result": {
-          "content": "bar",
-          "id": "foo",
-          "path": "/foo",
-        },
+      "path": "/foo",
+      "result": {
+        "content": "bar",
+        "id": "foo",
+        "path": "/foo",
       },
+      "status": "success",
+      "tool": "afs_read",
     }
   `);
 
@@ -227,13 +233,14 @@ test("AFS'skill write should invoke afs.write", async () => {
   assert(write);
   expect(await write.invoke({ path: "/foo", content: "bar" })).toMatchInlineSnapshot(`
     {
-      "file": {
-        "result": {
-          "content": "bar",
-          "id": "foo",
-          "path": "/foo",
-        },
+      "path": "/foo",
+      "result": {
+        "content": "bar",
+        "id": "foo",
+        "path": "/foo",
       },
+      "status": "success",
+      "tool": "afs_write",
     }
   `);
 

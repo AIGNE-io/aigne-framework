@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { findImageModel, findModel, parseModel } from "../../src/utils/model.js";
+import { findImageModel, findModel, findVideoModel, parseModel } from "../../src/utils/model.js";
 
 describe("findModel", async () => {
   describe("findModel function", () => {
@@ -213,6 +213,73 @@ describe("findImageModel", async () => {
           "google",
         ]
       `);
+    });
+  });
+});
+
+describe("findVideoModel", async () => {
+  describe("findVideoModel function", () => {
+    test("should find exact video model match", () => {
+      const result = findVideoModel("OpenAI");
+      expect(result.match).toBeDefined();
+      expect(result.match?.name).toBe("OpenAIVideoModel");
+      expect(result.all).toHaveLength(2);
+    });
+
+    test("should handle hyphenated names", () => {
+      const result = findVideoModel("aigne-hub");
+      expect(result.match).toBeDefined();
+      expect(result.match?.name).toBe("AIGNEHubVideoModel");
+    });
+
+    test("should be case insensitive", () => {
+      const result1 = findVideoModel("OPENAI");
+      const result2 = findVideoModel("openai");
+      const result3 = findVideoModel("OpenAI");
+
+      expect(result1.match?.name).toBe("OpenAIVideoModel");
+      expect(result2.match?.name).toBe("OpenAIVideoModel");
+      expect(result3.match?.name).toBe("OpenAIVideoModel");
+    });
+
+    test("should return undefined for non-matching provider", () => {
+      const result = findVideoModel("nonexistent");
+      expect(result.match).toBeUndefined();
+      expect(result.all).toHaveLength(2);
+    });
+
+    test("should return all available video models", () => {
+      const result = findVideoModel("any");
+      expect(result.all).toHaveLength(2);
+      expect(result.all.map((i) => i.name)).toMatchInlineSnapshot(`
+        [
+          "OpenAIVideoModel",
+          "AIGNEHubVideoModel",
+        ]
+      `);
+    });
+
+    test("should find AIGNE Hub video model", () => {
+      const result = findVideoModel("aigne-hub");
+      expect(result.match).toBeDefined();
+      expect(result.match?.name).toBe("AIGNEHubVideoModel");
+    });
+
+    test("should handle special characters", () => {
+      const result = findVideoModel("open_ai");
+      expect(result.match).toBeUndefined();
+    });
+
+    test("should find OpenAI video model", () => {
+      const result = findVideoModel("openai");
+      expect(result.match).toBeDefined();
+      expect(result.match?.name).toBe("OpenAIVideoModel");
+    });
+
+    test("should find OpenAI video model with partial match", () => {
+      const result = findVideoModel("open");
+      expect(result.match).toBeDefined();
+      expect(result.match?.name).toBe("OpenAIVideoModel");
     });
   });
 });

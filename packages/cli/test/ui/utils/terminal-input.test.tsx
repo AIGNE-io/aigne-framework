@@ -1,5 +1,4 @@
-import { describe, expect, mock, test } from "bun:test";
-import { beforeEach } from "node:test";
+import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { TerminalInput, terminalInput } from "@aigne/cli/ui/utils/terminal-input.js";
 import { render } from "ink-testing-library";
 
@@ -10,8 +9,8 @@ describe("terminalInput", () => {
 
     beforeEach(async () => {
       result = terminalInput({
-        render: ((...args) => {
-          const r = render(args[0] as any);
+        render: ((component) => {
+          const r = render(component as any);
           rendered = r;
           return r as any;
         }) as NonNullable<Parameters<typeof terminalInput>[0]>["render"],

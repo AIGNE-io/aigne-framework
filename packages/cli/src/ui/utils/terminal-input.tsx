@@ -16,9 +16,11 @@ export async function terminalInput({
   render?: typeof render;
 } = {}): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    process.addListener("SIGINT", () => {
+    const handleSigInt = () => {
       reject(new Error("Input aborted"));
-    });
+    };
+    process.addListener("SIGINT", handleSigInt);
+    const clean = () => process.removeListener("SIGINT", handleSigInt);
 
     const app = r(
       <TerminalInput
@@ -26,10 +28,12 @@ export async function terminalInput({
         onSubmit={(value) => {
           app.unmount();
           resolve(value);
+          clean();
         }}
         onError={(error) => {
           app.unmount();
           reject(error);
+          clean();
         }}
       />,
       { exitOnCtrlC: false },
@@ -97,9 +101,7 @@ export function TerminalInput(props: {
 
           // Validation passed
           setStatus("success");
-          setTimeout(() => {
-            props.onSubmit(input);
-          });
+          props.onSubmit(input);
         } catch (error) {
           setErrorMessage(error instanceof Error ? error.message : "Validation error");
           setStatus("input");

@@ -1,0 +1,423 @@
+[
+  {
+    "title": "Overview",
+    "description": "Provides a high-level introduction to the AIGNE Framework, outlining its purpose for building agentic AI applications, its core architectural components like the AIGNE engine and various agent types, and guiding users toward the appropriate documentation path based on their technical background.",
+    "path": "/overview",
+    "sourceIds": [
+      "packages/core/README.md",
+      "packages/core/architecture.md",
+      "./README.md",
+      "packages/core/src/aigne/aigne.ts",
+      "packages/core/src/agents/agent.ts",
+      "packages/core/src/index.ts"
+    ],
+    "parentId": ""
+  },
+  {
+    "title": "Getting Started",
+    "description": "Provides the essential first steps for developers, including system prerequisites and a hands-on, copy-paste ready quick-start example to build and run a basic AI agent in under 30 minutes, demonstrating the framework's fundamental workflow.",
+    "path": "/developer-guide/getting-started",
+    "sourceIds": [
+      "packages/core/README.md",
+      "./README.md",
+      "packages/core/src/aigne/aigne.ts",
+      "packages/core/src/agents/ai-agent.ts",
+      "models/openai/src/openai-chat-model.ts"
+    ],
+    "parentId": null
+  },
+  {
+    "title": "Core Concepts",
+    "description": "Explains the fundamental architectural building blocks of the AIGNE Framework, providing developers with a solid conceptual understanding of how the system is designed to operate.",
+    "path": "/developer-guide/core-concepts",
+    "sourceIds": [
+      "packages/core/architecture.md",
+      "packages/core/src/aigne/aigne.ts",
+      "packages/core/src/agents/agent.ts"
+    ],
+    "parentId": null
+  },
+  {
+    "title": "AIGNE",
+    "description": "Details the central execution engine of the framework, covering its instantiation, configuration with models, and the `invoke` method for running agents and managing their lifecycle.",
+    "path": "/developer-guide/core-concepts/aigne-engine",
+    "sourceIds": [
+      "packages/core/src/aigne/aigne.ts",
+      "packages/core/src/aigne/index.ts",
+      "packages/core/architecture.md"
+    ],
+    "parentId": "/developer-guide/core-concepts"
+  },
+  {
+    "title": "Agents",
+    "description": "Introduces the abstract `Agent` class as the fundamental unit of work, explaining its role, properties, and the base contract for all specialized agent types within the framework.",
+    "path": "/developer-guide/core-concepts/agents",
+    "sourceIds": [
+      "packages/core/src/agents/agent.ts",
+      "packages/core/architecture.md",
+      "packages/core/src/index.ts"
+    ],
+    "parentId": "/developer-guide/core-concepts"
+  },
+  {
+    "title": "Models",
+    "description": "Describes the `ChatModel` and `ImageModel` abstractions, which are specialized agents designed to interface with external Large Language Models and image generation services.",
+    "path": "/developer-guide/core-concepts/models",
+    "sourceIds": [
+      "packages/core/src/agents/model.ts",
+      "packages/core/src/agents/chat-model.ts",
+      "packages/core/src/agents/image-model.ts"
+    ],
+    "parentId": "/developer-guide/core-concepts"
+  },
+  {
+    "title": "Memory",
+    "description": "Explains how agents can maintain state and remember past interactions using `MemoryAgent`, covering the roles of `Recorder` for storing information and `Retriever` for recalling it.",
+    "path": "/developer-guide/core-concepts/memory",
+    "sourceIds": [
+      "packages/core/src/memory/index.ts",
+      "packages/core/src/memory/memory.ts",
+      "packages/core/src/memory/recorder.ts",
+      "packages/core/src/memory/retriever.ts"
+    ],
+    "parentId": "/developer-guide/core-concepts"
+  },
+  {
+    "title": "Agent Types",
+    "description": "Provides a detailed breakdown of the various specialized agent types available in the framework, complete with code examples and use cases for each.",
+    "path": "/developer-guide/agents",
+    "sourceIds": [
+      "packages/core/src/agents/agent.ts",
+      "packages/core/src/agents/ai-agent.ts",
+      "packages/core/src/agents/team-agent.ts",
+      "packages/core/src/agents/image-agent.ts",
+      "packages/core/src/agents/transform-agent.ts",
+      "packages/core/src/agents/mcp-agent.ts"
+    ],
+    "parentId": null
+  },
+  {
+    "title": "AI Agent",
+    "description": "Focuses on the primary agent for interacting with language models, explaining key configurations like `instructions`, `inputKey`, `outputKey`, tool usage, and structured output.",
+    "path": "/developer-guide/agents/ai-agent",
+    "sourceIds": [
+      "packages/core/src/agents/ai-agent.ts",
+      "packages/core/test-agents/chat.yaml",
+      "packages/core/architecture.md"
+    ],
+    "parentId": "/developer-guide/agents"
+  },
+  {
+    "title": "Team Agent",
+    "description": "Details how to orchestrate multiple agents to work together, covering `sequential` and `parallel` execution modes, iteration over data with `iterateOn`, and self-correction with `reflection`.",
+    "path": "/developer-guide/agents/team-agent",
+    "sourceIds": [
+      "packages/core/src/agents/team-agent.ts",
+      "packages/core/test-agents/team.yaml",
+      "packages/core/test-agents/team-agent-with-reflection.yaml",
+      "packages/core/architecture.md"
+    ],
+    "parentId": "/developer-guide/agents"
+  },
+  {
+    "title": "Image Agent",
+    "description": "Explains how to generate images by interfacing with an `ImageModel`, detailing the necessary configurations and prompt structures for image creation tasks.",
+    "path": "/developer-guide/agents/image-agent",
+    "sourceIds": [
+      "packages/core/src/agents/image-agent.ts",
+      "packages/core/test-agents/image.yaml",
+      "packages/core/architecture.md"
+    ],
+    "parentId": "/developer-guide/agents"
+  },
+  {
+    "title": "Function Agent",
+    "description": "Shows how to wrap custom TypeScript or JavaScript functions as agents, enabling the integration of arbitrary code and business logic into the agentic workflow.",
+    "path": "/developer-guide/agents/function-agent",
+    "sourceIds": [
+      "packages/core/src/agents/agent.ts",
+      "packages/core/test-agents/sandbox.js",
+      "packages/core/architecture.md"
+    ],
+    "parentId": "/developer-guide/agents"
+  },
+  {
+    "title": "Transform Agent",
+    "description": "Covers the use of the `TransformAgent` for declarative data mapping and manipulation using JSONata expressions, ideal for simple format conversions and restructuring.",
+    "path": "/developer-guide/agents/transform-agent",
+    "sourceIds": [
+      "packages/core/src/agents/transform-agent.ts",
+      "packages/core/test-agents/transform.yaml"
+    ],
+    "parentId": "/developer-guide/agents"
+  },
+  {
+    "title": "MCP Agent",
+    "description": "Explains how to connect to and interact with external systems via the Model Context Protocol (MCP), enabling agents to access external tools and resources.",
+    "path": "/developer-guide/agents/mcp-agent",
+    "sourceIds": [
+      "packages/core/src/agents/mcp-agent.ts",
+      "packages/core/src/utils/mcp-utils.ts",
+      "packages/core/architecture.md"
+    ],
+    "parentId": "/developer-guide/agents"
+  },
+  {
+    "title": "Advanced Topics",
+    "description": "Explores more complex features and patterns for building sophisticated AI applications, intended for developers who have mastered the core concepts.",
+    "path": "/developer-guide/advanced-topics",
+    "sourceIds": [
+      "packages/core/src/loader/agent-yaml.ts",
+      "packages/core/src/prompt/prompt-builder.ts",
+      "packages/core/src/agents/agent.ts"
+    ],
+    "parentId": null
+  },
+  {
+    "title": "Defining Agents with YAML",
+    "description": "Documents the declarative approach to defining agents using YAML configuration files, covering syntax, loading external prompts, and defining skills.",
+    "path": "/developer-guide/advanced-topics/defining-agents-with-yaml",
+    "sourceIds": [
+      "packages/core/src/loader/index.ts",
+      "packages/core/src/loader/agent-yaml.ts",
+      "packages/core/test-agents/aigne.yaml",
+      "packages/core/test-agents/chat-with-prompt.yaml",
+      "packages/core/src/loader/schema.ts"
+    ],
+    "parentId": "/developer-guide/advanced-topics"
+  },
+  {
+    "title": "Prompts",
+    "description": "Provides a deep dive into the `PromptBuilder` and the Nunjucks templating engine, explaining how to create dynamic and reusable prompts for AI models.",
+    "path": "/developer-guide/advanced-topics/prompts",
+    "sourceIds": [
+      "packages/core/src/prompt/prompt-builder.ts",
+      "packages/core/src/prompt/template.ts",
+      "packages/core/test-agents/prompts/prompt-a.md"
+    ],
+    "parentId": "/developer-guide/advanced-topics"
+  },
+  {
+    "title": "Hooks",
+    "description": "Details the agent execution lifecycle and how to use hooks like `onStart` and `onEnd` to observe, intercept, or add custom logic to the agent's behavior.",
+    "path": "/developer-guide/advanced-topics/hooks",
+    "sourceIds": [
+      "packages/core/src/agents/agent.ts",
+      "packages/core/test-agents/test-agent-with-hooks.yaml",
+      "packages/core/src/utils/agent-utils.ts"
+    ],
+    "parentId": "/developer-guide/advanced-topics"
+  },
+  {
+    "title": "Streaming",
+    "description": "Explains how to work with streaming responses from agents, allowing for real-time data processing and more responsive user experiences.",
+    "path": "/developer-guide/advanced-topics/streaming",
+    "sourceIds": [
+      "packages/core/src/utils/stream-utils.ts",
+      "packages/core/src/utils/event-stream.ts",
+      "packages/core/src/utils/structured-stream-extractor.ts"
+    ],
+    "parentId": "/developer-guide/advanced-topics"
+  },
+  {
+    "title": "User Guide",
+    "description": "A non-technical guide designed for end-users, explaining the core concepts of AI agents and workflows in simple terms with a focus on potential applications and business outcomes.",
+    "path": "/user-guide",
+    "sourceIds": ["./README.md", "packages/core/README.md"],
+    "parentId": ""
+  },
+  {
+    "title": "What is AIGNE?",
+    "description": "A plain-language introduction to the AIGNE Framework, explaining what AI agents are, what problems they solve, and how they can be used to automate complex tasks.",
+    "path": "/user-guide/what-is-aigne",
+    "sourceIds": ["./README.md", "packages/core/README.md"],
+    "parentId": "/user-guide"
+  },
+  {
+    "title": "Understanding Agents",
+    "description": "Conceptually explains the different roles agents can play within the system, using analogies to describe their functions without technical jargon.",
+    "path": "/user-guide/understanding-agents",
+    "sourceIds": ["packages/core/test-agents/chat.yaml", "packages/core/test-agents/team.yaml"],
+    "parentId": "/user-guide"
+  },
+  {
+    "title": "Basic Agents",
+    "description": "Describes a single agent as a specialized digital assistant, like a helpful chatbot, capable of performing a specific task based on instructions.",
+    "path": "/user-guide/understanding-agents/basic-agents",
+    "sourceIds": ["packages/core/test-agents/chat.yaml", "packages/core/src/agents/ai-agent.ts"],
+    "parentId": "/user-guide/understanding-agents"
+  },
+  {
+    "title": "Agent Teams",
+    "description": "Explains how multiple agents can be organized into a team to collaborate on solving larger, more complex problems that a single agent cannot handle alone.",
+    "path": "/user-guide/understanding-agents/agent-teams",
+    "sourceIds": ["packages/core/test-agents/team.yaml", "packages/core/src/agents/team-agent.ts"],
+    "parentId": "/user-guide/understanding-agents"
+  },
+  {
+    "title": "Common Workflows",
+    "description": "Illustrates common patterns of agent collaboration using high-level diagrams to show how information and tasks flow through the system to achieve a goal.",
+    "path": "/user-guide/common-workflows",
+    "sourceIds": ["./README.md"],
+    "parentId": "/user-guide"
+  },
+  {
+    "title": "Sequential Tasks",
+    "description": "Visualizes a workflow where tasks are completed in a specific order, with one agent passing its results to the next, similar to an assembly line.",
+    "path": "/user-guide/common-workflows/sequential-tasks",
+    "sourceIds": ["./README.md", "packages/core/src/agents/team-agent.ts"],
+    "parentId": "/user-guide/common-workflows"
+  },
+  {
+    "title": "Parallel Tasks",
+    "description": "Shows how multiple agents can work on different parts of a problem simultaneously to speed up the overall process, with their results combined at the end.",
+    "path": "/user-guide/common-workflows/parallel-tasks",
+    "sourceIds": ["./README.md", "packages/core/src/agents/team-agent.ts"],
+    "parentId": "/user-guide/common-workflows"
+  },
+  {
+    "title": "Decision-Making",
+    "description": "Illustrates a scenario where a 'manager' agent analyzes a request and decides which specialized agent is best suited to handle the task.",
+    "path": "/user-guide/common-workflows/decision-making",
+    "sourceIds": ["./README.md", "packages/core/src/agents/ai-agent.ts"],
+    "parentId": "/user-guide/common-workflows"
+  },
+  {
+    "title": "Models",
+    "description": "Provides an overview and specific guides for integrating various third-party AI model providers, such as OpenAI, Anthropic, and Google, into the AIGNE Framework.",
+    "path": "/models",
+    "sourceIds": [
+      "models/openai/README.md",
+      "models/anthropic/README.md",
+      "models/gemini/README.md",
+      "models/bedrock/README.md",
+      "models/deepseek/README.md",
+      "models/doubao/README.md",
+      "models/ideogram/README.md",
+      "models/ollama/README.md",
+      "models/open-router/README.md",
+      "models/poe/README.md",
+      "models/xai/README.md",
+      "models/aigne-hub/README.md"
+    ],
+    "parentId": ""
+  },
+  {
+    "title": "Overview",
+    "description": "Explains the role of model adapters in the AIGNE Framework and provides a summary list of all officially supported AI model providers.",
+    "path": "/models/overview",
+    "sourceIds": ["packages/core/src/agents/model.ts", "models/aigne-hub/src/utils/model.ts"],
+    "parentId": "/models"
+  },
+  {
+    "title": "OpenAI",
+    "description": "A guide for configuring and using OpenAI models like GPT-4o, covering API key setup, model selection, and specific features available through the `@aigne/openai` package.",
+    "path": "/models/openai",
+    "sourceIds": [
+      "models/openai/README.md",
+      "models/openai/src/openai-chat-model.ts",
+      "models/openai/src/openai-image-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "Anthropic",
+    "description": "A guide for configuring and using Anthropic's Claude models, covering API key setup, model selection, and specific features available through the `@aigne/anthropic` package.",
+    "path": "/models/anthropic",
+    "sourceIds": ["models/anthropic/README.md", "models/anthropic/src/anthropic-chat-model.ts"],
+    "parentId": "/models"
+  },
+  {
+    "title": "Google Gemini",
+    "description": "A guide for configuring and using Google's Gemini models, covering API key setup, model selection, and specific features available through the `@aigne/gemini` package.",
+    "path": "/models/gemini",
+    "sourceIds": [
+      "models/gemini/README.md",
+      "models/gemini/src/gemini-chat-model.ts",
+      "models/gemini/src/gemini-image-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "AWS Bedrock",
+    "description": "A guide for configuring and using models via AWS Bedrock, covering AWS credentials setup, model selection, and specific features available through the `@aigne/bedrock` package.",
+    "path": "/models/bedrock",
+    "sourceIds": ["models/bedrock/README.md", "models/bedrock/src/bedrock-chat-model.ts"],
+    "parentId": "/models"
+  },
+  {
+    "title": "DeepSeek",
+    "description": "A guide for configuring and using DeepSeek models, covering API key setup, model selection, and specific features available through the `@aigne/deepseek` package.",
+    "path": "/models/deepseek",
+    "sourceIds": ["models/deepseek/README.md", "models/deepseek/src/deepseek-chat-model.ts"],
+    "parentId": "/models"
+  },
+  {
+    "title": "Doubao",
+    "description": "A guide for configuring and using Doubao models, covering API key setup, model selection, and specific features available through the `@aigne/doubao` package.",
+    "path": "/models/doubao",
+    "sourceIds": [
+      "models/doubao/README.md",
+      "models/doubao/src/doubao-chat-model.ts",
+      "models/doubao/src/doubao-image-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "Ideogram",
+    "description": "A guide for configuring and using Ideogram's image generation models, covering API key setup and specific features available through the `@aigne/ideogram` package.",
+    "path": "/models/ideogram",
+    "sourceIds": ["models/ideogram/README.md", "models/ideogram/src/ideogram-image-model.ts"],
+    "parentId": "/models"
+  },
+  {
+    "title": "Ollama",
+    "description": "A guide for configuring and using locally hosted models via Ollama, covering setup, model selection, and specific features available through the `@aigne/ollama` package.",
+    "path": "/models/ollama",
+    "sourceIds": ["models/ollama/README.md", "models/ollama/src/ollama-chat-model.ts"],
+    "parentId": "/models"
+  },
+  {
+    "title": "OpenRouter",
+    "description": "A guide for configuring and using various models through the OpenRouter service, covering API key setup and model selection from multiple providers via `@aigne/open-router`.",
+    "path": "/models/open-router",
+    "sourceIds": [
+      "models/open-router/README.md",
+      "models/open-router/src/open-router-chat-model.ts"
+    ],
+    "parentId": "/models"
+  },
+  {
+    "title": "Poe",
+    "description": "A guide for configuring and using models through the Poe service, covering API key setup and model selection from multiple providers via `@aigne/poe`.",
+    "path": "/models/poe",
+    "sourceIds": ["models/poe/README.md", "models/poe/src/poe.ts"],
+    "parentId": "/models"
+  },
+  {
+    "title": "xAI",
+    "description": "A guide for configuring and using xAI's Grok models, covering API key setup, model selection, and specific features available through the `@aigne/xai` package.",
+    "path": "/models/xai",
+    "sourceIds": ["models/xai/README.md", "models/xai/src/xai-chat-model.ts"],
+    "parentId": "/models"
+  },
+  {
+    "title": "LMStudio",
+    "description": "A guide for configuring and using locally hosted models via LMStudio, covering setup and model selection through the `@aigne/lmstudio` package.",
+    "path": "/models/lmstudio",
+    "sourceIds": ["models/lmstudio/README.md", "models/lmstudio/src/lmstudio-chat-model.ts"],
+    "parentId": "/models"
+  },
+  {
+    "title": "AIGNE Hub",
+    "description": "A guide for configuring and using the AIGNE Hub, a unified proxy for multiple LLM providers, covering setup and model selection through the `@aigne/aigne-hub` package.",
+    "path": "/models/aigne-hub",
+    "sourceIds": [
+      "models/aigne-hub/README.md",
+      "models/aigne-hub/src/aigne-hub-model.ts",
+      "models/aigne-hub/src/aigne-hub-image-model.ts",
+      "models/aigne-hub/src/index.ts"
+    ],
+    "parentId": "/models"
+  }
+]

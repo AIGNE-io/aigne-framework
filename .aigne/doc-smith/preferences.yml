@@ -1,0 +1,19 @@
+rules:
+  - id: pref_b0ebc504b904b608
+    active: true
+    scope: global
+    rule: 始终使用 'AIGNE' 而非 'AIGNE Engine'。
+    feedback: AIGNE Engine 改为 AIGNE，没必要提到 ENGINE
+    createdAt: 2025-10-13T07:41:21.076Z
+  - id: pref_a0dfc652f92d7dec
+    active: true
+    scope: structure
+    rule: 不要生成或包含 'developer guide' 的内容层级。
+    feedback: 把 developer guide 层级去掉
+    createdAt: 2025-10-13T07:39:16.862Z
+  - id: pref_10485b1925c40189
+    active: true
+    scope: structure
+    rule: Do not generate or include documents or sections about installation.
+    feedback: remove installation
+    createdAt: 2025-10-13T07:35:59.683Z

@@ -1,0 +1,25 @@
+rules:
+  - id: pref_fd6643bfe933eadd
+    active: true
+    scope: translation
+    rule: 代码块中的输入和输出内容不应被翻译。
+    feedback: code block 中的输入和输出均不应该翻译
+    createdAt: 2025-10-17T12:50:24.804Z
+  - id: pref_b0d2aeb2add152e1
+    active: true
+    scope: document
+    rule: 在介绍安装步骤时应使用普通列表，不应使用自定义组件。
+    feedback: Install the AIGNE CLI 信息中不使用自定义组件,使用普通的列表介绍如何安装
+    createdAt: 2025-09-09T02:03:09.113Z
+  - id: pref_73e3292f10fe237a
+    active: true
+    scope: structure
+    rule: 不要生成或包含与 changelog 相关的内容或文档。
+    feedback: 删除 changelog 部分文档
+    createdAt: 2025-09-04T01:38:25.796Z
+  - id: pref_1419ac4d4aa2a0f0
+    active: true
+    scope: document
+    rule: 示例代码不应使用自定义组件进行展示。
+    feedback: 示例代码不适合使用自定义组件展示
+    createdAt: 2025-08-30T09:31:32.632Z

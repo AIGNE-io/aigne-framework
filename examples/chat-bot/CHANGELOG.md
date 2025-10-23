@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.15.78](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.15.78-beta.1...example-chat-bot-v1.15.78) (2025-10-22)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.52.0
+
 ## [1.15.78-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.15.78-beta...example-chat-bot-v1.15.78-beta.1) (2025-10-22)
 
 

@@ -44,6 +44,8 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Install dependencies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pnpm install
           pnpm exec playwright install --with-deps
@@ -136,11 +138,3 @@ jobs:
           store-endpoint: ${{ secrets.STORE_ENDPOINT_PROD }}
           store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_PROD }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish Docs
-        if: ${{ steps.release.outputs.release_created }}
-        run: pnpm publish:docs
-        env:
-          DOC_DISCUSS_KIT_ACCESS_TOKEN: ${{ secrets.DOC_DISCUSS_KIT_ACCESS_TOKEN }}
-          DOC_DISCUSS_KIT_URL: ${{ vars.DOC_DISCUSS_KIT_URL }}
-          DOC_DISCUSS_KIT_BOARD_ID: ${{ vars.DOC_DISCUSS_KIT_BOARD_ID }}

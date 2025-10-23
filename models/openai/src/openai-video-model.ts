@@ -1,13 +1,12 @@
 import {
-  type AgentInvokeOptions,
   VideoModel,
   type VideoModelInput,
   type VideoModelOptions,
   type VideoModelOutput,
   videoModelInputSchema,
 } from "@aigne/core";
+import { logger } from "@aigne/core/utils/logger.js";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
-import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type OpenAI from "openai";
 import type { ClientOptions } from "openai";
 import { type ZodType, z } from "zod";
@@ -132,22 +131,19 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
     return this.options?.modelOptions;
   }
 
-  async downloadToFile(videoId: string, filePath: string): Promise<string> {
-    const fs = await import("node:fs");
-
-    console.log("Downloading video content...");
+  async downloadToFile(videoId: string): Promise<string> {
+    logger.debug("Downloading video content...");
     const content = await this.client.videos.downloadContent(videoId);
     const arrayBuffer = await content.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    fs.writeFileSync(filePath, buffer);
-    return filePath;
+    const base64 = buffer.toString("base64");
+    const dataUrl = `data:video/mp4;base64,${base64}`;
+
+    return dataUrl;
   }
 
-  override async process(
-    input: OpenAIVideoModelInput,
-    options: AgentInvokeOptions,
-  ): Promise<OpenAIVideoModelOutput> {
+  override async process(input: OpenAIVideoModelInput): Promise<OpenAIVideoModelOutput> {
     const model = input.model ?? this.credential.model;
 
     const createParams: OpenAI.Videos.VideoCreateParams = {
@@ -157,12 +153,13 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
 
     if (input.seconds) createParams.seconds = input.seconds as OpenAI.Videos.VideoSeconds;
     if (input.size) createParams.size = input.size as OpenAI.Videos.VideoSize;
-    if (input.inputReference)
+    if (input.inputReference) {
       createParams.input_reference =
         input.inputReference as unknown as OpenAI.Videos.VideoCreateParams["input_reference"];
+    }
 
     let video = await this.client.videos.create(createParams);
-    console.log(`Video generation started: ${video.id}`);
+    logger.debug(`Video generation started: ${video.id}`);
 
     const pollingInterval = this.options?.pollingInterval ?? 2000;
     while (video.status === "in_progress" || video.status === "queued") {
@@ -171,7 +168,7 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
 
       const progress = video.progress ?? 0;
       const statusText = video.status === "queued" ? "Queued" : "Processing";
-      console.log(`${statusText}: ${progress.toFixed(1)}%`);
+      logger.debug(`${statusText}: ${progress.toFixed(1)}%`);
     }
 
     if (video.status === "failed") {
@@ -182,15 +179,11 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
       throw new Error(`Unexpected video status: ${video.status}`);
     }
 
-    const dir = nodejs.path.join(nodejs.os.tmpdir(), options?.context?.id);
-    await nodejs.fs.mkdir(dir, { recursive: true });
-    const localPath = nodejs.path.join(dir, `${video.id}.mp4`);
-
     return {
       videos: [
         {
-          type: "local",
-          path: await this.downloadToFile(video.id, localPath),
+          type: "file",
+          data: await this.downloadToFile(video.id),
         },
       ],
       usage: {

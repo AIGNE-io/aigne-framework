@@ -6,6 +6,7 @@ import {
   type VideoModelOutput,
   videoModelInputSchema,
 } from "@aigne/core";
+import { logger } from "@aigne/core/utils/logger.js";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { type GenerateVideosParameters, GoogleGenAI } from "@google/genai";
@@ -187,12 +188,12 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
 
     // Start video generation
     let operation = await this.client.models.generateVideos(params);
-    console.log("Video generation started...");
+    logger.debug("Video generation started...");
 
     // Poll operation status until complete
     const pollingInterval = this.options?.pollingInterval ?? 10000;
     while (!operation.done) {
-      console.log("Waiting for video generation to complete...");
+      logger.debug("Waiting for video generation to complete...");
       await new Promise((resolve) => setTimeout(resolve, pollingInterval));
       operation = await this.client.operations.getVideosOperation({ operation });
     }
@@ -210,24 +211,25 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
     }
 
     // Save to temporary directory
-    const dir = nodejs.path.join(nodejs.os.tmpdir(), options?.context?.id);
+    const dir = nodejs.path.join(nodejs.os.tmpdir(), options?.context?.id || "");
     await nodejs.fs.mkdir(dir, { recursive: true });
+
     const videoId = Date.now().toString();
     const localPath = nodejs.path.join(dir, `${videoId}.mp4`);
 
-    // Download video to local file
-    await this.client.files.download({
-      file: videoFile,
-      downloadPath: localPath,
-    });
+    await this.client.files.download({ file: videoFile, downloadPath: localPath });
+    logger.debug(`Generated video saved to ${localPath}`);
 
-    console.log(`Generated video saved to ${localPath}`);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const buffer = await nodejs.fs.readFile(localPath);
+    const base64 = buffer.toString("base64");
+    const dataUrl = `data:video/mp4;base64,${base64}`;
 
     return {
       videos: [
         {
-          type: "local",
-          path: localPath,
+          type: "file",
+          data: dataUrl,
         },
       ],
       usage: {

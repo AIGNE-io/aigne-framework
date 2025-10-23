@@ -9,7 +9,13 @@ import type {
   Message,
 } from "./agent.js";
 import { type ChatModelOutputUsage, chatModelOutputUsageSchema } from "./chat-model.js";
-import { type FileUnionContent, fileUnionContentSchema, Model } from "./model.js";
+import {
+  type FileType,
+  type FileUnionContent,
+  fileTypeSchema,
+  fileUnionContentSchema,
+  Model,
+} from "./model.js";
 
 export interface VideoModelOptions<
   I extends VideoModelInput = VideoModelInput,
@@ -74,6 +80,16 @@ export abstract class VideoModel<
     output: Exclude<AgentResponse<O>, AgentResponseStream<O>>,
     options: AgentInvokeOptions,
   ): Promise<O> {
+    if (output.videos) {
+      const videos = z.array(fileUnionContentSchema).parse(output.videos);
+      output = {
+        ...output,
+        videos: await Promise.all(
+          videos.map((video) => this.transformFileType(input.outputFileType, video, options)),
+        ),
+      };
+    }
+
     return super.processAgentOutput(input, output, options);
   }
 }
@@ -86,6 +102,8 @@ export interface VideoModelInput extends Message {
   size?: string;
 
   seconds?: string;
+
+  outputFileType?: FileType;
 }
 
 export const videoModelInputSchema = z.object({
@@ -93,6 +111,7 @@ export const videoModelInputSchema = z.object({
   model: z.string().optional().describe("Model to use for video generation"),
   size: z.string().optional().describe("Size/resolution of the video"),
   seconds: z.string().optional().describe("Duration of the video in seconds"),
+  outputFileType: fileTypeSchema.optional(),
 });
 
 export interface VideoModelOutput extends Message {

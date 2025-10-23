@@ -166,6 +166,23 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
     return this.options?.modelOptions;
   }
 
+  async downloadToFile(
+    dir: string,
+    videoId: string,
+    videoFile: { uri?: string; videoBytes?: any },
+  ): Promise<string> {
+    logger.debug("Downloading video content...");
+    const localPath = nodejs.path.join(dir, `${videoId}.mp4`);
+    await this.client.files.download({ file: videoFile, downloadPath: localPath });
+    logger.debug(`Generated video saved to ${localPath}`);
+
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const buffer = await nodejs.fs.readFile(localPath);
+    const base64 = buffer.toString("base64");
+    const dataUrl = `data:video/mp4;base64,${base64}`;
+    return dataUrl;
+  }
+
   override async process(
     input: GeminiVideoModelInput,
     options: AgentInvokeOptions,
@@ -215,21 +232,12 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
     await nodejs.fs.mkdir(dir, { recursive: true });
 
     const videoId = Date.now().toString();
-    const localPath = nodejs.path.join(dir, `${videoId}.mp4`);
-
-    await this.client.files.download({ file: videoFile, downloadPath: localPath });
-    logger.debug(`Generated video saved to ${localPath}`);
-
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const buffer = await nodejs.fs.readFile(localPath);
-    const base64 = buffer.toString("base64");
-    const dataUrl = `data:video/mp4;base64,${base64}`;
 
     return {
       videos: [
         {
           type: "file",
-          data: dataUrl,
+          data: await this.downloadToFile(dir, videoId, videoFile),
         },
       ],
       usage: {

@@ -42,6 +42,7 @@ test("AFS should list modules correctly", async () => {
   const module: AFSModule = {
     moduleId: "test-module",
     path: "/test-module",
+    description: "Test Module",
     list: async () => ({ list: [] }),
   };
 
@@ -55,7 +56,7 @@ test("AFS should list modules correctly", async () => {
         "path": "/history",
       },
       {
-        "description": undefined,
+        "description": "Test Module",
         "moduleId": "test-module",
         "path": "/test-module",
       },
@@ -66,34 +67,194 @@ test("AFS should list modules correctly", async () => {
 test("AFS should list entries correctly", async () => {
   const module: AFSModule = {
     moduleId: "test-module",
-    path: "/test-module",
+    path: "/foo/test-module",
+    description: "Test Module",
     list: async () => ({ list: [] }),
   };
 
   const afs = new AFS().use(module);
 
-  const listSpy = spyOn(module, "list").mockResolvedValue({ list: [{ id: "foo", path: "/foo" }] });
+  const listSpy = spyOn(module, "list").mockResolvedValue({
+    list: [
+      { id: "foo", path: "/foo" },
+      { id: "bar", path: "/bar" },
+    ],
+  });
 
   expect(await afs.list("/")).toMatchInlineSnapshot(`
     {
       "list": [
         {
+          "id": "AFSHistory",
+          "path": "/history",
+          "summary": undefined,
+        },
+        {
+          "id": "test-module",
+          "path": "/foo",
+          "summary": "Test Module",
+        },
+      ],
+      "message": undefined,
+    }
+  `);
+
+  expect(await afs.list("/", { maxDepth: 2 })).toMatchInlineSnapshot(`
+    {
+      "list": [
+        {
+          "id": "AFSHistory",
+          "path": "/history",
+          "summary": undefined,
+        },
+        {
+          "id": "test-module",
+          "path": "/foo/test-module",
+          "summary": "Test Module",
+        },
+      ],
+      "message": undefined,
+    }
+  `);
+
+  expect(await afs.list("/", { maxDepth: 3 })).toMatchInlineSnapshot(`
+    {
+      "list": [
+        {
+          "id": "AFSHistory",
+          "path": "/history",
+          "summary": undefined,
+        },
+        {
           "id": "foo",
-          "path": "/test-module/foo",
+          "path": "/foo/test-module/foo",
+        },
+        {
+          "id": "bar",
+          "path": "/foo/test-module/bar",
+        },
+      ],
+      "message": undefined,
+    }
+  `);
+
+  expect(listSpy.mock.lastCall).toMatchInlineSnapshot(`
+    [
+      "/",
+      {
+        "maxDepth": 1,
+      },
+    ]
+  `);
+
+  expect(await afs.list("/foo")).toMatchInlineSnapshot(`
+    {
+      "list": [
+        {
+          "id": "test-module",
+          "path": "/test-module",
+          "summary": "Test Module",
+        },
+      ],
+      "message": undefined,
+    }
+  `);
+
+  listSpy.mockClear();
+  expect(await afs.list("/foo", { maxDepth: 2 })).toMatchInlineSnapshot(`
+    {
+      "list": [
+        {
+          "id": "foo",
+          "path": "/foo/test-module/foo",
+        },
+        {
+          "id": "bar",
+          "path": "/foo/test-module/bar",
+        },
+      ],
+      "message": undefined,
+    }
+  `);
+  expect(listSpy.mock.lastCall).toMatchInlineSnapshot(`
+    [
+      "/",
+      {
+        "maxDepth": 1,
+      },
+    ]
+  `);
+});
+
+test("AFS should search entries correctly", async () => {
+  const module: AFSModule = {
+    moduleId: "test-module",
+    path: "/foo/test-module",
+    search: async () => ({ list: [] }),
+  };
+
+  const afs = new AFS().use(module);
+
+  const searchSpy = spyOn(module, "search").mockResolvedValue({
+    list: [
+      { id: "foo", path: "/foo" },
+      { id: "bar", path: "/bar" },
+    ],
+  });
+
+  expect(await afs.search("/bar", "foo")).toMatchInlineSnapshot(`
+    {
+      "list": [],
+      "message": "",
+    }
+  `);
+
+  expect(await afs.search("/", "foo")).toMatchInlineSnapshot(`
+    {
+      "list": [
+        {
+          "id": "foo",
+          "path": "/foo/test-module/foo",
+        },
+        {
+          "id": "bar",
+          "path": "/foo/test-module/bar",
         },
       ],
       "message": "",
     }
   `);
 
-  expect(listSpy.mock.calls).toMatchInlineSnapshot(`
+  expect(searchSpy.mock.lastCall).toMatchInlineSnapshot(`
     [
-      [
-        "/",
+      "/",
+      "foo",
+      undefined,
+    ]
+  `);
+
+  searchSpy.mockClear();
+  expect(await afs.search("/foo/test-module/bar", "foo")).toMatchInlineSnapshot(`
+    {
+      "list": [
         {
-          "maxDepth": 4,
+          "id": "foo",
+          "path": "/foo/test-module/foo",
+        },
+        {
+          "id": "bar",
+          "path": "/foo/test-module/bar",
         },
       ],
+      "message": "",
+    }
+  `);
+
+  expect(searchSpy.mock.lastCall).toMatchInlineSnapshot(`
+    [
+      "/bar",
+      "foo",
+      undefined,
     ]
   `);
 });
@@ -101,18 +262,23 @@ test("AFS should list entries correctly", async () => {
 test("AFS should read entry correctly", async () => {
   const module: AFSModule = {
     moduleId: "test-module",
-    path: "/test-module",
+    path: "/foo/test-module",
     read: async () => ({}),
   };
 
   const afs = new AFS().use(module);
 
-  const readSpy = spyOn(module, "read").mockResolvedValue({ result: { id: "foo", path: "/foo" } });
+  const readSpy = spyOn(module, "read").mockResolvedValue({
+    result: { id: "foo", path: "/foo", content: "Test Content" },
+  });
 
-  expect((await afs.read("/test-module/foo")).result).toMatchInlineSnapshot(`
+  expect((await afs.read("/bar")).result).toMatchInlineSnapshot(`undefined`);
+
+  expect((await afs.read("/foo/test-module/foo")).result).toMatchInlineSnapshot(`
     {
+      "content": "Test Content",
       "id": "foo",
-      "path": "/test-module/foo",
+      "path": "/foo/test-module/foo",
     }
   `);
 
@@ -128,20 +294,21 @@ test("AFS should read entry correctly", async () => {
 test("AFS should write entry correctly", async () => {
   const module: AFSModule = {
     moduleId: "test-module",
-    path: "/test-module",
+    path: "/foo/test-module",
     write: async () => ({ result: { id: "foo", path: "/foo" } }),
   };
 
   const afs = new AFS().use(module);
 
   const writeSpy = spyOn(module, "write").mockResolvedValue({
-    result: { id: "foo", path: "/foo" },
+    result: { id: "foo", path: "/foo", content: "Written Content" },
   });
 
-  expect((await afs.write("/test-module/foo", {})).result).toMatchInlineSnapshot(`
+  expect((await afs.write("/foo/test-module/foo", {})).result).toMatchInlineSnapshot(`
     {
+      "content": "Written Content",
       "id": "foo",
-      "path": "/test-module/foo",
+      "path": "/foo/test-module/foo",
     }
   `);
 
@@ -150,42 +317,6 @@ test("AFS should write entry correctly", async () => {
       [
         "/foo",
         {},
-      ],
-    ]
-  `);
-});
-
-test("AFS should search entries correctly", async () => {
-  const module: AFSModule = {
-    moduleId: "test-module",
-    path: "/test-module",
-    search: async () => ({ list: [] }),
-  };
-
-  const afs = new AFS().use(module);
-
-  const searchSpy = spyOn(module, "search").mockResolvedValue({
-    list: [{ id: "foo", path: "/foo" }],
-  });
-
-  expect(await afs.search("/", "foo")).toMatchInlineSnapshot(`
-    {
-      "list": [
-        {
-          "id": "foo",
-          "path": "/test-module/foo",
-        },
-      ],
-      "message": "",
-    }
-  `);
-
-  expect(searchSpy.mock.calls).toMatchInlineSnapshot(`
-    [
-      [
-        "/",
-        "foo",
-        undefined,
       ],
     ]
   `);
@@ -254,4 +385,91 @@ test("AFS should record history correctly", async () => {
     }
   `,
   );
+});
+
+test("AFS.findModules should match modules correctly", () => {
+  const moduleA: AFSModule = {
+    moduleId: "module-a",
+    path: "/foo/bar",
+  };
+
+  const afs = new AFS().use(moduleA);
+
+  expect(afs["findModules"]("/")).toContainAllValues([
+    {
+      module: expect.any(AFSHistory),
+      maxDepth: 0,
+      subpath: "/",
+      remainedModulePath: "/history",
+    },
+    {
+      module: moduleA,
+      maxDepth: 0,
+      subpath: "/",
+      remainedModulePath: "/foo",
+    },
+  ]);
+  expect(afs["findModules"]("/foo")).toContainAllValues([
+    {
+      module: moduleA,
+      maxDepth: 0,
+      subpath: "/",
+      remainedModulePath: "/bar",
+    },
+  ]);
+  expect(afs["findModules"]("/foo/bar")).toContainAllValues([
+    {
+      module: moduleA,
+      maxDepth: 1,
+      subpath: "/",
+      remainedModulePath: "/",
+    },
+  ]);
+  expect(afs["findModules"]("/foo/bar/baz")).toContainAllValues([
+    {
+      module: moduleA,
+      maxDepth: 1,
+      subpath: "/baz",
+      remainedModulePath: "/",
+    },
+  ]);
+
+  expect(afs["findModules"]("/", { maxDepth: 2 })).toContainAllValues([
+    {
+      module: expect.any(AFSHistory),
+      maxDepth: 1,
+      subpath: "/",
+      remainedModulePath: "/history",
+    },
+    {
+      module: moduleA,
+      maxDepth: 0,
+      subpath: "/",
+      remainedModulePath: "/foo/bar",
+    },
+  ]);
+  expect(afs["findModules"]("/foo", { maxDepth: 2 })).toContainAllValues([
+    {
+      module: moduleA,
+      maxDepth: 1,
+      subpath: "/",
+      remainedModulePath: "/bar",
+    },
+  ]);
+  expect(afs["findModules"]("/foo/bar", { maxDepth: 2 })).toContainAllValues([
+    {
+      module: moduleA,
+      maxDepth: 2,
+      subpath: "/",
+      remainedModulePath: "/",
+    },
+  ]);
+  expect(afs["findModules"]("/foo/bar/baz", { maxDepth: 2 })).toContainAllValues([
+    {
+      module: moduleA,
+      maxDepth: 2,
+      subpath: "/baz",
+      remainedModulePath: "/",
+    },
+  ]);
 });

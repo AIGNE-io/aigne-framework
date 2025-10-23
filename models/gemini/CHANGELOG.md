@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.3...gemini-v0.14.4-beta) (2025-10-23)
+
+
+### Bug Fixes
+
+* **models:** improve message structure handling and enable auto-message options ([#657](https://github.com/AIGNE-io/aigne-framework/issues/657)) ([233d70c](https://github.com/AIGNE-io/aigne-framework/commit/233d70cb292b937200fada8434f33d957d766ad6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.64.1-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta
+
 ## [0.14.3](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.3-beta.1...gemini-v0.14.3) (2025-10-22)
 
 

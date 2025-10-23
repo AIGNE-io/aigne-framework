@@ -67,14 +67,8 @@ userContext.name: {{userContext.name}}
     name (from userContext): Alice
 
     userContext.name: Alice
-    "
-    ,
-        "name": undefined,
-        "role": "system",
-      },
-      {
-        "content": 
-    "<related-memories>
+
+    <related-memories>
     - input:
         message: Hello, How can I help you?
       source: TestAgent
@@ -454,13 +448,9 @@ test("PromptBuilder should build with afs correctly", async () => {
   expect(result.messages).toMatchInlineSnapshot(`
     [
       {
-        "content": "Test instructions",
-        "name": undefined,
-        "role": "system",
-      },
-      {
         "content": 
-    "
+    "Test instructions
+
     <afs_usage>
     AFS (AIGNE File System) provides tools to interact with a virtual file system, allowing you to list, search, read, and write files. Use these tools to manage and retrieve files as needed.
 
@@ -479,7 +469,6 @@ test("PromptBuilder should build with afs correctly", async () => {
     </afs_usage>
     "
     ,
-        "name": undefined,
         "role": "system",
       },
       {
@@ -536,13 +525,9 @@ test("PromptBuilder should build with afs correctly", async () => {
     {
       "messages": [
         {
-          "content": "Test instructions",
-          "name": undefined,
-          "role": "system",
-        },
-        {
           "content": 
-    "
+    "Test instructions
+
     <afs_usage>
     AFS (AIGNE File System) provides tools to interact with a virtual file system, allowing you to list, search, read, and write files. Use these tools to manage and retrieve files as needed.
 
@@ -561,7 +546,6 @@ test("PromptBuilder should build with afs correctly", async () => {
     </afs_usage>
     "
     ,
-          "name": undefined,
           "role": "system",
         },
         {

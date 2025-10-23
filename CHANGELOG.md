@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.82.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.82.0...aigne-framework-v1.82.1-beta) (2025-10-23)
+
+
+### Bug Fixes
+
+* **afs:** improve module path resolution and depth handling ([#659](https://github.com/AIGNE-io/aigne-framework/issues/659)) ([c609d4f](https://github.com/AIGNE-io/aigne-framework/commit/c609d4fc9614123afcf4b8f86b3382a613ace417))
+* **models:** improve message structure handling and enable auto-message options ([#657](https://github.com/AIGNE-io/aigne-framework/issues/657)) ([233d70c](https://github.com/AIGNE-io/aigne-framework/commit/233d70cb292b937200fada8434f33d957d766ad6))
+
 ## [1.82.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.82.0-beta.1...aigne-framework-v1.82.0) (2025-10-22)
 
 ## [1.82.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.82.0-beta...aigne-framework-v1.82.0-beta.1) (2025-10-22)

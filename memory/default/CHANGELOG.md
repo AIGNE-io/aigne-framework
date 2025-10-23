@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.13-beta](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.12...default-memory-v1.2.13-beta) (2025-10-23)
+
+
+### Bug Fixes
+
+* **models:** improve message structure handling and enable auto-message options ([#657](https://github.com/AIGNE-io/aigne-framework/issues/657)) ([233d70c](https://github.com/AIGNE-io/aigne-framework/commit/233d70cb292b937200fada8434f33d957d766ad6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.64.1-beta
+  * devDependencies
+    * @aigne/openai bumped to 0.16.4-beta
+
 ## [1.2.12](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.12-beta.1...default-memory-v1.2.12) (2025-10-22)
 
 

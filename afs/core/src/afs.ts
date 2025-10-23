@@ -13,7 +13,7 @@ import type {
   AFSWriteEntryPayload,
 } from "./type.js";
 
-const DEFAULT_MAX_DEPTH = 5;
+const DEFAULT_MAX_DEPTH = 1;
 
 export interface AFSOptions {
   storage?: SharedAFSStorage | SharedAFSStorageOptions;
@@ -72,75 +72,52 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     const results: AFSEntry[] = [];
     const messages: string[] = [];
 
-    const modules = this.findModules(path);
+    const matches = this.findModules(path, options);
 
-    for (const { module, subpath, mountPath } of modules) {
-      if (!module.list) continue;
+    for (const matched of matches) {
+      const moduleEntry = {
+        id: matched.module.moduleId,
+        path: matched.remainedModulePath,
+        summary: matched.module.description,
+      };
+
+      if (matched.maxDepth === 0) {
+        results.push(moduleEntry);
+        continue;
+      }
+
+      if (!matched.module.list) continue;
 
       try {
-        const newMaxDepth = maxDepth - mountPath.split("/").filter(Boolean).length;
-        if (newMaxDepth < 0) continue;
+        const { list, message } = await matched.module.list(matched.subpath, {
+          ...options,
+          maxDepth: matched.maxDepth,
+        });
 
-        const { list, message } = await module.list(subpath, { ...options, maxDepth: newMaxDepth });
-
-        results.push(
-          ...list.map((entry) => ({
-            ...entry,
-            path: joinURL(mountPath, entry.path),
-          })),
-        );
+        if (list.length) {
+          results.push(
+            ...list.map((entry) => ({
+              ...entry,
+              path: joinURL(matched.module.path, entry.path),
+            })),
+          );
+        } else {
+          results.push(moduleEntry);
+        }
 
         if (message) messages.push(message);
       } catch (error) {
-        console.error(`Error listing from module at ${mountPath}`, error);
+        console.error(`Error listing from module at ${matched.module.path}`, error);
       }
     }
 
-    return { list: results, message: messages.join("; ") };
-  }
-
-  private findModules(
-    fullPath: string,
-  ): { module: AFSModule; mountPath: string; subpath: string; matchedDepth: number }[] {
-    const modules: ReturnType<typeof this.findModules> = [];
-
-    for (const [mountPath, module] of this.modules) {
-      const match = this.isSubpath(fullPath, mountPath);
-      if (!match) continue;
-
-      modules.push({ ...match, module, mountPath });
-    }
-
-    return modules.sort((a, b) => b.matchedDepth - a.matchedDepth);
-  }
-
-  private isSubpath(
-    fullPath: string,
-    mountPath: string,
-  ): { subpath: string; matchedDepth: number } | undefined {
-    const fullPathSegments = fullPath.split("/").filter(Boolean);
-    const mountPathSegments = mountPath.split("/").filter(Boolean);
-
-    const fp = fullPathSegments.join("/");
-    const mp = mountPathSegments.join("/");
-
-    if (fp.startsWith(mp)) {
-      return {
-        matchedDepth: mountPathSegments.length,
-        subpath: joinURL("/", ...fullPathSegments.slice(mountPathSegments.length)),
-      };
-    } else if (mp.startsWith(fp)) {
-      return {
-        matchedDepth: fullPathSegments.length,
-        subpath: "/",
-      };
-    }
+    return { list: results, message: messages.join("; ").trim() || undefined };
   }
 
   async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
-    const modules = this.findModules(path);
+    const modules = this.findModules(path, { exactMatch: true });
 
-    for (const { module, mountPath, subpath } of modules) {
+    for (const { module, subpath } of modules) {
       const res = await module.read?.(subpath);
 
       if (res?.result) {
@@ -148,7 +125,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
           ...res,
           result: {
             ...res.result,
-            path: joinURL(mountPath, res.result.path),
+            path: joinURL(module.path, res.result.path),
           },
         };
       }
@@ -161,7 +138,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     path: string,
     content: AFSWriteEntryPayload,
   ): Promise<{ result: AFSEntry; message?: string }> {
-    const module = this.findModules(path)[0];
+    const module = this.findModules(path, { exactMatch: true })[0];
     if (!module?.module.write) throw new Error(`No module found for path: ${path}`);
 
     const res = await module.module.write(module.subpath, content);
@@ -170,7 +147,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       ...res,
       result: {
         ...res.result,
-        path: joinURL(module.mountPath, res.result.path),
+        path: joinURL(module.module.path, res.result.path),
       },
     };
   }
@@ -183,26 +160,67 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     const results: AFSEntry[] = [];
     const messages: string[] = [];
 
-    for (const { module, mountPath, subpath } of this.findModules(path)) {
-      if (mountPath.startsWith(path)) {
-        if (!module.search) continue;
+    for (const { module, subpath } of this.findModules(path)) {
+      if (!module.search) continue;
 
-        try {
-          const { list, message } = await module.search(subpath, query, options);
+      try {
+        const { list, message } = await module.search(subpath, query, options);
 
-          results.push(
-            ...list.map((entry) => ({
-              ...entry,
-              path: joinURL(mountPath, entry.path),
-            })),
-          );
-          if (message) messages.push(message);
-        } catch (error) {
-          console.error(`Error searching in module at ${mountPath}`, error);
-        }
+        results.push(
+          ...list.map((entry) => ({
+            ...entry,
+            path: joinURL(module.path, entry.path),
+          })),
+        );
+        if (message) messages.push(message);
+      } catch (error) {
+        console.error(`Error searching in module at ${module.path}`, error);
       }
     }
 
     return { list: results, message: messages.join("; ") };
+  }
+
+  private findModules(
+    path: string,
+    options?: { maxDepth?: number; exactMatch?: boolean },
+  ): {
+    module: AFSModule;
+    maxDepth: number;
+    subpath: string;
+    remainedModulePath: string;
+  }[] {
+    const maxDepth = Math.max(options?.maxDepth ?? DEFAULT_MAX_DEPTH, 1);
+    const matched: ReturnType<typeof this.findModules> = [];
+
+    for (const [modulePath, module] of this.modules) {
+      const pathSegments = path.split("/").filter(Boolean);
+      const modulePathSegments = modulePath.split("/").filter(Boolean);
+
+      let newMaxDepth: number;
+      let subpath: string;
+      let remainedModulePath: string;
+
+      if (!options?.exactMatch && modulePath.startsWith(path)) {
+        newMaxDepth = Math.max(0, maxDepth - (modulePathSegments.length - pathSegments.length));
+        subpath = "/";
+        remainedModulePath = joinURL(
+          "/",
+          ...modulePathSegments.slice(pathSegments.length).slice(0, maxDepth),
+        );
+      } else if (path.startsWith(modulePath)) {
+        newMaxDepth = maxDepth;
+        subpath = joinURL("/", ...pathSegments.slice(modulePathSegments.length));
+        remainedModulePath = "/";
+      } else {
+        continue;
+      }
+
+      if (newMaxDepth < 0) continue;
+
+      matched.push({ module, maxDepth: newMaxDepth, subpath, remainedModulePath });
+    }
+
+    return matched;
   }
 }

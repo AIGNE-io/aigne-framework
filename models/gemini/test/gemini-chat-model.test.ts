@@ -208,6 +208,14 @@ test("GeminiChatModel should reset last message role from system to user", async
       {
         "parts": [
           {
+            "text": "How is the weather today in New York?",
+          },
+        ],
+        "role": "user",
+      },
+      {
+        "parts": [
+          {
             "functionCall": {
               "args": {
                 "location": "New York",

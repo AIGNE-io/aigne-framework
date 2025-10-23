@@ -284,8 +284,8 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
       typeof options.instructions === "string"
         ? PromptBuilder.from(options.instructions)
         : (options.instructions ?? new PromptBuilder());
-    this.autoReorderSystemMessages = options.autoReorderSystemMessages ?? false;
-    this.autoMergeSystemMessages = options.autoMergeSystemMessages ?? false;
+    this.autoReorderSystemMessages = options.autoReorderSystemMessages ?? true;
+    this.autoMergeSystemMessages = options.autoMergeSystemMessages ?? true;
     this.inputKey = options.inputKey;
     this.inputFileKey = options.inputFileKey;
     this.outputKey = options.outputKey || DEFAULT_OUTPUT_KEY;

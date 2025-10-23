@@ -440,12 +440,7 @@ export class GeminiChatModel extends ChatModel {
       )
     ).filter(isNonNullable);
 
-    if (!result.contents.length && systemParts.length) {
-      const system = systemParts.pop();
-      if (system) {
-        result.contents.push({ role: "user", parts: [system] });
-      }
-    }
+    this.ensureMessagesHasUserMessage(systemParts, result.contents);
 
     if (systemParts.length) {
       result.config ??= {};
@@ -453,5 +448,19 @@ export class GeminiChatModel extends ChatModel {
     }
 
     return result;
+  }
+
+  private ensureMessagesHasUserMessage(systems: Part[], contents: Content[]) {
+    // no messages but system messages
+    if (!contents.length && systems.length) {
+      const system = systems.pop();
+      if (system) contents.push({ role: "user", parts: [system] });
+    }
+
+    // first message is from model
+    if (contents[0]?.role === "model") {
+      const system = systems.pop();
+      if (system) contents.unshift({ role: "user", parts: [system] });
+    }
   }
 }

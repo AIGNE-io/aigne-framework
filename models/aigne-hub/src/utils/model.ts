@@ -10,7 +10,7 @@ import type {
 } from "@aigne/core";
 import { DeepSeekChatModel } from "@aigne/deepseek";
 import { DoubaoChatModel, DoubaoImageModel } from "@aigne/doubao";
-import { GeminiChatModel, GeminiImageModel } from "@aigne/gemini";
+import { GeminiChatModel, GeminiImageModel, GeminiVideoModel } from "@aigne/gemini";
 import { IdeogramImageModel } from "@aigne/ideogram";
 import { OllamaChatModel } from "@aigne/ollama";
 import { OpenRouterChatModel } from "@aigne/open-router";
@@ -49,6 +49,9 @@ const getClientOptions = () => {
     httpAgent,
   };
 };
+
+const GOOGLE = "google";
+
 export interface LoadableModel {
   name: string | string[];
   apiKeyEnvName?: string | string[];
@@ -92,7 +95,7 @@ export function availableModels(): LoadableModel[] {
       create: (params) => new DeepSeekChatModel({ ...params, clientOptions }),
     },
     {
-      name: [GeminiChatModel.name, "google"],
+      name: [GeminiChatModel.name, GOOGLE],
       apiKeyEnvName: ["GEMINI_API_KEY", "GOOGLE_API_KEY"],
       create: (params) =>
         new GeminiChatModel({
@@ -165,7 +168,7 @@ export function availableImageModels(): LoadableImageModel[] {
       create: (params) => new OpenAIImageModel({ ...params, clientOptions }),
     },
     {
-      name: [GeminiImageModel.name, "google"],
+      name: [GeminiImageModel.name, GOOGLE],
       apiKeyEnvName: "GEMINI_API_KEY",
       create: (params) => new GeminiImageModel({ ...params, clientOptions }),
     },
@@ -195,6 +198,11 @@ export function availableVideoModels(): LoadableVideoModel[] {
       name: OpenAIVideoModel.name,
       apiKeyEnvName: "OPENAI_API_KEY",
       create: (params) => new OpenAIVideoModel({ ...params, clientOptions }),
+    },
+    {
+      name: [GeminiVideoModel.name, GOOGLE],
+      apiKeyEnvName: "GEMINI_API_KEY",
+      create: (params) => new GeminiVideoModel({ ...params, clientOptions }),
     },
     {
       name: AIGNEHubVideoModel.name,

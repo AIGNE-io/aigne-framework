@@ -223,7 +223,7 @@ describe("findVideoModel", async () => {
       const result = findVideoModel("OpenAI");
       expect(result.match).toBeDefined();
       expect(result.match?.name).toBe("OpenAIVideoModel");
-      expect(result.all).toHaveLength(2);
+      expect(result.all).toHaveLength(3);
     });
 
     test("should handle hyphenated names", () => {
@@ -245,15 +245,19 @@ describe("findVideoModel", async () => {
     test("should return undefined for non-matching provider", () => {
       const result = findVideoModel("nonexistent");
       expect(result.match).toBeUndefined();
-      expect(result.all).toHaveLength(2);
+      expect(result.all).toHaveLength(3);
     });
 
     test("should return all available video models", () => {
       const result = findVideoModel("any");
-      expect(result.all).toHaveLength(2);
+      expect(result.all).toHaveLength(3);
       expect(result.all.map((i) => i.name)).toMatchInlineSnapshot(`
         [
           "OpenAIVideoModel",
+          [
+            "GeminiVideoModel",
+            "google",
+          ],
           "AIGNEHubVideoModel",
         ]
       `);

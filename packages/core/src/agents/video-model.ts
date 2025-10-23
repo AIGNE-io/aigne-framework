@@ -84,12 +84,15 @@ export interface VideoModelInput extends Message {
   model?: string;
 
   size?: string;
+
+  seconds?: string;
 }
 
 export const videoModelInputSchema = z.object({
   prompt: z.string().describe("Text prompt describing the video to generate"),
   model: z.string().optional().describe("Model to use for video generation"),
-  size: z.string().optional().describe("Size/resolution of the video (e.g., '1080p', '720p')"),
+  size: z.string().optional().describe("Size/resolution of the video"),
+  seconds: z.string().optional().describe("Duration of the video in seconds"),
 });
 
 export interface VideoModelOutput extends Message {

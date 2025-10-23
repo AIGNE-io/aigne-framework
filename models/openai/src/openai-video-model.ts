@@ -23,11 +23,6 @@ export interface OpenAIVideoModelInput extends VideoModelInput {
    * Optional image reference that guides generation (file path or URL)
    */
   inputReference?: string;
-
-  /**
-   * Clip duration in seconds. Defaults to 4 seconds
-   */
-  seconds?: string;
 }
 
 /**
@@ -81,7 +76,6 @@ export interface OpenAIVideoModelOptions
 
 const openAIVideoModelInputSchema: ZodType<OpenAIVideoModelInput> = videoModelInputSchema.extend({
   inputReference: z.string().optional(),
-  seconds: z.string().optional(),
 });
 
 const openAIVideoModelOptionsSchema = z.object({

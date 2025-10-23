@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.1.0...afs-v1.1.1-beta) (2025-10-23)
+
+
+### Bug Fixes
+
+* **afs:** improve module path resolution and depth handling ([#659](https://github.com/AIGNE-io/aigne-framework/issues/659)) ([c609d4f](https://github.com/AIGNE-io/aigne-framework/commit/c609d4fc9614123afcf4b8f86b3382a613ace417))
+
 ## [1.1.0](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.1.0-beta...afs-v1.1.0) (2025-10-19)
 
 

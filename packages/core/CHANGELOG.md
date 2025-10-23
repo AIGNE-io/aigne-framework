@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.64.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.64.0...core-v1.64.1-beta) (2025-10-23)
+
+
+### Bug Fixes
+
+* **models:** improve message structure handling and enable auto-message options ([#657](https://github.com/AIGNE-io/aigne-framework/issues/657)) ([233d70c](https://github.com/AIGNE-io/aigne-framework/commit/233d70cb292b937200fada8434f33d957d766ad6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.1.1-beta
+
 ## [1.64.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.64.0-beta.1...core-v1.64.0) (2025-10-22)
 
 

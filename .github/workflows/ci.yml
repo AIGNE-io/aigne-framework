@@ -36,6 +36,8 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pnpm install
           pnpm exec playwright install --with-deps

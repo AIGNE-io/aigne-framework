@@ -126,10 +126,13 @@ export interface VideoModelOutput extends Message {
    * Model name or version used
    */
   model?: string;
+
+  seconds?: number;
 }
 
 export const videoModelOutputSchema = z.object({
   videos: z.array(fileUnionContentSchema),
   usage: chatModelOutputUsageSchema.optional(),
   model: z.string().optional(),
+  seconds: z.number().optional(),
 });

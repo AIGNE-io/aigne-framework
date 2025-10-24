@@ -191,6 +191,7 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
         outputTokens: 0,
       },
       model,
+      seconds: input.seconds ? parseInt(input.seconds, 10) : undefined,
     };
   }
 }

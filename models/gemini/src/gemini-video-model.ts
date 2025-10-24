@@ -245,6 +245,7 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
         outputTokens: 0,
       },
       model,
+      seconds: mergedInput.seconds ? parseInt(mergedInput.seconds, 10) : undefined,
     };
   }
 }

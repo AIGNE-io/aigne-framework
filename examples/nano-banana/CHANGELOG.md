@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.5-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.1.5-beta...example-nano-banana-v1.1.5-beta.1) (2025-10-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.4-beta.1
+    * @aigne/cli bumped to 1.52.1-beta.1
+
 ## [1.1.5-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.1.4...example-nano-banana-v1.1.5-beta) (2025-10-23)
 
 

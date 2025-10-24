@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.4-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.4-beta...gemini-v0.14.4-beta.1) (2025-10-24)
+
+
+### Bug Fixes
+
+* **gemini:** use StructuredOutputError to trigger retry for missing JSON response ([#660](https://github.com/AIGNE-io/aigne-framework/issues/660)) ([e8826ed](https://github.com/AIGNE-io/aigne-framework/commit/e8826ed96db57bfcce0b577881bf0d2fd828c269))
+
 ## [0.14.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.3...gemini-v0.14.4-beta) (2025-10-23)
 
 

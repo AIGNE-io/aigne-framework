@@ -83,12 +83,18 @@ export class AIGNEHubVideoModel extends VideoModel {
       BLOCKLET_APP_PID ||
       ABT_NODE_DID ||
       `@aigne/aigne-hub:${typeof process !== "undefined" ? nodejs.os.hostname() : "unknown"}`;
+    const model = input.model || input.modelOptions?.model || (await this.credential).model;
 
     const response = await (await this.client).__invoke<VideoModelInput, VideoModelOutput>(
       undefined,
       {
         ...input,
-        model: input.model || (await this.credential).model,
+        model: model,
+        modelOptions: {
+          ...this.options.modelOptions,
+          ...input.modelOptions,
+          model: model,
+        },
       },
       {
         ...options,

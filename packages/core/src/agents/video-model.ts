@@ -22,6 +22,8 @@ export interface VideoModelOptions<
   O extends VideoModelOutput = VideoModelOutput,
 > extends Omit<AgentOptions<I, O>, "model"> {
   model?: string;
+
+  modelOptions?: Omit<VideoModelInputOptions, "model">;
 }
 
 export abstract class VideoModel<
@@ -104,6 +106,12 @@ export interface VideoModelInput extends Message {
   seconds?: string;
 
   outputFileType?: FileType;
+
+  modelOptions?: VideoModelInputOptions;
+}
+
+export interface VideoModelInputOptions extends Record<string, unknown> {
+  model?: string;
 }
 
 export const videoModelInputSchema = z.object({
@@ -112,6 +120,7 @@ export const videoModelInputSchema = z.object({
   size: z.string().optional().describe("Size/resolution of the video"),
   seconds: z.string().optional().describe("Duration of the video in seconds"),
   outputFileType: fileTypeSchema.optional(),
+  modelOptions: z.record(z.unknown()).optional(),
 });
 
 export interface VideoModelOutput extends Message {

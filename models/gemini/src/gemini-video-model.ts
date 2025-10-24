@@ -179,9 +179,7 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
 
     await new Promise((resolve) => setTimeout(resolve, 300));
     const buffer = await nodejs.fs.readFile(localPath);
-    const base64 = buffer.toString("base64");
-    const dataUrl = `data:video/mp4;base64,${base64}`;
-    return dataUrl;
+    return buffer.toString("base64");
   }
 
   override async process(
@@ -239,6 +237,8 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
         {
           type: "file",
           data: await this.downloadToFile(dir, videoId, videoFile),
+          mimeType: "video/mp4",
+          filename: `${videoId}.mp4`,
         },
       ],
       usage: {

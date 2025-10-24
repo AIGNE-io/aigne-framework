@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.83.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.82.1-beta.1...aigne-framework-v1.83.0-beta.1) (2025-10-24)
+
+
+### Features
+
+* **model:** support video model ([#647](https://github.com/AIGNE-io/aigne-framework/issues/647)) ([de81742](https://github.com/AIGNE-io/aigne-framework/commit/de817421ef1dd3246d0d8c51ff12f0a855658f9f))
+
+
+### Bug Fixes
+
+* load aigne hub api url for image model correctly ([#664](https://github.com/AIGNE-io/aigne-framework/issues/664)) ([c226b6a](https://github.com/AIGNE-io/aigne-framework/commit/c226b6adfa7acc162fdb2de385f2af57368e21ad))
+* **model:** updated default video duration settings for AI video models ([#663](https://github.com/AIGNE-io/aigne-framework/issues/663)) ([1203941](https://github.com/AIGNE-io/aigne-framework/commit/12039411aaef77ba665e8edfb0fe6f8097c43e39))
+
 ## [1.82.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.82.1-beta...aigne-framework-v1.82.1-beta.1) (2025-10-24)
 
 

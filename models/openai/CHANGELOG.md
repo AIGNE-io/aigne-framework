@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.16.4-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.4-beta...openai-v0.16.4-beta.1) (2025-10-24)
+
+
+### Features
+
+* **model:** support video model ([#647](https://github.com/AIGNE-io/aigne-framework/issues/647)) ([de81742](https://github.com/AIGNE-io/aigne-framework/commit/de817421ef1dd3246d0d8c51ff12f0a855658f9f))
+
+
+### Bug Fixes
+
+* **model:** updated default video duration settings for AI video models ([#663](https://github.com/AIGNE-io/aigne-framework/issues/663)) ([1203941](https://github.com/AIGNE-io/aigne-framework/commit/12039411aaef77ba665e8edfb0fe6f8097c43e39))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta.1
+
 ## [0.16.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.3...openai-v0.16.4-beta) (2025-10-23)
 
 

@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.10.4-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.4-beta.1...aigne-hub-v0.10.4-beta.2) (2025-10-24)
+
+
+### Features
+
+* **model:** support video model ([#647](https://github.com/AIGNE-io/aigne-framework/issues/647)) ([de81742](https://github.com/AIGNE-io/aigne-framework/commit/de817421ef1dd3246d0d8c51ff12f0a855658f9f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.4-beta.1
+    * @aigne/bedrock bumped to 0.10.9-beta.1
+    * @aigne/core bumped to 1.65.0-beta
+    * @aigne/deepseek bumped to 0.7.50-beta.1
+    * @aigne/doubao bumped to 1.1.4-beta.1
+    * @aigne/gemini bumped to 0.14.4-beta.2
+    * @aigne/ideogram bumped to 0.4.4-beta.1
+    * @aigne/ollama bumped to 0.7.50-beta.1
+    * @aigne/open-router bumped to 0.7.50-beta.1
+    * @aigne/openai bumped to 0.16.4-beta.1
+    * @aigne/poe bumped to 1.0.30-beta.1
+    * @aigne/transport bumped to 0.15.13-beta.1
+    * @aigne/xai bumped to 0.7.50-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta.1
+
 ## [0.10.4-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.4-beta...aigne-hub-v0.10.4-beta.1) (2025-10-24)
 
 

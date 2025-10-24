@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.65.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.64.1-beta...core-v1.65.0-beta) (2025-10-24)
+
+
+### Features
+
+* **model:** support video model ([#647](https://github.com/AIGNE-io/aigne-framework/issues/647)) ([de81742](https://github.com/AIGNE-io/aigne-framework/commit/de817421ef1dd3246d0d8c51ff12f0a855658f9f))
+
 ## [1.64.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.64.0...core-v1.64.1-beta) (2025-10-23)
 
 

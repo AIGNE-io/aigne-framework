@@ -207,7 +207,7 @@ export class GeminiChatModel extends ChatModel {
       } else if (text) {
         yield { delta: { json: { json: safeParseJSON(text) } } };
       } else if (!toolCalls.length) {
-        throw new Error("No JSON response from the model");
+        throw new StructuredOutputError("No JSON response from the model");
       }
     } else if (!toolCalls.length) {
       // NOTE: gemini-2.5-pro sometimes returns an empty response,

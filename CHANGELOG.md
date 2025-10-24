@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.83.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.1...aigne-framework-v1.83.0-beta.2) (2025-10-24)
+
+
+### Bug Fixes
+
+* **models:** aigne hub video params ([#665](https://github.com/AIGNE-io/aigne-framework/issues/665)) ([d00f836](https://github.com/AIGNE-io/aigne-framework/commit/d00f8368422d8e3707b974e1aff06714731ebb28))
+
 ## [1.83.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.82.1-beta.1...aigne-framework-v1.83.0-beta.1) (2025-10-24)
 
 

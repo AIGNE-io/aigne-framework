@@ -114,7 +114,7 @@ describe("AIGNEHubVideoModel", async () => {
         },
         "videos": [
           {
-            "data": "data:video/mp4;base64,test-video-data",
+            "data": "test-video-data",
             "type": "file",
           },
         ],
@@ -140,7 +140,7 @@ describe("AIGNEHubVideoModel", async () => {
         },
         "videos": [
           {
-            "data": "data:video/mp4;base64,test-video-data",
+            "data": "test-video-data",
             "type": "file",
           },
         ],

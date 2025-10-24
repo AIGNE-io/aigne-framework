@@ -1,6 +1,6 @@
 import { beforeEach, expect, spyOn, test } from "bun:test";
+import type { LocalContent } from "@aigne/core";
 import { OpenAIVideoModel } from "@aigne/openai";
-import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 
 let model: OpenAIVideoModel;
 
@@ -44,7 +44,6 @@ test("OpenAIVideoModel basic usage", async () => {
     videos: [
       {
         type: "local",
-        path: expect.stringContaining(`${videoId}.mp4`),
       },
     ],
     usage: {
@@ -53,6 +52,9 @@ test("OpenAIVideoModel basic usage", async () => {
     },
     model: "sora-2",
   });
+
+  expect(result.videos[0]?.type).toBe("local");
+  expect((result.videos[0] as LocalContent)?.path).toBeDefined();
 });
 
 test("OpenAIVideoModel with polling (queued -> in_progress -> completed)", async () => {
@@ -122,11 +124,17 @@ test("OpenAIVideoModel with polling (queued -> in_progress -> completed)", async
     videos: [
       {
         type: "local",
-        path: expect.stringContaining(`${videoId}.mp4`),
       },
     ],
+    usage: {
+      inputTokens: 0,
+      outputTokens: 0,
+    },
     model: "sora-2",
   });
+
+  expect(result.videos[0]?.type).toBe("local");
+  expect((result.videos[0] as LocalContent)?.path).toBeDefined();
 });
 
 test("OpenAIVideoModel with input reference", async () => {
@@ -277,22 +285,15 @@ test("OpenAIVideoModel should throw error if no API key", () => {
 test("OpenAIVideoModel downloadToFile", async () => {
   const videoId = "video_download";
   const mockVideoData = Buffer.from("test video data");
-  const testPath = nodejs.path.join(nodejs.os.tmpdir(), `test_${videoId}.mp4`);
 
   spyOn((model.client as any).videos, "downloadContent").mockResolvedValueOnce({
     arrayBuffer: async () => mockVideoData.buffer,
   });
 
-  const filePath = await model.downloadToFile(videoId, testPath);
+  const dataUrl = await model.downloadToFile(videoId);
 
-  expect(filePath).toBe(testPath);
-
-  const fs = await import("node:fs");
-  const fileContent = fs.readFileSync(testPath);
-  expect(fileContent.toString()).toBe("test video data");
-
-  // cleanup
-  fs.unlinkSync(testPath);
+  expect(dataUrl).toBe("data:video/mp4;base64,dGVzdCB2aWRlbyBkYXRh");
+  expect(dataUrl).toMatch(/^data:video\/mp4;base64,/);
 });
 
 test("OpenAIVideoModel with all optional parameters", async () => {
@@ -328,11 +329,16 @@ test("OpenAIVideoModel with all optional parameters", async () => {
     videos: [
       {
         type: "local",
-        path: expect.stringContaining(`${videoId}.mp4`),
       },
     ],
+    usage: {
+      inputTokens: 0,
+      outputTokens: 0,
+    },
     model: "sora-2",
   });
+
+  expect(result.videos[0]?.type).toBe("local");
 });
 
 test("OpenAIVideoModel credential getter", () => {

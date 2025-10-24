@@ -1,5 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
+import type { LocalContent } from "@aigne/core";
 import { GeminiVideoModel } from "@aigne/gemini";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 
 test("GeminiVideoModel should work correctly", async () => {
   const model = new GeminiVideoModel({
@@ -35,6 +37,10 @@ test("GeminiVideoModel should work correctly", async () => {
 
   spyOn(model["client"].files, "download").mockResolvedValueOnce(undefined);
 
+  // Mock fs.readFile to return mock video data
+  const mockVideoData = Buffer.from("mock-video-content");
+  spyOn(nodejs.fs, "readFile").mockResolvedValueOnce(mockVideoData as any);
+
   const result = await model.invoke({
     prompt: "A beautiful sunset over the ocean",
   });
@@ -42,8 +48,11 @@ test("GeminiVideoModel should work correctly", async () => {
   expect(result.videos).toBeDefined();
   expect(result.videos.length).toBe(1);
   expect(result.videos[0]?.type).toBe("local");
+  expect((result.videos[0] as LocalContent)?.path).toBeDefined();
   expect(result.model).toBe("veo-3.1-generate-preview");
   expect(result.usage).toBeDefined();
+  expect(result.usage?.inputTokens).toBe(0);
+  expect(result.usage?.outputTokens).toBe(0);
 });
 
 test("GeminiVideoModel should support custom parameters", async () => {
@@ -80,7 +89,11 @@ test("GeminiVideoModel should support custom parameters", async () => {
 
   spyOn(model["client"].files, "download").mockResolvedValueOnce(undefined);
 
-  await model.invoke({
+  // Mock fs.readFile to return mock video data
+  const mockVideoData = Buffer.from("mock-video-content");
+  spyOn(nodejs.fs, "readFile").mockResolvedValueOnce(mockVideoData as any);
+
+  const result = await model.invoke({
     prompt: "A car driving on a highway",
     negativePrompt: "blurry, low quality",
     aspectRatio: "16:9",
@@ -102,4 +115,9 @@ test("GeminiVideoModel should support custom parameters", async () => {
       }),
     }),
   );
+
+  expect(result.videos).toBeDefined();
+  expect(result.videos.length).toBe(1);
+  expect(result.videos[0]?.type).toBe("local");
+  expect((result.videos[0] as LocalContent)?.path).toBeDefined();
 });

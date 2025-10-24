@@ -30,9 +30,11 @@ export async function createHonoServer() {
 
   honoApp.post("/ai-kit/api/v2/video", async (c) => {
     return c.json({
-      videos: <FileUnionContent[]>[{ type: "local", path: "/xxx" }],
+      videos: <FileUnionContent[]>[{ type: "file", data: "data:video/mp4;base64,test-video-data" }],
       usage: {
         aigneHubCredits: 200,
+        inputTokens: 0,
+        outputTokens: 0,
       },
       model: "openai/sora-2",
     });

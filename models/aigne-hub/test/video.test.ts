@@ -114,8 +114,8 @@ describe("AIGNEHubVideoModel", async () => {
         },
         "videos": [
           {
-            "path": "/xxx",
-            "type": "local",
+            "data": "data:video/mp4;base64,test-video-data",
+            "type": "file",
           },
         ],
       }
@@ -140,8 +140,8 @@ describe("AIGNEHubVideoModel", async () => {
         },
         "videos": [
           {
-            "path": "/xxx",
-            "type": "local",
+            "data": "data:video/mp4;base64,test-video-data",
+            "type": "file",
           },
         ],
       }

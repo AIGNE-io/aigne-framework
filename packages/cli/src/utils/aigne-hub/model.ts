@@ -149,6 +149,7 @@ export async function loadImageModel(
 
   return match.create({
     ...credential,
+    baseURL: credential?.url,
     model,
     modelOptions: options && omit(options, "model", "aigneHubUrl", "inquirerPromptFn"),
   });

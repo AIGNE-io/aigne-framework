@@ -13,6 +13,7 @@ import { type ZodType, z } from "zod";
 import { CustomOpenAI } from "./openai.js";
 
 const DEFAULT_MODEL = "sora-2";
+const DEFAULT_SECONDS = 4;
 
 /**
  * Input options for OpenAI Video Model
@@ -191,7 +192,7 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
         outputTokens: 0,
       },
       model,
-      seconds: input.seconds ? parseInt(input.seconds, 10) : 4,
+      seconds: input.seconds ? parseInt(input.seconds, 10) : DEFAULT_SECONDS,
     };
   }
 }

@@ -13,6 +13,7 @@ import { type GenerateVideosParameters, GoogleGenAI } from "@google/genai";
 import { type ZodType, z } from "zod";
 
 const DEFAULT_MODEL = "veo-3.1-generate-preview";
+const DEFAULT_SECONDS = 8;
 
 /**
  * Input options for Gemini Video Model
@@ -245,7 +246,7 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
         outputTokens: 0,
       },
       model,
-      seconds: mergedInput.seconds ? parseInt(mergedInput.seconds, 10) : 8,
+      seconds: mergedInput.seconds ? parseInt(mergedInput.seconds, 10) : DEFAULT_SECONDS,
     };
   }
 }

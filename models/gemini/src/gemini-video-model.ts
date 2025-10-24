@@ -188,7 +188,7 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
     input: GeminiVideoModelInput,
     options: AgentInvokeOptions,
   ): Promise<GeminiVideoModelOutput> {
-    const model = input.model ?? this.credential.model;
+    const model = input.model ?? input.modelOptions?.model ?? this.credential.model;
     const mergedInput = { ...this.modelOptions, ...input };
 
     const config: GenerateVideosParameters["config"] = {};

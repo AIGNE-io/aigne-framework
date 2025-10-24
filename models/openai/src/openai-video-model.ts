@@ -145,7 +145,7 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
   }
 
   override async process(input: OpenAIVideoModelInput): Promise<OpenAIVideoModelOutput> {
-    const model = input.model ?? this.credential.model;
+    const model = input.model ?? input.modelOptions?.model ?? this.credential.model;
 
     const createParams: OpenAI.Videos.VideoCreateParams = {
       model: model as OpenAI.Videos.VideoModel,

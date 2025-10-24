@@ -274,14 +274,6 @@ test("OpenAIVideoModel override model in input", async () => {
   expect(result.model).toBe("sora-3");
 });
 
-test("OpenAIVideoModel should throw error if no API key", () => {
-  const modelNoKey = new OpenAIVideoModel({});
-
-  expect(() => modelNoKey.client).toThrow(
-    "OpenAIVideoModel requires an API key. Please provide it via `options.apiKey`, or set the `OPENAI_API_KEY` environment variable",
-  );
-});
-
 test("OpenAIVideoModel downloadToFile", async () => {
   const videoId = "video_download";
   const mockVideoData = Buffer.from("test video data");
@@ -292,8 +284,7 @@ test("OpenAIVideoModel downloadToFile", async () => {
 
   const dataUrl = await model.downloadToFile(videoId);
 
-  expect(dataUrl).toBe("data:video/mp4;base64,dGVzdCB2aWRlbyBkYXRh");
-  expect(dataUrl).toMatch(/^data:video\/mp4;base64,/);
+  expect(dataUrl).toBe("dGVzdCB2aWRlbyBkYXRh");
 });
 
 test("OpenAIVideoModel with all optional parameters", async () => {

@@ -137,11 +137,7 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
     const content = await this.client.videos.downloadContent(videoId);
     const arrayBuffer = await content.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-
-    const base64 = buffer.toString("base64");
-    const dataUrl = `data:video/mp4;base64,${base64}`;
-
-    return dataUrl;
+    return buffer.toString("base64");
   }
 
   override async process(input: OpenAIVideoModelInput): Promise<OpenAIVideoModelOutput> {
@@ -185,6 +181,8 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
         {
           type: "file",
           data: await this.downloadToFile(video.id),
+          mimeType: "video/mp4",
+          filename: `${video.id}.mp4`,
         },
       ],
       usage: {

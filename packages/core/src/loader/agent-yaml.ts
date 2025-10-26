@@ -8,6 +8,7 @@ import { AIAgentToolChoice } from "../agents/ai-agent.js";
 import { type Role, roleSchema } from "../agents/chat-model.js";
 import { ProcessMode, type ReflectionMode } from "../agents/team-agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
+import { codeToFunctionAgentFn } from "./function-agent.js";
 import {
   camelizeSchema,
   chatModelSchema,
@@ -326,7 +327,10 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
         z
           .object({
             type: z.literal("function"),
-            process: z.custom<FunctionAgentFn>(),
+            process: z.preprocess(
+              (v) => (typeof v === "string" ? codeToFunctionAgentFn(v) : v),
+              z.custom<FunctionAgentFn>(),
+            ) as ZodType<FunctionAgentFn>,
           })
           .extend(baseAgentSchema.shape),
       ]),

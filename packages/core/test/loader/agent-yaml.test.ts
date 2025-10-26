@@ -308,3 +308,15 @@ test("loadAgentFromYaml should load AIAgent with AFS correctly", async () => {
     }
   `);
 });
+
+test("loadAgentFromYaml should inline function correctly", async () => {
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/test-inline-function.yaml"),
+  );
+
+  expect(agent.invoke({ num: 2 })).resolves.toMatchInlineSnapshot(`
+    {
+      "result": 4,
+    }
+  `);
+});

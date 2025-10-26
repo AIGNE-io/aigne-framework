@@ -1,0 +1,13 @@
+type: function
+name: testInlineFunction
+input_schema:
+  type: object
+  properties:
+    num:
+      type: number
+  required:
+    - num
+process: |
+  return {
+    result: input.num * 2
+  }

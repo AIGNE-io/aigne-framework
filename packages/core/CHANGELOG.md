@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.65.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.0-beta...core-v1.65.0-beta.1) (2025-10-26)
+
+
+### Features
+
+* support define function agent by yaml ([#668](https://github.com/AIGNE-io/aigne-framework/issues/668)) ([2fde8cc](https://github.com/AIGNE-io/aigne-framework/commit/2fde8cc44b213fc2d4c20d91c3c8a8b3c2eb140e))
+
+
+### Bug Fixes
+
+* **models:** aigne hub video params ([#665](https://github.com/AIGNE-io/aigne-framework/issues/665)) ([d00f836](https://github.com/AIGNE-io/aigne-framework/commit/d00f8368422d8e3707b974e1aff06714731ebb28))
+
 ## [1.65.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.64.1-beta...core-v1.65.0-beta) (2025-10-24)
 
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.14.4-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.4-beta.2...gemini-v0.14.4-beta.3) (2025-10-26)
+
+
+### Bug Fixes
+
+* **models:** add mineType for transform file ([#667](https://github.com/AIGNE-io/aigne-framework/issues/667)) ([155a173](https://github.com/AIGNE-io/aigne-framework/commit/155a173e75aff1dbe870a1305455a4300942e07a))
+* **models:** aigne hub video params ([#665](https://github.com/AIGNE-io/aigne-framework/issues/665)) ([d00f836](https://github.com/AIGNE-io/aigne-framework/commit/d00f8368422d8e3707b974e1aff06714731ebb28))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta.2
+
 ## [0.14.4-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.4-beta.1...gemini-v0.14.4-beta.2) (2025-10-24)
 
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.83.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.1...aigne-framework-v1.83.0-beta.2) (2025-10-26)
+
+
+### Features
+
+* support define function agent by yaml ([#668](https://github.com/AIGNE-io/aigne-framework/issues/668)) ([2fde8cc](https://github.com/AIGNE-io/aigne-framework/commit/2fde8cc44b213fc2d4c20d91c3c8a8b3c2eb140e))
+
+
+### Bug Fixes
+
+* **models:** add mineType for transform file ([#667](https://github.com/AIGNE-io/aigne-framework/issues/667)) ([155a173](https://github.com/AIGNE-io/aigne-framework/commit/155a173e75aff1dbe870a1305455a4300942e07a))
+* **models:** aigne hub video params ([#665](https://github.com/AIGNE-io/aigne-framework/issues/665)) ([d00f836](https://github.com/AIGNE-io/aigne-framework/commit/d00f8368422d8e3707b974e1aff06714731ebb28))
+
 ## [1.83.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.82.1-beta.1...aigne-framework-v1.83.0-beta.1) (2025-10-24)
 
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.23-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.23-beta.3...aigne-runtime-v1.4.23-beta.4) (2025-10-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.4-beta.4
+
 ## [1.4.23-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.23-beta.2...aigne-runtime-v1.4.23-beta.3) (2025-10-26)
 
 

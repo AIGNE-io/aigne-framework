@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.53.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.53.0-beta.2...cli-v1.53.0-beta.3) (2025-10-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.4-beta.4
+
 ## [1.53.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.53.0-beta.1...cli-v1.53.0-beta.2) (2025-10-26)
 
 

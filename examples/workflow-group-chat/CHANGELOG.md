@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.17.26-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.26-beta.3...example-workflow-group-chat-v1.17.26-beta.4) (2025-10-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.53.0-beta.3
+
 ## [1.17.26-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.26-beta.2...example-workflow-group-chat-v1.17.26-beta.3) (2025-10-26)
 
 

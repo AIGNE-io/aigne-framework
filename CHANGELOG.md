@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.83.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.2...aigne-framework-v1.83.0-beta.3) (2025-10-27)
+
+
+### Bug Fixes
+
+* **gemini:** include thoughts token count in output token usage ([#669](https://github.com/AIGNE-io/aigne-framework/issues/669)) ([f6ff10c](https://github.com/AIGNE-io/aigne-framework/commit/f6ff10c33b0612a0bc416842c5a5bec3850a3fe6))
+
 ## [1.83.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.1...aigne-framework-v1.83.0-beta.2) (2025-10-26)
 
 

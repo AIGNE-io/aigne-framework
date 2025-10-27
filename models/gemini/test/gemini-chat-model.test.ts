@@ -142,7 +142,7 @@ test("GeminiChatModel.invoke should use tool result correctly", async () => {
       "model": "gemini-2.5-flash",
       "usage": {
         "inputTokens": 116,
-        "outputTokens": 25,
+        "outputTokens": 96,
       },
     }
   `);
@@ -402,7 +402,7 @@ What is the weather in New York?
       "model": "gemini-2.5-flash",
       "usage": {
         "inputTokens": 39,
-        "outputTokens": 16,
+        "outputTokens": 113,
       },
     }
   `);

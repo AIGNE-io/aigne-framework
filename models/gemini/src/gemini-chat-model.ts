@@ -196,8 +196,10 @@ export class GeminiChatModel extends ChatModel {
       if (chunk.usageMetadata) {
         if (chunk.usageMetadata.promptTokenCount)
           usage.inputTokens = chunk.usageMetadata.promptTokenCount;
-        if (chunk.usageMetadata.candidatesTokenCount)
-          usage.outputTokens = chunk.usageMetadata.candidatesTokenCount;
+        if (chunk.usageMetadata.candidatesTokenCount || chunk.usageMetadata.thoughtsTokenCount)
+          usage.outputTokens =
+            (chunk.usageMetadata.candidatesTokenCount || 0) +
+            (chunk.usageMetadata.thoughtsTokenCount || 0);
       }
     }
 

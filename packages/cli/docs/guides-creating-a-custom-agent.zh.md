@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["Reference"]
----
-
 # 创建自定义 Agent
 
 本指南提供了一个分步教程，指导您如何创建一个新的 JavaScript agent，并将其作为一项技能集成到您的 AIGNE 项目中。Agent 是赋予您的应用程序独特能力的核心可执行组件。通过创建自定义 agent，您可以扩展 AI 的功能，以执行特殊任务、与外部 API 交互或操作本地数据。

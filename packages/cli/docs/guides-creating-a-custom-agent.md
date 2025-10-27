@@ -2,10 +2,6 @@
 labels: ["Reference"]
 ---
 
----
-labels: ["Reference"]
----
-
 # Creating a Custom Agent
 
 This guide provides a step-by-step tutorial on creating a new JavaScript agent and integrating it into your AIGNE project as a skill. Agents are the core executable components that give your application its unique capabilities. By creating custom agents, you can extend the functionality of your AI to perform specialized tasks, interact with external APIs, or manipulate local data.

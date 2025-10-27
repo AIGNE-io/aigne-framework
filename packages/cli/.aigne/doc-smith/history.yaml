@@ -1,4 +1,8 @@
 entries:
+  - timestamp: 2025-10-27T13:28:59.522Z
+    operation: translation_update
+    feedback: '文章头部 labels: ["xxx"] 不需要翻译'
+    documentPath: /command-reference/deploy
   - timestamp: 2025-10-17T12:59:34.865Z
     operation: document_update
     feedback: aigne web 没有 create page 命令，改为 generate 命令说明. 去掉参数

@@ -74,6 +74,9 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
 
         return { ...common, type: "file", data: base64, mimeType };
       }
+      default: {
+        return data;
+      }
     }
   }
 
@@ -100,9 +103,9 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
   }
 }
 
-export type FileType = "local" | "file";
+export type FileType = "local" | "file" | "url";
 
-export const fileTypeSchema = z.enum(["local", "file"]);
+export const fileTypeSchema = z.enum(["local", "file", "url"]);
 
 export interface FileContentBase {
   filename?: string;

@@ -95,7 +95,7 @@ export class AIGNEHubChatModel extends ChatModel {
           model: input.modelOptions?.model || (await this.credential).model,
         },
         // Shouldn't use `local` output type for remote AIGNE Hub call, client can not access the remote filesystem
-        outputFileType: "file",
+        outputFileType: "url",
       },
       {
         ...options,

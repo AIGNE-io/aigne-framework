@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.10.4-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.4-beta.4...aigne-hub-v0.10.4-beta.5) (2025-10-28)
+
+
+### Bug Fixes
+
+* **core:** added support for URL file type handling, expanding the range of supported file formats ([#671](https://github.com/AIGNE-io/aigne-framework/issues/671)) ([fea4519](https://github.com/AIGNE-io/aigne-framework/commit/fea45197e87cf7b19499c48b41626062824d1355))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.4-beta.3
+    * @aigne/bedrock bumped to 0.10.9-beta.3
+    * @aigne/core bumped to 1.65.0-beta.2
+    * @aigne/deepseek bumped to 0.7.50-beta.3
+    * @aigne/doubao bumped to 1.1.4-beta.3
+    * @aigne/gemini bumped to 0.14.4-beta.5
+    * @aigne/ideogram bumped to 0.4.4-beta.3
+    * @aigne/ollama bumped to 0.7.50-beta.3
+    * @aigne/open-router bumped to 0.7.50-beta.3
+    * @aigne/openai bumped to 0.16.4-beta.3
+    * @aigne/poe bumped to 1.0.30-beta.3
+    * @aigne/transport bumped to 0.15.13-beta.3
+    * @aigne/xai bumped to 0.7.50-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta.3
+
 ## [0.10.4-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.4-beta.3...aigne-hub-v0.10.4-beta.4) (2025-10-27)
 
 

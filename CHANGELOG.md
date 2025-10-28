@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.83.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.3...aigne-framework-v1.83.0-beta.4) (2025-10-28)
+
+
+### Bug Fixes
+
+* **core:** added support for URL file type handling, expanding the range of supported file formats ([#671](https://github.com/AIGNE-io/aigne-framework/issues/671)) ([fea4519](https://github.com/AIGNE-io/aigne-framework/commit/fea45197e87cf7b19499c48b41626062824d1355))
+
 ## [1.83.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.2...aigne-framework-v1.83.0-beta.3) (2025-10-27)
 
 

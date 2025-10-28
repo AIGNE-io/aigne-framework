@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.65.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.0-beta.1...core-v1.65.0-beta.2) (2025-10-28)
+
+
+### Bug Fixes
+
+* **core:** added support for URL file type handling, expanding the range of supported file formats ([#671](https://github.com/AIGNE-io/aigne-framework/issues/671)) ([fea4519](https://github.com/AIGNE-io/aigne-framework/commit/fea45197e87cf7b19499c48b41626062824d1355))
+
 ## [1.65.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.0-beta...core-v1.65.0-beta.1) (2025-10-26)
 
 

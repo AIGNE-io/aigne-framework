@@ -41,6 +41,7 @@ test("loadAgentFromYaml should load AIAgent correctly", async () => {
     input_file_key: agent.inputFileKey,
     output_file_key: agent.outputFileKey,
     keep_text_in_tool_uses: agent.keepTextInToolUses,
+    catch_tools_error: agent.catchToolsError,
     skills: agent.skills.map((skill) => ({
       name: skill.name,
       description: skill.description,

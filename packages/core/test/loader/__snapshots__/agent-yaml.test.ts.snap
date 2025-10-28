@@ -8,6 +8,7 @@ exports[`loadAgentFromYaml should load AIAgent correctly 1`] = `
   ],
   "auto_merge_system_messages": true,
   "auto_reorder_system_messages": true,
+  "catch_tools_error": false,
   "description": "Chat agent",
   "includeInputInOutput": true,
   "input_file_key": "message_file",

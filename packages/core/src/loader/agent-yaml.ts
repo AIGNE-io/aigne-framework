@@ -278,6 +278,7 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
             toolChoice: optionalize(z.nativeEnum(AIAgentToolChoice)),
             toolCallsConcurrency: optionalize(z.number().int().min(0)),
             keepTextInToolUses: optionalize(z.boolean()),
+            catchToolsError: optionalize(z.boolean()),
             structuredStreamMode: optionalize(z.boolean()),
           })
           .extend(baseAgentSchema.shape),

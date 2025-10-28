@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.65.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.0-beta.2...core-v1.65.0-beta.3) (2025-10-28)
+
+
+### Bug Fixes
+
+* **core:** support custom `catchToolsError` in yaml agent definition ([#676](https://github.com/AIGNE-io/aigne-framework/issues/676)) ([fe43f5f](https://github.com/AIGNE-io/aigne-framework/commit/fe43f5f32d18d2180abb0717287fc680f1444a0d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.4-beta
+
 ## [1.65.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.0-beta.1...core-v1.65.0-beta.2) (2025-10-28)
 
 

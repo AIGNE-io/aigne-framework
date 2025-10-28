@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.0.50-beta.3...did-space-memory-v1.1.0-beta.3) (2025-10-28)
+
+
+### Features
+
+* use a more secure signature mechanism ([#655](https://github.com/AIGNE-io/aigne-framework/issues/655)) ([aa5dc0c](https://github.com/AIGNE-io/aigne-framework/commit/aa5dc0ccdff8245a629cb30e731081528a555134))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0-beta.3
+    * @aigne/openai bumped to 0.16.4-beta.4
+
 ## [1.0.50-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.0.50-beta.2...did-space-memory-v1.0.50-beta.3) (2025-10-28)
 
 

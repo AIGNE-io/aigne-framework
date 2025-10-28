@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.2...observability-ui-v0.11.3-beta) (2025-10-28)
+
+
+### Features
+
+* use a more secure signature mechanism ([#655](https://github.com/AIGNE-io/aigne-framework/issues/655)) ([aa5dc0c](https://github.com/AIGNE-io/aigne-framework/commit/aa5dc0ccdff8245a629cb30e731081528a555134))
+
+
+### Bug Fixes
+
+* update package ([#675](https://github.com/AIGNE-io/aigne-framework/issues/675)) ([0b233f3](https://github.com/AIGNE-io/aigne-framework/commit/0b233f38f86c9d5e0ddd469fa2a0406ec0083fa7))
+
 ## [0.11.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.2-beta...observability-ui-v0.11.2) (2025-10-22)
 
 ## [0.11.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.1...observability-ui-v0.11.2-beta) (2025-10-21)

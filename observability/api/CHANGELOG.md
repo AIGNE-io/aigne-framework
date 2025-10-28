@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.11.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.3...observability-api-v0.11.4-beta) (2025-10-28)
+
+
+### Features
+
+* use a more secure signature mechanism ([#655](https://github.com/AIGNE-io/aigne-framework/issues/655)) ([aa5dc0c](https://github.com/AIGNE-io/aigne-framework/commit/aa5dc0ccdff8245a629cb30e731081528a555134))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.3-beta
+
 ## [0.11.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.3-beta...observability-api-v0.11.3) (2025-10-22)
 
 

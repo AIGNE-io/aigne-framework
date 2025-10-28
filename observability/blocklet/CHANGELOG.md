@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.15.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.14.3...blocklet-observability-v1.15.0-beta) (2025-10-28)
+
+
+### Features
+
+* use a more secure signature mechanism ([#655](https://github.com/AIGNE-io/aigne-framework/issues/655)) ([aa5dc0c](https://github.com/AIGNE-io/aigne-framework/commit/aa5dc0ccdff8245a629cb30e731081528a555134))
+
+
+### Bug Fixes
+
+* update package ([#675](https://github.com/AIGNE-io/aigne-framework/issues/675)) ([0b233f3](https://github.com/AIGNE-io/aigne-framework/commit/0b233f38f86c9d5e0ddd469fa2a0406ec0083fa7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.4-beta
+    * @aigne/observability-ui bumped to 0.11.3-beta
+
 ## [1.14.3](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.14.3-beta...blocklet-observability-v1.14.3) (2025-10-22)
 
 

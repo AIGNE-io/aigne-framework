@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.5.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.23-beta.5...aigne-runtime-v1.5.0-beta.5) (2025-10-28)
+
+
+### Features
+
+* use a more secure signature mechanism ([#655](https://github.com/AIGNE-io/aigne-framework/issues/655)) ([aa5dc0c](https://github.com/AIGNE-io/aigne-framework/commit/aa5dc0ccdff8245a629cb30e731081528a555134))
+
+
+### Bug Fixes
+
+* update package ([#675](https://github.com/AIGNE-io/aigne-framework/issues/675)) ([0b233f3](https://github.com/AIGNE-io/aigne-framework/commit/0b233f38f86c9d5e0ddd469fa2a0406ec0083fa7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.4-beta.6
+    * @aigne/core bumped to 1.65.0-beta.3
+    * @aigne/observability-api bumped to 0.11.4-beta
+    * @aigne/transport bumped to 0.15.13-beta.4
+
 ## [1.4.23-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.4.23-beta.4...aigne-runtime-v1.4.23-beta.5) (2025-10-28)
 
 

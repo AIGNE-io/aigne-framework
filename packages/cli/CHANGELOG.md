@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.53.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.53.0-beta.4...cli-v1.53.0-beta.5) (2025-10-28)
+
+
+### Features
+
+* use a more secure signature mechanism ([#655](https://github.com/AIGNE-io/aigne-framework/issues/655)) ([aa5dc0c](https://github.com/AIGNE-io/aigne-framework/commit/aa5dc0ccdff8245a629cb30e731081528a555134))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-system-fs bumped to 1.0.3-beta.4
+    * @aigne/agent-library bumped to 1.21.50-beta.4
+    * @aigne/agentic-memory bumped to 1.0.50-beta.4
+    * @aigne/aigne-hub bumped to 0.10.4-beta.6
+    * @aigne/core bumped to 1.65.0-beta.3
+    * @aigne/default-memory bumped to 1.2.13-beta.4
+    * @aigne/observability-api bumped to 0.11.4-beta
+    * @aigne/openai bumped to 0.16.4-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta.4
+
 ## [1.53.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.53.0-beta.3...cli-v1.53.0-beta.4) (2025-10-28)
 
 

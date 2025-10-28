@@ -91,7 +91,7 @@ export class AIGNEHubVideoModel extends VideoModel {
         ...input,
         model: model,
         modelOptions: { ...this.options.modelOptions, ...input.modelOptions, model: model },
-        outputFileType: "file",
+        outputFileType: "url",
       },
       {
         ...options,

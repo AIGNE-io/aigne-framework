@@ -35,7 +35,7 @@
     "@aigne/uuid": "^13.0.1",
     "@arcblock/did-connect-react": "^3.1.52",
     "@arcblock/ux": "^3.1.52",
-    "@blocklet/sdk": "^1.16.54-beta-20251027-105624-dfa978f8",
+    "@blocklet/sdk": "^1.16.54-beta-20251028-073105-3ed10cef",
     "@blocklet/ui-react": "^3.1.52",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
@@ -52,7 +52,7 @@
     "ufo": "^1.6.1"
   },
   "devDependencies": {
-    "@blocklet/js-sdk": "^1.16.54-beta-20251027-105624-dfa978f8",
+    "@blocklet/js-sdk": "^1.16.54-beta-20251028-073105-3ed10cef",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/dotenv-flow": "^3.3.3",

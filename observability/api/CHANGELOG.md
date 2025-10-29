@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.11.4-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.4-beta...observability-api-v0.11.4-beta.1) (2025-10-29)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.3-beta.1
+
 ## [0.11.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.3...observability-api-v0.11.4-beta) (2025-10-28)
 
 

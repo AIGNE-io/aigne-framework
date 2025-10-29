@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.65.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.0-beta.3...core-v1.65.0-beta.4) (2025-10-29)
+
+
+### Features
+
+* add reasoningEffort option for chat model ([#680](https://github.com/AIGNE-io/aigne-framework/issues/680)) ([f69d232](https://github.com/AIGNE-io/aigne-framework/commit/f69d232d714d4a3e4946bdc8c6598747c9bcbd57))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.4-beta.1
+
 ## [1.65.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.0-beta.2...core-v1.65.0-beta.3) (2025-10-28)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.3-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.3-beta...observability-ui-v0.11.3-beta.1) (2025-10-29)
+
+
+### Bug Fixes
+
+* update package ([#677](https://github.com/AIGNE-io/aigne-framework/issues/677)) ([a4ad78a](https://github.com/AIGNE-io/aigne-framework/commit/a4ad78a79e4f34eb6c0b00909e7707cd5dd9dd97))
+
 ## [0.11.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.2...observability-ui-v0.11.3-beta) (2025-10-28)
 
 

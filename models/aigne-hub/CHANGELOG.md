@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.10.4-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.4-beta.6...aigne-hub-v0.10.4-beta.7) (2025-10-29)
+
+
+### Features
+
+* add reasoningEffort option for chat model ([#680](https://github.com/AIGNE-io/aigne-framework/issues/680)) ([f69d232](https://github.com/AIGNE-io/aigne-framework/commit/f69d232d714d4a3e4946bdc8c6598747c9bcbd57))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.4-beta.5
+    * @aigne/bedrock bumped to 0.10.9-beta.5
+    * @aigne/core bumped to 1.65.0-beta.4
+    * @aigne/deepseek bumped to 0.7.50-beta.5
+    * @aigne/doubao bumped to 1.1.4-beta.5
+    * @aigne/gemini bumped to 0.14.4-beta.7
+    * @aigne/ideogram bumped to 0.4.4-beta.5
+    * @aigne/ollama bumped to 0.7.50-beta.5
+    * @aigne/open-router bumped to 0.7.50-beta.5
+    * @aigne/openai bumped to 0.16.4-beta.5
+    * @aigne/poe bumped to 1.0.30-beta.5
+    * @aigne/transport bumped to 0.15.13-beta.5
+    * @aigne/xai bumped to 0.7.50-beta.5
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta.5
+
 ## [0.10.4-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.4-beta.5...aigne-hub-v0.10.4-beta.6) (2025-10-28)
 
 

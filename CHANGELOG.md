@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.83.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.5...aigne-framework-v1.83.0-beta.6) (2025-10-29)
+
+
+### Features
+
+* add reasoningEffort option for chat model ([#680](https://github.com/AIGNE-io/aigne-framework/issues/680)) ([f69d232](https://github.com/AIGNE-io/aigne-framework/commit/f69d232d714d4a3e4946bdc8c6598747c9bcbd57))
+
+
+### Bug Fixes
+
+* update package ([#677](https://github.com/AIGNE-io/aigne-framework/issues/677)) ([a4ad78a](https://github.com/AIGNE-io/aigne-framework/commit/a4ad78a79e4f34eb6c0b00909e7707cd5dd9dd97))
+
 ## [1.83.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.4...aigne-framework-v1.83.0-beta.5) (2025-10-28)
 
 

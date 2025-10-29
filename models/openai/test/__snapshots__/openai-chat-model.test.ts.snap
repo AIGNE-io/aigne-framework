@@ -3,6 +3,7 @@
 exports[`OpenAIChatModel.invoke should return the correct tool 1`] = `
 {
   "model": "gpt-4o-mini-2024-07-18",
+  "modelOptions": {},
   "toolCalls": [
     {
       "function": {
@@ -28,6 +29,7 @@ exports[`OpenAIChatModel.invoke should return structured output 1`] = `
     "text": "The current temperature in New York is 20°C.",
   },
   "model": "gpt-4o-mini-2024-07-18",
+  "modelOptions": {},
   "usage": {
     "inputTokens": 100,
     "outputTokens": 20,
@@ -37,6 +39,15 @@ exports[`OpenAIChatModel.invoke should return structured output 1`] = `
 
 exports[`OpenAIChatModel.invoke with streaming 1`] = `
 [
+  {
+    "delta": {
+      "json": {
+        "modelOptions": {
+          "reasoningEffort": undefined,
+        },
+      },
+    },
+  },
   {
     "delta": {
       "json": {
@@ -117,12 +128,26 @@ exports[`OpenAIChatModel.invoke with streaming 1`] = `
       },
     },
   },
+  {
+    "delta": {
+      "json": {
+        "model": "gpt-4o-mini-2024-07-18",
+        "modelOptions": {},
+        "text": "Hello! How can I assist you today?",
+        "usage": {
+          "inputTokens": 8,
+          "outputTokens": 10,
+        },
+      },
+    },
+  },
 ]
 `;
 
 exports[`OpenAIChatModel.invoke without streaming 1`] = `
 {
   "model": "gpt-4o-mini-2024-07-18",
+  "modelOptions": {},
   "text": "Hello! How can I assist you today?",
   "usage": {
     "inputTokens": 8,

@@ -1,6 +1,5 @@
 name: chat
 model:
-  model: google/gemini-2.5-flash
   temperature: 0.7
   reasoning_effort: minimal
 task_title: "process: {{message}}"

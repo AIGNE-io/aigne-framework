@@ -48,8 +48,9 @@ test("AIGNE.load should load agents correctly", async () => {
   expect(aigne.model?.options?.modelOptions).toMatchInlineSnapshot(`
     {
       "customOption": 1,
-      "model": ":gpt-4o-mini",
+      "model": undefined,
       "name": "gpt-4o-mini",
+      "reasoningEffort": "high",
       "temperature": 0.8,
     }
   `);

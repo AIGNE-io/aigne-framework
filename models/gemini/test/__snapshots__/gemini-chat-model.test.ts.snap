@@ -15,6 +15,7 @@ exports[`GeminiChatModel.invoke should use tool result correctly 1`] = `
       "temperature": undefined,
       "thinkingConfig": {
         "includeThoughts": true,
+        "thinkingBudget": undefined,
       },
       "toolConfig": {
         "functionCallingConfig": {

@@ -657,6 +657,8 @@ export interface ChatModelInputOptions {
   modalities?: Modality[];
 
   preferInputFileType?: "file" | "url";
+
+  reasoningEffort?: number | "minimal" | "low" | "medium" | "high";
 }
 
 const modelOptionsSchema = z.object({
@@ -667,6 +669,15 @@ const modelOptionsSchema = z.object({
   presencePenalty: z.number().optional(),
   parallelToolCalls: z.boolean().optional().default(true),
   modalities: z.array(z.enum(["text", "image", "audio"])).optional(),
+  reasoningEffort: z
+    .union([
+      z.number(),
+      z.literal("minimal"),
+      z.literal("low"),
+      z.literal("medium"),
+      z.literal("high"),
+    ])
+    .optional(),
 });
 
 const chatModelOptionsSchema = agentOptionsSchema.extend({

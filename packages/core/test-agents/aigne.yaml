@@ -4,6 +4,7 @@ chat_model:
   name: gpt-4o-mini
   temperature: 0.8
   custom_option: 1
+  reasoning_effort: high
 image_model:
   model: openai/gpt-image-1
   quality: standard

@@ -19,7 +19,11 @@ Your goal is to assist users in finding the information they need and to engage 
 "
 ,
   "keep_text_in_tool_uses": true,
-  "model": "google/gemini-2.5-flash",
+  "model": {
+    "model": "google/gemini-2.5-flash",
+    "reasoningEffort": "minimal",
+    "temperature": 0.7,
+  },
   "name": "chat",
   "output_file_key": "response_file",
   "output_key": "message",

@@ -1,6 +1,6 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`AIGNE.load should load agents correctly 4`] = `
+exports[`AIGNE.load should load agents correctly 1`] = `
 {
   "agents": [
     {

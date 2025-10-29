@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@abtnode/util": "^1.16.54-beta-20251028-092308-569763e6",
-    "@arcblock/ux": "^3.1.52",
+    "@arcblock/ux": "^3.1.53",
     "@blocklet/sdk": "^1.16.54-beta-20251028-092308-569763e6",
     "@iconify/react": "^6.0.2",
     "@microsoft/fetch-event-source": "^2.0.1",

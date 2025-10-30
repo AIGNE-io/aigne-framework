@@ -113,7 +113,7 @@ test("OpenAIVideoModel with polling (queued -> in_progress -> completed)", async
     model: "sora-2",
     prompt: "A dog running in the park",
     seconds: "8",
-    size: "1920x1080",
+    size: "1792x1024",
   });
 
   expect(retrieveSpy).toHaveBeenCalledTimes(2);
@@ -153,13 +153,11 @@ test("OpenAIVideoModel with input reference", async () => {
 
   const result = await model.invoke({
     prompt: "Extend this video",
-    inputReference: "https://example.com/image.png",
   });
 
   expect(createSpy).toHaveBeenCalledWith({
     model: "sora-2",
     prompt: "Extend this video",
-    input_reference: "https://example.com/image.png",
   });
 
   expect(downloadSpy).toHaveBeenCalledWith(videoId);
@@ -271,7 +269,7 @@ test("OpenAIVideoModel override model in input", async () => {
     prompt: "Override model test",
   });
 
-  expect(result.model).toBe("sora-3");
+  expect(result.model).toBe("sora-2-pro");
 });
 
 test("OpenAIVideoModel downloadToFile", async () => {

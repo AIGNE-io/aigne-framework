@@ -11,6 +11,7 @@ import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { type GenerateVideosParameters, GoogleGenAI } from "@google/genai";
 import { type ZodType, z } from "zod";
+import { waitFileSizeStable } from "./utils.js";
 
 const DEFAULT_MODEL = "veo-3.1-generate-preview";
 const DEFAULT_SECONDS = 8;
@@ -189,19 +190,7 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
     await this.client.files.download({ file: videoFile, downloadPath: localPath });
     logger.debug(`Generated video saved to ${localPath}`);
 
-    // Wait for the file to be stable
-    let previousSize = 0;
-    let stableCount = 0;
-    while (stableCount < 3) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const stats = await nodejs.fs.stat(localPath);
-      if (stats.size === previousSize && stats.size > 0) {
-        stableCount++;
-      } else {
-        stableCount = 0;
-        previousSize = stats.size;
-      }
-    }
+    await waitFileSizeStable(localPath);
 
     const buffer = await nodejs.fs.readFile(localPath);
     return buffer.toString("base64");

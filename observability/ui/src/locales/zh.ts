@@ -124,4 +124,7 @@ export default flatten({
   batchInvalid: "第 {batch} 批次无效",
   invalidIds: "无效的 ID",
   totalBatches: "{count} 批次",
+  wordWrap: "自动换行",
+  fullscreen: "全屏展示",
+  exitFullscreen: "退出全屏",
 });

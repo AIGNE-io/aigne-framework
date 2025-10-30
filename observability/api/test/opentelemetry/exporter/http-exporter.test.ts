@@ -63,9 +63,6 @@ describe("HttpExporter", () => {
     const spy = jest.spyOn(console, "warn").mockImplementation(() => {});
     const exporter = new HttpExporter({});
     await exporter.export([createMockSpan("abc123")], () => {});
-    expect(spy).toHaveBeenCalledWith(
-      "Please setup AIGNEObserver.setExportFn to collect tracing data from agents.",
-    );
     spy.mockRestore();
     // @ts-ignore
     jest.spyOn(util, "isBlocklet", "getter").mockRestore();

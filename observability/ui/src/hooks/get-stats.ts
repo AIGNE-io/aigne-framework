@@ -1,10 +1,8 @@
 import Decimal from "decimal.js";
 import type { TraceData } from "../components/run/types.ts";
-import useGetTokenPrice from "./get-token-price.ts";
+import { calculateCost } from "../libs/index.ts";
 
 export default function useGetStats({ traceInfo }: { traceInfo: TraceData }) {
-  const getPrices = useGetTokenPrice();
-
   const getRunStats = (run: TraceData | null) => {
     let count = 0;
     let inputTokens = 0;
@@ -18,20 +16,8 @@ export default function useGetStats({ traceInfo }: { traceInfo: TraceData }) {
       if (node.attributes.output?.usage) {
         inputTokens += node.attributes.output?.usage?.inputTokens || 0;
         outputTokens += node.attributes.output?.usage?.outputTokens || 0;
-        inputCost = inputCost.add(
-          getPrices({
-            model: node.attributes.output?.model,
-            inputTokens: node.attributes.output?.usage?.inputTokens || 0,
-            outputTokens: node.attributes.output?.usage?.outputTokens || 0,
-          }).inputCost,
-        );
-        outputCost = outputCost.add(
-          getPrices({
-            model: node.attributes.output?.model,
-            inputTokens: node.attributes.output?.usage?.inputTokens || 0,
-            outputTokens: node.attributes.output?.usage?.outputTokens || 0,
-          }).outputCost,
-        );
+        inputCost = inputCost.add(calculateCost(node.attributes.output).inputCost);
+        outputCost = outputCost.add(calculateCost(node.attributes.output).outputCost);
       }
       if (node.children) node.children.forEach(traverse);
     }

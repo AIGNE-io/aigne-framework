@@ -36,15 +36,7 @@ class HttpExporter implements HttpExporterInterface {
   }: { dbPath?: string; exportFn?: (spans: TraceFormatSpans[]) => Promise<void> }) {
     this.dbPath = dbPath;
     this._db ??= this.getDb();
-    this.upsert =
-      exportFn ??
-      (isBlocklet
-        ? async () => {
-            console.warn(
-              "Please setup AIGNEObserver.setExportFn to collect tracing data from agents.",
-            );
-          }
-        : this._upsertWithSQLite);
+    this.upsert = exportFn ?? (isBlocklet ? async () => {} : this._upsertWithSQLite);
   }
 
   async _upsertWithSQLite(validatedData: TraceFormatSpans[]) {

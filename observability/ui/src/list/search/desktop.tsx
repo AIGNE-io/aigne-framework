@@ -44,8 +44,14 @@ const PcSearch = ({
           sx={{
             minWidth: 160,
             maxWidth: 240,
+            width: 1,
+            fontSize: 13,
             "& .MuiInputBase-root": {
               height: 36,
+              fontSize: 13,
+            },
+            "& .MuiAutocomplete-option": {
+              fontSize: 13,
             },
           }}
           options={components?.data || []}

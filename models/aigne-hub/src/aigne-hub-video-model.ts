@@ -107,6 +107,7 @@ export class AIGNEHubVideoModel extends VideoModel {
     );
 
     return {
+      ...response,
       videos: response.videos,
       usage: {
         inputTokens: response.usage?.inputTokens ?? 0,

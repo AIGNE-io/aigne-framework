@@ -57,10 +57,10 @@ const Download = ({ selectedIds, onReset }: DownloadProps) => {
       <span>
         <Button
           variant="contained"
-          size="small"
           startIcon={<DownloadIcon />}
           onClick={handleDownloadSelected}
           disabled={downloading || selectedIds.length === 0}
+          sx={{ height: 36 }}
         >
           {downloading ? t("downloading") : `${t("download")} (${selectedIds.length})`}
         </Button>

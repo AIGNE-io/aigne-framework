@@ -108,6 +108,8 @@ export interface VideoModelInput extends Message {
   outputFileType?: FileType;
 
   modelOptions?: VideoModelInputOptions;
+
+  image?: FileUnionContent;
 }
 
 export interface VideoModelInputOptions extends Record<string, unknown> {
@@ -121,6 +123,7 @@ export const videoModelInputSchema = z.object({
   seconds: z.string().optional().describe("Duration of the video in seconds"),
   outputFileType: fileTypeSchema.optional(),
   modelOptions: z.record(z.unknown()).optional(),
+  image: fileUnionContentSchema.optional(),
 });
 
 export interface VideoModelOutput extends Message {

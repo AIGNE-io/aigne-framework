@@ -36,7 +36,7 @@ const agentColors = Object.fromEntries(
 export const AgentTag = ({ agentTag, model }: { agentTag?: string; model?: string }) => {
   if (!agentTag) return null;
 
-  const replaced = agentTag.replace(/Agent$/g, ""); // 使用正则确保只替换结尾
+  const replaced = agentTag.replace(/Agent$/g, "");
   const tag = replaced === "ChatModel" ? (model ?? replaced) : replaced;
   const colors = agentColors[agentTag as keyof typeof agentColors];
 

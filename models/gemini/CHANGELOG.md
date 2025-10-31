@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.4-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.4-beta.7...gemini-v0.14.4-beta.8) (2025-10-31)
+
+
+### Bug Fixes
+
+* **models:** add image parameters support for video generation ([#684](https://github.com/AIGNE-io/aigne-framework/issues/684)) ([b048b7f](https://github.com/AIGNE-io/aigne-framework/commit/b048b7f92bd7a532dbdbeb6fb5fa5499bae6b953))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0-beta.5
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta.6
+
 ## [0.14.4-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.4-beta.6...gemini-v0.14.4-beta.7) (2025-10-29)
 
 

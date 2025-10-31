@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-handoff",
-  "version": "1.16.67-beta.7",
+  "version": "1.16.67-beta.8",
   "description": "A demonstration of using AIGNE Framework to build a handoff workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-handoff",

@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.83.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.6...aigne-framework-v1.83.0-beta.7) (2025-10-31)
+
+
+### Features
+
+* **core:** add json/yaml stringify filters for prompt template ([#685](https://github.com/AIGNE-io/aigne-framework/issues/685)) ([4e414bf](https://github.com/AIGNE-io/aigne-framework/commit/4e414bf5a43d0677fb16fcdceacaed501542ee85))
+
+
+### Bug Fixes
+
+* **models:** add image parameters support for video generation ([#684](https://github.com/AIGNE-io/aigne-framework/issues/684)) ([b048b7f](https://github.com/AIGNE-io/aigne-framework/commit/b048b7f92bd7a532dbdbeb6fb5fa5499bae6b953))
+* **observability:** add image/video model cost calculation and improve trace detail UX ([#683](https://github.com/AIGNE-io/aigne-framework/issues/683)) ([07964e4](https://github.com/AIGNE-io/aigne-framework/commit/07964e47d84636b49a291bfe5c1cc1c4dd31f722))
+* update package to latest ([#681](https://github.com/AIGNE-io/aigne-framework/issues/681)) ([645327f](https://github.com/AIGNE-io/aigne-framework/commit/645327f7562311b42b281c55a2184600d1676059))
+
 ## [1.83.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.5...aigne-framework-v1.83.0-beta.6) (2025-10-29)
 
 

@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.65.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.0-beta.4...core-v1.65.0-beta.5) (2025-10-31)
+
+
+### Features
+
+* **core:** add json/yaml stringify filters for prompt template ([#685](https://github.com/AIGNE-io/aigne-framework/issues/685)) ([4e414bf](https://github.com/AIGNE-io/aigne-framework/commit/4e414bf5a43d0677fb16fcdceacaed501542ee85))
+
+
+### Bug Fixes
+
+* **models:** add image parameters support for video generation ([#684](https://github.com/AIGNE-io/aigne-framework/issues/684)) ([b048b7f](https://github.com/AIGNE-io/aigne-framework/commit/b048b7f92bd7a532dbdbeb6fb5fa5499bae6b953))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.4-beta.2
+
 ## [1.65.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.0-beta.3...core-v1.65.0-beta.4) (2025-10-29)
 
 

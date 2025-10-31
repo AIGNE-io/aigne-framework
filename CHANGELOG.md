@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.83.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.7...aigne-framework-v1.83.0-beta.8) (2025-10-31)
+
+
+### Bug Fixes
+
+* **cli:** wrap onSubmit call in setTimeout to fix cursor visibility issue ([#686](https://github.com/AIGNE-io/aigne-framework/issues/686)) ([7c69f1d](https://github.com/AIGNE-io/aigne-framework/commit/7c69f1ddf134ad297dc51f0ed944234a287415d7))
+
 ## [1.83.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.6...aigne-framework-v1.83.0-beta.7) (2025-10-31)
 
 

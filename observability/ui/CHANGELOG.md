@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.3-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.3-beta.1...observability-ui-v0.11.3-beta.2) (2025-10-31)
+
+
+### Bug Fixes
+
+* **observability:** add image/video model cost calculation and improve trace detail UX ([#683](https://github.com/AIGNE-io/aigne-framework/issues/683)) ([07964e4](https://github.com/AIGNE-io/aigne-framework/commit/07964e47d84636b49a291bfe5c1cc1c4dd31f722))
+* update package to latest ([#681](https://github.com/AIGNE-io/aigne-framework/issues/681)) ([645327f](https://github.com/AIGNE-io/aigne-framework/commit/645327f7562311b42b281c55a2184600d1676059))
+
 ## [0.11.3-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.3-beta...observability-ui-v0.11.3-beta.1) (2025-10-29)
 
 

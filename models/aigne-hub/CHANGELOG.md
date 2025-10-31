@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.10.4-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.4-beta.7...aigne-hub-v0.10.4-beta.8) (2025-10-31)
+
+
+### Bug Fixes
+
+* **models:** add image parameters support for video generation ([#684](https://github.com/AIGNE-io/aigne-framework/issues/684)) ([b048b7f](https://github.com/AIGNE-io/aigne-framework/commit/b048b7f92bd7a532dbdbeb6fb5fa5499bae6b953))
+* **observability:** add image/video model cost calculation and improve trace detail UX ([#683](https://github.com/AIGNE-io/aigne-framework/issues/683)) ([07964e4](https://github.com/AIGNE-io/aigne-framework/commit/07964e47d84636b49a291bfe5c1cc1c4dd31f722))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.4-beta.6
+    * @aigne/bedrock bumped to 0.10.9-beta.6
+    * @aigne/core bumped to 1.65.0-beta.5
+    * @aigne/deepseek bumped to 0.7.50-beta.6
+    * @aigne/doubao bumped to 1.1.4-beta.6
+    * @aigne/gemini bumped to 0.14.4-beta.8
+    * @aigne/ideogram bumped to 0.4.4-beta.6
+    * @aigne/ollama bumped to 0.7.50-beta.6
+    * @aigne/open-router bumped to 0.7.50-beta.6
+    * @aigne/openai bumped to 0.16.4-beta.6
+    * @aigne/poe bumped to 1.0.30-beta.6
+    * @aigne/transport bumped to 0.15.13-beta.6
+    * @aigne/xai bumped to 0.7.50-beta.6
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta.6
+
 ## [0.10.4-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.4-beta.6...aigne-hub-v0.10.4-beta.7) (2025-10-29)
 
 

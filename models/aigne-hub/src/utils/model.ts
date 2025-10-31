@@ -197,17 +197,17 @@ export function availableVideoModels(): LoadableVideoModel[] {
     {
       name: OpenAIVideoModel.name,
       apiKeyEnvName: "OPENAI_API_KEY",
-      create: (params) => new OpenAIVideoModel({ ...params, clientOptions }),
+      create: (params) => new OpenAIVideoModel({ ...params, clientOptions }) as VideoModel,
     },
     {
       name: [GeminiVideoModel.name, GOOGLE],
       apiKeyEnvName: "GEMINI_API_KEY",
-      create: (params) => new GeminiVideoModel({ ...params, clientOptions }),
+      create: (params) => new GeminiVideoModel({ ...params, clientOptions }) as VideoModel,
     },
     {
       name: AIGNEHubVideoModel.name,
       apiKeyEnvName: "AIGNE_HUB_API_KEY",
-      create: (params) => new AIGNEHubVideoModel({ ...params, clientOptions }),
+      create: (params) => new AIGNEHubVideoModel({ ...params, clientOptions }) as VideoModel,
     },
   ];
 }

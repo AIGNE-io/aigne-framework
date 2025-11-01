@@ -1,4 +1,5 @@
 import {
+  type AgentInvokeOptions,
   VideoModel,
   type VideoModelInput,
   type VideoModelOptions,
@@ -20,9 +21,31 @@ const DEFAULT_SECONDS = 4;
  */
 export interface OpenAIVideoModelInput extends VideoModelInput {
   /**
-   * Optional image reference that guides generation (file path or URL)
+   * Sora model to use for video generation
+   *
+   * - `sora-2`: Standard version, lower cost
+   * - `sora-2-pro`: Pro version, higher quality
+   *
+   * @default "sora-2"
    */
-  inputReference?: string;
+  model?: "sora-2" | "sora-2-pro";
+
+  /**
+   * Video resolution (width x height)
+   *
+   * - `720x1280`: Vertical video (9:16)
+   * - `1280x720`: Horizontal video (16:9)
+   * - `1024x1792`: Vertical video (9:16, higher resolution)
+   * - `1792x1024`: Horizontal video (16:9, higher resolution)
+   */
+  size?: "720x1280" | "1280x720" | "1024x1792" | "1792x1024";
+
+  /**
+   * Video duration in seconds
+   *
+   * @default "4"
+   */
+  seconds?: "4" | "8" | "12";
 }
 
 /**
@@ -75,7 +98,9 @@ export interface OpenAIVideoModelOptions
 }
 
 const openAIVideoModelInputSchema: ZodType<OpenAIVideoModelInput> = videoModelInputSchema.extend({
-  inputReference: z.string().optional(),
+  model: z.enum(["sora-2", "sora-2-pro"]).optional(),
+  seconds: z.enum(["4", "8", "12"]).optional(),
+  size: z.enum(["720x1280", "1280x720", "1024x1792", "1792x1024"]).optional(),
 });
 
 const openAIVideoModelOptionsSchema = z.object({
@@ -94,7 +119,6 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
       description: options?.description ?? "Generate videos using OpenAI Sora models",
       inputSchema: openAIVideoModelInputSchema,
     });
-
     if (options) checkArguments(this.name, openAIVideoModelOptionsSchema, options);
   }
 
@@ -140,7 +164,10 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
     return buffer.toString("base64");
   }
 
-  override async process(input: OpenAIVideoModelInput): Promise<OpenAIVideoModelOutput> {
+  override async process(
+    input: OpenAIVideoModelInput,
+    options: AgentInvokeOptions,
+  ): Promise<OpenAIVideoModelOutput> {
     const model = input.model ?? input.modelOptions?.model ?? this.credential.model;
 
     const createParams: OpenAI.Videos.VideoCreateParams = {
@@ -148,11 +175,19 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
       prompt: input.prompt,
     };
 
-    if (input.seconds) createParams.seconds = input.seconds as OpenAI.Videos.VideoSeconds;
-    if (input.size) createParams.size = input.size as OpenAI.Videos.VideoSize;
-    if (input.inputReference) {
-      createParams.input_reference =
-        input.inputReference as unknown as OpenAI.Videos.VideoCreateParams["input_reference"];
+    if (input.seconds) createParams.seconds = input.seconds;
+    if (input.size) createParams.size = input.size;
+    if (input.image) {
+      createParams.input_reference = await this.transformFileType(
+        "file",
+        input.image,
+        options,
+      ).then(
+        (file) =>
+          new File([Buffer.from(file.data, "base64")], file.filename || "image.png", {
+            type: file.mimeType,
+          }),
+      );
     }
 
     let video = await this.client.videos.create(createParams);

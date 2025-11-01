@@ -369,7 +369,8 @@ export default ({
               JSON_OBJECT(
                 'output', JSON_OBJECT(
                   'usage', JSON_EXTRACT(${Trace.attributes}, '$.output.usage'),
-                  'model', JSON_EXTRACT(${Trace.attributes}, '$.output.model')
+                  'model', JSON_EXTRACT(${Trace.attributes}, '$.output.model'),
+                  'seconds', JSON_EXTRACT(${Trace.attributes}, '$.output.seconds')
                 ),
                 'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag'),
                 'metadata', JSON_EXTRACT(${Trace.attributes}, '$.metadata')

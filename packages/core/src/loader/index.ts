@@ -15,7 +15,14 @@ import type { AIGNECLIAgent } from "../aigne/type.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { ChatMessagesTemplate, parseChatMessages } from "../prompt/template.js";
-import { flat, isNonNullable, type PromiseOrValue, tryOrThrow } from "../utils/type-utils.js";
+import {
+  flat,
+  isNil,
+  isNonNullable,
+  omitBy,
+  type PromiseOrValue,
+  tryOrThrow,
+} from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import { type HooksSchema, loadAgentFromYamlFile, type NestAgentSchema } from "./agent-yaml.js";
 import { camelizeSchema, chatModelSchema, imageModelSchema, optionalize } from "./schema.js";
@@ -38,6 +45,7 @@ export interface LoadOptions {
       create: (options?: Record<string, any>) => PromiseOrValue<AFSModule>;
     }[];
   };
+  aigne?: z.infer<typeof aigneFileSchema>;
 }
 
 export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
@@ -61,7 +69,7 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
   const allAgents: { [path: string]: Agent } = {};
 
   for (const path of allAgentPaths) {
-    allAgents[path] = await loadAgent(path, options);
+    allAgents[path] = await loadAgent(path, { ...options, aigne });
   }
 
   const pickAgent = (path: string) => allAgents[nodejs.path.join(rootDir, path)];
@@ -214,11 +222,14 @@ async function parseAgent(
 
   const model =
     agent.model && typeof options?.model === "function"
-      ? await options.model(agent.model)
+      ? await options.model({ ...options.aigne?.model, ...omitBy(agent.model, (v) => isNil(v)) })
       : undefined;
   const imageModel =
     agent.imageModel && typeof options?.imageModel === "function"
-      ? await options.imageModel(agent.imageModel)
+      ? await options.imageModel({
+          ...options.aigne?.imageModel,
+          ...omitBy(agent.imageModel, (v) => isNil(v)),
+        })
       : undefined;
 
   const baseOptions: AgentOptions<any, any> = {

@@ -1,16 +1,17 @@
-import {
-  type AgentInvokeOptions,
-  VideoModel,
-  type VideoModelInput,
-  type VideoModelOptions,
-  type VideoModelOutput,
-  videoModelInputSchema,
+import type {
+  AgentInvokeOptions,
+  FileUnionContent,
+  VideoModelInput,
+  VideoModelOptions,
+  VideoModelOutput,
 } from "@aigne/core";
+import { fileUnionContentSchema, VideoModel, videoModelInputSchema } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { type GenerateVideosParameters, GoogleGenAI } from "@google/genai";
 import { type ZodType, z } from "zod";
+import { waitFileSizeStable } from "./utils.js";
 
 const DEFAULT_MODEL = "veo-3.1-generate-preview";
 const DEFAULT_SECONDS = 8;
@@ -29,27 +30,24 @@ export interface GeminiVideoModelInput extends VideoModelInput {
    *
    * Veo 3.1: "16:9" (default, 720p and 1080p), "9:16" (720p and 1080p)
    * Veo 3: "16:9" (default, 720p and 1080p), "9:16" (720p and 1080p)
-   * Veo 2: "16:9" (default, 720p), "9:16" (720p)
    */
-  aspectRatio?: string;
+  aspectRatio?: "16:9" | "9:16";
 
   /**
    * Resolution of the video
    *
    * Veo 3.1: "720p" (default), "1080p" (only supports 8 seconds duration)
    * Veo 3: "720p" (default), "1080p" (16:9 only)
-   * Veo 2: Not supported
    */
-  size?: string;
+  size?: "720p" | "1080p";
 
   /**
    * Duration of the generated video in seconds
    *
    * Veo 3.1: "4", "6", "8"
    * Veo 3: "4", "6", "8"
-   * Veo 2: "5", "6", "8"
    */
-  seconds?: string;
+  seconds?: "4" | "6" | "8";
 
   /**
    * Control person generation
@@ -60,6 +58,17 @@ export interface GeminiVideoModelInput extends VideoModelInput {
    * - Veo 2: "allow_all", "allow_adult", "dont_allow"
    */
   personGeneration?: string;
+
+  /**
+   * Last frame for video generation (frame interpolation)
+   */
+  lastFrame?: FileUnionContent;
+
+  /**
+   * Reference images for video generation
+   * Only supported in Veo 3.1 models
+   */
+  referenceImages?: FileUnionContent[];
 }
 
 /**
@@ -113,8 +122,12 @@ export interface GeminiVideoModelOptions
 
 const geminiVideoModelInputSchema: ZodType<GeminiVideoModelInput> = videoModelInputSchema.extend({
   negativePrompt: z.string().optional(),
-  aspectRatio: z.string().optional(),
+  aspectRatio: z.enum(["16:9", "9:16"]).optional(),
+  size: z.enum(["720p", "1080p"]).optional(),
+  seconds: z.enum(["4", "6", "8"]).optional(),
   personGeneration: z.string().optional(),
+  lastFrame: fileUnionContentSchema.optional(),
+  referenceImages: fileUnionContentSchema.array().optional(),
 });
 
 const geminiVideoModelOptionsSchema = z.object({
@@ -177,7 +190,8 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
     await this.client.files.download({ file: videoFile, downloadPath: localPath });
     logger.debug(`Generated video saved to ${localPath}`);
 
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await waitFileSizeStable(localPath);
+
     const buffer = await nodejs.fs.readFile(localPath);
     return buffer.toString("base64");
   }
@@ -189,18 +203,58 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
     const model = input.model ?? input.modelOptions?.model ?? this.credential.model;
     const mergedInput = { ...this.modelOptions, ...input };
 
+    if (mergedInput.referenceImages && !model.includes("veo-3.1")) {
+      throw new Error("referenceImages is only supported in Veo 3.1 models");
+    }
+
     const config: GenerateVideosParameters["config"] = {};
     if (mergedInput.negativePrompt) config.negativePrompt = mergedInput.negativePrompt;
     if (mergedInput.aspectRatio) config.aspectRatio = mergedInput.aspectRatio;
     if (mergedInput.size) config.resolution = mergedInput.size;
     if (mergedInput.seconds) config.durationSeconds = parseInt(mergedInput.seconds, 10);
     if (mergedInput.personGeneration) config.personGeneration = mergedInput.personGeneration;
+    if (mergedInput.lastFrame) {
+      config.lastFrame = await this.transformFileType("file", mergedInput.lastFrame, options).then(
+        (file) => {
+          return {
+            imageBytes: file.data,
+            mimeType: file.mimeType,
+          };
+        },
+      );
+    }
+
+    if (mergedInput.referenceImages) {
+      config.referenceImages = await Promise.all(
+        mergedInput.referenceImages.map(async (image) => {
+          return await this.transformFileType("file", image, options).then((file) => {
+            return {
+              image: {
+                imageBytes: file.data,
+                mimeType: file.mimeType,
+              },
+            };
+          });
+        }),
+      );
+    }
 
     const params: GenerateVideosParameters = {
       model,
       prompt: mergedInput.prompt,
       config,
     };
+
+    if (mergedInput.image) {
+      params.image = await this.transformFileType("file", mergedInput.image, options).then(
+        (file) => {
+          return {
+            imageBytes: file.data,
+            mimeType: file.mimeType,
+          };
+        },
+      );
+    }
 
     // Start video generation
     let operation = await this.client.models.generateVideos(params);

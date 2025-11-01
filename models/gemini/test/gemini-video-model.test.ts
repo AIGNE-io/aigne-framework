@@ -2,6 +2,7 @@ import { expect, spyOn, test } from "bun:test";
 import type { LocalContent } from "@aigne/core";
 import { GeminiVideoModel } from "@aigne/gemini";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
+import * as utils from "../src/utils.js";
 
 test("GeminiVideoModel should work correctly", async () => {
   const model = new GeminiVideoModel({
@@ -36,6 +37,9 @@ test("GeminiVideoModel should work correctly", async () => {
   );
 
   spyOn(model["client"].files, "download").mockResolvedValueOnce(undefined);
+
+  // Mock waitFileSizeStable to avoid real file system checks
+  spyOn(utils, "waitFileSizeStable").mockResolvedValueOnce(undefined);
 
   // Mock fs.readFile to return mock video data
   const mockVideoData = Buffer.from("mock-video-content");
@@ -88,6 +92,9 @@ test("GeminiVideoModel should support custom parameters", async () => {
   );
 
   spyOn(model["client"].files, "download").mockResolvedValueOnce(undefined);
+
+  // Mock waitFileSizeStable to avoid real file system checks
+  spyOn(utils, "waitFileSizeStable").mockResolvedValueOnce(undefined);
 
   // Mock fs.readFile to return mock video data
   const mockVideoData = Buffer.from("mock-video-content");

@@ -1,5 +1,7 @@
 name: chat
-model: google/gemini-2.5-flash
+model:
+  temperature: 0.7
+  reasoning_effort: minimal
 task_title: "process: {{message}}"
 alias:
   - chat-bot
@@ -20,3 +22,4 @@ skills:
   - sandbox.js
 include_input_in_output: true
 tool_calls_concurrency: 3
+catch_tools_error: false

@@ -110,6 +110,7 @@ export class AIGNEHubImageModel extends ImageModel {
     );
 
     return {
+      ...response,
       images: response.images,
       usage: {
         inputTokens: response.usage?.inputTokens ?? 0,

@@ -8,6 +8,7 @@ exports[`loadAgentFromYaml should load AIAgent correctly 1`] = `
   ],
   "auto_merge_system_messages": true,
   "auto_reorder_system_messages": true,
+  "catch_tools_error": false,
   "description": "Chat agent",
   "includeInputInOutput": true,
   "input_file_key": "message_file",
@@ -18,7 +19,11 @@ Your goal is to assist users in finding the information they need and to engage 
 "
 ,
   "keep_text_in_tool_uses": true,
-  "model": "google/gemini-2.5-flash",
+  "model": {
+    "model": undefined,
+    "reasoningEffort": "minimal",
+    "temperature": 0.7,
+  },
   "name": "chat",
   "output_file_key": "response_file",
   "output_key": "message",

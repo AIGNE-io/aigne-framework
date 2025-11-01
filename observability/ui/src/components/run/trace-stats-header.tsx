@@ -105,6 +105,8 @@ export default function RunStatsHeader({
         )}
       </Typography>
 
+      <Box sx={{ flex: 1 }} />
+
       {traceInfo?.attributes?.metadata?.cliVersion && (
         <Chip
           label={`cli@${traceInfo.attributes?.metadata?.cliVersion}`}
@@ -124,8 +126,6 @@ export default function RunStatsHeader({
           sx={{ height: 21, borderRadius: "4px" }}
         />
       )}
-
-      <Box sx={{ flex: 1 }} />
 
       <Typography variant="body2" sx={{ color: "text.secondary" }}>
         {t("count")}{" "}

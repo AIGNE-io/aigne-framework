@@ -140,6 +140,7 @@ test("GeminiChatModel.invoke should use tool result correctly", async () => {
         "text": "The weather in New York is 20 degrees Celsius.",
       },
       "model": "gemini-2.5-flash",
+      "modelOptions": {},
       "usage": {
         "inputTokens": 116,
         "outputTokens": 96,
@@ -305,6 +306,7 @@ test("GeminiChatModel should support image mode", async () => {
           "type": "local",
         },
       ],
+      "modelOptions": {},
       "text": "hello world",
       "usage": {
         "inputTokens": 0,
@@ -324,7 +326,10 @@ test("GeminiChatModel should support image mode", async () => {
             "image",
           ],
           "temperature": undefined,
-          "thinkingConfig": undefined,
+          "thinkingConfig": {
+            "includeThoughts": true,
+            "thinkingBudget": undefined,
+          },
           "toolConfig": {
             "functionCallingConfig": undefined,
           },
@@ -400,6 +405,7 @@ What is the weather in New York?
         "text": "The weather in New York is 20 degrees.",
       },
       "model": "gemini-2.5-flash",
+      "modelOptions": {},
       "usage": {
         "inputTokens": 39,
         "outputTokens": 113,
@@ -427,6 +433,7 @@ What is the weather in New York?
       "temperature": undefined,
       "thinkingConfig": {
         "includeThoughts": true,
+        "thinkingBudget": undefined,
       },
       "toolConfig": {
         "functionCallingConfig": undefined,

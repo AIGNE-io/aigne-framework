@@ -62,4 +62,6 @@ lerna-debug.log*
 /docs/CONTRIBUTING.md
 /docs/RELEASING.md
 **/*/model-prices.json
-*/test.js
+
+# Breaking changes documentation
+BREAKING_CHANGE.MD

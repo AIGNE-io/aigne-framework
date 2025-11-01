@@ -179,3 +179,24 @@ test("safeParseChatMessages should correctly parse valid chat messages with role
     },
   ]);
 });
+
+test("PromptTemplate should support yaml.stringify filter", async () => {
+  const prompt = new PromptTemplate("Data in YAML:\n{{ data | yaml.stringify }}");
+  const result = await prompt.format({ data: { key: "value" } });
+  expect(result).toMatchInlineSnapshot(`
+    "Data in YAML:
+    key: value
+    "
+  `);
+});
+
+test("PromptTemplate should support json.stringify filter", async () => {
+  const prompt = new PromptTemplate("Data in JSON:\n{{ data | json.stringify(null, 2) }}");
+  const result = await prompt.format({ data: { key: "value" } });
+  expect(result).toMatchInlineSnapshot(`
+    "Data in JSON:
+    {
+      "key": "value"
+    }"
+  `);
+});

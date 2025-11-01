@@ -7,6 +7,7 @@ import type {
   ChatModelOutputToolCall,
 } from "../agents/chat-model.js";
 import { isNil, omitBy } from "../utils/type-utils.js";
+import { setupFilters } from "./filters/index.js";
 
 (nunjucks.runtime as any).suppressValue = (v: unknown) => {
   if (isNil(v)) return "";
@@ -30,6 +31,8 @@ export class PromptTemplate {
     if (options?.workingDir) {
       env = new nunjucks.Environment(new CustomLoader({ workingDir: options.workingDir }));
     }
+
+    setupFilters(env);
 
     return new Promise((resolve, reject) =>
       env.renderString(this.template, variables, (err, res) => {

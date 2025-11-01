@@ -166,4 +166,61 @@ describe("AIGNEHubChatModel", async () => {
       }
     `);
   });
+
+  test("AIGNEHubChatModel should pass model options to server", async () => {
+    const { AIGNEHubChatModel } = await import("@aigne/aigne-hub/aigne-hub-model.js");
+
+    const model = new AIGNEHubChatModel({
+      baseURL,
+      apiKey: "123",
+      model: "openai/gpt-4o-mini",
+      modelOptions: {
+        reasoningEffort: "minimal",
+      },
+    });
+
+    const client = await model.client;
+
+    const spy = spyOn(client, "__invoke").mockResolvedValue({});
+
+    await model.invoke({ messages: [{ role: "user", content: "hello" }] });
+    expect(spy.mock.lastCall?.[1]).toMatchInlineSnapshot(`
+      {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user",
+          },
+        ],
+        "modelOptions": {
+          "model": "openai/gpt-4o-mini",
+          "reasoningEffort": "minimal",
+        },
+        "outputFileType": "file",
+      }
+    `);
+
+    await model.invoke({
+      messages: [{ role: "user", content: "hello" }],
+      modelOptions: {
+        reasoningEffort: "high",
+      },
+    });
+    expect(spy.mock.lastCall?.[1]).toMatchInlineSnapshot(`
+      {
+        "messages": [
+          {
+            "content": "hello",
+            "role": "user",
+          },
+        ],
+        "modelOptions": {
+          "model": "openai/gpt-4o-mini",
+          "parallelToolCalls": true,
+          "reasoningEffort": "high",
+        },
+        "outputFileType": "file",
+      }
+    `);
+  });
 });

@@ -101,7 +101,9 @@ export function TerminalInput(props: {
 
           // Validation passed
           setStatus("success");
-          props.onSubmit(input);
+          setTimeout(() => {
+            props.onSubmit(input);
+          });
         } catch (error) {
           setErrorMessage(error instanceof Error ? error.message : "Validation error");
           setStatus("input");

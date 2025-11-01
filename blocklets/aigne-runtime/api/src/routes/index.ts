@@ -8,9 +8,9 @@ import { type NextFunction, type Request, type Response, Router } from "express"
 import logger from "../libs/logger.js";
 
 const router = Router();
-const AuthService = require("@blocklet/sdk/service/auth");
+const { BlockletService } = require("@blocklet/sdk/service/auth");
 
-const blocklet = new AuthService();
+const blocklet = new BlockletService();
 const COMPONENT_CACHE_TTL = 1 * 60 * 1000; // 1 minute
 const componentCache = new Map();
 

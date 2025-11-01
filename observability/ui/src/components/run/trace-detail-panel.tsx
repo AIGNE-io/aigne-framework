@@ -5,22 +5,26 @@ import Tag from "@arcblock/ux/lib/Tag";
 import CheckIcon from "@mui/icons-material/Check";
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import DownloadIcon from "@mui/icons-material/Download";
+import FullscreenIcon from "@mui/icons-material/Fullscreen";
+import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
+import WrapTextIcon from "@mui/icons-material/WrapText";
 import type { SxProps } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
+import Switch from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import useLocalStorageState from "ahooks/lib/useLocalStorageState";
 import Decimal from "decimal.js";
 import { isUndefined, omitBy } from "lodash";
 import { useEffect, useMemo, useState } from "react";
 import { joinURL } from "ufo";
-import useGetTokenPrice from "../../hooks/get-token-price.ts";
-import { getLocalizedFilename } from "../../libs/index.ts";
+import { calculateCost, findModelPrice, getLocalizedFilename } from "../../libs/index.ts";
 import { origin } from "../../utils/index.ts";
 import { parseDuration } from "../../utils/latency.ts";
 import JsonView from "../json-view.tsx";
@@ -37,16 +41,20 @@ export default function TraceDetailPanel({
 }) {
   const [tab, setTab] = useState("input");
   const { t, locale } = useLocaleContext();
-  const getPrices = useGetTokenPrice();
   const [trace, setTrace] = useState<TraceData | undefined | null>(originalTrace);
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [wordWrap, setWordWrap] = useLocalStorageState<"on" | "off">("trace-detail-word-wrap", {
+    defaultValue: "on",
+  });
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const hasError = trace?.status?.code === 2;
   const hasUserContext =
     trace?.attributes?.userContext && Object.keys(trace?.attributes?.userContext).length > 0;
   const hasMemories = trace?.attributes?.memories && trace?.attributes?.memories.length > 0;
-  const model = trace?.attributes?.output?.model;
+  const output = trace?.attributes?.output;
+  const model = output?.model;
 
   const init = async (signal?: AbortSignal) => {
     try {
@@ -94,12 +102,12 @@ export default function TraceDetailPanel({
     }
 
     if (tab === "output") {
-      const { model: _model, usage: _usage, ...rest } = trace?.attributes?.output || {};
+      const { model: _model, usage: _usage, ...rest } = output || {};
       return rest;
     }
 
     if (tab === "metadata") {
-      return omitBy({ model: model, usage: trace?.attributes?.output?.usage }, isUndefined);
+      return omitBy({ model, usage: output?.usage }, isUndefined);
     }
 
     if (tab === "errorMessage") {
@@ -119,18 +127,14 @@ export default function TraceDetailPanel({
     tab,
     model,
     trace?.attributes?.input,
-    trace?.attributes?.output,
     trace?.status?.message,
     trace?.attributes?.userContext,
     trace?.attributes?.memories,
+    output,
   ]);
 
   const prices = useMemo(() => {
-    const { inputCost, outputCost } = getPrices({
-      model,
-      inputTokens: trace?.attributes?.output?.usage?.inputTokens || 0,
-      outputTokens: trace?.attributes?.output?.usage?.outputTokens || 0,
-    });
+    const { inputCost, outputCost } = calculateCost({ ...output, model });
 
     return {
       inputCost: inputCost.gt(new Decimal(0)) ? `($${inputCost.toString()})` : null,
@@ -139,7 +143,7 @@ export default function TraceDetailPanel({
         ? `($${inputCost.add(outputCost).toString()})`
         : null,
     };
-  }, [model, trace?.attributes?.output?.usage, getPrices]);
+  }, [model, output]);
 
   const tabs = [
     { label: t("input"), value: "input" },
@@ -197,155 +201,165 @@ export default function TraceDetailPanel({
         bgcolor: (theme) => `${theme.palette.background.paper}`,
         borderRadius: 1,
         border: (theme) => `1px solid ${theme.palette.divider}`,
+        ...(isFullscreen && {
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 9999,
+          borderRadius: 0,
+          border: "none",
+          p: 1,
+        }),
         ...sx,
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
-        <Typography sx={{ fontSize: 20, color: "text.primary" }}>{`${trace?.name}`}</Typography>
-        <AgentTag agentTag={trace?.attributes?.agentTag} model={trace?.attributes?.output?.model} />
-      </Box>
-      <Box sx={{ my: 1 }}>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            gap: isMobile ? 0 : 6,
-          }}
-        >
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", flex: 1 }}>
-            <InfoRowBox valueComponent="div" nameFormatter={(v) => v} nameWidth={110} name="ID">
-              <Box sx={{ textAlign: "right" }}>{trace?.id}</Box>
-            </InfoRowBox>
-
-            <InfoRowBox
-              valueComponent="div"
-              nameFormatter={(v) => v}
-              nameWidth={110}
-              name={t("startTime")}
-            >
-              <Box sx={{ textAlign: "right" }}>
-                {trace?.startTime && (
-                  <RelativeTime
-                    value={trace?.startTime}
-                    type="absolute"
-                    format="YYYY-MM-DD HH:mm:ss"
-                  />
-                )}
-              </Box>
-            </InfoRowBox>
-
-            <InfoRowBox
-              valueComponent="div"
-              nameFormatter={(v) => v}
-              nameWidth={110}
-              name={t("endTime")}
-            >
-              <Box sx={{ textAlign: "right" }}>
-                {trace?.endTime && (
-                  <RelativeTime
-                    value={trace?.endTime}
-                    type="absolute"
-                    format="YYYY-MM-DD HH:mm:ss"
-                  />
-                )}
-              </Box>
-            </InfoRowBox>
-
-            <InfoRowBox
-              valueComponent="div"
-              nameFormatter={(v) => v}
-              nameWidth={110}
-              name={t("duration")}
-            >
-              <Box sx={{ textAlign: "right" }}>
-                {trace?.startTime &&
-                  trace?.endTime &&
-                  `${parseDuration(trace.startTime, trace.endTime)}`}
-              </Box>
-            </InfoRowBox>
+      {!isFullscreen && (
+        <>
+          <Box
+            sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}
+          >
+            <Typography sx={{ fontSize: 20, color: "text.primary" }}>{`${trace?.name}`}</Typography>
+            <AgentTag agentTag={trace?.attributes?.agentTag} model={output?.model} />
           </Box>
-
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flex: 1 }}>
-            {!!inputTokens && (
-              <InfoRowBox
-                valueComponent="div"
-                nameFormatter={(v) => v}
-                nameWidth={110}
-                name={t("inputTokens")}
+          <Box sx={{ my: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                gap: isMobile ? 0 : 6,
+              }}
+            >
+              <Box
+                sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", flex: 1 }}
               >
-                <Box sx={{ textAlign: "right" }}>
-                  {inputTokens} {prices?.inputCost}
-                </Box>
-              </InfoRowBox>
-            )}
+                <InfoRowBox valueComponent="div" nameFormatter={(v) => v} nameWidth={110} name="ID">
+                  <Box sx={{ textAlign: "right" }}>{trace?.id}</Box>
+                </InfoRowBox>
 
-            {!!outputTokens && (
-              <InfoRowBox
-                valueComponent="div"
-                nameFormatter={(v) => v}
-                nameWidth={110}
-                name={t("outputTokens")}
-              >
-                <Box sx={{ textAlign: "right" }}>
-                  {outputTokens} {prices?.outputCost}
-                </Box>
-              </InfoRowBox>
-            )}
-
-            {outputTokens + inputTokens > 0 && (
-              <InfoRowBox
-                valueComponent="div"
-                nameFormatter={(v) => v}
-                nameWidth={110}
-                name={t("totalTokens")}
-              >
-                <Box sx={{ textAlign: "right" }}>
-                  {outputTokens + inputTokens} {prices?.totalCost}
-                </Box>
-              </InfoRowBox>
-            )}
-
-            {!!model && (
-              <InfoRowBox
-                valueComponent="div"
-                nameFormatter={(v) => v}
-                nameWidth={110}
-                name={t("model")}
-              >
-                <Box
-                  sx={{
-                    textAlign: "right",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    justifyContent: "flex-end",
-                  }}
+                <InfoRowBox
+                  valueComponent="div"
+                  nameFormatter={(v) => v}
+                  nameWidth={110}
+                  name={t("startTime")}
                 >
-                  <Tooltip
-                    slotProps={{
-                      tooltip: {
-                        sx: { bgcolor: "common.white", color: "common.black", boxShadow: 4 },
-                      },
-                    }}
-                    title={
-                      (window as any).modelPrices?.[model] ? (
-                        <ModelInfoTip
-                          modelInfo={{
-                            ...(window as any).modelPrices?.[model],
-                            model,
-                          }}
-                        />
-                      ) : undefined
-                    }
+                  <Box sx={{ textAlign: "right" }}>
+                    {trace?.startTime && (
+                      <RelativeTime
+                        value={trace?.startTime}
+                        type="absolute"
+                        format="YYYY-MM-DD HH:mm:ss"
+                      />
+                    )}
+                  </Box>
+                </InfoRowBox>
+
+                <InfoRowBox
+                  valueComponent="div"
+                  nameFormatter={(v) => v}
+                  nameWidth={110}
+                  name={t("endTime")}
+                >
+                  <Box sx={{ textAlign: "right" }}>
+                    {trace?.endTime && (
+                      <RelativeTime
+                        value={trace?.endTime}
+                        type="absolute"
+                        format="YYYY-MM-DD HH:mm:ss"
+                      />
+                    )}
+                  </Box>
+                </InfoRowBox>
+
+                <InfoRowBox
+                  valueComponent="div"
+                  nameFormatter={(v) => v}
+                  nameWidth={110}
+                  name={t("duration")}
+                >
+                  <Box sx={{ textAlign: "right" }}>
+                    {trace?.startTime &&
+                      trace?.endTime &&
+                      `${parseDuration(trace.startTime, trace.endTime)}`}
+                  </Box>
+                </InfoRowBox>
+              </Box>
+
+              <Box
+                sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flex: 1 }}
+              >
+                <InfoRowBox
+                  valueComponent="div"
+                  nameFormatter={(v) => v}
+                  nameWidth={110}
+                  name={t("inputTokens")}
+                >
+                  <Box sx={{ textAlign: "right" }}>
+                    {inputTokens} {prices?.inputCost}
+                  </Box>
+                </InfoRowBox>
+
+                <InfoRowBox
+                  valueComponent="div"
+                  nameFormatter={(v) => v}
+                  nameWidth={110}
+                  name={t("outputTokens")}
+                >
+                  <Box sx={{ textAlign: "right" }}>
+                    {outputTokens} {prices?.outputCost}
+                  </Box>
+                </InfoRowBox>
+
+                <InfoRowBox
+                  valueComponent="div"
+                  nameFormatter={(v) => v}
+                  nameWidth={110}
+                  name={t("totalTokens")}
+                >
+                  <Box sx={{ textAlign: "right" }}>
+                    {outputTokens + inputTokens} {prices?.totalCost}
+                  </Box>
+                </InfoRowBox>
+
+                {!!model && (
+                  <InfoRowBox
+                    valueComponent="div"
+                    nameFormatter={(v) => v}
+                    nameWidth={110}
+                    name={t("model")}
                   >
-                    <Tag sx={{ cursor: "pointer" }}>{model}</Tag>
-                  </Tooltip>
-                </Box>
-              </InfoRowBox>
-            )}
+                    <Box
+                      sx={{
+                        textAlign: "right",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <Tooltip
+                        slotProps={{
+                          tooltip: {
+                            sx: { bgcolor: "common.white", color: "common.black", boxShadow: 4 },
+                          },
+                        }}
+                        title={
+                          findModelPrice(model) ? (
+                            <ModelInfoTip modelInfo={{ ...findModelPrice(model), model }} />
+                          ) : undefined
+                        }
+                      >
+                        <Tag sx={{ cursor: "pointer" }}>{model}</Tag>
+                      </Tooltip>
+                    </Box>
+                  </InfoRowBox>
+                )}
+              </Box>
+            </Box>
           </Box>
-        </Box>
-      </Box>
+        </>
+      )}
 
       <Box
         sx={{
@@ -354,6 +368,8 @@ export default function TraceDetailPanel({
           justifyContent: "space-between",
           borderBottom: 1,
           borderColor: "divider",
+          pl: 2,
+          zIndex: 2,
         }}
       >
         <Tabs
@@ -377,7 +393,36 @@ export default function TraceDetailPanel({
           ))}
         </Tabs>
 
-        <Box sx={{ display: "flex", gap: 0.5, pr: 1 }}>
+        <Box sx={{ display: "flex", gap: 0.5, pr: 1, alignItems: "center" }}>
+          <Tooltip title={t("wordWrap")}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 0.5,
+                cursor: "pointer",
+              }}
+              onClick={() => setWordWrap(wordWrap === "on" ? "off" : "on")}
+            >
+              <WrapTextIcon
+                fontSize="small"
+                sx={{ color: wordWrap === "on" ? "primary.main" : "text.secondary" }}
+              />
+              <Switch
+                size="small"
+                checked={wordWrap === "on"}
+                onChange={(e) => setWordWrap(e.target.checked ? "on" : "off")}
+                sx={{
+                  "& .MuiSwitch-switchBase.Mui-checked": {
+                    color: "primary.main",
+                  },
+                  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                    backgroundColor: "primary.main",
+                  },
+                }}
+              />
+            </Box>
+          </Tooltip>
           <Tooltip title={copied ? t("copied") : t("copyJson")}>
             <IconButton
               size="small"
@@ -408,17 +453,35 @@ export default function TraceDetailPanel({
               <DownloadIcon fontSize="small" />
             </IconButton>
           </Tooltip>
+          <Tooltip title={isFullscreen ? t("exitFullscreen") : t("fullscreen")}>
+            <IconButton
+              size="small"
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              sx={{
+                color: "text.secondary",
+                "&:hover": {
+                  color: "text.primary",
+                },
+              }}
+            >
+              {isFullscreen ? (
+                <FullscreenExitIcon fontSize="small" />
+              ) : (
+                <FullscreenIcon fontSize="small" />
+              )}
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
       <Box
         sx={{
-          mt: 2,
+          mt: isFullscreen ? 1 : 2,
           flex: 1,
           height: 0,
           overflow: "hidden",
           position: "relative",
           backgroundColor: "#1e1e1e",
-          borderRadius: 2,
+          borderRadius: isFullscreen ? 1 : 2,
         }}
       >
         {!isLoading ? (
@@ -426,7 +489,7 @@ export default function TraceDetailPanel({
             {!value ? (
               <Typography sx={{ color: "grey.500", fontSize: 14, p: 2 }}>{t("noData")}</Typography>
             ) : (
-              <JsonView value={value} />
+              <JsonView value={value} wordWrap={wordWrap || "on"} />
             )}
           </Box>
         ) : (

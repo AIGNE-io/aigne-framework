@@ -48,11 +48,21 @@ test("AIGNE.load should load agents correctly", async () => {
   expect(aigne.model?.options?.modelOptions).toMatchInlineSnapshot(`
     {
       "customOption": 1,
-      "model": ":gpt-4o-mini",
-      "name": "gpt-4o-mini",
+      "model": "gpt-4o-mini",
+      "reasoningEffort": "high",
       "temperature": 0.8,
     }
   `);
+
+  expect(chat.model?.options?.modelOptions).toMatchInlineSnapshot(`
+    {
+      "customOption": 1,
+      "model": "gpt-4o-mini",
+      "reasoningEffort": "minimal",
+      "temperature": 0.7,
+    }
+  `);
+
   assert(aigne.model, "model should be defined");
 
   expect(aigne.imageModel).toBeInstanceOf(OpenAIImageModel);

@@ -395,3 +395,105 @@ What is the weather in New York?
     }
   `);
 });
+
+test("OpenAIChatModel should pass reasoningEffort to API", async () => {
+  const model = new OpenAIChatModel({
+    apiKey: "YOUR_API_KEY",
+    model: "gpt-4o-mini",
+    modelOptions: {
+      temperature: 0.8,
+      reasoningEffort: "minimal",
+    },
+  });
+
+  const createSpy = spyOn(model.client.chat.completions, "create").mockReturnValueOnce(
+    createMockEventStream({
+      path: join(import.meta.dirname, "openai-streaming-response-text.txt"),
+    }),
+  );
+
+  await model.invoke({
+    messages: [
+      {
+        role: "system",
+        content: "hello",
+      },
+    ],
+  });
+  expect(createSpy.mock.lastCall).toMatchInlineSnapshot(`
+    [
+      {
+        "frequency_penalty": undefined,
+        "messages": [
+          {
+            "content": "hello",
+            "name": undefined,
+            "role": "system",
+            "tool_call_id": undefined,
+            "tool_calls": undefined,
+          },
+        ],
+        "model": "gpt-4o-mini",
+        "parallel_tool_calls": undefined,
+        "presence_penalty": undefined,
+        "reasoning_effort": "minimal",
+        "response_format": undefined,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true,
+        },
+        "temperature": 0.8,
+        "tool_choice": undefined,
+        "tools": undefined,
+        "top_p": undefined,
+      },
+    ]
+  `);
+
+  createSpy.mockReturnValueOnce(
+    createMockEventStream({
+      path: join(import.meta.dirname, "openai-streaming-response-text.txt"),
+    }),
+  );
+  await model.invoke({
+    messages: [
+      {
+        role: "system",
+        content: "hello",
+      },
+    ],
+    modelOptions: {
+      temperature: 0.1,
+      reasoningEffort: 3000,
+    },
+  });
+  expect(createSpy.mock.lastCall).toMatchInlineSnapshot(`
+    [
+      {
+        "frequency_penalty": undefined,
+        "messages": [
+          {
+            "content": "hello",
+            "name": undefined,
+            "role": "system",
+            "tool_call_id": undefined,
+            "tool_calls": undefined,
+          },
+        ],
+        "model": "gpt-4o-mini",
+        "parallel_tool_calls": undefined,
+        "presence_penalty": undefined,
+        "reasoning_effort": "medium",
+        "response_format": undefined,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true,
+        },
+        "temperature": 0.1,
+        "tool_choice": undefined,
+        "tools": undefined,
+        "top_p": undefined,
+      },
+    ]
+  `);
+});

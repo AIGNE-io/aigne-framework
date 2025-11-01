@@ -123,11 +123,10 @@ const Upload = ({ fetchTraces, pageSize }: UploadProps) => {
         <span>
           <Button
             variant="contained"
-            size="small"
             startIcon={<UploadIcon />}
             onClick={handleUploadClick}
             disabled={uploading}
-            sx={{ textTransform: "none" }}
+            sx={{ textTransform: "none", height: 36 }}
           >
             {uploading ? t("uploading") : t("uploadData")}
           </Button>

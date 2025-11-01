@@ -1,5 +1,70 @@
 # Changelog
 
+## [0.14.4](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.4-beta.8...gemini-v0.14.4) (2025-10-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57
+
+## [0.14.4-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.4-beta.7...gemini-v0.14.4-beta.8) (2025-10-31)
+
+
+### Bug Fixes
+
+* **models:** add image parameters support for video generation ([#684](https://github.com/AIGNE-io/aigne-framework/issues/684)) ([b048b7f](https://github.com/AIGNE-io/aigne-framework/commit/b048b7f92bd7a532dbdbeb6fb5fa5499bae6b953))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0-beta.5
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta.6
+
+## [0.14.4-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.4-beta.6...gemini-v0.14.4-beta.7) (2025-10-29)
+
+
+### Features
+
+* add reasoningEffort option for chat model ([#680](https://github.com/AIGNE-io/aigne-framework/issues/680)) ([f69d232](https://github.com/AIGNE-io/aigne-framework/commit/f69d232d714d4a3e4946bdc8c6598747c9bcbd57))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta.5
+
+## [0.14.4-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.4-beta.5...gemini-v0.14.4-beta.6) (2025-10-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta.4
+
+## [0.14.4-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.4-beta.4...gemini-v0.14.4-beta.5) (2025-10-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.57-beta.3
+
 ## [0.14.4-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.4-beta.3...gemini-v0.14.4-beta.4) (2025-10-27)
 
 

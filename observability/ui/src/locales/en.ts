@@ -125,4 +125,7 @@ export default flatten({
   batchInvalid: "Batch {batch} invalid",
   invalidIds: "Invalid IDs",
   totalBatches: "{count} batches",
+  wordWrap: "Word Wrap",
+  fullscreen: "Fullscreen",
+  exitFullscreen: "Exit Fullscreen",
 });

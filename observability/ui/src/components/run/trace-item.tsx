@@ -367,6 +367,8 @@ export default function TraceItemList({
     <Box>
       <Box
         sx={{
+          position: "sticky",
+          top: 0,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -374,6 +376,8 @@ export default function TraceItemList({
           pb: 2,
           borderBottom: "1px solid",
           borderColor: "divider",
+          backgroundColor: "background.paper",
+          zIndex: 3,
         }}
       >
         <Typography variant="h6" sx={{ fontWeight: 600 }}>

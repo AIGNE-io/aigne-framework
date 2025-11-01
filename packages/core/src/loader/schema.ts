@@ -82,6 +82,15 @@ const chatModelObjectSchema = camelizeSchema(
       topP: optionalize(z.number().min(0)),
       frequencyPenalty: optionalize(z.number().min(-2).max(2)),
       presencePenalty: optionalize(z.number().min(-2).max(2)),
+      thinkingEffort: optionalize(
+        z.union([
+          z.number().int(),
+          z.literal("high"),
+          z.literal("medium"),
+          z.literal("low"),
+          z.literal("minimal"),
+        ]),
+      ),
     })
     .passthrough(),
 );
@@ -90,7 +99,13 @@ export const chatModelSchema = z
   .preprocess(
     (v) => {
       if (!isRecord(v)) return v;
-      return { ...v, model: v.model || `${v.provider || ""}:${v.name || ""}` };
+      return {
+        ...v,
+        model:
+          v.model ||
+          (v.provider && v.name ? `${v.provider || ""}:${v.name || ""}` : undefined) ||
+          undefined,
+      };
     },
     z.union([z.string(), chatModelObjectSchema]),
   )

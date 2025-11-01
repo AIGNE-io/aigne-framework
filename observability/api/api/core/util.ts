@@ -7,6 +7,45 @@ import type { TraceFormatSpans } from "./type.ts";
 
 export const isBlocklet = !!process.env.BLOCKLET_APP_DIR && !!process.env.BLOCKLET_PORT;
 
+const PROVIDERS = [
+  "openai",
+  "google",
+  "anthropic",
+  "xai",
+  "bedrock",
+  "deepseek",
+  "openrouter",
+  "ollama",
+  "doubao",
+  "poe",
+  "ideogram",
+];
+
+interface ModelPrice {
+  input_cost_per_token: number;
+  output_cost_per_token: number;
+  output_cost_per_image?: number;
+  output_cost_per_video_per_second?: number;
+  mode: string;
+}
+
+const getPriceValue = (
+  prices: Record<string, ModelPrice>,
+  model: string,
+): ModelPrice | undefined => {
+  let price = prices?.[model];
+
+  for (const provider of PROVIDERS) {
+    if (price) {
+      break;
+    }
+
+    price = prices?.[`${provider}/${model}`];
+  }
+
+  return price;
+};
+
 export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
   if (Number(trace.endTime) > 0) {
     const model = trace.attributes?.output?.model;
@@ -30,38 +69,50 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
     } else {
       const inputTokens = trace.attributes?.output?.usage?.inputTokens || 0;
       const outputTokens = trace.attributes?.output?.usage?.outputTokens || 0;
+      const seconds = trace.attributes?.output?.seconds || 4;
 
       trace.token = new Decimal(inputTokens).plus(outputTokens).toNumber();
 
-      let price = {};
+      let prices: Record<string, ModelPrice> = {};
       try {
-        let fullPath = "";
-        if (process?.env?.BLOCKLET_APP_DIR) {
-          fullPath = path.resolve(process.env.BLOCKLET_APP_DIR, "dist", "model-prices.json");
-        } else {
-          fullPath = "../../../dist/model-prices.json";
-        }
+        const fullPath = process?.env?.BLOCKLET_APP_DIR
+          ? path.resolve(process.env.BLOCKLET_APP_DIR, "dist", "model-prices.json")
+          : "../../../dist/model-prices.json";
 
         // @ts-ignore
-        price = await import(fullPath, { with: { type: "json" } }).then((res) => res.default);
-      } catch {
-        price = {};
+        prices = await import(fullPath, { with: { type: "json" } }).then((res) => res.default);
+      } catch (err) {
+        console.warn(
+          `[Observability] Failed to load model prices: ${err.message}. ` +
+            `Cost calculation will be disabled.`,
+        );
+        prices = {};
       }
 
-      if (price && Object.keys(price).length > 0 && model) {
-        const value = price[model as keyof typeof price] as {
-          input_cost_per_token: number;
-          output_cost_per_token: number;
-        };
+      const getCost = (value?: ModelPrice) => {
+        if (!value) return 0;
 
-        trace.cost = value
-          ? Number(
-              new Decimal(inputTokens)
-                .mul(value.input_cost_per_token || 0)
-                .plus(new Decimal(outputTokens).mul(value.output_cost_per_token || 0))
-                .toFixed(6),
-            )
-          : 0;
+        if (value.mode === "image_generation") {
+          return value.output_cost_per_image || 0;
+        }
+
+        if (value.mode === "video_generation") {
+          return Number(
+            new Decimal(seconds).mul(value.output_cost_per_video_per_second || 0).toFixed(6),
+          );
+        }
+
+        return Number(
+          new Decimal(inputTokens)
+            .mul(value.input_cost_per_token || 0)
+            .plus(new Decimal(outputTokens).mul(value.output_cost_per_token || 0))
+            .toFixed(6),
+        );
+      };
+
+      if (prices && Object.keys(prices).length > 0 && model) {
+        const value = getPriceValue(prices, model);
+        trace.cost = getCost(value);
       } else {
         trace.cost = 0;
       }

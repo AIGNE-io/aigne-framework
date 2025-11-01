@@ -1,7 +1,13 @@
 import Editor from "@monaco-editor/react";
 import Box from "@mui/material/Box";
 
-export default function JsonView({ value: data }: { value: any }) {
+export default function JsonView({
+  value: data,
+  wordWrap = "on",
+}: {
+  value: any;
+  wordWrap?: "on" | "off";
+}) {
   const jsonString = typeof data === "string" ? data : JSON.stringify(data, null, 2);
 
   return (
@@ -24,8 +30,8 @@ export default function JsonView({ value: data }: { value: any }) {
         options={{
           readOnly: true,
           minimap: { enabled: false },
-          wordWrap: "on",
-          contextmenu: false,
+          wordWrap,
+          contextmenu: true,
         }}
       />
     </Box>

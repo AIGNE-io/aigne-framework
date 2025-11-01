@@ -1,5 +1,65 @@
 # Changelog
 
+## [1.1.0](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.1.0-beta.5...did-space-memory-v1.1.0) (2025-10-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0
+    * @aigne/openai bumped to 0.16.4
+
+## [1.1.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.1.0-beta.4...did-space-memory-v1.1.0-beta.5) (2025-10-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0-beta.5
+    * @aigne/openai bumped to 0.16.4-beta.6
+
+## [1.1.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.1.0-beta.3...did-space-memory-v1.1.0-beta.4) (2025-10-29)
+
+
+### Bug Fixes
+
+* update package ([#677](https://github.com/AIGNE-io/aigne-framework/issues/677)) ([a4ad78a](https://github.com/AIGNE-io/aigne-framework/commit/a4ad78a79e4f34eb6c0b00909e7707cd5dd9dd97))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0-beta.4
+    * @aigne/openai bumped to 0.16.4-beta.5
+
+## [1.1.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.0.50-beta.3...did-space-memory-v1.1.0-beta.3) (2025-10-28)
+
+
+### Features
+
+* use a more secure signature mechanism ([#655](https://github.com/AIGNE-io/aigne-framework/issues/655)) ([aa5dc0c](https://github.com/AIGNE-io/aigne-framework/commit/aa5dc0ccdff8245a629cb30e731081528a555134))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0-beta.3
+    * @aigne/openai bumped to 0.16.4-beta.4
+
+## [1.0.50-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.0.50-beta.2...did-space-memory-v1.0.50-beta.3) (2025-10-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.0-beta.2
+    * @aigne/openai bumped to 0.16.4-beta.3
+
 ## [1.0.50-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.0.50-beta.1...did-space-memory-v1.0.50-beta.2) (2025-10-26)
 
 

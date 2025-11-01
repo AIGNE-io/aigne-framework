@@ -6,6 +6,7 @@ import {
   ChatModel,
   type ChatModelInput,
   type ChatModelInputMessage,
+  type ChatModelInputOptions,
   type ChatModelInputTool,
   type ChatModelOptions,
   type ChatModelOutput,
@@ -175,6 +176,20 @@ export class OpenAIChatModel extends ChatModel {
     return this._process(input);
   }
 
+  private getReasoningEffort(
+    effort: ChatModelInputOptions["reasoningEffort"],
+  ): Exclude<ChatModelInputOptions["reasoningEffort"], number> {
+    if (typeof effort === "number") {
+      if (effort > 5000) return "high";
+      if (effort > 1000) return "medium";
+      if (effort > 500) return "low";
+      if (effort > 0) return "minimal";
+      return undefined;
+    }
+
+    return effort;
+  }
+
   private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
     const messages = await this.getRunMessages(input);
     const model = input.modelOptions?.model || this.credential.model;
@@ -193,6 +208,9 @@ export class OpenAIChatModel extends ChatModel {
         include_usage: true,
       },
       stream: true,
+      reasoning_effort: this.getReasoningEffort(
+        input.modelOptions?.reasoningEffort ?? this.modelOptions?.reasoningEffort,
+      ),
     };
 
     // For models that do not support tools use with JSON schema in same request,
@@ -213,10 +231,10 @@ export class OpenAIChatModel extends ChatModel {
     })) as unknown as Stream<OpenAI.Chat.Completions.ChatCompletionChunk>;
 
     if (input.responseFormat?.type !== "json_schema") {
-      return await this.extractResultFromStream(stream, false, true);
+      return await this.extractResultFromStream(body, stream, false, true);
     }
 
-    const result = await this.extractResultFromStream(stream, jsonMode);
+    const result = await this.extractResultFromStream(body, stream, jsonMode);
     // Just return the result if it has tool calls
     if (result.toolCalls?.length || result.json) return result;
 
@@ -310,20 +328,23 @@ export class OpenAIChatModel extends ChatModel {
       response_format: resolvedResponseFormat,
     })) as unknown as Stream<OpenAI.Chat.Completions.ChatCompletionChunk>;
 
-    return this.extractResultFromStream(res, jsonMode);
+    return this.extractResultFromStream(body, res, jsonMode);
   }
 
   private async extractResultFromStream(
+    body: OpenAI.Chat.ChatCompletionCreateParamsStreaming,
     stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
     jsonMode: boolean | undefined,
     streaming: true,
   ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>>>;
   private async extractResultFromStream(
+    body: OpenAI.Chat.ChatCompletionCreateParamsStreaming,
     stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
     jsonMode?: boolean,
     streaming?: false,
   ): Promise<ChatModelOutput>;
   private async extractResultFromStream(
+    body: OpenAI.Chat.ChatCompletionCreateParamsStreaming,
     stream: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>,
     jsonMode?: boolean,
     streaming?: boolean,
@@ -331,6 +352,16 @@ export class OpenAIChatModel extends ChatModel {
     const result = new ReadableStream<AgentResponseChunk<ChatModelOutput>>({
       start: async (controller) => {
         try {
+          controller.enqueue({
+            delta: {
+              json: {
+                modelOptions: {
+                  reasoningEffort: body.reasoning_effort,
+                },
+              },
+            },
+          });
+
           let text = "";
           let refusal = "";
           const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
@@ -340,6 +371,8 @@ export class OpenAIChatModel extends ChatModel {
 
           for await (const chunk of stream) {
             const choice = chunk.choices?.[0];
+            const delta = choice?.delta;
+
             if (!model) {
               model = chunk.model;
               controller.enqueue({
@@ -351,8 +384,8 @@ export class OpenAIChatModel extends ChatModel {
               });
             }
 
-            if (choice?.delta.tool_calls?.length) {
-              for (const call of choice.delta.tool_calls) {
+            if (delta?.tool_calls?.length) {
+              for (const call of delta.tool_calls) {
                 if (this.supportsToolStreaming && call.index !== undefined) {
                   handleToolCallDelta(toolCalls, call);
                 } else {
@@ -361,28 +394,25 @@ export class OpenAIChatModel extends ChatModel {
               }
             }
 
-            if (choice?.delta.content) {
-              text += choice.delta.content;
+            if (delta && "reasoning" in delta && typeof delta.reasoning === "string") {
+              controller.enqueue({ delta: { text: { thoughts: delta.reasoning } } });
+            }
+
+            if (delta?.content) {
+              text += delta.content;
               if (!jsonMode) {
                 controller.enqueue({
                   delta: {
                     text: {
-                      text: choice.delta.content,
+                      text: delta.content,
                     },
                   },
                 });
               }
             }
 
-            if (choice?.delta.refusal) {
-              refusal += choice.delta.refusal;
-              if (!jsonMode) {
-                controller.enqueue({
-                  delta: {
-                    text: { text: choice.delta.refusal },
-                  },
-                });
-              }
+            if (delta?.refusal) {
+              refusal += delta.refusal;
             }
 
             if (chunk.usage) {
@@ -399,7 +429,6 @@ export class OpenAIChatModel extends ChatModel {
             }
           }
 
-          text = text || refusal;
           if (jsonMode && text) {
             controller.enqueue({
               delta: {
@@ -422,6 +451,11 @@ export class OpenAIChatModel extends ChatModel {
               },
             });
           }
+
+          if (refusal) {
+            controller.error(new Error(`Got refusal from LLM: ${refusal}`));
+          }
+
           controller.close();
         } catch (error) {
           controller.error(error);

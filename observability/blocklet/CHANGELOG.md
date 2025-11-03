@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.15.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.15.0-beta.2...blocklet-observability-v1.15.0) (2025-10-31)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.4
+    * @aigne/observability-ui bumped to 0.11.3
+
 ## [1.15.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.15.0-beta.1...blocklet-observability-v1.15.0-beta.2) (2025-10-31)
 
 

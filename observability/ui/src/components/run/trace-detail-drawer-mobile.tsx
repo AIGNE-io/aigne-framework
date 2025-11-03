@@ -20,11 +20,6 @@ export default function RunDetailDrawer({
   const handleOpenDrawer = useCallback(() => setOpen(true), []);
   const handleCloseDrawer = useCallback(() => setOpen(false), []);
 
-  const handleSelect = useCallback(
-    (trace: typeof selectedTrace) => setSelectedTrace(trace ?? null),
-    [setSelectedTrace],
-  );
-
   const steps = useMemo(() => [traceInfo], [traceInfo]);
 
   return (
@@ -82,7 +77,7 @@ export default function RunDetailDrawer({
             <TraceItemList
               traceId={traceId}
               steps={steps}
-              onSelect={handleSelect}
+              onSelect={(trace) => setSelectedTrace(trace ?? null)}
               selectedTrace={selectedTrace}
             />
           </Box>

@@ -240,7 +240,7 @@ test("SystemFS should search for text in files", async () => {
 
   const foundFile = result.list.find((entry) => entry.path === "file1.txt");
   expect(foundFile).toBeDefined();
-  expect(foundFile?.content).toContain("Hello");
+  expect(foundFile?.summary).toContain("Hello");
 });
 
 test("SystemFS should search with regex pattern", async () => {
@@ -250,7 +250,7 @@ test("SystemFS should search with regex pattern", async () => {
 
   const foundFile = result.list.find((entry) => entry.path.includes("file3.js"));
   expect(foundFile).toBeDefined();
-  expect(foundFile?.content).toContain('console.log("test")');
+  expect(foundFile?.summary).toContain('console.log("test")');
 });
 
 test("SystemFS should search in specific directory", async () => {
@@ -290,5 +290,5 @@ test("SystemFS should search in written files", async () => {
   expect(result.list).toBeDefined();
   const foundFile = result.list.find((entry) => entry.path === "searchable.txt");
   expect(foundFile).toBeDefined();
-  expect(foundFile?.content).toContain("unique keyword");
+  expect(foundFile?.summary).toContain("unique keyword");
 });

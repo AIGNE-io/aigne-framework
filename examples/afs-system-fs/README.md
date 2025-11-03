@@ -110,9 +110,9 @@ await systemFS.list("")
 await systemFS.list("", { recursive: true, maxDepth: 2 })
 
 // List with sorting and limits
-await systemFS.list("", { 
-  orderBy: [['path', 'asc']], 
-  limit: 10 
+await systemFS.list("", {
+  orderBy: [['path', 'asc']],
+  limit: 10
 })
 ```
 
@@ -191,3 +191,168 @@ npx -y @aigne/example-afs-system-fs --path ~/Projects --mount /projects --descri
 ```
 
 The chatbot can help you navigate, search, read, and organize files in your mounted directories through natural language commands.
+
+## How this Example Works
+
+### Mount a local directory as an AFS module
+
+Just following code snippet shows how to mount a local directory using `SystemFS`:
+
+```typescript
+AIAgent.from({
+  ...,
+  afs: new AFS().use(
+    new SystemFS({ mount: '/source', path: '/PATH/TO/Bitcoin/Project', description: 'Codebase of Bitcoin project' }),
+  ),
+  afsConfig: {
+    injectHistory: true,
+  },
+}),
+```
+
+### Call AFS tools to retrieve context
+
+User Question: What's the purpose of this project?
+
+```json
+{
+  "toolCalls": [
+    {
+      "id": "call_nBAfMjqt6ufoR22ToRvwbvQ6",
+      "type": "function",
+      "function": {
+        "name": "afs_list",
+        "arguments": {
+          "path": "/",
+          "options": {
+            "recursive": false
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+The agent will call the `afs_list` tool to list the files in the root directory
+
+```json
+{
+  "status": "success",
+  "tool": "afs_list",
+  "options": {
+    "recursive": false
+  },
+  "list": [
+    {
+      "id": "/README.md",
+      "path": "/source/README.md",
+      "createdAt": "2025-10-30T14:03:49.961Z",
+      "updatedAt": "2025-10-30T14:03:49.961Z",
+      "metadata": {
+        "type": "file",
+        "size": 3489,
+        "mode": 33188
+      }
+    },
+    // ... other files
+  ]
+}
+```
+
+Then use `afs_read` to read specific file content
+
+```json
+{
+  "toolCalls": [
+    {
+      "id": "call_73i8vwuHKXt2igXGdyeEws7F",
+      "type": "function",
+      "function": {
+        "name": "afs_read",
+        "arguments": {
+          "path": "/source/README.md"
+        }
+      }
+    }
+  ]
+}
+```
+
+Finally, prompt builder will combine the retrieved file content and construct the final message for the agent to answer the user question.
+
+```json
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an ...",
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "What's the purpose of this project?"
+        }
+      ]
+    },
+    {
+      "role": "agent",
+      "toolCalls": [
+        {
+          "id": "call_TLvilbEhXqg3WFsFAKqm69W9",
+          "type": "function",
+          "function": {
+            "name": "afs_list",
+            "arguments": {
+              "path": "/source",
+              "options": {
+                "recursive": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "content": "... list result ...", // Here would be the actual list result
+      "toolCallId": "call_TLvilbEhXqg3WFsFAKqm69W9"
+    },
+    {
+      "role": "agent",
+      "toolCalls": [
+        {
+          "id": "call_73i8vwuHKXt2igXGdyeEws7F",
+          "type": "function",
+          "function": {
+            "name": "afs_read",
+            "arguments": {
+              "path": "/source/README.md"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "content": "... read file content ...", // Here would be the actual file content
+      "toolCallId": "call_73i8vwuHKXt2igXGdyeEws7F"
+    }
+  ]
+}
+```
+
+The final answer from the agent would be:
+
+```markdown
+This repository is Bitcoin Core — the reference implementation of the Bitcoin protocol. Its purpose is to provide a full-node Bitcoin client that:
+
+    * Connects to the Bitcoin peer-to-peer network, downloads blocks and transactions, and fully validates them against consensus rules (so you don’t have to trust others).
+    * Acts as a reference implementation of Bitcoin protocol behavior used by wallets, services, and other implementations.
+    * Includes an optional wallet and a GUI (and an RPC interface) for interacting with the node.
+    * Provides developer tooling, tests (unit, integration, regression), and documentation to maintain security and correctness.
+
+For an overview see the README (https://bitcoincore.org) and to get ready-to-run binaries use https://bitcoincore.org/en/download/. The project is released under the MIT license.
+```

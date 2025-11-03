@@ -35,6 +35,9 @@ await runWithAIGNE(
       afs: new AFS().use(
         new SystemFS({ mount: argv.mount, path: argv.path, description: argv.description }),
       ),
+      afsConfig: {
+        injectHistory: true,
+      },
     }),
   {
     chatLoopOptions: {

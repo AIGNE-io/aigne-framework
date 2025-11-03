@@ -1,6 +1,6 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import MemoryIcon from "@mui/icons-material/Memory";
-import { Box, Chip, Divider, Stack, Typography } from "@mui/material";
+import { Box, Divider, Stack, Typography } from "@mui/material";
 import Decimal from "decimal.js";
 import type { ModelPrice } from "../libs/index.ts";
 
@@ -23,23 +23,6 @@ function toPlainString(val: number = 0) {
 
 export default function ModelInfoTip({ modelInfo }: { modelInfo: ModelPrice }) {
   const { t } = useLocaleContext();
-
-  const supportsMap = {
-    supports_function_calling: t("models.functionCalling"),
-    supports_tool_choice: t("models.toolChoice"),
-    supports_vision: "Vision",
-  };
-
-  const supports = Object.entries(modelInfo)
-    .map(([key, value]) => {
-      if (key.startsWith("supports_") && value && supportsMap[key as keyof typeof supportsMap]) {
-        return supportsMap[key as keyof typeof supportsMap];
-      }
-
-      return null;
-    })
-    .filter(Boolean);
-
   const mode = modelInfo.mode || "chat";
 
   const renderCostInfo = () => {
@@ -143,15 +126,6 @@ export default function ModelInfoTip({ modelInfo }: { modelInfo: ModelPrice }) {
       <Typography variant="body2">
         • {t("models.provider")}: {modelInfo.litellm_provider}
       </Typography>
-
-      {supports.length > 0 && (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, alignItems: "center" }}>
-          <Typography variant="body2">• {t("models.supports")}:</Typography>
-          {supports.map((item) => (
-            <Chip key={item} label={item} size="small" sx={{ fontSize: 12 }} />
-          ))}
-        </Box>
-      )}
     </Box>
   );
 }

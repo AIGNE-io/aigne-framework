@@ -2,53 +2,65 @@ import InfoRow from "@arcblock/ux/lib/InfoRow";
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import RelativeTime from "@arcblock/ux/lib/RelativeTime";
 import Tag from "@arcblock/ux/lib/Tag";
+import { Icon } from "@iconify/react";
 import CheckIcon from "@mui/icons-material/Check";
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import DownloadIcon from "@mui/icons-material/Download";
 import FullscreenIcon from "@mui/icons-material/Fullscreen";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
+import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import WrapTextIcon from "@mui/icons-material/WrapText";
 import type { SxProps } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import IconButton from "@mui/material/IconButton";
-import Switch from "@mui/material/Switch";
 import { styled } from "@mui/material/styles";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import useLocalStorageState from "ahooks/lib/useLocalStorageState";
-import Decimal from "decimal.js";
 import { isUndefined, omitBy } from "lodash";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { joinURL } from "ufo";
-import { calculateCost, findModelPrice, getLocalizedFilename } from "../../libs/index.ts";
+import { findModelPrice, getLocalizedFilename, getTraceCostMap } from "../../libs/index.ts";
 import { origin } from "../../utils/index.ts";
 import { parseDuration } from "../../utils/latency.ts";
-import JsonView from "../json-view.tsx";
+import JsonView, { type JsonViewRef } from "../json-view.tsx";
 import ModelInfoTip from "../model-tip.tsx";
 import { AgentTag } from "./agent-tag.tsx";
 import type { TraceData } from "./types.ts";
 
 export default function TraceDetailPanel({
   trace: originalTrace,
+  traceInfo,
   sx,
 }: {
   trace?: TraceData | null;
+  traceInfo: TraceData;
   sx?: SxProps;
 }) {
   const [tab, setTab] = useState("input");
   const { t, locale } = useLocaleContext();
   const [trace, setTrace] = useState<TraceData | undefined | null>(originalTrace);
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
+  const jsonViewRef = useRef<JsonViewRef>(null);
+  const map = useMemo(() => getTraceCostMap(traceInfo), [traceInfo]);
+
+  const [viewSettings, setViewSettings] = useLocalStorageState<{
+    wordWrap: "on" | "off";
+    truncateStrings: boolean;
+  }>("trace-detail-view-settings", {
+    defaultValue: { wordWrap: "on", truncateStrings: false },
+  });
+
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [wordWrap, setWordWrap] = useLocalStorageState<"on" | "off">("trace-detail-word-wrap", {
-    defaultValue: "on",
-  });
+  const [isFolded, setIsFolded] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
   const hasError = trace?.status?.code === 2;
   const hasUserContext =
     trace?.attributes?.userContext && Object.keys(trace?.attributes?.userContext).length > 0;
@@ -56,33 +68,36 @@ export default function TraceDetailPanel({
   const output = trace?.attributes?.output;
   const model = output?.model;
 
-  const init = async (signal?: AbortSignal) => {
-    try {
-      setIsLoading(true);
+  const init = useCallback(
+    async (signal?: AbortSignal) => {
+      try {
+        setIsLoading(true);
 
-      const start = Date.now();
+        const start = Date.now();
 
-      const res = await fetch(joinURL(origin, `/api/trace/tree/children/${originalTrace?.id}`), {
-        signal,
-      }).then((res) => res.json());
+        const res = await fetch(joinURL(origin, `/api/trace/tree/children/${originalTrace?.id}`), {
+          signal,
+        }).then((res) => res.json());
 
-      const duration = Date.now() - start;
-      const remaining = Math.max(0, 1000 - duration);
+        const duration = Date.now() - start;
+        const remaining = Math.max(0, 1000 - duration);
 
-      await new Promise((resolve, reject) => {
-        const timer = setTimeout(resolve, remaining);
-        signal?.addEventListener("abort", () => {
-          clearTimeout(timer);
-          reject(new DOMException("Aborted", "AbortError"));
+        await new Promise((resolve, reject) => {
+          const timer = setTimeout(resolve, remaining);
+          signal?.addEventListener("abort", () => {
+            clearTimeout(timer);
+            reject(new DOMException("Aborted", "AbortError"));
+          });
         });
-      });
 
-      setTrace(res.data);
-    } finally {
-      setIsLoading(false);
-      setTab("input");
-    }
-  };
+        setTrace(res.data);
+      } finally {
+        setIsLoading(false);
+        setTab("input");
+      }
+    },
+    [originalTrace?.id],
+  );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
@@ -134,27 +149,38 @@ export default function TraceDetailPanel({
   ]);
 
   const prices = useMemo(() => {
-    const { inputCost, outputCost } = calculateCost({ ...output, model });
+    if (!trace?.id) {
+      return null;
+    }
+
+    const costData = map.get(trace.id);
+    if (!costData) {
+      return null;
+    }
 
     return {
-      inputCost: inputCost.gt(new Decimal(0)) ? `($${inputCost.toString()})` : null,
-      outputCost: outputCost.gt(new Decimal(0)) ? `($${outputCost.toString()})` : null,
-      totalCost: inputCost.add(outputCost).gt(new Decimal(0))
-        ? `($${inputCost.add(outputCost).toString()})`
-        : null,
+      inputCost: costData.inputCost.toString(),
+      outputCost: costData.outputCost.toString(),
+      totalCost: costData.totalCost.toString(),
+      inputTokens: costData.inputTokens,
+      outputTokens: costData.outputTokens,
+      totalTokens: costData.totalTokens,
     };
-  }, [model, output]);
+  }, [trace?.id, map]);
 
-  const tabs = [
-    { label: t("input"), value: "input" },
-    { label: t("output"), value: "output" },
-    ...(hasError ? [{ label: t("errorMessage"), value: "errorMessage" }] : []),
-    ...(hasUserContext ? [{ label: t("userContext"), value: "userContext" }] : []),
-    ...(hasMemories ? [{ label: t("memories"), value: "memories" }] : []),
-    { label: t("metadata"), value: "metadata" },
-  ];
+  const tabs = useMemo(
+    () => [
+      { label: t("input"), value: "input" },
+      { label: t("output"), value: "output" },
+      ...(hasError ? [{ label: t("errorMessage"), value: "errorMessage" }] : []),
+      ...(hasUserContext ? [{ label: t("userContext"), value: "userContext" }] : []),
+      ...(hasMemories ? [{ label: t("memories"), value: "memories" }] : []),
+      { label: t("metadata"), value: "metadata" },
+    ],
+    [t, hasError, hasUserContext, hasMemories],
+  );
 
-  const handleCopy = async () => {
+  const handleCopy = useCallback(async () => {
     try {
       const jsonString = typeof value === "string" ? value : JSON.stringify(value, null, 2);
       await navigator.clipboard.writeText(jsonString);
@@ -163,9 +189,9 @@ export default function TraceDetailPanel({
     } catch (err) {
       console.error("Failed to copy:", err);
     }
-  };
+  }, [value]);
 
-  const handleDownload = () => {
+  const handleDownload = useCallback(() => {
     const jsonString = typeof value === "string" ? value : JSON.stringify(value, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -176,7 +202,7 @@ export default function TraceDetailPanel({
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  };
+  }, [value, locale]);
 
   if (!trace) return null;
 
@@ -187,9 +213,6 @@ export default function TraceDetailPanel({
       </Box>
     );
   }
-
-  const inputTokens = trace.attributes.output?.usage?.inputTokens || 0;
-  const outputTokens = trace.attributes.output?.usage?.outputTokens || 0;
 
   return (
     <Box
@@ -296,7 +319,7 @@ export default function TraceDetailPanel({
                   name={t("inputTokens")}
                 >
                   <Box sx={{ textAlign: "right" }}>
-                    {inputTokens} {prices?.inputCost}
+                    {prices?.inputTokens || 0} {prices?.inputCost ? `($${prices?.inputCost})` : ""}
                   </Box>
                 </InfoRowBox>
 
@@ -307,7 +330,8 @@ export default function TraceDetailPanel({
                   name={t("outputTokens")}
                 >
                   <Box sx={{ textAlign: "right" }}>
-                    {outputTokens} {prices?.outputCost}
+                    {prices?.outputTokens || 0}
+                    {prices?.outputCost ? `($${prices?.outputCost})` : ""}
                   </Box>
                 </InfoRowBox>
 
@@ -318,7 +342,8 @@ export default function TraceDetailPanel({
                   name={t("totalTokens")}
                 >
                   <Box sx={{ textAlign: "right" }}>
-                    {outputTokens + inputTokens} {prices?.totalCost}
+                    {(prices?.outputTokens || 0) + (prices?.inputTokens || 0)}
+                    {prices?.totalCost ? `($${prices?.totalCost})` : ""}
                   </Box>
                 </InfoRowBox>
 
@@ -395,33 +420,72 @@ export default function TraceDetailPanel({
 
         <Box sx={{ display: "flex", gap: 0.5, pr: 1, alignItems: "center" }}>
           <Tooltip title={t("wordWrap")}>
-            <Box
+            <IconButton
+              size="small"
+              onClick={() =>
+                setViewSettings({
+                  ...viewSettings,
+                  wordWrap: viewSettings?.wordWrap === "on" ? "off" : "on",
+                })
+              }
               sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 0.5,
-                cursor: "pointer",
+                color: "text.secondary",
+                "&:hover": {
+                  color: "text.primary",
+                },
               }}
-              onClick={() => setWordWrap(wordWrap === "on" ? "off" : "on")}
             >
               <WrapTextIcon
                 fontSize="small"
-                sx={{ color: wordWrap === "on" ? "primary.main" : "text.secondary" }}
+                sx={{ color: viewSettings?.wordWrap === "on" ? "primary.main" : "text.secondary" }}
               />
-              <Switch
-                size="small"
-                checked={wordWrap === "on"}
-                onChange={(e) => setWordWrap(e.target.checked ? "on" : "off")}
-                sx={{
-                  "& .MuiSwitch-switchBase.Mui-checked": {
-                    color: "primary.main",
-                  },
-                  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                    backgroundColor: "primary.main",
-                  },
-                }}
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t("truncateStrings")}>
+            <IconButton
+              size="small"
+              onClick={() =>
+                setViewSettings({
+                  ...viewSettings,
+                  truncateStrings: !viewSettings?.truncateStrings,
+                })
+              }
+              sx={{
+                color: "text.secondary",
+                "&:hover": {
+                  color: "text.primary",
+                },
+              }}
+            >
+              <Box
+                component={Icon}
+                icon="ion:cut"
+                sx={{ color: viewSettings?.truncateStrings ? "primary.main" : "text.secondary" }}
               />
-            </Box>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={isFolded ? t("unfoldAll") : t("foldAll")}>
+            <IconButton
+              size="small"
+              onClick={() => {
+                if (isFolded) {
+                  jsonViewRef.current?.unfoldAll();
+                  setIsFolded(false);
+                } else {
+                  jsonViewRef.current?.foldAll();
+                  setIsFolded(true);
+                }
+              }}
+              disabled={!value}
+              sx={{
+                color: "text.secondary",
+                "&:hover": {
+                  color: "text.primary",
+                },
+              }}
+            >
+              {isFolded ? <UnfoldMoreIcon fontSize="small" /> : <UnfoldLessIcon fontSize="small" />}
+            </IconButton>
           </Tooltip>
           <Tooltip title={copied ? t("copied") : t("copyJson")}>
             <IconButton
@@ -489,7 +553,12 @@ export default function TraceDetailPanel({
             {!value ? (
               <Typography sx={{ color: "grey.500", fontSize: 14, p: 2 }}>{t("noData")}</Typography>
             ) : (
-              <JsonView value={value} wordWrap={wordWrap || "on"} />
+              <JsonView
+                ref={jsonViewRef}
+                value={value}
+                wordWrap={viewSettings?.wordWrap || "on"}
+                truncateStrings={viewSettings?.truncateStrings || false}
+              />
             )}
           </Box>
         ) : (

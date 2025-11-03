@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-system-fs-v1.0.4-beta...afs-system-fs-v1.0.4-beta.1) (2025-11-03)
+
+
+### Bug Fixes
+
+* **afs:** return matched lines instead of full content for search method ([#692](https://github.com/AIGNE-io/aigne-framework/issues/692)) ([1130405](https://github.com/AIGNE-io/aigne-framework/commit/1130405bdd7e6244801023acc7a820c08f400412))
+
 ## [1.0.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-system-fs-v1.0.3...afs-system-fs-v1.0.4-beta) (2025-11-03)
 
 

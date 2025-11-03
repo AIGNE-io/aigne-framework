@@ -1,3 +1,4 @@
+import { fetch } from "@aigne/core/utils/fetch.js";
 import { joinURL } from "ufo";
 
 export async function getAIGNEHubMountPoint(url: string, component: string) {

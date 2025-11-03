@@ -8,6 +8,7 @@ import {
   imageModelInputSchema,
 } from "@aigne/core";
 import { snakelize } from "@aigne/core/utils/camelize.js";
+import { fetch } from "@aigne/core/utils/fetch.js";
 import { checkArguments, flat, pick } from "@aigne/core/utils/type-utils.js";
 import { joinURL } from "ufo";
 import { z } from "zod";
@@ -172,11 +173,6 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`Doubao API error: ${response.status} ${response.statusText} ${error}`);
-    }
 
     if (body.stream) {
       if (!response.body) throw new Error("Streaming not supported in this environment");

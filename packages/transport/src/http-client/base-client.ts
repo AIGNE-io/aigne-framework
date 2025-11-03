@@ -6,6 +6,7 @@ import type {
   Message,
 } from "@aigne/core";
 import { AgentResponseStreamParser, EventStreamParser } from "@aigne/core/utils/event-stream.js";
+import { fetch } from "@aigne/core/utils/fetch.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { pick, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import { ChatModelName } from "../constants.js";
@@ -169,7 +170,7 @@ export class BaseClient {
   async fetch(url: string, init?: BaseClientInvokeOptions["fetchOptions"]): Promise<Response> {
     const { default: retry } = await import("p-retry");
 
-    const result = await retry(() => globalThis.fetch(url, init), {
+    const result = await retry(() => fetch(url, init), {
       retries: init?.maxRetries ?? DEFAULT_MAX_RECONNECTS,
       onFailedAttempt: (error) => {
         logger.warn("Retrying fetch request due to error:", error);

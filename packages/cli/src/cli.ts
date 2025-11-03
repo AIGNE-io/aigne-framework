@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { existsSync, realpathSync, statSync } from "node:fs";
+import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import chalk from "chalk";
 import { config } from "dotenv-flow";
 import { createAIGNECommand } from "./commands/aigne.js";
@@ -35,7 +36,12 @@ export default createAIGNECommand({ argv, aigneFilePath })
   .catch((error: Error) => {
     if (error.name !== "ExitPromptError") {
       console.log(""); // Add an empty line for better readability
-      console.error(`${chalk.red("Error:")} ${highlightUrl(error.message)}`);
+
+      if (logger.enabled(LogLevel.ERROR)) {
+        console.error(chalk.red(error.stack));
+      } else {
+        console.error(`${chalk.red("Error:")} ${highlightUrl(error.message)}`);
+      }
     }
     process.exit(1);
   });

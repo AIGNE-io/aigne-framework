@@ -78,21 +78,77 @@ pnpm start
 
 ## How Memory Works
 
-This example uses the `FSMemory` plugin from `@aigne/agent-library` to persist conversation history. The memory is stored in files within the `memories` directory, allowing the chatbot to remember previous interactions across different chat sessions.
+The memory functionality in this example is implemented using the `history` module and `UserProfileMemory` module,
+which are part of the AIGNE Framework's Augmented File System (AFS). Here's a brief overview of how memory is recorded and retrieved during conversations.
 
-Key features of the memory implementation:
+### Recording Conversations
 
-* Conversations are stored in a file system for persistence
-* The chatbot can recall previous interactions even after restarting
-* You can test this by chatting with the bot, closing the session, and starting a new one
+1. When the user sends a message and got a response from the AI model,
+  the conversation pair (user message and AI response) is stored in the `history` module of the `AFS`.
+2. The `UserProfileMemory` module extracts relevant user profile information (by analyzing the conversation history)
+  from the conversation and stores it in the `user_profile` module of the `AFS`.
 
-## Example Usage
+### Retrieving Conversations
 
-Try using the chatbot in these ways to test its memory capabilities:
+1. Load User Profile Memory and prepare to inject into the system prompt to let the agent know about the user profile.
 
-1. Introduce yourself to the chatbot
-2. Ask it a question or have a conversation
-3. Close the session and restart the chatbot
-4. Ask the chatbot if it remembers your previous conversation
+```text
+You are a friendly chatbot
 
-The chatbot should be able to recall information from your previous interactions.
+<related-memories>
+- |
+  name:
+    - name: Bob
+  interests:
+    - content: likes blue color
+
+</related-memories>
+```
+
+2. Inject conversation history into the chat messages
+
+```json
+[
+  {
+    "role": "system",
+    "content": "You are a friendly chatbot ..." // UserProfileMemory injected here
+  },
+  // Followed by nearby conversation history
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "I'm Bob and I like blue color"
+      }
+    ]
+  },
+  {
+    "role": "agent",
+    "content": [
+      {
+        "type": "text",
+        "text": "Nice to meet you, Bob! Blue is a great color.\n\nHow can I help you today?"
+      }
+    ]
+  },
+  // Here is the last user message
+  {
+    "role": "user",
+    "content": [
+      {
+        "type": "text",
+        "text": "What is my favorite color?"
+      }
+    ]
+  }
+]
+```
+
+3. The AI model processes the injected messages and generates a response based on the user's profile and conversation history.
+
+AI Response:
+
+```text
+You mentioned earlier that you like the color blue
+```

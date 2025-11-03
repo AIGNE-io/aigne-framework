@@ -14,6 +14,9 @@ await runWithAIGNE(
       afs: new AFS({ storage: { url: "file:./memory.sqlite3" } }).use(
         new UserProfileMemory({ context: aigne.newContext() }),
       ),
+      afsConfig: {
+        injectHistory: true,
+      },
     }),
   {
     chatLoopOptions: {

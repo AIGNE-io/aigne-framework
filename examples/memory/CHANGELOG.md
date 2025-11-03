@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.10.68-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.67...example-memory-v0.10.68-beta) (2025-11-03)
+
+
+### Bug Fixes
+
+* **examples:** enable history for memory example & update readme ([#690](https://github.com/AIGNE-io/aigne-framework/issues/690)) ([93b4185](https://github.com/AIGNE-io/aigne-framework/commit/93b41850425cc762aae9dec2516e655aa249bfef))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-user-profile-memory bumped to 1.0.4-beta
+    * @aigne/cli bumped to 1.53.1-beta
+    * @aigne/core bumped to 1.65.1-beta
+    * @aigne/default-memory bumped to 1.2.14-beta
+    * @aigne/fs-memory bumped to 1.0.51-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta
+
 ## [0.10.67](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.67-beta.9...example-memory-v0.10.67) (2025-10-31)
 
 

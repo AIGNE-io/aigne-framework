@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-system-fs-v1.0.3...example-afs-system-fs-v1.0.4-beta) (2025-11-03)
+
+
+### Bug Fixes
+
+* **examples:** enable history for memory example & update readme ([#690](https://github.com/AIGNE-io/aigne-framework/issues/690)) ([93b4185](https://github.com/AIGNE-io/aigne-framework/commit/93b41850425cc762aae9dec2516e655aa249bfef))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-system-fs bumped to 1.0.4-beta
+    * @aigne/cli bumped to 1.53.1-beta
+    * @aigne/core bumped to 1.65.1-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta
+
 ## [1.0.3](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-system-fs-v1.0.3-beta.9...example-afs-system-fs-v1.0.3) (2025-10-31)
 
 

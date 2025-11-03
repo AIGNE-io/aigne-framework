@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.83.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0...aigne-framework-v1.83.1-beta) (2025-11-03)
+
+
+### Bug Fixes
+
+* **examples:** enable history for memory example & update readme ([#690](https://github.com/AIGNE-io/aigne-framework/issues/690)) ([93b4185](https://github.com/AIGNE-io/aigne-framework/commit/93b41850425cc762aae9dec2516e655aa249bfef))
+* **observability:** enhance trace detail panel with improved JSON viewer and cost tracking ([#689](https://github.com/AIGNE-io/aigne-framework/issues/689)) ([1cddb6b](https://github.com/AIGNE-io/aigne-framework/commit/1cddb6ba1737c32aba045e34758d77416fb91fa0))
+
 ## [1.83.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.8...aigne-framework-v1.83.0) (2025-10-31)
 
 ## [1.83.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.0-beta.7...aigne-framework-v1.83.0-beta.8) (2025-10-31)

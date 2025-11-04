@@ -92,5 +92,5 @@ export async function serveMCPServerFromDir(options: {
 
   console.log(`MCP server is running on http://${options.host}:${port}${options.pathname}`);
 
-  await new Promise(() => {}); // Keep the server running
+  if (!process.env.CI && process.env.NODE_ENV !== "test") await new Promise(() => {}); // Keep the server running
 }

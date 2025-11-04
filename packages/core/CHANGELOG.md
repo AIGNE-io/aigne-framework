@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.65.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.1-beta...core-v1.65.1-beta.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* add fetch utility with timeout and enhanced error handling ([#694](https://github.com/AIGNE-io/aigne-framework/issues/694)) ([c2d4076](https://github.com/AIGNE-io/aigne-framework/commit/c2d4076ec590150d2751591a4f723721f78381e9))
+
 ## [1.65.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.0...core-v1.65.1-beta) (2025-11-03)
 
 

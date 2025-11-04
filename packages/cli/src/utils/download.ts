@@ -2,6 +2,7 @@ import { mkdir } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { finished } from "node:stream/promises";
 import type { ReadableStream } from "node:stream/web";
+import { fetch } from "@aigne/core/utils/fetch.js";
 import { x } from "tar";
 
 export async function downloadAndExtract(
@@ -9,13 +10,7 @@ export async function downloadAndExtract(
   dir: string,
   options: { strip?: number } = {},
 ) {
-  const response = await fetch(url).catch((error) => {
-    throw new Error(`Failed to download package from ${url}: ${error.message}`);
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to download package from ${url}: ${response.statusText}`);
-  }
+  const response = await fetch(url);
 
   if (!response.body) {
     throw new Error(`Failed to download package from ${url}: Unexpected to get empty response`);

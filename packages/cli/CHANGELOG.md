@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.53.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.53.1-beta.1...cli-v1.53.1-beta.2) (2025-11-04)
+
+
+### Bug Fixes
+
+* add fetch utility with timeout and enhanced error handling ([#694](https://github.com/AIGNE-io/aigne-framework/issues/694)) ([c2d4076](https://github.com/AIGNE-io/aigne-framework/commit/c2d4076ec590150d2751591a4f723721f78381e9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-system-fs bumped to 1.0.4-beta.2
+    * @aigne/agent-library bumped to 1.21.51-beta.1
+    * @aigne/agentic-memory bumped to 1.0.51-beta.1
+    * @aigne/aigne-hub bumped to 0.10.5-beta.1
+    * @aigne/core bumped to 1.65.1-beta.1
+    * @aigne/default-memory bumped to 1.2.14-beta.1
+    * @aigne/openai bumped to 0.16.5-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.1
+
 ## [1.53.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.53.1-beta...cli-v1.53.1-beta.1) (2025-11-03)
 
 

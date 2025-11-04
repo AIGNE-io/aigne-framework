@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.5-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.5-beta...ideogram-v0.4.5-beta.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* add fetch utility with timeout and enhanced error handling ([#694](https://github.com/AIGNE-io/aigne-framework/issues/694)) ([c2d4076](https://github.com/AIGNE-io/aigne-framework/commit/c2d4076ec590150d2751591a4f723721f78381e9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.1-beta.1
+
 ## [0.4.5-beta](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.4...ideogram-v0.4.5-beta) (2025-11-03)
 
 

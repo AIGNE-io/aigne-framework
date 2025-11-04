@@ -3,6 +3,7 @@ import { spawn } from "node:child_process";
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { fetch } from "@aigne/core/utils/fetch.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
@@ -494,7 +495,6 @@ export async function getNpmTgzInfo(
   { version, beta }: { version?: string; beta?: boolean } = {},
 ): Promise<{ version: string; url: string }> {
   const res = await fetch(joinURL("https://registry.npmjs.org", name));
-  if (!res.ok) throw new Error(`Failed to fetch package info for ${name}: ${res.statusText}`);
   const data = await res.json();
 
   let targetVersion: string;

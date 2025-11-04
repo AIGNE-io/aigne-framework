@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.53.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.53.1-beta.2...cli-v1.53.1-beta.3) (2025-11-04)
+
+
+### Bug Fixes
+
+* **cli:** optimize app startup by restructuring CLI application loading ([#698](https://github.com/AIGNE-io/aigne-framework/issues/698)) ([20c5059](https://github.com/AIGNE-io/aigne-framework/commit/20c50591bbd9a958b29409eca3ede5e341db2b7d))
+* update package to latest ([#699](https://github.com/AIGNE-io/aigne-framework/issues/699)) ([9877f6d](https://github.com/AIGNE-io/aigne-framework/commit/9877f6d1975362338db4eb47a2bf3564114c3cf8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-system-fs bumped to 1.0.4-beta.3
+    * @aigne/agent-library bumped to 1.21.51-beta.2
+    * @aigne/agentic-memory bumped to 1.0.51-beta.2
+    * @aigne/aigne-hub bumped to 0.10.5-beta.2
+    * @aigne/core bumped to 1.65.1-beta.2
+    * @aigne/default-memory bumped to 1.2.14-beta.2
+    * @aigne/observability-api bumped to 0.11.5-beta.1
+    * @aigne/openai bumped to 0.16.5-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.2
+
 ## [1.53.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.53.1-beta.1...cli-v1.53.1-beta.2) (2025-11-04)
 
 

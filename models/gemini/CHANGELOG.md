@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.5-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.5-beta.1...gemini-v0.14.5-beta.2) (2025-11-04)
+
+
+### Bug Fixes
+
+* **docs:** update video mode docs ([#695](https://github.com/AIGNE-io/aigne-framework/issues/695)) ([d691001](https://github.com/AIGNE-io/aigne-framework/commit/d69100169457c16c14f2f3e2f7fcd6b2a99330f3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.1-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.2
+
 ## [0.14.5-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.5-beta...gemini-v0.14.5-beta.1) (2025-11-04)
 
 

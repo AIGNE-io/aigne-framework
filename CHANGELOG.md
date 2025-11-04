@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.83.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.1-beta.2...aigne-framework-v1.83.1-beta.3) (2025-11-04)
+
+
+### Bug Fixes
+
+* **cli:** optimize app startup by restructuring CLI application loading ([#698](https://github.com/AIGNE-io/aigne-framework/issues/698)) ([20c5059](https://github.com/AIGNE-io/aigne-framework/commit/20c50591bbd9a958b29409eca3ede5e341db2b7d))
+* **docs:** update video mode docs ([#695](https://github.com/AIGNE-io/aigne-framework/issues/695)) ([d691001](https://github.com/AIGNE-io/aigne-framework/commit/d69100169457c16c14f2f3e2f7fcd6b2a99330f3))
+* update package to latest ([#699](https://github.com/AIGNE-io/aigne-framework/issues/699)) ([9877f6d](https://github.com/AIGNE-io/aigne-framework/commit/9877f6d1975362338db4eb47a2bf3564114c3cf8))
+
 ## [1.83.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.1-beta.1...aigne-framework-v1.83.1-beta.2) (2025-11-04)
 
 

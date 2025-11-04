@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.10.5-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.5-beta.1...aigne-hub-v0.10.5-beta.2) (2025-11-04)
+
+
+### Bug Fixes
+
+* **cli:** optimize app startup by restructuring CLI application loading ([#698](https://github.com/AIGNE-io/aigne-framework/issues/698)) ([20c5059](https://github.com/AIGNE-io/aigne-framework/commit/20c50591bbd9a958b29409eca3ede5e341db2b7d))
+* **docs:** update video mode docs ([#695](https://github.com/AIGNE-io/aigne-framework/issues/695)) ([d691001](https://github.com/AIGNE-io/aigne-framework/commit/d69100169457c16c14f2f3e2f7fcd6b2a99330f3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.5-beta.2
+    * @aigne/bedrock bumped to 0.10.10-beta.2
+    * @aigne/core bumped to 1.65.1-beta.2
+    * @aigne/deepseek bumped to 0.7.51-beta.2
+    * @aigne/doubao bumped to 1.1.5-beta.2
+    * @aigne/gemini bumped to 0.14.5-beta.2
+    * @aigne/ideogram bumped to 0.4.5-beta.2
+    * @aigne/ollama bumped to 0.7.51-beta.2
+    * @aigne/open-router bumped to 0.7.51-beta.2
+    * @aigne/openai bumped to 0.16.5-beta.2
+    * @aigne/poe bumped to 1.0.31-beta.2
+    * @aigne/transport bumped to 0.15.14-beta.2
+    * @aigne/xai bumped to 0.7.51-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.2
+
 ## [0.10.5-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.5-beta...aigne-hub-v0.10.5-beta.1) (2025-11-04)
 
 

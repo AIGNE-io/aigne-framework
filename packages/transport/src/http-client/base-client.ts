@@ -12,6 +12,7 @@ import { pick, tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import { ChatModelName } from "../constants.js";
 
 const DEFAULT_MAX_RECONNECTS = 3;
+const TIMEOUT = (process.env.TIMEOUT && parseInt(process.env.TIMEOUT, 10)) || 60e3; // default timeout 60 seconds
 
 /**
  * Options for invoking an agent through the BaseClient.
@@ -170,11 +171,18 @@ export class BaseClient {
   async fetch(url: string, init?: BaseClientInvokeOptions["fetchOptions"]): Promise<Response> {
     const { default: retry } = await import("p-retry");
 
-    const result = await retry(() => fetch(url, init), {
-      retries: init?.maxRetries ?? DEFAULT_MAX_RECONNECTS,
-      onFailedAttempt: (error) => {
-        logger.warn("Retrying fetch request due to error:", error);
+    const retries = init?.maxRetries ?? DEFAULT_MAX_RECONNECTS;
+
+    const result = await retry(
+      () => fetch(url, { ...init, timeout: TIMEOUT, skipResponseCheck: true }),
+      {
+        retries,
+        onFailedAttempt: (ctx) => {
+          logger.warn(`Retrying fetch ${url} due to error:`, ctx);
+        },
       },
+    ).catch((error) => {
+      throw new Error(`Failed to fetch ${url} after ${retries} retries: ${error.message}`);
     });
 
     if (!result.ok) {

@@ -2,7 +2,7 @@ const TIMEOUT = (process.env.TIMEOUT && parseInt(process.env.TIMEOUT, 10)) || 8e
 
 export async function fetch(
   input: RequestInfo,
-  init?: RequestInit & { timeout?: number },
+  init?: RequestInit & { timeout?: number; skipResponseCheck?: boolean },
 ): Promise<Response> {
   const url =
     typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
@@ -10,7 +10,9 @@ export async function fetch(
   const timeout = init?.timeout || TIMEOUT;
 
   const controller = timeout ? new AbortController() : undefined;
-  const timeoutId = controller ? setTimeout(() => controller.abort(), timeout) : undefined;
+  const timeoutId = controller
+    ? setTimeout(() => controller.abort(new Error(`Timeout after ${timeout}ms`)), timeout)
+    : undefined;
 
   try {
     const response = await globalThis
@@ -19,15 +21,13 @@ export async function fetch(
         signal: controller?.signal,
       })
       .catch((error) => {
-        const e = new Error(`Fetch ${url} error: ${error.message}`);
-        e.stack = error.stack;
-        return Promise.reject(e);
+        throw new Error(`Fetch ${url} error: ${error.message}`);
       });
 
     // Clear the timeout if the fetch completes successfully
     clearTimeout(timeoutId);
 
-    if (!response.ok) {
+    if (!init?.skipResponseCheck && !response.ok) {
       const text = await response.text().catch(() => "");
       throw new Error(`Fetch ${url} error: ${response.status} ${response.statusText} ${text}`);
     }
@@ -36,9 +36,7 @@ export async function fetch(
 
     response.json = () =>
       json().catch((error) => {
-        const e = new Error(`Parse JSON from ${url} error: ${error.message}`);
-        e.stack = error.stack;
-        return Promise.reject(e);
+        throw new Error(`Parse JSON from ${url} error: ${error.message}`);
       });
 
     return response;

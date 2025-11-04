@@ -1,4 +1,4 @@
-const TIMEOUT = (process.env.TIMEOUT && parseInt(process.env.TIMEOUT, 10)) || 15e3; // default timeout 15 seconds
+const TIMEOUT = (process.env.TIMEOUT && parseInt(process.env.TIMEOUT, 10)) || 8e3; // default timeout 8 seconds
 
 export async function fetch(
   input: RequestInfo,

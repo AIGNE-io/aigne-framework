@@ -31,8 +31,10 @@ export async function fetch(
       throw new Error(`Fetch ${url} error: ${response.status} ${response.statusText} ${text}`);
     }
 
+    const json = response.json.bind(response);
+
     response.json = () =>
-      response.json().catch((error) => {
+      json().catch((error) => {
         error.message = `Parse JSON from ${url} error: ${error.message}`;
         return Promise.reject(error);
       });

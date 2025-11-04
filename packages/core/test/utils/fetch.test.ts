@@ -51,3 +51,15 @@ test("fetch should custom error message on error response", async () => {
     `[Error: Fetch https://example.com error: 404 Not Found Not Found]`,
   );
 });
+
+test("fetch should catch json error and custom error message", async () => {
+  fetchSpy.mockResolvedValueOnce(new Response("Invalid JSON", { status: 200, statusText: "OK" }));
+
+  const response = fetch("https://example.com");
+
+  const json = response.then((res) => res.json());
+
+  expect(json).rejects.toMatchInlineSnapshot(
+    `[SyntaxError: Parse JSON from https://example.com error: Failed to parse JSON]`,
+  );
+});

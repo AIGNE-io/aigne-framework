@@ -15,7 +15,7 @@ interface JsonViewProps {
   truncateStrings?: boolean;
 }
 
-const truncateString = (str: string, maxLength = 20): string => {
+const truncateString = (str: string, maxLength = 200): string => {
   if (str.length <= maxLength * 2) return str;
 
   return `${str.slice(0, maxLength)}......${str.slice(-maxLength)}`;

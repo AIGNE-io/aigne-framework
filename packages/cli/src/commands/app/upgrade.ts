@@ -117,29 +117,43 @@ export async function loadApplication(
 
   const beta = options.beta ?? check?.version?.includes("beta");
 
-  if (check && !check.expired) {
-    const aigne = await loadAIGNE({
-      path: dir,
-      skipModelLoading: options.skipModelLoading,
-      modelOptions: options.modelOptions,
-      imageModelOptions: options.imageModelOptions,
-      metadata: {
-        appName: packageName,
-        appVersion: check?.version,
-      },
-    }).catch(async (error) => {
-      await withSpinner("", async () => {
-        await rm(options.dir, { recursive: true, force: true });
-        await mkdir(options.dir, { recursive: true });
+  if (check) {
+    let needUpdate = check.expired;
+
+    if (check.expired) {
+      await withSpinner("Checking updates...", async () => {
+        const tgz = await getNpmTgzInfo(packageName, { beta });
+        if (tgz.version === check.version) {
+          await writeInstallationMetadata(dir, { installedAt: Date.now() });
+          needUpdate = false;
+        }
+      });
+    }
+
+    if (!needUpdate) {
+      const aigne = await loadAIGNE({
+        path: dir,
+        skipModelLoading: options.skipModelLoading,
+        modelOptions: options.modelOptions,
+        imageModelOptions: options.imageModelOptions,
+        metadata: {
+          appName: packageName,
+          appVersion: check?.version,
+        },
+      }).catch(async (error) => {
+        await withSpinner("", async () => {
+          await rm(options.dir, { recursive: true, force: true });
+          await mkdir(options.dir, { recursive: true });
+        });
+
+        const message = `⚠️ Failed to load ${packageName}, trying to reinstall: ${error.message}`;
+
+        throw beta ? new NeedReinstallBetaError(message) : new NeedReinstallError(message);
       });
 
-      const message = `⚠️ Failed to load ${packageName}, trying to reinstall: ${error.message}`;
-
-      throw beta ? new NeedReinstallBetaError(message) : new NeedReinstallError(message);
-    });
-
-    if (aigne) {
-      return { aigne, version: check.version, isCache: true };
+      if (aigne) {
+        return { aigne, version: check.version, isCache: true };
+      }
     }
   }
 

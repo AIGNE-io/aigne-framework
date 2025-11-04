@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.10.5-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.5-beta...aigne-hub-v0.10.5-beta.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* add fetch utility with timeout and enhanced error handling ([#694](https://github.com/AIGNE-io/aigne-framework/issues/694)) ([c2d4076](https://github.com/AIGNE-io/aigne-framework/commit/c2d4076ec590150d2751591a4f723721f78381e9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.5-beta.1
+    * @aigne/bedrock bumped to 0.10.10-beta.1
+    * @aigne/core bumped to 1.65.1-beta.1
+    * @aigne/deepseek bumped to 0.7.51-beta.1
+    * @aigne/doubao bumped to 1.1.5-beta.1
+    * @aigne/gemini bumped to 0.14.5-beta.1
+    * @aigne/ideogram bumped to 0.4.5-beta.1
+    * @aigne/ollama bumped to 0.7.51-beta.1
+    * @aigne/open-router bumped to 0.7.51-beta.1
+    * @aigne/openai bumped to 0.16.5-beta.1
+    * @aigne/poe bumped to 1.0.31-beta.1
+    * @aigne/transport bumped to 0.15.14-beta.1
+    * @aigne/xai bumped to 0.7.51-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.1
+
 ## [0.10.5-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.4...aigne-hub-v0.10.5-beta) (2025-11-03)
 
 

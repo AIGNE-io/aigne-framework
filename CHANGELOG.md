@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.83.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.1-beta.1...aigne-framework-v1.83.1-beta.2) (2025-11-04)
+
+
+### Bug Fixes
+
+* add fetch utility with timeout and enhanced error handling ([#694](https://github.com/AIGNE-io/aigne-framework/issues/694)) ([c2d4076](https://github.com/AIGNE-io/aigne-framework/commit/c2d4076ec590150d2751591a4f723721f78381e9))
+
 ## [1.83.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.1-beta...aigne-framework-v1.83.1-beta.1) (2025-11-03)
 
 

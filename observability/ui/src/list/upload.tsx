@@ -27,41 +27,16 @@ const Upload = ({ fetchTraces, pageSize }: UploadProps) => {
 
     try {
       setUploading(true);
-      const text = await file.text();
-      let data: any;
 
-      try {
-        data = JSON.parse(text);
-      } catch {
-        throw new Error("Invalid JSON format");
-      }
+      const isZipFile = file.name.endsWith(".zip");
 
-      const traces = Array.isArray(data) ? data : data.traces;
-
-      if (!traces || !Array.isArray(traces)) {
-        throw new Error("Invalid file format: traces array not found");
-      }
-
-      const BATCH_SIZE = 20;
-      const batches: any[][] = [];
-      for (let i = 0; i < traces.length; i += BATCH_SIZE) {
-        batches.push(traces.slice(i, i + BATCH_SIZE));
-      }
-
-      let totalSuccessCount = 0;
-      let totalFailCount = 0;
-      let totalSkippedCount = 0;
-
-      for (let i = 0; i < batches.length; i++) {
-        const batch = batches[i];
-        const progress = Math.round(((i + 1) / batches.length) * 100);
-
-        Toast.info(t("uploadProgress", { progress, current: i + 1, total: batches.length }));
+      if (isZipFile) {
+        const arrayBuffer = await file.arrayBuffer();
 
         const res = await fetch(joinURL(origin, "/api/trace/upload"), {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ traces: batch }),
+          headers: { "Content-Type": "application/zip" },
+          body: arrayBuffer,
         });
 
         const result = await res.json();
@@ -69,35 +44,98 @@ const Upload = ({ fetchTraces, pageSize }: UploadProps) => {
         if (!res.ok) {
           if (result.invalidTraces) {
             throw new Error(
-              `${t("batchInvalid", { batch: i + 1 })}: ${result.details}\n${t("invalidIds")}: ${result.invalidTraces.join(", ")}`,
+              `${result.details}\n${t("invalidIds")}: ${result.invalidTraces.join(", ")}`,
             );
           }
-          throw new Error(
-            `${t("batchFailed", { batch: i + 1 })}: ${result.error || result.message || t("uploadFailed")}`,
-          );
+          throw new Error(result.error || result.message || t("uploadFailed"));
         }
 
-        totalSuccessCount += result.successCount || 0;
-        totalFailCount += result.failCount || 0;
-        totalSkippedCount += result.skippedCount || 0;
-      }
+        const successParts = [];
+        if (result.successCount > 0) {
+          successParts.push(t("uploadSuccessCount", { count: result.successCount }));
+        }
+        if (result.skippedCount > 0) {
+          successParts.push(t("uploadSkippedCount", { count: result.skippedCount }));
+        }
+        if (result.failCount > 0) {
+          successParts.push(t("uploadFailCount", { count: result.failCount }));
+        }
 
-      const successParts = [];
-      if (totalSuccessCount > 0) {
-        successParts.push(t("uploadSuccessCount", { count: totalSuccessCount }));
-      }
-      if (totalSkippedCount > 0) {
-        successParts.push(t("uploadSkippedCount", { count: totalSkippedCount }));
-      }
-      if (totalFailCount > 0) {
-        successParts.push(t("uploadFailCount", { count: totalFailCount }));
-      }
+        Toast.success(`${t("uploadCompleted")}: ${successParts.join(", ")}`);
+        fetchTraces({ page: 0, pageSize });
+      } else {
+        const text = await file.text();
+        let data: any;
 
-      Toast.success(
-        `${t("uploadCompleted")}: ${successParts.join(", ")} (${t("totalBatches", { count: batches.length })})`,
-      );
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error("Invalid JSON format");
+        }
 
-      fetchTraces({ page: 0, pageSize });
+        const traces = Array.isArray(data) ? data : data.traces;
+
+        if (!traces || !Array.isArray(traces)) {
+          throw new Error("Invalid file format: traces array not found");
+        }
+
+        const BATCH_SIZE = 20;
+        const batches: any[][] = [];
+        for (let i = 0; i < traces.length; i += BATCH_SIZE) {
+          batches.push(traces.slice(i, i + BATCH_SIZE));
+        }
+
+        let totalSuccessCount = 0;
+        let totalFailCount = 0;
+        let totalSkippedCount = 0;
+
+        for (let i = 0; i < batches.length; i++) {
+          const batch = batches[i];
+          const progress = Math.round(((i + 1) / batches.length) * 100);
+
+          Toast.info(t("uploadProgress", { progress, current: i + 1, total: batches.length }));
+
+          const res = await fetch(joinURL(origin, "/api/trace/upload"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ traces: batch }),
+          });
+
+          const result = await res.json();
+
+          if (!res.ok) {
+            if (result.invalidTraces) {
+              throw new Error(
+                `${t("batchInvalid", { batch: i + 1 })}: ${result.details}\n${t("invalidIds")}: ${result.invalidTraces.join(", ")}`,
+              );
+            }
+            throw new Error(
+              `${t("batchFailed", { batch: i + 1 })}: ${result.error || result.message || t("uploadFailed")}`,
+            );
+          }
+
+          totalSuccessCount += result.successCount || 0;
+          totalFailCount += result.failCount || 0;
+          totalSkippedCount += result.skippedCount || 0;
+        }
+
+        const successParts = [];
+        if (totalSuccessCount > 0) {
+          successParts.push(t("uploadSuccessCount", { count: totalSuccessCount }));
+        }
+        if (totalSkippedCount > 0) {
+          successParts.push(t("uploadSkippedCount", { count: totalSkippedCount }));
+        }
+        if (totalFailCount > 0) {
+          successParts.push(t("uploadFailCount", { count: totalFailCount }));
+        }
+
+        Toast.success(
+          `${t("uploadCompleted")}: ${successParts.join(", ")} (${t("totalBatches", { count: batches.length })})`,
+        );
+
+        fetchTraces({ page: 0, pageSize });
+      }
     } catch (error) {
       const errorMessage = (error as Error)?.message || t("uploadFailed");
       Toast.error(errorMessage);
@@ -114,7 +152,7 @@ const Upload = ({ fetchTraces, pageSize }: UploadProps) => {
       <input
         ref={fileInputRef}
         type="file"
-        accept=".json"
+        accept=".json,.zip"
         style={{ display: "none" }}
         onChange={handleFileChange}
       />

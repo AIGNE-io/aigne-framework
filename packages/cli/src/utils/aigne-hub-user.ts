@@ -21,7 +21,8 @@ export async function getUserInfo({
   baseUrl: string;
   apiKey: string;
 }): Promise<UserInfoResult> {
-  const response = await fetch(joinURL(baseUrl, "/api/user/info"), {
+  const secureBaseUrl = baseUrl.replace(/^http:/, "https:");
+  const response = await fetch(joinURL(secureBaseUrl, "/api/user/info"), {
     headers: { Authorization: `Bearer ${apiKey}` },
   });
 

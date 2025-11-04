@@ -1,9 +1,11 @@
 import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
+import archiver from "archiver";
 import { and, between, desc, eq, inArray, isNotNull, isNull, like, or, sql } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import express, { type Request, type Response, type Router } from "express";
 import type SSE from "express-sse";
+import unzipper from "unzipper";
 import { parse, stringify } from "yaml";
 import { z } from "zod";
 import { insertTrace } from "../../core/util.js";
@@ -531,11 +533,21 @@ export default ({
           ? await db.select().from(Trace).where(inArray(Trace.rootId, rootIds)).execute()
           : selectedTraces;
 
-      const now = new Date().toISOString();
-      res.setHeader("Content-Type", "application/json");
-      res.setHeader("Content-Disposition", `attachment; filename=traces-${now}.json`);
+      const now = new Date().toISOString().replace(/[:.]/g, "-");
 
-      res.json(allTraces);
+      const archive = archiver("zip", { zlib: { level: 9 } });
+      const jsonContent = JSON.stringify(allTraces, null, 2);
+
+      res.setHeader("Content-Type", "application/zip");
+      res.setHeader("Content-Disposition", `attachment; filename=traces-${now}.zip`);
+
+      archive.on("error", (err: Error) => {
+        throw err;
+      });
+
+      archive.pipe(res);
+      archive.append(jsonContent, { name: `traces-${now}.json` });
+      await archive.finalize();
     } catch (error) {
       console.error("Failed to download traces:", error);
       res.status(500).json({ error: "Failed to download traces" });
@@ -546,9 +558,47 @@ export default ({
     const db = req.app.locals.db as LibSQLDatabase;
 
     try {
-      const { traces } = req.body;
+      let traces: any[];
 
-      if (!traces || !Array.isArray(traces)) {
+      const contentType = req.headers["content-type"];
+
+      if (
+        contentType?.includes("application/zip") ||
+        contentType?.includes("application/x-zip-compressed")
+      ) {
+        const chunks: Buffer[] = [];
+
+        req.on("data", (chunk: Buffer) => {
+          chunks.push(chunk);
+        });
+
+        await new Promise<void>((resolve, reject) => {
+          req.on("end", () => resolve());
+          req.on("error", reject);
+        });
+
+        const zipBuffer = Buffer.concat(chunks);
+        const directory = await unzipper.Open.buffer(zipBuffer);
+
+        const jsonFile = directory.files.find((file: any) => file.path.endsWith(".json"));
+
+        if (!jsonFile) {
+          res.status(400).json({ error: "No JSON file found in zip archive" });
+          return;
+        }
+
+        const jsonContent = await jsonFile.buffer();
+        traces = JSON.parse(jsonContent.toString("utf-8"));
+      } else {
+        const body = req.body as any;
+        traces = body?.traces || body;
+
+        if (!Array.isArray(traces) && (traces as any)?.traces) {
+          traces = (traces as any).traces;
+        }
+      }
+
+      if (!Array.isArray(traces)) {
         res.status(400).json({ error: "Invalid data format: traces array is required" });
         return;
       }

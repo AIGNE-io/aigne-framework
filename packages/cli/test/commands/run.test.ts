@@ -3,8 +3,8 @@ import { randomUUID } from "node:crypto";
 import { stat } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join, relative } from "node:path";
+import * as runAgent from "@aigne/cli/commands/app/agent.js";
 import { createRunCommand } from "@aigne/cli/commands/run.js";
-import * as runAIGNEInChildProcess from "@aigne/cli/utils/workers/run-aigne-in-child-process.js";
 import yargs from "yargs";
 import { mockAIGNEPackage, mockAIGNEV1Package } from "../_mocks_/mock-aigne-package.js";
 
@@ -30,10 +30,9 @@ afterEach(() => {
 
 test("run command should call run chat loop correctly", async () => {
   const exit = spyOn(process, "exit").mockImplementation((() => {}) as any);
-  const runAIGNEInChildProcessSpy = spyOn(
-    runAIGNEInChildProcess,
-    "runAIGNEInChildProcess",
-  ).mockResolvedValue(undefined as any);
+  const runAIGNEInChildProcessSpy = spyOn(runAgent, "invokeAgent").mockResolvedValue(
+    undefined as any,
+  );
 
   const command = yargs().command(createRunCommand());
 
@@ -45,11 +44,8 @@ test("run command should call run chat loop correctly", async () => {
   process.chdir(testAgentsPath);
   await command.parseAsync(process.argv);
   expect(runAIGNEInChildProcessSpy).toHaveBeenCalledTimes(1);
-  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toMatchInlineSnapshot(
-    `"invokeCLIAgentFromDir"`,
-  );
-  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[1]).toEqual(
-    expect.objectContaining({ agent: "chat" }),
+  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toEqual(
+    expect.objectContaining({ agent: expect.objectContaining({ name: "chat" }) }),
   );
   process.chdir(cwd);
   runAIGNEInChildProcessSpy.mockClear();
@@ -58,11 +54,8 @@ test("run command should call run chat loop correctly", async () => {
   process.argv = ["run", testAgentsPath];
   await command.parseAsync(process.argv);
   expect(runAIGNEInChildProcessSpy).toHaveBeenCalledTimes(1);
-  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toMatchInlineSnapshot(
-    `"invokeCLIAgentFromDir"`,
-  );
-  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[1]).toEqual(
-    expect.objectContaining({ agent: "chat" }),
+  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toEqual(
+    expect.objectContaining({ agent: expect.objectContaining({ name: "chat" }) }),
   );
 
   // should run in specified directory of relative path
@@ -71,11 +64,8 @@ test("run command should call run chat loop correctly", async () => {
   process.argv = ["run", relativePath];
   await command.parseAsync(process.argv);
   expect(runAIGNEInChildProcessSpy).toHaveBeenCalledTimes(1);
-  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toMatchInlineSnapshot(
-    `"invokeCLIAgentFromDir"`,
-  );
-  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[1]).toEqual(
-    expect.objectContaining({ agent: "chat" }),
+  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toEqual(
+    expect.objectContaining({ agent: expect.objectContaining({ name: "chat" }) }),
   );
 
   exit.mockRestore();
@@ -84,10 +74,9 @@ test("run command should call run chat loop correctly", async () => {
 
 test("run command should download package and run correctly", async () => {
   const exit = spyOn(process, "exit").mockImplementation((() => {}) as any);
-  const runAIGNEInChildProcessSpy = spyOn(
-    runAIGNEInChildProcess,
-    "runAIGNEInChildProcess",
-  ).mockResolvedValue(undefined as any);
+  const runAIGNEInChildProcessSpy = spyOn(runAgent, "invokeAgent").mockResolvedValue(
+    undefined as any,
+  );
   const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(await mockAIGNEPackage())),
   );
@@ -103,11 +92,11 @@ test("run command should download package and run correctly", async () => {
   expect((await stat(join(path, "aigne.yaml"))).isFile()).toBeTrue();
 
   expect(runAIGNEInChildProcessSpy).toHaveBeenCalledTimes(1);
-  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toMatchInlineSnapshot(
-    `"invokeCLIAgentFromDir"`,
+  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toEqual(
+    expect.objectContaining({ agent: expect.objectContaining({ name: "chat" }) }),
   );
-  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[1]).toEqual(
-    expect.objectContaining({ agent: "chat" }),
+  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toEqual(
+    expect.objectContaining({ agent: expect.objectContaining({ name: "chat" }) }),
   );
 
   exit.mockRestore();
@@ -120,10 +109,9 @@ test("run command should convert package from v1 and run correctly", async () =>
     Promise.resolve(new Response(await mockAIGNEV1Package())),
   );
   const exit = spyOn(process, "exit").mockImplementation((() => {}) as any);
-  const runAIGNEInChildProcessSpy = spyOn(
-    runAIGNEInChildProcess,
-    "runAIGNEInChildProcess",
-  ).mockResolvedValue(undefined as any);
+  const runAIGNEInChildProcessSpy = spyOn(runAgent, "invokeAgent").mockResolvedValue(
+    undefined as any,
+  );
 
   const command = yargs().command(createRunCommand());
 
@@ -136,11 +124,8 @@ test("run command should convert package from v1 and run correctly", async () =>
   expect((await stat(join(path, "aigne.yaml"))).isFile()).toBeTrue();
 
   expect(runAIGNEInChildProcessSpy).toHaveBeenCalledTimes(1);
-  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toMatchInlineSnapshot(
-    `"invokeCLIAgentFromDir"`,
-  );
-  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[1]).toEqual(
-    expect.objectContaining({ agent: "chat" }),
+  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toEqual(
+    expect.objectContaining({ agent: expect.objectContaining({ name: "chat" }) }),
   );
 
   exit.mockRestore();
@@ -150,10 +135,9 @@ test("run command should convert package from v1 and run correctly", async () =>
 
 test("run command should parse model options correctly", async () => {
   const exit = spyOn(process, "exit").mockImplementation((() => {}) as any);
-  const runAIGNEInChildProcessSpy = spyOn(
-    runAIGNEInChildProcess,
-    "runAIGNEInChildProcess",
-  ).mockResolvedValue(undefined as any);
+  const runAIGNEInChildProcessSpy = spyOn(runAgent, "invokeAgent").mockResolvedValue(
+    undefined as any,
+  );
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
 
@@ -163,11 +147,8 @@ test("run command should parse model options correctly", async () => {
   await command.parseAsync(process.argv);
 
   expect(runAIGNEInChildProcessSpy).toHaveBeenCalledTimes(1);
-  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toMatchInlineSnapshot(
-    `"invokeCLIAgentFromDir"`,
-  );
-  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[1]).toEqual(
-    expect.objectContaining({ agent: "chat" }),
+  expect(runAIGNEInChildProcessSpy.mock.lastCall?.[0]).toEqual(
+    expect.objectContaining({ agent: expect.objectContaining({ name: "chat" }) }),
   );
 
   exit.mockRestore();
@@ -176,10 +157,9 @@ test("run command should parse model options correctly", async () => {
 
 test("run command should register commands correctly", async () => {
   const exit = spyOn(process, "exit").mockImplementation((() => {}) as any);
-  const runAIGNEInChildProcessSpy = spyOn(
-    runAIGNEInChildProcess,
-    "runAIGNEInChildProcess",
-  ).mockResolvedValue(undefined as any);
+  const runAIGNEInChildProcessSpy = spyOn(runAgent, "invokeAgent").mockResolvedValue(
+    undefined as any,
+  );
   const log = spyOn(console, "log").mockImplementation(() => {});
 
   const command = yargs().command(createRunCommand());
@@ -202,8 +182,7 @@ test("run command should register commands correctly", async () => {
 
     Options:
       -h, --help     Show help                                             [boolean]
-      -v, --version  Show version number                                   [boolean]
-    "
+      -v, --version  Show version number                                   [boolean]"
     ,
     ]
   `);
@@ -224,8 +203,7 @@ test("run command should register commands correctly", async () => {
 
     Options:
       -h, --help     Show help                                             [boolean]
-      -v, --version  Show version number                                   [boolean]
-    "
+      -v, --version  Show version number                                   [boolean]"
     ,
     ]
   `);
@@ -282,8 +260,7 @@ test("run command should register commands correctly", async () => {
           --log-level   Log level for detailed debugging information. Values:
                         silent, error, warn, info, debug[string] [default: "silent"]
       -h, --help        Show help                                          [boolean]
-      -v, --version     Show version number                                [boolean]
-    "
+      -v, --version     Show version number                                [boolean]"
     ,
     ]
   `);

@@ -271,7 +271,7 @@ export function findVideoModel(provider: string): {
 
 export const parseModel = (model: string) => {
   // replace first ':' with '/' to compatible with `provider:model-name` format
-  model = model.replace(/^(\w+)(:)/, "$1/");
+  model = model.replace(/^([\w-]+)(:)/, "$1/");
   const { provider, name } = model.match(/(?<provider>[^/]*)(\/(?<name>.*))?/)?.groups ?? {};
   return { provider: provider?.replace(/-/g, ""), model: name };
 };

@@ -48,14 +48,12 @@ export async function loadAIGNE({
   path,
   modelOptions,
   imageModelOptions,
-  printTips = false,
   skipModelLoading = false,
   metadata,
 }: {
   path?: string;
   modelOptions?: ChatModelInputOptions & LoadCredentialOptions;
   imageModelOptions?: ImageModelInputOptions & LoadCredentialOptions;
-  printTips?: boolean;
   skipModelLoading?: boolean;
   metadata?: AIGNEMetadata;
 }) {
@@ -99,7 +97,7 @@ export async function loadAIGNE({
     });
   }
 
-  if (printTips && !printed) {
+  if (!skipModelLoading && !printed) {
     printed = true;
 
     console.log(

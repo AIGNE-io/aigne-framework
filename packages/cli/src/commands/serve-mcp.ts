@@ -1,5 +1,5 @@
 import { isAbsolute, resolve } from "node:path";
-import type { AIGNEMetadata } from "@aigne/core/aigne/type.js";
+import type { AIGNE } from "@aigne/core";
 import { tryOrThrow } from "@aigne/core/utils/type-utils.js";
 import type { CommandModule } from "yargs";
 import { loadAIGNE } from "../utils/load-aigne.js";
@@ -10,6 +10,7 @@ interface ServeMCPOptions {
   host: string;
   port?: number;
   pathname: string;
+  aigneHubUrl?: string;
 }
 
 export const DEFAULT_PORT = () =>
@@ -64,29 +65,26 @@ export function createServeMCPCommand({
       const path = aigneFilePath || options.path;
       const absolutePath = isAbsolute(path) ? path : resolve(process.cwd(), path);
 
-      await serveMCPServerFromDir({ ...options, dir: absolutePath });
+      const aigne = await loadAIGNE({
+        path: absolutePath,
+        modelOptions: { aigneHubUrl: options.aigneHubUrl },
+      });
+
+      await serveMCPServerFromDir({ ...options, aigne });
     },
   };
 }
 
 export async function serveMCPServerFromDir(options: {
-  dir: string;
+  aigne: AIGNE;
   host: string;
   port?: number;
   pathname: string;
-  aigneHubUrl?: string;
-  metadata?: AIGNEMetadata;
 }) {
   const port = options.port || DEFAULT_PORT();
 
-  const aigne = await loadAIGNE({
-    path: options.dir,
-    modelOptions: { aigneHubUrl: options.aigneHubUrl },
-    metadata: options.metadata,
-  });
-
   await serveMCPServer({
-    aigne,
+    aigne: options.aigne,
     host: options.host,
     port,
     pathname: options.pathname,

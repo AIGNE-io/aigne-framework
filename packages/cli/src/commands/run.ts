@@ -2,7 +2,6 @@ import { cp, mkdir, rm } from "node:fs/promises";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import { exists } from "@aigne/agent-library/utils/fs.js";
-import { mapCliAgent } from "@aigne/core/utils/agent-utils.js";
 import { flat, isNonNullable } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { config } from "dotenv-flow";
@@ -12,8 +11,7 @@ import { isV1Package, toAIGNEPackage } from "../utils/agent-v1.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
 import { isUrl } from "../utils/url.js";
-import { serializeAgent } from "../utils/workers/run-aigne-in-child-process.js";
-import { agentCommandModule, cliAgentCommandModule } from "./app.js";
+import { agentCommandModule, cliAgentCommandModule } from "./app/agent.js";
 
 export function createRunCommand({
   aigneFilePath,
@@ -46,13 +44,13 @@ export function createRunCommand({
         }
       }
 
-      const { aigne, path } = await loadApplication(aigneFilePath || options.path || ".");
+      const { aigne } = await loadApplication(aigneFilePath || options.path || ".");
 
       const subYargs = yargs().scriptName("").usage("aigne run <path> <agent> [...options]");
 
       if (aigne.cli.chat) {
         subYargs.command({
-          ...agentCommandModule({ dir: path, agent: serializeAgent(aigne.cli.chat), chat: true }),
+          ...agentCommandModule({ aigne, agent: aigne.cli.chat, chat: true }),
           command: "$0",
         });
       }
@@ -60,14 +58,14 @@ export function createRunCommand({
       // Allow user to run all of agents in the AIGNE instances
       const allAgents = flat(aigne.agents, aigne.skills, aigne.cli.chat, aigne.mcpServer.agents);
       for (const agent of allAgents) {
-        subYargs.command(agentCommandModule({ dir: path, agent: serializeAgent(agent) }));
+        subYargs.command(agentCommandModule({ aigne, agent }));
       }
 
       for (const cliAgent of aigne.cli.agents ?? []) {
         subYargs.command(
           cliAgentCommandModule({
-            dir: path,
-            cliAgent: mapCliAgent(cliAgent, (a) => (a ? serializeAgent(a) : undefined)),
+            aigne,
+            cliAgent,
           }),
         );
       }

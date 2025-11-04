@@ -60,6 +60,6 @@ test("fetch should catch json error and custom error message", async () => {
   const json = response.then((res) => res.json());
 
   expect(json).rejects.toMatchInlineSnapshot(
-    `[SyntaxError: Parse JSON from https://example.com error: Failed to parse JSON]`,
+    `[Error: Parse JSON from https://example.com error: Failed to parse JSON]`,
   );
 });

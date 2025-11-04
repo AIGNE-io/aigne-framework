@@ -19,8 +19,9 @@ export async function fetch(
         signal: controller?.signal,
       })
       .catch((error) => {
-        error.message = `Fetch ${url} error: ${error.message}`;
-        return Promise.reject(error);
+        const e = new Error(`Fetch ${url} error: ${error.message}`);
+        e.stack = error.stack;
+        return Promise.reject(e);
       });
 
     // Clear the timeout if the fetch completes successfully
@@ -35,8 +36,9 @@ export async function fetch(
 
     response.json = () =>
       json().catch((error) => {
-        error.message = `Parse JSON from ${url} error: ${error.message}`;
-        return Promise.reject(error);
+        const e = new Error(`Parse JSON from ${url} error: ${error.message}`);
+        e.stack = error.stack;
+        return Promise.reject(e);
       });
 
     return response;

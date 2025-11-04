@@ -43,8 +43,8 @@
   "dependencies": {
     "@aigne/core": "workspace:^",
     "@aigne/openai": "workspace:^",
-    "@blocklet/did-space-js": "^1.1.35",
-    "@did-space/core": "^1.1.35",
+    "@blocklet/did-space-js": "^1.2.0",
+    "@did-space/core": "^1.2.0",
     "yaml": "^2.8.1",
     "zod": "^3.25.67"
   },

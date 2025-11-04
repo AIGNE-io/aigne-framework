@@ -37,7 +37,7 @@ const Download = ({ selectedIds, onReset }: DownloadProps) => {
       const a = document.createElement("a");
       a.href = downloadUrl;
       const now = new Date().toISOString().replace(/[:.]/g, "-").replace("T", "_").slice(0, 19);
-      a.download = `traces-selected-${now}.json`;
+      a.download = `traces-selected-${now}.zip`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(downloadUrl);

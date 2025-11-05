@@ -213,6 +213,11 @@ export class OpenAIChatModel extends ChatModel {
       ),
     };
 
+    if (model.includes("gpt-5") || model.includes("o1-")) {
+      delete body.temperature;
+      delete body.top_p;
+    }
+
     // For models that do not support tools use with JSON schema in same request,
     // so we need to handle the case where tools are not used and responseFormat is json
     if (!input.tools?.length && input.responseFormat?.type === "json_schema") {

@@ -375,12 +375,14 @@ export default ({
                   'seconds', JSON_EXTRACT(${Trace.attributes}, '$.output.seconds')
                 ),
                 'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag'),
-                'metadata', JSON_EXTRACT(${Trace.attributes}, '$.metadata')
+                'metadata', JSON_EXTRACT(${Trace.attributes}, '$.metadata'),
+                'taskTitle', JSON_EXTRACT(${Trace.attributes}, '$.taskTitle')
               )
             ELSE JSON_OBJECT(
               'output', JSON_OBJECT(),
               'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag'),
-              'metadata', JSON_EXTRACT(${Trace.attributes}, '$.metadata')
+              'metadata', JSON_EXTRACT(${Trace.attributes}, '$.metadata'),
+              'taskTitle', JSON_EXTRACT(${Trace.attributes}, '$.taskTitle')
             )
           END
         `,

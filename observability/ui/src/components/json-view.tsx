@@ -2,6 +2,7 @@ import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import Editor, { type OnMount } from "@monaco-editor/react";
 import Box from "@mui/material/Box";
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { truncateString } from "../libs/index.ts";
 import PreviewDialog from "./preview-dialog.tsx";
 
 export interface JsonViewRef {
@@ -14,12 +15,6 @@ interface JsonViewProps {
   wordWrap?: "on" | "off";
   truncateStrings?: boolean;
 }
-
-const truncateString = (str: string, maxLength = 200): string => {
-  if (str.length <= maxLength * 2) return str;
-
-  return `${str.slice(0, maxLength)}......${str.slice(-maxLength)}`;
-};
 
 const truncateJsonValues = (obj: any, truncateMap: Map<string, string> = new Map()): any => {
   if (typeof obj === "string") {

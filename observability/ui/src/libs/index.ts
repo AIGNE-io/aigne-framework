@@ -226,6 +226,12 @@ const clearModelPriceCache = () => {
   modelPriceCache.clear();
 };
 
+const truncateString = (str: string, maxLength = 200): string => {
+  if (str.length <= maxLength * 2) return str;
+
+  return `${str.slice(0, maxLength)}......${str.slice(-maxLength)}`;
+};
+
 export {
   getLocalizedFilename,
   findModelPrice,
@@ -233,5 +239,6 @@ export {
   getTraceStats,
   getTraceCostMap,
   clearModelPriceCache,
+  truncateString,
 };
 export type { TraceCostStats };

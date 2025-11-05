@@ -490,7 +490,7 @@ export class AIGNEContext implements Context {
     try {
       switch (eventName) {
         case "agentStarted": {
-          const { agent, input } = args[0] as ContextEventMap["agentStarted"][0];
+          const { agent, input, taskTitle } = args[0] as ContextEventMap["agentStarted"][0];
           span.updateName(agent.name);
 
           span.setAttribute("custom.trace_id", this.rootId);
@@ -504,6 +504,10 @@ export class AIGNEContext implements Context {
           span.setAttribute("custom.started_at", b.timestamp);
           span.setAttribute("input", JSON.stringify(input));
           span.setAttribute("agentTag", agent.tag ?? "UnknownAgent");
+
+          if (taskTitle) {
+            span.setAttribute("taskTitle", taskTitle);
+          }
 
           try {
             span.setAttribute("userContext", JSON.stringify(this.userContext));

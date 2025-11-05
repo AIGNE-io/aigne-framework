@@ -7,12 +7,14 @@ import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import { type ReactElement, useState } from "react";
+import { truncateString } from "../../libs/index.ts";
 import { parseDurationMs, parseDurationTime } from "../../utils/latency.ts";
 import { AgentTag } from "./agent-tag.tsx";
 import type { TraceData } from "./types.ts";
 
 type TraceItemProps = {
   name: string;
+  taskTitle?: string;
   duration: number;
   selected?: boolean;
   depth?: number;
@@ -32,6 +34,7 @@ type TraceItemProps = {
 
 function TraceItem({
   name,
+  taskTitle,
   duration,
   selected,
   depth = 0,
@@ -136,15 +139,20 @@ function TraceItem({
           {name}
         </Typography>
 
+        <Typography
+          sx={{
+            fontSize: 12,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            color: hasError ? "error.light" : "action.active",
+          }}
+        >
+          {`${taskTitle ? `(${truncateString(taskTitle, 20)})` : ""}`}
+        </Typography>
+
         {hasError && (
-          <ErrorIcon
-            sx={{
-              fontSize: 16,
-              color: "error.light",
-              opacity: 0.8,
-              flexShrink: 0,
-            }}
-          />
+          <ErrorIcon sx={{ fontSize: 16, color: "error.light", opacity: 0.8, flexShrink: 0 }} />
         )}
       </Box>
 
@@ -285,6 +293,7 @@ export function renderTraceItems({
         depth={depth}
         model={item.run?.attributes?.output?.model}
         agentTag={item.agentTag}
+        taskTitle={item.run?.attributes?.taskTitle}
         onSelect={() => onSelect?.(item.run)}
         hasChildren={hasChildren}
         isExpanded={isExpanded}

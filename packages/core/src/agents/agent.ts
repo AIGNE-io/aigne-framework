@@ -716,7 +716,12 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
     input = this.mergeDefaultInput(input);
 
     logger.debug("Invoke agent %s started with input: %O", this.name, input);
-    if (!this.disableEvents) opts.context.emit("agentStarted", { agent: this, input });
+    if (!this.disableEvents)
+      opts.context.emit("agentStarted", {
+        agent: this,
+        input,
+        taskTitle: await this.renderTaskTitle(input),
+      });
 
     try {
       const s = await this.callHooks("onStart", { input }, opts);

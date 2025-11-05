@@ -7,7 +7,6 @@ import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import { type ReactElement, useState } from "react";
-import { truncateString } from "../../libs/index.ts";
 import { parseDurationMs, parseDurationTime } from "../../utils/latency.ts";
 import { AgentTag } from "./agent-tag.tsx";
 import type { TraceData } from "./types.ts";
@@ -148,7 +147,7 @@ function TraceItem({
             color: hasError ? "error.light" : "action.active",
           }}
         >
-          {`${taskTitle ? `(${truncateString(taskTitle, 20)})` : ""}`}
+          {`${taskTitle ? `(${taskTitle})` : ""}`}
         </Typography>
 
         {hasError && (

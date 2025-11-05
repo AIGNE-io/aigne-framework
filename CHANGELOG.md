@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.83.1-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.1-beta.3...aigne-framework-v1.83.1-beta.4) (2025-11-05)
+
+
+### Bug Fixes
+
+* add taskTitle to observability traces and fix GPT-5/o1 model parameters ([#700](https://github.com/AIGNE-io/aigne-framework/issues/700)) ([30b513b](https://github.com/AIGNE-io/aigne-framework/commit/30b513b46ab5edb58a37f29e566e311bbb389f44))
+* **cli:** only auto-reinstall on agent loading errors ([#702](https://github.com/AIGNE-io/aigne-framework/issues/702)) ([52f61a4](https://github.com/AIGNE-io/aigne-framework/commit/52f61a47537f2be8763f7bd45b8baea94cf43e60))
+* **transport:** improve HTTP error status code validation ([#703](https://github.com/AIGNE-io/aigne-framework/issues/703)) ([76791d7](https://github.com/AIGNE-io/aigne-framework/commit/76791d760fc319c0c0edb82d19474d6141240a8e))
+
 ## [1.83.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.1-beta.2...aigne-framework-v1.83.1-beta.3) (2025-11-04)
 
 

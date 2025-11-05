@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.15.14-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.15.14-beta.2...transport-v0.15.14-beta.3) (2025-11-05)
+
+
+### Bug Fixes
+
+* **transport:** improve HTTP error status code validation ([#703](https://github.com/AIGNE-io/aigne-framework/issues/703)) ([76791d7](https://github.com/AIGNE-io/aigne-framework/commit/76791d760fc319c0c0edb82d19474d6141240a8e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.5-beta.3
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.51-beta.3
+    * @aigne/core bumped to 1.65.1-beta.3
+    * @aigne/default-memory bumped to 1.2.14-beta.3
+    * @aigne/test-utils bumped to 0.5.58-beta.3
+
 ## [0.15.14-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.15.14-beta.1...transport-v0.15.14-beta.2) (2025-11-04)
 
 

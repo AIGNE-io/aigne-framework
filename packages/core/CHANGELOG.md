@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.65.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.1-beta.2...core-v1.65.1-beta.3) (2025-11-05)
+
+
+### Bug Fixes
+
+* add taskTitle to observability traces and fix GPT-5/o1 model parameters ([#700](https://github.com/AIGNE-io/aigne-framework/issues/700)) ([30b513b](https://github.com/AIGNE-io/aigne-framework/commit/30b513b46ab5edb58a37f29e566e311bbb389f44))
+* **cli:** only auto-reinstall on agent loading errors ([#702](https://github.com/AIGNE-io/aigne-framework/issues/702)) ([52f61a4](https://github.com/AIGNE-io/aigne-framework/commit/52f61a47537f2be8763f7bd45b8baea94cf43e60))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.5-beta.2
+
 ## [1.65.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.1-beta.1...core-v1.65.1-beta.2) (2025-11-04)
 
 

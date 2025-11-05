@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.11.5-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.5-beta.1...observability-api-v0.11.5-beta.2) (2025-11-05)
+
+
+### Bug Fixes
+
+* add taskTitle to observability traces and fix GPT-5/o1 model parameters ([#700](https://github.com/AIGNE-io/aigne-framework/issues/700)) ([30b513b](https://github.com/AIGNE-io/aigne-framework/commit/30b513b46ab5edb58a37f29e566e311bbb389f44))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.4-beta.2
+
 ## [0.11.5-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.5-beta...observability-api-v0.11.5-beta.1) (2025-11-04)
 
 

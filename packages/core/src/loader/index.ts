@@ -174,6 +174,18 @@ async function parseHooks(
   );
 }
 
+async function loadSkills(
+  path: string,
+  skills: NestAgentSchema[],
+  options?: LoadOptions,
+): Promise<Agent[]> {
+  const loadedSkills: Agent[] = [];
+  for (const skill of skills) {
+    loadedSkills.push(await loadNestAgent(path, skill, options));
+  }
+  return loadedSkills;
+}
+
 async function parseAgent(
   path: string,
   agent: Awaited<ReturnType<typeof loadAgentFromYamlFile>>,
@@ -181,15 +193,7 @@ async function parseAgent(
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   const skills =
-    "skills" in agent && agent.skills
-      ? await (async () => {
-          const loadedSkills: Agent[] = [];
-          for (const skill of agent.skills ?? []) {
-            loadedSkills.push(await loadNestAgent(path, skill, options));
-          }
-          return loadedSkills;
-        })()
-      : undefined;
+    "skills" in agent && agent.skills ? await loadSkills(path, agent.skills, options) : undefined;
 
   const memory =
     "memory" in agent && options?.memories?.length

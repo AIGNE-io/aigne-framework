@@ -90,6 +90,14 @@ The `aigne observe` command starts a local web server to monitor and analyze age
 
 The `aigne observe` command starts a local web server to monitor and analyze agent execution data. It provides a user-friendly interface to inspect traces, view detailed call information, and understand your agent’s behavior during runtime. This tool is essential for debugging, performance tuning, and gaining insight into how your agent processes information and interacts with tools and models.
 
+Start the observation server.
+
+![aigne-observe-execute](../images/aigne-observe-execute.png)
+
+View a list of recent executions.
+
+![aigne-observe-list](../images/aigne-observe-list.png)
+
 ## Installation
 
 ### Clone the Repository

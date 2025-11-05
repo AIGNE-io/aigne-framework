@@ -23,7 +23,6 @@ This demo demonstrates how to use [AIGNE Framework](https://github.com/AIGNE-io/
 ### Run the Example
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 export BLOCKLET_APP_URL="https://xxx.xxxx.xxx" # Your Blocklet app URL
 
 # Run in one-shot mode (default)

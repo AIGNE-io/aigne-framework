@@ -84,7 +84,6 @@ AI ->> User: Here's the README content: ...
 ### Run the Example
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 export GITHUB_TOKEN=YOUR_GITHUB_TOKEN # Set your GitHub token
 
 npx -y @aigne/example-mcp-github # Run the example

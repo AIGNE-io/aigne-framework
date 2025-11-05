@@ -181,9 +181,14 @@ async function parseAgent(
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   const skills =
-    "skills" in agent
-      ? agent.skills &&
-        (await Promise.all(agent.skills.map((skill) => loadNestAgent(path, skill, options))))
+    "skills" in agent && agent.skills
+      ? await (async () => {
+          const loadedSkills: Agent[] = [];
+          for (const skill of agent.skills ?? []) {
+            loadedSkills.push(await loadNestAgent(path, skill, options));
+          }
+          return loadedSkills;
+        })()
       : undefined;
 
   const memory =

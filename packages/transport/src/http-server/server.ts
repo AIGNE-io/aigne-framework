@@ -215,7 +215,13 @@ export class AIGNEHTTPServer {
       });
     } catch (error) {
       return new Response(JSON.stringify({ error: { message: error.message } }), {
-        status: error instanceof ServerError ? error.status : 500,
+        status:
+          "status" in error &&
+          typeof error.status === "number" &&
+          error.status >= 200 &&
+          error.status < 599
+            ? error.status
+            : 500,
         headers: { "Content-Type": "application/json" },
       });
     }

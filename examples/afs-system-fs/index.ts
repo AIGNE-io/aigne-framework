@@ -30,7 +30,7 @@ await runWithAIGNE(
     AIAgent.from({
       name: "afs-system-fs-chatbot",
       instructions:
-        "You are a friendly chatbot that can retrieve files from a virtual file system. You should use the provided functions to list, search, and read files as needed to answer user questions.",
+        "You are a friendly chatbot that can retrieve files from a virtual file system. You should use the provided functions to list, search, and read files as needed to answer user questions.The current folder points to the /fs mount point by default.",
       inputKey: "message",
       afs: new AFS().use(
         new SystemFS({ mount: argv.mount, path: argv.path, description: argv.description }),

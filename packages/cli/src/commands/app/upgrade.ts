@@ -3,6 +3,7 @@ import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { LoadCredentialOptions } from "@aigne/cli/utils/aigne-hub/type.js";
 import type { AIGNE, ChatModelInputOptions, ImageModelInputOptions } from "@aigne/core";
+import { LoadJsAgentError } from "@aigne/core/loader/error.js";
 import { fetch } from "@aigne/core/utils/fetch.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { joinURL } from "ufo";
@@ -132,23 +133,25 @@ export async function loadApplication(
 
     if (!needUpdate) {
       const aigne = await loadAIGNE({
+        ...options,
         path: dir,
-        skipModelLoading: options.skipModelLoading,
-        modelOptions: options.modelOptions,
-        imageModelOptions: options.imageModelOptions,
         metadata: {
           appName: packageName,
           appVersion: check?.version,
         },
       }).catch(async (error) => {
-        await withSpinner("", async () => {
-          await rm(options.dir, { recursive: true, force: true });
-          await mkdir(options.dir, { recursive: true });
-        });
+        if (error instanceof LoadJsAgentError) {
+          await withSpinner("", async () => {
+            await rm(options.dir, { recursive: true, force: true });
+            await mkdir(options.dir, { recursive: true });
+          });
 
-        const message = `⚠️ Failed to load ${packageName}, trying to reinstall: ${error.message}`;
+          const message = `⚠️ Failed to load ${packageName}, trying to reinstall: ${error.message}`;
 
-        throw beta ? new NeedReinstallBetaError(message) : new NeedReinstallError(message);
+          throw beta ? new NeedReinstallBetaError(message) : new NeedReinstallError(message);
+        }
+
+        throw error;
       });
 
       if (aigne) {
@@ -163,8 +166,8 @@ export async function loadApplication(
 
   return {
     aigne: await loadAIGNE({
+      ...options,
       path: dir,
-      skipModelLoading: true,
       metadata: {
         appName: packageName,
         appVersion: result.version,

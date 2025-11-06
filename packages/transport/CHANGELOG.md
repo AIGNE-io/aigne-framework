@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.15.14-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.15.14-beta.3...transport-v0.15.14-beta.4) (2025-11-06)
+
+
+### Features
+
+* add dynamic model options resolution with getter pattern ([#708](https://github.com/AIGNE-io/aigne-framework/issues/708)) ([5ed5085](https://github.com/AIGNE-io/aigne-framework/commit/5ed5085203763c70194853c56edc13acf56d81c6))
+
+
+### Bug Fixes
+
+* add configurable timeout for fetch requests and set 3min timeout for hub video model ([4eb7f3d](https://github.com/AIGNE-io/aigne-framework/commit/4eb7f3df590992742706197bcb48b4db35ccc948))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.5-beta.4
+  * devDependencies
+    * @aigne/agent-library bumped to 1.21.51-beta.4
+    * @aigne/core bumped to 1.66.0-beta.3
+    * @aigne/default-memory bumped to 1.2.14-beta.4
+    * @aigne/test-utils bumped to 0.5.58-beta.4
+
 ## [0.15.14-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.15.14-beta.2...transport-v0.15.14-beta.3) (2025-11-05)
 
 

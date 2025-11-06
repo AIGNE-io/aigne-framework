@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.84.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.1-beta.4...aigne-framework-v1.84.0-beta.4) (2025-11-06)
+
+
+### Features
+
+* add dynamic model options resolution with getter pattern ([#708](https://github.com/AIGNE-io/aigne-framework/issues/708)) ([5ed5085](https://github.com/AIGNE-io/aigne-framework/commit/5ed5085203763c70194853c56edc13acf56d81c6))
+
+
+### Bug Fixes
+
+* add configurable timeout for fetch requests and set 3min timeout for hub video model ([4eb7f3d](https://github.com/AIGNE-io/aigne-framework/commit/4eb7f3df590992742706197bcb48b4db35ccc948))
+* **core:** change skills loading from Promise.all to sequential for loop ([#704](https://github.com/AIGNE-io/aigne-framework/issues/704)) ([08ac827](https://github.com/AIGNE-io/aigne-framework/commit/08ac8270285bdbafe171705f43ac32654430b745))
+
 ## [1.83.1-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.1-beta.3...aigne-framework-v1.83.1-beta.4) (2025-11-05)
 
 

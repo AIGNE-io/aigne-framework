@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.54.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.53.1-beta.4...cli-v1.54.0-beta.4) (2025-11-06)
+
+
+### Features
+
+* add dynamic model options resolution with getter pattern ([#708](https://github.com/AIGNE-io/aigne-framework/issues/708)) ([5ed5085](https://github.com/AIGNE-io/aigne-framework/commit/5ed5085203763c70194853c56edc13acf56d81c6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-system-fs bumped to 1.0.4-beta.5
+    * @aigne/agent-library bumped to 1.21.51-beta.4
+    * @aigne/agentic-memory bumped to 1.0.51-beta.4
+    * @aigne/aigne-hub bumped to 0.10.5-beta.4
+    * @aigne/core bumped to 1.66.0-beta.3
+    * @aigne/default-memory bumped to 1.2.14-beta.4
+    * @aigne/openai bumped to 0.16.5-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.4
+
 ## [1.53.1-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.53.1-beta.3...cli-v1.53.1-beta.4) (2025-11-05)
 
 

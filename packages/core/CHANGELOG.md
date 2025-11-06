@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.66.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.1-beta.3...core-v1.66.0-beta.3) (2025-11-06)
+
+
+### Features
+
+* add dynamic model options resolution with getter pattern ([#708](https://github.com/AIGNE-io/aigne-framework/issues/708)) ([5ed5085](https://github.com/AIGNE-io/aigne-framework/commit/5ed5085203763c70194853c56edc13acf56d81c6))
+
+
+### Bug Fixes
+
+* **core:** change skills loading from Promise.all to sequential for loop ([#704](https://github.com/AIGNE-io/aigne-framework/issues/704)) ([08ac827](https://github.com/AIGNE-io/aigne-framework/commit/08ac8270285bdbafe171705f43ac32654430b745))
+
 ## [1.65.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.65.1-beta.2...core-v1.65.1-beta.3) (2025-11-05)
 
 

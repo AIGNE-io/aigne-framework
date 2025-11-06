@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.6.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.5.1-beta.3...aigne-runtime-v1.6.0-beta.3) (2025-11-06)
+
+
+### Features
+
+* add dynamic model options resolution with getter pattern ([#708](https://github.com/AIGNE-io/aigne-framework/issues/708)) ([5ed5085](https://github.com/AIGNE-io/aigne-framework/commit/5ed5085203763c70194853c56edc13acf56d81c6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.5-beta.4
+    * @aigne/core bumped to 1.66.0-beta.3
+    * @aigne/transport bumped to 0.15.14-beta.4
+
 ## [1.5.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.5.1-beta.2...aigne-runtime-v1.5.1-beta.3) (2025-11-05)
 
 

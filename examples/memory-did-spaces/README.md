@@ -23,6 +23,11 @@ This example demonstrates how to create a chatbot with DID Spaces memory capabil
 
 ### Run the Example
 
+```bash
+# Run the memory test example
+npx -y @aigne/example-memory-did-spaces
+```
+
 ### Connect to an AI Model
 
 As an example, running `npx -y @aigne/example-afs-system-fs --path . --input "What files are in the current directory?"` requires an AI model. If this is your first run, you need to connect one.
@@ -56,10 +61,13 @@ After configuration, run the example again.
 
 The `aigne observe` command starts a local web server to monitor and analyze agent execution data. It provides a user-friendly interface to inspect traces, view detailed call information, and understand your agent’s behavior during runtime. This tool is essential for debugging, performance tuning, and gaining insight into how your agent processes information and interacts with tools and models.
 
-```bash
-# Run the memory test example
-npx -y @aigne/example-memory-did-spaces
-```
+Start the observation server.
+
+![aigne-observe-execute](../images/aigne-observe-execute.png)
+
+View a list of recent executions.
+
+![aigne-observe-list](../images/aigne-observe-list.png)
 
 ## Installation
 

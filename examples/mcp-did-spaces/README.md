@@ -24,13 +24,18 @@ This example demonstrates how to create a chatbot with MCP (Model Context Protoc
 ### Run the Example
 
 ```bash
+# @example: https://spaces.staging.arcblock.io/app
+export DID_SPACES_URL="https://spaces.staging.arcblock.io/app"
+# In Blocklet, go to Profile -> Settings -> Access Keys, click Create, and set Auth Type to "Simple".
+export DID_SPACES_AUTHORIZATION="blocklet-xxx"
+
 # Run the MCP test example
 npx -y @aigne/example-mcp-did-spaces
 ```
 
 ### Connect to an AI Model
 
-As an example, running `npx -y @aigne/example-afs-system-fs --path . --input "What files are in the current directory?"` requires an AI model. If this is your first run, you need to connect one.
+As an example, running `TBD"` requires an AI model. If this is your first run, you need to connect one.
 
 ![run example](./run-example.png)
 

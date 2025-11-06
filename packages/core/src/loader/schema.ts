@@ -1,7 +1,7 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
-import { DEFAULT_INPUT_ACTION_GET } from "../agents/agent.js";
+import { getterSchema } from "../agents/agent.js";
 import { camelize } from "../utils/camelize.js";
 import { isRecord } from "../utils/type-utils.js";
 
@@ -64,32 +64,26 @@ export const inputOutputSchema = ({ path }: { path: string }) => {
   ]);
 };
 
-export const defaultInputSchema = z.record(
-  z.string(),
-  z.union([
-    z.object({
-      [DEFAULT_INPUT_ACTION_GET]: z.string(),
-    }),
-    z.unknown(),
-  ]),
-);
+export const defaultInputSchema = z.record(z.string(), getterSchema(z.unknown()));
 
 const chatModelObjectSchema = camelizeSchema(
   z
     .object({
-      model: optionalize(z.string()),
-      temperature: optionalize(z.number().min(0).max(2)),
-      topP: optionalize(z.number().min(0)),
-      frequencyPenalty: optionalize(z.number().min(-2).max(2)),
-      presencePenalty: optionalize(z.number().min(-2).max(2)),
+      model: optionalize(getterSchema(z.string())),
+      temperature: optionalize(getterSchema(z.number().min(0).max(2))),
+      topP: optionalize(getterSchema(z.number().min(0))),
+      frequencyPenalty: optionalize(getterSchema(z.number().min(-2).max(2))),
+      presencePenalty: optionalize(getterSchema(z.number().min(-2).max(2))),
       thinkingEffort: optionalize(
-        z.union([
-          z.number().int(),
-          z.literal("high"),
-          z.literal("medium"),
-          z.literal("low"),
-          z.literal("minimal"),
-        ]),
+        getterSchema(
+          z.union([
+            z.number().int(),
+            z.literal("high"),
+            z.literal("medium"),
+            z.literal("low"),
+            z.literal("minimal"),
+          ]),
+        ),
       ),
     })
     .passthrough(),
@@ -116,7 +110,7 @@ export const chatModelSchema = z
 const imageModelObjectSchema = camelizeSchema(
   z
     .object({
-      model: optionalize(z.string()),
+      model: optionalize(getterSchema(z.string())),
     })
     .passthrough(),
 );

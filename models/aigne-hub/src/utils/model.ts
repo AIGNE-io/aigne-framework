@@ -3,7 +3,7 @@ import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
 import type {
   ChatModel,
-  ChatModelInputOptions,
+  ChatModelInputOptionsWithGetter,
   ImageModel,
   ImageModelInputOptions,
   VideoModel,
@@ -57,7 +57,7 @@ export interface LoadableModel {
   apiKeyEnvName?: string | string[];
   create: (options: {
     model?: string;
-    modelOptions?: ChatModelInputOptions;
+    modelOptions?: ChatModelInputOptionsWithGetter;
     apiKey?: string;
     baseURL?: string;
   }) => ChatModel;

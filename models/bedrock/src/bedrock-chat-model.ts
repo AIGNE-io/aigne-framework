@@ -1,4 +1,5 @@
 import {
+  type AgentInvokeOptions,
   type AgentProcessResult,
   type AgentResponse,
   type AgentResponseChunk,
@@ -123,12 +124,20 @@ or set the \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\` environment varia
    * @param input - The input to process
    * @returns The processed output from the model
    */
-  override process(input: ChatModelInput): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    return this._process(input);
+  override process(
+    input: ChatModelInput,
+    options: AgentInvokeOptions,
+  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+    return this._process(input, options);
   }
 
-  private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
-    const modelId = input.modelOptions?.model ?? this.credential.model;
+  private async _process(
+    input: ChatModelInput,
+    options: AgentInvokeOptions,
+  ): Promise<AgentResponse<ChatModelOutput>> {
+    const modelOptions = await this.getModelOptions(input, options);
+
+    const modelId = modelOptions.model ?? this.credential.model;
 
     const { messages, system } = getRunMessages(input);
     const toolConfig = convertTools(input);
@@ -138,8 +147,8 @@ or set the \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\` environment varia
       system,
       toolConfig,
       inferenceConfig: {
-        temperature: input.modelOptions?.temperature ?? this.modelOptions?.temperature,
-        topP: input.modelOptions?.topP ?? this.modelOptions?.topP,
+        temperature: modelOptions.temperature,
+        topP: modelOptions.topP,
       },
     };
 

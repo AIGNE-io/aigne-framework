@@ -6,6 +6,7 @@ import type {
   AgentProcessResult,
   AgentResponse,
   AgentResponseStream,
+  GetterSchema,
   Message,
 } from "./agent.js";
 import { type ChatModelOutputUsage, chatModelOutputUsageSchema } from "./chat-model.js";
@@ -115,6 +116,8 @@ export interface VideoModelInput extends Message {
 export interface VideoModelInputOptions extends Record<string, unknown> {
   model?: string;
 }
+
+export type VideoModelInputOptionsWithGetter = GetterSchema<VideoModelInputOptions>;
 
 export const videoModelInputSchema = z.object({
   prompt: z.string().describe("Text prompt describing the video to generate"),

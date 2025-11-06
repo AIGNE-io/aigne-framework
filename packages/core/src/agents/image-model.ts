@@ -7,6 +7,7 @@ import type {
   AgentProcessResult,
   AgentResponse,
   AgentResponseStream,
+  GetterSchema,
   Message,
 } from "./agent.js";
 import { type ChatModelOutputUsage, chatModelOutputUsageSchema } from "./chat-model.js";
@@ -152,6 +153,8 @@ export interface ImageModelInputOptions extends Record<string, unknown> {
 
   preferInputFileType?: "file" | "url";
 }
+
+export type ImageModelInputOptionsWithGetter = GetterSchema<ImageModelInputOptions>;
 
 export const imageModelInputSchema = z.object({
   prompt: z.string(),

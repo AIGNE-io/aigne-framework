@@ -37,6 +37,7 @@ import type { ChatModel } from "./chat-model.js";
 import type { GuideRailAgent, GuideRailAgentOutput } from "./guide-rail-agent.js";
 import type { ImageModel } from "./image-model.js";
 import {
+  type GetterSchema,
   replaceTransferAgentToName,
   type TransferAgentOutput,
   transferToAgentOutput,
@@ -475,7 +476,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
   private readonly _inputSchema?: AgentInputOutputSchema<I>;
 
-  defaultInput?: Partial<{ [key in keyof I]: { [DEFAULT_INPUT_ACTION_GET]: string } | I[key] }>;
+  defaultInput?: GetterSchema<I>;
 
   private readonly _outputSchema?: AgentInputOutputSchema<O>;
 

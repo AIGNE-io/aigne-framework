@@ -478,6 +478,8 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
       model,
     });
 
+    modelInput.modelOptions = await model.getModelOptions(input, options);
+
     const toolsMap = new Map<string, Agent>(toolAgents?.map((i) => [i.name, i]));
 
     if (this.toolChoice === "router") {

@@ -9,3 +9,16 @@ export const AIGNE_CLI_VERSION = require("../package.json").version;
 export const availableMemories = [DefaultMemory, AgenticMemory];
 
 export const AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE = "NOT_ENOUGH";
+
+export const CHAT_MODEL_OPTIONS = [
+  "aigneHubUrl",
+  "model",
+  "temperature",
+  "topP",
+  "frequencyPenalty",
+  "presencePenalty",
+  "parallelToolCalls",
+  "modalities",
+  "preferInputFileType",
+  "reasoningEffort",
+];

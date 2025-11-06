@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.84.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0-beta.4...aigne-framework-v1.84.0-beta.5) (2025-11-06)
+
+
+### Bug Fixes
+
+* **models:** apply dynamic model options resolution and use url output type ([#710](https://github.com/AIGNE-io/aigne-framework/issues/710)) ([1026034](https://github.com/AIGNE-io/aigne-framework/commit/102603402d8fa3ccd52e06f378a73f66ab7464ed))
+* update package to latest ([#709](https://github.com/AIGNE-io/aigne-framework/issues/709)) ([47661ab](https://github.com/AIGNE-io/aigne-framework/commit/47661ab78cd13ce039d6ebf596e4e603c0220139))
+
 ## [1.84.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.1-beta.4...aigne-framework-v1.84.0-beta.4) (2025-11-06)
 
 

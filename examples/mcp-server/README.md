@@ -24,8 +24,6 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) is an open s
 ### Run the Example
 
 ```bash
-OPENAI_API_KEY="" # Set your OpenAI API key here
-
 # Start the MCP server
 npx -y @aigne/example-mcp-server serve-mcp --port 3456
 
@@ -38,7 +36,7 @@ This command will start the MCP server with the agents defined in this example
 
 ### Connect to an AI Model
 
-As an example, running `npx -y @aigne/example-afs-system-fs --path . --input "What files are in the current directory?"` requires an AI model. If this is your first run, you need to connect one.
+As an example, running `npx -y @aigne/example-mcp-server serve-mcp --port 3456` requires an AI model. If this is your first run, you need to connect one.
 
 ![run example](./run-example.png)
 

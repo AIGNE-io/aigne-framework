@@ -25,6 +25,7 @@ export interface BaseClientInvokeOptions extends InvokeOptions {
    */
   fetchOptions?: Partial<RequestInit> & {
     maxRetries?: number;
+    timeout?: number;
   };
 }
 
@@ -174,7 +175,7 @@ export class BaseClient {
     const retries = init?.maxRetries ?? DEFAULT_MAX_RECONNECTS;
 
     const result = await retry(
-      () => fetch(url, { ...init, timeout: TIMEOUT, skipResponseCheck: true }),
+      () => fetch(url, { timeout: TIMEOUT, skipResponseCheck: true, ...init }),
       {
         retries,
         onFailedAttempt: (ctx) => {

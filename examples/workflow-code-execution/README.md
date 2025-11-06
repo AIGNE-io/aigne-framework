@@ -72,7 +72,7 @@ echo 'Calculate 15!' | npx -y @aigne/example-workflow-code-execution
 
 ### Connect to an AI Model
 
-As an example, running `npx -y @aigne/example-afs-system-fs --path . --input "What files are in the current directory?"` requires an AI model. If this is your first run, you need to connect one.
+As an example, running `npx -y @aigne/example-workflow-code-execution --chat` requires an AI model. If this is your first run, you need to connect one.
 
 ![run example](./run-example.png)
 

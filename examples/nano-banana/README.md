@@ -23,8 +23,6 @@ This example demonstrates how to create a chatbot with image capabilities using 
 ### Run the Example
 
 ```bash
-export GEMINI_API_KEY=YOUR_GEMINI_API_KEY # Set your Gemini API key
-
 npx -y @aigne/example-nano-banana --input 'Draw an image of a lovely cat'
 
 # Run in interactive chat mode
@@ -33,7 +31,7 @@ npx -y @aigne/example-nano-banana --chat
 
 ### Connect to an AI Model
 
-As an example, running `npx -y @aigne/example-afs-system-fs --path . --input "What files are in the current directory?"` requires an AI model. If this is your first run, you need to connect one.
+As an example, running `npx -y @aigne/example-nano-banana --input 'Draw an image of a lovely cat'` requires an AI model. If this is your first run, you need to connect one.
 
 ![run example](./run-example.png)
 

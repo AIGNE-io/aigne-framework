@@ -1,4 +1,12 @@
 entries:
+  - timestamp: 2025-11-06T14:55:06.640Z
+    operation: document_update
+    feedback: 提供商配置这个部分是写的太敷衍了，你必须参考 examples/README.md 详细描述。
+    docPaths:
+      - /models/configuration
+  - timestamp: 2025-11-06T14:49:14.339Z
+    operation: structure_update
+    feedback: 新增一个文档，添加到模型这个主题下。内容是讲解怎么配置各大模型的环境变量，参考文件 examples/README.md 来构建。
   - timestamp: 2025-11-04T01:09:17.587Z
     operation: document_update
     feedback: Re-read the model. Currently, openai gemini aignehub model supports video generation.

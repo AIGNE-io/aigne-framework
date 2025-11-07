@@ -1,11 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import {
-  findImageModel,
-  findModel,
-  findVideoModel,
-  formatHubModel,
-  parseModel,
-} from "../../src/utils/model.js";
+import { findImageModel, findModel, findVideoModel, parseModel } from "../../src/utils/model.js";
 
 describe("findModel", async () => {
   describe("findModel function", () => {
@@ -341,45 +335,5 @@ describe("parseModel", () => {
         "provider": "bedrock",
       }
     `);
-  });
-});
-
-describe("formatHubModel", () => {
-  test("should add aignehub prefix to model name without provider", () => {
-    expect(formatHubModel("gpt-4o")).toBe("aignehub/gpt-4o");
-    expect(formatHubModel("claude-3-sonnet")).toBe("aignehub/claude-3-sonnet");
-  });
-
-  test("should keep provider when model already has one", () => {
-    expect(formatHubModel("openai/gpt-4o")).toBe("openai/gpt-4o");
-    expect(formatHubModel("anthropic/claude-3-sonnet")).toBe("anthropic/claude-3-sonnet");
-  });
-
-  test("should convert colon separator to slash", () => {
-    expect(formatHubModel("openai:gpt-4o")).toBe("openai/gpt-4o");
-    expect(formatHubModel("anthropic:claude-3-sonnet")).toBe("anthropic/claude-3-sonnet");
-  });
-
-  test("should remove aignehub prefix and keep it normalized", () => {
-    expect(formatHubModel("aignehub/gpt-4o")).toBe("aignehub/gpt-4o");
-    expect(formatHubModel("aignehub:gpt-4o")).toBe("aignehub/gpt-4o");
-  });
-
-  test("should handle model names with hyphens", () => {
-    expect(formatHubModel("gpt-4o-mini")).toBe("aignehub/gpt-4o-mini");
-    expect(formatHubModel("claude-3-5-sonnet-20241022")).toBe(
-      "aignehub/claude-3-5-sonnet-20241022",
-    );
-  });
-
-  test("should handle provider names with hyphens", () => {
-    expect(formatHubModel("openrouter:gpt-4o")).toBe("openrouter/gpt-4o");
-    expect(formatHubModel("openrouter/gpt-4o")).toBe("openrouter/gpt-4o");
-  });
-
-  test("should handle edge cases", () => {
-    expect(formatHubModel("model")).toBe("aignehub/model");
-    expect(formatHubModel("provider/model")).toBe("provider/model");
-    expect(formatHubModel("provider:model")).toBe("provider/model");
   });
 });

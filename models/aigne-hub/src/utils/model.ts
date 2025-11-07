@@ -271,15 +271,25 @@ export function findVideoModel(provider: string): {
 
 export const parseModel = (model: string) => {
   // replace first ':' with '/' to compatible with `provider:model-name` format
-  model = formatHubModel(model.replace(/^([\w-]+)(:)/, "$1/"));
-  const { provider, name } = model.match(/(?<provider>[^/]*)(\/(?<name>.*))?/)?.groups ?? {};
-  return { provider: provider?.replace(/-/g, ""), model: name };
-};
+  model = model.replace(/^([\w-]+):/, "$1/").replace(/^aignehub\//, "");
+  let { provider, name } = model.match(/(?<provider>[^/]*)(\/(?<name>.*))?/)?.groups ?? {};
 
-const HUB_PREFIX = "aignehub";
+  const all = availableModels();
+  provider = provider?.replace(/-/g, "");
 
-export const formatHubModel = (model: string) => {
-  const normalized = model.replace(/^([\w-]+):/, "$1/").replace(/^aignehub\//, "");
-  // if contains provider, return directly, otherwise add aignehub/ prefix
-  return normalized.includes("/") ? normalized : `${HUB_PREFIX}/${normalized}`;
+  const match = provider
+    ? all.find((m) => {
+        if (typeof m.name === "string") {
+          return m.name.toLowerCase().includes(provider);
+        }
+
+        return m.name.some((n) => n.toLowerCase().includes(provider));
+      })
+    : undefined;
+
+  if (match) {
+    return { provider, model: name };
+  }
+
+  return { provider: "aignehub", model };
 };

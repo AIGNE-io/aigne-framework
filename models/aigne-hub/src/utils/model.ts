@@ -273,19 +273,8 @@ export const parseModel = (model: string) => {
   // replace first ':' with '/' to compatible with `provider:model-name` format
   model = model.replace(/^([\w-]+):/, "$1/");
   let { provider, name } = model.match(/(?<provider>[^/]*)(\/(?<name>.*))?/)?.groups ?? {};
-
-  const all = availableModels();
   provider = provider?.replace(/-/g, "");
-
-  const match = provider
-    ? all.find((m) => {
-        if (typeof m.name === "string") {
-          return m.name.toLowerCase().includes(provider);
-        }
-
-        return m.name.some((n) => n.toLowerCase().includes(provider));
-      })
-    : undefined;
+  const match = provider ? findModel(provider)?.match : undefined;
 
   if (match) {
     return { provider, model: name };

@@ -57,6 +57,7 @@ const JsonView = forwardRef<JsonViewRef, JsonViewProps>(
 
     const processedData = useMemo(() => {
       if (!truncateStrings) return data;
+
       truncateMapRef.current.clear();
       return truncateJsonValues(data, truncateMapRef.current);
     }, [data, truncateStrings]);

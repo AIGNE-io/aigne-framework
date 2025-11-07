@@ -275,3 +275,11 @@ export const parseModel = (model: string) => {
   const { provider, name } = model.match(/(?<provider>[^/]*)(\/(?<name>.*))?/)?.groups ?? {};
   return { provider: provider?.replace(/-/g, ""), model: name };
 };
+
+const HUB_PREFIX = "aignehub";
+
+export const formatHubModel = (model: string) => {
+  const normalized = model.replace(/^([\w-]+):/, "$1/").replace(/^aignehub\//, "");
+  // if contains provider, return directly, otherwise add aignehub/ prefix
+  return normalized.includes("/") ? normalized : `${HUB_PREFIX}/${normalized}`;
+};

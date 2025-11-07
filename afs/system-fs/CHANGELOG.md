@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/afs-system-fs-v1.0.4-beta.6...afs-system-fs-v1.0.4-beta.7) (2025-11-07)
+
+
+### Bug Fixes
+
+* **system-fs:** auto-install ripgrep when binary is missing ([#715](https://github.com/AIGNE-io/aigne-framework/issues/715)) ([265e45f](https://github.com/AIGNE-io/aigne-framework/commit/265e45f5004093bf130317e70ec0e4bee868ac8c))
+
 ## [1.0.4-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/afs-system-fs-v1.0.4-beta.5...afs-system-fs-v1.0.4-beta.6) (2025-11-06)
 
 

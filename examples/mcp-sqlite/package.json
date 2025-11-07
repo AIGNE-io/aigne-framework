@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-mcp-sqlite",
-  "version": "1.18.68-beta.7",
+  "version": "1.18.68-beta.8",
   "description": "A demonstration of using AIGNE Framework and Sqlite MCP Server to interact with a SQLite database",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-sqlite",

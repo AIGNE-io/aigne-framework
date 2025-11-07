@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.4-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.4-beta.3...observability-ui-v0.11.4-beta.4) (2025-11-07)
+
+
+### Bug Fixes
+
+* improve trace list layout and string truncation ([#714](https://github.com/AIGNE-io/aigne-framework/issues/714)) ([35716b4](https://github.com/AIGNE-io/aigne-framework/commit/35716b419f691d36bcf5ca810f267c9fdaf4f909))
+
 ## [0.11.4-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.4-beta.2...observability-ui-v0.11.4-beta.3) (2025-11-06)
 
 

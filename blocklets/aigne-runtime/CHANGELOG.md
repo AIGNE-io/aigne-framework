@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.6.0-beta.4...aigne-runtime-v1.6.0-beta.5) (2025-11-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.5-beta.6
+    * @aigne/core bumped to 1.66.0-beta.5
+    * @aigne/observability-api bumped to 0.11.5-beta.4
+    * @aigne/transport bumped to 0.15.14-beta.6
+
 ## [1.6.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.6.0-beta.3...aigne-runtime-v1.6.0-beta.4) (2025-11-06)
 
 

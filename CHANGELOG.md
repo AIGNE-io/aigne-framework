@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.84.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0-beta.5...aigne-framework-v1.84.0-beta.6) (2025-11-07)
+
+
+### Bug Fixes
+
+* **system-fs:** auto-install ripgrep when binary is missing ([#715](https://github.com/AIGNE-io/aigne-framework/issues/715)) ([265e45f](https://github.com/AIGNE-io/aigne-framework/commit/265e45f5004093bf130317e70ec0e4bee868ac8c))
+
 ## [1.84.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0-beta.4...aigne-framework-v1.84.0-beta.5) (2025-11-06)
 
 

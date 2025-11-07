@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.54.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.54.0-beta.5...cli-v1.54.0-beta.6) (2025-11-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-system-fs bumped to 1.0.4-beta.7
+
 ## [1.54.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.54.0-beta.4...cli-v1.54.0-beta.5) (2025-11-06)
 
 

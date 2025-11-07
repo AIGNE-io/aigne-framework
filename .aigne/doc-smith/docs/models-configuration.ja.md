@@ -1,57 +1,139 @@
 # モデル設定
 
-AIGNE フレームワークがサポートする様々な AI モデルを統合して利用するには、適切な環境変数を設定することが不可欠です。この設定には通常、認証用の API キーの提供が含まれ、プロバイダー固有の他の設定が含まれる場合もあります。このガイドは、サポートされている各モデルプロバイダーが必要とする環境変数に関する包括的なリファレンスとして機能します。
+AIGNE Framework内で様々なAIモデルを統合して利用するには、まず環境変数を介して必要な認証情報を設定する必要があります。これにより、それぞれのサードパーティサービスとの安全かつ適切な認証が保証されます。このガイドでは、サポートされている各モデルプロバイダーに必要な特定の環境変数について説明します。
 
-## プロバイダー設定
+## 一般的な使用方法
 
-以下の表は、各 AI モデルプロバイダーに必要な環境変数の詳細です。フレームワークがそれぞれのサービスに認証して接続するためには、これらの変数を環境に設定する必要があります。
+特定のモデルを使用するには、通常、主に2つの環境変数を設定する必要があります。
 
-| プロバイダー | 環境変数 | 説明 |
-| :--- | :--- | :--- |
-| **AIGNE Hub** | `AIGNE_HUB_BASE_URL`<br/>`AIGNE_HUB_API_KEY` | AIGNE Hub インスタンスのベース URL と認証に必要な API キーを設定します。 |
-| **Anthropic** | `ANTHROPIC_API_KEY` | Anthropic の Claude モデルにアクセスするための API キー。 |
-| **AWS Bedrock** | `AWS_ACCESS_KEY_ID`<br/>`AWS_SECRET_ACCESS_KEY`<br/>`AWS_REGION` | AWS Bedrock を介してモデルにアクセスするための AWS 認証情報と特定のリージョン。 |
-| **DeepSeek** | `DEEPSEEK_API_KEY` | DeepSeek のモデルにアクセスするための API キー。 |
-| **Doubao** | `DOUBAO_API_KEY` | Doubao のモデルにアクセスするための API キー。 |
-| **Google Gemini**| `GEMINI_API_KEY` | Google の Gemini モデルにアクセスするための API キー。 |
-| **Ideogram** | `IDEOGRAM_API_KEY` | Ideogram の画像生成モデル用の API キー。 |
-| **LMStudio** | `LM_STUDIO_BASE_URL`<br/>`LM_STUDIO_API_KEY` | ローカルの LMStudio サーバーのベース URL (例: `http://localhost:1234/v1`)。API キーは通常不要で、プレースホルダーがデフォルトになります。 |
-| **Ollama** | `OLLAMA_DEFAULT_BASE_URL`<br/>`OLLAMA_API_KEY` | ローカルの Ollama インスタンスのベース URL (例: `http://localhost:11434/v1`)。API キーは通常 `ollama` のようなプレースホルダーです。 |
-| **OpenAI** | `OPENAI_API_KEY` | GPT-4o などの OpenAI のモデルにアクセスするための API キー。 |
-| **OpenRouter** | `OPEN_ROUTER_API_KEY` | OpenRouter サービスを介して様々なモデルにアクセスするための API キー。 |
-| **Poe** | `POE_API_KEY` | Poe サービスを介して様々なモデルにアクセスするための API キー。 |
-| **xAI** | `XAI_API_KEY` | xAI の Grok モデルにアクセスするための API キー。 |
+1.  `MODEL`: モデルの識別子を指定します。多くの場合、プロバイダー名のプレフィックスが付いています（例：`openai:gpt-4o`）。
+2.  `[PROVIDER]_API_KEY`: そのプロバイダー固有のAPIキーです（例：`OPENAI_API_KEY`）。
 
-## 環境変数の設定
+アプリケーションを実行する前に、これらの変数をシェルで設定できます。
 
-アプリケーションを実行する前に、シェルでこれらの変数を設定できます。具体的なコマンドは、お使いのオペレーティングシステムによって異なります。
+```bash 環境変数を設定 icon=lucide:terminal
+export MODEL=openai:gpt-4o
+export OPENAI_API_KEY="your_api_key_here"
 
-### macOS と Linux
-
-`export` コマンドを使用して、現在のターミナルセッションの環境変数を設定します。
-
-```bash OpenAI API キーを設定 icon=lucide:terminal
-export OPENAI_API_KEY="your-openai-api-key"
+# AIGNEアプリケーションを実行
+node your-app.js
 ```
 
-セッションをまたいで変数を永続的にするには、`~/.bash_profile`、`~/.zshrc`、`~/.profile` などのシェルのプロファイルファイルに `export` コマンドを追加します。
+## プロバイダーの設定
 
-### Windows
+以下は、サポートされている各モデルプロバイダーに必要な環境変数の詳細なリストです。プレースホルダーの値を実際の認証情報に置き換えてください。
 
-コマンドプロンプトでは `set` コマンドを、PowerShell では `$env:` を使用します。
+### OpenAI
 
-**コマンドプロンプト:**
-```powershell CMD で OpenAI API キーを設定 icon=lucide:terminal
-set OPENAI_API_KEY="your-openai-api-key"
+GPT-4oのようなOpenAIモデルに接続するには、次の変数を設定します。
+
+```bash OpenAIの設定 icon=lucide:key-round
+export MODEL="openai:gpt-4o"
+export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 ```
 
-**PowerShell:**
-```powershell PowerShell で OpenAI API キーを設定 icon=lucide:terminal
-$env:OPENAI_API_KEY="your-openai-api-key"
+### Anthropic
+
+AnthropicのClaudeモデルを使用するには、次のように設定します。
+
+```bash Anthropicの設定 icon=lucide:key-round
+export MODEL="anthropic:claude-3-7-sonnet-latest"
+export ANTHROPIC_API_KEY="YOUR_ANTHROPIC_API_KEY"
 ```
 
-Windows で環境変数を永続的に設定するには、システムのプロパティの「環境変数」ダイアログを使用します。
+### Google Gemini
+
+GoogleのGeminiモデルを使用するには、これらの変数を設定します。
+
+```bash Geminiの設定 icon=lucide:key-round
+export MODEL="gemini:gemini-2.0-flash"
+export GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+```
+
+### AWS Bedrock
+
+AWS Bedrockでホストされているモデルの場合、AWSの認証情報と対象リージョンを提供する必要があります。
+
+```bash AWS Bedrockの設定 icon=lucide:key-round
+export MODEL="bedrock:us.amazon.nova-premier-v1:0"
+export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY_ID"
+export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_ACCESS_KEY"
+export AWS_REGION="YOUR_AWS_REGION"
+```
+
+### DeepSeek
+
+DeepSeekモデルを使用するには、次のAPIキーを設定します。
+
+```bash DeepSeekの設定 icon=lucide:key-round
+export MODEL="deepseek/deepseek-chat"
+export DEEPSEEK_API_KEY="YOUR_DEEPSEEK_API_KEY"
+```
+
+### Doubao
+
+Doubaoモデルの場合、次の環境変数を設定します。
+
+```bash Doubaoの設定 icon=lucide:key-round
+export MODEL="doubao-seed-1-6-250615"
+export DOUBAO_API_KEY="YOUR_DOUBAO_API_KEY"
+```
+
+### Ideogram
+
+Ideogramの画像生成モデルの場合、次のようにAPIキーを設定します。
+
+```bash Ideogramの設定 icon=lucide:key-round
+export MODEL="ideogram-v3"
+export IDEOGRAM_API_KEY="YOUR_IDEOGRAM_API_KEY"
+```
+
+### Ollama
+
+ローカルでホストされているOllamaインスタンスを使用する場合、モデル名とAPIエンドポイントを指定する必要があります。APIキーは通常プレースホルダーです。
+
+```bash Ollamaの設定 icon=lucide:server
+export MODEL="llama3"
+export OLLAMA_DEFAULT_BASE_URL="http://localhost:11434/v1"
+export OLLAMA_API_KEY="ollama"
+```
+
+### OpenRouter
+
+OpenRouterは、単一のAPIを介して様々なモデルへのアクセスを提供します。モデルをフルパスで指定してください。
+
+```bash OpenRouterの設定 icon=lucide:key-round
+export MODEL="openai/gpt-4o"
+export OPEN_ROUTER_API_KEY="YOUR_OPEN_ROUTER_API_KEY"
+```
+
+### Poe
+
+Poeを介してモデルに接続するには、次の設定を使用します。
+
+```bash Poeの設定 icon=lucide:key-round
+export MODEL="claude-3-opus"
+export POE_API_KEY="YOUR_POE_API_KEY"
+```
+
+### xAI
+
+xAIのGrokモデルの場合、`XAI_API_KEY`環境変数を設定します。
+
+```bash xAIの設定 icon=lucide:key-round
+export MODEL="grok-2-latest"
+export XAI_API_KEY="YOUR_XAI_API_KEY"
+```
+
+### LMStudio
+
+LMStudioを介してローカルでホストされているモデルの場合、モデル名を指定します。LMStudioはデフォルトで認証なしでローカル実行されるため、APIキーは通常プレースホルダーです。
+
+```bash LMStudioの設定 icon=lucide:server
+export MODEL="llama-3.2-3b-instruct"
+export LM_STUDIO_API_KEY="lmstudio"
+```
 
 ## まとめ
 
-これらの環境変数を適切に設定することは、統合された AI モデルを使用するための前提条件です。使用する予定のプロバイダーに対して、正しいキーとその他の必要な値が設定されていることを確認してください。特定のモデルの使用に関する詳細なガイドについては、[OpenAI](./models-openai.md) や [Google Gemini](./models-gemini.md) など、各プロバイダーの個別のドキュメントページを参照してください。
+これらの環境変数を適切に設定することは、AIGNE Frameworkに任意のモデルを統合するための基礎的なステップです。このアプローチにより、機密性の高いAPIキーを安全に保ち、アプリケーションコードを変更することなく柔軟なモデル選択が可能になります。各プロバイダーに関するより詳細なガイドについては、[OpenAI](./models-openai.md)や[Google Gemini](./models-gemini.md)などの特定のドキュメントページを参照してください。

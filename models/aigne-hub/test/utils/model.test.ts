@@ -301,8 +301,8 @@ describe("parseModel", () => {
   test("should parse model with only provider", () => {
     expect(parseModel("openai")).toMatchInlineSnapshot(`
       {
-        "model": "openai",
-        "provider": "aignehub",
+        "model": undefined,
+        "provider": "openai",
       }
     `);
   });

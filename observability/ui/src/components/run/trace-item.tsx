@@ -381,7 +381,7 @@ export default function TraceItemList({
           alignItems: "center",
           justifyContent: "space-between",
           mb: 1,
-          pb: 2,
+          py: 2,
           borderBottom: "1px solid",
           borderColor: "divider",
           backgroundColor: "background.paper",

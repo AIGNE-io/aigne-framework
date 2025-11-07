@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
 import type { TraceData } from "../components/run/types.ts";
 
+const MAX_STRING_LENGTH = 100;
 const PROVIDERS = [
   "openai",
   "google",
@@ -226,7 +227,7 @@ const clearModelPriceCache = () => {
   modelPriceCache.clear();
 };
 
-const truncateString = (str: string, maxLength = 200): string => {
+const truncateString = (str: string, maxLength = MAX_STRING_LENGTH): string => {
   if (str.length <= maxLength * 2) return str;
 
   return `${str.slice(0, maxLength)}......${str.slice(-maxLength)}`;

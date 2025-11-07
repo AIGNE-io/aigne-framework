@@ -37,7 +37,7 @@ echo "What are the features of this blocklet app?" | npx -y @aigne/example-mcp-b
 
 ### Connect to an AI Model
 
-As an example, running `TBD` requires an AI model. If this is your first run, you need to connect one.
+As an example, running `npx -y @aigne/example-mcp-blocklet --chat` requires an AI model. If this is your first run, you need to connect one.
 
 ![run example](./run-example.png)
 

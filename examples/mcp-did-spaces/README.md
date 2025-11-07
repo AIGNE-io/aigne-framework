@@ -35,7 +35,7 @@ npx -y @aigne/example-mcp-did-spaces
 
 ### Connect to an AI Model
 
-As an example, running `TBD"` requires an AI model. If this is your first run, you need to connect one.
+As an example, running `npx -y @aigne/example-mcp-did-spaces"` requires an AI model. If this is your first run, you need to connect one.
 
 ![run example](./run-example.png)
 

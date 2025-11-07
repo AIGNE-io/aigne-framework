@@ -64,7 +64,7 @@ echo "Write a short story about space exploration" | npx -y @aigne/example-workf
 
 ### Connect to an AI Model
 
-As an example, running `TBD` requires an AI model. If this is your first run, you need to connect one.
+As an example, running `npx -y @aigne/example-workflow-group-chat --chat` requires an AI model. If this is your first run, you need to connect one.
 
 ![run example](./run-example.png)
 

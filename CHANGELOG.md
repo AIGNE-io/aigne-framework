@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.84.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0-beta.7...aigne-framework-v1.84.0) (2025-11-07)
+
+## [1.84.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0-beta.6...aigne-framework-v1.84.0-beta.7) (2025-11-07)
+
+
+### Bug Fixes
+
+* improve trace list layout and string truncation ([#714](https://github.com/AIGNE-io/aigne-framework/issues/714)) ([35716b4](https://github.com/AIGNE-io/aigne-framework/commit/35716b419f691d36bcf5ca810f267c9fdaf4f909))
+* use aigne-code-smith latest version ([#713](https://github.com/AIGNE-io/aigne-framework/issues/713)) ([9be1c09](https://github.com/AIGNE-io/aigne-framework/commit/9be1c09a8d466b8bef8819559574daf3228c6328))
+
 ## [1.84.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0-beta.5...aigne-framework-v1.84.0-beta.6) (2025-11-07)
 
 

@@ -12,13 +12,7 @@ import {
 } from "@aigne/core";
 import type { BaseClientInvokeOptions } from "@aigne/transport/http-client/base-client.js";
 import { getModels } from "./utils/hub.js";
-import {
-  findImageModel,
-  findModel,
-  findVideoModel,
-  formatHubModel,
-  parseModel,
-} from "./utils/model.js";
+import { findImageModel, findModel, findVideoModel, parseModel } from "./utils/model.js";
 
 import type {
   AIGNEHubChatModelOptions,
@@ -47,7 +41,7 @@ export class AIGNEHubChatModel extends ChatModel {
     let provider = process.env.BLOCKLET_AIGNE_API_PROVIDER;
 
     if (!provider && options.model) {
-      const parsed = parseModel(formatHubModel(options.model));
+      const parsed = parseModel(options.model);
       if (parsed.provider && parsed.model) {
         provider = parsed.provider;
         options.model = parsed.model;
@@ -103,7 +97,7 @@ export class AIGNEHubImageModel extends ImageModel {
     let provider = process.env.BLOCKLET_AIGNE_API_PROVIDER;
 
     if (!provider && options.model) {
-      const parsed = parseModel(formatHubModel(options.model));
+      const parsed = parseModel(options.model);
       if (parsed.provider && parsed.model) {
         provider = parsed.provider;
         options.model = parsed.model;
@@ -159,7 +153,7 @@ export class AIGNEHubVideoModel extends VideoModel {
     let provider = process.env.BLOCKLET_AIGNE_API_PROVIDER;
 
     if (!provider && options.model) {
-      const parsed = parseModel(formatHubModel(options.model));
+      const parsed = parseModel(options.model);
       if (parsed.provider && parsed.model) {
         provider = parsed.provider;
         options.model = parsed.model;

@@ -1,6 +1,6 @@
 {
   "name": "@aigne/observability-ui",
-  "version": "0.11.4-beta.3",
+  "version": "0.11.4",
   "description": "AIGNE Observability for tracing and observability",
   "publishConfig": {
     "access": "public"
@@ -51,9 +51,9 @@
     "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text"
   },
   "dependencies": {
-    "@abtnode/util": "^1.17.0",
-    "@arcblock/ux": "^3.2.0",
-    "@blocklet/sdk": "^1.17.0",
+    "@abtnode/util": "^1.17.1",
+    "@arcblock/ux": "^3.2.2",
+    "@blocklet/sdk": "^1.17.1",
     "@iconify/react": "^6.0.2",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@monaco-editor/react": "^4.7.0",

@@ -200,3 +200,14 @@ test("PromptTemplate should support json.stringify filter", async () => {
     }"
   `);
 });
+
+test("PromptTemplate should support tson.stringify filter", async () => {
+  const prompt = new PromptTemplate("Data in TSON:\n{{ data | tson.stringify }}");
+  const result = await prompt.format({
+    data: { key: "value", labels: ["foo", "bar"], nested: { name: "Bob", age: 30 } },
+  });
+  expect(result).toMatchInlineSnapshot(`
+    "Data in TSON:
+    {@key,labels,nested|value,[foo,bar],{@name,age|Bob,30}}"
+  `);
+});

@@ -112,18 +112,18 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
 
-      - name: Check if aigne-runtime version changed
+      - name: Check if agent-runtime version changed
         if: ${{ steps.release.outputs.release_created }}
-        id: blocklets-aigne-runtime-version-check
+        id: blocklets-agent-runtime-version-check
         run: |
-          if git diff HEAD~1 HEAD -- blocklets/aigne-runtime/package.json | grep '"version"'; then
+          if git diff HEAD~1 HEAD -- blocklets/agent-runtime/package.json | grep '"version"'; then
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Blocklet workflow for aigne-runtime
-        if: ${{ steps.release.outputs.release_created && steps.blocklets-aigne-runtime-version-check.outputs.changed == 'true'  }}
+      - name: Blocklet workflow for agent-runtime
+        if: ${{ steps.release.outputs.release_created && steps.blocklets-agent-runtime-version-check.outputs.changed == 'true'  }}
         env:
           COMPONENT_STORE_URL: ${{ secrets.STORE_ENDPOINT_PROD }}
         uses: blocklet/action-workflow@v1
@@ -133,7 +133,7 @@ jobs:
           skip-upload: false
           skip-deploy: true
           skip-release: true
-          working-directory: blocklets/aigne-runtime
+          working-directory: blocklets/agent-runtime
           bundle-command: pnpm bundle
           store-endpoint: ${{ secrets.STORE_ENDPOINT_PROD }}
           store-access-token: ${{ secrets.STORE_ACCESS_TOKEN_PROD }}

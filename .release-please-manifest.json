@@ -44,7 +44,7 @@
   "models/poe": "1.0.31",
   "models/ideogram": "0.4.5",
   "models/lmstudio": "1.0.20",
-  "blocklets/aigne-runtime": "1.6.0",
+  "blocklets/agent-runtime": "1.6.0",
   "afs/core": "1.1.1",
   "afs/user-profile-memory": "1.0.4",
   "afs/system-fs": "1.0.4"

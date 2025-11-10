@@ -1,5 +1,5 @@
 {
-  "name": "aigne-runtime",
+  "name": "agent-runtime",
   "private": true,
   "version": "1.6.0",
   "scripts": {

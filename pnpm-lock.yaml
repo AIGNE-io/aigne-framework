@@ -159,7 +159,7 @@ importers:
         specifier: ^5.9.2
         version: 5.9.2
 
-  blocklets/aigne-runtime:
+  blocklets/agent-runtime:
     dependencies:
       '@aigne/aigne-hub':
         specifier: workspace:^

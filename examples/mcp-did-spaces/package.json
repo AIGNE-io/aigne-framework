@@ -16,6 +16,7 @@
     "CONFIG.md"
   ],
   "scripts": {
+    "debug": "DEBUG=* npm run start",
     "start": "bun run index.ts",
     "lint": "tsc --noEmit",
     "test:llm": "bun test index.test.ts"

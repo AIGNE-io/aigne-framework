@@ -9,6 +9,9 @@ if (!DID_SPACES_URL || !DID_SPACES_AUTHORIZATION) {
   process.exit(1);
 }
 
+console.log("DID_SPACES_URL:", DID_SPACES_URL);
+console.log("DID_SPACES_AUTHORIZATION:", DID_SPACES_AUTHORIZATION);
+
 // Create MCP agent for DID Spaces
 const mcpAgent = await MCPAgent.from({
   url: DID_SPACES_URL,

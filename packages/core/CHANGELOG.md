@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.67.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.66.0...core-v1.67.0-beta) (2025-11-11)
+
+
+### Features
+
+* **core:** add tson.stringify filter for prompt template ([#725](https://github.com/AIGNE-io/aigne-framework/issues/725)) ([c88e71c](https://github.com/AIGNE-io/aigne-framework/commit/c88e71c245a3eaa8a2d60f25c75368bced35fde2))
+
+
+### Bug Fixes
+
+* **core:** improve checkArguments error messages and refactor optional schemas ([#726](https://github.com/AIGNE-io/aigne-framework/issues/726)) ([8680f43](https://github.com/AIGNE-io/aigne-framework/commit/8680f43e6ad224eb84948b056c51e80ef8c47e06))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.6-beta
+
 ## [1.66.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.66.0-beta.5...core-v1.66.0) (2025-11-07)
 
 

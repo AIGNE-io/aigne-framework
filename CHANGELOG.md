@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.85.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0...aigne-framework-v1.85.0-beta) (2025-11-11)
+
+
+### Features
+
+* **core:** add tson.stringify filter for prompt template ([#725](https://github.com/AIGNE-io/aigne-framework/issues/725)) ([c88e71c](https://github.com/AIGNE-io/aigne-framework/commit/c88e71c245a3eaa8a2d60f25c75368bced35fde2))
+
+
+### Bug Fixes
+
+* **core:** improve checkArguments error messages and refactor optional schemas ([#726](https://github.com/AIGNE-io/aigne-framework/issues/726)) ([8680f43](https://github.com/AIGNE-io/aigne-framework/commit/8680f43e6ad224eb84948b056c51e80ef8c47e06))
+* **model:** normalize model names to support flexible provider/model format ([#712](https://github.com/AIGNE-io/aigne-framework/issues/712)) ([9f23755](https://github.com/AIGNE-io/aigne-framework/commit/9f23755406e1890e4523c778e71fd3d04c9f3e57))
+* update package to latest ([#720](https://github.com/AIGNE-io/aigne-framework/issues/720)) ([4386549](https://github.com/AIGNE-io/aigne-framework/commit/43865497e71f86478bc75d7d6e181c4fac80eae5))
+
 ## [1.84.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0-beta.7...aigne-framework-v1.84.0) (2025-11-07)
 
 ## [1.84.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0-beta.6...aigne-framework-v1.84.0-beta.7) (2025-11-07)

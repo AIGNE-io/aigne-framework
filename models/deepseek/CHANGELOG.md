@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.52-beta](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.7.51...deepseek-v0.7.52-beta) (2025-11-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.6-beta
+  * devDependencies
+    * @aigne/core bumped to 1.67.0-beta
+    * @aigne/test-utils bumped to 0.5.59-beta
+
 ## [0.7.51](https://github.com/AIGNE-io/aigne-framework/compare/deepseek-v0.7.51-beta.6...deepseek-v0.7.51) (2025-11-07)
 
 

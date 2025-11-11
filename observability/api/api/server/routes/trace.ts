@@ -163,82 +163,79 @@ export default ({
 
     res.setHeader("Cache-Control", "public, max-age=600");
 
-    const stats = await db
-      .select({
-        totalCount: sql<number>`COUNT(*)`,
-        successCount: sql<number>`
+    const [stats, llmStats] = await Promise.all([
+      db
+        .select({
+          totalCount: sql<number>`COUNT(*)`,
+          successCount: sql<number>`
           SUM(CASE
             WHEN JSON_EXTRACT(${Trace.status}, '$.code') = 1 AND ${Trace.endTime} > 0
             THEN 1 ELSE 0
           END)
         `,
-        totalToken: sql<number>`
+          totalToken: sql<number>`
           SUM(CASE
             WHEN ${Trace.endTime} > 0
             THEN COALESCE(${Trace.token}, 0) ELSE 0
           END)
         `,
-        totalCost: sql<number>`
+          totalCost: sql<number>`
           SUM(CASE
             WHEN ${Trace.endTime} > 0
             THEN COALESCE(${Trace.cost}, 0) ELSE 0
           END)
         `,
-        maxLatency: sql<number>`
+          maxLatency: sql<number>`
           MAX(CASE
             WHEN ${Trace.endTime} > 0
             THEN ${Trace.endTime} - ${Trace.startTime} ELSE NULL
           END)
         `,
-        minLatency: sql<number>`
+          minLatency: sql<number>`
           MIN(CASE
             WHEN ${Trace.endTime} > 0
             THEN ${Trace.endTime} - ${Trace.startTime} ELSE NULL
           END)
         `,
-        avgLatency: sql<number>`
+          avgLatency: sql<number>`
           AVG(CASE
             WHEN ${Trace.endTime} > 0
             THEN ${Trace.endTime} - ${Trace.startTime} ELSE NULL
           END)
         `,
-        totalDuration: sql<number>`
+          totalDuration: sql<number>`
           SUM(CASE
             WHEN ${Trace.endTime} > 0
             THEN ${Trace.endTime} - ${Trace.startTime} ELSE 0
           END)
         `,
-        // LLM stats
-        llmTotalCount: sql<number>`
-          SUM(CASE
-            WHEN ${Trace.attributes} IS NOT NULL
-            AND JSON_EXTRACT(${Trace.attributes}, '$.output.model') IS NOT NULL
-            THEN 1 ELSE 0
-          END)
-        `,
-        llmSuccessCount: sql<number>`
-          SUM(CASE
-            WHEN ${Trace.attributes} IS NOT NULL
-            AND JSON_EXTRACT(${Trace.attributes}, '$.output.model') IS NOT NULL
-            AND JSON_EXTRACT(${Trace.status}, '$.code') = 1
-            AND ${Trace.endTime} > 0
-            THEN 1 ELSE 0
-          END)
-        `,
-        llmTotalDuration: sql<number>`
-          SUM(CASE
-            WHEN ${Trace.attributes} IS NOT NULL
-            AND JSON_EXTRACT(${Trace.attributes}, '$.output.model') IS NOT NULL
-            AND ${Trace.endTime} > 0
-            THEN ${Trace.endTime} - ${Trace.startTime} ELSE 0
-          END)
-        `,
-      })
-      .from(Trace)
-      .where(and(isNull(Trace.parentId), isNull(Trace.action)))
-      .execute();
+        })
+        .from(Trace)
+        .where(and(isNull(Trace.parentId), isNull(Trace.action)))
+        .execute(),
+      db
+        .select({
+          llmTotalCount: sql<number>`COUNT(*)`,
+          llmSuccessCount: sql<number>`
+            SUM(CASE
+              WHEN JSON_EXTRACT(${Trace.status}, '$.code') = 1 AND ${Trace.endTime} > 0
+              THEN 1 ELSE 0
+            END)
+          `,
+          llmTotalDuration: sql<number>`
+            SUM(CASE
+              WHEN ${Trace.endTime} > 0
+              THEN ${Trace.endTime} - ${Trace.startTime} ELSE 0
+            END)
+          `,
+        })
+        .from(Trace)
+        .where(like(Trace.name, "%Model%"))
+        .execute(),
+    ]);
 
     const result = stats[0];
+    const llm = llmStats[0];
 
     res.json({
       totalCount: result?.totalCount ?? 0,
@@ -250,9 +247,9 @@ export default ({
       minLatency: result?.minLatency ?? 0,
       avgLatency: result?.avgLatency ?? 0,
       totalDuration: result?.totalDuration ?? 0,
-      llmSuccessCount: result?.llmSuccessCount ?? 0,
-      llmTotalCount: result?.llmTotalCount ?? 0,
-      llmTotalDuration: result?.llmTotalDuration ?? 0,
+      llmSuccessCount: llm?.llmSuccessCount ?? 0,
+      llmTotalCount: llm?.llmTotalCount ?? 0,
+      llmTotalDuration: llm?.llmTotalDuration ?? 0,
     });
   });
 

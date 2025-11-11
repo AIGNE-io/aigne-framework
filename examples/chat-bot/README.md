@@ -90,13 +90,13 @@ cd aigne-framework/examples/chat-bot
 ### Run the Example
 
 ```bash
-aigne run # Run in one-shot mode (default)
+pnpm start # Run in one-shot mode (default)
 
 # Run in interactive chat mode
-aigne run --chat
+pnpm start --chat
 
 # Use pipeline input
-echo "Tell me about AIGNE Framework" | aigne run
+echo "Tell me about AIGNE Framework" | pnpm start
 ```
 
 ### Run Options

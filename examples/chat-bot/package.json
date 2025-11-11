@@ -12,6 +12,7 @@
   "type": "module",
   "bin": "aigne.yaml",
   "scripts": {
+    "start": "aigne run",
     "test": "aigne test",
     "test:llm": "aigne run --input 'What can AIGNE do?'"
   },

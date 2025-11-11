@@ -1,6 +1,8 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { CHAT_MODEL_OPTIONS } from "@aigne/cli/constants.js";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
+import { pick } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -51,7 +53,7 @@ export async function runAppCLI({
         beta: appUseBetaVersion,
         dir,
         install: true,
-        modelOptions: options,
+        modelOptions: pick(options, CHAT_MODEL_OPTIONS),
         imageModelOptions: { model: options.imageModel },
         skipModelLoading: (options.help || options.h || options.version || options.v) === true,
       });

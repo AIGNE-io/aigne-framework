@@ -148,9 +148,9 @@
     "examples/afs-system-fs": {
       "prerelease-type": "beta"
     },
-    "blocklets/aigne-runtime": {
+    "blocklets/agent-runtime": {
       "prerelease-type": "beta",
-      "package-name": "aigne-runtime",
+      "package-name": "agent-runtime",
       "extra-files": [
         {
           "type": "yaml",

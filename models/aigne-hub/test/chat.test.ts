@@ -162,7 +162,7 @@ describe("AIGNEHubChatModel", async () => {
           "model": "openai/gpt-4o-mini",
           "parallelToolCalls": true,
         },
-        "outputFileType": "file",
+        "outputFileType": "url",
       }
     `);
   });
@@ -196,7 +196,7 @@ describe("AIGNEHubChatModel", async () => {
           "model": "openai/gpt-4o-mini",
           "reasoningEffort": "minimal",
         },
-        "outputFileType": "file",
+        "outputFileType": "url",
       }
     `);
 
@@ -219,7 +219,7 @@ describe("AIGNEHubChatModel", async () => {
           "parallelToolCalls": true,
           "reasoningEffort": "high",
         },
-        "outputFileType": "file",
+        "outputFileType": "url",
       }
     `);
   });

@@ -1,5 +1,43 @@
 # Changelog
 
+## [1.84.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0-beta.7...aigne-framework-v1.84.0) (2025-11-07)
+
+## [1.84.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0-beta.6...aigne-framework-v1.84.0-beta.7) (2025-11-07)
+
+
+### Bug Fixes
+
+* improve trace list layout and string truncation ([#714](https://github.com/AIGNE-io/aigne-framework/issues/714)) ([35716b4](https://github.com/AIGNE-io/aigne-framework/commit/35716b419f691d36bcf5ca810f267c9fdaf4f909))
+* use aigne-code-smith latest version ([#713](https://github.com/AIGNE-io/aigne-framework/issues/713)) ([9be1c09](https://github.com/AIGNE-io/aigne-framework/commit/9be1c09a8d466b8bef8819559574daf3228c6328))
+
+## [1.84.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0-beta.5...aigne-framework-v1.84.0-beta.6) (2025-11-07)
+
+
+### Bug Fixes
+
+* **system-fs:** auto-install ripgrep when binary is missing ([#715](https://github.com/AIGNE-io/aigne-framework/issues/715)) ([265e45f](https://github.com/AIGNE-io/aigne-framework/commit/265e45f5004093bf130317e70ec0e4bee868ac8c))
+
+## [1.84.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0-beta.4...aigne-framework-v1.84.0-beta.5) (2025-11-06)
+
+
+### Bug Fixes
+
+* **models:** apply dynamic model options resolution and use url output type ([#710](https://github.com/AIGNE-io/aigne-framework/issues/710)) ([1026034](https://github.com/AIGNE-io/aigne-framework/commit/102603402d8fa3ccd52e06f378a73f66ab7464ed))
+* update package to latest ([#709](https://github.com/AIGNE-io/aigne-framework/issues/709)) ([47661ab](https://github.com/AIGNE-io/aigne-framework/commit/47661ab78cd13ce039d6ebf596e4e603c0220139))
+
+## [1.84.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.1-beta.4...aigne-framework-v1.84.0-beta.4) (2025-11-06)
+
+
+### Features
+
+* add dynamic model options resolution with getter pattern ([#708](https://github.com/AIGNE-io/aigne-framework/issues/708)) ([5ed5085](https://github.com/AIGNE-io/aigne-framework/commit/5ed5085203763c70194853c56edc13acf56d81c6))
+
+
+### Bug Fixes
+
+* add configurable timeout for fetch requests and set 3min timeout for hub video model ([4eb7f3d](https://github.com/AIGNE-io/aigne-framework/commit/4eb7f3df590992742706197bcb48b4db35ccc948))
+* **core:** change skills loading from Promise.all to sequential for loop ([#704](https://github.com/AIGNE-io/aigne-framework/issues/704)) ([08ac827](https://github.com/AIGNE-io/aigne-framework/commit/08ac8270285bdbafe171705f43ac32654430b745))
+
 ## [1.83.1-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.83.1-beta.3...aigne-framework-v1.83.1-beta.4) (2025-11-05)
 
 

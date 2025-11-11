@@ -1,4 +1,5 @@
 import {
+  type AgentInvokeOptions,
   type AgentProcessResult,
   type AgentResponse,
   type AgentResponseChunk,
@@ -153,21 +154,27 @@ export class AnthropicChatModel extends ChatModel {
    * @param input - The input to process
    * @returns The processed output from the model
    */
-  override process(input: ChatModelInput): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    return this._process(input);
+  override process(
+    input: ChatModelInput,
+    options: AgentInvokeOptions,
+  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+    return this._process(input, options);
   }
 
-  private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
-    const model = input.modelOptions?.model || this.credential.model;
+  private async _process(
+    input: ChatModelInput,
+    options: AgentInvokeOptions,
+  ): Promise<AgentResponse<ChatModelOutput>> {
+    const modelOptions = await this.getModelOptions(input, options);
 
-    const disableParallelToolUse =
-      input.modelOptions?.parallelToolCalls === false ||
-      this.modelOptions?.parallelToolCalls === false;
+    const model = modelOptions.model || this.credential.model;
+
+    const disableParallelToolUse = modelOptions.parallelToolCalls === false;
 
     const body: Anthropic.Messages.MessageCreateParams = {
       model,
-      temperature: input.modelOptions?.temperature ?? this.modelOptions?.temperature,
-      top_p: input.modelOptions?.topP ?? this.modelOptions?.topP,
+      temperature: modelOptions.temperature,
+      top_p: modelOptions.topP,
       // TODO: make dynamic based on model https://docs.anthropic.com/en/docs/about-claude/models/all-models
       max_tokens: this.getMaxTokens(model),
       ...(await convertMessages(input)),

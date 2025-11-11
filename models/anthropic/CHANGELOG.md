@@ -1,5 +1,54 @@
 # Changelog
 
+## [0.14.5](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.5-beta.6...anthropic-v0.14.5) (2025-11-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.66.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58
+
+## [0.14.5-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.5-beta.5...anthropic-v0.14.5-beta.6) (2025-11-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.66.0-beta.5
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.6
+
+## [0.14.5-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.5-beta.4...anthropic-v0.14.5-beta.5) (2025-11-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.66.0-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.5
+
+## [0.14.5-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.5-beta.3...anthropic-v0.14.5-beta.4) (2025-11-06)
+
+
+### Features
+
+* add dynamic model options resolution with getter pattern ([#708](https://github.com/AIGNE-io/aigne-framework/issues/708)) ([5ed5085](https://github.com/AIGNE-io/aigne-framework/commit/5ed5085203763c70194853c56edc13acf56d81c6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.66.0-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.4
+
 ## [0.14.5-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.5-beta.2...anthropic-v0.14.5-beta.3) (2025-11-05)
 
 

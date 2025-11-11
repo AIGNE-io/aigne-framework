@@ -1,25 +1,25 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
-import { AIAgent, AIGNE, ChatModel, type ChatModelOptions, MCPAgent } from "@aigne/core";
+import { AIAgent, AIGNE, ChatModel, MCPAgent } from "@aigne/core";
 import { load, loadAgent } from "@aigne/core/loader/index.js";
 import { mapCliAgent } from "@aigne/core/utils/agent-utils.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { ClaudeChatModel, OpenAIChatModel, OpenAIImageModel } from "../_mocks/mock-models.js";
 
-const loadModel = (options?: ChatModelOptions) => new OpenAIChatModel(options);
+const loadModel = (options: any) => new OpenAIChatModel(options);
 
 test("AIGNE.load should load agents correctly", async () => {
   const aigne = await AIGNE.load(join(import.meta.dirname, "../../test-agents"), {
     model: (options) =>
       loadModel({
-        model: options?.model,
+        model: typeof options?.model === "string" ? options?.model : undefined,
         modelOptions: options,
       }),
     imageModel: (options) =>
       new OpenAIImageModel({
-        model: options?.model,
+        model: typeof options?.model === "string" ? options?.model : undefined,
         modelOptions: options,
       }),
   });

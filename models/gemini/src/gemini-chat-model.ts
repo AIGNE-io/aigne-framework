@@ -1,4 +1,5 @@
 import {
+  type AgentInvokeOptions,
   type AgentProcessAsyncGenerator,
   type AgentProcessResult,
   agentProcessResultToObject,
@@ -107,8 +108,11 @@ export class GeminiChatModel extends ChatModel {
     return this.options?.modelOptions;
   }
 
-  override process(input: ChatModelInput): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    return this.processInput(input);
+  override process(
+    input: ChatModelInput,
+    options: AgentInvokeOptions,
+  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+    return this.processInput(input, options);
   }
 
   // References: https://ai.google.dev/gemini-api/docs/thinking#set-budget
@@ -161,14 +165,16 @@ export class GeminiChatModel extends ChatModel {
     return { support: true, budget };
   }
 
-  private async *processInput(input: ChatModelInput): AgentProcessAsyncGenerator<ChatModelOutput> {
-    const model = input.modelOptions?.model || this.credential.model;
+  private async *processInput(
+    input: ChatModelInput,
+    options: AgentInvokeOptions,
+  ): AgentProcessAsyncGenerator<ChatModelOutput> {
+    const modelOptions = await this.getModelOptions(input, options);
+
+    const model = modelOptions.model || this.credential.model;
     const { contents, config } = await this.buildContents(input);
 
-    const thinkingBudget = this.getThinkingBudget(
-      model,
-      input.modelOptions?.reasoningEffort ?? this.modelOptions?.reasoningEffort,
-    );
+    const thinkingBudget = this.getThinkingBudget(model, modelOptions.reasoningEffort);
 
     const parameters: GenerateContentParameters = {
       model,
@@ -180,12 +186,11 @@ export class GeminiChatModel extends ChatModel {
               thinkingBudget: thinkingBudget.budget,
             }
           : undefined,
-        responseModalities: input.modelOptions?.modalities,
-        temperature: input.modelOptions?.temperature || this.modelOptions?.temperature,
-        topP: input.modelOptions?.topP || this.modelOptions?.topP,
-        frequencyPenalty:
-          input.modelOptions?.frequencyPenalty || this.modelOptions?.frequencyPenalty,
-        presencePenalty: input.modelOptions?.presencePenalty || this.modelOptions?.presencePenalty,
+        responseModalities: modelOptions.modalities,
+        temperature: modelOptions.temperature,
+        topP: modelOptions.topP,
+        frequencyPenalty: modelOptions.frequencyPenalty,
+        presencePenalty: modelOptions.presencePenalty,
         ...config,
         ...(await this.buildConfig(input)),
       },
@@ -281,16 +286,19 @@ export class GeminiChatModel extends ChatModel {
             output: z.string().describe("The final answer from the model"),
           });
 
-          const response = await this.process({
-            ...input,
-            responseFormat: {
-              type: "json_schema",
-              jsonSchema: {
-                name: "output",
-                schema: zodToJsonSchema(outputSchema),
+          const response = await this.process(
+            {
+              ...input,
+              responseFormat: {
+                type: "json_schema",
+                jsonSchema: {
+                  name: "output",
+                  schema: zodToJsonSchema(outputSchema),
+                },
               },
             },
-          });
+            options,
+          );
 
           const result = await agentProcessResultToObject(response);
 

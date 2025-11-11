@@ -59,7 +59,7 @@ export default function RunDetailDrawer({
         <Box
           sx={{
             flex: 1,
-            p: 2,
+            px: 2,
             borderRight: (theme) => `1px solid ${theme.palette.divider}`,
             minWidth: 300,
             overflow: "auto",

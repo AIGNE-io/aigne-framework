@@ -36,7 +36,9 @@ exports[`Build first agent: setup memory for client agent 1`] = `
         "role": "user",
       },
     ],
-    "modelOptions": undefined,
+    "modelOptions": {
+      "parallelToolCalls": true,
+    },
     "responseFormat": undefined,
     "toolChoice": undefined,
     "tools": undefined,

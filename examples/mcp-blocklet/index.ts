@@ -9,7 +9,7 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import JWT from "jsonwebtoken";
 import { TerminalOAuthProvider } from "./oauth.js";
 
-const rawUrl = process.argv[2] || process.env.BLOCKLET_APP_URL;
+const rawUrl = process.argv.find((arg) => arg.startsWith("https://") || arg.startsWith("http://")) || process.env.BLOCKLET_APP_URL;
 assert(
   rawUrl,
   "Please provide a blocklet url as an argument or set the BLOCKLET_APP_URL environment variable",

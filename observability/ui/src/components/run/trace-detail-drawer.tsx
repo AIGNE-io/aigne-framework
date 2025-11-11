@@ -1,7 +1,7 @@
 import { CircularProgress, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { joinURL } from "ufo";
 import { origin } from "../../utils/index.ts";
 import TraceDetailDrawerDesktop from "./trace-detail-drawer-desktop.tsx";
@@ -26,26 +26,29 @@ export default function RunDetailDrawer({
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
 
-  const init = async (setSelectTrace: boolean = false, signal?: AbortSignal) => {
-    try {
-      const res = await fetch(joinURL(origin, `/api/trace/tree/${traceId}`), { signal });
-      const { data } = (await res.json()) as { data: TraceData };
-      const format = {
-        ...data,
-        startTime: Number(data.startTime),
-        endTime: Number(data.endTime),
-      };
+  const init = useCallback(
+    async (setSelectTrace: boolean = false, signal?: AbortSignal) => {
+      try {
+        const res = await fetch(joinURL(origin, `/api/trace/tree/${traceId}`), { signal });
+        const { data } = (await res.json()) as { data: TraceData };
+        const format = {
+          ...data,
+          startTime: Number(data.startTime),
+          endTime: Number(data.endTime),
+        };
 
-      setTraces(format);
-      if (setSelectTrace) {
-        setSelectedTrace(format);
+        setTraces(format);
+        if (setSelectTrace) {
+          setSelectedTrace(format);
+          setLoading(false);
+        }
+        return format;
+      } catch {
         setLoading(false);
       }
-      return format;
-    } catch {
-      setLoading(false);
-    }
-  };
+    },
+    [traceId],
+  );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
@@ -94,11 +97,11 @@ export default function RunDetailDrawer({
     };
   }, [traceId, open, trace]);
 
-  const onClose = () => {
+  const onClose = useCallback(() => {
     setTraces(null);
     setSelectedTrace(null);
     onCloseDrawer();
-  };
+  }, [onCloseDrawer]);
 
   const renderContent = () => {
     if (!traceInfo || !traceId || !selectedTrace) return null;

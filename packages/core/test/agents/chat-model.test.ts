@@ -523,7 +523,7 @@ test("ChatModel should download file", async () => {
     }
   `);
 
-  expect(fetchSpy).toHaveBeenCalledWith("https://www.example.com/test.png");
+  expect(fetchSpy).toHaveBeenCalledWith("https://www.example.com/test.png", expect.anything());
 
   fetchSpy.mockRestore();
 });

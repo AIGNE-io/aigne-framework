@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
 import type { TraceData } from "../components/run/types.ts";
 
+const MAX_STRING_LENGTH = 100;
 const PROVIDERS = [
   "openai",
   "google",
@@ -58,19 +59,33 @@ export interface ModelPrice {
   supports_audio_output?: boolean;
 }
 
+const modelPriceCache = new Map<string, ModelPrice | undefined>();
+
 const findModelPrice = (model: string): ModelPrice | undefined => {
-  let price = (window as any).modelPrices?.[model];
-
-  for (const provider of PROVIDERS) {
-    if (price) {
-      break;
-    }
-
-    price = (window as any).modelPrices?.[`${provider}/${model}`];
+  if (modelPriceCache.get(model)) {
+    return modelPriceCache.get(model);
   }
 
+  const modelPrices = (window as any).modelPrices;
+  if (!modelPrices) {
+    modelPriceCache.set(model, undefined);
+    return undefined;
+  }
+
+  let price = modelPrices[model];
+
+  if (!price) {
+    for (const provider of PROVIDERS) {
+      price = modelPrices[`${provider}/${model}`];
+      if (price) break;
+    }
+  }
+
+  modelPriceCache.set(model, price);
   return price;
 };
+
+const ZERO = new Decimal(0);
 
 const calculateCost = (data: TraceData["attributes"]["output"]) => {
   const { model, usage, seconds } = data || {};
@@ -78,22 +93,16 @@ const calculateCost = (data: TraceData["attributes"]["output"]) => {
   const outputTokens = usage?.outputTokens || 0;
 
   if (!model) {
-    return {
-      inputCost: new Decimal(0),
-      outputCost: new Decimal(0),
-    };
+    return { inputCost: ZERO, outputCost: ZERO };
   }
 
   const price = findModelPrice(model);
   if (!price) {
-    return {
-      inputCost: new Decimal(0),
-      outputCost: new Decimal(0),
-    };
+    return { inputCost: ZERO, outputCost: ZERO };
   }
 
-  const inputCostPerToken = new Decimal(price.input_cost_per_token || 0);
-  const outputCostPerToken = new Decimal(price.output_cost_per_token || 0);
+  const inputCostPerToken = price.input_cost_per_token || 0;
+  const outputCostPerToken = price.output_cost_per_token || 0;
   const inputCost = new Decimal(inputTokens).mul(inputCostPerToken);
   let outputCost = new Decimal(outputTokens).mul(outputCostPerToken);
 
@@ -111,4 +120,126 @@ const calculateCost = (data: TraceData["attributes"]["output"]) => {
   };
 };
 
-export { getLocalizedFilename, findModelPrice, calculateCost };
+const getTraceStats = (trace: TraceData | null) => {
+  let count = 0;
+  let inputTokens = 0;
+  let outputTokens = 0;
+  let inputCost = ZERO;
+  let outputCost = ZERO;
+
+  function traverse(node: TraceData | null) {
+    if (!node) return;
+    count += 1;
+    if (node.attributes.output?.usage) {
+      inputTokens += node.attributes.output.usage.inputTokens || 0;
+      outputTokens += node.attributes.output.usage.outputTokens || 0;
+      const cost = calculateCost(node.attributes.output);
+      inputCost = inputCost.add(cost.inputCost);
+      outputCost = outputCost.add(cost.outputCost);
+    }
+    if (node.children) node.children.forEach(traverse);
+  }
+  traverse(trace);
+
+  const totalCost = inputCost.add(outputCost);
+
+  return {
+    count,
+    inputTokens,
+    outputTokens,
+    totalTokens: inputTokens + outputTokens,
+    inputCost: inputCost.gt(0) ? `$${inputCost.toString()}` : "",
+    outputCost: outputCost.gt(0) ? `$${outputCost.toString()}` : "",
+    totalCost: totalCost.gt(0) ? `$${totalCost.toString()}` : "",
+  };
+};
+
+interface TraceCostStats {
+  count: number;
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  inputCost: Decimal;
+  outputCost: Decimal;
+  totalCost: Decimal;
+}
+
+const getTraceCostMap = (trace: TraceData | null): Map<string, TraceCostStats> => {
+  const costMap = new Map<string, TraceCostStats>();
+
+  function calculateSubtree(node: TraceData | null): TraceCostStats {
+    if (!node) {
+      return {
+        count: 0,
+        inputTokens: 0,
+        outputTokens: 0,
+        totalTokens: 0,
+        inputCost: ZERO,
+        outputCost: ZERO,
+        totalCost: ZERO,
+      };
+    }
+
+    let count = 1;
+    let inputTokens = 0;
+    let outputTokens = 0;
+    let inputCost = ZERO;
+    let outputCost = ZERO;
+
+    if (node.attributes.output?.usage) {
+      inputTokens = node.attributes.output.usage.inputTokens || 0;
+      outputTokens = node.attributes.output.usage.outputTokens || 0;
+      const cost = calculateCost(node.attributes.output);
+      inputCost = cost.inputCost;
+      outputCost = cost.outputCost;
+    }
+
+    if (node.children) {
+      for (const child of node.children) {
+        const childStats = calculateSubtree(child);
+        count += childStats.count;
+        inputTokens += childStats.inputTokens;
+        outputTokens += childStats.outputTokens;
+        inputCost = inputCost.add(childStats.inputCost);
+        outputCost = outputCost.add(childStats.outputCost);
+      }
+    }
+
+    const stats: TraceCostStats = {
+      count,
+      inputTokens,
+      outputTokens,
+      totalTokens: inputTokens + outputTokens,
+      inputCost,
+      outputCost,
+      totalCost: inputCost.add(outputCost),
+    };
+
+    costMap.set(node.id, stats);
+    return stats;
+  }
+
+  calculateSubtree(trace);
+  return costMap;
+};
+
+const clearModelPriceCache = () => {
+  modelPriceCache.clear();
+};
+
+const truncateString = (str: string, maxLength = MAX_STRING_LENGTH): string => {
+  if (str.length <= maxLength * 2) return str;
+
+  return `${str.slice(0, maxLength)}......${str.slice(-maxLength)}`;
+};
+
+export {
+  getLocalizedFilename,
+  findModelPrice,
+  calculateCost,
+  getTraceStats,
+  getTraceCostMap,
+  clearModelPriceCache,
+  truncateString,
+};
+export type { TraceCostStats };

@@ -160,10 +160,6 @@ export class OpenAIChatModel extends ChatModel {
     };
   }
 
-  get modelOptions() {
-    return this.options?.modelOptions;
-  }
-
   /**
    * Process the input and generate a response
    * @param input The input to process
@@ -171,9 +167,9 @@ export class OpenAIChatModel extends ChatModel {
    */
   override process(
     input: ChatModelInput,
-    _options: AgentInvokeOptions,
+    options: AgentInvokeOptions,
   ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    return this._process(input);
+    return this._process(input, options);
   }
 
   private getReasoningEffort(
@@ -190,28 +186,31 @@ export class OpenAIChatModel extends ChatModel {
     return effort;
   }
 
-  private async _process(input: ChatModelInput): Promise<AgentResponse<ChatModelOutput>> {
+  private async _process(
+    input: ChatModelInput,
+    options: AgentInvokeOptions,
+  ): Promise<AgentResponse<ChatModelOutput>> {
+    const modelOptions = await this.getModelOptions(input, options);
+
     const messages = await this.getRunMessages(input);
-    const model = input.modelOptions?.model || this.credential.model;
+    const model = modelOptions?.model || this.credential.model;
 
     const body: OpenAI.Chat.ChatCompletionCreateParams = {
       model,
-      temperature: this.supportsTemperature
-        ? (input.modelOptions?.temperature ?? this.modelOptions?.temperature)
-        : undefined,
-      top_p: input.modelOptions?.topP ?? this.modelOptions?.topP,
-      frequency_penalty:
-        input.modelOptions?.frequencyPenalty ?? this.modelOptions?.frequencyPenalty,
-      presence_penalty: input.modelOptions?.presencePenalty ?? this.modelOptions?.presencePenalty,
+      temperature: this.supportsTemperature ? modelOptions.temperature : undefined,
+      top_p: modelOptions.topP,
+      frequency_penalty: modelOptions.frequencyPenalty,
+      presence_penalty: modelOptions.presencePenalty,
       messages,
-      stream_options: {
-        include_usage: true,
-      },
+      stream_options: { include_usage: true },
       stream: true,
-      reasoning_effort: this.getReasoningEffort(
-        input.modelOptions?.reasoningEffort ?? this.modelOptions?.reasoningEffort,
-      ),
+      reasoning_effort: this.getReasoningEffort(modelOptions.reasoningEffort),
     };
+
+    if (model.includes("gpt-5") || model.includes("o1-")) {
+      delete body.temperature;
+      delete body.top_p;
+    }
 
     // For models that do not support tools use with JSON schema in same request,
     // so we need to handle the case where tools are not used and responseFormat is json
@@ -226,7 +225,7 @@ export class OpenAIChatModel extends ChatModel {
         addTypeToEmptyParameters: !this.supportsToolsEmptyParameters,
       }),
       tool_choice: input.toolChoice,
-      parallel_tool_calls: this.getParallelToolCalls(input),
+      parallel_tool_calls: this.getParallelToolCalls(input, modelOptions),
       response_format: responseFormat,
     })) as unknown as Stream<OpenAI.Chat.Completions.ChatCompletionChunk>;
 
@@ -258,10 +257,13 @@ export class OpenAIChatModel extends ChatModel {
     return { ...output, usage: mergeUsage(result.usage, output.usage) };
   }
 
-  private getParallelToolCalls(input: ChatModelInput): boolean | undefined {
+  private getParallelToolCalls(
+    input: ChatModelInput,
+    modelOptions: ChatModelInputOptions,
+  ): boolean | undefined {
     if (!this.supportsParallelToolCalls) return undefined;
     if (!input.tools?.length) return undefined;
-    return input.modelOptions?.parallelToolCalls ?? this.modelOptions?.parallelToolCalls;
+    return modelOptions.parallelToolCalls;
   }
 
   protected async getRunMessages(input: ChatModelInput): Promise<ChatCompletionMessageParam[]> {

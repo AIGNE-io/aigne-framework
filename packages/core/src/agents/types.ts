@@ -1,4 +1,5 @@
-import type { Agent, Message } from "./agent.js";
+import z, { type ZodType } from "zod";
+import { type Agent, DEFAULT_INPUT_ACTION_GET, type Message } from "./agent.js";
 
 export const transferAgentOutputKey = "$transferAgentTo";
 
@@ -29,4 +30,17 @@ export function replaceTransferAgentToName(output: Message): Message {
   }
 
   return output;
+}
+
+export type GetterSchema<I extends Record<string, unknown>> = Partial<{
+  [key in keyof I]: { [DEFAULT_INPUT_ACTION_GET]: string } | I[key];
+}>;
+
+export function getterSchema<T extends ZodType>(schema: T) {
+  return z.union([
+    schema,
+    z.object({
+      [DEFAULT_INPUT_ACTION_GET]: z.string(),
+    }),
+  ]);
 }

@@ -228,6 +228,110 @@ console.log(result);
 
 **Reference:** [Ideogram API Documentation](https://developer.ideogram.ai/api-reference/api-reference/generate-v3)
 
+## Video Generation
+
+AIGNE Hub supports AI-powered video generation models from multiple providers. Here are examples for each supported platform:
+
+### OpenAI Sora Model
+
+```typescript
+import { AIGNEHubVideoModel } from "@aigne/aigne-hub";
+
+const model = new AIGNEHubVideoModel({
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
+  model: "openai/sora-2",
+});
+
+const result = await model.invoke({
+  prompt: "A serene beach scene with gentle waves at sunset",
+  size: "1280x720",
+  seconds: "8",
+  outputFileType: "url",
+});
+
+console.log(result);
+/* Example Output:
+  {
+    videos: [{ url: "https://...", type: "url" }],
+    usage: {
+      inputTokens: 0,
+      outputTokens: 0,
+      aigneHubCredits: 200
+    },
+    model: "openai/sora-2",
+    seconds: 8
+  }
+*/
+```
+
+**Available Parameters:**
+- `prompt` (required): Text description of the video to generate
+- `model`: Video model - `"openai/sora-2"` (standard) or `"openai/sora-2-pro"` (higher quality)
+- `size`: Video resolution - `"720x1280"` (9:16 vertical), `"1280x720"` (16:9 horizontal), `"1024x1792"` (9:16 higher), `"1792x1024"` (16:9 higher)
+- `seconds`: Video duration - `"4"`, `"8"`, or `"12"` seconds
+- `image`: Optional input image for image-to-video generation
+- `outputFileType`: Output format - `"url"`, `"file"`, or `"base64"`
+
+**Reference:** [OpenAI Video API Documentation](https://platform.openai.com/docs/api-reference/videos)
+
+### Google Gemini Veo Model
+
+```typescript
+import { AIGNEHubVideoModel } from "@aigne/aigne-hub";
+
+const model = new AIGNEHubVideoModel({
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
+  model: "google/veo-3.1-generate-preview",
+});
+
+const result = await model.invoke({
+  prompt: "A majestic eagle soaring through mountain valleys",
+  aspectRatio: "16:9",
+  size: "1080p",
+  seconds: "6",
+  negativePrompt: "blur, low quality",
+  personGeneration: "allow_adult",
+  outputFileType: "url",
+});
+
+console.log(result);
+/* Example Output:
+  {
+    videos: [{ url: "https://...", type: "url" }],
+    usage: {
+      inputTokens: 0,
+      outputTokens: 0,
+      aigneHubCredits: 150
+    },
+    model: "google/veo-3.1-generate-preview",
+    seconds: 6
+  }
+*/
+```
+
+**Available Parameters:**
+- `prompt` (required): Text description of the video to generate
+- `model`: Video model - `"google/veo-3.1-generate-preview"` (latest), `"google/veo-3-generate"`, or `"google/veo-2-generate"`
+- `aspectRatio`: Video aspect ratio - `"16:9"` (default, horizontal) or `"9:16"` (vertical)
+- `size`: Video resolution - `"720p"` (default) or `"1080p"` (note: 1080p only supports 8 seconds for Veo 3.1)
+- `seconds`: Video duration - `"4"`, `"6"`, or `"8"` seconds
+- `negativePrompt`: Text describing content to avoid in the video
+- `personGeneration`: Control person generation - `"allow_adult"` (text-to-video), `"allow_all"` (image-to-video for Veo 3.1)
+- `image`: Optional input image for image-to-video generation
+- `lastFrame`: Optional last frame for frame interpolation (Veo 3.1)
+- `referenceImages`: Optional reference images array (only supported in Veo 3.1)
+- `outputFileType`: Output format - `"url"`, `"file"`, or `"base64"`
+
+**Reference:** [Google Gemini Video API Documentation](https://ai.google.dev/api/generate-videos)
+
+### General Notes
+
+Video generation may take longer than image or text generation. The `outputFileType` parameter determines how the generated video is returned:
+- `url`: Returns a URL to the generated video (recommended for web applications)
+- `file`: Returns the video file data directly
+- `base64`: Returns base64-encoded video data
 
 ## Streaming Usage
 

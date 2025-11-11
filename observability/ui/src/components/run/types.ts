@@ -28,6 +28,7 @@ export interface TraceData {
       appName?: string;
       appVersion?: string;
     };
+    taskTitle?: string;
   };
   componentId?: string;
   userId?: string;

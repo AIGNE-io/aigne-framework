@@ -8,9 +8,9 @@ import {
 } from "@aigne/aigne-hub";
 import type {
   ChatModel,
-  ChatModelInputOptions,
+  ChatModelInputOptionsWithGetter,
   ImageModel,
-  ImageModelInputOptions,
+  ImageModelInputOptionsWithGetter,
 } from "@aigne/core";
 import { flat, omit } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
@@ -100,10 +100,10 @@ export const formatModelName = async (
 };
 
 export async function loadChatModel(
-  options?: ChatModelInputOptions & LoadCredentialOptions,
+  options?: ChatModelInputOptionsWithGetter & LoadCredentialOptions,
 ): Promise<ChatModel> {
   const { provider, model } = await formatModelName(
-    options?.model || process.env.MODEL || "",
+    (typeof options?.model === "string" ? options.model : undefined) || process.env.MODEL || "",
     options?.inquirerPromptFn ??
       (inquirer.prompt as NonNullable<LoadCredentialOptions["inquirerPromptFn"]>),
   );
@@ -128,10 +128,12 @@ export async function loadChatModel(
 }
 
 export async function loadImageModel(
-  options?: ImageModelInputOptions & LoadCredentialOptions,
+  options?: ImageModelInputOptionsWithGetter & LoadCredentialOptions,
 ): Promise<ImageModel> {
   const { provider, model } = await formatModelName(
-    options?.model || process.env.IMAGE_MODEL || "",
+    (typeof options?.model === "string" ? options.model : undefined) ||
+      process.env.IMAGE_MODEL ||
+      "",
     options?.inquirerPromptFn ??
       (inquirer.prompt as NonNullable<LoadCredentialOptions["inquirerPromptFn"]>),
   );

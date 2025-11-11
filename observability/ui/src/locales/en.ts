@@ -126,6 +126,16 @@ export default flatten({
   invalidIds: "Invalid IDs",
   totalBatches: "{count} batches",
   wordWrap: "Word Wrap",
+  truncateStrings: "Truncate Long Strings",
   fullscreen: "Fullscreen",
   exitFullscreen: "Exit Fullscreen",
+  foldAll: "Fold All",
+  unfoldAll: "Unfold All",
+  jsonView: {
+    viewAsMarkdown: "Format Value",
+    preview: "Preview",
+    close: "Close",
+    fullscreen: "Fullscreen",
+    exitFullscreen: "Exit Fullscreen",
+  },
 });

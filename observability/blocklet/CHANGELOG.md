@@ -1,5 +1,75 @@
 # Changelog
 
+## [1.15.1](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.15.1-beta.4...blocklet-observability-v1.15.1) (2025-11-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.5
+    * @aigne/observability-ui bumped to 0.11.4
+
+## [1.15.1-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.15.1-beta.3...blocklet-observability-v1.15.1-beta.4) (2025-11-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.5-beta.4
+    * @aigne/observability-ui bumped to 0.11.4-beta.4
+
+## [1.15.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.15.1-beta.2...blocklet-observability-v1.15.1-beta.3) (2025-11-06)
+
+
+### Bug Fixes
+
+* update package to latest ([#709](https://github.com/AIGNE-io/aigne-framework/issues/709)) ([47661ab](https://github.com/AIGNE-io/aigne-framework/commit/47661ab78cd13ce039d6ebf596e4e603c0220139))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.5-beta.3
+    * @aigne/observability-ui bumped to 0.11.4-beta.3
+
+## [1.15.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.15.1-beta.1...blocklet-observability-v1.15.1-beta.2) (2025-11-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.5-beta.2
+    * @aigne/observability-ui bumped to 0.11.4-beta.2
+
+## [1.15.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.15.1-beta...blocklet-observability-v1.15.1-beta.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* update package to latest ([#699](https://github.com/AIGNE-io/aigne-framework/issues/699)) ([9877f6d](https://github.com/AIGNE-io/aigne-framework/commit/9877f6d1975362338db4eb47a2bf3564114c3cf8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.5-beta.1
+    * @aigne/observability-ui bumped to 0.11.4-beta.1
+
+## [1.15.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.15.0...blocklet-observability-v1.15.1-beta) (2025-11-03)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.5-beta
+    * @aigne/observability-ui bumped to 0.11.4-beta
+
 ## [1.15.0](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.15.0-beta.2...blocklet-observability-v1.15.0) (2025-10-31)
 
 

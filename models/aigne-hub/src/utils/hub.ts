@@ -1,3 +1,4 @@
+import { fetch } from "@aigne/core/utils/fetch.js";
 import { joinURL, withQuery } from "ufo";
 import { z } from "zod";
 import { getAIGNEHubMountPoint } from "./blocklet.js";
@@ -37,14 +38,7 @@ export async function getModels(options: GetModelsOptions) {
     }),
   );
 
-  if (!response.ok) {
-    const text = await response.text().catch(() => "");
-    throw new Error(`Failed to fetch models: ${response.status} ${response.statusText} ${text}`);
-  }
-
-  const json = await response.json().catch((error) => {
-    throw new Error(`Failed to parse response as JSON from ${url}: ${error.message}`);
-  });
+  const json = await response.json();
 
   return modelsSchema.parse(json);
 }

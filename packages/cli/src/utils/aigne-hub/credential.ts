@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { AIGNE_HUB_BLOCKLET_DID, AIGNE_HUB_URL, getAIGNEHubMountPoint } from "@aigne/aigne-hub";
+import { fetch } from "@aigne/core/utils/fetch.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import inquirer from "inquirer";
 import open from "open";
@@ -25,9 +26,9 @@ const request = async (config: { url: string; method?: string; requestCount?: nu
   }
 
   const response = await fetch(config.url, { method: config.method || "GET", headers });
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
   const data = await response.json();
+
   return { data };
 };
 

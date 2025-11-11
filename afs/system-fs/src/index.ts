@@ -190,14 +190,13 @@ export class SystemFS implements AFSModule {
         processedFiles.add(itemRelativePath);
 
         const stats = await stat(absolutePath);
-        const content = await readFile(absolutePath, "utf8");
 
         const entry: AFSEntry = {
           id: itemRelativePath,
           path: itemRelativePath,
           createdAt: stats.birthtime,
           updatedAt: stats.mtime,
-          content,
+          summary: match.data.lines?.text,
           metadata: {
             type: "file",
             size: stats.size,

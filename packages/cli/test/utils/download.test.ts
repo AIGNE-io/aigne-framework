@@ -32,30 +32,30 @@ test("downloadPackage should raise error with custom message", async () => {
   try {
     spyOn(globalThis, "fetch").mockReturnValueOnce(Promise.reject(new Error("Network error")));
 
-    expect(downloadAndExtract(url, dir)).rejects.toThrow(
-      "Failed to download package from https://www.aigne.io/projects/xxx/test-package.tgz: Network error",
+    expect(downloadAndExtract(url, dir)).rejects.toMatchInlineSnapshot(
+      `[Error: Fetch https://www.aigne.io/projects/xxx/test-package.tgz error: Network error]`,
     );
 
     spyOn(globalThis, "fetch").mockReturnValueOnce(
       Promise.resolve(new Response(null, { status: 404, statusText: "Not Found" })),
     );
 
-    expect(downloadAndExtract(url, dir)).rejects.toThrow(
-      "Failed to download package from https://www.aigne.io/projects/xxx/test-package.tgz: Not Found",
+    expect(downloadAndExtract(url, dir)).rejects.toMatchInlineSnapshot(
+      `[Error: Fetch https://www.aigne.io/projects/xxx/test-package.tgz error: 404 Not Found ]`,
     );
 
     spyOn(globalThis, "fetch").mockReturnValueOnce(Promise.resolve(new Response(null)));
 
-    expect(downloadAndExtract(url, dir)).rejects.toThrow(
-      "Failed to download package from https://www.aigne.io/projects/xxx/test-package.tgz: Unexpected to get empty response",
+    expect(downloadAndExtract(url, dir)).rejects.toMatchInlineSnapshot(
+      `[Error: Failed to download package from https://www.aigne.io/projects/xxx/test-package.tgz: Unexpected to get empty response]`,
     );
 
     spyOn(globalThis, "fetch").mockReturnValueOnce(
       Promise.resolve(new Response("invalid tgz file content")),
     );
 
-    expect(downloadAndExtract(url, dir)).rejects.toThrow(
-      "Failed to extract package from https://www.aigne.io/projects/xxx/test-package.tgz: TAR_BAD_ARCHIVE: Unrecognized archive format",
+    expect(downloadAndExtract(url, dir)).rejects.toMatchInlineSnapshot(
+      `[Error: Failed to extract package from https://www.aigne.io/projects/xxx/test-package.tgz: TAR_BAD_ARCHIVE: Unrecognized archive format]`,
     );
   } finally {
     await rm(dir, { recursive: true, force: true });

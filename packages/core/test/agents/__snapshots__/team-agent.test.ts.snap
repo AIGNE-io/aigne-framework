@@ -448,7 +448,9 @@ exports[`TeamAgent should process reflection mode correctly 1`] = `
         "role": "system",
       },
     ],
-    "modelOptions": undefined,
+    "modelOptions": {
+      "parallelToolCalls": true,
+    },
     "responseFormat": undefined,
     "toolChoice": undefined,
     "tools": undefined,
@@ -468,7 +470,9 @@ AIGNE in 2025 is a framework for building AI agents.
         "role": "system",
       },
     ],
-    "modelOptions": undefined,
+    "modelOptions": {
+      "parallelToolCalls": true,
+    },
     "responseFormat": {
       "jsonSchema": {
         "name": "output",
@@ -513,7 +517,9 @@ The article is well-written and informative. However, it could use more examples
         "role": "system",
       },
     ],
-    "modelOptions": undefined,
+    "modelOptions": {
+      "parallelToolCalls": true,
+    },
     "responseFormat": undefined,
     "toolChoice": undefined,
     "tools": undefined,
@@ -533,7 +539,9 @@ AIGNE in 2025 is a framework for building AI agents. For example, it allows deve
         "role": "system",
       },
     ],
-    "modelOptions": undefined,
+    "modelOptions": {
+      "parallelToolCalls": true,
+    },
     "responseFormat": {
       "jsonSchema": {
         "name": "output",

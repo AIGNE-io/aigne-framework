@@ -59,9 +59,9 @@ yarn add @aigne/gemini @aigne/core
 pnpm add @aigne/gemini @aigne/core
 ```
 
-## Basic Usage
+## Chat Completions
 
-### Chat Model
+### Basic Usage
 
 ```typescript file="test/gemini-chat-model.test.ts" region="example-gemini-chat-model"
 import { GeminiChatModel } from "@aigne/gemini";
@@ -69,7 +69,7 @@ import { GeminiChatModel } from "@aigne/gemini";
 const model = new GeminiChatModel({
   // Provide API key directly or use environment variable GOOGLE_API_KEY
   apiKey: "your-api-key", // Optional if set in env variables
-  // Specify Gemini model version (defaults to 'gemini-1.5-pro' if not specified)
+  // Specify Gemini model version (defaults to 'gemini-2.0-flash' if not specified)
   model: "gemini-1.5-flash",
   modelOptions: {
     temperature: 0.7,
@@ -84,12 +84,52 @@ console.log(result);
 /* Output:
   {
     text: "Hello from Gemini! I'm Google's helpful AI assistant. How can I assist you today?",
-    model: "gemini-1.5-flash"
+    model: "gemini-1.5-flash",
+    usage: {
+      inputTokens: 12,
+      outputTokens: 18
+    }
   }
   */
 ```
 
-### Image Generation Model
+### GeminiChatModel Input
+
+- `messages` (array, required): Conversation messages
+  - Each message has: `role` ("user" | "assistant" | "system" | "tool"), `content` (string or multimodal array)
+  - Multimodal content supports: text, images (url/base64), files, audio, video
+- `tools` (array, optional): Available function tools for the model to call
+  - Each tool has: `type: "function"`, `function` with `name`, `description`, `parameters` (JSON schema)
+- `toolChoice` (string/object, optional): Control tool usage - "auto", "required", "none", or specific tool
+- `responseFormat` (object, optional): Control output format
+  - `type: "json_schema"` with `jsonSchema` for structured JSON output
+- `model` (string, optional): Model to use (e.g., "gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash")
+- `temperature` (number, optional): Sampling temperature (0-1), controls randomness
+- `topP` (number, optional): Nucleus sampling parameter (0-1), alternative to temperature
+- `topK` (number, optional): Top-k sampling parameter, limits token selection
+- `frequencyPenalty` (number, optional): Frequency penalty, reduces repetition
+- `presencePenalty` (number, optional): Presence penalty, encourages topic diversity
+- `reasoningEffort` (string/number, optional): For thinking models (Gemini 2.5) - "minimal", "low", "medium", "high" or token count (128-32768)
+- `modalities` (array, optional): Response modalities - ["TEXT"], ["IMAGE"], ["TEXT", "IMAGE"], ["AUDIO"]
+
+### GeminiChatModel Output
+
+- `text` (string, optional): Generated text response
+- `toolCalls` (array, optional): Function calls requested by the model
+  - Each call has: `id`, `type: "function"`, `function` with `name` and `arguments` (parsed JSON)
+- `json` (object, optional): Structured JSON output (when using `responseFormat`)
+- `files` (array, optional): Generated files (images, audio, etc.) as `FileUnionContent[]`
+  - Each file contains: `type: "file"`, `data` (base64), `mimeType`, `filename`
+- `usage` (object): Token usage statistics
+  - `inputTokens` (number): Input tokens consumed
+  - `outputTokens` (number): Output tokens generated (includes thoughts tokens if applicable)
+- `model` (string): Actual model version used for the request
+- `modelOptions` (object, optional): Model options used
+  - `reasoningEffort` (number, optional): Thinking budget applied (for thinking models)
+
+## Image Generation
+
+### Basic Image Generation
 
 ```typescript
 import { GeminiImageModel } from "@aigne/gemini";
@@ -109,7 +149,9 @@ console.log(result);
   {
     images: [
       {
-        base64: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+        type: "file",
+        data: "iVBORw0KGgoAAAANSUhEUgAA...",
+        mimeType: "image/png"
       }
     ],
     usage: {
@@ -120,6 +162,75 @@ console.log(result);
   }
   */
 ```
+
+### Image Editing with Gemini Models
+
+```typescript
+import { GeminiImageModel } from "@aigne/gemini";
+
+const model = new GeminiImageModel({
+  apiKey: "your-api-key",
+  model: "gemini-2.0-flash-exp", // Use Gemini model for editing
+});
+
+const result = await model.invoke({
+  prompt: "Add vibrant flowers in the foreground",
+  image: [
+    {
+      type: "url",
+      url: "https://example.com/original-image.png",
+    },
+  ],
+  n: 1,
+});
+
+console.log(result.images); // Array of edited images
+```
+
+### GeminiImageModel Input
+
+**Common Parameters:**
+- `prompt` (string, required): Text description of the desired image
+- `model` (string, optional): Model to use (default: "imagen-4.0-generate-001")
+  - Imagen models: "imagen-4.0-generate-001", "imagen-3.0-generate-001"
+  - Gemini models: "gemini-2.0-flash-exp", "gemini-1.5-pro", "gemini-1.5-flash"
+- `n` (number, optional): Number of images to generate (default: 1)
+- `image` (array, optional): Reference images for editing (Gemini models only)
+
+**Imagen Models Parameters:**
+- `seed` (number, optional): Random seed for reproducible generation
+- `safetyFilterLevel` (string, optional): Safety filter level for content moderation
+- `personGeneration` (string, optional): Person generation settings
+- `outputMimeType` (string, optional): Output image format ("image/png", "image/jpeg")
+- `outputGcsUri` (string, optional): Google Cloud Storage URI for output
+- `outputCompressionQuality` (number, optional): JPEG compression quality (1-100)
+- `negativePrompt` (string, optional): Description of what to exclude from the image
+- `language` (string, optional): Language for the prompt
+- `includeSafetyAttributes` (boolean, optional): Include safety attributes in response
+- `includeRaiReason` (boolean, optional): Include RAI reasoning in response
+- `imageSize` (string, optional): Size of the generated image
+- `guidanceScale` (number, optional): Guidance scale for generation
+- `aspectRatio` (string, optional): Aspect ratio of the image
+- `addWatermark` (boolean, optional): Add watermark to generated images
+
+**Gemini Models Parameters:**
+- `temperature` (number, optional): Controls randomness in generation (0.0 to 1.0)
+- `maxOutputTokens` (number, optional): Maximum number of tokens in response
+- `topP` (number, optional): Nucleus sampling parameter
+- `topK` (number, optional): Top-k sampling parameter
+- `safetySettings` (array, optional): Safety settings for content generation
+- `seed` (number, optional): Random seed for reproducible generation
+- `stopSequences` (array, optional): Sequences that stop generation
+- `systemInstruction` (string, optional): System-level instructions
+
+### GeminiImageModel Output
+
+- `images` (array): Generated/edited images as `FileUnionContent[]`
+  - Each image contains: `type: "file"`, `data` (base64), `mimeType`, `filename` (optional)
+- `usage` (object): Token usage information
+  - `inputTokens` (number): Input tokens used
+  - `outputTokens` (number): Output tokens used
+- `model` (string): The model used for generation
 
 ## Streaming Responses
 
@@ -154,74 +265,123 @@ console.log(fullText); // Output: "Hello from Gemini! I'm Google's helpful AI as
 console.log(json); // { model: "gemini-1.5-flash" }
 ```
 
-## Image Generation Parameters
+## Video Generation
 
-The `GeminiImageModel` supports different parameters depending on the model type:
+Use `GeminiVideoModel` to generate videos with Google's Veo models.
 
-### Imagen Models (e.g., `imagen-4.0-generate-001`)
-
-- **`prompt`** (string): The text description of the image you want to generate
-- **`n`** (number): Number of images to generate (defaults to 1)
-- **`seed`** (number): Random seed for reproducible generation
-- **`safetyFilterLevel`** (string): Safety filter level for content moderation
-- **`personGeneration`** (string): Person generation settings
-- **`outputMimeType`** (string): Output image format (e.g., "image/png", "image/jpeg")
-- **`outputGcsUri`** (string): Google Cloud Storage URI for output
-- **`outputCompressionQuality`** (number): JPEG compression quality (1-100)
-- **`negativePrompt`** (string): Description of what to exclude from the image
-- **`language`** (string): Language for the prompt
-- **`includeSafetyAttributes`** (boolean): Include safety attributes in response
-- **`includeRaiReason`** (boolean): Include RAI reasoning in response
-- **`imageSize`** (string): Size of the generated image
-- **`guidanceScale`** (number): Guidance scale for generation
-- **`aspectRatio`** (string): Aspect ratio of the image
-- **`addWatermark`** (boolean): Add watermark to generated images
-
-### Gemini Models (e.g., `gemini-1.5-pro`)
-
-- **`prompt`** (string): The text description of the image you want to generate
-- **`n`** (number): Number of images to generate (defaults to 1)
-- **`temperature`** (number): Controls randomness in generation (0.0 to 1.0)
-- **`maxOutputTokens`** (number): Maximum number of tokens in response
-- **`topP`** (number): Nucleus sampling parameter
-- **`topK`** (number): Top-k sampling parameter
-- **`safetySettings`** (array): Safety settings for content generation
-- **`seed`** (number): Random seed for reproducible generation
-- **`stopSequences`** (array): Sequences that stop generation
-- **`systemInstruction`** (string): System-level instructions
-
-### Advanced Image Generation Example
+### Basic Video Generation
 
 ```typescript
-const result = await model.invoke({
-  prompt: "A futuristic cityscape with neon lights and flying cars",
-  model: "imagen-4.0-generate-001",
-  n: 2,
-  imageSize: "1024x1024",
-  aspectRatio: "1:1",
-  guidanceScale: 7.5,
-  negativePrompt: "blurry, low quality, distorted",
-  seed: 12345,
-  includeSafetyAttributes: true,
-  outputMimeType: "image/png"
-});
-```
+import { GeminiVideoModel } from "@aigne/gemini";
 
-## Model Options
-
-You can also set default options when creating the model:
-
-```typescript
-const model = new GeminiImageModel({
+const videoModel = new GeminiVideoModel({
   apiKey: "your-api-key",
-  model: "imagen-4.0-generate-001",
-  modelOptions: {
-    safetyFilterLevel: "BLOCK_MEDIUM_AND_ABOVE",
-    includeSafetyAttributes: true,
-    outputMimeType: "image/png"
+  model: "veo-3.1-generate-preview", // or "veo-3-generate-preview"
+});
+
+const result = await videoModel.invoke({
+  prompt: "A serene lake with mountains in the background, gentle waves rippling",
+  aspectRatio: "16:9",
+  size: "720p",
+  seconds: "8",
+});
+
+console.log(result);
+/* Output:
+  {
+    videos: [
+      {
+        type: "file",
+        data: "base64-encoded-video-data...",
+        mimeType: "video/mp4",
+        filename: "timestamp.mp4"
+      }
+    ],
+    usage: {
+      inputTokens: 0,
+      outputTokens: 0
+    },
+    model: "veo-3.1-generate-preview",
+    seconds: 8
   }
+  */
+```
+
+### Image-to-Video
+
+```typescript
+import { GeminiVideoModel } from "@aigne/gemini";
+
+const videoModel = new GeminiVideoModel({
+  apiKey: "your-api-key",
+  model: "veo-3.1-generate-preview",
+});
+
+const result = await videoModel.invoke({
+  prompt: "Animate this image with gentle movement, clouds drifting slowly",
+  image: {
+    type: "url",
+    url: "https://example.com/input-image.png",
+  },
+  aspectRatio: "16:9",
+  size: "720p",
+  seconds: "8",
+});
+
+console.log(result.videos); // Array containing generated video
+```
+
+### Frame Interpolation
+
+```typescript
+const result = await videoModel.invoke({
+  prompt: "Smooth transition between the two frames",
+  image: {
+    type: "url",
+    url: "https://example.com/first-frame.png",
+  },
+  lastFrame: {
+    type: "url",
+    url: "https://example.com/last-frame.png",
+  },
+  aspectRatio: "16:9",
+  size: "720p",
+  seconds: "8",
 });
 ```
+
+### GeminiVideoModel Input
+
+- `prompt` (string, required): Text description of the desired video
+- `model` (string, optional): Veo model to use (default: "veo-3.1-generate-preview")
+  - "veo-3.1-generate-preview": Latest version with reference images support
+  - "veo-3-generate-preview": Previous version
+- `aspectRatio` (string, optional): Video aspect ratio
+  - "16:9": Horizontal video (default)
+  - "9:16": Vertical video
+- `size` (string, optional): Video resolution (default: "720p")
+  - "720p": 720p resolution
+  - "1080p": 1080p resolution (16:9 only for Veo 3, 8 seconds only for Veo 3.1)
+- `seconds` (string, optional): Video duration - "4", "6", or "8" seconds (default: "8")
+- `image` (object, optional): Reference image for image-to-video or frame interpolation
+  - Supports `type: "url"` with `url` or `type: "file"` with base64 `data`
+- `lastFrame` (object, optional): Last frame for frame interpolation
+  - Supports `type: "url"` with `url` or `type: "file"` with base64 `data`
+- `referenceImages` (array, optional): Reference images for video generation (Veo 3.1 only)
+- `negativePrompt` (string, optional): Description of what to avoid in the video
+- `personGeneration` (string, optional): Control person generation
+  - Veo 3.1: "allow_all" for image-to-video/frame interpolation/reference images; "allow_adult" for text-to-video
+  - Veo 3: "allow_all" for image-to-video; "allow_adult" for text-to-video
+
+### GeminiVideoModel Output
+
+- `videos` (array): Generated videos as `FileUnionContent[]`
+  - Each video contains: `type: "file"`, `data` (base64), `mimeType: "video/mp4"`, `filename`
+- `usage` (object): Token usage information
+  - `inputTokens` (number): Input tokens used (typically 0 for video generation)
+  - `outputTokens` (number): Output tokens used (typically 0 for video generation)
+- `model` (string): The model used for generation
+- `seconds` (number): Actual duration of the generated video
 
 ## Environment Variables
 
@@ -233,10 +393,13 @@ export GEMINI_API_KEY="your-gemini-api-key"
 
 ## API Reference
 
-For complete parameter details and advanced features:
+For complete API documentation, please visit:
 
-- **Imagen Models**: Refer to [Google GenAI Models.generateImages()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generateimages)
-- **Gemini Models**: Refer to [Google GenAI Models.generateContent()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generatecontent)
+- [AIGNE Documentation](https://aigne.io/docs)
+- [Google GenAI API Reference](https://googleapis.github.io/js-genai/release_docs/)
+  - [Models.generateContent()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generatecontent) - Chat completions
+  - [Models.generateImages()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generateimages) - Image generation
+  - [Models.generateVideos()](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html#generatevideos) - Video generation
 
 ## License
 

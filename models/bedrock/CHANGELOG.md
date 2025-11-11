@@ -1,5 +1,98 @@
 # Changelog
 
+## [0.10.10](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.10-beta.6...bedrock-v0.10.10) (2025-11-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.66.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58
+
+## [0.10.10-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.10-beta.5...bedrock-v0.10.10-beta.6) (2025-11-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.66.0-beta.5
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.6
+
+## [0.10.10-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.10-beta.4...bedrock-v0.10.10-beta.5) (2025-11-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.66.0-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.5
+
+## [0.10.10-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.10-beta.3...bedrock-v0.10.10-beta.4) (2025-11-06)
+
+
+### Features
+
+* add dynamic model options resolution with getter pattern ([#708](https://github.com/AIGNE-io/aigne-framework/issues/708)) ([5ed5085](https://github.com/AIGNE-io/aigne-framework/commit/5ed5085203763c70194853c56edc13acf56d81c6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.66.0-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.4
+
+## [0.10.10-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.10-beta.2...bedrock-v0.10.10-beta.3) (2025-11-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.1-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.3
+
+## [0.10.10-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.10-beta.1...bedrock-v0.10.10-beta.2) (2025-11-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.1-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.2
+
+## [0.10.10-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.10-beta...bedrock-v0.10.10-beta.1) (2025-11-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.1-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.1
+
+## [0.10.10-beta](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.9...bedrock-v0.10.10-beta) (2025-11-03)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.65.1-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta
+
 ## [0.10.9](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.9-beta.6...bedrock-v0.10.9) (2025-10-31)
 
 

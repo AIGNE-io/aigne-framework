@@ -1,77 +1,77 @@
 # OpenAI
 
-The `@aigne/openai` package provides a direct and robust integration with OpenAI's suite of models, including the powerful GPT series for chat completions and DALL-E for image generation. This guide details the necessary steps for installation, configuration, and utilization of these models within the AIGNE Framework.
+The `@aigne/openai` package provides a seamless integration with OpenAI's suite of models, allowing developers to leverage services like GPT for chat completions, DALL-E for image generation, and Sora for video creation directly within the AIGNE Framework. This document provides a comprehensive guide to installing, configuring, and using these models.
 
-For information on other model providers, refer to the main [Models](./models.md) overview.
+For a broader overview of available model providers, please see the [Models](./models.md) section.
 
 ## Features
 
-The integration with OpenAI is designed to be comprehensive, offering the following capabilities:
+The OpenAI integration is designed to be robust and developer-friendly, offering a range of features:
 
-*   **Direct API Integration**: Leverages the official OpenAI SDK for reliable communication.
-*   **Chat Completions**: Full support for OpenAI's chat completion models, such as `gpt-4o` and `gpt-4o-mini`.
-*   **Function Calling**: Native support for OpenAI's function calling and tool use features.
-*   **Structured Outputs**: Ability to request and parse JSON-formatted responses from the model.
-*   **Image Generation**: Access to DALL-E 2 and DALL-E 3 for creating images from text prompts.
-*   **Streaming Responses**: Support for handling real-time, chunked responses for more interactive applications.
-*   **Type-Safe**: Complete TypeScript typings for all model options and API responses.
+*   **Comprehensive Model Support**: Full integration with OpenAI's Chat, Image, and Video generation APIs.
+*   **Official SDK**: Built on top of the official OpenAI SDK for maximum reliability and compatibility.
+*   **Advanced Capabilities**: Includes support for function calling, streaming responses, and structured JSON outputs.
+*   **Type-Safe**: Provides complete TypeScript typings for all model configurations and API responses, ensuring code quality and autocompletion.
+*   **Consistent Interface**: Adheres to the AIGNE Framework's model interface for uniform implementation across different providers.
+*   **Extensive Configuration**: Offers detailed options for fine-tuning model behavior to meet specific application needs.
 
 ## Installation
 
-To begin, install the `@aigne/openai` package along with the `@aigne/core` framework. Select the command corresponding to your package manager.
+To integrate OpenAI models into your project, install the `@aigne/openai` package alongside the `@aigne/core` framework. Use the command appropriate for your package manager:
 
-```bash icon=npm install @aigne/openai @aigne/core
+```bash npm
 npm install @aigne/openai @aigne/core
 ```
 
-```bash icon=yarn add @aigne/openai @aigne/core
+```bash yarn
 yarn add @aigne/openai @aigne/core
 ```
 
-```bash icon=pnpm add @aigne/openai @aigne/core
+```bash pnpm
 pnpm add @aigne/openai @aigne/core
 ```
 
 ## Chat Model (`OpenAIChatModel`)
 
-The `OpenAIChatModel` class is the primary interface for interacting with OpenAI's language models like GPT-4o.
+The `OpenAIChatModel` class serves as the primary interface for interacting with OpenAI's text-based language models, such as GPT-4o and GPT-4o-mini.
 
 ### Configuration
 
-To instantiate the model, you must provide your OpenAI API key. This can be done directly in the constructor or by setting the `OPENAI_API_KEY` environment variable.
+When creating an instance of `OpenAIChatModel`, you must provide your OpenAI API key. This can be passed directly in the constructor or set as an environment variable named `OPENAI_API_KEY`.
 
 <x-field-group>
   <x-field data-name="apiKey" data-type="string" data-required="false">
-    <x-field-desc markdown>Your OpenAI API key. If not provided, the system will check for the `OPENAI_API_KEY` environment variable.</x-field-desc>
+    <x-field-desc markdown>Your OpenAI API key. If omitted, the system will look for the `OPENAI_API_KEY` environment variable.</x-field-desc>
   </x-field>
   <x-field data-name="baseURL" data-type="string" data-required="false">
-    <x-field-desc markdown>An optional base URL for the OpenAI API. This is useful for proxying requests or using compatible alternative endpoints.</x-field-desc>
+    <x-field-desc markdown>An optional base URL for the OpenAI API, useful for connecting through a proxy or an alternative endpoint.</x-field-desc>
   </x-field>
   <x-field data-name="model" data-type="string" data-default="gpt-4o-mini" data-required="false">
-    <x-field-desc markdown>The specific model to use for chat completions, e.g., `gpt-4o`.</x-field-desc>
+    <x-field-desc markdown>The identifier of the model to be used for chat completions (e.g., "gpt-4o").</x-field-desc>
   </x-field>
   <x-field data-name="modelOptions" data-type="object" data-required="false">
-    <x-field-desc markdown>Additional options to control the model's behavior.</x-field-desc>
-    <x-field data-name="temperature" data-type="number" data-required="false" data-desc="Controls randomness. Lower values make the model more deterministic."></x-field>
-    <x-field data-name="topP" data-type="number" data-required="false" data-desc="Nucleus sampling parameter."></x-field>
-    <x-field data-name="frequencyPenalty" data-type="number" data-required="false" data-desc="Penalizes new tokens based on their existing frequency."></x-field>
-    <x-field data-name="presencePenalty" data-type="number" data-required="false" data-desc="Penalizes new tokens based on whether they appear in the text so far."></x-field>
-    <x-field data-name="parallelToolCalls" data-type="boolean" data-default="true" data-required="false" data-desc="Determines if the model can call multiple tools in parallel."></x-field>
+    <x-field-desc markdown>A set of parameters to control the generation process.</x-field-desc>
+    <x-field data-name="temperature" data-type="number" data-required="false" data-desc="Controls the randomness of the output. Lower values produce more deterministic results."></x-field>
+    <x-field data-name="topP" data-type="number" data-required="false" data-desc="An alternative to temperature sampling, known as nucleus sampling."></x-field>
+    <x-field data-name="frequencyPenalty" data-type="number" data-required="false" data-desc="Reduces the likelihood of repeating tokens."></x-field>
+    <x-field data-name="presencePenalty" data-type="number" data-required="false" data-desc="Reduces the likelihood of repeating topics."></x-field>
+    <x-field data-name="parallelToolCalls" data-type="boolean" data-default="true" data-required="false" data-desc="Enables the model to execute multiple function calls concurrently."></x-field>
+    <x-field data-name="reasoningEffort" data-type="string | number" data-required="false" data-desc="For reasoning models (o1/o3), sets the reasoning effort ('minimal', 'low', 'medium', 'high', or a token count)."></x-field>
   </x-field>
   <x-field data-name="clientOptions" data-type="object" data-required="false">
-    <x-field-desc markdown>Advanced options passed directly to the underlying OpenAI SDK client.</x-field-desc>
+    <x-field-desc markdown>Additional options passed directly to the underlying OpenAI SDK client for advanced customization.</x-field-desc>
   </x-field>
 </x-field-group>
 
 ### Basic Usage
 
-The following example demonstrates how to create an `OpenAIChatModel` instance and invoke it with a simple user message.
+The following example shows how to instantiate `OpenAIChatModel` and use the `invoke` method to get a response.
 
 ```typescript Basic Chat Completion icon=logos:typescript
 import { OpenAIChatModel } from "@aigne/openai";
 
 const model = new OpenAIChatModel({
-  // It is recommended to use the OPENAI_API_KEY environment variable.
+  // Using an environment variable for the API key is recommended.
   apiKey: "your-api-key", 
   model: "gpt-4o",
   modelOptions: {
@@ -86,12 +86,11 @@ const result = await model.invoke({
 console.log(result);
 ```
 
-The `invoke` method returns a promise that resolves to an object containing the model's response and usage metrics.
-
 **Example Response**
+
 ```json
 {
-  "text": "I am a large language model, trained by Google.",
+  "text": "Hello! How can I assist you today?",
   "model": "gpt-4o",
   "usage": {
     "inputTokens": 10,
@@ -102,7 +101,7 @@ The `invoke` method returns a promise that resolves to an object containing the 
 
 ### Streaming Responses
 
-For applications requiring real-time feedback, you can enable streaming by setting the `streaming: true` option in the `invoke` method. This returns an async iterator that yields response chunks as they become available.
+For real-time applications, you can enable streaming by passing `{ streaming: true }` to the `invoke` method. This returns an async iterator that yields response chunks as they are generated.
 
 ```typescript Streaming Chat Response icon=logos:typescript
 import { isAgentResponseDelta } from "@aigne/core";
@@ -115,7 +114,7 @@ const model = new OpenAIChatModel({
 
 const stream = await model.invoke(
   {
-    messages: [{ role: "user", content: "Tell me a short story." }],
+    messages: [{ role: "user", content: "Hello, who are you?" }],
   },
   { streaming: true },
 );
@@ -131,35 +130,32 @@ for await (const chunk of stream) {
   }
 }
 
-console.log("\n\n--- End of Story ---");
-console.log("Full text:", fullText);
+console.log("\n--- Response Complete ---");
 ```
-
-This approach allows you to process the response incrementally, which is ideal for chat interfaces or other interactive use cases.
 
 ## Image Model (`OpenAIImageModel`)
 
-The `OpenAIImageModel` class provides an interface for OpenAI's image generation capabilities, such as DALL-E 2 and DALL-E 3.
+The `OpenAIImageModel` class provides an interface for OpenAI's image generation and editing models, such as DALL-E 2, DALL-E 3, and gpt-image-1.
 
 ### Configuration
 
-Configuration for the image model is similar to the chat model, requiring an API key and allowing for model selection.
+The image model is configured similarly to the chat model, requiring an API key and allowing for model-specific options.
 
 <x-field-group>
   <x-field data-name="apiKey" data-type="string" data-required="false">
-    <x-field-desc markdown>Your OpenAI API key. If not provided, the system will check for the `OPENAI_API_KEY` environment variable.</x-field-desc>
+    <x-field-desc markdown>Your OpenAI API key. Defaults to the `OPENAI_API_KEY` environment variable if not provided.</x-field-desc>
   </x-field>
   <x-field data-name="baseURL" data-type="string" data-required="false">
     <x-field-desc markdown>An optional base URL for the OpenAI API.</x-field-desc>
   </x-field>
   <x-field data-name="model" data-type="string" data-default="dall-e-2" data-required="false">
-    <x-field-desc markdown>The image model to use, e.g., `dall-e-3`.</x-field-desc>
+    <x-field-desc markdown>The image model to use (e.g., "dall-e-3", "gpt-image-1").</x-field-desc>
   </x-field>
   <x-field data-name="modelOptions" data-type="object" data-required="false">
-    <x-field-desc markdown>Additional options to control image generation. Available parameters depend on the selected model.</x-field-desc>
-    <x-field data-name="size" data-type="string" data-required="false" data-desc="The desired dimensions of the generated image (e.g., '1024x1024')."></x-field>
-    <x-field data-name="quality" data-type="string" data-required="false" data-desc="The quality of the image, 'standard' or 'hd' (DALL-E 3 only)."></x-field>
-    <x-field data-name="style" data-type="string" data-required="false" data-desc="The style of the generated images, 'vivid' or 'natural' (DALL-E 3 only)."></x-field>
+    <x-field-desc markdown>Parameters to control the image generation process. Available options vary by model.</x-field-desc>
+    <x-field data-name="size" data-type="string" data-required="false" data-desc="The dimensions of the generated image (e.g., '1024x1024')."></x-field>
+    <x-field data-name="quality" data-type="string" data-required="false" data-desc="Image quality, either 'standard' or 'hd' (DALL-E 3 only)."></x-field>
+    <x-field data-name="style" data-type="string" data-required="false" data-desc="The artistic style, either 'vivid' or 'natural' (DALL-E 3 only)."></x-field>
     <x-field data-name="n" data-type="number" data-required="false" data-desc="The number of images to generate."></x-field>
   </x-field>
   <x-field data-name="clientOptions" data-type="object" data-required="false">
@@ -167,45 +163,38 @@ Configuration for the image model is similar to the chat model, requiring an API
   </x-field>
 </x-field-group>
 
-### Basic Usage
+### Image Generation
 
-To generate an image, create an instance of `OpenAIImageModel` and invoke it with a prompt.
+To generate an image, create an instance of `OpenAIImageModel` and invoke it with a text prompt.
 
 ```typescript Image Generation icon=logos:typescript
 import { OpenAIImageModel } from "@aigne/openai";
-import fs from "fs/promises";
 
 const imageModel = new OpenAIImageModel({
   apiKey: "your-api-key",
   model: "dall-e-3",
   modelOptions: {
-    quality: "hd",
+    size: "1024x1024",
+    quality: "standard",
     style: "vivid",
   },
 });
 
 const result = await imageModel.invoke({
-  prompt: "A futuristic cityscape with flying cars, synthwave style",
+  prompt: "A futuristic city at sunset with flying cars",
 });
 
-// The result contains image data. It can be a URL or a base64-encoded string.
-const firstImage = result.images[0];
-
-if (firstImage.type === "url") {
-  console.log("Image URL:", firstImage.url);
-} else if (firstImage.type === "file") {
-  await fs.writeFile("cityscape.png", firstImage.data, "base64");
-  console.log("Image saved as cityscape.png");
-}
+console.log(result);
 ```
 
 **Example Response**
+
 ```json
 {
   "images": [
     {
       "type": "url",
-      "url": "https://oaidalleapiprodscus.blob.core.windows.net/...",
+      "url": "https://...",
       "mimeType": "image/png"
     }
   ],
@@ -217,10 +206,124 @@ if (firstImage.type === "url") {
 }
 ```
 
-The response object contains an array of generated images. Each image can be either a URL pointing to the hosted image or a base64-encoded file, depending on the response format requested from the API.
+### Image Editing
+
+Image editing is supported by specific models like `gpt-image-1`. To edit an image, provide both a prompt and a reference image.
+
+```typescript Image Editing icon=logos:typescript
+import { OpenAIImageModel } from "@aigne/openai";
+
+const imageModel = new OpenAIImageModel({
+  apiKey: "your-api-key",
+  model: "gpt-image-1",
+});
+
+const result = await imageModel.invoke({
+  prompt: "Add a rainbow to the sky",
+  image: [
+    {
+      type: "url",
+      url: "https://example.com/original-image.png",
+    },
+  ],
+});
+
+console.log(result.images); // Array of edited images
+```
+
+## Video Model (`OpenAIVideoModel`)
+
+The `OpenAIVideoModel` class enables video generation using OpenAI's Sora models.
+
+### Configuration
+
+The video model requires an API key and allows for specifying the model, resolution, and duration.
+
+<x-field-group>
+  <x-field data-name="apiKey" data-type="string" data-required="false">
+    <x-field-desc markdown>Your OpenAI API key. Defaults to the `OPENAI_API_KEY` environment variable if not provided.</x-field-desc>
+  </x-field>
+  <x-field data-name="model" data-type="string" data-default="sora-2" data-required="false">
+    <x-field-desc markdown>The video model to use, either "sora-2" (standard) or "sora-2-pro" (higher quality).</x-field-desc>
+  </x-field>
+  <x-field data-name="modelOptions" data-type="object" data-required="false">
+    <x-field-desc markdown>Parameters to control the video generation process.</x-field-desc>
+    <x-field data-name="size" data-type="string" data-default="1280x720" data-required="false" data-desc="Video resolution (e.g., '1280x720' for horizontal, '720x1280' for vertical)."></x-field>
+    <x-field data-name="seconds" data-type="string" data-default="4" data-required="false" data-desc="Video duration in seconds. Accepted values are '4', '8', or '12'."></x-field>
+  </x-field>
+</x-field-group>
+
+### Video Generation
+
+The following example demonstrates how to generate a short video from a text prompt.
+
+```typescript Video Generation icon=logos:typescript
+import { OpenAIVideoModel } from "@aigne/openai";
+
+const videoModel = new OpenAIVideoModel({
+  apiKey: "your-api-key",
+  model: "sora-2",
+  modelOptions: {
+    size: "1280x720",
+    seconds: "4",
+  },
+});
+
+const result = await videoModel.invoke({
+  prompt: "A serene lake with mountains in the background, gentle waves rippling",
+});
+
+console.log(result);
+```
+
+**Example Response**
+
+```json
+{
+  "videos": [
+    {
+      "type": "file",
+      "data": "base64-encoded-video-data...",
+      "mimeType": "video/mp4",
+      "filename": "video-id.mp4"
+    }
+  ],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0
+  },
+  "model": "sora-2",
+  "seconds": 4
+}
+```
+
+### Image-to-Video Generation
+
+You can also generate a video by animating a still image.
+
+```typescript Image-to-Video icon=logos:typescript
+import { OpenAIVideoModel } from "@aigne/openai";
+
+const videoModel = new OpenAIVideoModel({
+  apiKey: "your-api-key",
+  model: "sora-2",
+});
+
+const result = await videoModel.invoke({
+  prompt: "Animate this image with gentle movement",
+  image: {
+    type: "url",
+    url: "https://example.com/input-image.png",
+  },
+  size: "1280x720",
+  seconds: "8",
+});
+
+console.log(result.videos);
+```
 
 ## Summary
 
-This guide has provided the necessary information to install, configure, and use the OpenAI chat and image models within the AIGNE Framework. By leveraging the `@aigne/openai` package, you can seamlessly integrate the advanced capabilities of OpenAI into your agentic applications.
+This guide has covered the essentials for integrating OpenAI's chat, image, and video models into your AIGNE applications. By using the `@aigne/openai` package, you can easily harness the power of these advanced AI capabilities.
 
-For more advanced configurations or troubleshooting, refer to the official [OpenAI API documentation](https://platform.openai.com/docs/api-reference). To explore other available models, see the [Models Overview](./models-overview.md).
+For further details, refer to the official [OpenAI API documentation](https://platform.openai.com/docs/api-reference). To explore other supported model providers, please visit the [Models Overview](./models-overview.md).

@@ -126,7 +126,6 @@ const Table = ({
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
-                    width: 150,
                   }}
                 >
                   {item.remark}

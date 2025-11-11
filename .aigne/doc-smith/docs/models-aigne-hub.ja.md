@@ -1,79 +1,40 @@
 # AIGNE Hub
 
-AIGNE Hubは、複数のプロバイダーが提供するさまざまな大規模言語モデル（LLM）や画像生成サービスにアクセスするための統一されたプロキシレイヤーを提供します。`@aigne/aigne-hub` パッケージを使用することで、クライアント側のアプリケーションロジックを変更することなく、異なるAIモデル間をシームレスに切り替え、すべてのリクエストを単一の一貫したAPIエンドポイント経由で送信できます。
+AIGNE Hub は、複数のプロバイダーが提供する様々な大規模言語モデル（LLM）、画像生成サービス、動画生成サービスにアクセスするための統一されたプロキシレイヤーを提供します。`@aigne/aigne-hub` パッケージを使用することで、クライアント側のアプリケーションロジックを変更することなく、異なるAIモデル間をシームレスに切り替え、すべてのリクエストを単一の一貫したAPIエンドポイント経由で送信できます。
 
-このガイドでは、アプリケーションをAIGNE Hubに接続するための `AIGNEHubChatModel` および `AIGNEHubImageModel` クラスのインストール、設定、使用方法について説明します。
+このガイドでは、`AIGNEHubChatModel`、`AIGNEHubImageModel`、および `AIGNEHubVideoModel` クラスを使用してアプリケーションを AIGNE Hub に接続するためのインストール、設定、および使用方法について説明します。
 
 ## 概要
 
-AIGNE Hubは、OpenAI、Anthropic、Googleなどの主要なAIプロバイダーを集約するゲートウェイとして機能します。このアーキテクチャは、各プロバイダーのAPI固有の要件を抽象化することで、統合を簡素化します。プロバイダーのプレフィックスを含む一意の識別子（例：`openai/gpt-4o-mini` や `anthropic/claude-3-sonnet`）を渡すだけで、サポートされている任意のモデルと対話できます。
-
-### アーキテクチャ図
-
-以下の図は、AIGNE Hubがアプリケーションと様々なLLMプロバイダーとの間でどのように仲介役として機能するかを示しています。アプリケーションは統一されたリクエストをHubに送信し、Hubは指定されたモデルに基づいて適切な下流サービスにリクエストをルーティングします。
-
-```d2
-direction: down
-
-Your-Application: {
-  label: "あなたのアプリケーション"
-  shape: rectangle
-}
-
-AIGNE-Hub: {
-  label: "AIGNE Hub"
-  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-}
-
-LLM-Providers: {
-  label: "LLM プロバイダー"
-  shape: rectangle
-  style.stroke-dash: 4
-
-  OpenAI: {
-    label: "OpenAI\n(GPT-4o, DALL-E 3)"
-  }
-  Anthropic: {
-    label: "Anthropic\n(Claude)"
-  }
-  Google: {
-    label: "Google\n(Gemini, Imagen)"
-  }
-}
-
-Your-Application -> AIGNE-Hub: "統一 API リクエスト\n(例: 'openai/gpt-4o-mini')"
-AIGNE-Hub -> LLM-Providers.OpenAI: "リクエストをルーティング"
-AIGNE-Hub -> LLM-Providers.Anthropic: "リクエストをルーティング"
-AIGNE-Hub -> LLM-Providers.Google: "リクエストをルーティング"
-```
+AIGNE Hub は、OpenAI、Anthropic、Google などの主要な AI プロバイダーを集約するゲートウェイとして機能します。このアーキテクチャにより、各プロバイダーの API の特定の要件が抽象化され、統合が簡素化されます。プロバイダーのプレフィックスを含む一意の識別子（例：`openai/gpt-4o-mini` または `anthropic/claude-3-sonnet`）を渡すだけで、サポートされているどのモデルとも対話できます。
 
 ### 主な機能
 
--   **統一アクセス**: すべてのLLMおよび画像生成リクエストに対応する単一のエンドポイント。
--   **マルチプロバイダーサポート**: OpenAI、Anthropic、AWS Bedrock、Google、DeepSeek、Ollama、xAI、OpenRouterのモデルにアクセス可能。
--   **セキュアな認証**: 単一のAPIキー（`accessKey`）でアクセスを管理。
--   **チャットおよび画像モデル**: チャット補完と画像生成の両方をサポート。
+-   **統一アクセス**: すべての LLM、画像、動画生成リクエストに対応する単一のエンドポイント。
+-   **マルチプロバイダー対応**: OpenAI、Anthropic、AWS Bedrock、Google、DeepSeek、Ollama、xAI、OpenRouter のモデルにアクセス可能。
+-   **セキュアな認証**: 単一のAPIキー（`apiKey`）でアクセスを管理。
+-   **チャット、画像、動画モデル**: チャット補完、画像生成、動画作成をサポート。
 -   **ストリーミング**: チャット応答のリアルタイム、トークンレベルのストリーミング。
--   **シームレスな統合**: 広範なAIGNEフレームワークと完全に連携するように設計。
+-   **シームレスな統合**: より広範な AIGNE フレームワークと連携するように設計されています。
 
-### サポートされているプロバイダー
+### 対応プロバイダー
 
-AIGNE Hubは、統一APIを通じて幅広いAIプロバイダーをサポートしています。
+AIGNE Hub は、統一された API を通じて幅広い AI プロバイダーをサポートしています。
 
 | プロバイダー | 識別子 |
-| :---------- | :------------ |
-| OpenAI      | `openai`      |
-| Anthropic   | `anthropic`   |
-| AWS Bedrock | `bedrock`     |
-| DeepSeek    | `deepseek`    |
-| Google      | `google`      |
-| Ollama      | `ollama`      |
-| OpenRouter  | `openRouter`  |
-| xAI         | `xai`         |
+| :--- | :--- |
+| OpenAI | `openai` |
+| Anthropic | `anthropic` |
+| AWS Bedrock | `bedrock` |
+| DeepSeek | `deepseek` |
+| Google | `google` |
+| Ollama | `ollama` |
+| OpenRouter | `openRouter` |
+| xAI | `xai` |
 
 ## インストール
 
-始めるには、プロジェクトに `@aigne/aigne-hub` と `@aigne/core` パッケージをインストールします。
+まず、プロジェクトに `@aigne/aigne-hub` と `@aigne/core` パッケージをインストールします。
 
 ```bash npm install icon=logos:npm
 npm install @aigne/aigne-hub @aigne/core
@@ -89,15 +50,15 @@ pnpm add @aigne/aigne-hub @aigne/core
 
 ## 設定
 
-チャットモデルと画像モデルの両方で、AIGNE Hubインスタンスに接続するための設定が必要です。主なオプションには、HubのURL、アクセスキー、および目的のモデル識別子が含まれます。
+チャット、画像、動画モデルを AIGNE Hub インスタンスに接続するには、設定が必要です。主なオプションには、Hub の URL、アクセスキー、および希望するモデルの識別子が含まれます。
 
-### チャットモデルの設定
+### モデル設定
 
-`AIGNEHubChatModel` は、以下のオプションを使用して設定します。
+設定オプションは `AIGNEHubChatModel`、`AIGNEHubImageModel`、`AIGNEHubVideoModel` で共通です。
 
 <x-field-group>
   <x-field data-name="baseUrl" data-type="string" data-required="true">
-    <x-field-desc markdown>AIGNE Hub インスタンスのベース URL（例：`https://your-aigne-hub-instance/ai-kit`）。</x-field-desc>
+    <x-field-desc markdown>AIGNE Hub インスタンスのベースURL（例：`https://your-aigne-hub-instance/ai-kit`）。</x-field-desc>
   </x-field>
   <x-field data-name="apiKey" data-type="string" data-required="true">
     <x-field-desc markdown>AIGNE Hub での認証に使用する API アクセスキー。</x-field-desc>
@@ -106,26 +67,7 @@ pnpm add @aigne/aigne-hub @aigne/core
     <x-field-desc markdown>プロバイダーのプレフィックスが付いたモデル識別子（例：`openai/gpt-4o-mini`）。</x-field-desc>
   </x-field>
   <x-field data-name="modelOptions" data-type="object" data-required="false">
-    <x-field-desc markdown>プロバイダーの API に渡すオプションのモデル固有パラメータ。</x-field-desc>
-  </x-field>
-</x-field-group>
-
-### 画像モデルの設定
-
-`AIGNEHubImageModel` は、同様の設定構造を使用します。
-
-<x-field-group>
-  <x-field data-name="url" data-type="string" data-required="true">
-    <x-field-desc markdown>AIGNE Hub インスタンスのエンドポイント。</x-field-desc>
-  </x-field>
-  <x-field data-name="accessKey" data-type="string" data-required="true">
-    <x-field-desc markdown>認証用の API アクセスキー。</x-field-desc>
-  </x-field>
-  <x-field data-name="model" data-type="string" data-required="true">
-    <x-field-desc markdown>プロバイダーのプレフィックスが付いたモデル識別子（例：`openai/dall-e-3`）。</x-field-desc>
-  </x-field>
-  <x-field data-name="modelOptions" data-type="object" data-required="false">
-    <x-field-desc markdown>プロバイダーの API に渡すオプションのモデル固有パラメータ。</x-field-desc>
+    <x-field-desc markdown>プロバイダーのAPIに渡す、モデル固有のオプションパラメータ。</x-field-desc>
   </x-field>
 </x-field-group>
 
@@ -133,7 +75,7 @@ pnpm add @aigne/aigne-hub @aigne/core
 
 ### チャット補完
 
-チャット補完を実行するには、設定を使用して `AIGNEHubChatModel` をインスタンス化し、`invoke` メソッドを呼び出します。
+チャット補完を実行するには、`AIGNEHubChatModel` を設定でインスタンス化し、`invoke` メソッドを呼び出します。
 
 ```typescript 基本的なチャット補完 icon=logos:typescript
 import { AIGNEHubChatModel } from "@aigne/aigne-hub";
@@ -175,7 +117,7 @@ console.log(result);
 
 ### チャット応答のストリーミング
 
-リアルタイムの応答を得るには、`invoke` 呼び出しで `streaming` オプションを `true` に設定します。これにより、応答チャンクが利用可能になるたびにそれを生成する非同期イテレータが返されます。
+リアルタイムで応答を得るには、`invoke` の呼び出しで `streaming` オプションを `true` に設定します。これにより、応答チャンクが利用可能になるたびにそれを生成する非同期イテレータが返されます。
 
 ```typescript ストリーミングの例 icon=logos:typescript
 import { AIGNEHubChatModel } from "@aigne/aigne-hub";
@@ -211,7 +153,7 @@ console.log(fullText);
 
 ### 画像生成
 
-AIGNE Hubは、複数のプロバイダーからの画像生成をサポートしています。`AIGNEHubImageModel` をインスタンス化し、プロンプトとモデル固有のパラメータを提供します。
+AIGNE Hub は複数のプロバイダーからの画像生成をサポートしています。`AIGNEHubImageModel` をインスタンス化し、プロンプトとモデル固有のパラメータを提供します。
 
 #### OpenAI DALL-E
 
@@ -219,8 +161,8 @@ AIGNE Hubは、複数のプロバイダーからの画像生成をサポート�
 import { AIGNEHubImageModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubImageModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
   model: "openai/dall-e-3",
 });
 
@@ -235,7 +177,7 @@ const result = await model.invoke({
 console.log(result.images[0].url);
 ```
 
--   **リファレンス**: [OpenAI Images API ドキュメント](https://platform.openai.com/docs/guides/images)
+-   **参照**: [OpenAI Images API ドキュメンテーション](https://platform.openai.com/docs/guides/images)
 
 #### Google Gemini Imagen
 
@@ -243,8 +185,8 @@ console.log(result.images[0].url);
 import { AIGNEHubImageModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubImageModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
   model: "google/imagen-4.0-generate-001",
 });
 
@@ -254,10 +196,10 @@ const result = await model.invoke({
   aspectRatio: "1:1",
 });
 
-console.log(result.images[0].base64); // 注意: Gemini モデルは base64 データを返します
+console.log(result.images[0].base64); // 注意：Gemini モデルは base64 データを返します
 ```
 
--   **リファレンス**: [Google AI Generative Models API](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html)
+-   **参照**: [Google AI Generative Models API](https://googleapis.github.io/js-genai/release_docs/classes/models.Models.html)
 
 #### Ideogram
 
@@ -265,8 +207,8 @@ console.log(result.images[0].base64); // 注意: Gemini モデルは base64 デ�
 import { AIGNEHubImageModel } from "@aigne/aigne-hub";
 
 const model = new AIGNEHubImageModel({
-  url: "https://your-aigne-hub-instance/ai-kit",
-  accessKey: "your-access-key-secret",
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
   model: "ideogram/ideogram-v3",
 });
 
@@ -279,10 +221,89 @@ const result = await model.invoke({
 console.log(result.images[0].url);
 ```
 
--   **リファレンス**: [Ideogram API ドキュメント](https://developer.ideogram.ai/api-reference/api-reference/generate-v3)
+-   **参照**: [Ideogram API ドキュメンテーション](https://developer.ideogram.ai/api-reference/api-reference/generate-v3)
+
+### 動画生成
+
+AIGNE Hub は、その統一されたAPIを、主要プロバイダーによるAIを活用した動画生成にまで拡張しています。動画を作成するには、`AIGNEHubVideoModel` を適切な設定でインスタンス化します。
+
+#### OpenAI Sora
+
+```typescript Sora で生成 icon=logos:typescript
+import { AIGNEHubVideoModel } from "@aigne/aigne-hub";
+
+const model = new AIGNEHubVideoModel({
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
+  model: "openai/sora-2",
+});
+
+const result = await model.invoke({
+  prompt: "A serene beach scene with gentle waves at sunset",
+  size: "1280x720",
+  seconds: "8",
+  outputFileType: "url",
+});
+
+console.log(result);
+```
+
+**レスポンス例**
+```json
+{
+  "videos": [{ "url": "https://...", "type": "url" }],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "aigneHubCredits": 200
+  },
+  "model": "openai/sora-2",
+  "seconds": 8
+}
+```
+
+-   **参照**: [OpenAI Video API ドキュメンテーション](https://platform.openai.com/docs/api-reference/videos)
+
+#### Google Gemini Veo
+
+```typescript Veo で生成 icon=logos:typescript
+import { AIGNEHubVideoModel } from "@aigne/aigne-hub";
+
+const model = new AIGNEHubVideoModel({
+  baseUrl: "https://your-aigne-hub-instance/ai-kit",
+  apiKey: "your-access-key-secret",
+  model: "google/veo-3.1-generate-preview",
+});
+
+const result = await model.invoke({
+  prompt: "A majestic eagle soaring through mountain valleys",
+  aspectRatio: "16:9",
+  size: "1080p",
+  seconds: "6",
+  outputFileType: "url",
+});
+
+console.log(result);
+```
+
+**レスポンス例**
+```json
+{
+  "videos": [{ "url": "https://...", "type": "url" }],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "aigneHubCredits": 150
+  },
+  "model": "google/veo-3.1-generate-preview",
+  "seconds": 6
+}
+```
+
+-   **参照**: [Google Gemini Video API ドキュメンテーション](https://ai.google.dev/api/generate-videos)
 
 ## まとめ
 
-`@aigne/aigne-hub` パッケージは、AIGNE Hubサービス用の統一クライアントを提供することで、マルチプロバイダーのLLM統合を簡素化します。プロバイダー固有のロジックを抽象化することにより、開発者はより柔軟で保守性の高いAI搭載アプリケーションを構築できます。
+`@aigne/aigne-hub` パッケージは、AIGNE Hub サービスのための統一されたクライアントを提供することで、マルチプロバイダーの LLM 統合を簡素化します。チャット、画像、動画モデルのプロバイダー固有のロジックを抽象化することにより、開発者はより柔軟で保守性の高いAI搭載アプリケーションを構築できます。
 
-特定のモデルとその機能に関する詳細情報については、各AIプロバイダーが提供するドキュメントを参照してください。他のモデル統合を調べるには、[モデル概要](./models-overview.md) を参照してください。
+特定のモデルとその機能に関する詳細については、各AIプロバイダーが提供するドキュメントを参照してください。他のモデル統合については、[モデル概要](./models-overview.md) を参照してください。

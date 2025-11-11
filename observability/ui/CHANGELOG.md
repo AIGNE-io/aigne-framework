@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.11.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.4-beta.4...observability-ui-v0.11.4) (2025-11-07)
+
+## [0.11.4-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.4-beta.3...observability-ui-v0.11.4-beta.4) (2025-11-07)
+
+
+### Bug Fixes
+
+* improve trace list layout and string truncation ([#714](https://github.com/AIGNE-io/aigne-framework/issues/714)) ([35716b4](https://github.com/AIGNE-io/aigne-framework/commit/35716b419f691d36bcf5ca810f267c9fdaf4f909))
+
+## [0.11.4-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.4-beta.2...observability-ui-v0.11.4-beta.3) (2025-11-06)
+
+
+### Bug Fixes
+
+* update package to latest ([#709](https://github.com/AIGNE-io/aigne-framework/issues/709)) ([47661ab](https://github.com/AIGNE-io/aigne-framework/commit/47661ab78cd13ce039d6ebf596e4e603c0220139))
+
+## [0.11.4-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.4-beta.1...observability-ui-v0.11.4-beta.2) (2025-11-05)
+
+
+### Bug Fixes
+
+* add taskTitle to observability traces and fix GPT-5/o1 model parameters ([#700](https://github.com/AIGNE-io/aigne-framework/issues/700)) ([30b513b](https://github.com/AIGNE-io/aigne-framework/commit/30b513b46ab5edb58a37f29e566e311bbb389f44))
+
+## [0.11.4-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.4-beta...observability-ui-v0.11.4-beta.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* **docs:** update video mode docs ([#695](https://github.com/AIGNE-io/aigne-framework/issues/695)) ([d691001](https://github.com/AIGNE-io/aigne-framework/commit/d69100169457c16c14f2f3e2f7fcd6b2a99330f3))
+* update package to latest ([#699](https://github.com/AIGNE-io/aigne-framework/issues/699)) ([9877f6d](https://github.com/AIGNE-io/aigne-framework/commit/9877f6d1975362338db4eb47a2bf3564114c3cf8))
+
+## [0.11.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.3...observability-ui-v0.11.4-beta) (2025-11-03)
+
+
+### Bug Fixes
+
+* **observability:** enhance trace detail panel with improved JSON viewer and cost tracking ([#689](https://github.com/AIGNE-io/aigne-framework/issues/689)) ([1cddb6b](https://github.com/AIGNE-io/aigne-framework/commit/1cddb6ba1737c32aba045e34758d77416fb91fa0))
+
 ## [0.11.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.3-beta.2...observability-ui-v0.11.3) (2025-10-31)
 
 ## [0.11.3-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.3-beta.1...observability-ui-v0.11.3-beta.2) (2025-10-31)

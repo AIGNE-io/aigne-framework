@@ -3,6 +3,7 @@ import { v7 } from "@aigne/uuid";
 import { parseURL } from "ufo";
 import { z } from "zod";
 import { optionalize } from "../loader/schema.js";
+import { fetch } from "../utils/fetch.js";
 import { pick } from "../utils/type-utils.js";
 import { Agent, type AgentInvokeOptions, type Message } from "./agent.js";
 
@@ -92,12 +93,6 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
 
   async downloadFile(url: string) {
     const response = await fetch(url);
-    if (!response.ok) {
-      const text = await response.text().catch(() => null);
-      throw new Error(
-        `Failed to download content from ${url}, ${response.status} ${response.statusText} ${text}`,
-      );
-    }
 
     return response;
   }

@@ -1,5 +1,143 @@
 # Changelog
 
+## [1.18.68](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.68-beta.8...example-mcp-sqlite-v1.18.68) (2025-11-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.51
+    * @aigne/cli bumped to 1.54.0
+    * @aigne/core bumped to 1.66.0
+    * @aigne/default-memory bumped to 1.2.14
+    * @aigne/openai bumped to 0.16.5
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58
+
+## [1.18.68-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.68-beta.7...example-mcp-sqlite-v1.18.68-beta.8) (2025-11-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.51-beta.6
+    * @aigne/cli bumped to 1.54.0-beta.7
+    * @aigne/core bumped to 1.66.0-beta.5
+    * @aigne/default-memory bumped to 1.2.14-beta.6
+    * @aigne/openai bumped to 0.16.5-beta.6
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.6
+
+## [1.18.68-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.68-beta.6...example-mcp-sqlite-v1.18.68-beta.7) (2025-11-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.54.0-beta.6
+
+## [1.18.68-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.68-beta.5...example-mcp-sqlite-v1.18.68-beta.6) (2025-11-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.51-beta.5
+    * @aigne/cli bumped to 1.54.0-beta.5
+    * @aigne/core bumped to 1.66.0-beta.4
+    * @aigne/default-memory bumped to 1.2.14-beta.5
+    * @aigne/openai bumped to 0.16.5-beta.5
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.5
+
+## [1.18.68-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.68-beta.4...example-mcp-sqlite-v1.18.68-beta.5) (2025-11-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.51-beta.4
+    * @aigne/cli bumped to 1.54.0-beta.4
+    * @aigne/core bumped to 1.66.0-beta.3
+    * @aigne/default-memory bumped to 1.2.14-beta.4
+    * @aigne/openai bumped to 0.16.5-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.4
+
+## [1.18.68-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.68-beta.3...example-mcp-sqlite-v1.18.68-beta.4) (2025-11-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.51-beta.3
+    * @aigne/cli bumped to 1.53.1-beta.4
+    * @aigne/core bumped to 1.65.1-beta.3
+    * @aigne/default-memory bumped to 1.2.14-beta.3
+    * @aigne/openai bumped to 0.16.5-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.3
+
+## [1.18.68-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.68-beta.2...example-mcp-sqlite-v1.18.68-beta.3) (2025-11-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.51-beta.2
+    * @aigne/cli bumped to 1.53.1-beta.3
+    * @aigne/core bumped to 1.65.1-beta.2
+    * @aigne/default-memory bumped to 1.2.14-beta.2
+    * @aigne/openai bumped to 0.16.5-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.2
+
+## [1.18.68-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.68-beta.1...example-mcp-sqlite-v1.18.68-beta.2) (2025-11-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.51-beta.1
+    * @aigne/cli bumped to 1.53.1-beta.2
+    * @aigne/core bumped to 1.65.1-beta.1
+    * @aigne/default-memory bumped to 1.2.14-beta.1
+    * @aigne/openai bumped to 0.16.5-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta.1
+
+## [1.18.68-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.68-beta...example-mcp-sqlite-v1.18.68-beta.1) (2025-11-03)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.53.1-beta.1
+
+## [1.18.68-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.67...example-mcp-sqlite-v1.18.68-beta) (2025-11-03)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.51-beta
+    * @aigne/cli bumped to 1.53.1-beta
+    * @aigne/core bumped to 1.65.1-beta
+    * @aigne/default-memory bumped to 1.2.14-beta
+    * @aigne/openai bumped to 0.16.5-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.58-beta
+
 ## [1.18.67](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-sqlite-v1.18.67-beta.9...example-mcp-sqlite-v1.18.67) (2025-10-31)
 
 

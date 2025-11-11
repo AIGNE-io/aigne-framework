@@ -2,7 +2,7 @@
 
 The AIGNE Framework is designed to be model-agnostic, allowing you to connect to a wide range of third-party AI model providers. This flexibility is achieved through a system of model adapters, where each adapter provides a standardized interface for a specific service, such as OpenAI, Anthropic, or Google Gemini.
 
-This section provides detailed guides for installing, configuring, and using each officially supported model provider. Whether you need powerful language models, specialized image generation, or the privacy of a locally hosted model, you can find the right integration here.
+This section provides detailed guides for installing, configuring, and using each officially supported model provider. Whether you need powerful language models, specialized image and video generation, or the privacy of a locally hosted model, you can find the right integration here.
 
 ## Supported Model Providers
 
@@ -10,7 +10,7 @@ Below is a curated list of supported providers. Each card links to a dedicated g
 
 ### Foundational Models
 
-These are direct integrations with major AI model providers.
+These are direct integrations with major AI model providers for chat completions and other language-based tasks.
 
 <x-cards data-columns="2">
   <x-card data-title="OpenAI" data-icon="simple-icons:openai" data-href="/models/openai">
@@ -28,7 +28,7 @@ These are direct integrations with major AI model providers.
   <x-card data-title="DeepSeek" data-icon="lucide:brain-circuit" data-href="/models/deepseek">
     Utilize DeepSeek's powerful and efficient language models for a range of natural language processing tasks.
   </x-card>
-    <x-card data-title="Doubao" data-icon="lucide:bot" data-href="/models/doubao">
+  <x-card data-title="Doubao" data-icon="lucide:bot" data-href="/models/doubao">
     Integrate with Doubao's language models for building conversational AI and other text-based applications.
   </x-card>
   <x-card data-title="xAI" data-icon="lucide:sparkles" data-href="/models/xai">
@@ -38,14 +38,33 @@ These are direct integrations with major AI model providers.
 
 ### Image Generation Models
 
-Specialized integrations for creating visual content.
+Specialized integrations for creating visual content from text prompts.
 
 <x-cards data-columns="2">
   <x-card data-title="Ideogram" data-icon="lucide:image" data-href="/models/ideogram">
-    Generate high-quality images from text prompts using Ideogram's advanced image synthesis models.
+    Generate high-quality images with reliable text rendering using Ideogram's advanced synthesis models.
   </x-card>
-    <x-card data-title="Google Gemini" data-icon="simple-icons:googlegemini" data-href="/models/gemini">
-    Use Gemini and Imagen models for versatile image generation capabilities alongside its language features.
+  <x-card data-title="OpenAI" data-icon="simple-icons:openai" data-href="/models/openai">
+    Use DALL-E 3 and other models for creative and diverse image generation capabilities.
+  </x-card>
+  <x-card data-title="Google Gemini" data-icon="simple-icons:googlegemini" data-href="/models/gemini">
+    Leverage Gemini and Imagen models for versatile image generation and editing alongside language features.
+  </x-card>
+</x-cards>
+
+### Video Generation Models
+
+Integrations for generating video content from text or image inputs.
+
+<x-cards data-columns="2">
+  <x-card data-title="OpenAI" data-icon="simple-icons:openai" data-href="/models/openai">
+     Generate high-quality video content from text or image prompts using OpenAI's Sora models.
+  </x-card>
+  <x-card data-title="Google Gemini" data-icon="simple-icons:googlegemini" data-href="/models/gemini">
+    Create video from text or images using Google's Veo models for dynamic content generation.
+  </x-card>
+    <x-card data-title="AIGNE Hub" data-icon="lucide:hub" data-href="/models/aigne-hub">
+    Access video generation models like OpenAI Sora and Google Veo through a unified API endpoint.
   </x-card>
 </x-cards>
 

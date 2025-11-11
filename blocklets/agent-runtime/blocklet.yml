@@ -1,7 +1,7 @@
 name: z2qa6yt75HHQL3cS4ao7j2aqVodExoBAN7xeS
-title: AIGNE Runtime
+title: Agent Runtime
 description: >-
-  AIGNE Runtime is a specialized runtime engine designed for executing AI
+  Agent Runtime is a specialized runtime engine designed for executing AI
   agents, serving as the core runtime environment for the Blocklet system
 keywords:
   - blocklet
@@ -17,7 +17,7 @@ repository:
   type: git
   url: git+https://github.com/blocklet/create-blocklet.git
 specVersion: 1.2.8
-version: 1.5.0
+version: 1.6.0
 logo: logo.png
 files:
   - dist

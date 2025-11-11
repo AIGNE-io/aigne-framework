@@ -70,7 +70,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
       res
         .status(400)
         .send(
-          "AIGNE Runtime is up and running.\nBut got nothing to show here.\nShould be used together with agent blocklets.",
+          "Agent Runtime is up and running.\nBut got nothing to show here.\nShould be used together with agent blocklets.",
         );
       return;
     }

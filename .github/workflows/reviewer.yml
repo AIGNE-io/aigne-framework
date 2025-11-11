@@ -21,7 +21,7 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-      - uses: aigne-io/aigne-codesmith@v0.1.0
+      - uses: aigne-io/aigne-code-smith@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

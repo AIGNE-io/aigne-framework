@@ -1,3 +1,4 @@
+import { fetch } from "@aigne/core/utils/fetch.js";
 import { joinURL } from "ufo";
 
 export interface UserInfoResult {
@@ -20,11 +21,10 @@ export async function getUserInfo({
   baseUrl: string;
   apiKey: string;
 }): Promise<UserInfoResult> {
-  const response = await fetch(joinURL(baseUrl, "/api/user/info"), {
+  const secureBaseUrl = baseUrl.replace(/^http:/, "https:");
+  const response = await fetch(joinURL(secureBaseUrl, "/api/user/info"), {
     headers: { Authorization: `Bearer ${apiKey}` },
   });
-
-  if (!response.ok) throw new Error(`Failed to fetch user info: ${response.statusText}`);
 
   const data = await response.json();
 

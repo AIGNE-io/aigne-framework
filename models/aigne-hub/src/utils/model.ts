@@ -3,7 +3,7 @@ import { AnthropicChatModel } from "@aigne/anthropic";
 import { BedrockChatModel } from "@aigne/bedrock";
 import type {
   ChatModel,
-  ChatModelInputOptions,
+  ChatModelInputOptionsWithGetter,
   ImageModel,
   ImageModelInputOptions,
   VideoModel,
@@ -57,7 +57,7 @@ export interface LoadableModel {
   apiKeyEnvName?: string | string[];
   create: (options: {
     model?: string;
-    modelOptions?: ChatModelInputOptions;
+    modelOptions?: ChatModelInputOptionsWithGetter;
     apiKey?: string;
     baseURL?: string;
   }) => ChatModel;
@@ -271,7 +271,14 @@ export function findVideoModel(provider: string): {
 
 export const parseModel = (model: string) => {
   // replace first ':' with '/' to compatible with `provider:model-name` format
-  model = model.replace(/^(\w+)(:)/, "$1/");
-  const { provider, name } = model.match(/(?<provider>[^/]*)(\/(?<name>.*))?/)?.groups ?? {};
-  return { provider: provider?.replace(/-/g, ""), model: name };
+  model = model.replace(/^([\w-]+):/, "$1/");
+  let { provider, name } = model.match(/(?<provider>[^/]*)(\/(?<name>.*))?/)?.groups ?? {};
+  provider = provider?.replace(/-/g, "");
+  const match = provider ? findModel(provider)?.match : undefined;
+
+  if (match) {
+    return { provider, model: name };
+  }
+
+  return { provider: "aignehub", model };
 };

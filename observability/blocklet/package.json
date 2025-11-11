@@ -1,6 +1,6 @@
 {
   "name": "@blocklet/observability",
-  "version": "1.15.0",
+  "version": "1.15.1",
   "description": "Blocklet Observability for tracing and observability",
   "publishConfig": {
     "access": "public"
@@ -34,11 +34,11 @@
     "@aigne/observability-ui": "workspace:^",
     "@aigne/sqlite": "workspace:^",
     "@aigne/uuid": "^13.0.1",
-    "@arcblock/did-connect-react": "^3.1.53",
-    "@arcblock/ux": "^3.1.53",
-    "@blocklet/sdk": "^1.16.54-beta-20251029-055649-a9143beb",
-    "@blocklet/ui-react": "^3.1.53",
-    "@blocklet/uploader-server": "^0.3.2",
+    "@arcblock/did-connect-react": "^3.2.2",
+    "@arcblock/ux": "^3.2.2",
+    "@blocklet/sdk": "^1.17.1",
+    "@blocklet/ui-react": "^3.2.2",
+    "@blocklet/uploader-server": "^0.3.8",
     "@mui/material": "^7.3.2",
     "express": "^5.1.0",
     "lodash": "^4.17.21",
@@ -66,7 +66,7 @@
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.44.0",
     "vite": "^7.1.5",
-    "vite-plugin-blocklet": "^0.11.2",
+    "vite-plugin-blocklet": "^0.12.2",
     "vite-plugin-svgr": "^4.5.0",
     "zx": "^8.8.1"
   }

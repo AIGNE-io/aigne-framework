@@ -125,6 +125,16 @@ export default flatten({
   invalidIds: "无效的 ID",
   totalBatches: "{count} 批次",
   wordWrap: "自动换行",
+  truncateStrings: "截取长字符串",
   fullscreen: "全屏展示",
   exitFullscreen: "退出全屏",
+  foldAll: "折叠全部",
+  unfoldAll: "展开全部",
+  jsonView: {
+    viewAsMarkdown: "格式化",
+    preview: "预览",
+    close: "关闭",
+    fullscreen: "全屏展示",
+    exitFullscreen: "退出全屏",
+  },
 });

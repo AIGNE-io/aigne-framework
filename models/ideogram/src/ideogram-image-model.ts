@@ -6,8 +6,8 @@ import {
   type ImageModelOutput,
   imageModelInputSchema,
 } from "@aigne/core";
-
 import { snakelize } from "@aigne/core/utils/camelize.js";
+import { fetch } from "@aigne/core/utils/fetch.js";
 import { checkArguments, flat, pick } from "@aigne/core/utils/type-utils.js";
 import { joinURL } from "ufo";
 import { z } from "zod";
@@ -140,11 +140,6 @@ export class IdeogramImageModel extends ImageModel<
       headers: { "api-key": apiKey },
       body: formData,
     });
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`Ideogram API error: ${response.status} ${response.statusText} ${error}`);
-    }
 
     const data: { data: { url: string }[] } = await response.json();
 

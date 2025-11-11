@@ -12,6 +12,9 @@ import {
   type AgentResponse,
   type AgentResponseStream,
   agentOptionsSchema,
+  DEFAULT_INPUT_ACTION_GET,
+  type GetterSchema,
+  getterSchema,
   type Message,
 } from "./agent.js";
 import {
@@ -39,7 +42,7 @@ export interface ChatModelOptions
   > {
   model?: string;
 
-  modelOptions?: Omit<ChatModelInputOptions, "model">;
+  modelOptions?: ChatModelInputOptionsWithGetter;
 }
 
 /**
@@ -96,6 +99,33 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
     model?: string;
   }> {
     return {};
+  }
+
+  async getModelOptions(
+    input: Message,
+    options: AgentInvokeOptions,
+  ): Promise<ChatModelInputOptions> {
+    const result: ChatModelInputOptions = {};
+
+    for (const [key, val] of Object.entries({
+      ...this.options?.modelOptions,
+      ...("modelOptions" in input ? (input.modelOptions as ChatModelInputOptionsWithGetter) : {}),
+    })) {
+      if (
+        val &&
+        typeof val === "object" &&
+        DEFAULT_INPUT_ACTION_GET in val &&
+        typeof val[DEFAULT_INPUT_ACTION_GET] === "string"
+      ) {
+        const getterPath = val[DEFAULT_INPUT_ACTION_GET];
+        const value = input[getterPath] ?? options.context.userContext[getterPath];
+        if (!isNil(value)) Object.assign(result, { [key]: value });
+      } else {
+        Object.assign(result, { [key]: val });
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -411,7 +441,7 @@ export interface ChatModelInput extends Message {
   /**
    * Model-specific configuration options
    */
-  modelOptions?: ChatModelInputOptions;
+  modelOptions?: ChatModelInputOptionsWithGetter;
 }
 
 /**
@@ -623,7 +653,7 @@ export type Modality = "text" | "image" | "audio";
  *
  * Contains various parameters for controlling model behavior, such as model name, temperature, etc.
  */
-export interface ChatModelInputOptions {
+export interface ChatModelInputOptions extends Record<string, unknown> {
   /**
    * Model name or version
    */
@@ -661,23 +691,25 @@ export interface ChatModelInputOptions {
   reasoningEffort?: number | "minimal" | "low" | "medium" | "high";
 }
 
+export type ChatModelInputOptionsWithGetter = GetterSchema<ChatModelInputOptions>;
+
 const modelOptionsSchema = z.object({
-  model: z.string().optional(),
-  temperature: z.number().optional(),
-  topP: z.number().optional(),
-  frequencyPenalty: z.number().optional(),
-  presencePenalty: z.number().optional(),
-  parallelToolCalls: z.boolean().optional().default(true),
-  modalities: z.array(z.enum(["text", "image", "audio"])).optional(),
-  reasoningEffort: z
-    .union([
+  model: getterSchema(z.string()).optional(),
+  temperature: getterSchema(z.number()).optional(),
+  topP: getterSchema(z.number()).optional(),
+  frequencyPenalty: getterSchema(z.number()).optional(),
+  presencePenalty: getterSchema(z.number()).optional(),
+  parallelToolCalls: getterSchema(z.boolean()).optional().default(true),
+  modalities: getterSchema(z.array(z.enum(["text", "image", "audio"]))).optional(),
+  reasoningEffort: getterSchema(
+    z.union([
       z.number(),
       z.literal("minimal"),
       z.literal("low"),
       z.literal("medium"),
       z.literal("high"),
-    ])
-    .optional(),
+    ]),
+  ).optional(),
 });
 
 const chatModelOptionsSchema = agentOptionsSchema.extend({

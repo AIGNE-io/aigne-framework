@@ -1,5 +1,6 @@
 import Box from "@mui/material/Box";
-import useGetStats from "../../hooks/get-stats.ts";
+import { useCallback, useMemo } from "react";
+import { getTraceStats } from "../../libs/index.ts";
 import { parseDuration } from "../../utils/latency.ts";
 import TraceDetailPanel from "./trace-detail-panel.tsx";
 import TraceItemList from "./trace-item.tsx";
@@ -21,9 +22,22 @@ export default function RunDetailDrawer({
   setSelectedTrace,
   onClose,
 }: RunDetailDrawerProps) {
-  const stats = useGetStats({ traceInfo });
-  const latency = parseDuration(traceInfo.startTime, traceInfo.endTime);
-  const timestamp = new Date(traceInfo.startTime || Date.now()).toLocaleString();
+  const stats = useMemo(() => getTraceStats(traceInfo), [traceInfo]);
+  const latency = useMemo(
+    () => parseDuration(traceInfo.startTime, traceInfo.endTime),
+    [traceInfo.startTime, traceInfo.endTime],
+  );
+  const timestamp = useMemo(
+    () => new Date(traceInfo.startTime || Date.now()).toLocaleString(),
+    [traceInfo.startTime],
+  );
+
+  const handleSelect = useCallback(
+    (trace: TraceData | null | undefined) => setSelectedTrace(trace ?? null),
+    [setSelectedTrace],
+  );
+
+  const steps = useMemo(() => [traceInfo], [traceInfo]);
 
   return (
     <Box sx={{ height: "100vh", display: "flex", flexDirection: "column", position: "relative" }}>
@@ -45,7 +59,7 @@ export default function RunDetailDrawer({
         <Box
           sx={{
             flex: 1,
-            p: 2,
+            px: 2,
             borderRight: (theme) => `1px solid ${theme.palette.divider}`,
             minWidth: 300,
             overflow: "auto",
@@ -53,8 +67,8 @@ export default function RunDetailDrawer({
         >
           <TraceItemList
             traceId={traceId}
-            steps={[traceInfo]}
-            onSelect={(trace) => setSelectedTrace(trace ?? null)}
+            steps={steps}
+            onSelect={handleSelect}
             selectedTrace={selectedTrace}
           />
         </Box>
@@ -75,7 +89,7 @@ export default function RunDetailDrawer({
               bgcolor: (theme) => `${theme.palette.action.hover}`,
             }}
           >
-            <TraceDetailPanel trace={selectedTrace} sx={{}} />
+            <TraceDetailPanel trace={selectedTrace} traceInfo={traceInfo} />
           </Box>
         </Box>
       </Box>

@@ -1,6 +1,11 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {},
+  "compilerOptions": {
+    "paths": {
+      "@aigne/sqlite": ["./src"],
+      "@aigne/sqlite/*": ["./src/*"]
+    }
+  },
   "exclude": ["node_modules", "lib"],
   "include": ["src", "test"]
 }

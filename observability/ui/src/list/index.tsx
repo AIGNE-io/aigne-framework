@@ -61,7 +61,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const [selectedTrace, setSelectedTrace] = useState<TraceData | null>(null);
 
   const { data: components } = useRequest(async () => {
-    if (isBlocklet) return { data: [] };
+    if (!isBlocklet) return { data: [] };
 
     const res = await fetch(joinURL(origin, "/api/trace/tree/components"));
     return res.json() as Promise<{ data: string[] }>;

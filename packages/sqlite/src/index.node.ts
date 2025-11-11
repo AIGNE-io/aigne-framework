@@ -1,3 +1,5 @@
+import { mkdir } from "node:fs/promises";
+import { dirname } from "node:path";
 import { createClient } from "@libsql/client";
 import { drizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
 import type { SQLiteSession } from "drizzle-orm/sqlite-core";
@@ -11,6 +13,11 @@ export async function initDatabase({
   wal = false,
 }: InitDatabaseOptions = {}): Promise<LibSQLDatabase> {
   let db: LibSQLDatabase;
+
+  if (/^file:\/?[^/]+.*/.test(url)) {
+    const path = url.replace("file:", "");
+    await mkdir(dirname(path), { recursive: true });
+  }
 
   if (wal) {
     const client = createClient({ url });

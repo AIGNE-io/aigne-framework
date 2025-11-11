@@ -90,19 +90,22 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     setPage({ ...page, page: 1 });
   };
 
-  const fetchTraces = async ({
-    page,
-    pageSize,
-    searchText = "",
-    dateRange,
-    showImportedOnly,
-  }: {
-    page: number;
-    pageSize: number;
-    searchText?: string;
-    dateRange?: [Date, Date];
-    showImportedOnly?: boolean;
-  }) => {
+  const fetchTraces = async (
+    {
+      page,
+      pageSize,
+      searchText = "",
+      dateRange,
+      showImportedOnly,
+    }: {
+      page: number;
+      pageSize: number;
+      searchText?: string;
+      dateRange?: [Date, Date];
+      showImportedOnly?: boolean;
+    },
+    signal?: AbortSignal,
+  ) => {
     try {
       const res = await fetch(
         withQuery(joinURL(origin, "/api/trace/tree"), {
@@ -114,6 +117,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
           componentId: search.componentId,
           showImportedOnly: showImportedOnly ?? search.showImportedOnly ?? false,
         }),
+        { signal },
       ).then((r) => r.json() as Promise<TracesResponse>);
       const formatted: TraceData[] = res.data.map((trace) => ({
         ...trace,
@@ -122,6 +126,10 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       }));
       setTraces(formatted);
       setTotal(res.total);
+    } catch (error) {
+      if ((error as Error)?.name !== "AbortError") {
+        throw error;
+      }
     } finally {
       setLoading(false);
     }
@@ -129,16 +137,24 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
   useEffect(() => {
-    if (documentVisibility === "visible") {
-      setLoading(true);
-      fetchTraces({
+    if (documentVisibility !== "visible") return;
+
+    const abortController = new AbortController();
+    setLoading(true);
+    fetchTraces(
+      {
         page: Math.max(0, page.page - 1),
         pageSize: page.pageSize,
         searchText: search.searchText,
         dateRange: search.dateRange,
         showImportedOnly: search.showImportedOnly,
-      });
-    }
+      },
+      abortController.signal,
+    );
+
+    return () => {
+      abortController.abort();
+    };
   }, [
     page.page,
     page.pageSize,
@@ -153,7 +169,8 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
     if (!live) return;
     if (isBlocklet) return;
 
-    fetch(joinURL(origin, "/api/trace/tree/stats"))
+    const abortController = new AbortController();
+    fetch(joinURL(origin, "/api/trace/tree/stats"), { signal: abortController.signal })
       .then((res) => res.json() as Promise<{ data: { lastTraceChanged: boolean } }>)
       .then(({ data }) => {
         if (data?.lastTraceChanged) {
@@ -163,7 +180,16 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
             showImportedOnly: search.showImportedOnly,
           });
         }
+      })
+      .catch((error) => {
+        if ((error as Error)?.name !== "AbortError") {
+          console.error("Failed to fetch trace stats:", error);
+        }
       });
+
+    return () => {
+      abortController.abort();
+    };
   }, 3000);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
@@ -184,12 +210,23 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   );
 
   useEffect(() => {
-    fetch(joinURL(origin, "/model-prices.json"))
+    const abortController = new AbortController();
+
+    fetch(joinURL(origin, "/model-prices.json"), { signal: abortController.signal })
       .then((res) => res.json())
       .then((data) => {
         // @ts-ignore
         window.modelPrices = data;
+      })
+      .catch((error) => {
+        if ((error as Error)?.name !== "AbortError") {
+          console.error("Failed to fetch model prices:", error);
+        }
       });
+
+    return () => {
+      abortController.abort();
+    };
   }, []);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive

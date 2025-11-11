@@ -57,6 +57,15 @@
       "types": "./lib/dts/server/cli.d.ts",
       "default": "./lib/esm/server/cli.js"
     },
+    "./migrate": {
+      "browser": "./lib/esm/server/migrate.js",
+      "node": {
+        "require": "./lib/cjs/server/migrate.js",
+        "import": "./lib/esm/server/migrate.js"
+      },
+      "types": "./lib/dts/server/migrate.d.ts",
+      "default": "./lib/esm/server/migrate.js"
+    },
     "./db-path": {
       "browser": "./lib/esm/core/db-path.js",
       "node": {
@@ -92,6 +101,9 @@
       ],
       "type": [
         "./lib/dts/core/type.d.ts"
+      ],
+      "migrate": [
+        "./lib/dts/server/migrate.d.ts"
       ]
     }
   },

@@ -123,27 +123,22 @@ export default ({
         endTime: Trace.endTime,
         status: Trace.status,
         attributes: sql<string>`
-          CASE
-            WHEN ${Trace.attributes} IS NULL THEN JSON_OBJECT('input', '', 'output', '', 'metadata', NULL)
-            ELSE JSON_OBJECT(
-              'input',
-              CASE
-                WHEN JSON_EXTRACT(${Trace.attributes}, '$.input') IS NOT NULL
-                THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT), 1, 150) ||
-                CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT)) > 150 THEN '...' ELSE '' END
-                ELSE ''
-              END,
-              'output',
-              CASE
-                WHEN JSON_EXTRACT(${Trace.attributes}, '$.output') IS NOT NULL
-                THEN SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT), 1, 150) ||
-                CASE WHEN LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT)) > 150 THEN '...' ELSE '' END
-                ELSE ''
-              END,
-              'metadata',
-              JSON_EXTRACT(${Trace.attributes}, '$.metadata')
-            )
-          END
+          JSON_OBJECT(
+            'input',
+            COALESCE(
+              SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT), 1, 150) ||
+              IIF(LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT)) > 150, '...', ''),
+              ''
+            ),
+            'output',
+            COALESCE(
+              SUBSTR(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT), 1, 150) ||
+              IIF(LENGTH(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT)) > 150, '...', ''),
+              ''
+            ),
+            'metadata',
+            JSON_EXTRACT(${Trace.attributes}, '$.metadata')
+          )
         `,
         userId: Trace.userId,
         componentId: Trace.componentId,
@@ -180,99 +175,78 @@ export default ({
   router.get("/tree/summary", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
 
+    res.setHeader("Cache-Control", "public, max-age=60");
+
     const baseWhere = and(isNull(Trace.parentId), isNull(Trace.action));
-
-    const totalCountResult = await db
-      .select({ totalCount: sql<number>`COUNT(*)` })
-      .from(Trace)
-      .where(baseWhere)
-      .execute();
-
-    const totalCount = totalCountResult[0]?.totalCount ?? 0;
-
-    const statusResult = await db
-      .select({
-        successCount: sql<number>`
-          COUNT(
-            CASE
-              WHEN JSON_EXTRACT(${Trace.status}, '$.code') = 1 AND ${Trace.endTime} > 0
-              THEN 1
-            END
-          )
-        `,
-      })
-      .from(Trace)
-      .where(baseWhere)
-      .execute();
-
-    const successCount = statusResult[0]?.successCount ?? 0;
-    const failCount = totalCount - successCount;
-
-    const TotalStatsResult = await db
-      .select({
-        totalToken: sql<number>`COALESCE(SUM(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.token} ELSE 0 END), 0)`,
-        totalCost: sql<number>`COALESCE(SUM(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.cost} ELSE 0 END), 0)`,
-        maxLatency: sql<number>`COALESCE(MAX(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE NULL END), 0)`,
-        minLatency: sql<number>`COALESCE(MIN(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE NULL END), 0)`,
-        avgLatency: sql<number>`COALESCE(AVG(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE NULL END), 0)`,
-        totalDuration: sql<number>`COALESCE(SUM(CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE 0 END), 0)`,
-      })
-      .from(Trace)
-      .where(baseWhere)
-      .execute();
-
-    const totalStats = TotalStatsResult[0];
-
     const llmWhere = and(
       sql`${Trace.attributes} IS NOT NULL`,
       sql`JSON_EXTRACT(${Trace.attributes}, '$.output.model') IS NOT NULL`,
     );
 
-    const llmStatsResult = await db
-      .select({
-        llmTotalCount: sql<number>`COUNT(*)`,
-        llmSuccessCount: sql<number>`
-          COUNT(
-            CASE
-              WHEN JSON_EXTRACT(${Trace.status}, '$.code') = 1 AND ${Trace.endTime} > 0
-              THEN 1
-            END
-          )
-        `,
-        llmTotalDuration: sql<number>`
-          COALESCE(SUM(
-            CASE WHEN ${Trace.endTime} > 0 THEN ${Trace.endTime} - ${Trace.startTime} ELSE 0 END
-          ), 0)
-        `,
-      })
-      .from(Trace)
-      .where(llmWhere)
-      .execute();
+    const isCompleted = sql`${Trace.endTime} > 0`;
+    const duration = sql`${Trace.endTime} - ${Trace.startTime}`;
+    const successCount = sql<number>`
+      COUNT(
+        CASE
+          WHEN JSON_EXTRACT(${Trace.status}, '$.code') = 1 AND ${Trace.endTime} > 0
+          THEN 1
+        END
+      )
+    `;
+
+    const [baseStats, llmStats] = await Promise.all([
+      db
+        .select({
+          totalCount: sql<number>`COUNT(*)`,
+          successCount,
+          totalToken: sql<number>`COALESCE(SUM(CASE WHEN ${isCompleted} THEN ${Trace.token} ELSE 0 END), 0)`,
+          totalCost: sql<number>`COALESCE(SUM(CASE WHEN ${isCompleted} THEN ${Trace.cost} ELSE 0 END), 0)`,
+          maxLatency: sql<number>`COALESCE(MAX(CASE WHEN ${isCompleted} THEN ${duration} ELSE NULL END), 0)`,
+          minLatency: sql<number>`COALESCE(MIN(CASE WHEN ${isCompleted} THEN ${duration} ELSE NULL END), 0)`,
+          avgLatency: sql<number>`COALESCE(AVG(CASE WHEN ${isCompleted} THEN ${duration} ELSE NULL END), 0)`,
+          totalDuration: sql<number>`COALESCE(SUM(CASE WHEN ${isCompleted} THEN ${duration} ELSE 0 END), 0)`,
+        })
+        .from(Trace)
+        .where(baseWhere)
+        .execute(),
+      db
+        .select({
+          llmTotalCount: sql<number>`COUNT(*)`,
+          llmSuccessCount: successCount,
+          llmTotalDuration: sql<number>`COALESCE(SUM(CASE WHEN ${isCompleted} THEN ${duration} ELSE 0 END), 0)`,
+        })
+        .from(Trace)
+        .where(llmWhere)
+        .execute(),
+    ]);
+
+    const stats = baseStats[0];
+    const llm = llmStats[0];
 
     res.json({
-      totalCount,
-      successCount,
-      failCount,
-      totalToken: totalStats?.totalToken ?? 0,
-      totalCost: totalStats?.totalCost ?? 0,
-      maxLatency: totalStats?.maxLatency ?? 0,
-      minLatency: totalStats?.minLatency ?? 0,
-      avgLatency: totalStats?.avgLatency ?? 0,
-      totalDuration: totalStats?.totalDuration ?? 0,
-      llmSuccessCount: llmStatsResult[0]?.llmSuccessCount ?? 0,
-      llmTotalCount: llmStatsResult[0]?.llmTotalCount ?? 0,
-      llmTotalDuration: llmStatsResult[0]?.llmTotalDuration ?? 0,
+      totalCount: stats?.totalCount ?? 0,
+      successCount: stats?.successCount ?? 0,
+      failCount: (stats?.totalCount ?? 0) - (stats?.successCount ?? 0),
+      totalToken: stats?.totalToken ?? 0,
+      totalCost: stats?.totalCost ?? 0,
+      maxLatency: stats?.maxLatency ?? 0,
+      minLatency: stats?.minLatency ?? 0,
+      avgLatency: stats?.avgLatency ?? 0,
+      totalDuration: stats?.totalDuration ?? 0,
+      llmSuccessCount: llm?.llmSuccessCount ?? 0,
+      llmTotalCount: llm?.llmTotalCount ?? 0,
+      llmTotalDuration: llm?.llmTotalDuration ?? 0,
     });
   });
 
   router.get("/tree/components", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
+    res.set("Cache-Control", "public, max-age=60");
 
     const components = await db
-      .select({ componentId: Trace.componentId })
+      .selectDistinct({ componentId: Trace.componentId })
       .from(Trace)
       .where(and(isNotNull(Trace.componentId), isNull(Trace.action)))
-      .groupBy(Trace.componentId)
       .execute();
 
     const componentIds = components.map((c) => c.componentId).filter(Boolean);
@@ -366,25 +340,16 @@ export default ({
         endTime: Trace.endTime,
         status: Trace.status,
         attributes: sql`
-          CASE
-            WHEN JSON_EXTRACT(${Trace.attributes}, '$.output.usage') IS NOT NULL THEN
-              JSON_OBJECT(
-                'output', JSON_OBJECT(
-                  'usage', JSON_EXTRACT(${Trace.attributes}, '$.output.usage'),
-                  'model', JSON_EXTRACT(${Trace.attributes}, '$.output.model'),
-                  'seconds', JSON_EXTRACT(${Trace.attributes}, '$.output.seconds')
-                ),
-                'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag'),
-                'metadata', JSON_EXTRACT(${Trace.attributes}, '$.metadata'),
-                'taskTitle', JSON_EXTRACT(${Trace.attributes}, '$.taskTitle')
-              )
-            ELSE JSON_OBJECT(
-              'output', JSON_OBJECT(),
-              'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag'),
-              'metadata', JSON_EXTRACT(${Trace.attributes}, '$.metadata'),
-              'taskTitle', JSON_EXTRACT(${Trace.attributes}, '$.taskTitle')
-            )
-          END
+          JSON_OBJECT(
+            'output', JSON_OBJECT(
+              'usage', JSON_EXTRACT(${Trace.attributes}, '$.output.usage'),
+              'model', JSON_EXTRACT(${Trace.attributes}, '$.output.model'),
+              'seconds', JSON_EXTRACT(${Trace.attributes}, '$.output.seconds')
+            ),
+            'agentTag', JSON_EXTRACT(${Trace.attributes}, '$.agentTag'),
+            'metadata', JSON_EXTRACT(${Trace.attributes}, '$.metadata'),
+            'taskTitle', JSON_EXTRACT(${Trace.attributes}, '$.taskTitle')
+          )
         `,
         userId: Trace.userId,
         sessionId: Trace.sessionId,

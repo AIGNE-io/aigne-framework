@@ -130,7 +130,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
       setTotal(res.total);
     } catch (error) {
       if ((error as Error)?.name !== "AbortError") {
-        throw error;
+        console.error("Failed to fetch traces:", error);
       }
     } finally {
       setLoading(false);

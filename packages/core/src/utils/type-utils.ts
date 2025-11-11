@@ -82,6 +82,10 @@ export function unique<T>(arr: T[], key: (item: T) => unknown = (item: T) => ite
   });
 }
 
+export function get(obj: any, path: (string | number | symbol)[]): any {
+  return path.reduce((acc, key) => (isRecord(acc) ? Reflect.get(acc, key) : undefined), obj);
+}
+
 export function pick<T extends object, K extends keyof T>(
   obj: T,
   ...keys: (K | K[])[]
@@ -171,46 +175,34 @@ export function checkArguments<T extends ZodType>(
   args: unknown,
 ): z.infer<T> {
   try {
-    return schema.parse(args, {
-      errorMap: (issue, ctx) => {
-        if (issue.code === "invalid_union") {
-          // handle all issues that are not invalid_type
-          const otherQuestions = issue.unionErrors
-            .map(({ issues: [issue] }) => {
-              if (issue && issue.code !== "invalid_type") {
-                return issue.message || z.defaultErrorMap(issue, ctx).message;
-              }
-            })
-            .filter(isNonNullable);
-          if (otherQuestions.length) {
-            return { message: otherQuestions.join(", ") };
-          }
-
-          // handle invalid_type issues
-          const expected = issue.unionErrors
-            .map(({ issues: [issue] }) => {
-              if (issue?.code === "invalid_type") {
-                return issue;
-              }
-            })
-            .filter(isNonNullable);
-          if (expected.length) {
-            return {
-              message: `Expected ${expected.map((i) => i.expected).join(" or ")}, received ${expected[0]?.received}`,
-            };
-          }
-        }
-
-        return { message: ctx.defaultError };
-      },
-    });
+    return schema.parse(args);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const message = error.issues.map((i) => `${i.path}: ${i.message}`).join(", ");
+      const message = error.issues
+        .map((i) => {
+          const msg =
+            i.code === "invalid_union"
+              ? `${i.message} expect ${getExpectedTypes(i)} got ${get(args, i.path)}`
+              : i.message;
+          return `${i.path}: ${msg}`;
+        })
+        .join(", ");
       throw new Error(`${prefix} check arguments error: ${message}`);
     }
     throw error;
   }
+}
+
+function getExpectedTypes(issue: z.ZodIssue | z.ZodIssue[]): string[] {
+  if (Array.isArray(issue)) return issue.flatMap((issue) => getExpectedTypes(issue));
+
+  if ("expected" in issue) return [String(issue.expected)];
+
+  if (issue.code === "invalid_union") {
+    return issue.unionErrors.flatMap((e) => getExpectedTypes(e.issues));
+  }
+
+  return [];
 }
 
 export function tryOrThrow<P extends PromiseOrValue<unknown>>(

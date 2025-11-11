@@ -22,7 +22,7 @@ export function createRunCommand({
   aigneFilePath?: string;
 } = {}): CommandModule<unknown, { path?: string; entryAgent?: string }> {
   return {
-    command: "run [path] [entry-agent]",
+    command: ["$0", "run [path] [entry-agent]"],
     describe: "Run AIGNE for the specified path",
     builder: async (yargs) => {
       return yargs

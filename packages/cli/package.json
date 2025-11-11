@@ -45,6 +45,7 @@
     }
   },
   "scripts": {
+    "debug": "npm run build && node dist/cli.js",
     "lint": "tsc --noEmit",
     "build": "tsc --build tsconfig.build.json",
     "clean": "rimraf dist test/coverage templates/coverage",
@@ -54,7 +55,9 @@
     "test:src": "bun --cwd test test",
     "test:src:coverage": "bun --cwd test test --coverage --coverage-reporter=lcov --coverage-reporter=text",
     "test:templates": "cd templates && node --test",
-    "test:templates:coverage": "cd templates && mkdir -p coverage && node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=coverage/lcov.info --test-reporter=spec --test-reporter-destination=stdout"
+    "test:templates:coverage": "cd templates && mkdir -p coverage && node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=coverage/lcov.info --test-reporter=spec --test-reporter-destination=stdout",
+    "install:local": "npm uninstall -g @aigne/cli && npm run build && npm install -g .",
+    "install:remote": "npm uninstall -g @aigne/cli && npm install -g @aigne/cli"
   },
   "dependencies": {
     "@aigne/afs-system-fs": "workspace:^",

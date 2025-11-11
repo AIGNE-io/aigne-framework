@@ -93,20 +93,23 @@ const migrations = [
       await db.run(sql`CREATE INDEX IF NOT EXISTS idx_trace_parentId ON Trace (parentId);`);
       await db.run(sql`CREATE INDEX IF NOT EXISTS idx_trace_componentId ON Trace (componentId);`);
       await db.run(sql`CREATE INDEX IF NOT EXISTS idx_trace_startTime ON Trace (startTime DESC);`);
+      await db.run(sql`CREATE INDEX IF NOT EXISTS idx_trace_isImport ON Trace (isImport);`);
+    },
+  },
+  {
+    hash: "20251111_add_composite_query_indexes",
+    async sql(db: DB) {
+      //  isImport + componentId + parentId + startTime
       await db.run(
-        sql`CREATE INDEX IF NOT EXISTS idx_trace_componentId_action ON Trace (componentId, action);`,
+        sql`CREATE INDEX IF NOT EXISTS idx_trace_import_component_root_query ON Trace (isImport, componentId, parentId, startTime DESC) WHERE componentId IS NOT NULL;`,
       );
+      //  componentId + parentId + startTime
       await db.run(
-        sql`CREATE INDEX IF NOT EXISTS idx_trace_component_root_query ON Trace (componentId, parentId, action, startTime DESC) WHERE componentId IS NOT NULL;`,
+        sql`CREATE INDEX IF NOT EXISTS idx_trace_component_time_query ON Trace (componentId, startTime DESC, parentId) WHERE componentId IS NOT NULL AND parentId IS NULL AND action IS NULL;`,
       );
+      // isImport + startTime + parentId
       await db.run(
-        sql`CREATE INDEX IF NOT EXISTS idx_trace_parentId_action ON Trace (parentId, action);`,
-      );
-      await db.run(
-        sql`CREATE INDEX IF NOT EXISTS idx_trace_root_query ON Trace (parentId, action, startTime DESC);`,
-      );
-      await db.run(
-        sql`CREATE INDEX IF NOT EXISTS idx_trace_isImport_root_query ON Trace (isImport, parentId, action, startTime DESC);`,
+        sql`CREATE INDEX IF NOT EXISTS idx_trace_import_time_query ON Trace (isImport, startTime DESC, parentId) WHERE parentId IS NULL AND action IS NULL;`,
       );
     },
   },

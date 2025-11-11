@@ -106,7 +106,6 @@ export default ({
       whereClause = and(whereClause, eq(Trace.isImport, 1));
     }
 
-    // 并行执行 count 和 data 查询以节省时间
     const [count, rootCalls] = await Promise.all([
       db.select({ count: sql`count(*)` }).from(Trace).where(whereClause).execute(),
       db
@@ -259,7 +258,7 @@ export default ({
 
   router.get("/tree/components", ...middleware, async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
-    res.set("Cache-Control", "public, max-age=60");
+    res.set("Cache-Control", "public, max-age=600");
 
     const components = await db
       .selectDistinct({ componentId: Trace.componentId })
@@ -331,11 +330,9 @@ export default ({
     if (!id) throw new Error("id is required");
 
     const db = req.app.locals.db as LibSQLDatabase;
-    const rootCalls = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
-    if (rootCalls.length === 0) throw new Error(`Not found trace: ${id}`);
-
-    const all = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
-    res.json({ data: all[0] });
+    const trace = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
+    if (trace.length === 0) throw new Error(`Not found trace: ${id}`);
+    res.json({ data: trace[0] });
   });
 
   router.get("/tree/:id", async (req: Request, res: Response) => {

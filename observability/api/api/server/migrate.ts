@@ -31,6 +31,8 @@ export async function migrate(db: LibSQLDatabase | SqliteRemoteDatabase) {
       await db
         .run(sql`INSERT INTO ${sql.identifier(migrationsTable)} (hash) VALUES (${migration.hash})`)
         .execute();
+
+      console.log(`Migrated ${migration.hash} to database`);
     }
   }
 }

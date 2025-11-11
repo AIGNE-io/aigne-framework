@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === "development") {
 
 (async () => {
   try {
-    const dbUrl = path.join(process.env.BLOCKLET_DATA_DIR || "", "observer.db");
+    const dbUrl = path.join("file:", process.env.BLOCKLET_DATA_DIR || "", "observer.db");
     const db = await initDatabase({ url: dbUrl });
     await migrate(db);
     process.exit(0);

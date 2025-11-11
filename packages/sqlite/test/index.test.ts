@@ -24,6 +24,14 @@ test("initDatabase should create parent directories automatically", async () => 
   expect((await stat(path)).isFile()).toBe(true);
 });
 
+test("initDatabase should create parent directories automatically (file:// url)", async () => {
+  const path = join(tmp, "nested", "dir", "test.db");
+
+  await initDatabase({ url: `file://${path}` });
+
+  expect((await stat(path)).isFile()).toBe(true);
+});
+
 test("initDatabase should create parent directories automatically (relative path)", async () => {
   const path = join(tmp, "nested", "dir", "test.db");
   const relativePath = relative(process.cwd(), path);

@@ -14,8 +14,8 @@ export async function initDatabase({
 }: InitDatabaseOptions = {}): Promise<LibSQLDatabase> {
   let db: LibSQLDatabase;
 
-  if (/^file:\/?[^/]+.*/.test(url)) {
-    const path = url.replace("file:", "");
+  if (/^file:.*/.test(url)) {
+    const path = url.replace(/^file:(\/\/)?/, "");
     await mkdir(dirname(path), { recursive: true });
   }
 

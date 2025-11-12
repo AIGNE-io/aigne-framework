@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.85.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.85.0-beta.3...aigne-framework-v1.85.0-beta.4) (2025-11-12)
+
+
+### Bug Fixes
+
+* **core:** order history entries by time in ascending order ([#736](https://github.com/AIGNE-io/aigne-framework/issues/736)) ([7a3c2c3](https://github.com/AIGNE-io/aigne-framework/commit/7a3c2c32c428026ae7b8025f42ac51c38374915a))
+
 ## [1.85.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.85.0-beta.2...aigne-framework-v1.85.0-beta.3) (2025-11-12)
 
 

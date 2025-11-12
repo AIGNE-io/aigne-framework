@@ -1,6 +1,6 @@
 {
   "name": "@aigne/afs-user-profile-memory",
-  "version": "1.0.5-beta.3",
+  "version": "1.0.5-beta.4",
   "description": "AIGNE AFS module for user profile memory",
   "publishConfig": {
     "access": "public"

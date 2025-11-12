@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.85.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.85.0-beta.2...aigne-framework-v1.85.0-beta.3) (2025-11-12)
+
+
+### Bug Fixes
+
+* **core:** improved ImageAgent parameter filtering to reduce redundant parameter passing ([#734](https://github.com/AIGNE-io/aigne-framework/issues/734)) ([f8f7da2](https://github.com/AIGNE-io/aigne-framework/commit/f8f7da21d6e55062da0d2070b3289388ba5e6702))
+
 ## [1.85.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.85.0-beta.1...aigne-framework-v1.85.0-beta.2) (2025-11-12)
 
 

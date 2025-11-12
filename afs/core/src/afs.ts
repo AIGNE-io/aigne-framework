@@ -54,6 +54,12 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     return this;
   }
 
+  mount(path: string, module: AFSModule) {
+    this.modules.set(path, module);
+    module.onMount?.(this);
+    return this;
+  }
+
   async listModules(): Promise<{ moduleId: string; path: string; description?: string }[]> {
     return Array.from(this.modules.entries()).map(([path, module]) => ({
       moduleId: module.moduleId,
@@ -222,5 +228,16 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     }
 
     return matched;
+  }
+
+  async execute(
+    path: string,
+    args: Record<string, any>,
+    options: { context: any },
+  ): Promise<{ result: Record<string, any> }> {
+    const module = this.findModules(path)[0];
+    if (!module?.module.execute) throw new Error(`No module found for path: ${path}`);
+
+    return await module.module.execute(module.subpath, args, options);
   }
 }

@@ -41,6 +41,13 @@ export interface AFSModule {
     query: string,
     options?: AFSSearchOptions,
   ): Promise<{ list: AFSEntry[]; message?: string }>;
+
+  // TODO: options.context should be typed properly
+  execute?(
+    path: string,
+    args: Record<string, any>,
+    options: { context: any },
+  ): Promise<{ result: Record<string, any> }>;
 }
 
 export type AFSRootEvents = {
@@ -52,6 +59,15 @@ export interface AFSRoot extends Emitter<AFSRootEvents>, AFSModule {
   storage(module: AFSModule): AFSStorage;
 }
 
+export interface AFSEntryMetadata extends Record<string, any> {
+  execute?: {
+    name: string;
+    description?: string;
+    inputSchema?: Record<string, any>;
+    outputSchema?: Record<string, any>;
+  };
+}
+
 export interface AFSEntry<T = any> {
   id: string;
   createdAt?: Date;
@@ -60,7 +76,7 @@ export interface AFSEntry<T = any> {
   userId?: string | null;
   sessionId?: string | null;
   summary?: string | null;
-  metadata?: Record<string, any> | null;
+  metadata?: AFSEntryMetadata | null;
   linkTo?: string | null;
   content?: T;
 }

@@ -1,10 +1,11 @@
-import { type AFSEntry, AFSHistory } from "@aigne/afs";
+import { type AFSEntry, type AFSEntryMetadata, AFSHistory } from "@aigne/afs";
+import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { Agent, type AgentInvokeOptions, type Message } from "../agents/agent.js";
+import { Agent, type AgentInvokeOptions, FunctionAgent, type Message } from "../agents/agent.js";
 import { type AIAgent, DEFAULT_OUTPUT_FILE_KEY, DEFAULT_OUTPUT_KEY } from "../agents/ai-agent.js";
 import type {
   ChatModel,
@@ -113,13 +114,15 @@ export class PromptBuilder {
   workingDir?: string;
 
   async build(options: PromptBuildOptions): Promise<ChatModelInput & { toolAgents?: Agent[] }> {
+    const { messages, skills } = await this.buildMessages(options);
+
     return {
-      messages: await this.buildMessages(options),
+      messages,
       responseFormat: options.agent?.structuredStreamMode
         ? undefined
         : this.buildResponseFormat(options),
       outputFileType: options.agent?.outputFileType,
-      ...(await this.buildTools(options)),
+      ...(await this.buildTools(options, skills)),
     };
   }
 
@@ -157,11 +160,15 @@ export class PromptBuilder {
     };
   }
 
-  private async buildMessages(options: PromptBuildOptions): Promise<ChatModelInputMessage[]> {
+  private async buildMessages(
+    options: PromptBuildOptions,
+  ): Promise<{ messages: ChatModelInputMessage[]; skills?: Agent[] }> {
     const { input } = options;
 
     const inputKey = options.agent?.inputKey;
     const message = inputKey && typeof input?.[inputKey] === "string" ? input[inputKey] : undefined;
+
+    const skills: Agent[] = [];
 
     const [messages, otherCustomMessages] = partition(
       (await (typeof this.instructions === "string"
@@ -197,28 +204,51 @@ export class PromptBuilder {
       memories.push(...options.context.memories);
     }
 
-    if (options.agent?.afs) {
-      messages.push(
-        await SystemMessageTemplate.from(await getAFSSystemPrompt(options.agent.afs)).format({}),
-      );
+    const afs = options.agent?.afs;
 
-      if (options.agent.afsConfig?.injectHistory) {
-        const history = await options.agent.afs.list(AFSHistory.Path, {
+    if (afs) {
+      messages.push(await SystemMessageTemplate.from(await getAFSSystemPrompt(afs)).format({}));
+
+      if (options.agent?.afsConfig?.injectHistory) {
+        const history = await afs.list(AFSHistory.Path, {
           limit: options.agent.afsConfig.historyWindowSize || 10,
           orderBy: [["createdAt", "desc"]],
         });
-
-        if (message) {
-          const result = await options.agent.afs.search("/", message);
-          const ms = result.list.map((entry) => ({ content: stringify(entry.content) }));
-          memories.push(...ms);
-        }
 
         memories.push(
           ...history.list
             .reverse()
             .filter((i): i is Required<AFSEntry> => isNonNullable(i.content)),
         );
+
+        if (message) {
+          const result = await afs.search("/", message);
+          const ms = result.list
+            .map((entry) => entry.content || entry.summary)
+            .filter(Boolean)
+            .map((content) => ({ content: stringify(content) }));
+          memories.push(...ms);
+
+          const executable = result.list.filter(
+            (i): i is typeof i & { metadata: Required<Pick<AFSEntryMetadata, "execute">> } =>
+              !!i.metadata?.execute,
+          );
+          skills.push(
+            ...executable.map((entry) => {
+              return FunctionAgent.from({
+                name: entry.metadata.execute.name,
+                description: entry.metadata.execute.description,
+                inputSchema:
+                  entry.metadata.execute.inputSchema &&
+                  jsonSchemaToZod(entry.metadata.execute.inputSchema),
+                process: async (args: Record<string, any>, options) => {
+                  const result = await afs.execute(entry.path, args, options);
+                  return result.result;
+                },
+              });
+            }),
+          );
+        }
       }
     }
 
@@ -233,12 +263,14 @@ export class PromptBuilder {
         PromptBuilder.from(STRUCTURED_STREAM_INSTRUCTIONS.instructions);
 
       messages.push(
-        ...(await instructions.buildMessages({
-          input: {
-            ...input,
-            outputJsonSchema: zodToJsonSchema(outputSchema),
-          },
-        })),
+        ...(
+          await instructions.buildMessages({
+            input: {
+              ...input,
+              outputJsonSchema: zodToJsonSchema(outputSchema),
+            },
+          })
+        ).messages,
       );
     }
 
@@ -266,7 +298,10 @@ export class PromptBuilder {
 
     messages.push(...otherCustomMessages);
 
-    return this.refineMessages(options, messages);
+    return {
+      messages: this.refineMessages(options, messages),
+      skills,
+    };
   }
 
   private refineMessages(
@@ -429,6 +464,7 @@ export class PromptBuilder {
 
   private async buildTools(
     options: PromptBuildOptions,
+    skills?: Agent[],
   ): Promise<
     Pick<ChatModelInput, "tools" | "toolChoice" | "modelOptions"> & { toolAgents?: Agent[] }
   > {
@@ -436,7 +472,8 @@ export class PromptBuilder {
       (options.context?.skills ?? [])
         .concat(options.agent?.skills ?? [])
         .concat(options.agent?.memoryAgentsAsTools ? options.agent.memories : [])
-        .flatMap((i) => (i.isInvokable ? i : i.skills)),
+        .flatMap((i) => (i.isInvokable ? i : i.skills))
+        .concat(skills ?? []),
       (i) => i.name,
     );
 

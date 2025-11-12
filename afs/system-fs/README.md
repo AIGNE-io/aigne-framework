@@ -96,18 +96,21 @@ const { list, message } = await afs.list('/docs', {
   limit: 50            // Maximum results (capped at 50)
 });
 
-// Example entry
-list[0] = {
-  id: '/docs/README.md',
-  path: '/docs/README.md',
-  createdAt: Date,
-  updatedAt: Date,
-  metadata: {
-    type: 'file',      // 'file' or 'directory'
-    size: 1024,        // File size in bytes
-    mode: 33188        // Unix file permissions
-  }
-}
+// list is an array of AFS entries:
+[
+  {
+    id: '/docs/README.md',
+    path: '/docs/README.md',
+    createdAt: Date,
+    updatedAt: Date,
+    metadata: {
+      type: 'file',      // 'file' or 'directory'
+      size: 1024,        // File size in bytes
+      mode: 33188        // Unix file permissions
+    }
+  },
+  ...
+]
 ```
 
 **Options:**

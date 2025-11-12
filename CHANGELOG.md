@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.85.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.85.0-beta.1...aigne-framework-v1.85.0-beta.2) (2025-11-12)
+
+
+### Bug Fixes
+
+* **core:** resolve relative paths correctly in JS agent files ([#732](https://github.com/AIGNE-io/aigne-framework/issues/732)) ([0cb5631](https://github.com/AIGNE-io/aigne-framework/commit/0cb5631e1a1516b796f86a8dafc2341fe0e0810c))
+* **core:** support JSON object definitions for agent files ([#730](https://github.com/AIGNE-io/aigne-framework/issues/730)) ([4337def](https://github.com/AIGNE-io/aigne-framework/commit/4337defab694abdbcc118cc7f9151ba4df945478))
+* replace dynamic import with readFileSync for model prices loading ([#733](https://github.com/AIGNE-io/aigne-framework/issues/733)) ([0e5d372](https://github.com/AIGNE-io/aigne-framework/commit/0e5d37248cd55559f1d5cafa74bd6095e69e5345))
+
 ## [1.85.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.85.0-beta...aigne-framework-v1.85.0-beta.1) (2025-11-12)
 
 

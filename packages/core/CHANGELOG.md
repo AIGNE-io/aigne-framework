@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.67.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.67.0-beta.1...core-v1.67.0-beta.2) (2025-11-12)
+
+
+### Bug Fixes
+
+* **core:** resolve relative paths correctly in JS agent files ([#732](https://github.com/AIGNE-io/aigne-framework/issues/732)) ([0cb5631](https://github.com/AIGNE-io/aigne-framework/commit/0cb5631e1a1516b796f86a8dafc2341fe0e0810c))
+* **core:** support JSON object definitions for agent files ([#730](https://github.com/AIGNE-io/aigne-framework/issues/730)) ([4337def](https://github.com/AIGNE-io/aigne-framework/commit/4337defab694abdbcc118cc7f9151ba4df945478))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.6-beta.2
+
 ## [1.67.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.67.0-beta...core-v1.67.0-beta.1) (2025-11-12)
 
 

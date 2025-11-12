@@ -1,6 +1,6 @@
 {
   "name": "@aigne/gemini",
-  "version": "0.14.5",
+  "version": "0.14.6-beta.2",
   "description": "AIGNE Gemini SDK for integrating with Google's Gemini AI models",
   "publishConfig": {
     "access": "public"

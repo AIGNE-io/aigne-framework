@@ -1,9 +1,9 @@
 import { useLocaleContext } from "@arcblock/ux/lib/Locale/context";
 import { CallMade, InfoOutlined, TrendingUp } from "@mui/icons-material";
 import { Box, Card, CardContent, Grid, styled, Tooltip, Typography } from "@mui/material";
-import useRequest from "ahooks/lib/useRequest";
 import BigNumber from "bignumber.js";
 import prettyMs from "pretty-ms";
+import { useEffect, useState } from "react";
 import { joinURL } from "ufo";
 import Metric from "./components/metric.js";
 import formatNumber from "./utils/format-number.ts";
@@ -224,14 +224,32 @@ function UsageSummary({
 
 export default () => {
   const { t } = useLocaleContext();
-  const { data: usageSummary } = useRequest(async () => {
-    try {
-      const res = await fetch(joinURL(origin, "/api/trace/tree/summary"));
-      return res.json() as Promise<UsageSummaryProps>;
-    } catch {
-      return { totalToken: 0, totalCost: 0 };
-    }
+  const [usageSummary, setUsageSummary] = useState<UsageSummaryProps>({
+    totalToken: 0,
+    totalCost: 0,
   });
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    (async () => {
+      try {
+        const res = await fetch(joinURL(origin, "/api/trace/tree/summary"), {
+          signal: abortController.signal,
+        });
+        const data = (await res.json()) as UsageSummaryProps;
+        setUsageSummary(data);
+      } catch (error) {
+        if ((error as Error)?.name !== "AbortError") {
+          console.error("Failed to fetch usage summary:", error);
+        }
+      }
+    })();
+
+    return () => {
+      abortController.abort();
+    };
+  }, []);
 
   return (
     <UsageSummary

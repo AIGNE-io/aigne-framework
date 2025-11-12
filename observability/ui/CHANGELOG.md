@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.11.5-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.5-beta...observability-ui-v0.11.5-beta.1) (2025-11-12)
+
+
+### Bug Fixes
+
+* **observability:** optimize database performance with indexes ([#728](https://github.com/AIGNE-io/aigne-framework/issues/728)) ([301aeea](https://github.com/AIGNE-io/aigne-framework/commit/301aeeaa2acd5f529b20582711ae691fa66e181d))
+
+## [0.11.5-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.4...observability-ui-v0.11.5-beta) (2025-11-11)
+
+
+### Bug Fixes
+
+* update package to latest ([#720](https://github.com/AIGNE-io/aigne-framework/issues/720)) ([4386549](https://github.com/AIGNE-io/aigne-framework/commit/43865497e71f86478bc75d7d6e181c4fac80eae5))
+
 ## [0.11.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.4-beta.4...observability-ui-v0.11.4) (2025-11-07)
 
 ## [0.11.4-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.4-beta.3...observability-ui-v0.11.4-beta.4) (2025-11-07)

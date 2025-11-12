@@ -9,7 +9,7 @@ author:
   name: Arcblock
   email: blocklet@arcblock.io
 specVersion: 1.2.8
-version: 1.15.1
+version: 1.15.2-beta.2
 repository:
   type: git
   url: git+https://github.com/AIGNE-io/aigne-framework.git
@@ -20,6 +20,7 @@ files:
   - screenshots
   - api/dist
   - logo.svg
+  - api/hooks/pre-start.js
 interfaces:
   - type: web
     name: publicUrl
@@ -30,6 +31,7 @@ interfaces:
     proxyBehavior: service
 did: z2qa2GCqPJkufzqF98D8o7PWHrRRSHpYkNhEh
 scripts:
+  preStart: node api/hooks/pre-start.js
   dev: npm run start
 logo: logo.svg
 community: https://community.arcblock.io/discussions/boards/aigne

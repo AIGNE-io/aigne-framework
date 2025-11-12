@@ -1,5 +1,37 @@
 # Changelog
 
+## [0.11.6-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.6-beta.1...observability-api-v0.11.6-beta.2) (2025-11-12)
+
+
+### Bug Fixes
+
+* replace dynamic import with readFileSync for model prices loading ([#733](https://github.com/AIGNE-io/aigne-framework/issues/733)) ([0e5d372](https://github.com/AIGNE-io/aigne-framework/commit/0e5d37248cd55559f1d5cafa74bd6095e69e5345))
+
+## [0.11.6-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.6-beta...observability-api-v0.11.6-beta.1) (2025-11-12)
+
+
+### Bug Fixes
+
+* **observability:** optimize database performance with indexes ([#728](https://github.com/AIGNE-io/aigne-framework/issues/728)) ([301aeea](https://github.com/AIGNE-io/aigne-framework/commit/301aeeaa2acd5f529b20582711ae691fa66e181d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.4-beta
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.5-beta.1
+
+## [0.11.6-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.5...observability-api-v0.11.6-beta) (2025-11-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.5-beta
+
 ## [0.11.5](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.5-beta.4...observability-api-v0.11.5) (2025-11-07)
 
 

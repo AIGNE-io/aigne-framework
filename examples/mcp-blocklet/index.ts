@@ -8,6 +8,7 @@ import { refreshAuthorization, UnauthorizedError } from "@modelcontextprotocol/s
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import JWT from "jsonwebtoken";
 import { TerminalOAuthProvider } from "./oauth.js";
+import { joinURL } from 'ufo';
 
 const rawUrl = process.argv.find((arg) => arg.startsWith("https://") || arg.startsWith("http://")) || process.env.BLOCKLET_APP_URL;
 assert(
@@ -28,7 +29,6 @@ try {
   process.exit(1);
 }
 
-appUrl.pathname = "/.well-known/service/mcp";
 console.info("Connecting to blocklet", appUrl.href);
 
 let transport: StreamableHTTPClientTransport;
@@ -111,8 +111,10 @@ try {
 
 await runWithAIGNE(
   async () => {
+
+    const url = joinURL(appUrl.origin, '/.well-known/service/mcp');
     const blocklet = await MCPAgent.from({
-      url: appUrl.href,
+      url,
       transport: "streamableHttp",
       opts: {
         authProvider: provider,

@@ -487,12 +487,12 @@ test("PromptBuilder should build with afs correctly", async () => {
       {
         id: "1",
         path: "/history/1",
-        content: { input: { message: "Hello" }, output: { message: "Hello, How can I help you?" } },
+        content: { input: { message: "I'm Bob" }, output: { message: "Hello, Bob!" } },
       },
       {
         id: "1",
         path: "/history/1",
-        content: { input: { message: "I'm Bob" }, output: { message: "Hello, Bob!" } },
+        content: { input: { message: "Hello" }, output: { message: "Hello, How can I help you?" } },
       },
     ],
   });

@@ -215,7 +215,9 @@ export class PromptBuilder {
         }
 
         memories.push(
-          ...history.list.filter((i): i is Required<AFSEntry> => isNonNullable(i.content)),
+          ...history.list
+            .reverse()
+            .filter((i): i is Required<AFSEntry> => isNonNullable(i.content)),
         );
       }
     }

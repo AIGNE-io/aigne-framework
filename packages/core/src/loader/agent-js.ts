@@ -17,17 +17,13 @@ export async function loadAgentFromJsFile(path: string) {
 
   if (agent instanceof Agent) return agent;
 
-  if (typeof agent !== "function") {
-    throw new Error(`Agent file ${path} must export a default function, but got ${typeof agent}`);
-  }
-
   return tryOrThrow(
     () =>
       parseAgentFile(path, {
-        ...agent,
         type: "function",
-        name: agent.agent_name || agent.agentName || agent.name,
         process: agent,
+        name: agent.agent_name || agent.agentName || agent.name,
+        ...agent,
       }),
     (error) => new Error(`Failed to parse agent from ${path}: ${error.message}`),
   );

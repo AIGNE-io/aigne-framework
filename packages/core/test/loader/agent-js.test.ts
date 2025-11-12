@@ -13,11 +13,11 @@ test("loadAgentFromJs should error if agent.js file is invalid", async () => {
     "no such file or directory",
   );
 
-  await using _2 = await mockModule("@aigne/invalid-agent-fn", () => ({}));
-  expect(loadAgentFromJsFile("@aigne/invalid-agent-fn")).rejects.toThrow(
-    "must export a default function",
-  );
-
   await using _3 = await mockModule("@aigne/not-valid-agent", () => ({ default: fn }));
   expect(loadAgentFromJsFile("@aigne/not-valid-agent")).rejects.toThrow("Failed to parse agent");
+});
+
+test("loadAgentFromJs should support construct agent from json data as yaml format", async () => {
+  const agent = await loadAgentFromJsFile("../../test-agents/test-json-definition-agent.mjs");
+  expect(agent.name).toBe("testJsonDefinitionAgent");
 });

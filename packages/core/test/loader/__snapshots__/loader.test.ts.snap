@@ -28,6 +28,11 @@ exports[`AIGNE.load should load agents correctly 1`] = `
       "name": "test-relative-prompt-paths",
       "taskTitle": undefined,
     },
+    {
+      "description": "A test agent defined in JSON format",
+      "name": "testJsonDefinitionAgent",
+      "taskTitle": undefined,
+    },
   ],
   "cli": {
     "agents": [

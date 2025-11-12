@@ -18,8 +18,7 @@ assert(
 
 const appUrl = new URL(rawUrl);
 try {
-  appUrl.pathname = "/__blocklet__.js";
-  const result = await fetch(appUrl.href);
+  const result = await fetch(joinURL(appUrl.href, "__blocklet__.js"));
   if (result.status !== 200) {
     console.error("Seems like the provided url is not a valid blocklet url: ", rawUrl);
     process.exit(1);

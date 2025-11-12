@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.85.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.85.0-beta...aigne-framework-v1.85.0-beta.1) (2025-11-12)
+
+
+### Bug Fixes
+
+* **observability:** optimize database performance with indexes ([#728](https://github.com/AIGNE-io/aigne-framework/issues/728)) ([301aeea](https://github.com/AIGNE-io/aigne-framework/commit/301aeeaa2acd5f529b20582711ae691fa66e181d))
+* **sqlite:** auto-create parent directories for file-based databases ([#727](https://github.com/AIGNE-io/aigne-framework/issues/727)) ([581789f](https://github.com/AIGNE-io/aigne-framework/commit/581789f38d838f53396e9e41ce9367a486319c53))
+
 ## [1.85.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.84.0...aigne-framework-v1.85.0-beta) (2025-11-11)
 
 

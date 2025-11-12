@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.15.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.15.2-beta...blocklet-observability-v1.15.2-beta.1) (2025-11-12)
+
+
+### Bug Fixes
+
+* **observability:** optimize database performance with indexes ([#728](https://github.com/AIGNE-io/aigne-framework/issues/728)) ([301aeea](https://github.com/AIGNE-io/aigne-framework/commit/301aeeaa2acd5f529b20582711ae691fa66e181d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.6-beta.1
+    * @aigne/observability-ui bumped to 0.11.5-beta.1
+    * @aigne/sqlite bumped to 0.4.4-beta
+
 ## [1.15.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.15.1...blocklet-observability-v1.15.2-beta) (2025-11-11)
 
 

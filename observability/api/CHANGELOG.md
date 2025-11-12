@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.11.6-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.6-beta...observability-api-v0.11.6-beta.1) (2025-11-12)
+
+
+### Bug Fixes
+
+* **observability:** optimize database performance with indexes ([#728](https://github.com/AIGNE-io/aigne-framework/issues/728)) ([301aeea](https://github.com/AIGNE-io/aigne-framework/commit/301aeeaa2acd5f529b20582711ae691fa66e181d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.4-beta
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.5-beta.1
+
 ## [0.11.6-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.5...observability-api-v0.11.6-beta) (2025-11-11)
 
 

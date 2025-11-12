@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import Decimal from "decimal.js";
 import { eq, sql } from "drizzle-orm";
@@ -75,16 +76,18 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
 
       let prices: Record<string, ModelPrice> = {};
       try {
-        const fullPath = process?.env?.BLOCKLET_APP_DIR
-          ? path.resolve(process.env.BLOCKLET_APP_DIR, "dist", "model-prices.json")
-          : "../../../dist/model-prices.json";
-
-        // @ts-ignore
-        prices = await import(fullPath, { with: { type: "json" } }).then((res) => res.default);
+        if (process?.env?.BLOCKLET_APP_DIR) {
+          const fullPath = path.resolve(process.env.BLOCKLET_APP_DIR, "dist", "model-prices.json");
+          const content = readFileSync(fullPath, "utf-8");
+          prices = JSON.parse(content);
+        } else {
+          const fullPath = "../../../dist/model-prices.json";
+          // @ts-ignore
+          prices = await import(fullPath, { with: { type: "json" } }).then((res) => res.default);
+        }
       } catch (err) {
         console.warn(
-          `[Observability] Failed to load model prices: ${err.message}. ` +
-            `Cost calculation will be disabled.`,
+          `[Observability] Failed to load model prices: ${err.message}. Cost calculation will be disabled.`,
         );
         prices = {};
       }

@@ -12,6 +12,8 @@ import type {
 
 const DEFAULT_MAX_DEPTH = 1;
 
+const MODULES_ROOT_DIR = "/modules";
+
 export interface AFSOptions {
   modules?: AFSModule[];
 }
@@ -55,6 +57,8 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     if (this.modules.has(p)) {
       throw new Error(`Module already mounted at path: ${p}`);
     }
+
+    p = joinURL(MODULES_ROOT_DIR, p);
 
     this.modules.set(p, m);
     m.onMount?.(this);

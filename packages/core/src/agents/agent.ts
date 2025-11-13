@@ -1200,17 +1200,6 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
   }
 
   /** For AFSModule interface **/
-
-  get moduleId(): string {
-    // TODO: should use DID as moduleId
-    return this.name;
-  }
-
-  get path(): string {
-    // TODO: should remove this property from AFSModule
-    return `/${this.name}`;
-  }
-
   private agentToAFSEntry(agent: Agent): AFSEntry {
     return {
       id: `/${this.name}/${agent.name}`,
@@ -1270,7 +1259,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     return this.list(path, options);
   }
 
-  async execute(
+  async exec(
     path: string,
     args: Record<string, any>,
     options: { context: Context },

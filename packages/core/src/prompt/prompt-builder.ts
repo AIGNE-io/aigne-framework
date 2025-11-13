@@ -1,11 +1,10 @@
 import { type AFSEntry, type AFSEntryMetadata, AFSHistory } from "@aigne/afs";
-import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { Agent, type AgentInvokeOptions, FunctionAgent, type Message } from "../agents/agent.js";
+import { Agent, type AgentInvokeOptions, type Message } from "../agents/agent.js";
 import { type AIAgent, DEFAULT_OUTPUT_FILE_KEY, DEFAULT_OUTPUT_KEY } from "../agents/ai-agent.js";
 import type {
   ChatModel,
@@ -20,7 +19,6 @@ import type {
 import type { ImageAgent } from "../agents/image-agent.js";
 import { type FileUnionContent, fileUnionContentsSchema } from "../agents/model.js";
 import { optionalize } from "../loader/schema.js";
-import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
 import {
   checkArguments,
@@ -30,7 +28,10 @@ import {
   partition,
   unique,
 } from "../utils/type-utils.js";
-import { getAFSSystemPrompt } from "./prompts/afs-builtin-prompt.js";
+import {
+  AFS_EXECUTABLE_TOOLS_PROMPT_TEMPLATE,
+  getAFSSystemPrompt,
+} from "./prompts/afs-builtin-prompt.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
 import { getAFSSkills } from "./skills/afs.js";
@@ -227,6 +228,8 @@ export class PromptBuilder {
           const result = await afs.search("/", message);
           const ms = result.list
             .map((entry) => {
+              if (entry.metadata?.execute) return null;
+
               const content = entry.content || entry.summary;
               if (!content) return null;
 
@@ -243,21 +246,20 @@ export class PromptBuilder {
               !!i.metadata?.execute,
           );
 
-          // skills.push(
-          //   ...executable.map((entry) => {
-          //     return FunctionAgent.from({
-          //       name: entry.metadata.execute.name,
-          //       description: entry.metadata.execute.description,
-          //       inputSchema:
-          //         entry.metadata.execute.inputSchema &&
-          //         jsonSchemaToZod(entry.metadata.execute.inputSchema),
-          //       process: async (args: Record<string, any>, options) => {
-          //         const result = await afs.execute(entry.path, args, options);
-          //         return result.result;
-          //       },
-          //     });
-          //   }),
-          // );
+          if (executable.length) {
+            messages.push({
+              role: "system",
+              content: await PromptTemplate.from(AFS_EXECUTABLE_TOOLS_PROMPT_TEMPLATE).format({
+                tools: executable.map((entry) => ({
+                  path: entry.path,
+                  name: entry.metadata.execute.name,
+                  description: entry.metadata.execute.description,
+                  inputSchema: entry.metadata.execute.inputSchema,
+                  outputSchema: entry.metadata.execute.outputSchema,
+                })),
+              }),
+            });
+          }
         }
       }
     }

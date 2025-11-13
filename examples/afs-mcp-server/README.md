@@ -8,16 +8,18 @@
   </picture>
 </p>
 
-This example demonstrates how to mount an [MCP (Model Context Protocol)](https://www.anthropic.com/news/model-context-protocol) server as an AFS module using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework). The example integrates the GitHub MCP Server, allowing AI agents to interact with GitHub repositories through the **Agentic File System (AFS)** interface.
+This example shows how to mount any [MCP (Model Context Protocol)](https://www.anthropic.com/news/model-context-protocol) server as an AFS module, making it accessible to AI agents through a unified file system interface. We use the GitHub MCP Server as a real-world demonstration.
 
-**Agentic File System (AFS)** is a virtual file system abstraction that provides AI agents with unified access to various storage backends. For comprehensive documentation, see [AFS Documentation](../../afs/README.md).
+## What You'll See
 
-## Overview
+**User asks:** "Search for a repo named aigne"
 
-This example showcases the powerful integration between AIGNE and MCP servers by:
-- Mounting the GitHub MCP Server as an AFS module at `/modules/github-mcp-server`
-- Providing AI agents with GitHub capabilities through the AFS interface
-- Demonstrating how to bridge external protocols (MCP) with AIGNE's unified file system
+**Behind the scenes:**
+1. LLM calls `afs_exec` → `/modules/github-mcp-server/search_repositories`
+2. MCP server searches GitHub and returns JSON results
+3. LLM presents results naturally: "Found 89 repositories. Notable matches: aigne-framework..."
+
+**The power:** AI agents can access GitHub (or any MCP server) through a simple, unified AFS interface - just like accessing files!
 
 ## Prerequisites
 
@@ -42,8 +44,46 @@ export OPENAI_API_KEY=your_openai_api_key_here
 npx -y @aigne/example-afs-mcp-server --chat
 
 # Ask a specific question
-npx -y @aigne/example-afs-mcp-server --input "What are the recent issues in the AIGNE repository?"
+npx -y @aigne/example-afs-mcp-server --input "Search for a repo named aigne"
 ```
+
+## See It In Action
+
+Here's what happens when you ask to search for a repository:
+
+```bash
+You: "Search for a repo named aigne"
+
+# LLM makes a tool call
+{
+  "function": {
+    "name": "afs_exec",
+    "arguments": {
+      "path": "/modules/github-mcp-server/search_repositories",
+      "args": "{\"query\":\"aigne\",\"minimal_output\":true}"
+    }
+  }
+}
+
+# GitHub MCP Server returns results
+{
+  "total_count": 89,
+  "items": [
+    {"name": "aigne-framework", "full_name": "AIGNE-io/aigne-framework", ...},
+    ...
+  ]
+}
+
+# LLM responds naturally
+AI: "I searched GitHub for 'aigne'. Results: 89 repositories found.
+     Notable matches:
+     - aigne-framework (AIGNE-io/aigne-framework)
+     - ...
+
+     Would you like me to open/read any of these repos?"
+```
+
+**Key insight:** The LLM automatically calls `afs_exec` with the correct path and arguments, treating the MCP server like a native AFS module!
 
 ## Installation
 
@@ -95,228 +135,130 @@ pnpm start --chat
 pnpm start --input "What are the recent issues in the AIGNE repository?"
 ```
 
-## How MCP Integration Works
+## How It Works: 3 Simple Steps
 
-This example uses `MCPAgent` from `@aigne/core` to mount an MCP server as an AFS module. The GitHub MCP Server runs in a Docker container and communicates with AIGNE through the MCP protocol.
-
-### Key Components
-
-#### 1. MCPAgent - Protocol Bridge
-
-The `MCPAgent` class bridges MCP servers with AIGNE's AFS interface:
+### 1. Launch the MCP Server
 
 ```typescript
 import { MCPAgent } from "@aigne/core";
 
-// Create an MCPAgent that runs the GitHub MCP Server in Docker
 const mcpAgent = await MCPAgent.from({
   command: "docker",
   args: [
-    "run",
-    "-i",
-    "--rm",
-    "-e",
-    `GITHUB_PERSONAL_ACCESS_TOKEN=${process.env.GITHUB_PERSONAL_ACCESS_TOKEN}`,
+    "run", "-i", "--rm",
+    "-e", `GITHUB_PERSONAL_ACCESS_TOKEN=${process.env.GITHUB_PERSONAL_ACCESS_TOKEN}`,
     "ghcr.io/github/github-mcp-server",
   ],
 });
 ```
 
-#### 2. Mounting as AFS Module
-
-The MCP server is mounted just like any other AFS module:
+### 2. Mount It as an AFS Module
 
 ```typescript
 import { AFS, AFSHistory } from "@aigne/afs";
 
 const afs = new AFS()
   .mount(new AFSHistory({ storage: { url: ":memory:" } }))
-  .mount("/github-mcp-server", mcpAgent);
+  .mount(mcpAgent);  // Mounted at /modules/github-mcp-server
 ```
 
-This makes the GitHub MCP Server accessible at `/modules/github-mcp-server` in the AFS virtual file system.
-
-#### 3. AI Agent Integration
-
-The AI agent can now interact with GitHub through AFS tools:
+### 3. Create an AI Agent
 
 ```typescript
 import { AIAgent } from "@aigne/core";
 
 const agent = AIAgent.from({
-  instructions: "You are a friendly chatbot that can help users interact with a github repository via github-mcp-server mounted on AFS.",
+  instructions: "Help users interact with GitHub via the github-mcp-server module.",
   inputKey: "message",
-  afs,
+  afs,  // Agent automatically gets access to all mounted modules
 });
 ```
 
-### Available GitHub Operations
+**That's it!** The agent can now call `/modules/github-mcp-server/search_repositories`, `/modules/github-mcp-server/list_issues`, and all other GitHub MCP tools through the AFS interface.
 
-Through the mounted GitHub MCP Server, the AI agent can:
-
-- **List repositories**: Browse user and organization repositories
-- **Read issues**: View issue details, comments, and status
-- **Create issues**: Open new issues with descriptions
-- **Search code**: Find code snippets across repositories
-- **View pull requests**: Access PR information and reviews
-- **Repository information**: Get repository details, stars, forks, etc.
-
-## Example Usage
-
-Try these commands to explore GitHub through the MCP server:
-
-### Basic GitHub Queries
+## Try These Examples
 
 ```bash
-# Ask about recent issues
-npx -y @aigne/example-afs-mcp-server --input "What are the recent open issues in the AIGNE-io/aigne-framework repository?"
-
-# Search for code
-npx -y @aigne/example-afs-mcp-server --input "Find examples of using MCPAgent in the codebase"
+# Search for repositories
+npx -y @aigne/example-afs-mcp-server --input "Search for a repo named aigne"
 
 # Get repository information
-npx -y @aigne/example-afs-mcp-server --input "Tell me about the AIGNE framework repository"
-```
+npx -y @aigne/example-afs-mcp-server --input "Tell me about the AIGNE-io/aigne-framework repository"
 
-### Interactive Chat Examples
+# Check recent issues
+npx -y @aigne/example-afs-mcp-server --input "What are the recent open issues in AIGNE-io/aigne-framework?"
 
-```bash
-# Start interactive mode
+# Interactive mode - ask follow-up questions naturally
 npx -y @aigne/example-afs-mcp-server --chat
 ```
 
-Then try asking:
-- "What are the most starred repositories for AIGNE-io?"
-- "Show me the latest pull requests in the aigne-framework repository"
-- "Create a new issue in my repository about improving documentation"
-- "Search for code examples of AFS modules"
-- "What repositories does the AIGNE organization have?"
+**In chat mode, try:**
+- "Show me the most popular AIGNE repositories"
+- "Search for repos about AI agents"
+- "What pull requests are open in aigne-framework?"
+- "Find code examples of MCPAgent usage"
 
-## How This Example Works
+## Why Mount MCP as AFS?
 
-### 1. MCP Server Initialization
+**The Problem:** Each MCP server has its own protocol and tools. AI agents need custom code to work with each one.
 
-The GitHub MCP Server is launched in a Docker container:
-
-```typescript
-await MCPAgent.from({
-  command: "docker",
-  args: [
-    "run",
-    "-i",
-    "--rm",
-    "-e",
-    `GITHUB_PERSONAL_ACCESS_TOKEN=${process.env.GITHUB_PERSONAL_ACCESS_TOKEN}`,
-    "ghcr.io/github/github-mcp-server",
-  ],
-});
-```
-
-### 2. Protocol Translation
-
-The `MCPAgent` translates between:
-- **AFS operations** (list, read, write, exec) ↔ **MCP protocol** (resources, tools, prompts)
-- AIGNE's standardized interface ↔ GitHub-specific MCP commands
-
-### 3. Agent Tool Calls
-
-When you ask a question, the AI agent uses AFS tools to interact with GitHub:
-
-```json
-{
-  "toolCalls": [
-    {
-      "type": "function",
-      "function": {
-        "name": "afs_exec",
-        "arguments": {
-          "path": "/modules/github-mcp-server",
-          "args": {
-            "tool": "list_issues",
-            "repository": "AIGNE-io/aigne-framework"
-          }
-        }
-      }
-    }
-  ]
-}
-```
-
-The MCP server processes this request and returns GitHub data, which the AI agent then presents in natural language.
-
-## Understanding MCP Integration
-
-### What is MCP?
-
-MCP (Model Context Protocol) is a standardized protocol for connecting AI models with external tools and data sources. It defines:
-- **Resources**: Data and content sources (files, databases, APIs)
-- **Tools**: Actions the AI can perform (create, update, search)
-- **Prompts**: Pre-defined interaction patterns
-
-### Why Mount MCP as AFS?
-
-Mounting MCP servers as AFS modules provides:
-
-1. **Unified Interface**: All external services accessible through the same AFS API
-2. **Composability**: Mix MCP servers with file systems, databases, and custom modules
-3. **Standard Tools**: AI agents use familiar `afs_list`, `afs_read`, `afs_exec` tools
-4. **Path-Based Organization**: Multiple MCP servers can coexist at different paths
-
-### Example: Multiple MCP Servers
-
-You can mount multiple MCP servers simultaneously:
+**The Solution:** Mount all MCP servers as AFS modules:
 
 ```typescript
 const afs = new AFS()
-  .mount("/github", await MCPAgent.from({ /* GitHub MCP config */ }))
-  .mount("/slack", await MCPAgent.from({ /* Slack MCP config */ }))
-  .mount("/notion", await MCPAgent.from({ /* Notion MCP config */ }));
+  .mount("/github", await MCPAgent.from({ /* GitHub MCP */ }))
+  .mount("/slack", await MCPAgent.from({ /* Slack MCP */ }))
+  .mount("/notion", await MCPAgent.from({ /* Notion MCP */ }));
 
-// Now the agent can interact with all three services!
+// Now the agent uses ONE interface (afs_exec) to access ALL services!
 ```
 
-## Extending This Example
+**Benefits:**
+- **Unified Interface**: All MCP servers accessible through `afs_list`, `afs_read`, `afs_exec`
+- **Composability**: Mix MCP servers with file systems, databases, custom modules
+- **Path-Based**: Multiple MCP servers coexist at different paths
+- **No Rewiring**: AI agents work with any mounted MCP server automatically
 
-### Using Other MCP Servers
+## Use Any MCP Server
 
-Replace the GitHub MCP Server with any other MCP-compatible server:
+Replace GitHub with **any** MCP server:
 
 ```typescript
-// Example: Slack MCP Server
-.mount("/slack-mcp", await MCPAgent.from({
+// Slack MCP Server
+.mount(await MCPAgent.from({
   command: "npx",
   args: ["-y", "@modelcontextprotocol/server-slack"],
-  env: {
-    SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN,
-  },
+  env: { SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN },
 }))
 
-// Example: File System MCP Server
-.mount("/filesystem-mcp", await MCPAgent.from({
+// File System MCP Server
+.mount(await MCPAgent.from({
   command: "npx",
-  args: ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/files"],
+  args: ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/files"],
+}))
+
+// Postgres MCP Server
+.mount(await MCPAgent.from({
+  command: "npx",
+  args: ["-y", "@modelcontextprotocol/server-postgres"],
+  env: { POSTGRES_CONNECTION_STRING: process.env.DATABASE_URL },
 }))
 ```
 
-### Combining with Other AFS Modules
-
-Mix MCP servers with other AFS modules:
+## Mix MCP with Other AFS Modules
 
 ```typescript
 import { LocalFS } from "@aigne/afs-local-fs";
 import { UserProfileMemory } from "@aigne/afs-user-profile-memory";
 
 const afs = new AFS()
-  .mount(new AFSHistory({ storage: { url: "file:./memory.sqlite3" } }))
-  .mount(new LocalFS({ localPath: "./docs", description: "Documentation" }))
-  .mount(new UserProfileMemory({ context: aigne.newContext() }))
-  .mount("/github-mcp", await MCPAgent.from({ /* GitHub MCP config */ }));
+  .mount(new AFSHistory({ storage: { url: ":memory:" } }))
+  .mount(new LocalFS({ localPath: "./docs" }))
+  .mount(new UserProfileMemory({ context }))
+  .mount(await MCPAgent.from({ /* GitHub MCP */ }))
+  .mount(await MCPAgent.from({ /* Slack MCP */ }));
 
-// Now your agent has access to:
-// - Conversation history (/modules/history)
-// - Local files (/modules/local-fs)
-// - User profiles (/modules/user-profile-memory)
-// - GitHub API (/modules/github-mcp)
+// Agent now has: history, local files, user profiles, GitHub, Slack!
 ```
 
 ## Related Examples

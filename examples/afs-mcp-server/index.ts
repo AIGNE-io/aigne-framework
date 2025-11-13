@@ -7,7 +7,7 @@ import { AIAgent, MCPAgent } from "@aigne/core";
 const afs = new AFS()
   .mount(new AFSHistory({ storage: { url: ":memory:" } })) // In-memory history for this example
   .mount(
-    "/github-mcp-server",
+    // Integrate github-mcp-server MCP server as an AFS module, so that AI agents can access github repo via AFS API
     await MCPAgent.from({
       command: "docker",
       args: [

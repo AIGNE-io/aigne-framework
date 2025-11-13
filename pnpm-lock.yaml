@@ -1843,6 +1843,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@aigne/afs':
+        specifier: workspace:^
+        version: link:../../afs/core
       '@aigne/afs-local-fs':
         specifier: workspace:^
         version: link:../../afs/local-fs

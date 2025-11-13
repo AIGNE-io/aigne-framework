@@ -26,7 +26,10 @@ const localFSOptionsSchema = z.object({
 
 export class LocalFS implements AFSModule {
   constructor(public options: LocalFSOptions) {
-    checkArguments("LocalFS", localFSOptionsSchema, options);
+    checkArguments("LocalFS", localFSOptionsSchema, {
+      ...options,
+      localPath: options.localPath || (options as any).path, // compatible with 'path' option
+    });
 
     this.description = options.description;
   }

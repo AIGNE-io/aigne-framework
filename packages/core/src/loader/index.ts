@@ -42,6 +42,7 @@ export interface LoadOptions {
   afs?: {
     availableModules?: {
       module: string;
+      alias?: string[];
       create: (options?: Record<string, any>) => PromiseOrValue<AFSModule>;
     }[];
   };
@@ -210,23 +211,23 @@ async function parseAgent(
       afs = new AFS();
     }
   } else if (agent.afs) {
-    afs = new AFS({
-      ...agent.afs,
-      modules:
-        agent.afs.modules &&
-        (await Promise.all(
-          agent.afs.modules.map((m) => {
-            const mod =
-              typeof m === "string"
-                ? options?.afs?.availableModules?.find((mod) => mod.module === m)
-                : options?.afs?.availableModules?.find((mod) => mod.module === m.module);
-            if (!mod)
-              throw new Error(`AFS module not found: ${typeof m === "string" ? m : m.module}`);
+    afs = new AFS();
 
-            return mod.create(typeof m === "string" ? {} : m.options);
-          }),
-        )),
-    });
+    for (const m of agent.afs.modules || []) {
+      const moduleName = typeof m === "string" ? m : m.module;
+
+      const mod = options?.afs?.availableModules?.find(
+        (mod) => mod.module === moduleName || mod.alias?.includes(moduleName),
+      );
+      if (!mod) throw new Error(`AFS module not found: ${typeof m === "string" ? m : m.module}`);
+
+      const module = await mod.create(typeof m === "string" ? {} : m.options);
+
+      const mountPoint = typeof m === "string" ? undefined : m.mountPoint;
+
+      if (mountPoint) afs.mount(mountPoint, module);
+      else afs.mount(module);
+    }
   }
 
   const model =

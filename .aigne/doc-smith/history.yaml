@@ -1,4 +1,7 @@
 entries:
+  - timestamp: 2025-11-13T14:00:17.303Z
+    operation: structure_update
+    feedback: 根目录下创建一个 examples，然后里面描述各种示例的文档，上下文参考 examples/**/*.md
   - timestamp: 2025-11-06T14:55:06.640Z
     operation: document_update
     feedback: 提供商配置这个部分是写的太敷衍了，你必须参考 examples/README.md 详细描述。

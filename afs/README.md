@@ -1,6 +1,6 @@
-# AFS - AIGNE File System
+# AFS - Agentic File System
 
-**AFS (AIGNE File System)** is a virtual file system abstraction layer that provides a unified, file-system-like interface for AI agents to access various types of storage backends. It enables agents to interact with different data sources—such as local files, conversation history, and user profiles—through a consistent, path-based API.
+**AFS (Agentic File System)** is a virtual file system abstraction layer that provides a unified, file-system-like interface for AI agents to access various types of storage backends. It enables agents to interact with different data sources—such as local files, conversation history, and user profiles—through a consistent, path-based API.
 
 ## Overview
 

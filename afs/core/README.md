@@ -1,6 +1,6 @@
 # @aigne/afs
 
-**@aigne/afs** is the core package of the AIGNE File System (AFS), providing a virtual file system abstraction layer that enables AI agents to access various storage backends through a unified, path-based API.
+**@aigne/afs** is the core package of the Agentic File System (AFS), providing a virtual file system abstraction layer that enables AI agents to access various storage backends through a unified, path-based API.
 
 ## Overview
 

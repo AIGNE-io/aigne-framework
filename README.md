@@ -22,7 +22,7 @@ AIGNE Framework \[ ˈei dʒən ] is a functional AI application development fram
 * **TypeScript Support**: Comprehensive TypeScript type definitions are provided, ensuring type safety and enhancing the developer experience.
 * **Multiple AI Model Support**: Built-in support for OpenAI, Gemini, Claude, Nova and other mainstream AI models, easily extensible to support additional models.
 * **Flexible Workflow Patterns**: Support for sequential, concurrent, routing, handoff and other workflow patterns to meet various complex application requirements.
-* **AIGNE File System (AFS)**: A virtual file system abstraction that provides AI agents with unified access to various storage backends, including local files, conversation history, and user profiles. See [AFS Documentation](./afs/README.md) for details.
+* **Agentic File System (AFS)**: A virtual file system abstraction that provides AI agents with unified access to various storage backends, including local files, conversation history, and user profiles. See [AFS Documentation](./afs/README.md) for details.
 * **MCP Protocol Integration**: Seamless integration with external systems and services through the Model Context Protocol.
 * **Code Execution Capabilities**: Support for executing dynamically generated code in a secure sandbox, enabling more powerful automation capabilities.
 * **Blocklet Ecosystem Integration**: Closely integrated with ArcBlock's Blocklet ecosystem, providing developers with a one-stop solution for development and deployment.
@@ -328,7 +328,7 @@ Built-in MCP support allows the AIGNE framework to effortlessly run its own MCP 
 * [packages/core](./packages/core/README.md) - Core package providing the foundation for building AIGNE applications.
 * [packages/agent-library](./packages/agent-library/README.md) - AIGNE agent library, providing a variety of specialized agents for different tasks.
 * [packages/cli](./packages/cli/README.md) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
-* [afs](./afs/README.md) - AIGNE File System (AFS), providing virtual file system abstraction for AI agents.
+* [afs](./afs/README.md) - Agentic File System (AFS), providing virtual file system abstraction for AI agents.
   * [afs/core](./afs/core/README.md) - Core AFS implementation with history module.
   * [afs/system-fs](./afs/system-fs/README.md) - Local file system module for AFS.
   * [afs/user-profile-memory](./afs/user-profile-memory/README.md) - User profile memory module for AFS.

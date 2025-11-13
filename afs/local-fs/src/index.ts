@@ -14,29 +14,24 @@ import { searchWithRipgrep } from "./utils/ripgrep.js";
 
 const LIST_MAX_LIMIT = 50;
 
-export interface SystemFSOptions {
-  mount: string;
-  path: string;
+export interface LocalFSOptions {
+  localPath: string;
   description?: string;
 }
 
-const systemFSOptionsSchema = z.object({
-  mount: z.string().describe("The mount point in the AFS (e.g., '/system')"),
-  path: z.string().describe("The path to the directory to mount"),
+const localFSOptionsSchema = z.object({
+  localPath: z.string().describe("The path to the local directory to mount"),
   description: z.string().describe("A description of the mounted directory").optional(),
 });
 
-export class SystemFS implements AFSModule {
-  constructor(public options: SystemFSOptions) {
-    checkArguments("SystemFS", systemFSOptionsSchema, options);
+export class LocalFS implements AFSModule {
+  constructor(public options: LocalFSOptions) {
+    checkArguments("LocalFS", localFSOptionsSchema, options);
 
-    this.path = options.mount;
     this.description = options.description;
   }
 
-  moduleId: string = "SystemFS";
-
-  path: string;
+  name: string = "local-fs";
 
   description?: string;
 
@@ -45,7 +40,7 @@ export class SystemFS implements AFSModule {
     options?: AFSListOptions,
   ): Promise<{ list: AFSEntry[]; message?: string }> {
     const limit = Math.min(options?.limit || LIST_MAX_LIMIT, LIST_MAX_LIMIT);
-    const basePath = join(this.options.path, path);
+    const basePath = join(this.options.localPath, path);
 
     const pattern = options?.recursive ? "**/*" : "*";
 
@@ -96,7 +91,7 @@ export class SystemFS implements AFSModule {
   }
 
   async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
-    const fullPath = join(this.options.path, path);
+    const fullPath = join(this.options.localPath, path);
 
     const stats = await stat(fullPath);
 
@@ -126,7 +121,7 @@ export class SystemFS implements AFSModule {
     path: string,
     entry: AFSWriteEntryPayload,
   ): Promise<{ result: AFSEntry; message?: string }> {
-    const fullPath = join(this.options.path, path);
+    const fullPath = join(this.options.localPath, path);
 
     // Ensure parent directory exists
     const parentDir = dirname(fullPath);
@@ -173,7 +168,7 @@ export class SystemFS implements AFSModule {
     options?: AFSSearchOptions,
   ): Promise<{ list: AFSEntry[]; message?: string }> {
     const limit = Math.min(options?.limit || LIST_MAX_LIMIT, LIST_MAX_LIMIT);
-    const basePath = join(this.options.path, path);
+    const basePath = join(this.options.localPath, path);
     const matches = await searchWithRipgrep(basePath, query);
 
     const entries: AFSEntry[] = [];

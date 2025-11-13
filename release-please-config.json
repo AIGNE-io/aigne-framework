@@ -139,13 +139,16 @@
     "examples/chat-bot": {
       "prerelease-type": "beta"
     },
-    "examples/memory": {
-      "prerelease-type": "beta"
-    },
     "examples/nano-banana": {
       "prerelease-type": "beta"
     },
-    "examples/afs-system-fs": {
+    "examples/afs-memory": {
+      "prerelease-type": "beta"
+    },
+    "examples/afs-local-fs": {
+      "prerelease-type": "beta"
+    },
+    "examples/afs-mcp-server": {
       "prerelease-type": "beta"
     },
     "blocklets/agent-runtime": {
@@ -165,7 +168,7 @@
     "afs/user-profile-memory": {
       "prerelease-type": "beta"
     },
-    "afs/system-fs": {
+    "afs/local-fs": {
       "prerelease-type": "beta"
     }
   },

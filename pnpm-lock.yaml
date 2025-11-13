@@ -97,7 +97,7 @@ importers:
         specifier: ^5.9.2
         version: 5.9.2
 
-  afs/system-fs:
+  afs/local-fs:
     dependencies:
       '@aigne/afs':
         specifier: workspace:^
@@ -365,14 +365,14 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
-  examples/afs-mcp-server:
+  examples/afs-local-fs:
     dependencies:
       '@aigne/afs':
         specifier: workspace:^
         version: link:../../afs/core
-      '@aigne/afs-system-fs':
+      '@aigne/afs-local-fs':
         specifier: workspace:^
-        version: link:../../afs/system-fs
+        version: link:../../afs/local-fs
       '@aigne/cli':
         specifier: workspace:^
         version: link:../../packages/cli
@@ -390,14 +390,14 @@ importers:
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
 
-  examples/afs-system-fs:
+  examples/afs-mcp-server:
     dependencies:
       '@aigne/afs':
         specifier: workspace:^
         version: link:../../afs/core
-      '@aigne/afs-system-fs':
+      '@aigne/afs-local-fs':
         specifier: workspace:^
-        version: link:../../afs/system-fs
+        version: link:../../afs/local-fs
       '@aigne/cli':
         specifier: workspace:^
         version: link:../../packages/cli
@@ -407,6 +407,28 @@ importers:
       yargs:
         specifier: ^18.0.0
         version: 18.0.0
+    devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.22
+        version: 1.2.22(@types/react@19.1.13)
+
+  examples/afs-memory:
+    dependencies:
+      '@aigne/afs':
+        specifier: workspace:^
+        version: link:../../afs/core
+      '@aigne/afs-user-profile-memory':
+        specifier: workspace:^
+        version: link:../../afs/user-profile-memory
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -550,34 +572,6 @@ importers:
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
-    devDependencies:
-      '@aigne/test-utils':
-        specifier: workspace:^
-        version: link:../../packages/test-utils
-      '@types/bun':
-        specifier: ^1.2.22
-        version: 1.2.22(@types/react@19.1.13)
-
-  examples/memory:
-    dependencies:
-      '@aigne/afs':
-        specifier: workspace:^
-        version: link:../../afs/core
-      '@aigne/afs-user-profile-memory':
-        specifier: workspace:^
-        version: link:../../afs/user-profile-memory
-      '@aigne/cli':
-        specifier: workspace:^
-        version: link:../../packages/cli
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../../packages/core
-      '@aigne/default-memory':
-        specifier: workspace:^
-        version: link:../../memory/default
-      '@aigne/fs-memory':
-        specifier: workspace:^
-        version: link:../../memory/fs
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -1849,9 +1843,9 @@ importers:
 
   packages/cli:
     dependencies:
-      '@aigne/afs-system-fs':
+      '@aigne/afs-local-fs':
         specifier: workspace:^
-        version: link:../../afs/system-fs
+        version: link:../../afs/local-fs
       '@aigne/agent-library':
         specifier: workspace:^
         version: link:../agent-library

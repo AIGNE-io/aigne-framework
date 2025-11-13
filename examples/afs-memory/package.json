@@ -1,9 +1,9 @@
 {
-  "name": "@aigne/example-afs-system-fs",
-  "version": "1.0.5",
-  "description": "A demonstration of using AIGNE Framework with AFS SystemFS module",
+  "name": "@aigne/example-afs-memory",
+  "version": "0.10.69",
+  "description": "A demonstration of using AIGNE Framework with memory-based AFS modules",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
-  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/memory",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/afs-memory",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,10 +22,9 @@
   },
   "dependencies": {
     "@aigne/afs": "workspace:^",
-    "@aigne/afs-system-fs": "workspace:^",
+    "@aigne/afs-user-profile-memory": "workspace:^",
     "@aigne/cli": "workspace:^",
-    "@aigne/core": "workspace:^",
-    "yargs": "^18.0.0"
+    "@aigne/core": "workspace:^"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",

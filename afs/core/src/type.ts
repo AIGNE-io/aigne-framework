@@ -1,5 +1,4 @@
 import type { Emitter } from "strict-event-emitter";
-import type { AFSStorage } from "./storage/type.js";
 
 export interface AFSListOptions {
   filter?: {
@@ -19,9 +18,7 @@ export interface AFSSearchOptions {
 export interface AFSWriteEntryPayload extends Omit<AFSEntry, "id" | "path"> {}
 
 export interface AFSModule {
-  readonly moduleId: string;
-
-  readonly path: string;
+  readonly name: string;
 
   readonly description?: string;
 
@@ -43,7 +40,7 @@ export interface AFSModule {
   ): Promise<{ list: AFSEntry[]; message?: string }>;
 
   // TODO: options.context should be typed properly
-  execute?(
+  exec?(
     path: string,
     args: Record<string, any>,
     options: { context: any },
@@ -55,9 +52,7 @@ export type AFSRootEvents = {
   historyCreated: [{ entry: AFSEntry }];
 };
 
-export interface AFSRoot extends Emitter<AFSRootEvents>, AFSModule {
-  storage(module: AFSModule): AFSStorage;
-}
+export interface AFSRoot extends Emitter<AFSRootEvents>, AFSModule {}
 
 export interface AFSEntryMetadata extends Record<string, any> {
   execute?: {
@@ -76,6 +71,7 @@ export interface AFSEntry<T = any> {
   userId?: string | null;
   sessionId?: string | null;
   summary?: string | null;
+  description?: string | null;
   metadata?: AFSEntryMetadata | null;
   linkTo?: string | null;
   content?: T;

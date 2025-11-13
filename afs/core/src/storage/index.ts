@@ -4,6 +4,8 @@ import { migrate } from "./migrate.js";
 import { entriesTable } from "./models/entries.js";
 import type { AFSStorage, AFSStorageCreatePayload, AFSStorageListOptions } from "./type.js";
 
+export * from "./type.js";
+
 const DEFAULT_AFS_STORAGE_LIST_LIMIT = 10;
 
 export interface SharedAFSStorageOptions {

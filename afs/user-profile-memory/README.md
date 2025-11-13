@@ -306,7 +306,7 @@ type UserProfile = z.infer<typeof userProfileSchema>;
 ## Related Packages
 
 - [@aigne/afs](../core/README.md) - AFS core package
-- [@aigne/afs-system-fs](../system-fs/README.md) - File system module
+- [@aigne/afs-local-fs](../local-fs/README.md) - File system module
 
 ## License
 

@@ -193,8 +193,6 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
 
   afs?: true | AFSOptions | AFS | ((afs: AFS) => AFS);
 
-  afsConfig?: AFSConfig;
-
   asyncMemoryRecord?: boolean;
 
   /**
@@ -205,11 +203,6 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
   hooks?: AgentHooks<I, O> | AgentHooks<I, O>[];
 
   retryOnError?: Agent<I, O>["retryOnError"] | boolean;
-}
-
-export interface AFSConfig {
-  injectHistory?: boolean;
-  historyWindowSize?: number;
 }
 
 const hooksSchema = z.object({
@@ -360,7 +353,6 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
           : options.afs instanceof AFS
             ? options.afs
             : new AFS(options.afs);
-    this.afsConfig = options.afsConfig;
     this.asyncMemoryRecord = options.asyncMemoryRecord;
 
     this.maxRetrieveMemoryCount = options.maxRetrieveMemoryCount;
@@ -383,8 +375,6 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
   readonly memories: MemoryAgent[] = [];
 
   afs?: AFS;
-
-  afsConfig?: AFSConfig;
 
   asyncMemoryRecord?: boolean;
 

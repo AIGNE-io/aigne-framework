@@ -2,10 +2,10 @@ import { afterAll, beforeAll, expect, test } from "bun:test";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { SystemFS } from "@aigne/afs-system-fs";
+import { LocalFS } from "@aigne/afs-local-fs";
 
 let testDir: string;
-let systemFS: SystemFS;
+let localFS: LocalFS;
 
 beforeAll(async () => {
   // Create a temporary directory for testing
@@ -22,7 +22,7 @@ beforeAll(async () => {
   await writeFile(join(testDir, "subdir", "nested", "file4.json"), '{"test": true}');
 
   // Initialize SystemFS
-  systemFS = new SystemFS({ mount: "/test", path: testDir });
+  localFS = new LocalFS({ localPath: testDir });
 });
 
 afterAll(async () => {
@@ -31,7 +31,7 @@ afterAll(async () => {
 });
 
 test("SystemFS should list files in the root directory (non-recursive)", async () => {
-  const result = await systemFS.list("");
+  const result = await localFS.list("");
 
   const paths = result.list.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
@@ -66,7 +66,7 @@ test("SystemFS should list files in the root directory (non-recursive)", async (
 });
 
 test("SystemFS should list files recursively when recursive option is true", async () => {
-  const result = await systemFS.list("", { recursive: true });
+  const result = await localFS.list("", { recursive: true });
 
   const paths = result.list.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
@@ -82,7 +82,7 @@ test("SystemFS should list files recursively when recursive option is true", asy
 });
 
 test("SystemFS should respect maxDepth option", async () => {
-  const result = await systemFS.list("", { recursive: true, maxDepth: 1 });
+  const result = await localFS.list("", { recursive: true, maxDepth: 1 });
 
   const paths = result.list.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
@@ -95,14 +95,14 @@ test("SystemFS should respect maxDepth option", async () => {
 });
 
 test("SystemFS should respect limit option", async () => {
-  const result = await systemFS.list("", { recursive: true, limit: 3 });
+  const result = await localFS.list("", { recursive: true, limit: 3 });
 
   expect(result.list).toBeDefined();
   expect(result.list.length).toBe(3);
 });
 
 test("SystemFS should list files in a subdirectory", async () => {
-  const result = await systemFS.list("subdir");
+  const result = await localFS.list("subdir");
 
   const paths = result.list.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
@@ -114,7 +114,7 @@ test("SystemFS should list files in a subdirectory", async () => {
 });
 
 test("SystemFS should handle orderBy option", async () => {
-  const result = await systemFS.list("", {
+  const result = await localFS.list("", {
     orderBy: [["path", "asc"]],
   });
 
@@ -130,7 +130,7 @@ test("SystemFS should handle orderBy option", async () => {
 
 // Read method tests
 test("SystemFS should read a file and return content", async () => {
-  const { result } = await systemFS.read("file1.txt");
+  const { result } = await localFS.read("file1.txt");
 
   expect(result).toBeDefined();
   expect(result?.path).toBe("file1.txt");
@@ -140,7 +140,7 @@ test("SystemFS should read a file and return content", async () => {
 });
 
 test("SystemFS should read a directory without content", async () => {
-  const { result } = await systemFS.read("subdir");
+  const { result } = await localFS.read("subdir");
 
   expect(result).toBeDefined();
   expect(result?.path).toBe("subdir");
@@ -149,7 +149,7 @@ test("SystemFS should read a directory without content", async () => {
 });
 
 test("SystemFS should read a nested file", async () => {
-  const { result } = await systemFS.read("subdir/file3.js");
+  const { result } = await localFS.read("subdir/file3.js");
 
   expect(result).toBeDefined();
   expect(result?.path).toBe("subdir/file3.js");
@@ -165,7 +165,7 @@ test("SystemFS should write a new file", async () => {
     metadata: { custom: "value" },
   };
 
-  const { result } = await systemFS.write("newfile.txt", entry);
+  const { result } = await localFS.write("newfile.txt", entry);
 
   expect(result).toBeDefined();
   expect(result.path).toBe("newfile.txt");
@@ -183,7 +183,7 @@ test("SystemFS should write a file with JSON content", async () => {
     summary: "JSON test file",
   };
 
-  const { result } = await systemFS.write("data.json", entry);
+  const { result } = await localFS.write("data.json", entry);
 
   expect(result).toBeDefined();
   expect(result.path).toBe("data.json");
@@ -191,7 +191,7 @@ test("SystemFS should write a file with JSON content", async () => {
   expect(result.metadata?.type).toBe("file");
 
   // Verify the file was written with JSON formatting
-  const { result: readResult } = await systemFS.read("data.json");
+  const { result: readResult } = await localFS.read("data.json");
   expect(readResult?.content).toBe(JSON.stringify(jsonData, null, 2));
 });
 
@@ -201,7 +201,7 @@ test("SystemFS should write a file in a nested directory", async () => {
     metadata: { nested: true },
   };
 
-  const { result } = await systemFS.write("deep/nested/test.txt", entry);
+  const { result } = await localFS.write("deep/nested/test.txt", entry);
 
   expect(result).toBeDefined();
   expect(result.path).toBe("deep/nested/test.txt");
@@ -216,7 +216,7 @@ test("SystemFS should overwrite existing file", async () => {
     summary: "Updated file",
   };
 
-  const { result } = await systemFS.write("file1.txt", entry);
+  const { result } = await localFS.write("file1.txt", entry);
 
   expect(result).toBeDefined();
   expect(result.path).toBe("file1.txt");
@@ -224,16 +224,16 @@ test("SystemFS should overwrite existing file", async () => {
   expect(result.summary).toBe("Updated file");
 
   // Verify the file was actually updated
-  const { result: readResult } = await systemFS.read("file1.txt");
+  const { result: readResult } = await localFS.read("file1.txt");
   expect(readResult?.content).toBe("Updated content");
 });
 
 // Search method tests
 test("SystemFS should search for text in files", async () => {
   // First update the content since it was overwritten in previous test
-  await systemFS.write("file1.txt", { content: "Hello World" });
+  await localFS.write("file1.txt", { content: "Hello World" });
 
-  const result = await systemFS.search("", "Hello");
+  const result = await localFS.search("", "Hello");
 
   expect(result.list).toBeDefined();
   expect(result.list.length).toBeGreaterThan(0);
@@ -244,7 +244,7 @@ test("SystemFS should search for text in files", async () => {
 });
 
 test("SystemFS should search with regex pattern", async () => {
-  const result = await systemFS.search("", "console\\.log");
+  const result = await localFS.search("", "console\\.log");
 
   expect(result.list).toBeDefined();
 
@@ -254,7 +254,7 @@ test("SystemFS should search with regex pattern", async () => {
 });
 
 test("SystemFS should search in specific directory", async () => {
-  const result = await systemFS.search("subdir", "test");
+  const result = await localFS.search("subdir", "test");
 
   expect(result.list).toBeDefined();
 
@@ -266,14 +266,14 @@ test("SystemFS should search in specific directory", async () => {
 });
 
 test("SystemFS should respect search limit option", async () => {
-  const result = await systemFS.search("", "test", { limit: 1 });
+  const result = await localFS.search("", "test", { limit: 1 });
 
   expect(result.list).toBeDefined();
   expect(result.list.length).toBe(1);
 });
 
 test("SystemFS should return empty results for no matches", async () => {
-  const result = await systemFS.search("", "nonexistenttext123");
+  const result = await localFS.search("", "nonexistenttext123");
 
   expect(result.list).toBeDefined();
   expect(result.list.length).toBe(0);
@@ -281,11 +281,11 @@ test("SystemFS should return empty results for no matches", async () => {
 
 test("SystemFS should search in written files", async () => {
   // First write a file with searchable content
-  await systemFS.write("searchable.txt", {
+  await localFS.write("searchable.txt", {
     content: "This is searchable content with unique keyword",
   });
 
-  const result = await systemFS.search("", "unique keyword");
+  const result = await localFS.search("", "unique keyword");
 
   expect(result.list).toBeDefined();
   const foundFile = result.list.find((entry) => entry.path === "searchable.txt");

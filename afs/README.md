@@ -65,7 +65,7 @@ interface AFSEntry {
 
 ```typescript
 import { AFS } from "@aigne/afs";
-import { SystemFS } from "@aigne/afs-system-fs";
+import { LocalFS } from "@aigne/afs-local-fs";
 import { UserProfileMemory } from "@aigne/afs-user-profile-memory";
 
 // Create AFS with SQLite storage
@@ -74,7 +74,7 @@ const afs = new AFS({
 });
 
 // Mount modules
-afs.use(new SystemFS({
+afs.use(new LocalFS({
   mount: '/docs',
   path: '/path/to/documentation',
   description: 'Project documentation'
@@ -163,9 +163,9 @@ const agent = AIAgent.from({
 });
 ```
 
-### 2. SystemFS
+### 2. LocalFS
 
-- **Package:** `@aigne/afs-system-fs`
+- **Package:** `@aigne/afs-local-fs`
 - **Mount Path:** Configurable (e.g., `/fs`, `/docs`)
 - **Purpose:** Mount local file system directories
 
@@ -179,16 +179,16 @@ const agent = AIAgent.from({
 
 **Usage:**
 ```typescript
-import { SystemFS } from "@aigne/afs-system-fs";
+import { LocalFS } from "@aigne/afs-local-fs";
 
-afs.use(new SystemFS({
+afs.use(new LocalFS({
   mount: '/source',           // AFS mount point
   path: '/local/file/path',   // Local directory
   description: 'Source code'  // Description for AI
 }));
 ```
 
-**Example:** See [examples/afs-system-fs](../examples/afs-system-fs)
+**Example:** See [examples/afs-local-fs](../examples/afs-local-fs)
 
 ### 3. UserProfileMemory
 
@@ -245,7 +245,7 @@ When an agent has AFS configured, these tools are automatically available:
 ```typescript
 import { AIAgent, AIGNE } from "@aigne/core";
 import { AFS } from "@aigne/afs";
-import { SystemFS } from "@aigne/afs-system-fs";
+import { LocalFS } from "@aigne/afs-local-fs";
 import { UserProfileMemory } from "@aigne/afs-user-profile-memory";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -260,7 +260,7 @@ const afs = new AFS({
 });
 
 // Mount file system
-afs.use(new SystemFS({
+afs.use(new LocalFS({
   mount: '/docs',
   path: './documentation',
   description: 'Project documentation'
@@ -339,12 +339,12 @@ export class CustomModule implements AFSModule {
 ## Packages
 
 - [`@aigne/afs`](./core/README.md) - Core AFS implementation with history module
-- [`@aigne/afs-system-fs`](./system-fs/README.md) - Local file system module
+- [`@aigne/afs-local-fs`](./local-fs/README.md) - Local file system module
 - [`@aigne/afs-user-profile-memory`](./user-profile-memory/README.md) - User profile memory module
 
 ## Examples
 
-- [AFS SystemFS Example](../examples/afs-system-fs/README.md) - File system access with AI agents
+- [AFS LocalFS Example](../examples/afs-local-fs/README.md) - File system access with AI agents
 - [Memory Example](../examples/memory/README.md) - Conversational memory with user profiles
 
 ## API Reference

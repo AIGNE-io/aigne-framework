@@ -1,9 +1,9 @@
 {
-  "name": "@aigne/example-memory",
-  "version": "0.10.69",
-  "description": "A demonstration of using AIGNE Framework with memory.",
+  "name": "@aigne/example-afs-local-fs",
+  "version": "1.0.5",
+  "description": "A demonstration of using AIGNE Framework with AFS LocalFS module",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
-  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/memory",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/afs-local-fs",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,11 +22,10 @@
   },
   "dependencies": {
     "@aigne/afs": "workspace:^",
-    "@aigne/afs-user-profile-memory": "workspace:^",
+    "@aigne/afs-local-fs": "workspace:^",
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",
-    "@aigne/default-memory": "workspace:^",
-    "@aigne/fs-memory": "workspace:^"
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",

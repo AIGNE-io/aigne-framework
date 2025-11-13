@@ -81,9 +81,9 @@ export async function loadAIGNE({
       afs: {
         availableModules: [
           {
-            module: "system-fs",
+            module: "local-fs",
             create: (options) =>
-              import("@aigne/afs-system-fs").then((m) => new m.SystemFS(options as any)),
+              import("@aigne/afs-local-fs").then((m) => new m.LocalFS(options as any)),
           },
         ],
       },

@@ -1,5 +1,6 @@
 import type { AFS } from "@aigne/afs";
 import { stringify } from "yaml";
+import { pick } from "../../utils/type-utils.js";
 
 export async function getAFSSystemPrompt(afs: AFS): Promise<string> {
   return `\
@@ -8,7 +9,7 @@ export async function getAFSSystemPrompt(afs: AFS): Promise<string> {
 AFS (AIGNE File System) provides tools to interact with a virtual file system, allowing you to list, search, read, and write files. Use these tools to manage and retrieve files as needed.
 
 Modules:
-${stringify(await afs.listModules())}
+${stringify((await afs.listModules()).map((i) => pick(i, ["name", "path", "description"])))}
 
 Available Tools:
 1. afs_list: Browse directory contents like filesystem ls/tree command - shows files and folders in a given path

@@ -20,7 +20,7 @@ export async function migrate(db: ReturnType<typeof initDatabase>, module: AFSMo
 
   const dbMigrations = await (await db)
     .values<[number, string]>(
-      sql`SELECT "id", "moduleId", "hash" FROM ${sql.identifier(migrationsTable)} WHERE "moduleId" = ${sql.param(module.moduleId)} ORDER BY id DESC LIMIT 1`,
+      sql`SELECT "id", "moduleId", "hash" FROM ${sql.identifier(migrationsTable)} WHERE "moduleId" = ${sql.param(module.name)} ORDER BY id DESC LIMIT 1`,
     )
     .execute();
 
@@ -32,7 +32,7 @@ export async function migrate(db: ReturnType<typeof initDatabase>, module: AFSMo
     if (!lastDbMigration || lastDbMigration[1] < migration.hash) {
       queriesToRun.push(
         ...migration.sql(module),
-        sql`INSERT INTO ${sql.identifier(migrationsTable)} ("id", "moduleId", "hash") VALUES(${sql.param(v7())}, ${sql.param(module.moduleId)}, ${sql.param(migration.hash)})`,
+        sql`INSERT INTO ${sql.identifier(migrationsTable)} ("id", "moduleId", "hash") VALUES(${sql.param(v7())}, ${sql.param(module.name)}, ${sql.param(migration.hash)})`,
       );
     }
   }

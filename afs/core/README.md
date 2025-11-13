@@ -319,12 +319,12 @@ const result = await context.invoke(agent, {
 
 ## Related Packages
 
-- [@aigne/afs-system-fs](../system-fs/README.md) - Local file system module
+- [@aigne/afs-local-fs](../local-fs/README.md) - Local file system module
 - [@aigne/afs-user-profile-memory](../user-profile-memory/README.md) - User profile memory module
 
 ## Examples
 
-See the [AFS examples](../../examples/afs-system-fs) for complete usage examples.
+See the [AFS examples](../../examples/afs-local-fs) for complete usage examples.
 
 ## TypeScript Support
 

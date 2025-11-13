@@ -1,5 +1,7 @@
 import { v7 } from "@aigne/uuid";
 import { joinURL } from "ufo";
+import { SharedAFSStorage, type SharedAFSStorageOptions } from "../storage/index.js";
+import type { AFSStorage } from "../storage/type.js";
 import type {
   AFSEntry,
   AFSListOptions,
@@ -8,26 +10,25 @@ import type {
   AFSWriteEntryPayload,
 } from "../type.js";
 
+export interface AFSHistoryOptions {
+  storage?: SharedAFSStorage | SharedAFSStorageOptions;
+}
+
 export class AFSHistory implements AFSModule {
-  static Path = "/history";
-
-  path = AFSHistory.Path;
-
-  moduleId: string = "AFSHistory";
-
-  private _afs?: AFSRoot;
-
-  get afs() {
-    if (!this._afs) throw new Error("AFSHistory module is not mounted");
-    return this._afs;
+  constructor(options?: AFSHistoryOptions) {
+    this.storage =
+      options?.storage instanceof SharedAFSStorage
+        ? options.storage.withModule(this)
+        : new SharedAFSStorage(options?.storage).withModule(this);
   }
 
-  onMount(afs: AFSRoot): void {
-    this._afs = afs;
+  private storage: AFSStorage;
 
+  readonly name: string = "history";
+
+  onMount(afs: AFSRoot): void {
     afs.on("agentSucceed", ({ input, output }) => {
-      this.afs
-        .storage(this)
+      this.storage
         .create({
           path: joinURL("/", v7()),
           content: { input, output },
@@ -44,11 +45,11 @@ export class AFSHistory implements AFSModule {
   async list(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[] }> {
     if (path !== "/") return { list: [] };
 
-    return await this.afs.storage(this).list(options);
+    return await this.storage.list(options);
   }
 
   async read(path: string): Promise<{ result: AFSEntry | undefined; message?: string }> {
-    const result = await this.afs.storage(this).read(path);
+    const result = await this.storage.read(path);
     return { result };
   }
 
@@ -56,7 +57,7 @@ export class AFSHistory implements AFSModule {
     path: string,
     content: AFSWriteEntryPayload,
   ): Promise<{ result: AFSEntry; message?: string }> {
-    const result = await this.afs.storage(this).create({ ...content, path });
+    const result = await this.storage.create({ ...content, path });
     return { result };
   }
 }

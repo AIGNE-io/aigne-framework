@@ -303,7 +303,7 @@ AFS provides AI agents with a unified interface to access various storage backen
 
 ### AFS Examples
 
-* [AFS SystemFS Example](./examples/afs-system-fs/README.md) - Learn how to mount local file systems and let AI agents interact with your files through natural language.
+* [AFS LocalFS Example](./examples/afs-local-fs/README.md) - Learn how to mount local file systems and let AI agents interact with your files through natural language.
 * [Memory Example](./examples/memory/README.md) - Explore conversation memory and user profile management capabilities.
 
 For comprehensive AFS documentation, see [AFS Documentation](./afs/README.md).
@@ -330,7 +330,7 @@ Built-in MCP support allows the AIGNE framework to effortlessly run its own MCP 
 * [packages/cli](./packages/cli/README.md) - Command-line interface for AIGNE Framework, providing tools for project management and deployment.
 * [afs](./afs/README.md) - Agentic File System (AFS), providing virtual file system abstraction for AI agents.
   * [afs/core](./afs/core/README.md) - Core AFS implementation with history module.
-  * [afs/system-fs](./afs/system-fs/README.md) - Local file system module for AFS.
+  * [afs/local-fs](./afs/local-fs/README.md) - Local file system module for AFS.
   * [afs/user-profile-memory](./afs/user-profile-memory/README.md) - User profile memory module for AFS.
 * models - AIGNE Framework's built-in models, including OpenAI, Gemini, Claude, and Nova.
   * [models/openai](./models/openai/README.md) - OpenAI model implementation, supporting OpenAI's API and function calling.

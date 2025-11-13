@@ -1,9 +1,13 @@
-import type {
-  AFSEntry,
-  AFSModule,
-  AFSRoot,
-  AFSSearchOptions,
-  AFSWriteEntryPayload,
+import {
+  type AFSEntry,
+  type AFSListOptions,
+  type AFSModule,
+  type AFSRoot,
+  type AFSSearchOptions,
+  type AFSStorage,
+  type AFSWriteEntryPayload,
+  SharedAFSStorage,
+  type SharedAFSStorageOptions,
 } from "@aigne/afs";
 import { AIAgent, type Context } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
@@ -13,19 +17,35 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 import { USER_PROFILE_MEMORY_EXTRACTOR_PROMPT } from "./prompt.js";
 import { userProfileJsonPathSchema, userProfileSchema } from "./schema.js";
 
+export interface UserProfileMemoryOptions {
+  context: Context;
+  storage?: SharedAFSStorage | SharedAFSStorageOptions;
+  description?: string;
+}
+
+const DEFAULT_DESCRIPTION = `\
+User Profile Memory: This contains structured information about the user that has been \
+automatically extracted from previous conversations. It includes personal details such as name, \
+location, interests, family members, projects, and other relevant information the user has shared. \
+Use this memory to personalize responses and maintain context about the user across conversations. \
+The profile is continuously updated as new information is learned.
+`;
+
 export class UserProfileMemory implements AFSModule {
-  constructor(public options: { context: Context }) {}
+  constructor(public options: UserProfileMemoryOptions) {
+    this.storage =
+      options?.storage instanceof SharedAFSStorage
+        ? options.storage.withModule(this)
+        : new SharedAFSStorage(options?.storage).withModule(this);
 
-  moduleId: string = "UserProfileMemory";
-
-  path = "/user-profile-memory";
-
-  _afs?: AFSRoot;
-
-  get afs() {
-    if (!this._afs) throw new Error("UserProfileMemory module is not mounted");
-    return this._afs;
+    this.description = options.description || DEFAULT_DESCRIPTION;
   }
+
+  private storage: AFSStorage;
+
+  readonly name: string = "user-profile-memory";
+
+  description?: string | undefined;
 
   extractor: AIAgent<
     { schema: any; profile?: any; entry: AFSEntry },
@@ -36,8 +56,6 @@ export class UserProfileMemory implements AFSModule {
   });
 
   onMount(afs: AFSRoot): void {
-    this._afs = afs;
-
     afs.on("historyCreated", async ({ entry }) => {
       try {
         await this.updateProfile(entry);
@@ -47,8 +65,8 @@ export class UserProfileMemory implements AFSModule {
     });
   }
 
-  async updateProfile(entry: AFSEntry): Promise<AFSEntry | undefined> {
-    const previous = await this._read();
+  private async updateProfile(entry: AFSEntry) {
+    const { result: previous } = await this.read("/");
 
     const { ops } = await this.options.context.newContext({ reset: true }).invoke(this.extractor, {
       schema: zodToJsonSchema(userProfileSchema),
@@ -59,20 +77,32 @@ export class UserProfileMemory implements AFSModule {
     const profile = applyPatch(
       previous?.content || {},
       ops.map((op) => {
-        if (op.value) op.value = JSON.parse(op.value);
-        return op as Operation;
+        const value = typeof op.value === "string" && op.value ? JSON.parse(op.value) : op.value;
+        return { ...op, value } as Operation;
       }),
     ).newDocument;
 
-    return await this._write({ content: profile });
+    return await this.write("/", { content: profile });
   }
 
-  private async _read(): Promise<AFSEntry | undefined> {
-    return this.afs.storage(this).read("/");
+  async list(
+    _path: string,
+    _options?: AFSListOptions,
+  ): Promise<{ list: AFSEntry[]; message?: string }> {
+    const { result: profile } = await this.read("/");
+    return { list: profile ? [profile] : [] };
   }
 
-  private async _write(entry: AFSWriteEntryPayload): Promise<AFSEntry> {
-    return this.afs.storage(this).create({ ...entry, path: "/" });
+  async read(path: string): Promise<{ result: AFSEntry | undefined }> {
+    const result = await this.storage.read(path);
+    if (result) result.description = this.description;
+    return { result };
+  }
+
+  async write(path: string, entry: AFSWriteEntryPayload): Promise<{ result: AFSEntry }> {
+    const result = await this.storage.create({ ...entry, path });
+    if (result) result.description = this.description;
+    return { result };
   }
 
   async search(
@@ -80,7 +110,7 @@ export class UserProfileMemory implements AFSModule {
     _query: string,
     _options?: AFSSearchOptions,
   ): Promise<{ list: AFSEntry[] }> {
-    const profile = await this._read();
+    const { result: profile } = await this.read("/");
     return { list: profile ? [profile] : [] };
   }
 }

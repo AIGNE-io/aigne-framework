@@ -33,9 +33,10 @@
   "examples/workflow-router": "1.18.69",
   "examples/workflow-sequential": "1.17.78",
   "examples/chat-bot": "1.15.81",
-  "examples/memory": "0.10.69",
   "examples/nano-banana": "1.1.7",
-  "examples/afs-system-fs": "1.0.5",
+  "examples/afs-memory": "0.10.69",
+  "examples/afs-local-fs": "1.0.5",
+  "examples/afs-mcp-server": "0.0.0",
   "memory/agentic": "1.0.52",
   "memory/default": "1.2.15",
   "memory/did-space": "1.1.2",
@@ -47,5 +48,5 @@
   "blocklets/agent-runtime": "1.6.1",
   "afs/core": "1.1.2",
   "afs/user-profile-memory": "1.0.5",
-  "afs/system-fs": "1.0.5"
+  "afs/local-fs": "1.0.5"
 }

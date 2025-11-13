@@ -1,10 +1,10 @@
-# @aigne/afs-system-fs
+# @aigne/afs-local-fs
 
-**@aigne/afs-system-fs** is an AFS module that provides local file system access for AI agents. It allows agents to browse, read, write, and search files in specified directories through the AFS virtual file system interface.
+**@aigne/afs-local-fs** is an AFS module that provides local file system access for AI agents. It allows agents to browse, read, write, and search files in specified directories through the AFS virtual file system interface.
 
 ## Overview
 
-SystemFS mounts local directories into the AFS virtual file system, enabling AI agents to interact with your local files as if they were part of a unified file system. It provides sandboxed access with powerful search capabilities using ripgrep.
+LocalFS mounts local directories into the AFS virtual file system, enabling AI agents to interact with your local files as if they were part of a unified file system. It provides sandboxed access with powerful search capabilities using ripgrep.
 
 ## Features
 
@@ -20,18 +20,18 @@ SystemFS mounts local directories into the AFS virtual file system, enabling AI 
 ## Installation
 
 ```bash
-npm install @aigne/afs-system-fs @aigne/afs
+npm install @aigne/afs-local-fs @aigne/afs
 # or
-yarn add @aigne/afs-system-fs @aigne/afs
+yarn add @aigne/afs-local-fs @aigne/afs
 # or
-pnpm add @aigne/afs-system-fs @aigne/afs
+pnpm add @aigne/afs-local-fs @aigne/afs
 ```
 
 ## Quick Start
 
 ```typescript
 import { AFS } from "@aigne/afs";
-import { SystemFS } from "@aigne/afs-system-fs";
+import { LocalFS } from "@aigne/afs-local-fs";
 
 // Create AFS instance
 const afs = new AFS({
@@ -39,7 +39,7 @@ const afs = new AFS({
 });
 
 // Mount a local directory
-afs.use(new SystemFS({
+afs.use(new LocalFS({
   mount: '/docs',                    // AFS mount point
   path: '/path/to/documentation',    // Local directory path
   description: 'Project documentation'  // Description for AI
@@ -63,10 +63,10 @@ await afs.write('/docs/notes.txt', {
 
 ## Configuration
 
-### SystemFSOptions
+### LocalFSOptions
 
 ```typescript
-interface SystemFSOptions {
+interface LocalFSOptions {
   mount: string;        // AFS mount path (e.g., '/docs', '/source')
   path: string;         // Local file system path to mount
   description?: string; // Optional description for AI agents
@@ -76,7 +76,7 @@ interface SystemFSOptions {
 **Example:**
 
 ```typescript
-afs.use(new SystemFS({
+afs.use(new LocalFS({
   mount: '/project',
   path: '/Users/john/my-project',
   description: 'My web application source code'
@@ -182,12 +182,12 @@ list.forEach(entry => {
 
 ## Integration with AI Agents
 
-SystemFS integrates seamlessly with AIGNE agents:
+LocalFS integrates seamlessly with AIGNE agents:
 
 ```typescript
 import { AIAgent, AIGNE } from "@aigne/core";
 import { AFS } from "@aigne/afs";
-import { SystemFS } from "@aigne/afs-system-fs";
+import { LocalFS } from "@aigne/afs-local-fs";
 import { OpenAIChatModel } from "@aigne/openai";
 
 // Setup AIGNE
@@ -195,18 +195,18 @@ const aigne = new AIGNE({
   model: new OpenAIChatModel({ apiKey: process.env.OPENAI_API_KEY })
 });
 
-// Setup AFS with SystemFS
+// Setup AFS with LocalFS
 const afs = new AFS({
   storage: { url: "file:./memory.sqlite3" }
 });
 
-afs.use(new SystemFS({
+afs.use(new LocalFS({
   mount: '/codebase',
   path: './src',
   description: 'Application source code'
 }));
 
-afs.use(new SystemFS({
+afs.use(new LocalFS({
   mount: '/docs',
   path: './docs',
   description: 'Project documentation'
@@ -238,21 +238,21 @@ You can mount multiple directories at different paths:
 
 ```typescript
 // Mount source code
-afs.use(new SystemFS({
+afs.use(new LocalFS({
   mount: '/src',
   path: './src',
   description: 'Application source code'
 }));
 
 // Mount tests
-afs.use(new SystemFS({
+afs.use(new LocalFS({
   mount: '/tests',
   path: './tests',
   description: 'Test files'
 }));
 
 // Mount configuration
-afs.use(new SystemFS({
+afs.use(new LocalFS({
   mount: '/config',
   path: './config',
   description: 'Configuration files'
@@ -266,7 +266,7 @@ await afs.search('/tests', 'test suite');
 
 ## File Metadata
 
-SystemFS provides detailed file metadata:
+LocalFS provides detailed file metadata:
 
 ```typescript
 const { result } = await afs.read('/docs/README.md');
@@ -284,7 +284,7 @@ result.updatedAt  // Last modification date
 ## Security Considerations
 
 **Sandboxed Access:**
-- SystemFS operations are restricted to the mounted directory
+- LocalFS operations are restricted to the mounted directory
 - Cannot access files outside the mounted path
 - Path traversal attempts are prevented by Node.js path operations
 
@@ -296,7 +296,7 @@ result.updatedAt  // Last modification date
 
 ## Ripgrep Integration
 
-SystemFS uses ripgrep for high-performance text search:
+LocalFS uses ripgrep for high-performance text search:
 
 - **Fast**: Optimized for searching large codebases
 - **Smart Filtering**: Automatically ignores binary files
@@ -305,14 +305,14 @@ SystemFS uses ripgrep for high-performance text search:
 
 ## Examples
 
-See the [SystemFS example](../../examples/afs-system-fs) for a complete working implementation.
+See the [LocalFS example](../../examples/afs-local-fs) for a complete working implementation.
 
 ## TypeScript Support
 
 This package includes full TypeScript type definitions:
 
 ```typescript
-import type { SystemFS, SystemFSOptions } from "@aigne/afs-system-fs";
+import type { LocalFS, LocalFSOptions } from "@aigne/afs-local-fs";
 ```
 
 ## Related Packages

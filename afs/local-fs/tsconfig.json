@@ -2,8 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@aigne/afs-system-fs": ["./src"],
-      "@aigne/afs-system-fs/*": ["./src/*"]
+      "@aigne/afs-local-fs": ["./src"],
+      "@aigne/afs-local-fs/*": ["./src/*"]
     }
   },
   "exclude": ["node_modules", "lib"],

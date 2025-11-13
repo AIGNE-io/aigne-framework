@@ -8,9 +8,9 @@
   </picture>
 </p>
 
-This example demonstrates how to create a chatbot that can interact with your local file system using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md). The example utilizes the `LocalFS` module to provide file system access to AI agents through the **AIGNE File System (AFS)** interface.
+This example demonstrates how to create a chatbot that can interact with your local file system using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md). The example utilizes the `LocalFS` module to provide file system access to AI agents through the **Agentic File System (AFS)** interface.
 
-**AIGNE File System (AFS)** is a virtual file system abstraction that provides AI agents with unified access to various storage backends. For comprehensive documentation, see [AFS Documentation](../../afs/README.md).
+**Agentic File System (AFS)** is a virtual file system abstraction that provides AI agents with unified access to various storage backends. For comprehensive documentation, see [AFS Documentation](../../afs/README.md).
 
 ## Prerequisites
 
@@ -89,7 +89,7 @@ pnpm start --path . --chat
 
 ## How LocalFS Works
 
-This example uses the `LocalFS` module from `@aigne/afs-local-fs` to mount your local file system into the **AIGNE File System (AFS)**. This allows AI agents to interact with your files through a standardized interface.
+This example uses the `LocalFS` module from `@aigne/afs-local-fs` to mount your local file system into the **Agentic File System (AFS)**. This allows AI agents to interact with your files through a standardized interface.
 
 ### Key Features
 

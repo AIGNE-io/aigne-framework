@@ -8,9 +8,9 @@
   </picture>
 </p>
 
-This example demonstrates how to mount an [MCP (Model Context Protocol)](https://www.anthropic.com/news/model-context-protocol) server as an AFS module using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework). The example integrates the GitHub MCP Server, allowing AI agents to interact with GitHub repositories through the **AIGNE File System (AFS)** interface.
+This example demonstrates how to mount an [MCP (Model Context Protocol)](https://www.anthropic.com/news/model-context-protocol) server as an AFS module using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework). The example integrates the GitHub MCP Server, allowing AI agents to interact with GitHub repositories through the **Agentic File System (AFS)** interface.
 
-**AIGNE File System (AFS)** is a virtual file system abstraction that provides AI agents with unified access to various storage backends. For comprehensive documentation, see [AFS Documentation](../../afs/README.md).
+**Agentic File System (AFS)** is a virtual file system abstraction that provides AI agents with unified access to various storage backends. For comprehensive documentation, see [AFS Documentation](../../afs/README.md).
 
 ## Overview
 

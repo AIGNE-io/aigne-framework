@@ -14,7 +14,7 @@ The example uses two powerful AFS (Agentic File System) modules:
 - **AFSHistory**: Automatically records all conversations for context
 - **UserProfileMemory**: Intelligently extracts and stores user information (name, interests, location, etc.)
 
-**AIGNE File System (AFS)** is a virtual file system abstraction that provides AI agents with unified access to various storage backends. For comprehensive documentation, see [AFS Documentation](../../afs/README.md).
+**Agentic File System (AFS)** is a virtual file system abstraction that provides AI agents with unified access to various storage backends. For comprehensive documentation, see [AFS Documentation](../../afs/README.md).
 
 ## Prerequisites
 
@@ -30,17 +30,17 @@ The example uses two powerful AFS (Agentic File System) modules:
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
 # First conversation - introduce yourself
-npx -y @aigne/example-memory --input "I'm Bob, and I like blue color"
+npx -y @aigne/example-afs-memory --input "I'm Bob, and I like blue color"
 # Response: Nice to meet you, Bob — I've saved that your favorite color is blue...
 
 # Second conversation - the bot remembers you!
-npx -y @aigne/example-memory --input "Tell me all info about me you known"
+npx -y @aigne/example-afs-memory --input "Tell me all info about me you known"
 # Response: Here's what I currently have stored about you:
 #   * Name: Bob
 #   * Interests / favorite color: blue
 
 # Run in interactive chat mode
-npx -y @aigne/example-memory --chat
+npx -y @aigne/example-afs-memory --chat
 ```
 
 ## Installation

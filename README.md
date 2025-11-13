@@ -289,7 +289,7 @@ class sandbox processing
 
 **Example**: [@aigne/example-workflow-code-execution: Code execution](./examples/workflow-code-execution/README.md)
 
-## AIGNE File System (AFS)
+## Agentic File System (AFS)
 
 AFS provides AI agents with a unified interface to access various storage backends through a virtual file system abstraction. This enables agents to work with local files, conversation history, and user profiles using consistent APIs.
 

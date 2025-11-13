@@ -51,39 +51,26 @@ npx -y @aigne/example-afs-mcp-server --input "Search for a repo named aigne"
 
 Here's what happens when you ask to search for a repository:
 
-```bash
-You: "Search for a repo named aigne"
+```
+👤 You: "Search for a repo named aigne"
 
-# LLM makes a tool call
-{
-  "function": {
-    "name": "afs_exec",
-    "arguments": {
-      "path": "/modules/github-mcp-server/search_repositories",
-      "args": "{\"query\":\"aigne\",\"minimal_output\":true}"
-    }
-  }
-}
+🤖 Agent thinks: I need to search GitHub repositories...
+   → Calls: afs_exec("/modules/github-mcp-server/search_repositories")
 
-# GitHub MCP Server returns results
-{
-  "total_count": 89,
-  "items": [
-    {"name": "aigne-framework", "full_name": "AIGNE-io/aigne-framework", ...},
-    ...
-  ]
-}
+📡 GitHub MCP Server:
+   ✓ Found 89 repositories matching "aigne"
 
-# LLM responds naturally
-AI: "I searched GitHub for 'aigne'. Results: 89 repositories found.
-     Notable matches:
-     - aigne-framework (AIGNE-io/aigne-framework)
-     - ...
+🤖 AI: "I searched GitHub for 'aigne'. Results: 89 repositories found.
 
-     Would you like me to open/read any of these repos?"
+       Notable matches:
+       • aigne-framework (AIGNE-io/aigne-framework) - ⭐ 150 stars
+       • aigne-examples (user/aigne-examples) - ⭐ 12 stars
+       ...
+
+       Would you like me to open any of these repos or see more details?"
 ```
 
-**Key insight:** The LLM automatically calls `afs_exec` with the correct path and arguments, treating the MCP server like a native AFS module!
+**Key insight:** The agent treats the GitHub MCP Server like any other AFS module - no special integration code needed!
 
 ## Installation
 

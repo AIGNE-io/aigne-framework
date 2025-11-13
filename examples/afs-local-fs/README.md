@@ -8,9 +8,19 @@
   </picture>
 </p>
 
-This example demonstrates how to create a chatbot that can interact with your local file system using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md). The example utilizes the `LocalFS` module to provide file system access to AI agents through the **Agentic File System (AFS)** interface.
+This example shows how to mount your local file system as an AFS module, enabling AI agents to intelligently search, read, and interact with your files. We demonstrate mounting the AIGNE framework documentation.
 
-**Agentic File System (AFS)** is a virtual file system abstraction that provides AI agents with unified access to various storage backends. For comprehensive documentation, see [AFS Documentation](../../afs/README.md).
+## What You'll See
+
+**User asks:** "What is AIGNE?"
+
+**Behind the scenes:**
+1. LLM calls `afs_search` → searches all files for "AIGNE"
+2. Finds `/modules/local-fs/docs/getting-started/what-is-aigne.md`
+3. LLM calls `afs_read` → reads the specific file
+4. LLM presents: "AIGNE is a framework and runtime engine for building LLM-powered applications..."
+
+**The power:** AI agents intelligently search your file system and retrieve exactly what's needed - no manual navigation required!
 
 ## Prerequisites
 
@@ -23,17 +33,53 @@ This example demonstrates how to create a chatbot that can interact with your lo
 ## Quick Start (No Installation Required)
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
+export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
 
-# Mount your current directory and chat with the bot about your files
-npx -y @aigne/example-afs-local-fs --path . --chat
+# Mount AIGNE framework docs (clone first)
+git clone https://github.com/AIGNE-io/aigne-framework
+npx -y @aigne/example-afs-local-fs --path ./aigne-framework --chat
 
-# Mount a specific directory (e.g., your documents)
+# Or mount any directory
 npx -y @aigne/example-afs-local-fs --path ~/Documents --description "My Documents" --chat
 
-# Ask questions about files without interactive mode
-npx -y @aigne/example-afs-local-fs --path . --input "What files are in the current directory?"
+# Ask a specific question
+npx -y @aigne/example-afs-local-fs --path . --input "What is AIGNE?"
 ```
+
+## See It In Action
+
+Here's what happens when you ask "What is AIGNE?" with the framework docs mounted:
+
+```
+👤 You: "What is AIGNE?"
+
+🤖 Agent thinks: I should search the docs for information about AIGNE...
+   → Calls: afs_search(query: "AIGNE")
+
+📁 Found 15 matching files:
+   • docs/getting-started/what-is-aigne.md ⭐ (most relevant)
+   • README.md
+   • docs/core-concepts/overview.md
+   ...
+
+🤖 Agent thinks: Let me read the most relevant file...
+   → Calls: afs_read("docs/getting-started/what-is-aigne.md")
+
+📄 File loaded (2.4 KB)
+
+🤖 AI: "AIGNE is a framework and runtime engine for building LLM-powered
+       applications and AI agents. It provides:
+
+       • A unified Agentic File System (AFS) interface
+       • Support for multiple LLM providers (OpenAI, Anthropic, etc.)
+       • Tools for building autonomous agents
+       • Integration with external services via MCP
+
+       Would you like me to walk you through a quick-start tutorial, or
+       would you prefer to see specific examples?"
+```
+
+**Key insight:** The agent intelligently searches, finds the right file, reads it, and synthesizes a helpful answer - all automatically!
 
 ## Installation
 
@@ -87,190 +133,111 @@ pnpm start --path ~/Documents --description "My Documents"
 pnpm start --path . --chat
 ```
 
-## How LocalFS Works
+## How It Works: 3 Simple Steps
 
-This example uses the `LocalFS` module from `@aigne/afs-local-fs` to mount your local file system into the **Agentic File System (AFS)**. This allows AI agents to interact with your files through a standardized interface.
-
-### Key Features
-
-* **File Operations**: List, read, write, and search files in mounted directories
-* **Recursive Directory Traversal**: Navigate through subdirectories with depth control
-* **Fast Text Search**: Uses ripgrep for blazing-fast content search across files
-* **Metadata Support**: Access file timestamps, sizes, types, and custom metadata
-* **Path Safety**: Sandboxed access limited to mounted directories
-
-### Available Operations
-
-The LocalFS module provides these AFS operations:
-
-#### **list(path, options?)** - List directory contents
-```typescript
-// List files in mounted directory
-await afs.list('/modules/local-fs')
-
-// List files recursively with depth limit
-await afs.list('/modules/local-fs', { maxDepth: 2 })
-```
-
-#### **read(path)** - Read file or directory
-```typescript
-// Read file content
-const { result } = await afs.read('/modules/local-fs/README.md')
-console.log(result.content) // File contents as string
-
-// Read directory metadata
-const { result: dir } = await afs.read('/modules/local-fs/src')
-console.log(dir.metadata.type) // "directory"
-```
-
-#### **write(path, entry)** - Write or create files
-```typescript
-// Write a text file
-await afs.write('/modules/local-fs/notes.txt', {
-  content: "My notes",
-  summary: "Personal notes file"
-})
-
-// Write JSON data
-await afs.write('/modules/local-fs/config.json', {
-  content: { setting: "value" },
-  metadata: { format: "json" }
-})
-```
-
-#### **search(path, query, options?)** - Search file contents
-```typescript
-// Search for text in files
-const { list } = await afs.search('/modules/local-fs', 'TODO')
-
-// Search with regex patterns
-const { list: matches } = await afs.search('/modules/local-fs', 'function\\s+\\w+')
-```
-
-## Example Usage
-
-Try these commands to explore the file system capabilities:
-
-### Basic File Operations
-```bash
-# List all files in current directory
-npx -y @aigne/example-afs-local-fs --path . --input "List all files in the root directory"
-
-# Read a specific file
-npx -y @aigne/example-afs-local-fs --path . --input "Read the contents of package.json"
-
-# Search for specific content
-npx -y @aigne/example-afs-local-fs --path . --input "Find all files containing the word 'example'"
-```
-
-### Interactive Chat Examples
-```bash
-# Start interactive mode
-npx -y @aigne/example-afs-local-fs --path . --chat
-```
-
-Then try asking:
-- "What files are in this directory?"
-- "Show me the contents of the README file"
-- "Find all TypeScript files"
-- "Search for functions in the codebase"
-- "Create a new file called notes.txt with some content"
-- "List all files recursively with a depth limit of 2"
-
-### Advanced Usage
-```bash
-# Mount specific directories
-npx -y @aigne/example-afs-local-fs --path ~/Projects --description "My coding projects" --chat
-```
-
-The chatbot can help you navigate, search, read, and organize files in your mounted directories through natural language commands.
-
-## How this Example Works
-
-### Mount a local directory as an AFS module
-
-The following code snippet shows how to mount a local directory using `LocalFS`:
+### 1. Create LocalFS Module
 
 ```typescript
-import { AFS, AFSHistory } from "@aigne/afs";
 import { LocalFS } from "@aigne/afs-local-fs";
-import { AIAgent } from "@aigne/core";
 
-const afs = new AFS()
-  .mount(new AFSHistory({ storage: { url: ":memory:" } }))
-  .mount(new LocalFS({
-    localPath: '/path/to/directory',
-    description: 'My project files'
-  }));
-
-const agent = AIAgent.from({
-  instructions: "You are a friendly chatbot that can retrieve files from a virtual file system.",
-  inputKey: "message",
-  afs,
+const localFS = new LocalFS({
+  localPath: './aigne-framework',
+  description: 'AIGNE framework documentation'
 });
 ```
 
-### Call AFS tools to retrieve context
+### 2. Mount It as an AFS Module
 
-User Question: What's the purpose of this project?
+```typescript
+import { AFS, AFSHistory } from "@aigne/afs";
 
-```json
-{
-  "toolCalls": [
-    {
-      "id": "call_nBAfMjqt6ufoR22ToRvwbvQ6",
-      "type": "function",
-      "function": {
-        "name": "afs_list",
-        "arguments": {
-          "path": "/modules/local-fs"
-        }
-      }
-    }
-  ]
-}
+const afs = new AFS()
+  .mount(new AFSHistory({ storage: { url: ":memory:" } }))
+  .mount(localFS);  // Mounted at /modules/local-fs
 ```
 
-The agent will call the `afs_list` tool to list the files in the mounted directory
+### 3. Create an AI Agent
 
-```json
-{
-  "list": [
-    {
-      "id": "/README.md",
-      "path": "/modules/local-fs/README.md",
-      "createdAt": "2025-10-30T14:03:49.961Z",
-      "updatedAt": "2025-10-30T14:03:49.961Z",
-      "metadata": {
-        "type": "file",
-        "size": 3489,
-        "mode": 33188
-      }
-    }
-  ]
-}
+```typescript
+import { AIAgent } from "@aigne/core";
+
+const agent = AIAgent.from({
+  instructions: "Help users find and read files from the local file system.",
+  inputKey: "message",
+  afs,  // Agent gets: afs_list, afs_read, afs_write, afs_search
+});
 ```
 
-Then use `afs_read` to read specific file content
+**That's it!** The agent can now intelligently search and retrieve files from your local directory.
 
-```json
-{
-  "toolCalls": [
-    {
-      "id": "call_73i8vwuHKXt2igXGdyeEws7F",
-      "type": "function",
-      "function": {
-        "name": "afs_read",
-        "arguments": {
-          "path": "/modules/local-fs/README.md"
-        }
-      }
-    }
-  ]
-}
+### What the Agent Can Do
+
+- **`afs_list`** - List files and directories (with recursive depth control)
+- **`afs_read`** - Read file contents and metadata
+- **`afs_write`** - Create or update files
+- **`afs_search`** - Fast full-text search using ripgrep (supports regex)
+
+All operations are sandboxed to the mounted directory for safety.
+
+## Try These Examples
+
+```bash
+# Mount AIGNE docs and ask questions
+git clone https://github.com/AIGNE-io/aigne-framework
+npx -y @aigne/example-afs-local-fs --path ./aigne-framework --input "What is AIGNE?"
+
+# Ask about specific features
+npx -y @aigne/example-afs-local-fs --path ./aigne-framework --input "How does AFS work?"
+
+# Search your codebase
+npx -y @aigne/example-afs-local-fs --path . --input "Find all TypeScript files with TODO comments"
+
+# Interactive mode - ask follow-up questions
+npx -y @aigne/example-afs-local-fs --path ~/Documents --chat
 ```
 
-The agent combines the retrieved file content to answer the user's question naturally.
+**In chat mode, try:**
+- "What files are in this directory?"
+- "Show me the README"
+- "Search for 'authentication' in all files"
+- "Find all Python files"
+- "What does the config.json file contain?"
+
+## Use Cases
+
+### Documentation Chat
+Mount your project docs and let users ask questions:
+```typescript
+const afs = new AFS()
+  .mount(new LocalFS({ localPath: './docs', description: 'Project documentation' }));
+// Users can now ask: "How do I configure authentication?"
+```
+
+### Codebase Analysis
+Give AI agents access to your codebase:
+```typescript
+const afs = new AFS()
+  .mount(new LocalFS({ localPath: './src', description: 'Source code' }));
+// Agent can search, read, and explain code
+```
+
+### File Organization
+Let AI help organize your files:
+```typescript
+const afs = new AFS()
+  .mount(new LocalFS({ localPath: '~/Downloads', description: 'Downloads folder' }));
+// Ask: "Find all PDFs from last week" or "Organize these files by type"
+```
+
+### Multi-Directory Access
+Mount multiple directories simultaneously:
+```typescript
+const afs = new AFS()
+  .mount("/docs", new LocalFS({ localPath: './docs' }))
+  .mount("/src", new LocalFS({ localPath: './src' }))
+  .mount("/tests", new LocalFS({ localPath: './tests' }));
+// Agent can search across all mounted directories
+```
 
 ## Related Examples
 

@@ -268,6 +268,8 @@ export class AIGNEContext implements Context {
     }
 
     this.id = this.span?.spanContext()?.spanId ?? v7();
+
+    this.initProcessExitHandler();
   }
 
   id: string;
@@ -475,6 +477,23 @@ export class AIGNEContext implements Context {
 
     this.trace(eventName, args, b);
     return this.internal.events.emit(eventName, ...newArgs);
+  }
+
+  initProcessExitHandler() {
+    process.on("SIGINT", async () => {
+      try {
+        if (process.env.AIGNE_OBSERVABILITY_DISABLED) return;
+
+        const span = this.span;
+        if (!span) return;
+
+        span.setStatus({ code: SpanStatusCode.ERROR, message: "SIGINT" });
+        span.end();
+        await this.observer?.flush(span);
+      } finally {
+        process.exit(0);
+      }
+    });
   }
 
   private async trace<K extends keyof ContextEmitEventMap>(

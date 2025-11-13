@@ -67,14 +67,19 @@ export async function runEvaluationPipeline(params: {
 
   const results: EvaluationPipelineContext["results"] = [];
 
-  const task1 = new Listr<{ items: DatasetItem[] }>([
-    {
-      title: "Load dataset",
-      task: async (ctx, _task) => {
-        ctx.items = await dataset.loadWithOptions();
+  const task1 = new Listr<{ items: DatasetItem[] }>(
+    [
+      {
+        title: "Load dataset",
+        task: async (ctx, _task) => {
+          ctx.items = await dataset.loadWithOptions();
+        },
       },
+    ],
+    {
+      registerSignalListeners: false,
     },
-  ]);
+  );
 
   const { items } = await task1.run();
 
@@ -120,6 +125,7 @@ export async function runEvaluationPipeline(params: {
       rendererOptions: {
         collapseSubtasks: false,
       },
+      registerSignalListeners: false,
     },
   );
 

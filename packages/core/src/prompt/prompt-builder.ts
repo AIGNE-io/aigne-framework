@@ -115,15 +115,13 @@ export class PromptBuilder {
   workingDir?: string;
 
   async build(options: PromptBuildOptions): Promise<ChatModelInput & { toolAgents?: Agent[] }> {
-    const { messages, skills } = await this.buildMessages(options);
-
     return {
-      messages,
+      messages: await this.buildMessages(options),
       responseFormat: options.agent?.structuredStreamMode
         ? undefined
         : this.buildResponseFormat(options),
       outputFileType: options.agent?.outputFileType,
-      ...(await this.buildTools(options, skills)),
+      ...(await this.buildTools(options)),
     };
   }
 
@@ -161,15 +159,11 @@ export class PromptBuilder {
     };
   }
 
-  private async buildMessages(
-    options: PromptBuildOptions,
-  ): Promise<{ messages: ChatModelInputMessage[]; skills?: Agent[] }> {
+  private async buildMessages(options: PromptBuildOptions): Promise<ChatModelInputMessage[]> {
     const { input } = options;
 
     const inputKey = options.agent?.inputKey;
     const message = inputKey && typeof input?.[inputKey] === "string" ? input[inputKey] : undefined;
-
-    const skills: Agent[] = [];
 
     const [messages, otherCustomMessages] = partition(
       (await (typeof this.instructions === "string"
@@ -275,14 +269,12 @@ export class PromptBuilder {
         PromptBuilder.from(STRUCTURED_STREAM_INSTRUCTIONS.instructions);
 
       messages.push(
-        ...(
-          await instructions.buildMessages({
-            input: {
-              ...input,
-              outputJsonSchema: zodToJsonSchema(outputSchema),
-            },
-          })
-        ).messages,
+        ...(await instructions.buildMessages({
+          input: {
+            ...input,
+            outputJsonSchema: zodToJsonSchema(outputSchema),
+          },
+        })),
       );
     }
 
@@ -310,10 +302,7 @@ export class PromptBuilder {
 
     messages.push(...otherCustomMessages);
 
-    return {
-      messages: this.refineMessages(options, messages),
-      skills,
-    };
+    return this.refineMessages(options, messages);
   }
 
   private refineMessages(
@@ -478,7 +467,6 @@ export class PromptBuilder {
 
   private async buildTools(
     options: PromptBuildOptions,
-    skills?: Agent[],
   ): Promise<
     Pick<ChatModelInput, "tools" | "toolChoice" | "modelOptions"> & { toolAgents?: Agent[] }
   > {
@@ -486,8 +474,7 @@ export class PromptBuilder {
       (options.context?.skills ?? [])
         .concat(options.agent?.skills ?? [])
         .concat(options.agent?.memoryAgentsAsTools ? options.agent.memories : [])
-        .flatMap((i) => (i.isInvokable ? i : i.skills))
-        .concat(skills ?? []),
+        .flatMap((i) => (i.isInvokable ? i : i.skills)),
       (i) => i.name,
     );
 

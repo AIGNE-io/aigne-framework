@@ -303,8 +303,8 @@ AFS provides AI agents with a unified interface to access various storage backen
 
 ### AFS Examples
 
+* [AFS Memory Example](./examples/afs-memory/README.md) - Explore conversation memory and user profile management capabilities.
 * [AFS LocalFS Example](./examples/afs-local-fs/README.md) - Learn how to mount local file systems and let AI agents interact with your files through natural language.
-* [Memory Example](./examples/memory/README.md) - Explore conversation memory and user profile management capabilities.
 
 For comprehensive AFS documentation, see [AFS Documentation](./afs/README.md).
 

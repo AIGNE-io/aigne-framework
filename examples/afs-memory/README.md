@@ -54,7 +54,7 @@ git clone https://github.com/AIGNE-io/aigne-framework
 ### Install Dependencies
 
 ```bash
-cd aigne-framework/examples/memory
+cd aigne-framework/examples/afs-memory
 
 pnpm install
 ```

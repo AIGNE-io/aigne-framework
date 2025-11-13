@@ -4,16 +4,14 @@
 
 ## Overview
 
-AFS Core provides the foundational infrastructure for building virtual file systems that can integrate with different storage backends. It includes the base AFS implementation, storage layer abstraction, and the built-in history module for automatic conversation tracking.
+AFS Core provides the foundational infrastructure for building virtual file systems that can integrate with different storage backends. It includes the base AFS implementation, module mounting system, and event-driven architecture for building modular storage solutions.
 
 ## Features
 
-- **Virtual File System**: Hierarchical path-based structure similar to Unix file systems
+- **Virtual File System**: Hierarchical path-based structure with `/modules` root directory
 - **Module System**: Pluggable architecture for custom storage backends
-- **Unified API**: Consistent interface for list, read, write, and search operations
+- **Unified API**: Consistent interface for list, read, write, search, and exec operations
 - **Event System**: Event-driven architecture for module communication
-- **SQLite Storage**: Built-in persistent storage using SQLite
-- **History Tracking**: Automatic conversation history recording (AFSHistory module)
 - **AI Agent Integration**: Seamless integration with AIGNE agents
 
 ## Installation
@@ -29,27 +27,34 @@ pnpm add @aigne/afs
 ## Quick Start
 
 ```typescript
-import { AFS } from "@aigne/afs";
+import { AFS, AFSHistory } from "@aigne/afs";
 
-// Create AFS instance with SQLite storage
-const afs = new AFS({
+// Create AFS instance
+const afs = new AFS();
+
+// Mount history module (optional)
+afs.mount(new AFSHistory({
   storage: { url: "file:./memory.sqlite3" }
-});
+}));
 
-// List entries
-const { list } = await afs.list('/');
+// All modules are mounted under /modules
+// List modules
+const modules = await afs.listModules();
+
+// List entries in a module
+const { list } = await afs.list('/modules/history');
 
 // Read an entry
-const { result } = await afs.read('/history/some-id');
+const { result } = await afs.read('/modules/history/some-id');
 
-// Write an entry
-await afs.write('/my-data/notes.txt', {
+// Write an entry (if module supports write)
+await afs.write('/modules/history/notes', {
   content: 'My notes',
   summary: 'Personal notes'
 });
 
 // Search for content
-const { list: results } = await afs.search('/', 'search query');
+const { list: results } = await afs.search('/modules/history', 'search query');
 ```
 
 ## Core Concepts
@@ -75,25 +80,27 @@ interface AFSEntry {
 
 ### Modules
 
-Modules are pluggable components that implement storage backends:
+Modules are pluggable components that implement storage backends. All modules are automatically mounted under the `/modules` path prefix:
 
 ```typescript
 interface AFSModule {
-  moduleId: string;               // Unique module identifier
-  path: string;                   // Mount path (e.g., '/history')
+  name: string;                   // Module name (used as mount path)
   description?: string;           // Description for AI agents
 
   // Operations (all optional)
-  list?(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[] }>;
-  read?(path: string): Promise<{ result?: AFSEntry }>;
-  write?(path: string, entry: AFSWriteEntryPayload): Promise<{ result: AFSEntry }>;
-  search?(path: string, query: string, options?: AFSSearchOptions): Promise<{ list: AFSEntry[] }>;
+  list?(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[]; message?: string }>;
+  read?(path: string): Promise<{ result?: AFSEntry; message?: string }>;
+  write?(path: string, entry: AFSWriteEntryPayload): Promise<{ result: AFSEntry; message?: string }>;
+  search?(path: string, query: string, options?: AFSSearchOptions): Promise<{ list: AFSEntry[]; message?: string }>;
+  exec?(path: string, args: Record<string, any>, options: { context: any }): Promise<{ result: Record<string, any> }>;
 
   // Lifecycle
   onMount?(afs: AFSRoot): void;
   onUnmount?(): void;
 }
 ```
+
+**Mount Path Convention**: When you mount a module with name `"my-module"`, it will be accessible at `/modules/my-module`.
 
 ## API Reference
 
@@ -102,21 +109,34 @@ interface AFSModule {
 #### Constructor
 
 ```typescript
-new AFS(options: AFSOptions)
+new AFS(options?: AFSOptions)
 ```
 
 Options:
-- `storage`: Storage configuration (e.g., `{ url: "file:./memory.sqlite3" }`)
-- `historyEnabled`: Enable/disable automatic history tracking (default: `true`)
+- `modules`: Optional array of modules to mount on initialization
 
 #### Methods
 
-##### use(module: AFSModule)
+##### mount(module: AFSModule)
+##### mount(path: string, module: AFSModule)
 
-Mount a module at its specified path:
+Mount a module. The module will be accessible under `/modules/{module.name}` or `/modules/{path}`:
 
 ```typescript
-afs.use(new CustomModule());
+// Mount using module's name
+afs.mount(new CustomModule());
+
+// Mount with custom path (advanced usage)
+afs.mount("/custom-path", new CustomModule());
+```
+
+##### listModules()
+
+Get all mounted modules:
+
+```typescript
+const modules = await afs.listModules();
+// Returns: [{ name: string, path: string, description?: string, module: AFSModule }]
 ```
 
 ##### list(path: string, options?: AFSListOptions)
@@ -124,26 +144,20 @@ afs.use(new CustomModule());
 List entries in a directory:
 
 ```typescript
-const { list, message } = await afs.list('/history', {
-  maxDepth: 2,
-  recursive: true,
-  limit: 10,
-  orderBy: [['createdAt', 'desc']]
+const { list, message } = await afs.list('/modules/history', {
+  maxDepth: 2
 });
 ```
 
 Options:
-- `maxDepth`: Maximum recursion depth
-- `recursive`: Enable recursive listing
-- `limit`: Maximum number of results
-- `orderBy`: Sort order (array of `[field, direction]` tuples)
+- `maxDepth`: Maximum recursion depth (default: 1)
 
 ##### read(path: string)
 
 Read a specific entry:
 
 ```typescript
-const { result, message } = await afs.read('/history/uuid-123');
+const { result, message } = await afs.read('/modules/history/uuid-123');
 ```
 
 ##### write(path: string, content: AFSWriteEntryPayload)
@@ -151,7 +165,7 @@ const { result, message } = await afs.read('/history/uuid-123');
 Write or update an entry:
 
 ```typescript
-const { result, message } = await afs.write('/data/file.txt', {
+const { result, message } = await afs.write('/modules/my-module/file.txt', {
   content: 'Hello, world!',
   summary: 'Greeting file',
   metadata: { type: 'greeting' }
@@ -163,9 +177,15 @@ const { result, message } = await afs.write('/data/file.txt', {
 Search for content:
 
 ```typescript
-const { list, message } = await afs.search('/history', 'authentication', {
-  limit: 5
-});
+const { list, message } = await afs.search('/modules/history', 'authentication');
+```
+
+##### exec(path: string, args: Record<string, any>, options: { context: any })
+
+Execute a module-specific operation:
+
+```typescript
+const { result } = await afs.exec('/modules/my-module/action', { param: 'value' }, { context });
 ```
 
 ### Events
@@ -173,117 +193,107 @@ const { list, message } = await afs.search('/history', 'authentication', {
 AFS uses an event system for module communication:
 
 ```typescript
-afs.on('historyCreated', ({ entry }) => {
-  console.log('New history entry:', entry);
+// Modules can listen to events
+afs.on('agentSucceed', ({ input, output }) => {
+  console.log('Agent succeeded:', input, output);
 });
+
+// Modules can emit custom events
+afs.emit('customEvent', { data: 'value' });
 ```
 
-Available events:
-- `historyCreated`: Emitted when a new history entry is created
+Common events from `AFSRootEvents`:
+- `agentSucceed`: Emitted when an agent successfully completes
+- `agentFail`: Emitted when an agent fails
 
 ## Built-in Modules
 
 ### AFSHistory
 
-The history module automatically tracks conversation history.
+The history module tracks conversation history. It must be manually mounted.
 
 **Features:**
-- Automatically records agent interactions
+- Listens to `agentSucceed` events and records agent interactions
 - Stores input/output pairs with UUID paths
-- Enables conversation history injection into agent prompts
-- Supports semantic search
+- Supports list and read operations
+- Can be extended with search capabilities
 
 **Usage:**
 
-History is enabled by default. To disable:
-
 ```typescript
-const afs = new AFS({
-  storage: { url: "file:./memory.sqlite3" },
-  historyEnabled: false
-});
+import { AFS, AFSHistory } from "@aigne/afs";
+
+const afs = new AFS();
+afs.mount(new AFSHistory({
+  storage: { url: "file:./memory.sqlite3" }
+}));
+
+// History entries are accessible at /modules/history
+const { list } = await afs.list('/modules/history');
 ```
 
-**Integration with AI Agents:**
+**Configuration:**
+- `storage`: Storage configuration (e.g., `{ url: "file:./memory.sqlite3" }`) or a SharedAFSStorage instance
 
-```typescript
-import { AIAgent, AIGNE } from "@aigne/core";
-
-const agent = AIAgent.from({
-  name: "assistant",
-  afs: afs,
-  afsConfig: {
-    injectHistory: true,      // Inject history into prompts
-    historyWindowSize: 10     // Number of recent entries
-  }
-});
-```
+**Note:** History is NOT automatically mounted. You must explicitly mount it if needed.
 
 ## Creating Custom Modules
 
 Create a custom module by implementing the `AFSModule` interface:
 
 ```typescript
-import { AFSModule, AFSEntry, AFSStorage } from "@aigne/afs";
+import { AFSModule, AFSEntry, AFSListOptions } from "@aigne/afs";
 
 export class CustomModule implements AFSModule {
-  readonly moduleId = "custom-module";
-  readonly path = "/custom";
+  readonly name = "custom-module";
   readonly description = "My custom storage";
 
-  constructor(private storage: AFSStorage) {}
-
   async list(path: string, options?: AFSListOptions) {
-    const entries = await this.storage.list(options);
-    return { list: entries };
+    // path is the subpath within your module
+    // Implement your list logic
+    return { list: [] };
   }
 
   async read(path: string) {
-    const entry = await this.storage.read(path);
-    return { result: entry };
+    // Implement your read logic
+    return { result: undefined };
   }
 
   async write(path: string, content: AFSWriteEntryPayload) {
-    const entry = await this.storage.create({ ...content, path });
+    // Implement your write logic
+    const entry: AFSEntry = { id: 'id', path, ...content };
     return { result: entry };
   }
 
   async search(path: string, query: string, options?: AFSSearchOptions) {
-    const results = await this.storage.list({
-      where: { content: { contains: query } }
-    });
-    return { list: results };
+    // Implement your search logic
+    return { list: [] };
   }
 
   onMount(afs: AFSRoot) {
-    console.log(`${this.moduleId} mounted at ${this.path}`);
+    console.log(`${this.name} mounted`);
 
     // Listen to events
-    afs.on('someEvent', (data) => {
+    afs.on('agentSucceed', (data) => {
       // Handle event
     });
   }
 }
 
-// Use the module
-afs.use(new CustomModule());
+// Mount the module
+afs.mount(new CustomModule());
+// Now accessible at /modules/custom-module
 ```
 
-## Storage Layer
+## Module Path Resolution
 
-AFS Core includes a SQLite-based storage layer that modules can use:
+When a module is mounted, AFS handles path resolution automatically:
 
-```typescript
-// Get module-specific storage
-const storage = afs.storage(myModule);
+1. Module mounted with name `"my-module"` → accessible at `/modules/my-module`
+2. When listing `/modules`, AFS shows all mounted modules
+3. When accessing `/modules/my-module/foo`, the module receives `"/foo"` as the path parameter
 
-// Storage operations
-await storage.create({ path: '/data', content: 'value' });
-await storage.read('/data');
-await storage.update('/data', { content: 'new value' });
-await storage.delete('/data');
-await storage.list({ where: { path: { startsWith: '/data' } } });
-```
+This allows modules to focus on their internal logic without worrying about mount paths.
 
 ## Integration with AI Agents
 
@@ -293,22 +303,22 @@ When an agent has AFS configured, these tools are automatically registered:
 - **afs_read**: Read file contents
 - **afs_write**: Write/create files
 - **afs_search**: Search for content
+- **afs_exec**: Execute module operations
 
 Example:
 
 ```typescript
 import { AIAgent, AIGNE } from "@aigne/core";
-import { AFS } from "@aigne/afs";
+import { AFS, AFSHistory } from "@aigne/afs";
 
-const afs = new AFS({ storage: { url: "file:./memory.sqlite3" } });
+const afs = new AFS();
+afs.mount(new AFSHistory({
+  storage: { url: "file:./memory.sqlite3" }
+}));
 
 const agent = AIAgent.from({
   name: "assistant",
-  afs: afs,
-  afsConfig: {
-    injectHistory: true,
-    historyWindowSize: 10
-  }
+  afs: afs
 });
 
 const context = aigne.newContext();

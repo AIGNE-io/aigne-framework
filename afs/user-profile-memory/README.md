@@ -31,7 +31,7 @@ pnpm add @aigne/afs-user-profile-memory @aigne/afs @aigne/core
 
 ```typescript
 import { AIGNE, AIAgent } from "@aigne/core";
-import { AFS } from "@aigne/afs";
+import { AFS, AFSHistory } from "@aigne/afs";
 import { UserProfileMemory } from "@aigne/afs-user-profile-memory";
 import { OpenAIChatModel } from "@aigne/openai";
 
@@ -41,23 +41,24 @@ const aigne = new AIGNE({
 });
 
 // Create AFS
-const afs = new AFS({
+const afs = new AFS();
+
+// Mount history module (required for UserProfileMemory)
+afs.mount(new AFSHistory({
   storage: { url: "file:./memory.sqlite3" }
-});
+}));
 
 // Mount UserProfileMemory
-afs.use(new UserProfileMemory({
+afs.mount(new UserProfileMemory({
   context: aigne.newContext()
 }));
+// Accessible at /modules/user-profile-memory
 
 // Create agent
 const agent = AIAgent.from({
   name: "assistant",
   instructions: "You are a helpful assistant that remembers user information",
-  afs: afs,
-  afsConfig: {
-    injectHistory: true
-  }
+  afs
 });
 
 // Have a conversation - profile is automatically built
@@ -66,8 +67,8 @@ await context.invoke(agent, {
   message: "Hi! I'm John, I live in San Francisco and I love hiking."
 });
 
-// The profile is automatically extracted and stored at /user-profile-memory
-const { result } = await afs.read('/user-profile-memory');
+// The profile is automatically extracted and stored at /modules/user-profile-memory
+const { result } = await afs.read('/modules/user-profile-memory');
 console.log(result.content);
 // {
 //   name: [{ name: "John" }],
@@ -78,11 +79,11 @@ console.log(result.content);
 
 ## How It Works
 
-1. **Event Listening**: UserProfileMemory listens to `historyCreated` events from AFS
-2. **AI Extraction**: When new conversation history is created, it uses an AI agent to extract user information
+1. **Event Listening**: UserProfileMemory listens to `agentSucceed` events from AFS
+2. **AI Extraction**: When an agent succeeds, it uses an AI agent to extract user information
 3. **JSON Patch Operations**: The AI generates JSON Patch operations to update the profile
 4. **Profile Update**: Operations are applied to the existing profile incrementally
-5. **Storage**: Updated profile is stored at `/user-profile-memory`
+5. **Storage**: Updated profile is stored at `/modules/user-profile-memory`
 
 ## Profile Schema
 
@@ -176,11 +177,6 @@ new UserProfileMemory(options: { context: Context })
 **Options:**
 - `context`: An AIGNE context for making AI calls
 
-### Module Properties
-
-- `moduleId`: `"UserProfileMemory"`
-- `path`: `"/user-profile-memory"`
-
 ### Methods
 
 #### updateProfile(entry: AFSEntry)
@@ -196,7 +192,7 @@ await userProfileMemory.updateProfile(conversationEntry);
 Search returns the current profile:
 
 ```typescript
-const { list } = await afs.search('/user-profile-memory', 'any query');
+const { list } = await afs.search('/modules/user-profile-memory', 'any query');
 // Returns array with current profile entry
 ```
 
@@ -258,7 +254,7 @@ UserProfileMemory hooks into the AFS event system:
 
 ```typescript
 // UserProfileMemory listens to this event internally
-afs.on('historyCreated', async ({ entry }) => {
+afs.on('agentSucceed', async ({ input, output }) => {
   // Automatically updates profile from new conversation
 });
 
@@ -268,13 +264,13 @@ afs.on('historyCreated', async ({ entry }) => {
 
 ## Examples
 
-See the [Memory example](../../examples/memory) for a complete working implementation.
+See the [Memory example](../../examples/afs-memory) for a complete working implementation.
 
 ## Error Handling
 
 ```typescript
 try {
-  const { result } = await afs.read('/user-profile-memory');
+  const { result } = await afs.read('/modules/user-profile-memory');
   if (!result) {
     console.log('No profile found yet');
   }

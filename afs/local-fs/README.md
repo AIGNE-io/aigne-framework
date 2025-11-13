@@ -34,29 +34,27 @@ import { AFS } from "@aigne/afs";
 import { LocalFS } from "@aigne/afs-local-fs";
 
 // Create AFS instance
-const afs = new AFS({
-  storage: { url: "file:./memory.sqlite3" }
-});
+const afs = new AFS();
 
 // Mount a local directory
-afs.use(new LocalFS({
-  mount: '/docs',                    // AFS mount point
-  path: '/path/to/documentation',    // Local directory path
-  description: 'Project documentation'  // Description for AI
+afs.mount(new LocalFS({
+  localPath: '/path/to/documentation',  // Local directory path
+  description: 'Project documentation' // Description for AI
 }));
+// Accessible at /modules/local-fs
 
 // List files
-const { list } = await afs.list('/docs', { recursive: true });
+const { list } = await afs.list('/modules/local-fs');
 
 // Read a file
-const { result } = await afs.read('/docs/README.md');
+const { result } = await afs.read('/modules/local-fs/README.md');
 console.log(result.content);
 
 // Search for content
-const { list: results } = await afs.search('/docs', 'installation');
+const { list: results } = await afs.search('/modules/local-fs', 'installation');
 
 // Write a file
-await afs.write('/docs/notes.txt', {
+await afs.write('/modules/local-fs/notes.txt', {
   content: 'My notes about the project'
 });
 ```
@@ -67,8 +65,7 @@ await afs.write('/docs/notes.txt', {
 
 ```typescript
 interface LocalFSOptions {
-  mount: string;        // AFS mount path (e.g., '/docs', '/source')
-  path: string;         // Local file system path to mount
+  localPath: string;    // Local file system path to mount
   description?: string; // Optional description for AI agents
 }
 ```
@@ -76,11 +73,11 @@ interface LocalFSOptions {
 **Example:**
 
 ```typescript
-afs.use(new LocalFS({
-  mount: '/project',
-  path: '/Users/john/my-project',
+afs.mount(new LocalFS({
+  localPath: '/Users/john/my-project',
   description: 'My web application source code'
 }));
+// Accessible at /modules/local-fs
 ```
 
 ## Operations
@@ -90,17 +87,15 @@ afs.use(new LocalFS({
 List files and directories:
 
 ```typescript
-const { list, message } = await afs.list('/docs', {
-  recursive: true,      // Enable recursive listing
-  maxDepth: 3,         // Limit recursion depth
-  limit: 50            // Maximum results (capped at 50)
+const { list, message } = await afs.list('/modules/local-fs', {
+  maxDepth: 3  // Limit recursion depth
 });
 
 // list is an array of AFS entries:
 [
   {
-    id: '/docs/README.md',
-    path: '/docs/README.md',
+    id: '/modules/local-fs/README.md',
+    path: '/modules/local-fs/README.md',
     createdAt: Date,
     updatedAt: Date,
     metadata: {
@@ -114,16 +109,14 @@ const { list, message } = await afs.list('/docs', {
 ```
 
 **Options:**
-- `recursive`: Enable recursive directory listing (default: `false`)
-- `maxDepth`: Maximum recursion depth when recursive is enabled
-- `limit`: Maximum number of results (capped at 50)
+- `maxDepth`: Maximum recursion depth (default: 1)
 
 ### read(path)
 
 Read file contents and metadata:
 
 ```typescript
-const { result } = await afs.read('/docs/README.md');
+const { result } = await afs.read('/modules/local-fs/README.md');
 
 console.log(result.content);   // File contents as string
 console.log(result.metadata);  // File metadata
@@ -142,7 +135,7 @@ console.log(result.updatedAt); // Last modified timestamp
 Write or update file contents:
 
 ```typescript
-const { result } = await afs.write('/docs/notes.txt', {
+const { result } = await afs.write('/modules/local-fs/notes.txt', {
   content: 'My notes',
   summary: 'Personal notes about the project',
   metadata: { category: 'personal' }
@@ -160,9 +153,7 @@ const { result } = await afs.write('/docs/notes.txt', {
 Search for files containing specific text:
 
 ```typescript
-const { list, message } = await afs.search('/docs', 'authentication', {
-  limit: 20
-});
+const { list, message } = await afs.search('/modules/local-fs', 'authentication');
 
 // Results include matching files with context
 list.forEach(entry => {
@@ -175,10 +166,6 @@ list.forEach(entry => {
 - Uses ripgrep for extremely fast text search
 - Automatically deduplicates results
 - Returns file paths with matching line snippets
-- Respects the limit option (capped at 50)
-
-**Options:**
-- `limit`: Maximum number of results (capped at 50)
 
 ## Integration with AI Agents
 
@@ -196,21 +183,21 @@ const aigne = new AIGNE({
 });
 
 // Setup AFS with LocalFS
-const afs = new AFS({
-  storage: { url: "file:./memory.sqlite3" }
-});
+const afs = new AFS();
 
-afs.use(new LocalFS({
-  mount: '/codebase',
-  path: './src',
+afs.mount(new LocalFS({
+  name: 'codebase',
+  localPath: './src',
   description: 'Application source code'
 }));
+// Accessible at /modules/codebase
 
-afs.use(new LocalFS({
-  mount: '/docs',
-  path: './docs',
+afs.mount(new LocalFS({
+  name: 'docs',
+  localPath: './docs',
   description: 'Project documentation'
 }));
+// Accessible at /modules/docs
 
 // Create agent with AFS access
 const agent = AIAgent.from({
@@ -234,34 +221,37 @@ The agent automatically gets these tools:
 
 ## Multiple Mounts
 
-You can mount multiple directories at different paths:
+You can mount multiple directories with different names:
 
 ```typescript
 // Mount source code
-afs.use(new LocalFS({
-  mount: '/src',
-  path: './src',
+afs.mount(new LocalFS({
+  name: 'src',
+  localPath: './src',
   description: 'Application source code'
 }));
+// Accessible at /modules/src
 
 // Mount tests
-afs.use(new LocalFS({
-  mount: '/tests',
-  path: './tests',
+afs.mount(new LocalFS({
+  name: 'tests',
+  localPath: './tests',
   description: 'Test files'
 }));
+// Accessible at /modules/tests
 
 // Mount configuration
-afs.use(new LocalFS({
-  mount: '/config',
-  path: './config',
+afs.mount(new LocalFS({
+  name: 'config',
+  localPath: './config',
   description: 'Configuration files'
 }));
+// Accessible at /modules/config
 
 // Now agents can access all mounted directories
-await afs.list('/src');
-await afs.read('/config/app.json');
-await afs.search('/tests', 'test suite');
+await afs.list('/modules/src');
+await afs.read('/modules/config/app.json');
+await afs.search('/modules/tests', 'test suite');
 ```
 
 ## File Metadata
@@ -269,7 +259,7 @@ await afs.search('/tests', 'test suite');
 LocalFS provides detailed file metadata:
 
 ```typescript
-const { result } = await afs.read('/docs/README.md');
+const { result } = await afs.read('/modules/local-fs/README.md');
 
 result.metadata = {
   type: 'file',           // 'file' or 'directory'

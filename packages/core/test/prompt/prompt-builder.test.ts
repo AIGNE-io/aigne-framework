@@ -1,6 +1,6 @@
 import { expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
-import { AFS } from "@aigne/afs";
+import { AFS, AFSHistory } from "@aigne/afs";
 import {
   AIAgent,
   AIAgentToolChoice,
@@ -39,7 +39,13 @@ userContext.name: {{userContext.name}}
   const memory = new MockMemory({});
   await memory.record(
     {
-      content: [{ input: { message: "Hello, How can I help you?" }, source: "TestAgent" }],
+      content: [
+        {
+          input: { message: "Hello" },
+          output: { message: "Hello, How can I help you?" },
+          source: "TestAgent",
+        },
+      ],
     },
 
     context,
@@ -67,16 +73,27 @@ userContext.name: {{userContext.name}}
     name (from userContext): Alice
 
     userContext.name: Alice
-
-    <related-memories>
-    - input:
-        message: Hello, How can I help you?
-      source: TestAgent
-
-    </related-memories>
     "
     ,
         "role": "system",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+      {
+        "content": [
+          {
+            "text": "Hello, How can I help you?",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
       },
       {
         "content": [
@@ -428,15 +445,11 @@ test("PromptBuilder should build with afs correctly", async () => {
     ]),
   });
 
-  const afs = new AFS();
+  const afs = new AFS().mount(new AFSHistory());
 
   const agent = AIAgent.from({
     inputKey: "message",
     afs,
-    afsConfig: {
-      injectHistory: false,
-      historyWindowSize: 5,
-    },
   });
 
   // Build without AFS history
@@ -452,20 +465,21 @@ test("PromptBuilder should build with afs correctly", async () => {
     "Test instructions
 
     <afs_usage>
-    AFS (AIGNE File System) provides tools to interact with a virtual file system, allowing you to list, search, read, and write files. Use these tools to manage and retrieve files as needed.
+    AFS (Agentic File System) provides tools to interact with a virtual file system,
+    allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
+    Use these tools to manage and retrieve files as needed.
 
-    Modules:
-    - moduleId: AFSHistory
-      path: /history
+    Provided modules:
+    - path: /modules/history
+      name: history
 
 
-    Available Tools:
+    Global tools to interact with the AFS:
     1. afs_list: Browse directory contents like filesystem ls/tree command - shows files and folders in a given path
     2. afs_search: Find files by content keywords - use specific keywords related to what you're looking for
     3. afs_read: Read file contents - path must be an exact file path from list or search results
     4. afs_write: Write content to a file in the AFS
-
-    Workflow: Use afs_list to browse directories, afs_search to find specific content, then afs_read to access file contents.
+    5. afs_exec: Execute a executable tool from the available modules
     </afs_usage>
     "
     ,
@@ -478,9 +492,6 @@ test("PromptBuilder should build with afs correctly", async () => {
       },
     ]
   `);
-
-  // Mock AFS history
-  agent.afsConfig = { ...agent.afsConfig, injectHistory: true };
 
   const listSpy = spyOn(afs, "list").mockResolvedValueOnce({
     list: [
@@ -505,9 +516,9 @@ test("PromptBuilder should build with afs correctly", async () => {
   expect(listSpy.mock.calls).toMatchInlineSnapshot(`
     [
       [
-        "/history",
+        "/modules/history",
         {
-          "limit": 5,
+          "limit": 10,
           "orderBy": [
             [
               "createdAt",
@@ -529,20 +540,21 @@ test("PromptBuilder should build with afs correctly", async () => {
     "Test instructions
 
     <afs_usage>
-    AFS (AIGNE File System) provides tools to interact with a virtual file system, allowing you to list, search, read, and write files. Use these tools to manage and retrieve files as needed.
+    AFS (Agentic File System) provides tools to interact with a virtual file system,
+    allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
+    Use these tools to manage and retrieve files as needed.
 
-    Modules:
-    - moduleId: AFSHistory
-      path: /history
+    Provided modules:
+    - path: /modules/history
+      name: history
 
 
-    Available Tools:
+    Global tools to interact with the AFS:
     1. afs_list: Browse directory contents like filesystem ls/tree command - shows files and folders in a given path
     2. afs_search: Find files by content keywords - use specific keywords related to what you're looking for
     3. afs_read: Read file contents - path must be an exact file path from list or search results
     4. afs_write: Write content to a file in the AFS
-
-    Workflow: Use afs_list to browse directories, afs_search to find specific content, then afs_read to access file contents.
+    5. afs_exec: Execute a executable tool from the available modules
     </afs_usage>
     "
     ,
@@ -714,6 +726,32 @@ test("PromptBuilder should build with afs correctly", async () => {
               "required": [
                 "path",
                 "content",
+              ],
+              "type": "object",
+            },
+          },
+          "type": "function",
+        },
+        {
+          "function": {
+            "description": "Execute a function or command available in the AFS modules",
+            "name": "afs_exec",
+            "parameters": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "description": "JSON stringified arguments to pass to the executable, must be an object matching the input schema of the executable",
+                  "type": "string",
+                },
+                "path": {
+                  "description": "The exact path to the executable entry in AFS",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "path",
+                "args",
               ],
               "type": "object",
             },

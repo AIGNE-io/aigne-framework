@@ -10,7 +10,7 @@ test("AFS should mount module correctly", async () => {
   expect([...afs["modules"].entries()]).toMatchInlineSnapshot(`
     [
       [
-        "/test-module",
+        "/modules/test-module",
         {
           "name": "test-module",
         },
@@ -28,12 +28,15 @@ test("AFS should list modules correctly", async () => {
 
   const afs = new AFS().mount(module);
 
-  expect(await afs.listModules()).toMatchInlineSnapshot(`
+  expect(
+    (await afs.listModules()).map((i) => ({ ...i, module: undefined })),
+  ).toMatchInlineSnapshot(`
     [
       {
         "description": "Test Module",
+        "module": undefined,
         "name": "test-module",
-        "path": "/test-module",
+        "path": "/modules/test-module",
       },
     ]
   `);
@@ -60,7 +63,7 @@ test("AFS should list entries correctly", async () => {
       "list": [
         {
           "id": "test-module",
-          "path": "/test-module",
+          "path": "/modules",
           "summary": "Test Module",
         },
       ],
@@ -72,12 +75,9 @@ test("AFS should list entries correctly", async () => {
     {
       "list": [
         {
-          "id": "foo",
-          "path": "/test-module/foo",
-        },
-        {
-          "id": "bar",
-          "path": "/test-module/bar",
+          "id": "test-module",
+          "path": "/modules/test-module",
+          "summary": "Test Module",
         },
       ],
       "message": undefined,
@@ -89,11 +89,11 @@ test("AFS should list entries correctly", async () => {
       "list": [
         {
           "id": "foo",
-          "path": "/test-module/foo",
+          "path": "/modules/test-module/foo",
         },
         {
           "id": "bar",
-          "path": "/test-module/bar",
+          "path": "/modules/test-module/bar",
         },
       ],
       "message": undefined,
@@ -104,7 +104,7 @@ test("AFS should list entries correctly", async () => {
     [
       "/",
       {
-        "maxDepth": 2,
+        "maxDepth": 1,
       },
     ]
   `);
@@ -153,11 +153,11 @@ test("AFS should search entries correctly", async () => {
       "list": [
         {
           "id": "foo",
-          "path": "/test-module/foo",
+          "path": "/modules/test-module/foo",
         },
         {
           "id": "bar",
-          "path": "/test-module/bar",
+          "path": "/modules/test-module/bar",
         },
       ],
       "message": "",
@@ -214,11 +214,11 @@ test("AFS should write entry correctly", async () => {
     result: { id: "foo", path: "/foo", content: "Written Content" },
   });
 
-  expect((await afs.write("/foo/test-module/foo", {})).result).toMatchInlineSnapshot(`
+  expect((await afs.write("/modules/test-module/foo", {})).result).toMatchInlineSnapshot(`
     {
       "content": "Written Content",
       "id": "foo",
-      "path": "/foo/test-module/foo",
+      "path": "/modules/test-module/foo",
     }
   `);
 
@@ -309,80 +309,90 @@ test("AFS.findModules should match modules correctly", () => {
 
   const afs = new AFS().mount(moduleA);
 
+  // Test matching at root level - should match modules
   expect(afs["findModules"]("/")).toContainAllValues([
     {
-      module: expect.any(AFSHistory),
-      maxDepth: 0,
-      subpath: "/",
-      remainedModulePath: "/history",
-    },
-    {
       module: moduleA,
+      modulePath: "/modules/module-a",
       maxDepth: 0,
       subpath: "/",
-      remainedModulePath: "/foo",
+      remainedModulePath: "/modules",
     },
   ]);
-  expect(afs["findModules"]("/foo")).toContainAllValues([
+
+  // Test matching /modules - should show module-a at depth 0
+  expect(afs["findModules"]("/modules")).toContainAllValues([
     {
       module: moduleA,
+      modulePath: "/modules/module-a",
       maxDepth: 0,
       subpath: "/",
-      remainedModulePath: "/bar",
+      remainedModulePath: "/module-a",
     },
   ]);
-  expect(afs["findModules"]("/foo/bar")).toContainAllValues([
+
+  // Test matching /modules/module-a - should match with subpath /
+  expect(afs["findModules"]("/modules/module-a")).toContainAllValues([
     {
       module: moduleA,
+      modulePath: "/modules/module-a",
       maxDepth: 1,
       subpath: "/",
-      remainedModulePath: "/",
-    },
-  ]);
-  expect(afs["findModules"]("/foo/bar/baz")).toContainAllValues([
-    {
-      module: moduleA,
-      maxDepth: 1,
-      subpath: "/baz",
       remainedModulePath: "/",
     },
   ]);
 
+  // Test matching /modules/module-a/foo - should match with subpath /foo
+  expect(afs["findModules"]("/modules/module-a/foo")).toContainAllValues([
+    {
+      module: moduleA,
+      modulePath: "/modules/module-a",
+      maxDepth: 1,
+      subpath: "/foo",
+      remainedModulePath: "/",
+    },
+  ]);
+
+  // Test with maxDepth 2 at root
   expect(afs["findModules"]("/", { maxDepth: 2 })).toContainAllValues([
     {
-      module: expect.any(AFSHistory),
-      maxDepth: 1,
-      subpath: "/",
-      remainedModulePath: "/history",
-    },
-    {
       module: moduleA,
+      modulePath: "/modules/module-a",
       maxDepth: 0,
       subpath: "/",
-      remainedModulePath: "/foo/bar",
+      remainedModulePath: "/modules/module-a",
     },
   ]);
-  expect(afs["findModules"]("/foo", { maxDepth: 2 })).toContainAllValues([
+
+  // Test with maxDepth 2 at /modules
+  expect(afs["findModules"]("/modules", { maxDepth: 2 })).toContainAllValues([
     {
       module: moduleA,
+      modulePath: "/modules/module-a",
       maxDepth: 1,
       subpath: "/",
-      remainedModulePath: "/bar",
+      remainedModulePath: "/module-a",
     },
   ]);
-  expect(afs["findModules"]("/foo/bar", { maxDepth: 2 })).toContainAllValues([
+
+  // Test with maxDepth 2 at /modules/module-a
+  expect(afs["findModules"]("/modules/module-a", { maxDepth: 2 })).toContainAllValues([
     {
       module: moduleA,
+      modulePath: "/modules/module-a",
       maxDepth: 2,
       subpath: "/",
       remainedModulePath: "/",
     },
   ]);
-  expect(afs["findModules"]("/foo/bar/baz", { maxDepth: 2 })).toContainAllValues([
+
+  // Test with maxDepth 2 at /modules/module-a/foo
+  expect(afs["findModules"]("/modules/module-a/foo", { maxDepth: 2 })).toContainAllValues([
     {
       module: moduleA,
+      modulePath: "/modules/module-a",
       maxDepth: 2,
-      subpath: "/baz",
+      subpath: "/foo",
       remainedModulePath: "/",
     },
   ]);

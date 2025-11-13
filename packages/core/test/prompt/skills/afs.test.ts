@@ -150,6 +150,35 @@ test("getAFSSkills should return all AFS skills", async () => {
           "type": "object",
         },
       },
+      {
+        "description": "Execute a function or command available in the AFS modules",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": true,
+          "properties": {
+            "args": {
+              "description": "JSON stringified arguments to pass to the executable, must be an object matching the input schema of the executable",
+              "type": "string",
+            },
+            "path": {
+              "description": "The exact path to the executable entry in AFS",
+              "type": "string",
+            },
+          },
+          "required": [
+            "path",
+            "args",
+          ],
+          "type": "object",
+        },
+        "name": "afs_exec",
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "additionalProperties": true,
+          "properties": {},
+          "type": "object",
+        },
+      },
     ]
   `);
 });

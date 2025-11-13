@@ -309,12 +309,6 @@ test("loadAgentFromYaml should load AIAgent with AFS correctly", async () => {
   assert(agent instanceof AIAgent, "agent should be an instance of AIAgent");
 
   expect(agent.afs).toBeInstanceOf(AFS);
-  expect(agent.afsConfig).toMatchInlineSnapshot(`
-    {
-      "historyWindowSize": 5,
-      "injectHistory": true,
-    }
-  `);
 });
 
 test("loadAgentFromYaml should inline function correctly", async () => {

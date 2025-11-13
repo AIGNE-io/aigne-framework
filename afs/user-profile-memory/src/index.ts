@@ -65,7 +65,7 @@ export class UserProfileMemory implements AFSModule {
     });
   }
 
-  private async updateProfile(entry: AFSEntry) {
+  async updateProfile(entry: AFSEntry) {
     const { result: previous } = await this.read("/");
 
     const { ops } = await this.options.context.newContext({ reset: true }).invoke(this.extractor, {

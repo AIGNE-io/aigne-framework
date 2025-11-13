@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.4](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.4-beta...sqlite-v0.4.4) (2025-11-12)
+
+## [0.4.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.3...sqlite-v0.4.4-beta) (2025-11-12)
+
+
+### Bug Fixes
+
+* **sqlite:** auto-create parent directories for file-based databases ([#727](https://github.com/AIGNE-io/aigne-framework/issues/727)) ([581789f](https://github.com/AIGNE-io/aigne-framework/commit/581789f38d838f53396e9e41ce9367a486319c53))
+
 ## [0.4.3](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.3-beta...sqlite-v0.4.3) (2025-10-19)
 
 ## [0.4.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.2...sqlite-v0.4.3-beta) (2025-10-07)

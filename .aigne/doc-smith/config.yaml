@@ -66,6 +66,7 @@ docsDir: .aigne/doc-smith/docs  # Directory to save generated documentation
 sourcesPath:  # Source code paths to analyze
   - packages/core
   - models/
+  - afs/
   - ./README.md
 lastGitHead: 5dbd1f28225340d5199886e6fba0d9949a2c0170
 appUrl: https://docsmith.aigne.io

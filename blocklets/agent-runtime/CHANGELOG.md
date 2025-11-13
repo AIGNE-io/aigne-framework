@@ -1,5 +1,77 @@
 # Changelog
 
+## [1.6.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-runtime-v1.6.1-beta.4...agent-runtime-v1.6.1) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.6
+    * @aigne/core bumped to 1.67.0
+    * @aigne/observability-api bumped to 0.11.6
+    * @aigne/sqlite bumped to 0.4.4
+    * @aigne/transport bumped to 0.15.15
+
+## [1.6.1-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/agent-runtime-v1.6.1-beta.3...agent-runtime-v1.6.1-beta.4) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.6-beta.4
+    * @aigne/core bumped to 1.67.0-beta.4
+    * @aigne/transport bumped to 0.15.15-beta.4
+
+## [1.6.1-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/agent-runtime-v1.6.1-beta.2...agent-runtime-v1.6.1-beta.3) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.6-beta.3
+    * @aigne/core bumped to 1.67.0-beta.3
+    * @aigne/transport bumped to 0.15.15-beta.3
+
+## [1.6.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/agent-runtime-v1.6.1-beta.1...agent-runtime-v1.6.1-beta.2) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.6-beta.2
+    * @aigne/core bumped to 1.67.0-beta.2
+    * @aigne/observability-api bumped to 0.11.6-beta.2
+    * @aigne/transport bumped to 0.15.15-beta.2
+
+## [1.6.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-runtime-v1.6.1-beta...agent-runtime-v1.6.1-beta.1) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.6-beta.1
+    * @aigne/core bumped to 1.67.0-beta.1
+    * @aigne/observability-api bumped to 0.11.6-beta.1
+    * @aigne/sqlite bumped to 0.4.4-beta
+    * @aigne/transport bumped to 0.15.15-beta.1
+
+## [1.6.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/agent-runtime-v1.6.0...agent-runtime-v1.6.1-beta) (2025-11-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.6-beta
+    * @aigne/core bumped to 1.67.0-beta
+    * @aigne/observability-api bumped to 0.11.6-beta
+    * @aigne/transport bumped to 0.15.15-beta
+
 ## [1.6.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-runtime-v1.6.0-beta.5...aigne-runtime-v1.6.0) (2025-11-07)
 
 

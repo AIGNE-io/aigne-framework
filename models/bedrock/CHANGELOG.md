@@ -1,5 +1,71 @@
 # Changelog
 
+## [0.10.11](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.11-beta.4...bedrock-v0.10.11) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.59
+
+## [0.10.11-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.11-beta.3...bedrock-v0.10.11-beta.4) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.59-beta.4
+
+## [0.10.11-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.11-beta.2...bedrock-v0.10.11-beta.3) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.59-beta.3
+
+## [0.10.11-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.11-beta.1...bedrock-v0.10.11-beta.2) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.59-beta.2
+
+## [0.10.11-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.11-beta...bedrock-v0.10.11-beta.1) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.59-beta.1
+
+## [0.10.11-beta](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.10...bedrock-v0.10.11-beta) (2025-11-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.59-beta
+
 ## [0.10.10](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.10-beta.6...bedrock-v0.10.10) (2025-11-07)
 
 

@@ -466,7 +466,7 @@ export class AIGNE<U extends UserContext = UserContext> {
    * This registers handlers for SIGINT and exit events to properly terminate all agents.
    */
   private initProcessExitHandler() {
-    const shutdownAndExit = () => this.shutdown().finally(() => process.exit(0));
+    const shutdownAndExit = () => this.shutdown();
     process.on("SIGINT", shutdownAndExit);
     process.on("exit", shutdownAndExit);
   }

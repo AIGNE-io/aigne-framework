@@ -73,10 +73,11 @@ export class ImageAgent<I extends Message = any, O extends ImageModelOutput = an
       agent: this,
     });
 
+    const n = input.n || this.modelOptions?.n;
     return (await this.invokeChildAgent(
       imageModel,
       {
-        ...input,
+        n: n && typeof n === "number" ? n : undefined,
         modelOptions: this.modelOptions,
         prompt,
         image,

@@ -25,6 +25,7 @@ export default defineConfig(() => {
         transformMixedEsModules: true,
       },
       rollupOptions: {
+        external: ["fs/promises"],
         output: {
           manualChunks: {
             "vendor-common": [

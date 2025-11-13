@@ -1,6 +1,6 @@
 {
   "name": "@blocklet/observability",
-  "version": "1.15.1",
+  "version": "1.15.2",
   "description": "Blocklet Observability for tracing and observability",
   "publishConfig": {
     "access": "public"
@@ -63,6 +63,7 @@
     "globals": "^16.4.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.44.0",
     "vite": "^7.1.5",

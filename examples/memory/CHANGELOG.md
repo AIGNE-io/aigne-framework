@@ -1,5 +1,97 @@
 # Changelog
 
+## [0.10.69](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.69-beta.4...example-memory-v0.10.69) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.1.2
+    * @aigne/afs-user-profile-memory bumped to 1.0.5
+    * @aigne/cli bumped to 1.54.1
+    * @aigne/core bumped to 1.67.0
+    * @aigne/default-memory bumped to 1.2.15
+    * @aigne/fs-memory bumped to 1.0.52
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.59
+
+## [0.10.69-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.69-beta.3...example-memory-v0.10.69-beta.4) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-user-profile-memory bumped to 1.0.5-beta.4
+    * @aigne/cli bumped to 1.54.1-beta.4
+    * @aigne/core bumped to 1.67.0-beta.4
+    * @aigne/default-memory bumped to 1.2.15-beta.4
+    * @aigne/fs-memory bumped to 1.0.52-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.59-beta.4
+
+## [0.10.69-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.69-beta.2...example-memory-v0.10.69-beta.3) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-user-profile-memory bumped to 1.0.5-beta.3
+    * @aigne/cli bumped to 1.54.1-beta.3
+    * @aigne/core bumped to 1.67.0-beta.3
+    * @aigne/default-memory bumped to 1.2.15-beta.3
+    * @aigne/fs-memory bumped to 1.0.52-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.59-beta.3
+
+## [0.10.69-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.69-beta.1...example-memory-v0.10.69-beta.2) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-user-profile-memory bumped to 1.0.5-beta.2
+    * @aigne/cli bumped to 1.54.1-beta.2
+    * @aigne/core bumped to 1.67.0-beta.2
+    * @aigne/default-memory bumped to 1.2.15-beta.2
+    * @aigne/fs-memory bumped to 1.0.52-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.59-beta.2
+
+## [0.10.69-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.69-beta...example-memory-v0.10.69-beta.1) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.1.2-beta
+    * @aigne/afs-user-profile-memory bumped to 1.0.5-beta.1
+    * @aigne/cli bumped to 1.54.1-beta.1
+    * @aigne/core bumped to 1.67.0-beta.1
+    * @aigne/default-memory bumped to 1.2.15-beta.1
+    * @aigne/fs-memory bumped to 1.0.52-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.59-beta.1
+
+## [0.10.69-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.68...example-memory-v0.10.69-beta) (2025-11-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-user-profile-memory bumped to 1.0.5-beta
+    * @aigne/cli bumped to 1.54.1-beta
+    * @aigne/core bumped to 1.67.0-beta
+    * @aigne/default-memory bumped to 1.2.15-beta
+    * @aigne/fs-memory bumped to 1.0.52-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.59-beta
+
 ## [0.10.68](https://github.com/AIGNE-io/aigne-framework/compare/example-memory-v0.10.68-beta.8...example-memory-v0.10.68) (2025-11-07)
 
 

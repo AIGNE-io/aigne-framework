@@ -1,2 +1,12 @@
 type: ai
-afs: true
+afs:
+  modules:
+    - module: history
+      options:
+        storage:
+          url: ":memory:"
+    - module: local-fs
+      mountPoint: /working-dir
+      options:
+        localPath: ./afs-local-fs-storage
+        description: "Local file system storage for AFS example"

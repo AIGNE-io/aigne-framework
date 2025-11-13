@@ -17,6 +17,7 @@ import {
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 import { MockMemory } from "../_mocks/mock-memory.js";
 
 test("PromptBuilder should build messages correctly", async () => {
@@ -447,6 +448,31 @@ test("PromptBuilder should build with afs correctly", async () => {
 
   const afs = new AFS().mount(new AFSHistory());
 
+  spyOn(afs, "search").mockResolvedValueOnce({
+    list: [
+      {
+        id: "1",
+        path: "/modules/history/1",
+        content: `Test file content 1`,
+      },
+      {
+        id: "2",
+        path: "/modules/history/2",
+        content: `Test file content 2`,
+      },
+      {
+        id: "3",
+        path: "/modules/history/3",
+        metadata: {
+          execute: {
+            name: "echo",
+            inputSchema: zodToJsonSchema(z.object({ text: z.string() })),
+          },
+        },
+      },
+    ],
+  });
+
   const agent = AIAgent.from({
     inputKey: "message",
     afs,
@@ -481,6 +507,29 @@ test("PromptBuilder should build with afs correctly", async () => {
     4. afs_write: Write content to a file in the AFS
     5. afs_exec: Execute a executable tool from the available modules
     </afs_usage>
+
+    <afs_executable_tools>
+    Here are the executable tools available in the AFS you can use:
+
+    - path: /modules/history/3
+      name: echo
+      inputSchema:
+        type: object
+        properties:
+          text:
+            type: string
+        required:
+          - text
+        additionalProperties: false
+        $schema: http://json-schema.org/draft-07/schema#
+
+    </afs_executable_tools>
+
+    <related-memories>
+    - content: Test file content 1
+    - content: Test file content 2
+
+    </related-memories>
     "
     ,
         "role": "system",

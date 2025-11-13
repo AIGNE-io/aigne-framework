@@ -207,9 +207,7 @@ async function parseAgent(
 
   let afs: AFS | undefined;
   if (typeof agent.afs === "boolean") {
-    if (agent.afs) {
-      afs = new AFS();
-    }
+    if (agent.afs) afs = new AFS();
   } else if (agent.afs) {
     afs = new AFS();
 

@@ -305,6 +305,7 @@ AFS provides AI agents with a unified interface to access various storage backen
 
 * [AFS Memory Example](./examples/afs-memory/README.md) - Explore conversation memory and user profile management capabilities.
 * [AFS LocalFS Example](./examples/afs-local-fs/README.md) - Learn how to mount local file systems and let AI agents interact with your files through natural language.
+* [AFS MCP Server Example](./examples/afs-mcp-server/README.md) - Mount MCP servers as AFS modules to integrate external services like GitHub.
 
 For comprehensive AFS documentation, see [AFS Documentation](./afs/README.md).
 

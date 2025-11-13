@@ -334,7 +334,9 @@ const result = await context.invoke(agent, {
 
 ## Examples
 
-See the [AFS examples](../../examples/afs-local-fs) for complete usage examples.
+- [AFS Memory Example](../../examples/afs-memory/README.md) - Conversational memory with user profiles
+- [AFS LocalFS Example](../../examples/afs-local-fs/README.md) - File system access with AI agents
+- [AFS MCP Server Example](../../examples/afs-mcp-server/README.md) - Mount MCP servers as AFS modules
 
 ## TypeScript Support
 

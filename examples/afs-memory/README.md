@@ -222,3 +222,21 @@ The AI can now:
 4. **Persistent**: Memory survives across multiple conversations
 5. **Structured**: Information is organized in a consistent format
 6. **Privacy-Aware**: All data stored locally in SQLite
+
+## Related Examples
+
+- [AFS LocalFS Example](../afs-local-fs/README.md) - File system access with AI agents
+- [AFS MCP Server Example](../afs-mcp-server/README.md) - Mount MCP servers as AFS modules
+
+## Related Packages
+
+- [@aigne/afs](../../afs/README.md) - AFS core package
+- [@aigne/afs-user-profile-memory](../../afs/user-profile-memory/README.md) - User profile memory module
+
+## TypeScript Support
+
+This package includes full TypeScript type definitions.
+
+## License
+
+[MIT](../../LICENSE.md)

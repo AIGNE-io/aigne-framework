@@ -1,4 +1,4 @@
-# AFS SystemFS Example
+# AFS LocalFS Example
 
 <p align="center">
   <picture>
@@ -8,7 +8,7 @@
   </picture>
 </p>
 
-This example demonstrates how to create a chatbot that can interact with your local file system using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md). The example utilizes the `SystemFS` module to provide file system access to AI agents through the **AIGNE File System (AFS)** interface.
+This example demonstrates how to create a chatbot that can interact with your local file system using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md). The example utilizes the `LocalFS` module to provide file system access to AI agents through the **AIGNE File System (AFS)** interface.
 
 **AIGNE File System (AFS)** is a virtual file system abstraction that provides AI agents with unified access to various storage backends. For comprehensive documentation, see [AFS Documentation](../../afs/README.md).
 
@@ -26,13 +26,13 @@ This example demonstrates how to create a chatbot that can interact with your lo
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 
 # Mount your current directory and chat with the bot about your files
-npx -y @aigne/example-afs-system-fs --path . --chat
+npx -y @aigne/example-afs-local-fs --path . --chat
 
 # Mount a specific directory (e.g., your documents)
-npx -y @aigne/example-afs-system-fs --path ~/Documents --mount /docs --description "My Documents" --chat
+npx -y @aigne/example-afs-local-fs --path ~/Documents --description "My Documents" --chat
 
 # Ask questions about files without interactive mode
-npx -y @aigne/example-afs-system-fs --path . --input "What files are in the current directory?"
+npx -y @aigne/example-afs-local-fs --path . --input "What files are in the current directory?"
 ```
 
 ## Installation
@@ -46,7 +46,7 @@ git clone https://github.com/AIGNE-io/aigne-framework
 ### Install Dependencies
 
 ```bash
-cd aigne-framework/examples/afs-system-fs
+cd aigne-framework/examples/afs-local-fs
 
 pnpm install
 ```
@@ -80,16 +80,16 @@ For detailed configuration examples, please refer to the `.env.local.example` fi
 # Run with your current directory
 pnpm start --path .
 
-# Run with a specific directory and custom mount point
-pnpm start --path ~/Documents --mount /docs --description "My Documents"
+# Run with a specific directory
+pnpm start --path ~/Documents --description "My Documents"
 
 # Run in interactive chat mode
 pnpm start --path . --chat
 ```
 
-## How SystemFS Works
+## How LocalFS Works
 
-This example uses the `SystemFS` module from `@aigne/afs-system-fs` to mount your local file system into the **AIGNE File System (AFS)**. This allows AI agents to interact with your files through a standardized interface.
+This example uses the `LocalFS` module from `@aigne/afs-local-fs` to mount your local file system into the **AIGNE File System (AFS)**. This allows AI agents to interact with your files through a standardized interface.
 
 ### Key Features
 
@@ -101,44 +101,38 @@ This example uses the `SystemFS` module from `@aigne/afs-system-fs` to mount you
 
 ### Available Operations
 
-The SystemFS module provides these AFS operations:
+The LocalFS module provides these AFS operations:
 
 #### **list(path, options?)** - List directory contents
 ```typescript
-// List files in root directory
-await systemFS.list("")
+// List files in mounted directory
+await afs.list('/modules/local-fs')
 
 // List files recursively with depth limit
-await systemFS.list("", { recursive: true, maxDepth: 2 })
-
-// List with sorting and limits
-await systemFS.list("", {
-  orderBy: [['path', 'asc']],
-  limit: 10
-})
+await afs.list('/modules/local-fs', { maxDepth: 2 })
 ```
 
 #### **read(path)** - Read file or directory
 ```typescript
 // Read file content
-const file = await systemFS.read("README.md")
-console.log(file.content) // File contents as string
+const { result } = await afs.read('/modules/local-fs/README.md')
+console.log(result.content) // File contents as string
 
 // Read directory metadata
-const dir = await systemFS.read("src")
+const { result: dir } = await afs.read('/modules/local-fs/src')
 console.log(dir.metadata.type) // "directory"
 ```
 
 #### **write(path, entry)** - Write or create files
 ```typescript
 // Write a text file
-await systemFS.write("notes.txt", {
+await afs.write('/modules/local-fs/notes.txt', {
   content: "My notes",
   summary: "Personal notes file"
 })
 
 // Write JSON data
-await systemFS.write("config.json", {
+await afs.write('/modules/local-fs/config.json', {
   content: { setting: "value" },
   metadata: { format: "json" }
 })
@@ -147,13 +141,10 @@ await systemFS.write("config.json", {
 #### **search(path, query, options?)** - Search file contents
 ```typescript
 // Search for text in files
-const results = await systemFS.search("", "TODO")
+const { list } = await afs.search('/modules/local-fs', 'TODO')
 
 // Search with regex patterns
-const matches = await systemFS.search("", "function\\s+\\w+")
-
-// Limit search results
-const limited = await systemFS.search("", "error", { limit: 5 })
+const { list: matches } = await afs.search('/modules/local-fs', 'function\\s+\\w+')
 ```
 
 ## Example Usage
@@ -163,19 +154,19 @@ Try these commands to explore the file system capabilities:
 ### Basic File Operations
 ```bash
 # List all files in current directory
-npx -y @aigne/example-afs-system-fs --path . --input "List all files in the root directory"
+npx -y @aigne/example-afs-local-fs --path . --input "List all files in the root directory"
 
 # Read a specific file
-npx -y @aigne/example-afs-system-fs --path . --input "Read the contents of package.json"
+npx -y @aigne/example-afs-local-fs --path . --input "Read the contents of package.json"
 
 # Search for specific content
-npx -y @aigne/example-afs-system-fs --path . --input "Find all files containing the word 'example'"
+npx -y @aigne/example-afs-local-fs --path . --input "Find all files containing the word 'example'"
 ```
 
 ### Interactive Chat Examples
 ```bash
 # Start interactive mode
-npx -y @aigne/example-afs-system-fs --path . --chat
+npx -y @aigne/example-afs-local-fs --path . --chat
 ```
 
 Then try asking:
@@ -188,8 +179,8 @@ Then try asking:
 
 ### Advanced Usage
 ```bash
-# Mount multiple directories or specific paths
-npx -y @aigne/example-afs-system-fs --path ~/Projects --mount /projects --description "My coding projects" --chat
+# Mount specific directories
+npx -y @aigne/example-afs-local-fs --path ~/Projects --description "My coding projects" --chat
 ```
 
 The chatbot can help you navigate, search, read, and organize files in your mounted directories through natural language commands.
@@ -198,18 +189,25 @@ The chatbot can help you navigate, search, read, and organize files in your moun
 
 ### Mount a local directory as an AFS module
 
-Just following code snippet shows how to mount a local directory using `SystemFS`:
+The following code snippet shows how to mount a local directory using `LocalFS`:
 
 ```typescript
-AIAgent.from({
-  ...,
-  afs: new AFS().use(
-    new SystemFS({ mount: '/source', path: '/PATH/TO/Bitcoin/Project', description: 'Codebase of Bitcoin project' }),
-  ),
-  afsConfig: {
-    injectHistory: true,
-  },
-}),
+import { AFS, AFSHistory } from "@aigne/afs";
+import { LocalFS } from "@aigne/afs-local-fs";
+import { AIAgent } from "@aigne/core";
+
+const afs = new AFS()
+  .mount(new AFSHistory({ storage: { url: ":memory:" } }))
+  .mount(new LocalFS({
+    localPath: '/path/to/directory',
+    description: 'My project files'
+  }));
+
+const agent = AIAgent.from({
+  instructions: "You are a friendly chatbot that can retrieve files from a virtual file system.",
+  inputKey: "message",
+  afs,
+});
 ```
 
 ### Call AFS tools to retrieve context
@@ -225,10 +223,7 @@ User Question: What's the purpose of this project?
       "function": {
         "name": "afs_list",
         "arguments": {
-          "path": "/",
-          "options": {
-            "recursive": false
-          }
+          "path": "/modules/local-fs"
         }
       }
     }
@@ -236,19 +231,14 @@ User Question: What's the purpose of this project?
 }
 ```
 
-The agent will call the `afs_list` tool to list the files in the root directory
+The agent will call the `afs_list` tool to list the files in the mounted directory
 
 ```json
 {
-  "status": "success",
-  "tool": "afs_list",
-  "options": {
-    "recursive": false
-  },
   "list": [
     {
       "id": "/README.md",
-      "path": "/source/README.md",
+      "path": "/modules/local-fs/README.md",
       "createdAt": "2025-10-30T14:03:49.961Z",
       "updatedAt": "2025-10-30T14:03:49.961Z",
       "metadata": {
@@ -256,8 +246,7 @@ The agent will call the `afs_list` tool to list the files in the root directory
         "size": 3489,
         "mode": 33188
       }
-    },
-    // ... other files
+    }
   ]
 }
 ```
@@ -273,7 +262,7 @@ Then use `afs_read` to read specific file content
       "function": {
         "name": "afs_read",
         "arguments": {
-          "path": "/source/README.md"
+          "path": "/modules/local-fs/README.md"
         }
       }
     }
@@ -281,80 +270,22 @@ Then use `afs_read` to read specific file content
 }
 ```
 
-Finally, prompt builder will combine the retrieved file content and construct the final message for the agent to answer the user question.
+The agent combines the retrieved file content to answer the user's question naturally.
 
-```json
-{
-  "messages": [
-    {
-      "role": "system",
-      "content": "You are an ...",
-    },
-    {
-      "role": "user",
-      "content": [
-        {
-          "type": "text",
-          "text": "What's the purpose of this project?"
-        }
-      ]
-    },
-    {
-      "role": "agent",
-      "toolCalls": [
-        {
-          "id": "call_TLvilbEhXqg3WFsFAKqm69W9",
-          "type": "function",
-          "function": {
-            "name": "afs_list",
-            "arguments": {
-              "path": "/source",
-              "options": {
-                "recursive": false
-              }
-            }
-          }
-        }
-      ]
-    },
-    {
-      "role": "tool",
-      "content": "... list result ...", // Here would be the actual list result
-      "toolCallId": "call_TLvilbEhXqg3WFsFAKqm69W9"
-    },
-    {
-      "role": "agent",
-      "toolCalls": [
-        {
-          "id": "call_73i8vwuHKXt2igXGdyeEws7F",
-          "type": "function",
-          "function": {
-            "name": "afs_read",
-            "arguments": {
-              "path": "/source/README.md"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "role": "tool",
-      "content": "... read file content ...", // Here would be the actual file content
-      "toolCallId": "call_73i8vwuHKXt2igXGdyeEws7F"
-    }
-  ]
-}
-```
+## Related Examples
 
-The final answer from the agent would be:
+- [AFS Memory Example](../afs-memory/README.md) - Conversational memory with user profiles
+- [AFS MCP Server Example](../afs-mcp-server/README.md) - Integration with MCP servers
 
-```markdown
-This repository is Bitcoin Core — the reference implementation of the Bitcoin protocol. Its purpose is to provide a full-node Bitcoin client that:
+## Related Packages
 
-    * Connects to the Bitcoin peer-to-peer network, downloads blocks and transactions, and fully validates them against consensus rules (so you don’t have to trust others).
-    * Acts as a reference implementation of Bitcoin protocol behavior used by wallets, services, and other implementations.
-    * Includes an optional wallet and a GUI (and an RPC interface) for interacting with the node.
-    * Provides developer tooling, tests (unit, integration, regression), and documentation to maintain security and correctness.
+- [@aigne/afs](../../afs/README.md) - AFS core package
+- [@aigne/afs-local-fs](../../afs/local-fs/README.md) - LocalFS module documentation
 
-For an overview see the README (https://bitcoincore.org) and to get ready-to-run binaries use https://bitcoincore.org/en/download/. The project is released under the MIT license.
-```
+## TypeScript Support
+
+This package includes full TypeScript type definitions.
+
+## License
+
+[MIT](../../LICENSE.md)

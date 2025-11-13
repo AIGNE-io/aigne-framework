@@ -463,6 +463,11 @@ export default ({
     }
 
     await db.delete(Trace).execute();
+
+    await (db as any).vacuum?.().catch((err: any) => {
+      console.error("Failed to vacuum:", err);
+    });
+
     res.json({ code: 0, message: "all traces deleted" });
   });
 

@@ -62,7 +62,7 @@ export class TerminalTracer {
           this.formatResult(agent, context, result, options),
       },
       [],
-      { concurrent: true, exitOnError: false },
+      { concurrent: true, exitOnError: false, registerSignalListeners: false },
     );
     this.listr = listr;
 

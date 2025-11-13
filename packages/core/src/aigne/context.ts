@@ -480,12 +480,7 @@ export class AIGNEContext implements Context {
   }
 
   initProcessExitHandler() {
-    const originalExit = process.exit.bind(process);
-
     process.on("SIGINT", async () => {
-      // @ts-ignore
-      process.exit = () => {};
-
       try {
         if (process.env.AIGNE_OBSERVABILITY_DISABLED) return;
 
@@ -496,7 +491,6 @@ export class AIGNEContext implements Context {
         span.end();
         await this.observer?.flush(span);
       } finally {
-        process.exit = originalExit;
         process.exit(0);
       }
     });

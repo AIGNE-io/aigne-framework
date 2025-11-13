@@ -1,5 +1,2 @@
 type: ai
 afs: true
-afs_config:
-  inject_history: true
-  history_window_size: 5

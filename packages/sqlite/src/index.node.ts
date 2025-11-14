@@ -11,8 +11,9 @@ export * from "./reexport.js";
 export async function initDatabase({
   url = ":memory:",
   wal = false,
+  walAutocheckpoint = 5000,
 }: InitDatabaseOptions & { walAutocheckpoint?: number } = {}): Promise<
-  LibSQLDatabase & { checkpoint?: () => Promise<void> }
+  LibSQLDatabase & { vacuum?: () => Promise<void> }
 > {
   let db: LibSQLDatabase;
   let client: ReturnType<typeof createClient> | undefined;
@@ -27,11 +28,17 @@ export async function initDatabase({
     await client.execute(`\
 PRAGMA journal_mode = WAL;
 PRAGMA synchronous = normal;
-PRAGMA wal_autocheckpoint = 5000;
+PRAGMA wal_autocheckpoint = ${walAutocheckpoint};
 PRAGMA busy_timeout = 5000;
 `);
-    await client.execute(`PRAGMA auto_vacuum = FULL;`);
-    await client.execute(`VACUUM;`);
+
+    try {
+      await client.execute(`PRAGMA auto_vacuum = FULL;`);
+      await client.execute(`VACUUM;`);
+    } catch (e) {
+      console.warn("auto_vacuum or VACUUM failed", e);
+    }
+
     db = drizzle(client);
   } else {
     db = drizzle(url);
@@ -49,8 +56,12 @@ PRAGMA busy_timeout = 5000;
 
   (db as any).vacuum = async function checkpointWal() {
     if (client && typeof client.execute === "function") {
-      await client.execute("PRAGMA wal_checkpoint(TRUNCATE);");
-      await client.execute(`VACUUM;`);
+      try {
+        await client.execute("PRAGMA wal_checkpoint(TRUNCATE);");
+        await client.execute(`VACUUM;`);
+      } catch (e) {
+        console.error("checkpointWal failed", e);
+      }
     }
   };
 

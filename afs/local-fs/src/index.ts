@@ -15,13 +15,15 @@ import { searchWithRipgrep } from "./utils/ripgrep.js";
 const LIST_MAX_LIMIT = 50;
 
 export interface LocalFSOptions {
+  name?: string;
   localPath: string;
   description?: string;
 }
 
 const localFSOptionsSchema = z.object({
+  name: z.string().nullish(),
   localPath: z.string().describe("The path to the local directory to mount"),
-  description: z.string().describe("A description of the mounted directory").optional(),
+  description: z.string().describe("A description of the mounted directory").nullish(),
 });
 
 export class LocalFS implements AFSModule {
@@ -31,10 +33,11 @@ export class LocalFS implements AFSModule {
       localPath: options.localPath || (options as any).path, // compatible with 'path' option
     });
 
+    this.name = options.name || "local-fs";
     this.description = options.description;
   }
 
-  name: string = "local-fs";
+  name: string;
 
   description?: string;
 

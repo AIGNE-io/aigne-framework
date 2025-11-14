@@ -1,6 +1,6 @@
+import type { AFSModule } from "@aigne/afs";
 import { type initDatabase, type SQL, sql } from "@aigne/sqlite";
 import { v7 } from "@aigne/uuid";
-import type { AFSModule } from "../type.js";
 import { init } from "./migrations/001-init.js";
 import type { AFSStorageMigrations } from "./type.js";
 

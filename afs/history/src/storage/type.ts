@@ -1,5 +1,5 @@
+import type { AFSEntry, AFSModule } from "@aigne/afs";
 import type { SQL } from "@aigne/sqlite";
-import type { AFSEntry, AFSModule } from "../type.js";
 
 export interface AFSStorageCreatePayload extends Omit<AFSEntry, "id"> {}
 

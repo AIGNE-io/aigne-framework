@@ -38,7 +38,6 @@ export type AFSModuleSchema =
   | string
   | {
       module: string;
-      mountPoint?: string;
       options?: Record<string, any>;
     };
 
@@ -196,7 +195,6 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
                     camelizeSchema(
                       z.object({
                         module: z.string(),
-                        mountPoint: optionalize(z.string()),
                         options: optionalize(z.record(z.any())),
                       }),
                     ),

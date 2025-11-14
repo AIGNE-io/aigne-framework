@@ -221,10 +221,7 @@ async function parseAgent(
 
       const module = await mod.create(typeof m === "string" ? {} : m.options);
 
-      const mountPoint = typeof m === "string" ? undefined : m.mountPoint;
-
-      if (mountPoint) afs.mount(mountPoint, module);
-      else afs.mount(module);
+      afs.mount(module);
     }
   }
 

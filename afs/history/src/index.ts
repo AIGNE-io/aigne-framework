@@ -1,14 +1,19 @@
-import { v7 } from "@aigne/uuid";
-import { joinURL } from "ufo";
-import { SharedAFSStorage, type SharedAFSStorageOptions } from "../storage/index.js";
-import type { AFSStorage } from "../storage/type.js";
 import type {
   AFSEntry,
   AFSListOptions,
   AFSModule,
   AFSRoot,
   AFSWriteEntryPayload,
-} from "../type.js";
+} from "@aigne/afs";
+import { v7 } from "@aigne/uuid";
+import { joinURL } from "ufo";
+import {
+  type AFSStorage,
+  SharedAFSStorage,
+  type SharedAFSStorageOptions,
+} from "./storage/index.js";
+
+export * from "./storage/index.js";
 
 export interface AFSHistoryOptions {
   storage?: SharedAFSStorage | SharedAFSStorageOptions;

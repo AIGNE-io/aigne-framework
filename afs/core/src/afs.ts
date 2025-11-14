@@ -31,37 +31,21 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
   private modules = new Map<string, AFSModule>();
 
-  mount(module: AFSModule): this;
-  mount(path: string, module: AFSModule): this;
-  mount(path: string | AFSModule, module?: AFSModule): this;
-  mount(path: string | AFSModule, module?: AFSModule): this {
-    let p: string | undefined;
-    let m: AFSModule | undefined;
+  mount(module: AFSModule): this {
+    let path = joinURL("/", module.name);
 
-    if (typeof path === "string" && module) {
-      p = path;
-      m = module;
-    } else if (typeof path !== "string") {
-      p = joinURL("/", path.name);
-      m = path;
+    if (!/^\/[^/]+$/.test(path)) {
+      throw new Error(`Invalid mount path: ${path}. Must start with '/' and contain no other '/'`);
     }
 
-    if (!p || !m) {
-      throw new Error("Invalid arguments to mount: path and module are required");
+    if (this.modules.has(path)) {
+      throw new Error(`Module already mounted at path: ${path}`);
     }
 
-    if (!/^\/[^/]+$/.test(p)) {
-      throw new Error(`Invalid mount path: ${p}. Must start with '/' and contain no other '/'`);
-    }
+    path = joinURL(MODULES_ROOT_DIR, path);
 
-    if (this.modules.has(p)) {
-      throw new Error(`Module already mounted at path: ${p}`);
-    }
-
-    p = joinURL(MODULES_ROOT_DIR, p);
-
-    this.modules.set(p, m);
-    m.onMount?.(this);
+    this.modules.set(path, module);
+    module.onMount?.(this);
     return this;
   }
 

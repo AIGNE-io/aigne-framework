@@ -1,14 +1,16 @@
+import type {
+  AFSEntry,
+  AFSListOptions,
+  AFSModule,
+  AFSRoot,
+  AFSSearchOptions,
+  AFSWriteEntryPayload,
+} from "@aigne/afs";
 import {
-  type AFSEntry,
-  type AFSListOptions,
-  type AFSModule,
-  type AFSRoot,
-  type AFSSearchOptions,
   type AFSStorage,
-  type AFSWriteEntryPayload,
   SharedAFSStorage,
   type SharedAFSStorageOptions,
-} from "@aigne/afs";
+} from "@aigne/afs-history";
 import { AIAgent, type Context } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
 import { applyPatch, type Operation } from "fast-json-patch";

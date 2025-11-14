@@ -1,6 +1,7 @@
 #!/usr/bin/env npx -y bun
 
-import { AFS, AFSHistory } from "@aigne/afs";
+import { AFS } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgent, MCPAgent } from "@aigne/core";
 

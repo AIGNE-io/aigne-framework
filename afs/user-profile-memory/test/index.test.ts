@@ -1,5 +1,6 @@
 import { expect, type Mock, spyOn, test } from "bun:test";
-import { AFS, AFSHistory } from "@aigne/afs";
+import { AFS } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 import { UserProfileMemory } from "@aigne/afs-user-profile-memory";
 import { AIGNE } from "@aigne/core";
 

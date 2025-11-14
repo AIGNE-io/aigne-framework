@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@aigne/afs": "workspace:^",
+    "@aigne/afs-history": "workspace:^",
     "@aigne/afs-local-fs": "workspace:^",
     "@aigne/cli": "workspace:^",
     "@aigne/core": "workspace:^",

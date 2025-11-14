@@ -16,6 +16,7 @@ export function createAIGNECommand(options?: { argv?: string[]; aigneFilePath?: 
     .scriptName("aigne")
     .usage(`${asciiLogo}\n$0 <command> [options]`)
     .version(AIGNE_CLI_VERSION)
+    // default command: when user runs `aigne` without subcommand, behave like `aigne run`
     .command(createRunCommand(options))
     .command(createEvalCommand(options))
     .command(createTestCommand(options))

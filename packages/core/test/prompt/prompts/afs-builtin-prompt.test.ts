@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
-import { AFS, AFSHistory } from "@aigne/afs";
+import { AFS } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 import { getAFSSystemPrompt } from "@aigne/core/prompt/prompts/afs-builtin-prompt";
 
 test("getAFSSystemPrompt should inject afs modules to the system prompt", async () => {

@@ -1,6 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import { join } from "node:path";
-import { AFS, AFSHistory } from "@aigne/afs";
+import { AFS } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 import {
   AIAgent,
   AIAgentToolChoice,

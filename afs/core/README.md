@@ -258,24 +258,24 @@ export class CustomModule implements AFSModule {
   readonly name = "custom-module";
   readonly description = "My custom storage";
 
-  async list(path: string, options?: AFSListOptions) {
+  async list(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[]; message?: string }> {
     // path is the subpath within your module
     // Implement your list logic
     return { list: [] };
   }
 
-  async read(path: string) {
+  async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
     // Implement your read logic
     return { result: undefined };
   }
 
-  async write(path: string, content: AFSWriteEntryPayload) {
+  async write(path: string, content: AFSWriteEntryPayload): Promise<{ result: AFSEntry; message?: string }> {
     // Implement your write logic
     const entry: AFSEntry = { id: 'id', path, ...content };
     return { result: entry };
   }
 
-  async search(path: string, query: string, options?: AFSSearchOptions) {
+  async search(path: string, query: string, options?: AFSSearchOptions): Promise<{ list: AFSEntry[]; message?: string }> {
     // Implement your search logic
     return { list: [] };
   }

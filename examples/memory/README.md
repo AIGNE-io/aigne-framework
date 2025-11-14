@@ -8,7 +8,9 @@
   </picture>
 </p>
 
-This example demonstrates how to create a chatbot with memory capabilities using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md). The example utilizes the `FSMemory` plugin to provide persistence across chat sessions.
+This example demonstrates how to create a chatbot with memory capabilities using the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md). The example utilizes the **AIGNE File System (AFS)** with memory modules to provide persistence across chat sessions.
+
+**AIGNE File System (AFS)** is a virtual file system abstraction that provides AI agents with unified access to various storage backends, including conversation history and user profiles. For comprehensive documentation, see [AFS Documentation](../../afs/README.md).
 
 ## Prerequisites
 
@@ -97,7 +99,7 @@ pnpm start
 ## How Memory Works
 
 The memory functionality in this example is implemented using the `history` module and `UserProfileMemory` module,
-which are part of the AIGNE Framework's Augmented File System (AFS). Here's a brief overview of how memory is recorded and retrieved during conversations.
+which are part of the AIGNE Framework's **AIGNE File System (AFS)**. Here's a brief overview of how memory is recorded and retrieved during conversations.
 
 ### Recording Conversations
 

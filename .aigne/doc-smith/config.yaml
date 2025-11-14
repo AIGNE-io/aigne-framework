@@ -66,6 +66,7 @@ docsDir: .aigne/doc-smith/docs  # Directory to save generated documentation
 sourcesPath:  # Source code paths to analyze
   - packages/core
   - models/
+  - afs/
   - ./README.md
   - ./examples/**/*.md
   - ./examples/**/*.png

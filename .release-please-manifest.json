@@ -47,6 +47,7 @@
   "models/lmstudio": "1.0.21",
   "blocklets/agent-runtime": "1.6.1",
   "afs/core": "1.1.2",
+  "afs/history": "0.0.0",
   "afs/user-profile-memory": "1.0.5",
   "afs/local-fs": "1.0.5"
 }

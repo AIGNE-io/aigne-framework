@@ -96,9 +96,6 @@ importers:
       '@aigne/afs':
         specifier: workspace:^
         version: link:../core
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../../packages/core
       '@aigne/sqlite':
         specifier: workspace:^
         version: link:../../packages/sqlite

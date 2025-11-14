@@ -165,6 +165,9 @@
     "afs/core": {
       "prerelease-type": "beta"
     },
+    "afs/history": {
+      "prerelease-type": "beta"
+    },
     "afs/user-profile-memory": {
       "prerelease-type": "beta"
     },

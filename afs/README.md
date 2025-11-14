@@ -65,7 +65,8 @@ interface AFSEntry {
 ### Creating an AFS Instance
 
 ```typescript
-import { AFS, AFSHistory } from "@aigne/afs";
+import { AFS } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 import { LocalFS } from "@aigne/afs-local-fs";
 import { UserProfileMemory } from "@aigne/afs-user-profile-memory";
 
@@ -149,6 +150,7 @@ const modules = await afs.listModules();
 
 ### 1. AFSHistory
 
+- **Package:** `@aigne/afs-history`
 - **Mount Path:** `/modules/history`
 - **Purpose:** Records conversation history
 
@@ -156,10 +158,12 @@ const modules = await afs.listModules();
 - Listens to `agentSucceed` events
 - Stores input/output pairs with UUIDs as paths
 - Supports list and read operations
+- Persistent SQLite storage
 
 **Usage:**
 ```typescript
-import { AFS, AFSHistory } from "@aigne/afs";
+import { AFS } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 
 const afs = new AFS();
 afs.mount(new AFSHistory({
@@ -174,6 +178,8 @@ const { list } = await afs.list('/modules/history');
 - `storage`: Storage configuration (e.g., `{ url: "file:./memory.sqlite3" }`) or a SharedAFSStorage instance
 
 **Note:** History must be manually mounted. It is NOT automatically enabled.
+
+**Example:** See [history module documentation](./history/README.md)
 
 ### 2. LocalFS
 
@@ -261,7 +267,8 @@ When an agent has AFS configured, these tools are automatically available:
 
 ```typescript
 import { AIAgent, AIGNE } from "@aigne/core";
-import { AFS, AFSHistory } from "@aigne/afs";
+import { AFS } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 import { LocalFS } from "@aigne/afs-local-fs";
 import { UserProfileMemory } from "@aigne/afs-user-profile-memory";
 import { OpenAIChatModel } from "@aigne/openai";
@@ -355,7 +362,8 @@ afs.mount(new CustomModule());
 
 ## Packages
 
-- [`@aigne/afs`](./core/README.md) - Core AFS implementation with history module
+- [`@aigne/afs`](./core/README.md) - Core AFS implementation
+- [`@aigne/afs-history`](./history/README.md) - History tracking module
 - [`@aigne/afs-local-fs`](./local-fs/README.md) - Local file system module
 - [`@aigne/afs-user-profile-memory`](./user-profile-memory/README.md) - User profile memory module
 

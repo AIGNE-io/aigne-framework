@@ -31,7 +31,8 @@ pnpm add @aigne/afs-user-profile-memory @aigne/afs @aigne/core
 
 ```typescript
 import { AIGNE, AIAgent } from "@aigne/core";
-import { AFS, AFSHistory } from "@aigne/afs";
+import { AFS } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 import { UserProfileMemory } from "@aigne/afs-user-profile-memory";
 import { OpenAIChatModel } from "@aigne/openai";
 

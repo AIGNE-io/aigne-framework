@@ -149,7 +149,8 @@ const localFS = new LocalFS({
 ### 2. Mount It as an AFS Module
 
 ```typescript
-import { AFS, AFSHistory } from "@aigne/afs";
+import { AFS } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 
 const afs = new AFS()
   .mount(new AFSHistory({ storage: { url: ":memory:" } }))

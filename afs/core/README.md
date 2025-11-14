@@ -27,7 +27,8 @@ pnpm add @aigne/afs
 ## Quick Start
 
 ```typescript
-import { AFS, AFSHistory } from "@aigne/afs";
+import { AFS } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 
 // Create AFS instance
 const afs = new AFS();
@@ -210,18 +211,25 @@ Common events from `AFSRootEvents`:
 
 ### AFSHistory
 
-The history module tracks conversation history. It must be manually mounted.
+The history module tracks conversation history. It is available as a separate package: `@aigne/afs-history`.
 
 **Features:**
 - Listens to `agentSucceed` events and records agent interactions
 - Stores input/output pairs with UUID paths
 - Supports list and read operations
 - Can be extended with search capabilities
+- Persistent SQLite storage
+
+**Installation:**
+```bash
+npm install @aigne/afs-history
+```
 
 **Usage:**
 
 ```typescript
-import { AFS, AFSHistory } from "@aigne/afs";
+import { AFS } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 
 const afs = new AFS();
 afs.mount(new AFSHistory({
@@ -236,6 +244,8 @@ const { list } = await afs.list('/modules/history');
 - `storage`: Storage configuration (e.g., `{ url: "file:./memory.sqlite3" }`) or a SharedAFSStorage instance
 
 **Note:** History is NOT automatically mounted. You must explicitly mount it if needed.
+
+**Documentation:** See [@aigne/afs-history](../history/README.md) for detailed documentation.
 
 ## Creating Custom Modules
 
@@ -309,7 +319,8 @@ Example:
 
 ```typescript
 import { AIAgent, AIGNE } from "@aigne/core";
-import { AFS, AFSHistory } from "@aigne/afs";
+import { AFS } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 
 const afs = new AFS();
 afs.mount(new AFSHistory({
@@ -329,6 +340,7 @@ const result = await context.invoke(agent, {
 
 ## Related Packages
 
+- [@aigne/afs-history](../history/README.md) - History tracking module
 - [@aigne/afs-local-fs](../local-fs/README.md) - Local file system module
 - [@aigne/afs-user-profile-memory](../user-profile-memory/README.md) - User profile memory module
 

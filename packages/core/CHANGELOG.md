@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.68.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.67.0...core-v1.68.0-beta) (2025-11-14)
+
+
+### Features
+
+* support mount mcp agent into AFS ([#740](https://github.com/AIGNE-io/aigne-framework/issues/740)) ([6d474fc](https://github.com/AIGNE-io/aigne-framework/commit/6d474fc05845a15e2c3e8fa97727b409bdd70945))
+
+
+### Bug Fixes
+
+* properly handle SIGINT to flush observability data before exit ([#739](https://github.com/AIGNE-io/aigne-framework/issues/739)) ([99b4503](https://github.com/AIGNE-io/aigne-framework/commit/99b45033d5f3bcc1f830b583f9cca7258b00606f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.0-beta
+    * @aigne/afs-history bumped to 1.0.0
+
 ## [1.67.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.67.0-beta.4...core-v1.67.0) (2025-11-12)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.1.2...afs-v1.2.0-beta) (2025-11-14)
+
+
+### Features
+
+* support mount mcp agent into AFS ([#740](https://github.com/AIGNE-io/aigne-framework/issues/740)) ([6d474fc](https://github.com/AIGNE-io/aigne-framework/commit/6d474fc05845a15e2c3e8fa97727b409bdd70945))
+
 ## [1.1.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.1.2-beta...afs-v1.1.2) (2025-11-12)
 
 

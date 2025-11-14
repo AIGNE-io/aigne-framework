@@ -1,77 +1,76 @@
-このドキュメントでは、AIGNE Framework を使用して Agent ベースのチャットボットを作成し、実行するための包括的なガイドを提供します。インストールせずにチャットボットを即座に実行し、さまざまな AI モデルプロバイダーに接続し、ローカル開発用にセットアップする方法を学びます。この例では、単一応答 (ワンショット) モードと連続会話 (インタラクティブ) モードの両方をサポートしています。
+# チャットボット
+
+このガイドでは、Agentベースのチャットボットの例について包括的に解説します。さまざまなモードでチャットボットを実行する方法、さまざまなAIモデルプロバイダーに接続する方法、そしてAIGNEのオブザーバビリティツールを使用してその実行をデバッグする方法を学びます。この例は、ローカルに何もインストールすることなくすぐに始められるように設計されています。
 
 ## 概要
 
-この例では、[AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) と [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md) の機能を、機能的なチャットボットを構築することで示します。Agent は、主に 2 つのモードで操作できます。
+この例では、AIGNEフレームワークを使用して、シンプルかつ強力なAgentベースのチャットボットを作成および実行する方法を示します。主に2つの動作モードをサポートしています：
+*   **ワンショットモード**: チャットボットは単一の入力を受け取り、応答を提供して終了します。
+*   **インタラクティブモード**: セッションを終了することを決定するまで、チャットボットは継続的な会話を行います。
 
-*   **ワンショットモード**: チャットボットは単一の入力を処理し、終了する前に単一の応答を提供します。これは、直接的な質問やコマンドラインのパイピングに最適です。
-*   **インタラクティブモード**: チャットボットは、ユーザーがセッションを終了するまでターンの間でコンテキストを維持しながら、連続的な会話を行います。
+チャットボットは、さまざまなAIモデルを使用するように設定でき、コマンドラインから直接、またはパイプラインを通じて入力を受け入れることができます。
 
 ## 前提条件
 
-進める前に、お使いの環境が次の要件を満たしていることを確認してください。
+この例を実行する前に、システムに以下がインストールされていることを確認してください：
 
-*   **Node.js**: バージョン 20.0 以上。
-*   **npm**: Node.js のインストールに含まれています。
-*   **AI モデルへのアクセス**: OpenAI のようなプロバイダーからの API キーが必要です。または、AIGNE Hub に接続することもできます。
+*   [Node.js](https://nodejs.org) (バージョン20.0以上)
+*   [OpenAI APIキー](https://platform.openai.com/api-keys)またはモデルとの対話のためのAIGNE Hubへのアクセス。
 
-## クイックスタート (インストール不要)
+## クイックスタート
 
-`npx` を使用して、ローカルでのインストール手順なしで、ターミナルから直接チャットボットの例を実行できます。
+リポジトリをクローンしたり、依存関係をローカルにインストールしたりすることなく、`npx`を使用してこの例を直接実行できます。
 
-### チャットボットの実行
+### 例の実行
 
-チャットボットは、ニーズに合わせてさまざまなモードで実行できます。
+ターミナルで以下のコマンドを実行してチャットボットを起動します。
 
-*   **ワンショットモード (デフォルト)**: 単一の質問と回答用。
+デフォルトのワンショットモードで実行：
+```bash npx command icon=lucide:terminal
+npx -y @aigne/example-chat-bot
+```
 
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-chat-bot
-    ```
+`--chat`フラグを使用してインタラクティブなチャットモードで実行：
+```bash npx command icon=lucide:terminal
+npx -y @aigne/example-chat-bot --chat
+```
 
-*   **インタラクティブチャットモード**: 連続的な会話を開始する場合。
+パイプライン入力を使用してプロンプトを直接提供：
+```bash npx command icon=lucide:terminal
+echo "Tell me about AIGNE Framework" | npx -y @aigne/example-chat-bot
+```
 
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-chat-bot --chat
-    ```
+### AIモデルへの接続
 
-*   **パイプライン入力**: ワンショットモードでチャットボットに直接入力をパイプできます。
+この例を初めて実行すると、APIキーが設定されていないため、AIモデルサービスに接続するように求められます。次の図は、利用可能な接続オプションを示しています：
 
-    ```bash icon=lucide:terminal
-    echo "Tell me about the AIGNE Framework" | npx -y @aigne/example-chat-bot
-    ```
-
-### AI モデルへの接続
-
-初回実行時に、CLI は AI モデルサービスへの接続を促します。いくつかのオプションが利用可能です。
 ```d2
 direction: down
 
-User: {
-  shape: c4-person
-}
-
-AIGNE-CLI: {
-  label: "AIGNE CLI"
+Chatbot-Example: {
+  label: "チャットボットの例\n(@aigne/example-chat-bot)"
+  shape: rectangle
 }
 
 Connection-Options: {
   label: "接続オプション"
   shape: rectangle
-  grid-columns: 3
+  style: {
+    stroke-dash: 4
+  }
 
-  AIGNE-Hub-Official: {
-    label: "AIGNE Hub\n(公式)"
+  Official-AIGNE-Hub: {
+    label: "1. 公式AIGNE Hub\n(推奨)"
     icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
   }
 
-  AIGNE-Hub-Self-Hosted: {
-    label: "AIGNE Hub\n(セルフホスト)"
+  Self-Hosted-Hub: {
+    label: "2. セルフホストAIGNE Hub"
     icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
   }
 
   Third-Party-Provider: {
-    label: "サードパーティプロバイダー\n(例: OpenAI)"
+    label: "3. サードパーティプロバイダー\n(例: OpenAI)"
     shape: rectangle
   }
 }
@@ -81,107 +80,126 @@ Blocklet-Store: {
   icon: "https://store.blocklet.dev/assets/z8ia29UsENBg6tLZUKi2HABj38Cw1LmHZocbQ/logo.png"
 }
 
-User -> AIGNE-CLI: "1. チャットボットを実行"
-AIGNE-CLI -> User: "2. AI モデル接続のプロンプト"
-User -> Connection-Options: "3. オプションを選択"
-
-Connection-Options.AIGNE-Hub-Official -> AIGNE-CLI: "ブラウザ認証経由で接続"
-Connection-Options.AIGNE-Hub-Self-Hosted -> AIGNE-CLI: "サービス URL 経由で接続"
-Connection-Options.AIGNE-Hub-Self-Hosted <- Blocklet-Store: "からデプロイ"
-Connection-Options.Third-Party-Provider -> AIGNE-CLI: "環境変数経由で接続"
+Chatbot-Example -> Connection-Options: "AIモデルへの接続をユーザーに促す"
+Connection-Options.Self-Hosted-Hub -> Blocklet-Store: "ここからインストール"
 ```
-1.  **AIGNE Hub (公式) 経由で接続**
-    これは新規ユーザーに推奨される方法です。このオプションを選択すると、Web ブラウザが公式の AIGNE Hub に開きます。画面の指示に従って接続してください。新規ユーザーは、開始するための無料トークン残高を自動的に受け取ります。
 
-2.  **AIGNE Hub (セルフホスト) 経由で接続**
-    独自の AIGNE Hub インスタンスを運用している場合は、このオプションを選択し、サービスの URL を入力して接続を完了します。[Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ) からセルフホストの AIGNE Hub をデプロイできます。
+![AIモデル接続のための初期設定プロンプト。](../../../examples/chat-bot/run-example.png)
 
-3.  **サードパーティモデルプロバイダー経由で接続**
-    必要な環境変数を設定することで、OpenAI などのプロバイダーに直接接続できます。OpenAI の場合、API キーを次のように設定します。
+続行するにはいくつかのオプションがあります：
 
-    ```bash icon=lucide:terminal
-    export OPENAI_API_KEY="your-openai-api-key"
-    ```
+#### 1. 公式AIGNE Hubに接続する（推奨）
 
-    環境変数を設定した後、再度チャットボットコマンドを実行してください。他のプロバイダー (例: DeepSeek, Google Gemini) でサポートされている変数の一覧については、リポジトリ内の `.env.local.example` ファイルを参照してください。
+これが最も簡単な開始方法です。
+1.  最初のオプションを選択します: `Connect to the Arcblock official AIGNE Hub`。
+2.  Webブラウザが開き、AIGNE CLIを承認するページが表示されます。
+3.  画面の指示に従って接続を承認します。新規ユーザーはサービスを使用するための無料トークンが付与されます。
 
-## ローカルでのインストールとセットアップ
+![AIGNE CLIがAIGNE Hubに接続することを承認します。](../../../examples/images/connect-to-aigne-hub.png)
 
-開発やカスタマイズのために、リポジトリをクローンしてローカルマシンからサンプルを実行できます。
+#### 2. セルフホストのAIGNE Hubに接続する
 
-### 1. AIGNE CLI のインストール
+独自のAIGNE Hubインスタンスを実行している場合：
+1.  2番目のオプションを選択します: `Connect to a self-hosted AIGNE Hub instance`。
+2.  プロンプトが表示されたら、セルフホストAIGNE HubのURLを入力します。
+3.  その後のプロンプトに従って接続を完了します。
 
-まず、AIGNE コマンドラインインターフェースをグローバルにインストールします。
+セルフホストのAIGNE Hubをセットアップする必要がある場合は、[Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ)からインストールできます。
 
-```bash icon=lucide:terminal
+![セルフホストのAIGNE HubのURLを入力します。](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+#### 3. サードパーティのモデルプロバイダー経由で接続する
+
+適切な環境変数を設定することで、OpenAIなどのサードパーティAIモデルプロバイダーに直接接続することもできます。たとえば、OpenAIを使用するには、次のようにAPIキーを設定します：
+
+```bash OpenAI APIキーを設定 icon=lucide:terminal
+export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+```
+
+環境変数を設定した後、再度この例を実行してください。サポートされているプロバイダーとその必要な環境変数のリストについては、例の設定ファイルを参照してください。
+
+## ローカルでのインストールと使用
+
+開発目的で、リポジトリをクローンしてローカルで例を実行したい場合があります。
+
+### 1. AIGNE CLIのインストール
+
+まず、AIGNEコマンドラインインターフェース（CLI）をグローバルにインストールします。
+
+```bash AIGNE CLIをインストール icon=lucide:terminal
 npm install -g @aigne/cli
 ```
 
 ### 2. リポジトリのクローン
 
-AIGNE Framework リポジトリをクローンし、チャットボットの例のディレクトリに移動します。
+`aigne-framework`リポジトリをクローンし、`chat-bot`の例のディレクトリに移動します。
 
-```bash icon=lucide:terminal
+```bash リポジトリをクローン icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 cd aigne-framework/examples/chat-bot
 ```
 
-### 3. ローカルでサンプルを実行
+### 3. ローカルで例を実行
 
-`chat-bot` ディレクトリ内から `pnpm` を使用して開始スクリプトを実行します。
+`pnpm start`コマンドを使用してチャットボットを実行します。
 
-*   **ワンショットモード (デフォルト)**:
+デフォルトのワンショットモードで実行：
+```bash pnpm command icon=lucide:terminal
+pnpm start
+```
 
-    ```bash icon=lucide:terminal
-    pnpm start
-    ```
+インタラクティブなチャットモードで実行：
+```bash pnpm command icon=lucide:terminal
+pnpm start --chat
+```
 
-*   **インタラクティブチャットモード**:
-
-    ```bash icon=lucide:terminal
-    pnpm start --chat
-    ```
-
-*   **パイプライン入力**:
-
-    ```bash icon=lucide:terminal
-    echo "Tell me about the AIGNE Framework" | pnpm start
-    ```
+パイプライン入力を使用：
+```bash pnpm command icon=lucide:terminal
+echo "Tell me about AIGNE Framework" | pnpm start
+```
 
 ## コマンドラインオプション
 
-チャットボットスクリプトは、その動作と設定をカスタマイズするためにいくつかのコマンドライン引数を受け入れます。
+チャットボットスクリプトは、その動作をカスタマイズするためにいくつかのコマンドライン引数を受け入れます。
 
 | パラメータ | 説明 | デフォルト |
 |---|---|---|
-| `--chat` | チャットボットをインタラクティブモードで実行し、連続的な会話を行います。 | 無効 (ワンショットモード) |
-| `--model <provider[:model]>` | 使用する AI モデルを指定します。フォーマットは `provider[:model]` です。例: `openai` または `openai:gpt-4o-mini`。 | `openai` |
-| `--temperature <value>` | モデル生成の温度を設定して、ランダム性を制御します。 | プロバイダーのデフォルト |
-| `--top-p <value>` | トークン選択のための top-p (nucleus sampling) 値を設定します。 | プロバイダーのデフォルト |
-| `--presence-penalty <value>` | テキスト内での存在に基づいて新しいトークンのペナルティを調整します。 | プロバイダーのデフォルト |
-| `--frequency-penalty <value>` | テキスト内での頻度に基づいて新しいトークンのペナルティを調整します。 | プロバイダーのデフォルト |
-| `--log-level <level>` | ロギングの詳細度を設定します。オプション: `ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`。 | `INFO` |
-| `--input`, `-i <input>` | 入力クエリを引数として直接提供します。 | なし |
+| `--chat` | インタラクティブなチャットモードで実行します。省略した場合、ワンショットモードで実行されます。 | `無効` |
+| `--model <provider[:model]>` | 使用するAIモデルを指定します。形式は`provider[:model]`です。例：`openai`または`openai:gpt-4o-mini`。 | `openai` |
+| `--temperature <value>` | モデル生成の温度を設定し、ランダム性を制御します。 | プロバイダーのデフォルト |
+| `--top-p <value>` | モデル生成のためのtop-p（nucleus sampling）値を設定します。 | プロバイダーのデフォルト |
+| `--presence-penalty <value>` | トピックの多様性に影響を与えるための存在ペナルティ値を設定します。 | プロバイダーのデフォルト |
+| `--frequency-penalty <value>` | 繰り返し出力を減らすための頻度ペナルティ値を設定します。 | プロバイダーのデフォルト |
+| `--log-level <level>` | ログレベルを設定します。オプションは`ERROR`、`WARN`、`INFO`、`DEBUG`、`TRACE`です。 | `INFO` |
+| `--input`, `-i <input>` | 入力プロンプトを引数として直接提供します。 | `なし` |
 
-## デバッグ
+## AIGNE Observeによるデバッグ
 
-AIGNE Framework には、Agent の実行を監視および分析するための強力な観測ツールが含まれており、これはデバッグとパフォーマンスチューニングに不可欠です。
+AIGNEには、Agentの実行をデバッグおよび分析するための強力なローカルオブザーバビリティツールが含まれています。`aigne observe`コマンドは、実行トレースを検査するためのユーザーインターフェースを提供するローカルWebサーバーを起動します。
 
-1.  **観測サーバーの開始**
-    ターミナルで `aigne observe` コマンドを実行します。これにより、Agent からの実行データを受け取るローカル Web サーバーが起動します。
+まず、ターミナルでオブザベーションサーバーを起動します：
 
-2.  **実行の表示**
-    ブラウザで Web インターフェースを開き、最近の Agent の実行リストを表示します。実行を選択してそのトレースを検査し、詳細な呼び出し情報を表示し、Agent が情報を処理しモデルと対話する方法を理解できます。
+```bash aigne observe icon=lucide:terminal
+aigne observe
+```
+
+![aigne observeサーバーが実行中であることを示すターミナル出力。](../../../examples/images/aigne-observe-execute.png)
+
+チャットボットを実行した後、提供されたURL（通常は`http://localhost:7893`）をブラウザで開くと、最近のAgent実行のリストを表示できます。このインターフェースでは、入力、出力、モデル呼び出し、パフォーマンスメトリクスなど、各実行の詳細情報を検査でき、デバッグや最適化に非常に役立ちます。
+
+![トレースのリストを示すAIGNEオブザーバビリティインターフェース。](../../../examples/images/aigne-observe-list.png)
 
 ## まとめ
 
-この例は、AIGNE Framework を使用して Agent ベースのチャットボットを構築するための実践的な基盤を提供します。チャットボットをさまざまなモードで実行し、AI モデルに接続し、その実行をデバッグする方法を学びました。
+この例は、AIGNEフレームワークを使用してAgentベースのチャットボットを構築するための実践的な基盤を提供します。この例の実行方法、さまざまなAIモデルへの接続方法、デバッグのための組み込みオブザーバビリティツールの活用方法を学びました。
 
-より高度な例や機能については、以下のトピックを探索することをお勧めします。
+より高度なトピックや例については、以下のドキュメントが役立つかもしれません：
 
 <x-cards data-columns="2">
-  <x-card data-title="メモリ" data-icon="lucide:brain-circuit" data-href="/examples/memory">チャットボットに過去の対話を記憶させる方法を学びます。</x-card>
-  <x-card data-title="AIGNE ファイルシステム (AFS)" data-icon="lucide:folder-tree" data-href="/examples/afs-system-fs">ローカルファイルシステムと対話できるチャットボットを構築します。</x-card>
-  <x-card data-title="ワークフローオーケストレーション" data-icon="lucide:workflow" data-href="/examples/workflow-orchestration">複雑なタスクで複数の Agent を連携させます。</x-card>
-  <x-card data-title="コアコンセプト" data-icon="lucide:book-open" data-href="/developer-guide/core-concepts">AIGNE Framework の基本的な構成要素について深く掘り下げます。</x-card>
+  <x-card data-title="メモリ" data-icon="lucide:brain-circuit" data-href="/examples/memory">
+    会話全体でコンテキストを維持するために、チャットボットにメモリを追加する方法を学びます。
+  </x-card>
+  <x-card data-title="AIGNEのコアコンセプト" data-icon="lucide:book-open" data-href="/developer-guide/core-concepts">
+    AIGNEフレームワークの基本的な構成要素についてさらに深く掘り下げます。
+  </x-card>
 </x-cards>

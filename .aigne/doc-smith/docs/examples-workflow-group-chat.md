@@ -1,12 +1,16 @@
 # Workflow Group Chat
 
-This document provides a step-by-step guide to building and running a multi-agent group chat application using the AIGNE Framework. You will learn how to orchestrate several AI agents—a manager, writer, editor, and illustrator—to collaborate on a task, demonstrating a practical application of complex agentic workflows.
+This guide demonstrates how to build and run a multi-agent group chat workflow using the AIGNE Framework. You will learn how to orchestrate several agents, including a manager, to collaborate on a task, simulating a team environment where they share messages and work together to achieve a common goal.
 
 ## Overview
 
-In this workflow, a `Group Manager` agent serves as the central coordinator. When a user provides an instruction, the manager directs the request to the appropriate specialized agent. The agents then collaborate by sharing messages within the group to complete the task.
+The Group Chat workflow example showcases a sophisticated multi-agent system where different agents with specialized roles collaborate to fulfill a user's request. The process is managed by a `Group Manager` agent that directs the conversation and task execution among other agents like a `Writer`, `Editor`, and `Illustrator`.
 
-The following diagram illustrates this interaction flow:
+This example supports two primary modes of operation:
+*   **One-shot mode**: The workflow runs once to completion based on a single input.
+*   **Interactive mode**: The workflow engages in a continuous conversation, allowing for follow-up questions and dynamic interactions.
+
+The core interaction model is as follows:
 
 ```d2
 direction: down
@@ -15,115 +19,126 @@ User: {
   shape: c4-person
 }
 
-AIGNE-Framework: {
-  label: "AIGNE Framework"
+GroupChat: {
+  label: "Group Chat Workflow"
   shape: rectangle
 
   Group-Manager: {
     label: "Group Manager"
+    shape: rectangle
   }
 
-  Writer: {
-    label: "Writer"
-  }
+  Collaborators: {
+    label: "Collaborators"
+    shape: rectangle
+    grid-columns: 3
 
-  Editor: {
-    label: "Editor"
+    Writer: {
+      shape: rectangle
+    }
+    Editor: {
+      shape: rectangle
+    }
+    Illustrator: {
+      shape: rectangle
+    }
   }
-
-  Illustrator: {
-    label: "Illustrator"
-  }
-
 }
 
-User -> AIGNE-Framework.Group-Manager: "1. Sends instruction"
-AIGNE-Framework.Group-Manager -> AIGNE-Framework.Writer: "2. Delegates task"
-AIGNE-Framework.Writer -> AIGNE-Framework.Editor: "3. Shares draft (group message)"
-AIGNE-Framework.Writer -> AIGNE-Framework.Illustrator: "3. Shares draft (group message)"
-AIGNE-Framework.Writer -> User: "3. Shares draft (group message)"
-AIGNE-Framework.Group-Manager -> AIGNE-Framework.Illustrator: "4. Requests image creation"
+User -> GroupChat.Group-Manager: "1. User Request"
+GroupChat.Group-Manager -> GroupChat.Collaborators.Writer: "2. Delegate Task"
+GroupChat.Collaborators.Writer <-> GroupChat.Collaborators.Editor: "3. Collaborate"
+GroupChat.Collaborators.Editor <-> GroupChat.Collaborators.Illustrator: "4. Collaborate"
+GroupChat.Collaborators.Writer -> GroupChat.Group-Manager: "5. Send Result"
+GroupChat.Group-Manager -> User: "6. Final Output"
 ```
-
-The interaction flow is as follows:
-
-1.  A **User** sends an instruction to the **Group Manager**.
-2.  The **Group Manager** delegates the initial task to the **Writer** agent.
-3.  The **Writer** agent drafts the content and shares it as a group message, making it available to the **Editor**, **Illustrator**, and **User**.
-4.  The **Manager** then requests the **Illustrator** to create an image based on the story.
-5.  This collaborative process continues until the initial instruction is fulfilled.
 
 ## Prerequisites
 
 Before proceeding, ensure your development environment meets the following requirements:
-
 *   **Node.js**: Version 20.0 or higher.
-*   **npm**: Included with your Node.js installation.
-*   **OpenAI API Key**: Required for agents to interact with OpenAI's language models. Obtain a key from the [OpenAI Platform](https://platform.openai.com/api-keys).
+*   **npm**: Included with Node.js.
+*   **OpenAI API Key**: Required for the default model configuration. You can obtain one from the [OpenAI Platform](https://platform.openai.com/api-keys).
 
 ## Quick Start
 
-You can run this example directly using `npx` without cloning the repository.
+You can run this example directly without cloning the repository using `npx`.
 
 ### Run the Example
 
-The application supports several execution modes.
+Execute one of the following commands in your terminal:
 
-#### One-Shot Mode
-
-In the default mode, the application processes a single input instruction and then terminates.
-
+To run the workflow in the default one-shot mode:
 ```bash Run in one-shot mode icon=lucide:terminal
 npx -y @aigne/example-workflow-group-chat
 ```
 
-#### Interactive Chat Mode
-
-Use the `--chat` flag to run the application in an interactive mode for continuous conversation.
-
-```bash Run in interactive chat mode icon=lucide:terminal
+To start an interactive chat session:
+```bash Run in interactive mode icon=lucide:terminal
 npx -y @aigne/example-workflow-group-chat --chat
 ```
 
-#### Pipeline Input
-
-You can also pipe input directly from your terminal.
-
-```bash Use pipeline input icon=lucide:terminal
+You can also provide input directly via a pipeline:
+```bash Run with pipeline input icon=lucide:terminal
 echo "Write a short story about space exploration" | npx -y @aigne/example-workflow-group-chat
 ```
 
 ### Connect to an AI Model
 
-The first time you run the example, you will be prompted to connect to an AI model provider.
+The first time you run the example, it will prompt you to connect to an AI model provider since no API keys have been configured.
 
-![Connect to an AI model](/sources/examples/workflow-group-chat/run-example.png)
+![Initial setup prompt for connecting to an AI model.](../../../examples/workflow-group-chat/run-example.png)
 
-You have several options:
+You have several options to proceed:
 
-1.  **AIGNE Hub (Official)**: The recommended method. The official hub provides free tokens for new users.
-2.  **Self-Hosted AIGNE Hub**: Connect to your own instance of AIGNE Hub by providing its URL.
-3.  **Third-Party Model Provider**: Connect directly to providers like OpenAI by setting the appropriate environment variables. For OpenAI, set your API key as follows:
+#### 1. Connect to the AIGNE Hub (Recommended)
 
-    ```bash Set OpenAI API key icon=lucide:terminal
-    export OPENAI_API_KEY="your-openai-api-key-here"
+This is the easiest way to get started and includes free credits for new users.
+
+1.  Select the first option: `Connect to the Arcblock official AIGNE Hub`.
+2.  Your web browser will open a page to authorize the AIGNE CLI.
+3.  Click "Approve" to grant the necessary permissions. The CLI will be configured automatically.
+
+![Authorization dialog for AIGNE Hub connection.](../../../examples/images/connect-to-aigne-hub.png)
+
+#### 2. Connect to a Self-Hosted AIGNE Hub
+
+If you are running your own instance of AIGNE Hub:
+
+1.  Select the second option: `Connect to your self-hosted AIGNE Hub`.
+2.  Enter the URL of your AIGNE Hub instance when prompted.
+3.  Follow the instructions in your browser to complete the connection.
+
+![Prompt to enter the URL for a self-hosted AIGNE Hub.](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+#### 3. Configure a Third-Party Model Provider
+
+You can directly connect to a provider like OpenAI by setting an environment variable.
+
+1.  Exit the interactive prompt.
+2.  Set the `OPENAI_API_KEY` environment variable in your terminal:
+
+    ```bash Configure OpenAI API Key icon=lucide:terminal
+    export OPENAI_API_KEY="your-openai-api-key"
     ```
 
-After configuration, run the `npx` command again.
+3.  Run the example command again.
 
-## Running from Source
+For other providers like Google Gemini or DeepSeek, refer to the `.env.local.example` file within the project for the correct environment variable names.
 
-To inspect or modify the code, you can clone the repository and run the example locally.
+## Local Installation and Usage
+
+For development purposes, you can clone the repository and run the example locally.
 
 ### 1. Clone the Repository
 
-```bash Clone the repository icon=lucide:terminal
+```bash Clone the framework repository icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 ```
 
 ### 2. Install Dependencies
 
-Navigate to the example directory and install the required packages using `pnpm`.
+Navigate to the example's directory and install the required packages using `pnpm`.
 
 ```bash Install dependencies icon=lucide:terminal
 cd aigne-framework/examples/workflow-group-chat
@@ -132,26 +147,29 @@ pnpm install
 
 ### 3. Run the Example
 
-Use the `pnpm start` command to execute the application. Command-line arguments must be passed after `--`.
+Use the `pnpm start` command to run the workflow. Command-line arguments must be passed after `--`.
 
+To run in one-shot mode:
 ```bash Run in one-shot mode icon=lucide:terminal
 pnpm start
 ```
 
-```bash Run in interactive chat mode icon=lucide:terminal
+To run in interactive chat mode:
+```bash Run in interactive mode icon=lucide:terminal
 pnpm start -- --chat
 ```
 
-```bash Use pipeline input icon=lucide:terminal
+To use pipeline input:
+```bash Run with pipeline input icon=lucide:terminal
 echo "Write a short story about space exploration" | pnpm start
 ```
 
-## Command-Line Options
+### Command-Line Options
 
-The application's behavior can be customized using the following command-line parameters.
+The example accepts several command-line arguments to customize its behavior:
 
 | Parameter | Description | Default |
-|---|---|---|
+|-----------|-------------|---------|
 | `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
 | `--model <provider[:model]>` | AI model to use in format 'provider\[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
 | `--temperature <value>` | Temperature for model generation | Provider default |
@@ -161,39 +179,41 @@ The application's behavior can be customized using the following command-line pa
 | `--log-level <level>` | Set logging level (ERROR, WARN, INFO, DEBUG, TRACE) | INFO |
 | `--input`, `-i <input>` | Specify input directly | None |
 
-### Usage Example
-
-The following command runs the application with the logging level set to `DEBUG`:
+#### Examples
 
 ```bash Set logging level icon=lucide:terminal
 pnpm start -- --log-level DEBUG
 ```
 
-## Debugging
-
-To inspect and analyze agent behavior, use the `aigne observe` command. This tool launches a local web server with an interface for viewing execution traces, call details, and other runtime data, which is essential for debugging agentic workflows.
-
-To start the observation server, run:
-
-```bash Start the observation server icon=lucide:terminal
-aigne observe
+```bash Use a specific model icon=lucide:terminal
+pnpm start -- --model openai:gpt-4o-mini
 ```
 
-![Start aigne observe](/sources/examples/images/aigne-observe-execute.png)
+## Debugging with AIGNE Observe
 
-Once running, the web interface will display a list of recent agent executions, allowing you to drill down into the details of each run.
+To inspect the execution flow and debug the behavior of the agents, you can use the `aigne observe` command. This tool launches a local web server that provides a detailed view of agent traces.
 
-![View recent executions](/sources/examples/images/aigne-observe-list.png)
+First, start the observability server in a separate terminal:
+```bash Start the observability server icon=lucide:terminal
+aigne observe
+```
+![Terminal output showing the AIGNE Observe server starting.](../../../examples/images/aigne-observe-execute.png)
+
+After running the workflow example, open your browser to `http://localhost:7893` to view the traces. You can inspect the inputs, outputs, and internal states of each agent throughout the execution.
+
+![AIGNE Observe web interface showing a list of traces.](../../../examples/images/aigne-observe-list.png)
 
 ## Summary
 
-This guide has demonstrated how to run and configure a collaborative, multi-agent group chat. To explore other advanced workflow patterns, refer to the following examples:
+This guide provided a step-by-step walkthrough for running the Workflow Group Chat example. You learned how to execute the workflow using `npx`, connect to various AI model providers, and install it locally for development. You also saw how to use `aigne observe` for debugging agent interactions.
+
+For more complex patterns, explore other examples in the AIGNE Framework documentation.
 
 <x-cards data-columns="2">
-  <x-card data-title="Workflow: Handoff" data-href="/examples/workflow-handoff" data-icon="lucide:arrow-right-left">
-  Learn how to create seamless transitions between specialized agents to solve complex problems.
+  <x-card data-title="Workflow: Handoff" data-icon="lucide:arrow-right-left" data-href="/examples/workflow-handoff">
+    Learn how to create seamless transitions between specialized agents to solve complex problems.
   </x-card>
-  <x-card data-title="Workflow: Orchestration" data-href="/examples/workflow-orchestration" data-icon="lucide:network">
-  Coordinate multiple agents working together in sophisticated processing pipelines.
+  <x-card data-title="Workflow: Orchestration" data-icon="lucide:network" data-href="/examples/workflow-orchestration">
+    Discover how to coordinate multiple agents working together in sophisticated processing pipelines.
   </x-card>
 </x-cards>

@@ -1,131 +1,141 @@
 # Workflow Orchestration
 
-This document provides a technical walkthrough for building a sophisticated processing pipeline by coordinating multiple specialized AI agents. By following this example, you will learn to construct a workflow where an orchestrator agent delegates tasks—such as research, writing, and fact-checking—to a team of agents that work together to accomplish a complex goal.
+This guide demonstrates how to build and run a sophisticated workflow that orchestrates multiple specialized AI agents. You will learn to coordinate agents like a `finder`, `writer`, and `proofreader` to work together on a complex task, from initial research to final report generation.
 
 ## Overview
 
-In this example, we create a multi-agent system designed to conduct in-depth research on a given topic and compile a detailed report. The workflow is managed by an `OrchestratorAgent`, which directs a team of specialized agents to perform specific sub-tasks in parallel.
+Workflow orchestration involves creating a processing pipeline where multiple agents collaborate to achieve a common goal. Each agent in the pipeline has a specific role, and a central orchestrator manages the flow of tasks and information between them. This example showcases how to use the AIGNE Framework to build such a system, supporting both single-run (one-shot) and interactive chat modes.
 
-The flow of information is as follows:
+The following diagram illustrates the agent relationships in this example:
 
-1.  An initial request is sent to the `Orchestrator` agent.
-2.  The `Orchestrator` breaks down the request into tasks and distributes them to specialized agents like `Finder`, `Writer`, `Proofreader`, `Fact Checker`, and `Style Enforcer`.
-3.  These agents execute their tasks concurrently. For instance, the `Finder` uses web scraping tools to gather information, while the `Writer` begins structuring the report.
-4.  The outputs from all agents are sent to a `Synthesizer` agent.
-5.  The `Synthesizer` consolidates the information and produces the final, comprehensive report.
-
-This workflow can be visualized with the following diagram:```d2
+```d2
 direction: down
 
-Request: {
-  label: "Initial Request"
-  shape: oval
+User: {
+  shape: c4-person
 }
 
-Orchestrator: {
+OrchestratorAgent: {
   label: "Orchestrator Agent"
   shape: rectangle
+
+  finder: {
+    label: "Finder Agent"
+    shape: rectangle
+  }
+
+  writer: {
+    label: "Writer Agent"
+    shape: rectangle
+  }
 }
 
-Specialized-Agents: {
-  label: "Specialized Agents (Concurrent Execution)"
+Skills: {
+  label: "Skills / Tools"
   shape: rectangle
-  grid-columns: 3
   style: {
     stroke-dash: 2
   }
 
-  Finder: {
+  puppeteer: {
+    label: "Puppeteer\n(Web Scraping)"
     shape: rectangle
   }
 
-  Writer: {
-    shape: rectangle
-  }
-
-  Proofreader: {
-    shape: rectangle
-  }
-
-  Fact-Checker: {
-    label: "Fact Checker"
-    shape: rectangle
-  }
-
-  Style-Enforcer: {
-    label: "Style Enforcer"
-    shape: rectangle
+  filesystem: {
+    label: "Filesystem\n(Read/Write)"
+    shape: cylinder
   }
 }
 
-Synthesizer: {
-  label: "Synthesizer Agent"
-  shape: rectangle
-}
+User -> OrchestratorAgent: "1. Submits research task"
+OrchestratorAgent -> OrchestratorAgent.finder: "2. Delegate: Find info"
+OrchestratorAgent.finder -> Skills.puppeteer: "3. Scrape web"
+OrchestratorAgent.finder -> Skills.filesystem: "4. Save findings"
+OrchestratorAgent -> OrchestratorAgent.writer: "5. Delegate: Compile report"
+OrchestratorAgent.writer -> Skills.filesystem: "6. Write final report"
 
-Report: {
-  label: "Final Report"
-  shape: oval
-}
-
-Request -> Orchestrator: "1. Send request"
-Orchestrator -> Specialized-Agents: "2. Distribute tasks"
-Specialized-Agents -> Synthesizer: "4. Send outputs"
-Synthesizer -> Report: "5. Produce final report"
 ```
 
 ## Prerequisites
 
-Before running the example, ensure the following requirements are met:
+Before you begin, ensure you have the following installed and configured:
 
-*   **Node.js**: Version 20.0 or higher must be installed.
-*   **OpenAI API Key**: An API key is required for agents to interact with the language model. Obtain one from the [OpenAI API keys page](https://platform.openai.com/api-keys).
+*   **Node.js**: Version 20.0 or higher.
+*   **npm**: Comes bundled with Node.js.
+*   **OpenAI API Key**: Required for the agents to interact with OpenAI models. You can obtain one from the [OpenAI Platform](https://platform.openai.com/api-keys).
+
+Optional dependencies for running from source code:
+
+*   **Bun**: For running unit tests and examples.
+*   **Pnpm**: For package management.
 
 ## Quick Start
 
-You can run this example directly from the command line without a manual installation process using `npx`.
+You can run this example directly without any installation using `npx`.
 
 ### Run the Example
 
-The script can be executed in a default one-shot mode or an interactive chat mode.
+Execute the following commands in your terminal:
 
 ```bash Run in one-shot mode icon=lucide:terminal
+# Run in one-shot mode (default)
 npx -y @aigne/example-workflow-orchestrator
 ```
 
 ```bash Run in interactive chat mode icon=lucide:terminal
+# Run in interactive chat mode
 npx -y @aigne/example-workflow-orchestrator --chat
 ```
 
-Input can also be provided directly via a standard pipeline:
-
 ```bash Use pipeline input icon=lucide:terminal
+# Use pipeline input
 echo "Research ArcBlock and compile a report about their products and architecture" | npx -y @aigne/example-workflow-orchestrator
 ```
 
 ### Connect to an AI Model
 
-On the first run, the script will prompt you to connect to an AI model provider.
+The first time you run the example, it will prompt you to connect to an AI model service since no API keys have been configured.
 
-![Connect to a model provider](./run-example.png)
+![Initial prompt to connect an AI model](../../../examples/workflow-orchestrator/run-example.png)
 
-There are three connection options:
+You have three options:
 
-1.  **AIGNE Hub (Official)**: This is the recommended option. Your browser will open the official AIGNE Hub for you to log in and connect. New users receive a complimentary token grant.
-2.  **AIGNE Hub (Self-Hosted)**: If you host your own instance of AIGNE Hub, select this option and enter its URL to establish a connection.
-3.  **Third-Party Model Provider**: You can connect directly to a provider like OpenAI by configuring the appropriate environment variable with your API key.
+1.  **Connect via the Official AIGNE Hub**: This is the recommended option for new users. Selecting it will open your browser to an authorization page. After you approve, the CLI will be connected to the AIGNE Hub, and you'll receive complimentary tokens to get started.
 
-To use OpenAI, for instance, set the `OPENAI_API_KEY` environment variable:
+    ![Authorize connection to the official AIGNE Hub](../../../examples/images/connect-to-aigne-hub.png)
 
-```bash Set OpenAI API Key icon=lucide:terminal
-export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+2.  **Connect via a Self-Hosted AIGNE Hub**: Choose this if you have your own AIGNE Hub instance. You will be prompted to enter the URL of your hub to complete the connection. You can deploy a self-hosted AIGNE Hub from the [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ).
+
+    ![Enter the URL for a self-hosted AIGNE Hub](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+3.  **Connect via a Third-Party Model Provider**: You can configure an API key from a provider like OpenAI directly. Set the key as an environment variable and run the example again.
+
+    ```bash Set OpenAI API Key icon=lucide:terminal
+    export OPENAI_API_KEY="YOUR_API_KEY_HERE"
+    ```
+
+    For more configuration examples, refer to the `.env.local.example` file in the repository.
+
+### Debugging with AIGNE Observe
+
+The `aigne observe` command launches a local web server that helps you monitor and analyze agent executions. This tool is invaluable for debugging, tuning performance, and understanding agent behavior.
+
+First, start the observation server:
+
+```bash Start the observability server icon=lucide:terminal
+aigne observe
 ```
 
-After configuring the model, execute the run command again.
+![Terminal output showing the observability server running](../../../examples/images/aigne-observe-execute.png)
 
-## Installation from Source
+Once the server is running, you can open the provided URL (`http://localhost:7893`) in your browser to view a list of recent agent traces and inspect their details.
 
-For developers who wish to modify or inspect the source code, follow these steps to run the example from a local repository.
+![AIGNE Observe web interface showing a list of traces](../../../examples/images/aigne-observe-list.png)
+
+## Local Installation and Usage
+
+For development purposes, you can clone the repository and run the example locally.
 
 ### 1. Clone the Repository
 
@@ -135,7 +145,7 @@ git clone https://github.com/AIGNE-io/aigne-framework
 
 ### 2. Install Dependencies
 
-Navigate to the example's directory and install the required packages using `pnpm`.
+Navigate to the example directory and install the necessary packages using `pnpm`.
 
 ```bash Install dependencies icon=lucide:terminal
 cd aigne-framework/examples/workflow-orchestrator
@@ -144,38 +154,70 @@ pnpm install
 
 ### 3. Run the Example
 
-Use the `pnpm start` command to execute the script from the source directory.
+Use the `pnpm start` command to execute the workflow.
 
 ```bash Run in one-shot mode icon=lucide:terminal
+# Run in one-shot mode (default)
 pnpm start
 ```
 
-To run in interactive chat mode, add the `--chat` flag. The extra `--` is necessary to pass arguments through the `pnpm` script runner.
-
 ```bash Run in interactive chat mode icon=lucide:terminal
+# Run in interactive chat mode
 pnpm start -- --chat
 ```
 
-## Code Implementation
+```bash Use pipeline input icon=lucide:terminal
+# Use pipeline input
+echo "Research ArcBlock and compile a report about their products and architecture" | pnpm start
+```
 
-The following TypeScript code demonstrates how to define and orchestrate the team of agents. It initializes two specialized agents—a `finder` and a `writer`—and uses an `OrchestratorAgent` to manage their execution.
+## Run Options
 
-The `finder` agent is equipped with `puppeteer` and `filesystem` skills, enabling it to browse the web and save information. The `writer` agent is responsible for compiling the final report and writing it to the filesystem.
+The script accepts several command-line parameters to customize its behavior.
 
-```typescript orchestrator-workflow.ts icon=logos:typescript
+| Parameter                 | Description                                                                    | Default            |
+| ------------------------- | ------------------------------------------------------------------------------ | ------------------ |
+| `--chat`                  | Run in interactive chat mode.                                                  | Disabled           |
+| `--model <provider[:model]>` | Specify the AI model to use (e.g., `openai` or `openai:gpt-4o-mini`).          | `openai`           |
+| `--temperature <value>`   | Set the temperature for model generation.                                      | Provider default   |
+| `--top-p <value>`         | Set the top-p sampling value.                                                  | Provider default   |
+| `--presence-penalty <value>` | Set the presence penalty value.                                                | Provider default   |
+| `--frequency-penalty <value>` | Set the frequency penalty value.                                               | Provider default   |
+| `--log-level <level>`     | Set the logging level (e.g., `ERROR`, `WARN`, `INFO`, `DEBUG`).                | `INFO`             |
+| `--input`, `-i <input>`   | Specify input directly via the command line.                                   | None               |
+
+#### Examples
+
+```bash Run in interactive chat mode icon=lucide:terminal
+# Run in chat mode
+pnpm start -- --chat
+```
+
+```bash Set a different logging level icon=lucide:terminal
+# Set logging level to DEBUG
+pnpm start -- --log-level DEBUG
+```
+
+## Code Example
+
+The following TypeScript code demonstrates how to define and orchestrate multiple agents to perform in-depth research and compile a report. The `OrchestratorAgent` coordinates a `finder` and a `writer`, which are equipped with skills to browse the web (`puppeteer`) and interact with the local filesystem.
+
+```typescript orchestrator.ts icon=logos:typescript
 import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
 
+// 1. Initialize the chat model
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
   modelOptions: {
-    parallelToolCalls: false, // puppeteer can only run one task at a time
+    parallelToolCalls: false, // Puppeteer can only run one task at a time
   },
 });
 
+// 2. Set up MCP agents for web scraping and filesystem access
 const puppeteer = await MCPAgent.from({
   command: "npx",
   args: ["-y", "@modelcontextprotocol/server-puppeteer"],
@@ -187,6 +229,7 @@ const filesystem = await MCPAgent.from({
   args: ["-y", "@modelcontextprotocol/server-filesystem", import.meta.dir],
 });
 
+// 3. Define the finder agent to research information
 const finder = AIAgent.from({
   name: "finder",
   description: "Find the closest match to a user's request",
@@ -204,6 +247,7 @@ then you can use the title to search the url of the page you want to visit.
   skills: [puppeteer, filesystem],
 });
 
+// 4. Define the writer agent to save the report
 const writer = AIAgent.from({
   name: "writer",
   description: "Write to the filesystem",
@@ -213,14 +257,17 @@ const writer = AIAgent.from({
   skills: [filesystem],
 });
 
+// 5. Create the orchestrator agent to manage the workflow
 const agent = OrchestratorAgent.from({
   skills: [finder, writer],
   maxIterations: 3,
-  tasksConcurrency: 1, // puppeteer can only run one task at a time
+  tasksConcurrency: 1, // Puppeteer can only run one task at a time
 });
 
+// 6. Initialize the AIGNE instance
 const aigne = new AIGNE({ model });
 
+// 7. Invoke the workflow with a detailed prompt
 const result = await aigne.invoke(
   agent,
   `\
@@ -232,47 +279,25 @@ The report should include comprehensive insights into the company's products \
 console.log(result);
 ```
 
-When invoked, the `AIGNE` instance passes the prompt to the `OrchestratorAgent`, which coordinates the `finder` and `writer` agents to produce the final report based on the provided instructions.
-
-## Command-Line Options
-
-The script accepts several command-line arguments to customize its behavior and the model's generation parameters.
-
-| Parameter | Description | Default |
-| :--- | :--- | :--- |
-| `--chat` | Run in interactive chat mode. | Disabled |
-| `--model <provider[:model]>` | Specify the AI model to use. Format is 'provider\[:model]'. Examples: 'openai' or 'openai:gpt-4o-mini'. | `openai` |
-| `--temperature <value>` | Set the temperature for model generation. | Provider default |
-| `--top-p <value>` | Set the top-p sampling value. | Provider default |
-| `--presence-penalty <value>` | Set the presence penalty value. | Provider default |
-| `--frequency-penalty <value>` | Set the frequency penalty value. | Provider default |
-| `--log-level <level>` | Set the logging verbosity. Accepts `ERROR`, `WARN`, `INFO`, `DEBUG`, or `TRACE`. | `INFO` |
-| `--input`, `-i <input>` | Specify input directly as a command-line argument. | None |
-
-### Usage Example
-
-```bash Set logging level icon=lucide:terminal
-pnpm start -- --log-level DEBUG
-```
-
-## Debugging
-
-To monitor and analyze agent executions, use the `aigne observe` command. This launches a local web server with a user-friendly interface to inspect traces, view detailed call information, and understand the agent's runtime behavior.
-
-First, start the observation server in your terminal:
-![Start aigne observe](../images/aigne-observe-execute.png)
-
-The interface provides a list of recent executions. You can select an execution to drill down into its detailed traces.
-![View execution list](../images/aigne-observe-list.png)
-
-This tool is essential for debugging, performance tuning, and gaining insight into how agents process information and interact with models and tools.
+When executed, this workflow produces a detailed markdown file. You can view an example of the generated output here: [arcblock-deep-research.md](https://github.com/AIGNE-io/aigne-framework/blob/main/examples/workflow-orchestrator/generated-report-arcblock.md).
 
 ## Summary
 
-This example illustrates the functionality of the `OrchestratorAgent` in coordinating multiple specialized agents to solve a complex problem. By decomposing a large task into smaller, manageable sub-tasks and assigning them to agents with the appropriate skills, you can build robust and scalable AI-driven workflows.
+This example illustrates the power of the AIGNE Framework for building complex, multi-agent workflows. By defining specialized agents and coordinating them with an orchestrator, you can automate sophisticated tasks that require multiple steps, such as research, content generation, and file manipulation.
 
-To explore other workflow patterns, refer to the following examples:
+For more examples of advanced workflow patterns, explore the following sections:
+
 <x-cards data-columns="2">
-  <x-card data-title="Sequential Workflow" data-href="/examples/workflow-sequential" data-icon="lucide:arrow-right">Build step-by-step processing pipelines with guaranteed execution order.</x-card>
-  <x-card data-title="Concurrent Workflow" data-href="/examples/workflow-concurrency" data-icon="lucide:git-compare-arrows">Optimize performance by processing multiple tasks simultaneously.</x-card>
+  <x-card data-title="Sequential Workflows" data-icon="lucide:arrow-right-circle" data-href="/examples/workflow-sequential">
+    Build pipelines where agents execute tasks in a strict, step-by-step order.
+  </x-card>
+  <x-card data-title="Concurrent Workflows" data-icon="lucide:git-fork" data-href="/examples/workflow-concurrency">
+    Process multiple tasks simultaneously to improve performance and efficiency.
+  </x-card>
+  <x-card data-title="Agent Handoff" data-icon="lucide:arrow-right-left" data-href="/examples/workflow-handoff">
+    Create seamless transitions where one agent passes its output to another for further processing.
+  </x-card>
+  <x-card data-title="Group Chat" data-icon="lucide:users" data-href="/examples/workflow-group-chat">
+    Enable multiple agents to collaborate and communicate in a shared environment.
+  </x-card>
 </x-cards>

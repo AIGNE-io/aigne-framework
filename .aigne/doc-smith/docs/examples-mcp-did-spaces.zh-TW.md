@@ -1,209 +1,204 @@
 # MCP DID Spaces
 
-本指南將示範如何透過模型內容協定（Model Context Protocol，MCP）建構一個與 DID Spaces 整合的聊天機器人。依照這些步驟，您將建立一個能夠與去中心化儲存互動的 Agent，使用預定義的技能執行讀取、寫入和列出檔案等操作。
-
-## 總覽
-
-此範例展示了 AIGNE 框架如何透過模型內容協定（MCP）與 DID Spaces 服務整合。主要目標是為一個聊天機器人 Agent 配備一套技能，使其能夠在用戶的 DID Space 內執行檔案和資料操作。這提供了一個實際的示範，說明 Agent 如何安全地與外部的去中心化服務互動。
-
-下圖說明了聊天機器人 Agent、MCP 伺服器和 DID Space 之間的互動：
-
-```d2
-direction: down
-
-AIGNE-Framework: {
-  label: "AIGNE 框架"
-  shape: rectangle
-
-  MCPAgent: {
-    label: "聊天機器人 Agent\n(MCPAgent)"
-  }
-}
-
-MCP-Server: {
-  label: "MCP 伺服器"
-  shape: rectangle
-}
-
-DID-Spaces: {
-  label: "DID Spaces"
-  shape: cylinder
-  icon: "https://www.arcblock.io/image-bin/uploads/fb3d25d6fcd3f35c5431782a35bef879.svg"
-}
-
-AIGNE-Framework.MCPAgent -> MCP-Server: "1. 連接並發現技能"
-MCP-Server -> AIGNE-Framework.MCPAgent: "2. 提供技能（例如：list_objects、write_object）"
-AIGNE-Framework.MCPAgent -> MCP-Server: "3. 執行技能（例如：寫入 'report.md'）"
-MCP-Server -> DID-Spaces: "4. 執行檔案操作"
-DID-Spaces -> MCP-Server: "5. 返回結果"
-MCP-Server -> AIGNE-Framework.MCPAgent: "6. 將結果傳送給 Agent"
-```
-
-展示的主要功能包括：
-- 連接到 DID Spaces MCP 伺服器。
-- 動態載入可用的技能（例如：`list_objects`、`write_object`）。
-- 執行基本的檔案操作，如檢查元資料、列出物件和寫入新檔案。
-- 將結果的 Markdown 報告儲存起來。
+本文件提供了一份透過模型情境協定（Model Context Protocol, MCP）將聊天機器人與 DID Spaces 整合的綜合指南。遵循這些說明，您將能夠建立一個 AI Agent，該 Agent 可以安全地存取和管理去中心化儲存環境中的檔案，並利用 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework) 的功能。
 
 ## 先決條件
 
-在開始之前，請確保您已安裝並設定好以下項目：
+為確保此範例成功執行，請確認已安裝並設定下列元件：
 
-*   **Node.js**：版本 20.0 或更高。
-*   **AI 模型提供商 API 金鑰**：需要一個來自 OpenAI 等提供商的 API 金鑰。
-*   **DID Spaces MCP 伺服器憑證**：您將需要 DID Spaces 執行個體的 URL 和授權金鑰。
-
-以下相依套件是選用的，僅當您打算從複製的原始碼執行範例時才需要：
-
-*   **pnpm**：用於套件管理。
-*   **Bun**：用於執行測試和範例。
+*   **Node.js**：版本 20.0 或更新版本。
+*   **OpenAI API 金鑰**：AI 模型需要有效的 API 金鑰。金鑰可從 [OpenAI Platform](https://platform.openai.com/api-keys) 取得。
+*   **DID Spaces MCP 伺服器憑證**：與您指定的 DID Space 互動時，需要身份驗證詳細資訊。
 
 ## 快速入門
 
-您可以使用 `npx` 直接執行此範例，無需在本機安裝。
+此範例可使用 `npx` 直接從您的終端機執行，無需本機安裝。
 
 ### 1. 設定環境變數
 
-首先，您需要設定 DID Spaces 伺服器的憑證。打開您的終端機並匯出以下環境變數。
+首先，使用您的 DID Spaces 伺服器憑證設定環境變數。您空間的 URL 和存取金鑰可以從您的 Blocklet 管理設定中產生。
 
-要取得您的 `DID_SPACES_AUTHORIZATION` 金鑰：
-1.  導覽至您的 Blocklet。
-2.  前往 **個人資料 -> 設定 -> 存取金鑰**。
-3.  點擊 **建立** 並將 **認證類型** 設定為「Simple」。
-4.  複製產生的金鑰。
+```bash 設定 DID Spaces 憑證 icon=lucide:terminal
+# 以您的 DID Spaces 應用程式 URL 取代
+export DID_SPaces_URL="https://spaces.staging.arcblock.io/app"
 
-```bash 設定環境變數 icon=lucide:terminal
-# 以您的 DID Spaces URL 取代
-export DID_SPACES_URL="https://spaces.staging.arcblock.io/app"
-
-# 以您產生的存取金鑰取代
+# 在個人資料 -> 設定 -> 存取金鑰中建立一個金鑰，並將驗證類型設定為「Simple」
 export DID_SPACES_AUTHORIZATION="blocklet-xxx"
 ```
 
-### 2. 連接到 AI 模型
+### 2. 執行範例
 
-此 Agent 需要連接到一個大型語言模型（LLM）才能運作。當您第一次執行範例時，系統會提示您連接到一個 AI 模型，並提供幾個選項。
-
-#### 選項 A：透過 AIGNE Hub 連接（建議）
-
-您可以選擇透過官方的 AIGNE Hub 進行連接。您的瀏覽器將打開一個頁面來引導您完成此過程。新用戶會獲得免費的 token 配額以供入門。或者，如果您有自行託管的 AIGNE Hub 執行個體，您可以選擇該選項並輸入其 URL。
-
-#### 選項 B：透過第三方提供商連接
-
-您可以透過環境變數直接設定來自第三方提供商（如 OpenAI）的 API 金鑰。
-
-```bash 設定 OpenAI API 金鑰 icon=lucide:terminal
-export OPENAI_API_KEY="sk-..." # 在此處設定您的 OpenAI API 金鑰
-```
-
-有關設定不同模型提供商（例如：DeepSeek、Google Gemini）的更多範例，請參閱原始碼中的 `.env.local.example` 檔案。
-
-### 3. 執行範例
-
-一旦您的環境設定完成，請執行以下命令以啟動聊天機器人：
+設定好環境變數後，執行以下指令以初始化聊天機器人。
 
 ```bash 執行範例 icon=lucide:terminal
 npx -y @aigne/example-mcp-did-spaces
 ```
 
-該腳本將執行以下步驟：
-1.  測試與 MCP DID Spaces 伺服器的連接。
-2.  執行三個操作：檢查元資料、列出物件和寫入一個檔案。
-3.  在主控台中顯示結果。
-4.  將一份完整的 Markdown 報告儲存到您的本機檔案系統，並顯示檔案路徑。
+### 3. 連線至 AI 模型
 
-## 運作方式
+聊天機器人需要連線至一個大型語言模型（LLM）才能運作。首次執行時，會出現一個提示，引導您完成連線設定。
 
-此範例利用一個 `MCPAgent` 來連接到 DID Spaces 伺服器。模型內容協定（MCP）作為一個標準化介面，允許 Agent 發現並利用伺服器提供的技能。
+![AI 模型連線的初始提示](../../../examples/mcp-did-spaces/run-example.png)
 
--   **動態技能載入**：`MCPAgent` 會查詢 MCP 伺服器並動態載入所有可用的技能。這意味著您不需要在程式碼中預先定義 Agent 的能力。
--   **安全認證**：與 DID Spaces 的連接是使用提供的授權憑證進行保護的。
--   **即時互動**：Agent 與 DID Spaces 進行即時互動以執行操作。
+建立連線主要有三種方法：
 
-可用的技能通常包括：
+#### 選項 1：AIGNE Hub（建議）
 
-| 技能 | 說明 |
-| :--- | :--- |
-| `head_space` | 取得關於 DID Space 的元資料。 |
-| `read_object` | 從 DID Space 中的一個物件讀取內容。 |
-| `write_object` | 將內容寫入 DID Space 中的一個物件。 |
-| `list_objects` | 列出 DID Space 中某個目錄內的物件。 |
-| `delete_object` | 從 DID Space 中刪除一個物件。 |
+這是最直接的方法。官方的 AIGNE Hub 為新使用者提供免費的權杖。若要使用此選項，請在提示中選擇第一個選項。您的網頁瀏覽器將開啟 AIGNE Hub 授權頁面，您可以在此核准連線請求。
+
+![授權 AIGNE Hub 連線](../../../examples/images/connect-to-aigne-hub.png)
+
+#### 選項 2：自架 AIGNE Hub
+
+對於正在營運私有 AIGNE Hub 執行個體的使用者，請選擇第二個選項。系統會提示您輸入自架 Hub 的 URL。關於部署個人 AIGNE Hub 的說明，請參閱 [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ)。
+
+![連線至自架的 AIGNE Hub](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+#### 選項 3：第三方模型提供者
+
+也支援與第三方 LLM 提供者（如 OpenAI）直接整合。將對應的 API 金鑰設定為環境變數，然後再次執行執行指令。
+
+```bash 設定 OpenAI API 金鑰 icon=lucide:terminal
+export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+```
+
+有關其他設定範例，包括像 DeepSeek 和 Google Gemini 這樣的提供者，請參閱原始碼儲存庫中的 `.env.local.example` 檔案。
+
+一旦 AI 模型連線成功，此範例將對您的 DID Space 執行一系列測試操作，將結果記錄到主控台，並產生一個總結結果的 markdown 檔案。
+
+## 運作原理
+
+此範例使用一個 `MCPAgent`，透過模型情境協定（MCP）與 DID Spaces 伺服器互動。此協定使 Agent 能夠動態發現並利用「技能」，這些技能直接對應到 DID Spaces 的功能。
+
+下圖說明了其運作流程：
+
+```d2
+direction: down
+
+AI-Agent: {
+  label: "AI Agent"
+  shape: rectangle
+}
+
+MCPAgent: {
+  label: "MCPAgent"
+  shape: rectangle
+}
+
+DID-Spaces-Server: {
+  label: "DID Spaces MCP 伺服器"
+  shape: rectangle
+
+  Skills: {
+    label: "可用技能"
+    shape: rectangle
+    list-objects: "list_objects"
+    write-object: "write_object"
+    read-object: "read_object"
+    head-space: "head_space"
+    delete-object: "delete_object"
+  }
+}
+
+DID-Space: {
+  label: "DID Space"
+  shape: cylinder
+}
+
+AI-Agent -> MCPAgent: "3. 執行指令\n（例如：'列出檔案'）"
+MCPAgent -> DID-Spaces-Server: "1. 連線並驗證"
+DID-Spaces-Server -> MCPAgent: "2. 提供技能"
+MCPAgent -> DID-Space: "4. 透過技能執行操作"
+
+```
+
+運作流程如下：
+1. `MCPAgent` 連線至指定的 DID Spaces MCP 伺服器端點。
+2. 它使用提供的授權憑證進行身份驗證。
+3. 伺服器向 Agent 提供一組技能，例如 `list_objects` 和 `write_object`。
+4. `MCPAgent` 整合這些技能，使主要的 AI Agent 能夠根據使用者輸入或程式邏輯，在 DID Space 內執行檔案和資料管理任務。
+
+### 可用技能
+
+此整合將幾個關鍵的 DID Spaces 操作作為技能暴露出來，供 Agent 使用：
+
+| 技能 | 描述 |
+| --------------- | ---------------------------------------------- |
+| `head_space` | 擷取關於 DID Space 的元資料。 |
+| `read_object` | 讀取指定物件（檔案）的內容。 |
+| `write_object` | 將新內容寫入物件（檔案）。 |
+| `list_objects` | 列出目錄中的所有物件（檔案）。 |
+| `delete_object` | 刪除指定的物件（檔案）。 |
 
 ## 設定
 
-在生產環境中，您通常會託管自己的 DID Spaces MCP 伺服器。`MCPAgent` 可以被設定為指向您的自訂端點並使用您特定的認證 token。
+對於生產環境部署，應更新 Agent 設定，以指向您特定的 MCP 伺服器並使用安全的身份驗證權杖。`MCPAgent` 在實例化時需提供伺服器 URL 和適當的授權標頭。
 
-以下程式碼片段展示了如何使用自訂參數初始化 `MCPAgent`：
-
-```typescript MCPAgent 初始化
-import { MCPAgent } from '@aigne/mcp-agent';
-
+```typescript agent-config.ts icon=logos:typescript
 const mcpAgent = await MCPAgent.from({
-  url: 'YOUR_MCP_SERVER_URL',
-  transport: 'streamableHttp',
+  url: "YOUR_MCP_SERVER_URL",
+  transport: "streamableHttp",
   opts: {
     requestInit: {
       headers: {
-        Authorization: 'Bearer YOUR_TOKEN',
+        Authorization: "Bearer YOUR_TOKEN",
       },
     },
   },
 });
 ```
 
-## 從原始碼執行
+## 偵錯
 
-如果您偏好從本機複製的儲存庫執行範例，請按照以下步驟操作。
+`aigne observe` 指令提供了一個工具，用於監控和分析 Agent 的執行期行為。它會啟動一個本機網頁伺服器，將執行追蹤視覺化，提供關於輸入、輸出、工具互動和效能指標的深入資訊。
+
+1. **啟動觀察伺服器：**
+
+    ```bash aigne observe icon=lucide:terminal
+    aigne observe
+    ```
+
+    ![AIGNE Observe 伺服器在終端機中啟動](../../../examples/images/aigne-observe-execute.png)
+
+2. **檢視執行追蹤：**
+
+    存取 `http://localhost:7893` 的網頁介面，以檢視最近的 Agent 執行列表。可以檢查每個追蹤，以詳細分析 Agent 的操作。
+
+    ![AIGNE Observe 追蹤列表](../../../examples/images/aigne-observe-list.png)
+
+## 本機安裝與測試
+
+對於打算修改原始碼的開發者，以下步驟概述了本機設定和測試的流程。
 
 ### 1. 複製儲存庫
 
-```bash 複製儲存庫 icon=lucide:terminal
+```bash icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 ```
 
-### 2. 安裝相依套件
+### 2. 安裝依賴項
 
-導覽至範例目錄並使用 `pnpm` 安裝必要的套件。
+切換到範例的目錄，並使用 `pnpm` 安裝所需的套件。
 
-```bash 安裝相依套件 icon=lucide:terminal
+```bash icon=lucide:terminal
 cd aigne-framework/examples/mcp-did-spaces
 pnpm install
 ```
 
 ### 3. 執行範例
 
-使用 `pnpm start` 命令啟動應用程式。
+執行啟動腳本，從本機原始碼執行應用程式。
 
-```bash 執行範例 icon=lucide:terminal
+```bash icon=lucide:terminal
 pnpm start
 ```
 
-## 測試與偵錯
+### 4. 執行測試
 
-### 執行測試
+若要驗證整合與功能，請執行測試套件。
 
-要驗證整合是否正常運作，您可以執行測試套件。測試將連接到 MCP 伺服器，列出可用的技能，並執行基本的 DID Spaces 操作。
-
-```bash 執行測試套件 icon=lucide:terminal
+```bash icon=lucide:terminal
 pnpm test:llm
 ```
 
-### 觀察 Agent 行為
-
-`aigne observe` 命令會啟動一個本機 Web 伺服器，用於監控和分析 Agent 的執行資料。這個工具對於偵錯、效能調校以及理解您的 Agent 如何與模型和工具互動至關重要。它提供了一個使用者友善的介面來檢查追蹤記錄並查看詳細的呼叫資訊。
-
-```bash 啟動觀察伺服器 icon=lucide:terminal
-aigne observe
-```
-
-## 總結
-
-本範例提供了一個實用指南，說明如何使用模型內容協定將 AIGNE Agent 與 DID Spaces 等外部服務整合。您已經學會了如何設定、執行和測試一個能夠執行去中心化儲存操作的 Agent。
-
-有關相關概念的更多資訊，請參閱以下文件：
-
-<x-cards data-columns="2">
-  <x-card data-title="MCP Agent" data-href="/developer-guide/agents/mcp-agent" data-icon="lucide:box">了解更多關於 MCPAgent 及其如何與外部服務互動的資訊。</x-card>
-  <x-card data-title="DID Spaces 記憶體" data-href="/examples/memory-did-spaces" data-icon="lucide:database">查看一個使用 DID Spaces 作為 Agent 持久性記憶體的範例。</x-card>
-</x-cards>
+測試過程將建立與 MCP 伺服器的連線，列舉可用技能，並執行基本的 DID Spaces 操作，以確認整合功能是否如預期般運作。

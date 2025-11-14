@@ -1,77 +1,76 @@
-This document provides a comprehensive guide to creating and running an agent-based chatbot using the AIGNE Framework. You will learn to execute the chatbot instantly without installation, connect it to various AI model providers, and set it up for local development. The example supports both single-response (one-shot) and continuous conversation (interactive) modes.
+# Chatbot
+
+This guide provides a comprehensive walkthrough of the agent-based chatbot example. You will learn how to run the chatbot in different modes, connect it to various AI model providers, and use the AIGNE observability tools to debug its execution. This example is designed to work out-of-the-box, allowing you to get started without any local installation.
 
 ## Overview
 
-This example demonstrates the capabilities of the [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) and [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md) by building a functional chatbot. The agent can be operated in two primary modes:
+This example demonstrates how to create and run a simple yet powerful agent-based chatbot using the AIGNE Framework. It supports two primary modes of operation:
+*   **One-shot mode**: The chatbot takes a single input, provides a response, and then exits.
+*   **Interactive mode**: The chatbot engages in a continuous conversation until you decide to end the session.
 
-*   **One-shot Mode**: The chatbot processes a single input and provides a single response before exiting. This is ideal for direct questions or command-line piping.
-*   **Interactive Mode**: The chatbot engages in a continuous conversation, maintaining context between turns until the user terminates the session.
+The chatbot can be configured to use different AI models and can accept input directly from the command line or through a pipeline.
 
 ## Prerequisites
 
-Before proceeding, ensure your environment meets the following requirements:
+Before running the example, ensure you have the following installed on your system:
 
-*   **Node.js**: Version 20.0 or higher.
-*   **npm**: Included with your Node.js installation.
-*   **AI Model Access**: An API key from a provider like OpenAI is required. Alternatively, you can connect to the AIGNE Hub.
+*   [Node.js](https://nodejs.org) (version 20.0 or higher)
+*   An [OpenAI API key](https://platform.openai.com/api-keys) or access to an AIGNE Hub for model interaction.
 
-## Quick Start (No Installation)
+## Quick Start
 
-You can run the chatbot example directly from your terminal without any local installation steps using `npx`.
+You can run this example directly using `npx` without cloning the repository or installing any dependencies locally.
 
-### Execute the Chatbot
+### Running the Example
 
-The chatbot can be run in different modes to suit your needs.
+Execute the following commands in your terminal to run the chatbot.
 
-*   **One-Shot Mode (Default)**: For a single question and answer.
+Run in default one-shot mode:
+```bash npx command icon=lucide:terminal
+npx -y @aigne/example-chat-bot
+```
 
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-chat-bot
-    ```
+Run in interactive chat mode using the `--chat` flag:
+```bash npx command icon=lucide:terminal
+npx -y @aigne/example-chat-bot --chat
+```
 
-*   **Interactive Chat Mode**: To begin a continuous conversation.
+Use pipeline input to provide a prompt directly:
+```bash npx command icon=lucide:terminal
+echo "Tell me about AIGNE Framework" | npx -y @aigne/example-chat-bot
+```
 
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-chat-bot --chat
-    ```
+### Connecting to an AI Model
 
-*   **Pipeline Input**: You can pipe input directly to the chatbot in one-shot mode.
+The first time you run the example, it will prompt you to connect to an AI model service since no API keys are configured. The following diagram illustrates the connection options available:
 
-    ```bash icon=lucide:terminal
-    echo "Tell me about the AIGNE Framework" | npx -y @aigne/example-chat-bot
-    ```
-
-### Connect to an AI Model
-
-On the first run, the CLI will prompt you to connect to an AI model service. You have several options available.
 ```d2
 direction: down
 
-User: {
-  shape: c4-person
-}
-
-AIGNE-CLI: {
-  label: "AIGNE CLI"
+Chatbot-Example: {
+  label: "Chatbot Example\n(@aigne/example-chat-bot)"
+  shape: rectangle
 }
 
 Connection-Options: {
   label: "Connection Options"
   shape: rectangle
-  grid-columns: 3
+  style: {
+    stroke-dash: 4
+  }
 
-  AIGNE-Hub-Official: {
-    label: "AIGNE Hub\n(Official)"
+  Official-AIGNE-Hub: {
+    label: "1. Official AIGNE Hub\n(Recommended)"
     icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
   }
 
-  AIGNE-Hub-Self-Hosted: {
-    label: "AIGNE Hub\n(Self-Hosted)"
+  Self-Hosted-Hub: {
+    label: "2. Self-Hosted AIGNE Hub"
     icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
   }
 
   Third-Party-Provider: {
-    label: "Third-Party Provider\n(e.g., OpenAI)"
+    label: "3. Third-Party Provider\n(e.g., OpenAI)"
     shape: rectangle
   }
 }
@@ -81,107 +80,126 @@ Blocklet-Store: {
   icon: "https://store.blocklet.dev/assets/z8ia29UsENBg6tLZUKi2HABj38Cw1LmHZocbQ/logo.png"
 }
 
-User -> AIGNE-CLI: "1. Run chatbot"
-AIGNE-CLI -> User: "2. Prompt for AI model connection"
-User -> Connection-Options: "3. Selects an option"
-
-Connection-Options.AIGNE-Hub-Official -> AIGNE-CLI: "Connect via browser auth"
-Connection-Options.AIGNE-Hub-Self-Hosted -> AIGNE-CLI: "Connect via service URL"
-Connection-Options.AIGNE-Hub-Self-Hosted <- Blocklet-Store: "Deploy from"
-Connection-Options.Third-Party-Provider -> AIGNE-CLI: "Connect via env variables"
+Chatbot-Example -> Connection-Options: "Prompts user to connect to AI model"
+Connection-Options.Self-Hosted-Hub -> Blocklet-Store: "Install from"
 ```
-1.  **Connect via AIGNE Hub (Official)**
-    This is the recommended path for new users. Selecting this option will open your web browser to the official AIGNE Hub. Follow the on-screen instructions to connect. New users automatically receive a complimentary token balance to get started.
 
-2.  **Connect via AIGNE Hub (Self-Hosted)**
-    If you operate your own instance of AIGNE Hub, choose this option and enter your service's URL to complete the connection. You can deploy a self-hosted AIGNE Hub from the [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ).
+![Initial setup prompt for connecting an AI model.](../../../examples/chat-bot/run-example.png)
 
-3.  **Connect via a Third-Party Model Provider**
-    You can connect directly to a provider such as OpenAI by setting the required environment variables. For OpenAI, set your API key as follows:
+You have several options to proceed:
 
-    ```bash icon=lucide:terminal
-    export OPENAI_API_KEY="your-openai-api-key"
-    ```
+#### 1. Connect to the Official AIGNE Hub (Recommended)
 
-    After configuring the environment variable, run the chatbot command again. For a list of supported variables for other providers (e.g., DeepSeek, Google Gemini), refer to the `.env.local.example` file in the repository.
+This is the easiest way to get started.
+1.  Select the first option: `Connect to the Arcblock official AIGNE Hub`.
+2.  Your web browser will open a page to authorize the AIGNE CLI.
+3.  Follow the on-screen instructions to approve the connection. New users receive a complimentary token grant to use the service.
 
-## Local Installation and Setup
+![Authorize AIGNE CLI to connect to AIGNE Hub.](../../../examples/images/connect-to-aigne-hub.png)
 
-For development or customization, you can clone the repository and run the example from your local machine.
+#### 2. Connect to a Self-Hosted AIGNE Hub
+
+If you are running your own instance of AIGNE Hub:
+1.  Select the second option: `Connect to a self-hosted AIGNE Hub instance`.
+2.  Enter the URL of your self-hosted AIGNE Hub when prompted.
+3.  Follow the subsequent prompts to complete the connection.
+
+If you need to set up a self-hosted AIGNE Hub, you can install it from the [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ).
+
+![Enter the URL for a self-hosted AIGNE Hub.](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+#### 3. Connect via a Third-Party Model Provider
+
+You can also connect directly to a third-party AI model provider, such as OpenAI, by setting the appropriate environment variables. For example, to use OpenAI, set your API key as follows:
+
+```bash Set OpenAI API Key icon=lucide:terminal
+export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+```
+
+After setting the environment variable, run the example again. For a list of supported providers and their required environment variables, refer to the example configuration file.
+
+## Local Installation and Usage
+
+For development purposes, you may want to clone the repository and run the example locally.
 
 ### 1. Install AIGNE CLI
 
-First, install the AIGNE command-line interface globally.
+First, install the AIGNE Command Line Interface (CLI) globally.
 
-```bash icon=lucide:terminal
+```bash Install AIGNE CLI icon=lucide:terminal
 npm install -g @aigne/cli
 ```
 
 ### 2. Clone the Repository
 
-Clone the AIGNE Framework repository and navigate into the chatbot example's directory.
+Clone the `aigne-framework` repository and navigate to the `chat-bot` example directory.
 
-```bash icon=lucide:terminal
+```bash Clone repository icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 cd aigne-framework/examples/chat-bot
 ```
 
 ### 3. Run the Example Locally
 
-From within the `chat-bot` directory, use `pnpm` to execute the start scripts.
+Use the `pnpm start` command to run the chatbot.
 
-*   **One-Shot Mode (Default)**:
+Run in default one-shot mode:
+```bash pnpm command icon=lucide:terminal
+pnpm start
+```
 
-    ```bash icon=lucide:terminal
-    pnpm start
-    ```
+Run in interactive chat mode:
+```bash pnpm command icon=lucide:terminal
+pnpm start --chat
+```
 
-*   **Interactive Chat Mode**:
-
-    ```bash icon=lucide:terminal
-    pnpm start --chat
-    ```
-
-*   **Pipeline Input**:
-
-    ```bash icon=lucide:terminal
-    echo "Tell me about the AIGNE Framework" | pnpm start
-    ```
+Use pipeline input:
+```bash pnpm command icon=lucide:terminal
+echo "Tell me about AIGNE Framework" | pnpm start
+```
 
 ## Command-Line Options
 
-The chatbot script accepts several command-line arguments to customize its behavior and configuration.
+The chatbot script accepts several command-line arguments to customize its behavior.
 
 | Parameter | Description | Default |
 |---|---|---|
-| `--chat` | Runs the chatbot in interactive mode for continuous conversation. | Disabled (one-shot mode) |
-| `--model <provider[:model]>` | Specifies the AI model to use. Format is `provider[:model]`. Examples: `openai` or `openai:gpt-4o-mini`. | `openai` |
-| `--temperature <value>` | Sets the temperature for model generation to control randomness. | Provider default |
-| `--top-p <value>` | Sets the top-p (nucleus sampling) value for token selection. | Provider default |
-| `--presence-penalty <value>` | Adjusts the penalty for new tokens based on their presence in the text so far. | Provider default |
-| `--frequency-penalty <value>` | Adjusts the penalty for new tokens based on their frequency in the text so far. | Provider default |
-| `--log-level <level>` | Sets the logging verbosity. Options: `ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`. | `INFO` |
-| `--input`, `-i <input>` | Provides the input query directly as an argument. | None |
+| `--chat` | Run in interactive chat mode. If omitted, runs in one-shot mode. | `Disabled` |
+| `--model <provider[:model]>` | Specifies the AI model to use. The format is `provider[:model]`. Examples: `openai` or `openai:gpt-4o-mini`. | `openai` |
+| `--temperature <value>` | Sets the temperature for model generation, controlling randomness. | Provider default |
+| `--top-p <value>` | Sets the top-p (nucleus sampling) value for model generation. | Provider default |
+| `--presence-penalty <value>` | Sets the presence penalty value to influence topic diversity. | Provider default |
+| `--frequency-penalty <value>` | Sets the frequency penalty value to reduce repetitive output. | Provider default |
+| `--log-level <level>` | Sets the logging level. Options are `ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`. | `INFO` |
+| `--input`, `-i <input>` | Provides the input prompt directly as an argument. | `None` |
 
-## Debugging
+## Debugging with AIGNE Observe
 
-The AIGNE Framework includes a powerful observation tool for monitoring and analyzing agent execution, which is essential for debugging and performance tuning.
+AIGNE includes a powerful local observability tool for debugging and analyzing agent execution. The `aigne observe` command starts a local web server that provides a user interface to inspect execution traces.
 
-1.  **Start the Observation Server**
-    Run the `aigne observe` command in your terminal. This launches a local web server that listens for execution data from your agents.
+First, start the observation server in your terminal:
 
-2.  **View Executions**
-    Open the web interface in your browser to see a list of recent agent runs. You can select an execution to inspect its traces, view detailed call information, and understand how the agent processes information and interacts with models.
+```bash aigne observe icon=lucide:terminal
+aigne observe
+```
+
+![Terminal output showing the aigne observe server running.](../../../examples/images/aigne-observe-execute.png)
+
+After running the chatbot, you can open the provided URL (typically `http://localhost:7893`) in your browser to view a list of recent agent executions. This interface allows you to inspect detailed information for each run, including inputs, outputs, model calls, and performance metrics, which is invaluable for debugging and optimization.
+
+![AIGNE observability interface showing a list of traces.](../../../examples/images/aigne-observe-list.png)
 
 ## Summary
 
-This example provides a practical foundation for building agent-based chatbots with the AIGNE Framework. You have learned how to run the chatbot in different modes, connect it to AI models, and debug its execution.
+This example provides a practical foundation for building agent-based chatbots with the AIGNE Framework. You have learned how to run the example, connect it to various AI models, and utilize the built-in observability tools for debugging.
 
-For more advanced examples and features, you may want to explore the following topics:
+For more advanced topics and examples, you may find the following documents helpful:
 
 <x-cards data-columns="2">
-  <x-card data-title="Memory" data-icon="lucide:brain-circuit" data-href="/examples/memory">Learn how to give your chatbot memory to recall past interactions.</x-card>
-  <x-card data-title="AIGNE File System (AFS)" data-icon="lucide:folder-tree" data-href="/examples/afs-system-fs">Build a chatbot that can interact with your local file system.</x-card>
-  <x-card data-title="Workflow Orchestration" data-icon="lucide:workflow" data-href="/examples/workflow-orchestration">Coordinate multiple agents to work together on complex tasks.</x-card>
-  <x-card data-title="Core Concepts" data-icon="lucide:book-open" data-href="/developer-guide/core-concepts">Dive deeper into the fundamental building blocks of the AIGNE Framework.</x-card>
+  <x-card data-title="Memory" data-icon="lucide:brain-circuit" data-href="/examples/memory">
+    Learn how to add memory to your chatbot to maintain context across conversations.
+  </x-card>
+  <x-card data-title="AIGNE Core Concepts" data-icon="lucide:book-open" data-href="/developer-guide/core-concepts">
+    Dive deeper into the fundamental building blocks of the AIGNE Framework.
+  </x-card>
 </x-cards>

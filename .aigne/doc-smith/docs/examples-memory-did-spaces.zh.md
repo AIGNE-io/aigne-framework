@@ -1,180 +1,140 @@
-本文档将指导您如何使用 DID Spaces 和 AIGNE 框架构建一个具有持久化内存的聊天机器人。您将学习如何利用 `DIDSpacesMemory` 插件，使您的 Agent 能够以安全、去中心化的方式跨多个会话保留对话历史。
+# DID Spaces 内存
 
-# DID Spaces Memory
+本指南演示了如何使用 DID Spaces 构建一个具有持久化内存的聊天机器人。通过利用 AIGNE 框架中的 `DIDSpacesMemory` 插件，您的 Agent 能够以去中心化且安全的方式跨多个会话保留对话历史。
 
-## 概述
+## 前提条件
 
-本示例演示了如何将持久化内存集成到 AI Agent 中。与忘记过去交互的无状态聊天机器人不同，本示例展示了一个能够存储用户个人资料信息、从先前对话中回忆偏好，并根据存储的内存提供个性化响应的 Agent。
+在开始之前，请确保您已安装并配置好以下各项：
 
-此功能通过使用来自 `@aigne/agent-library` 的 `DIDSpacesMemory` 插件实现，该插件连接到 DID Spaces 实例以存储和检索对话历史。
-
-## 前置要求
-
-在继续之前，请确保已安装并配置以下各项：
-
-*   **Node.js**: 20.0 或更高版本。
-*   **npm**: 包含在 Node.js 中。
-*   **OpenAI API 密钥**: 语言模型所需。可从 [OpenAI 平台](https://platform.openai.com/api-keys)获取。
-*   **DID Spaces 凭证**: 内存持久化所需。
+*   **Node.js**：版本 20.0 或更高。
+*   **npm**：随 Node.js 一同安装。
+*   **OpenAI API 密钥**：用于连接语言模型。您可以从 [OpenAI Platform](https://platform.openai.com/api-keys) 获取。
+*   **DID Spaces 凭证**：内存持久化所必需。
 
 ## 快速入门
 
-您可以使用 `npx` 直接在终端中运行此示例，无需本地安装。
+您可以使用 `npx` 直接运行此示例，无需任何本地安装。
 
 ### 1. 运行示例
 
 在您的终端中执行以下命令：
 
-```bash memory-did-spaces icon=lucide:terminal
+```bash 运行 memory-did-spaces 示例 icon=lucide:terminal
 npx -y @aigne/example-memory-did-spaces
 ```
 
-### 2. 连接到 AI 模型
+### 2. 连接 AI 模型
 
-该 Agent 需要连接到一个大型语言模型。首次运行时，系统将提示您连接到一个模型提供商。
+首次运行时，由于尚未配置任何 API 密钥，CLI 将提示您连接到一个 AI 模型。
 
-![连接到 AI 模型](https://static.AIGNE.io/aigne-docs/images/examples/run-example.png)
+![run-example.png](../../../examples/memory-did-spaces/run-example.png)
 
-您有以下几种连接选项：
+您有以下几种选择：
 
-*   **AIGNE Hub (官方)**: 这是最简单的方法。您的浏览器将打开官方的 AIGNE Hub，您可以在那里登录。新用户会获得免费的 token，可以立即开始体验。
+*   **通过官方 AIGNE Hub 连接（推荐）**
+    这是最简单的入门方式。选择此选项将会在您的网页浏览器中打开官方 AIGNE Hub 的认证页面。按照屏幕上的说明连接您的钱包。新用户将自动获得 400,000 个 token 的欢迎奖励。
 
-    ![连接到官方 AIGNE Hub](https://static.AIGNE.io/aigne-docs/images/examples/connect-to-aigne-hub.png)
+    ![连接到官方 AIGNE Hub](../../../examples/images/connect-to-aigne-hub.png)
 
-*   **AIGNE Hub (自托管)**: 如果您运行自己的 AIGNE Hub 实例，请选择此选项并输入其 URL。您可以从 [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ) 部署自托管的 AIGNE Hub。
+*   **通过自托管的 AIGNE Hub 连接**
+    如果您有自己的 AIGNE Hub 实例，请选择此选项。系统将提示您输入自托管 Hub 的 URL 以完成连接。您可以从 [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ) 部署您自己的 AIGNE Hub。
 
-    ![连接到自托管 AIGNE Hub](https://static.AIGNE.io/aigne-docs/images/examples/connect-to-self-hosted-aigne-hub.png)
+    ![连接到自托管的 AIGNE Hub](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
 
-*   **第三方模型提供商**: 您可以直接连接到 OpenAI 等提供商。为此，请在执行命令前将您的 API 密钥设置为环境变量。
+*   **通过第三方模型提供商连接**
+    您也可以直接连接到第三方提供商，如 OpenAI、DeepSeek 或 Google Gemini。为此，您需要将提供商的 API 密钥设置为环境变量。例如，要使用 OpenAI，请设置 `OPENAI_API_KEY` 变量：
 
-    ```bash 导出 OpenAI 密钥 icon=lucide:terminal
+    ```bash 在此处设置您的 OpenAI API 密钥 icon=lucide:terminal
     export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
     ```
 
-    有关 DeepSeek 或 Google Gemini 等提供商的更多配置选项，请参阅源仓库中的 `.env.local.example` 文件。
-
-配置模型连接后，再次运行 `npx` 命令以启动聊天机器人。
+    设置环境变量后，再次运行 `npx` 命令。
 
 ## 本地安装与执行
 
-对于希望检查源代码或进行修改的开发者，请按照以下步骤在本地运行示例。
+如果您倾向于从源代码运行示例，请按照以下步骤操作。
 
 ### 1. 克隆仓库
 
-首先，克隆官方的 AIGNE 框架仓库：
+首先，从 GitHub 克隆 AIGNE 框架的仓库：
 
-```bash 克隆仓库 icon=lucide:terminal
+```bash icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 ```
 
 ### 2. 安装依赖
 
-导航到示例目录并使用 pnpm 安装所需的依赖项。
+导航至示例目录，并使用 `pnpm` 安装所需依赖：
 
-```bash 安装依赖 icon=lucide:terminal
+```bash icon=lucide:terminal
 cd aigne-framework/examples/memory-did-spaces
 pnpm install
 ```
 
 ### 3. 运行示例
 
-通过执行 `start` 脚本来启动应用程序。
+最后，启动示例：
 
-```bash 运行示例 icon=lucide:terminal
+```bash icon=lucide:terminal
 pnpm start
 ```
 
-该脚本将运行一系列测试以展示内存功能，将结果保存到 Markdown 文件中，并在控制台中显示文件路径供您查看。
+该脚本将执行三个测试，以演示内存功能：存储用户个人资料、回忆偏好，以及根据存储的数据创建投资组合。结果将显示在控制台中，并保存到一个 Markdown 报告文件中供您查阅。
 
 ## 工作原理
 
-本示例利用 `DIDSpacesMemory` 插件为 Agent 提供持久化和去中心化的内存。下图说明了此工作流程：
+本示例使用了 `@aigne/agent-library` 包中的 `DIDSpacesMemory` 插件。该插件通过将对话历史存储在 DID Spaces（一种去中心化的个人数据存储解决方案）中，使 Agent 能够持久化对话历史。
 
-```d2
-direction: down
+主要功能包括：
+*   **去中心化持久性**：对话被安全地存储在用户的 DID Space 中。
+*   **会话连续性**：聊天机器人可以回忆起先前交互中的信息，即使在重启后也能做到。
+*   **隐私与安全**：用户数据使用去中心化标识符（DID）技术进行管理，确保了隐私和用户控制权。
 
-User: {
-  shape: c4-person
-}
-
-AI-Agent: {
-  label: "AI Agent"
-  shape: rectangle
-
-  DIDSpacesMemory-Plugin: {
-    label: "DIDSpacesMemory 插件"
-  }
-}
-
-DID-Spaces: {
-  label: "DID Spaces"
-  shape: cylinder
-  icon: "https://www.arcblock.io/image-bin/uploads/fb3d25d6fcd3f35c5431782a35bef879.svg"
-}
-
-User -> AI-Agent: "2. 用户发送消息"
-AI-Agent -> User: "7. Agent 发送具有上下文感知的响应"
-
-AI-Agent.DIDSpacesMemory-Plugin -> DID-Spaces: "1. 使用凭证进行初始化"
-AI-Agent.DIDSpacesMemory-Plugin -> DID-Spaces: "3. 检索对话历史"
-DID-Spaces -> AI-Agent.DIDSpacesMemory-Plugin: "4. 为 Agent 提供上下文"
-AI-Agent -> AI-Agent.DIDSpacesMemory-Plugin: "5. 处理新的交互"
-AI-Agent.DIDSpacesMemory-Plugin -> DID-Spaces: "6. 保存更新后的历史"
-
-```
-
-流程如下：
-
-1.  **初始化**: 使用 `DIDSpacesMemory` 插件对 Agent 进行初始化，该插件配置了 DID Spaces 实例的 URL 和身份验证凭证。
-2.  **交互**: 当您与聊天机器人交谈时，每个用户输入和 Agent 响应都会被记录下来。
-3.  **存储**: `DIDSpacesMemory` 插件会自动将对话历史保存到您指定的 DID Space 中。
-4.  **检索**: 在后续会话中，该插件会检索过去的对话历史，为 Agent 提供记住先前交互所需的上下文。
-
-这种去中心化的方法确保了内存在用户 DID 的控制下是安全、私密且可移植的。
+该示例通过存储用户个人资料详情，在新的交互中回忆这些信息，并利用这些记住的上下文来提供个性化推荐，从而展示了这一功能。
 
 ## 配置
 
-该示例包含一个预配置的 DID Spaces 端点用于演示。对于生产环境，您必须更新配置以指向您自己的实例。
+虽然该示例为了演示目的预先配置了一个 DID Spaces 端点，但在生产应用中，您需要更新配置。这包括设置您自己的 DID Spaces 实例，并在代码中提供正确的 URL 和认证凭证。
 
-此配置在实例化 `DIDSpacesMemory` 插件时应用：
-
-```typescript memory-config.ts icon=logos:typescript
+```typescript memory-config.ts
 import { DIDSpacesMemory } from '@aigne/agent-library';
-
-// ...
 
 const memory = new DIDSpacesMemory({
   url: "YOUR_DID_SPACES_URL",
   auth: {
-    authorization: "Bearer YOUR_AUTHENTICATION_TOKEN",
+    authorization: "Bearer YOUR_TOKEN",
   },
 });
 ```
 
-请将 `"YOUR_DID_SPACES_URL"` 和 `"Bearer YOUR_AUTHENTICATION_TOKEN"` 替换为您的特定端点和凭证。
+请将 `"YOUR_DID_SPACES_URL"` 和 `"Bearer YOUR_TOKEN"` 替换为您的实际端点和认证令牌。
 
-## 调试
+## 使用 AIGNE Observe 进行调试
 
-要监控和分析 Agent 的行为，请使用 `aigne observe` 命令。该工具会启动一个本地 Web 服务器，提供 Agent 执行跟踪的详细视图。它是调试、理解信息流和优化性能的重要工具。
+要监控和调试您的 Agent 执行情况，您可以使用 `aigne observe` 命令。该工具会启动一个本地 Web 服务器，提供 Agent 追踪的详细视图，帮助您了解其行为、诊断问题并优化性能。
 
 要启动观察服务器，请运行：
 
-```bash aigne-observe icon=lucide:terminal
+```bash icon=lucide:terminal
 aigne observe
 ```
 
-![AIGNE Observe 执行](https://static.AIGNE.io/aigne-docs/images/examples/aigne-observe-execute.png)
+![AIGNE Observe 服务器启动](../../../examples/images/aigne-observe-execute.png)
 
-Web 界面将显示最近执行的列表，允许您检查每次运行的输入、输出、工具调用和模型交互。
+运行后，您可以在浏览器中打开提供的 URL（默认为 `http://localhost:7893`），查看最近的 Agent 执行列表并检查其详细信息。
 
-![AIGNE Observe 列表](https://static.AIGNE.io/aigne-docs/images/examples/aigne-observe-list.png)
+![AIGNE Observe 追踪列表](../../../examples/images/aigne-observe-list.png)
 
 ## 总结
 
-本示例提供了一个功能性演示，展示了如何使用 AIGNE 框架和 DID Spaces 将持久化、去中心化的内存集成到 AI Agent 中。通过遵循本指南，您可以创建更智能、更具上下文感知能力的聊天机器人。
+本示例演示了如何使用 `DIDSpacesMemory` 插件将去中心化的持久内存集成到 AI Agent 中。此功能使您能够创建更复杂、更具上下文感知能力的聊天机器人，这些机器人能够跨会话记住用户交互。
 
-如需进一步阅读，请参阅以下部分：
+要了解更多相关概念，请参阅以下文档：
 <x-cards data-columns="2">
-  <x-card data-title="内存概念" data-href="/developer-guide/core-concepts/memory" data-icon="lucide:book-open">了解更多关于内存如何在 AIGNE 框架中工作的信息。</x-card>
-  <x-card data-title="框架示例" data-href="/examples" data-icon="lucide:layout-template">探索其他实际示例和用例。</x-card>
+  <x-card data-title="内存" data-href="/developer-guide/core-concepts/memory" data-icon="lucide:brain-circuit">
+   了解 AIGNE 框架中 Agent 内存的核心概念。
+  </x-card>
+  <x-card data-title="文件系统内存" data-href="/examples/memory" data-icon="lucide:folder">
+   探索另一个使用本地文件系统进行内存持久化的示例。
+  </x-card>
 </x-cards>

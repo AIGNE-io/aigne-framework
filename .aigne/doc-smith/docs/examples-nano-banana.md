@@ -1,127 +1,85 @@
 # Nano Banana
 
-This document provides a step-by-step guide on how to create and run a chatbot with image generation capabilities using the AIGNE Framework. You will learn how to execute the example directly from the command line, connect it to various AI model providers, and debug its operation.
-
-## Overview
-
-The "Nano Banana" example demonstrates a practical application of the AIGNE Framework by combining a language model with an image generation model. An AI agent is configured to interpret a user's text prompt and produce a corresponding image. This example is designed for a quick start and can be run without any local installation.
-
-The following diagram illustrates the workflow of the Nano Banana example, from user input to image generation:
-
-```d2
-direction: down
-
-User: {
-  shape: c4-person
-}
-
-CLI: {
-  label: "CLI"
-}
-
-Nano-Banana-Example: {
-  label: "Nano Banana Example\n(AI Agent)"
-  shape: rectangle
-
-  Language-Model: {
-    label: "Language Model\n(Prompt Interpretation)"
-    shape: rectangle
-  }
-
-  Image-Generation-Model: {
-    label: "Image Generation Model\n(Image Creation)"
-    shape: rectangle
-  }
-}
-
-AI-Model-Provider: {
-  label: "AI Model Provider\n(e.g., OpenAI)"
-  shape: cylinder
-}
-
-User -> CLI: "1. Executes command\n(e.g., npx ... --input '...a cat')"
-CLI -> Nano-Banana-Example: "2. Runs agent with text prompt"
-Nano-Banana-Example.Language-Model -> AI-Model-Provider: "3. Processes prompt"
-AI-Model-Provider -> Nano-Banana-Example.Image-Generation-Model: "4. Generates image based on processed prompt"
-Nano-Banana-Example -> User: "5. Returns generated image"
-
-```
+This guide demonstrates how to build and run a chatbot capable of generating images. By following these steps, you will learn how to execute a pre-built AIGNE example, connect it to an AI model, and inspect its behavior using the framework's observability tools.
 
 ## Prerequisites
 
-To successfully run this example, the following components must be available on your system:
+Before proceeding, ensure the following requirements are met:
 
-*   **Node.js**: Version 20.0 or later. Download from [nodejs.org](https://nodejs.org).
-*   **npm**: Node Package Manager, which is included with the Node.js installation.
-*   **AI Model Provider API Key**: Required for interacting with an AI service. An API key from a provider like [OpenAI](https://platform.openai.com/api-keys) is necessary.
+*   **Node.js:** Version 20.0 or higher must be installed. You can download it from [nodejs.org](https://nodejs.org).
+*   **OpenAI API Key:** An API key from [OpenAI](https://platform.openai.com/api-keys) is required to interact with their image generation models.
 
-## Quick Start (No Installation Required)
+## Quick Start
 
-This example can be executed directly from your terminal using `npx`, which avoids the need for a local installation.
+You can run this example directly without a local installation using `npx`.
 
-### Run with a Single Input
+### Run the Example
 
-To generate an image based on a specific text prompt, use the `--input` flag. The command will execute once and output the result.
+Execute the following command in your terminal to run the chatbot with a single input. This command will download and run the example package.
 
 ```bash Run with a single input icon=lucide:terminal
 npx -y @aigne/example-nano-banana --input 'Draw an image of a lovely cat'
 ```
 
-### Run in Interactive Chat Mode
-
-For a continuous, conversational session, use the `--chat` flag. This will start an interactive mode where you can submit multiple prompts.
+To start an interactive session where you can have a conversation with the chatbot, use the `--chat` flag.
 
 ```bash Run in interactive mode icon=lucide:terminal
 npx -y @aigne/example-nano-banana --chat
 ```
 
-## Connecting to an AI Model
+### Connect to an AI Model
 
-Upon first execution, the application will prompt you to connect to an AI model. There are several methods to establish this connection.
+On the first run, the application will detect that no AI model is configured and will prompt you to connect one.
 
-![A terminal prompt asks the user to select a connection method for an AI model.](/media/examples/nano-banana/run-example.png)
+![Initial setup prompt for connecting an AI model.](../../../examples/nano-banana/run-example.png)
 
-### 1. Connect via AIGNE Hub (Official)
+You have three primary options to connect to an AI model:
 
-This is the recommended method for new users.
+#### 1. Connect via the Official AIGNE Hub (Recommended)
 
-1.  Select the first option to connect via the official AIGNE Hub.
-2.  Your default web browser will open the AIGNE Hub connection page.
-3.  Follow the on-screen instructions to complete the connection. New users are granted a number of free tokens for trial purposes.
+This is the simplest method. Choosing this option will open your web browser and guide you through the authorization process on the official AIGNE Hub. New users receive a complimentary token allocation to get started immediately.
 
-![The AIGNE Hub connection page is displayed in a web browser.](/media/examples/images/connect-to-aigne-hub.png)
+![AIGNE Hub authorization screen.](../../../examples/images/connect-to-aigne-hub.png)
 
-### 2. Connect via a Self-Hosted AIGNE Hub
+#### 2. Connect via a Self-Hosted AIGNE Hub
 
-If you or your organization operates a private AIGNE Hub instance, use this option.
+If you operate your own instance of AIGNE Hub, select this option. You will be prompted to enter the URL of your self-hosted Hub to complete the connection. You can deploy your own AIGNE Hub from the [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ).
 
-1.  Choose the second option in the terminal.
-2.  Enter the URL of your self-hosted AIGNE Hub when prompted.
-3.  Follow the subsequent prompts to finalize the connection.
+![Prompt to enter the URL for a self-hosted AIGNE Hub.](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
 
-To deploy a self-hosted AIGNE Hub, you can install it from the [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ).
+#### 3. Connect via a Third-Party Model Provider
 
-![The terminal prompts for the URL of a self-hosted AIGNE Hub.](/media/examples/images/connect-to-self-hosted-aigne-hub.png)
-
-### 3. Connect via a Third-Party Model Provider
-
-You can connect directly to a third-party model provider, such as OpenAI, by configuring an API key as an environment variable.
-
-For example, to use OpenAI, set the `OPENAI_API_KEY` variable in your shell:
+You can directly connect to a third-party provider like OpenAI by configuring the necessary API key as an environment variable. For example, to use OpenAI, set the `OPENAI_API_KEY` variable in your terminal.
 
 ```bash Set OpenAI API key icon=lucide:terminal
 export OPENAI_API_KEY="your-openai-api-key-here"
 ```
 
-After setting the environment variable, execute the run command again. For details on configuring other providers, refer to the [Model Configuration](./models-configuration.md) guide.
+After setting the environment variable, run the `npx` command again. For a comprehensive list of supported variables for different model providers, refer to the example environment file in the source repository.
 
-## Installation and Local Execution
+### Debugging with the Observability UI
 
-For users who wish to inspect or modify the source code, the example can be run from a local copy of the repository.
+The AIGNE Framework includes a built-in observability tool to help you monitor and debug your agents. The `aigne observe` command launches a local web server that provides a detailed view of agent execution traces.
+
+First, start the observation server by running the following command in your terminal:
+
+```bash Start the observability server icon=lucide:terminal
+aigne observe
+```
+
+![Terminal output showing the aigne observe command successfully starting the server.](../../../examples/images/aigne-observe-execute.png)
+
+Once the server is running, you can open the provided URL (typically `http://localhost:7893`) in your browser to view a list of recent agent executions. This interface allows you to inspect the inputs, outputs, latency, and token usage for each trace, providing critical insights for debugging and optimization.
+
+![The AIGNE observability UI showing a list of agent execution traces.](../../../examples/images/aigne-observe-list.png)
+
+## Local Installation and Execution
+
+For development purposes, you may prefer to clone the repository and run the example locally.
 
 ### 1. Clone the Repository
 
-Use `git` to clone the AIGNE Framework repository to your local machine.
+Clone the official AIGNE Framework repository from GitHub.
 
 ```bash Clone the repository icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
@@ -129,7 +87,7 @@ git clone https://github.com/AIGNE-io/aigne-framework
 
 ### 2. Install Dependencies
 
-Navigate to the example's directory and use `pnpm` to install the required dependencies.
+Navigate to the example's directory and install the required dependencies using `pnpm`.
 
 ```bash Install dependencies icon=lucide:terminal
 cd aigne-framework/examples/nano-banana
@@ -138,37 +96,23 @@ pnpm install
 
 ### 3. Run the Example
 
-Execute the `start` script defined in the project to run the application.
+After the installation is complete, you can run the example using the `start` script defined in the project's `package.json`.
 
 ```bash Run the local example icon=lucide:terminal
 pnpm start
 ```
 
-## Debugging
-
-The AIGNE Framework includes `aigne observe`, a command-line tool that launches a local web server for monitoring and analyzing agent executions.
-
-1.  **Start the Observation Server**: In your terminal, run the `aigne observe` command.
-
-    ![The 'aigne observe' command is executed in a terminal.](/media/examples/images/aigne-observe-execute.png)
-
-2.  **View Executions**: The command will output a URL. Open this URL in your browser to access the observation interface, which lists recent agent runs.
-
-    ![The AIGNE Observe web interface shows a list of recent agent executions.](/media/examples/images/aigne-observe-list.png)
-
-3.  **Inspect Execution Details**: Click on an execution to view its detailed trace, including calls to models and tools. This interface is invaluable for debugging, performance analysis, and understanding agent behavior.
-
 ## Summary
 
-This guide has detailed the process for running an image-generating chatbot using the AIGNE Framework. You have learned how to execute the example with `npx`, connect to AI models, run from source, and utilize the `aigne observe` tool for debugging.
+This document provided a step-by-step guide to running the "Nano Banana" example, which demonstrates an AI chatbot with image generation capabilities. You have learned how to execute the example directly with `npx`, connect various AI model providers, and use the `aigne observe` command to debug agent behavior.
 
-For further information on related topics, please consult the following documentation:
+For more advanced use cases and a deeper understanding of the framework's capabilities, please refer to the following sections:
 
 <x-cards data-columns="2">
   <x-card data-title="Image Agent" data-icon="lucide:image" data-href="/developer-guide/agents/image-agent">
-    Learn more about the specific configurations for generating images.
+    Learn how to configure and use agents for image generation.
   </x-card>
-  <x-card data-title="AIGNE CLI" data-icon="lucide:terminal" data-href="https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md">
-    Explore the full capabilities of the AIGNE command-line interface.
+  <x-card data-title="AI Agent" data-icon="lucide:bot" data-href="/developer-guide/agents/ai-agent">
+    Explore the primary agent for interacting with language models.
   </x-card>
 </x-cards>

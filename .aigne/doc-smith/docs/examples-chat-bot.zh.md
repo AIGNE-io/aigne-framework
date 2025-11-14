@@ -1,77 +1,76 @@
-本文档提供了使用 AIGNE 框架创建和运行基于 Agent 的聊天机器人的综合指南。您将学习如何无需安装即可立即执行聊天机器人，将其连接到各种 AI 模型提供商，并进行本地开发设置。该示例支持单次响应（one-shot）和连续对话（interactive）两种模式。
+# 聊天机器人
+
+本指南全面介绍了基于 Agent 的聊天机器人示例。您将学习如何在不同模式下运行聊天机器人，将其连接到各种 AI 模型提供商，并使用 AIGNE 可观测性工具来调试其执行过程。本示例旨在开箱即用，让您无需任何本地安装即可开始使用。
 
 ## 概述
 
-本示例通过构建一个功能性的聊天机器人，展示了 [AIGNE 框架](https://github.com/AIGNE-io/aigne-framework)和 [AIGNE CLI](https://github.com/AIGNE-io/aigne-framework/blob/main/packages/cli/README.md) 的能力。该 Agent 可以在两种主要模式下运行：
+本示例演示了如何使用 AIGNE 框架创建并运行一个简单而强大的基于 Agent 的聊天机器人。它支持两种主要操作模式：
+*   **单次模式**：聊天机器人接收单个输入，提供一个响应，然后退出。
+*   **交互模式**：聊天机器人进行持续对话，直到您决定结束会话。
 
-*   **单次响应模式**：聊天机器人在退出前处理单个输入并提供单个响应。这对于直接提问或命令行管道操作非常理想。
-*   **交互模式**：聊天机器人进行连续对话，在用户终止会话前保持上下文。
+可以将聊天机器人配置为使用不同的 AI 模型，并可直接从命令行或通过管道接收输入。
 
-## 前置要求
+## 先决条件
 
-在继续之前，请确保您的环境满足以下要求：
+在运行此示例之前，请确保您的系统上已安装以下软件：
 
-*   **Node.js**：版本 20.0 或更高。
-*   **npm**：随 Node.js 安装。
-*   **AI 模型访问权限**：需要来自 OpenAI 等提供商的 API 密钥。或者，您可以连接到 AIGNE Hub。
+*   [Node.js](https://nodejs.org)（20.0 或更高版本）
+*   一个 [OpenAI API 密钥](https://platform.openai.com/api-keys)或对 AIGNE Hub 的访问权限，以便与模型进行交互。
 
-## 快速入门（无需安装）
+## 快速入门
 
-您可以使用 `npx` 直接从终端运行聊天机器人示例，无需任何本地安装步骤。
+您可以使用 `npx` 直接运行此示例，而无需克隆代码仓库或在本地安装任何依赖项。
 
-### 执行聊天机器人
+### 运行示例
 
-聊天机器人可以根据您的需求以不同模式运行。
+在您的终端中执行以下命令来运行聊天机器人。
 
-*   **单次响应模式（默认）**：用于单个问题和回答。
+以默认的单次模式运行：
+```bash npx command icon=lucide:terminal
+npx -y @aigne/example-chat-bot
+```
 
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-chat-bot
-    ```
+使用 `--chat` 标志以交互式聊天模式运行：
+```bash npx command icon=lucide:terminal
+npx -y @aigne/example-chat-bot --chat
+```
 
-*   **交互式聊天模式**：开始连续对话。
-
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-chat-bot --chat
-    ```
-
-*   **管道输入**：您可以在单次响应模式下将输入直接通过管道传递给聊天机器人。
-
-    ```bash icon=lucide:terminal
-    echo "Tell me about the AIGNE Framework" | npx -y @aigne/example-chat-bot
-    ```
+使用管道输入直接提供提示：
+```bash npx command icon=lucide:terminal
+echo "Tell me about AIGNE Framework" | npx -y @aigne/example-chat-bot
+```
 
 ### 连接到 AI 模型
 
-首次运行时，CLI 将提示您连接到 AI 模型服务。您有多种选择。
+首次运行该示例时，由于未配置 API 密钥，它会提示您连接到 AI 模型服务。下图说明了可用的连接选项：
+
 ```d2
 direction: down
 
-User: {
-  shape: c4-person
-}
-
-AIGNE-CLI: {
-  label: "AIGNE CLI"
+Chatbot-Example: {
+  label: "聊天机器人示例\n(@aigne/example-chat-bot)"
+  shape: rectangle
 }
 
 Connection-Options: {
   label: "连接选项"
   shape: rectangle
-  grid-columns: 3
+  style: {
+    stroke-dash: 4
+  }
 
-  AIGNE-Hub-Official: {
-    label: "AIGNE Hub\n(官方)"
+  Official-AIGNE-Hub: {
+    label: "1. 官方 AIGNE Hub\n(推荐)"
     icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
   }
 
-  AIGNE-Hub-Self-Hosted: {
-    label: "AIGNE Hub\n(自托管)"
+  Self-Hosted-Hub: {
+    label: "2. 自托管的 AIGNE Hub"
     icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
   }
 
   Third-Party-Provider: {
-    label: "第三方提供商\n(例如 OpenAI)"
+    label: "3. 第三方提供商\n(例如 OpenAI)"
     shape: rectangle
   }
 }
@@ -81,107 +80,126 @@ Blocklet-Store: {
   icon: "https://store.blocklet.dev/assets/z8ia29UsENBg6tLZUKi2HABj38Cw1LmHZocbQ/logo.png"
 }
 
-User -> AIGNE-CLI: "1. 运行聊天机器人"
-AIGNE-CLI -> User: "2. 提示连接 AI 模型"
-User -> Connection-Options: "3. 选择一个选项"
-
-Connection-Options.AIGNE-Hub-Official -> AIGNE-CLI: "通过浏览器认证连接"
-Connection-Options.AIGNE-Hub-Self-Hosted -> AIGNE-CLI: "通过服务 URL 连接"
-Connection-Options.AIGNE-Hub-Self-Hosted <- Blocklet-Store: "从此处部署"
-Connection-Options.Third-Party-Provider -> AIGNE-CLI: "通过环境变量连接"
+Chatbot-Example -> Connection-Options: "提示用户连接到 AI 模型"
+Connection-Options.Self-Hosted-Hub -> Blocklet-Store: "从此处安装"
 ```
-1.  **通过 AIGNE Hub (官方) 连接**
-    这是推荐给新用户的路径。选择此选项将在您的网络浏览器中打开官方 AIGNE Hub。按照屏幕上的说明进行连接。新用户会自动获得免费的 token 余额以开始使用。
 
-2.  **通过 AIGNE Hub (自托管) 连接**
-    如果您运行自己的 AIGNE Hub 实例，请选择此选项并输入您服务的 URL 以完成连接。您可以从 [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ) 部署一个自托管的 AIGNE Hub。
+![连接 AI 模型的初始设置提示。](../../../examples/chat-bot/run-example.png)
 
-3.  **通过第三方模型提供商连接**
-    您可以通过设置所需的环境变量直接连接到 OpenAI 等提供商。对于 OpenAI，请按如下方式设置您的 API 密钥：
+您有以下几个选项可以继续：
 
-    ```bash icon=lucide:terminal
-    export OPENAI_API_KEY="your-openai-api-key"
-    ```
+#### 1. 连接到官方 AIGNE Hub（推荐）
 
-    配置环境变量后，再次运行聊天机器人命令。有关其他提供商（例如 DeepSeek、Google Gemini）支持的变量列表，请参阅代码仓库中的 `.env.local.example` 文件。
+这是最简单的入门方式。
+1.  选择第一个选项：`Connect to the Arcblock official AIGNE Hub`。
+2.  您的网络浏览器将打开一个页面，以授权 AIGNE CLI。
+3.  按照屏幕上的说明批准连接。新用户会获得免费的令牌赠款以使用该服务。
 
-## 本地安装和设置
+![授权 AIGNE CLI 连接到 AIGNE Hub。](../../../examples/images/connect-to-aigne-hub.png)
 
-为了进行开发或自定义，您可以克隆代码仓库并从本地计算机运行示例。
+#### 2. 连接到自托管的 AIGNE Hub
+
+如果您正在运行自己的 AIGNE Hub 实例：
+1.  选择第二个选项：`Connect to a self-hosted AIGNE Hub instance`。
+2.  在提示时输入您自托管的 AIGNE Hub 的 URL。
+3.  按照后续提示完成连接。
+
+如果您需要设置一个自托管的 AIGNE Hub，可以从 [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ) 安装。
+
+![输入自托管 AIGNE Hub 的 URL。](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+#### 3. 通过第三方模型提供商连接
+
+您也可以通过设置相应的环境变量，直接连接到第三方 AI 模型提供商，例如 OpenAI。例如，要使用 OpenAI，请按如下方式设置您的 API 密钥：
+
+```bash 设置 OpenAI API 密钥 icon=lucide:terminal
+export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+```
+
+设置环境变量后，再次运行该示例。有关支持的提供商及其所需环境变量的列表，请参阅示例配置文件。
+
+## 本地安装和使用
+
+出于开发目的，您可能希望克隆代码仓库并在本地运行该示例。
 
 ### 1. 安装 AIGNE CLI
 
-首先，全局安装 AIGNE 命令行界面。
+首先，全局安装 AIGNE 命令行界面（CLI）。
 
-```bash icon=lucide:terminal
+```bash 安装 AIGNE CLI icon=lucide:terminal
 npm install -g @aigne/cli
 ```
 
 ### 2. 克隆代码仓库
 
-克隆 AIGNE 框架代码仓库，并进入聊天机器人示例的目录。
+克隆 `aigne-framework` 代码仓库并导航到 `chat-bot` 示例目录。
 
-```bash icon=lucide:terminal
+```bash 克隆代码仓库 icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 cd aigne-framework/examples/chat-bot
 ```
 
 ### 3. 本地运行示例
 
-在 `chat-bot` 目录中，使用 `pnpm` 执行启动脚本。
+使用 `pnpm start` 命令运行聊天机器人。
 
-*   **单次响应模式（默认）**：
+以默认的单次模式运行：
+```bash pnpm command icon=lucide:terminal
+pnpm start
+```
 
-    ```bash icon=lucide:terminal
-    pnpm start
-    ```
+以交互式聊天模式运行：
+```bash pnpm command icon=lucide:terminal
+pnpm start --chat
+```
 
-*   **交互式聊天模式**：
-
-    ```bash icon=lucide:terminal
-    pnpm start --chat
-    ```
-
-*   **管道输入**：
-
-    ```bash icon=lucide:terminal
-    echo "Tell me about the AIGNE Framework" | pnpm start
-    ```
+使用管道输入：
+```bash pnpm command icon=lucide:terminal
+echo "Tell me about AIGNE Framework" | pnpm start
+```
 
 ## 命令行选项
 
-聊天机器人脚本接受多个命令行参数以自定义其行为和配置。
+聊天机器人脚本接受多个命令行参数以自定义其行为。
 
 | 参数 | 描述 | 默认值 |
 |---|---|---|
-| `--chat` | 以交互模式运行聊天机器人，进行连续对话。 | 禁用（单次响应模式） |
+| `--chat` | 以交互式聊天模式运行。如果省略，则以单次模式运行。 | `禁用` |
 | `--model <provider[:model]>` | 指定要使用的 AI 模型。格式为 `provider[:model]`。例如：`openai` 或 `openai:gpt-4o-mini`。 | `openai` |
-| `--temperature <value>` | 设置模型生成的温度以控制随机性。 | 提供商默认值 |
-| `--top-p <value>` | 设置用于 token 选择的 top-p（核采样）值。 | 提供商默认值 |
-| `--presence-penalty <value>` | 根据新 token 在文本中是否已出现来调整其惩罚值。 | 提供商默认值 |
-| `--frequency-penalty <value>` | 根据新 token 在文本中的频率来调整其惩罚值。 | 提供商默认值 |
-| `--log-level <level>` | 设置日志详细程度。可选值：`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`。 | `INFO` |
-| `--input`, `-i <input>` | 直接以参数形式提供输入查询。 | 无 |
+| `--temperature <value>` | 设置模型生成的温度，控制随机性。 | 提供商默认值 |
+| `--top-p <value>` | 设置模型生成的 top-p（核采样）值。 | 提供商默认值 |
+| `--presence-penalty <value>` | 设置存在惩罚值以影响主题多样性。 | 提供商默认值 |
+| `--frequency-penalty <value>` | 设置频率惩罚值以减少重复输出。 | 提供商默认值 |
+| `--log-level <level>` | 设置日志记录级别。选项为 `ERROR`、`WARN`、`INFO`、`DEBUG`、`TRACE`。 | `INFO` |
+| `--input`, `-i <input>` | 直接以参数形式提供输入提示。 | `无` |
 
-## 调试
+## 使用 AIGNE Observe 进行调试
 
-AIGNE 框架包含一个强大的观察工具，用于监控和分析 Agent 的执行，这对于调试和性能调优至关重要。
+AIGNE 包含一个强大的本地可观测性工具，用于调试和分析 Agent 的执行过程。`aigne observe` 命令会启动一个本地 Web 服务器，提供一个用户界面来检查执行跟踪。
 
-1.  **启动观察服务器**
-    在终端中运行 `aigne observe` 命令。这将启动一个本地 Web 服务器，用于监听来自您的 Agent 的执行数据。
+首先，在您的终端中启动观测服务器：
 
-2.  **查看执行情况**
-    在浏览器中打开 Web 界面，查看最近的 Agent 运行列表。您可以选择一个执行来检查其跟踪信息，查看详细的调用信息，并了解 Agent 如何处理信息以及与模型交互。
+```bash aigne observe icon=lucide:terminal
+aigne observe
+```
+
+![显示 aigne observe 服务器正在运行的终端输出。](../../../examples/images/aigne-observe-execute.png)
+
+运行聊天机器人后，您可以在浏览器中打开提供的 URL（通常是 `http://localhost:7893`）以查看最近的 Agent 执行列表。该界面允许您检查每次运行的详细信息，包括输入、输出、模型调用和性能指标，这对于调试和优化非常有价值。
+
+![显示跟踪列表的 AIGNE 可观测性界面。](../../../examples/images/aigne-observe-list.png)
 
 ## 总结
 
-本示例为使用 AIGNE 框架构建基于 Agent 的聊天机器人提供了实用的基础。您已经学会了如何以不同模式运行聊天机器人，将其连接到 AI 模型，并调试其执行过程。
+本示例为使用 AIGNE 框架构建基于 Agent 的聊天机器人提供了实用的基础。您已经学习了如何运行该示例，将其连接到各种 AI 模型，并利用内置的可观测性工具进行调试。
 
-有关更高级的示例和功能，您可能希望探索以下主题：
+有关更高级的主题和示例，您可能会发现以下文档很有帮助：
 
 <x-cards data-columns="2">
-  <x-card data-title="记忆" data-icon="lucide:brain-circuit" data-href="/examples/memory">学习如何为您的聊天机器人赋予记忆，使其能够回忆过去的互动。</x-card>
-  <x-card data-title="AIGNE 文件系统 (AFS)" data-icon="lucide:folder-tree" data-href="/examples/afs-system-fs">构建一个可以与您的本地文件系统交互的聊天机器人。</x-card>
-  <x-card data-title="工作流编排" data-icon="lucide:workflow" data-href="/examples/workflow-orchestration">协调多个 Agent 协同处理复杂任务。</x-card>
-  <x-card data-title="核心概念" data-icon="lucide:book-open" data-href="/developer-guide/core-concepts">深入了解 AIGNE 框架的基本构建模块。</x-card>
+  <x-card data-title="记忆" data-icon="lucide:brain-circuit" data-href="/examples/memory">
+    了解如何为您的聊天机器人添加记忆功能，以在对话中保持上下文。
+  </x-card>
+  <x-card data-title="AIGNE 核心概念" data-icon="lucide:book-open" data-href="/developer-guide/core-concepts">
+    更深入地了解 AIGNE 框架的基本构建模块。
+  </x-card>
 </x-cards>

@@ -1,136 +1,176 @@
 # 工作流反思
 
-是否想过如何创建一个能够自我纠错的 AI 工作流？本指南将演示如何构建一个自我完善的系统，其中一个 AI Agent 生成内容，另一个 Agent 审查并优化内容，从而形成一个持续改进的反馈循环。您将学习如何设置一个“编码员”和“审查员” Agent 团队，它们协同工作以产生精良的最终输出。
+您是否曾需要 AI 不仅能生成内容，还能批判和改进其自身的工作？本指南将演示如何构建一个自我修正的工作流，其中一个 Agent 的输出由另一个 Agent 审查和完善。通过遵循这些步骤，您将学习如何使用 AIGNE 框架实现这一强大的迭代模式。
 
-## 概览
+此示例建立了一个包含两个不同 Agent 的工作流：一个 `Coder` 和一个 `Reviewer`。`Coder` Agent 负责编写代码以解决用户的请求，而 `Reviewer` Agent 则评估该代码。如果 `Reviewer` 认为代码不令人满意，它会提供建设性的反馈并将其发回给 `Coder` 进行修订。这就创建了一个持续改进的循环，直到输出达到所需标准。
 
-工作流反思模式涉及一个为迭代优化而设计的多 Agent 系统。在本示例中，我们创建了一个包含两个不同 Agent 的工作流：
+下图说明了此过程：
 
-*   **编码员 Agent (Coder Agent)**：负责根据用户请求生成初始解决方案（例如，编写一段代码）。
-*   **审查员 Agent (Reviewer Agent)**：根据特定标准（例如，正确性、效率、安全性）评估编码员的输出。
+```mermaid
+flowchart LR
+in(In)
+out(Out)
+coder(Coder)
+reviewer(Reviewer)
 
-该工作流遵循一个结构化的循环：
+in --Ideas--> coder ==Solution==> reviewer --Approved--> out
+reviewer ==Rejected==> coder
 
-1.  用户提供一个初始想法或问题。
-2.  `Coder` Agent 接收想法并生成一个解决方案。
-3.  `Reviewer` Agent 检查该解决方案。
-4.  如果解决方案被批准，它将被发送到最终输出。
-5.  如果解决方案被拒绝，`Reviewer` 会提供反馈，并将请求发送回 `Coder` 进行修订。
+classDef inputOutput fill:#f9f0ed,stroke:#debbae,stroke-width:2px,color:#b35b39,font-weight:bolder;
+classDef processing fill:#F0F4EB,stroke:#C2D7A7,stroke-width:2px,color:#6B8F3C,font-weight:bolder;
 
-这个循环过程会一直持续到 `Reviewer` 批准输出为止，从而确保高质量的结果。
+class in inputOutput
+class out inputOutput
+class coder processing
+class reviewer processing
+```
+
+## 前提条件
+
+要成功运行此示例，您的开发环境必须满足以下标准：
+
+*   **Node.js**: 20.0 或更高版本。
+*   **npm**: 包含在您的 Node.js 安装中。
+*   **OpenAI API 密钥**: 示例需要 API 密钥才能与 OpenAI 模型通信。您可以从 [OpenAI 平台](https://platform.openai.com/api-keys)获取一个。
+
+## 快速入门
+
+此示例可直接通过命令行使用 `npx` 执行，无需本地安装。
+
+### 运行示例
+
+打开您的终端并使用以下命令之一来运行工作流。
+
+若以默认的单次模式运行，该模式会处理单个请求并退出：
+```bash npx command icon=lucide:terminal
+npx -y @aigne/example-workflow-reflection
+```
+
+若要进行交互式会话，请使用 `--chat` 标志：
+```bash npx command icon=lucide:terminal
+npx -y @aigne/example-workflow-reflection --chat
+```
+
+您也可以将输入直接通过管道传递给命令：
+```bash npx command icon=lucide:terminal
+echo "Write a function to validate email addresses" | npx -y @aigne/example-workflow-reflection
+```
+
+### 连接到 AI 模型
+
+首次执行时，由于尚未设置任何 API 密钥，应用程序将提示您配置与 AI 模型的连接。
 
 ```d2
 direction: down
 
-User: {
-  shape: c4-person
+In: {
+  shape: oval
 }
 
-Coder-Agent: {
-  label: "编码员 Agent"
+Out: {
+  shape: oval
+}
+
+Coder: {
   shape: rectangle
 }
 
-Reviewer-Agent: {
-  label: "审查员 Agent"
+Reviewer: {
   shape: rectangle
 }
 
-Decision: {
-  label: "已批准？"
-  shape: diamond
-}
-
-Final-Output: {
-  label: "最终输出"
-  shape: rectangle
-}
-
-User -> Coder-Agent: "1. 提供想法"
-Coder-Agent -> Reviewer-Agent: "2. 生成解决方案"
-Reviewer-Agent -> Decision: "3. 检查解决方案"
-Decision -> Final-Output: "4. 是"
-Decision -> Coder-Agent: "5. 否，提供反馈"
+In -> Coder: "想法"
+Coder -> Reviewer: "解决方案"
+Reviewer -> Out: "已批准"
+Reviewer -> Coder: "已拒绝"
 ```
 
-## 快速入门
+您会看到以下选项：
 
-您可以使用 `npx` 直接运行此示例，无需任何本地安装。
+#### 1. 通过官方 AIGNE Hub 连接（推荐）
 
-### 运行示例
+这是最直接的方法。新用户将获得免费积分以开始使用。
 
-在您的终端中执行以下命令。
+1.  选择第一个选项：`Connect to the Arcblock official AIGNE Hub`。
+2.  您的默认网络浏览器将打开一个新标签页，显示一个授权页面。
+3.  按照屏幕上的说明批准连接请求。
 
-*   **单次模式 (One-Shot Mode)**：Agent 处理单个输入后终止。
+DIAGRAM_PLACEHOLDER
 
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-reflection
-    ```
+#### 2. 通过自托管的 AIGNE Hub 连接
 
-*   **交互式聊天模式 (Interactive Chat Mode)**：与 Agent 团队开始一个连续的聊天会话。
+如果您或您的组织运行一个私有的 AIGNE Hub 实例，请按以下步骤操作：
 
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-reflection --chat
-    ```
+1.  选择第二个选项：`Connect to a self-hosted AIGNE Hub`。
+2.  在提示时，输入您自托管的 AIGNE Hub 实例的 URL。
+3.  继续按照屏幕上的说明完成连接。
 
-*   **管道模式 (Pipeline Mode)**：直接从另一个命令通过管道传递输入。
+DIAGRAM_PLACEHOLDER
 
-    ```bash icon=lucide:terminal
-    echo "Write a function to validate email addresses" | npx -y @aigne/example-workflow-reflection
-    ```
+#### 3. 通过第三方模型提供商连接
 
-### 连接到 AI 模型
+您可以通过将相应的 API 密钥配置为环境变量，直接连接到第三方 LLM 提供商，例如 OpenAI。
 
-AIGNE 框架需要连接到大语言模型 (LLM) 才能运行。您可以通过 AIGNE Hub 连接以获得托管体验，或直接配置第三方提供商。
-
-例如，要使用 OpenAI，请设置 `OPENAI_API_KEY` 环境变量：
-
+例如，要使用 OpenAI 模型，请在您的终端中设置 `OPENAI_API_KEY` 环境变量：
 ```bash 设置 OpenAI API 密钥 icon=lucide:terminal
-export OPENAI_API_KEY="your-openai-api-key"
+export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 ```
 
-配置 API 密钥后，再次运行该示例。有关配置不同模型提供商的详细指南，请参阅[模型配置](./models-configuration.md)文档。
+将 `"YOUR_OPENAI_API_KEY"` 替换为您的实际密钥。设置环境变量后，再次运行 `npx` 命令。有关配置其他提供商（如 Google Gemini 或 DeepSeek）的详细信息，请参阅源代码中包含的 `.env.local.example` 文件。
 
-## 从源代码运行
+## 从源代码安装
 
-对于希望检查或修改代码的开发者，请按照以下步骤从源代码仓库运行示例。
+对于希望检查或自定义代码的开发人员，可以克隆仓库以在本地运行示例。
 
 ### 1. 克隆仓库
 
-首先，将 AIGNE 框架仓库克隆到您的本地计算机。
-
-```bash icon=lucide:terminal
+```bash 克隆仓库 icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 ```
 
 ### 2. 安装依赖项
 
-导航到示例目录并使用 `pnpm` 安装所需的依赖项。
+导航到示例的目录并使用 `pnpm` 安装必要的包。
 
-```bash icon=lucide:terminal
+```bash 安装依赖项 icon=lucide:terminal
 cd aigne-framework/examples/workflow-reflection
 pnpm install
 ```
 
 ### 3. 运行示例
 
-执行启动脚本以运行工作流。
+使用 `pnpm start` 命令执行脚本。
 
-*   **单次模式（默认）**
+```bash 以单次模式运行 icon=lucide:terminal
+pnpm start
+```
 
-    ```bash icon=lucide:terminal
-    pnpm start
-    ```
+要在交互式聊天模式下运行，请附加 `--chat` 标志。需要额外的 `--` 将标志传递给脚本而不是 `pnpm` 本身。
 
-*   **交互式聊天模式**
+```bash 以交互模式运行 icon=lucide:terminal
+pnpm start -- --chat
+```
 
-    ```bash icon=lucide:terminal
-    pnpm start -- --chat
-    ```
+通过管道提供输入：
+```bash 使用管道输入运行 icon=lucide:terminal
+echo "Write a function to validate email addresses" | pnpm start
+```
 
-## 代码实现
+## 工作原理
 
-此示例的核心是一个 TypeScript 文件，它定义并编排了 `Coder` 和 `Reviewer` Agent。让我们来看看关键组件。
+该工作流由两个 `AIAgent` 实例 `coder` 和 `reviewer` 协同完成，它们通过一个主题系统进行通信。这创建了一个消息驱动的状态机。
+
+1.  **初始化**：当包含用户请求的消息发布到 `UserInputTopic` 时，流程开始。
+2.  **Coder Agent**：订阅了 `UserInputTopic` 的 `coder` Agent 接收到请求。它生成初始代码并将其解决方案发布到 `review_request` 主题。
+3.  **Reviewer Agent**：`reviewer` Agent 订阅 `review_request` 主题。它根据正确性、效率和安全性等标准评估提交的代码。
+4.  **决策与路由**：
+    *   如果代码**被批准**，`reviewer` 将最终验证过的结果发布到 `UserOutputTopic`，从而结束工作流。
+    *   如果代码**被拒绝**，`reviewer` 会制定反馈并将其发布到 `rewrite_request` 主题。
+5.  **迭代**：`coder` Agent 也订阅了 `rewrite_request` 主题。当它收到反馈时，会相应地修改其代码，并将其重新提交到 `review_request` 主题，从而重复此循环，直到获得批准。
+
+### 代码实现
+
+以下 TypeScript 代码提供了定义和运行 `coder` 和 `reviewer` Agent 的完整实现。
 
 ```typescript reflection-workflow.ts icon=logos:typescript
 import { AIAgent, AIGNE, UserInputTopic, UserOutputTopic } from "@aigne/core";
@@ -139,12 +179,12 @@ import { z } from "zod";
 
 const { OPENAI_API_KEY } = process.env;
 
-// 1. 初始化 AI 模型
+// 初始化模型
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-// 2. 定义编码员 Agent
+// 定义 Coder agent
 const coder = AIAgent.from({
   subscribeTopic: [UserInputTopic, "rewrite_request"],
   publishTopic: "review_request",
@@ -174,7 +214,7 @@ User's question:
   }),
 });
 
-// 3. 定义审查员 Agent
+// 定义 Reviewer agent
 const reviewer = AIAgent.from({
   subscribeTopic: "review_request",
   publishTopic: (output) =>
@@ -207,7 +247,7 @@ Please review the code. If previous feedback was provided, see if it was address
   includeInputInOutput: true,
 });
 
-// 4. 初始化并运行 AIGNE 实例
+// 初始化并运行 AIGNE 实例
 const aigne = new AIGNE({ model, agents: [coder, reviewer] });
 aigne.publish(
   UserInputTopic,
@@ -218,29 +258,11 @@ const { message } = await aigne.subscribe(UserOutputTopic);
 console.log(message);
 ```
 
-### 说明
-
-1.  **初始化模型**：创建一个 `OpenAIChatModel` 实例，作为两个 Agent 的底层 LLM。
-2.  **定义编码员 Agent**：
-    *   `subscribeTopic`：监听初始用户输入 (`UserInputTopic`) 和来自审查员的修订请求 (`rewrite_request`)。
-    *   `publishTopic`：将其生成的代码发送到 `review_request` 主题，供审查员接收。
-    *   `instructions`：一个详细的提示，定义了其角色、输出格式以及如何处理反馈。
-    *   `outputSchema`：使用 Zod 模式强制要求输出必须包含一个 `code` 字符串。
-3.  **定义审查员 Agent**：
-    *   `subscribeTopic`：监听 `review_request` 主题上的代码提交。
-    *   `publishTopic`：一个动态路由输出的函数。如果 `approval` 为 `true`，结果将发送到最终的 `UserOutputTopic`。否则，它将被发送回 `rewrite_request` 主题，供编码员修订。
-    *   `instructions`：一个指导审查员如何评估代码的提示。
-    *   `outputSchema`：一个 Zod 模式，要求包含一个布尔值 `approval` 字段和一个结构化的 `feedback` 对象。
-4.  **运行工作流**：
-    *   使用模型和两个 Agent 创建一个 `AIGNE` 实例。
-    *   `aigne.publish()` 将初始问题陈述发送到 `UserInputTopic`，从而启动工作流。
-    *   `aigne.subscribe()` 等待 `UserOutputTopic` 上的消息，这只会在审查员批准代码后发生。
-
 ### 示例输出
 
-当脚本执行时，最终批准的输出将被记录到控制台：
+工作流成功完成后，最终批准的代码和审阅者的反馈将作为 JSON 对象记录到控制台。
 
-```json
+```json 示例输出
 {
   "code": "def sum_of_even_numbers(numbers):\n    \"\"\"Function to calculate the sum of all even numbers in a list.\"\"\"\n    return sum(number for number in numbers if number % 2 == 0)",
   "approval": true,
@@ -253,38 +275,30 @@ console.log(message);
 }
 ```
 
-## 命令行选项
+## 使用 AIGNE Observe 进行调试
 
-您可以使用以下命令行标志自定义执行：
+要深入了解 Agent 交互、消息流和整体执行情况，您可以使用 AIGNE 可观测性工具。
 
-| 参数 | 描述 | 默认值 |
-| :--- | :--- | :--- |
-| `--chat` | 以交互式聊天模式运行。 | 已禁用 |
-| `--model <provider[:model]>` | 要使用的 AI 模型，例如 'openai' 或 'openai:gpt-4o-mini'。 | `openai` |
-| `--temperature <value>` | 模型生成的温度。 | 提供商默认值 |
-| `--top-p <value>` | 模型生成的 Top-p 采样值。 | 提供商默认值 |
-| `--presence-penalty <value>` | 模型生成的“存在惩罚”值。 | 提供商默认值 |
-| `--frequency-penalty <value>` | 模型生成的“频率惩罚”值。 | 提供商默认值 |
-| `--log-level <level>` | 设置日志级别（ERROR、WARN、INFO、DEBUG、TRACE）。 | `INFO` |
-| `--input`, `-i <input>` | 直接通过命令行指定输入。 | 无 |
-
-#### 用法示例
-
-```bash 将日志级别设置为 DEBUG icon=lucide:terminal
-pnpm start -- --log-level DEBUG
+首先，从一个单独的终端窗口启动观测服务器：
+```bash 启动 AIGNE Observe icon=lucide:terminal
+aigne observe
 ```
+DIAGRAM_PLACEHOLDER
+
+该服务器在本地运行，可通过 `http://localhost:7893` 访问。服务器运行时，您的任何 AIGNE 应用程序的执行都将捕获详细的追踪信息。在浏览器中打开 Web 界面，可以查看最近的执行列表，并检查工作流中每个步骤的具体细节。
+
+DIAGRAM_PLACEHOLDER
 
 ## 总结
 
-本示例说明了工作流反思在构建健壮、自我纠正的 AI 系统中的强大作用。通过将生成和评估的角色分离到不同的 Agent 中，您可以创建一个反馈循环，从而显著提高最终输出的质量和可靠性。
+本指南详细介绍了构建反思工作流的过程，其中 Agent 协作以迭代方式改进输出。这种模式是开发更可靠、更复杂的能够自我修正的 AI 系统的关键技术。
 
-要探索其他高级工作流模式，请参阅以下示例：
-
+要探索其他协调 Agent 的方式，请考虑以下工作流模式：
 <x-cards data-columns="2">
-  <x-card data-title="工作流编排" data-href="/examples/workflow-orchestration" data-icon="lucide:workflow">
-  协调多个 Agent 在复杂的处理管道中协同工作。
+  <x-card data-title="顺序工作流" data-icon="lucide:arrow-right-circle" data-href="/examples/workflow-sequential">
+    构建具有保证执行顺序的逐步处理管道。
   </x-card>
-  <x-card data-title="工作流路由器" data-href="/examples/workflow-router" data-icon="lucide:git-fork">
-  实现智能路由逻辑，将请求定向到适当的处理程序。
+  <x-card data-title="工作流编排" data-icon="lucide:network" data-href="/examples/workflow-orchestration">
+    协调多个 Agent 在复杂的处理管道中协同工作。
   </x-card>
 </x-cards>

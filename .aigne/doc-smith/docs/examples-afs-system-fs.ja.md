@@ -1,183 +1,184 @@
-「AFS System FS」のサンプルドキュメントに必要なファイルを見つけました。主なソースは `/sources/examples/afs-system-fs/README.md` となり、これが構造、コードスニペット、概念的な説明を提供します。中心となるロジックの例は `/sources/examples/afs-system-fs/index.ts` から引用します。利用可能な画像 `/sources/examples/afs-system-fs/run-example.png` にも注目し、無効な画像パスに関するユーザーのフィードバックに対応するため、正しい場所を確認するか、有効な画像に置き換えます。次のステップは、ドキュメントの草稿作成を開始するために `README.md` を分析することです。# AFS System FS
+# AFS System FS
 
-ローカルファイルと直接かつ安全に対話できるチャットボットを構築したいと思ったことはありませんか？このガイドでは、まさにその方法を説明します。AIGNE File System (AFS) と `SystemFS` モジュールを使用して、AI Agentにサンドボックス化されたアクセス権を付与し、マシン上のファイルの読み取り、書き込み、検索を許可する方法を学びます。これにより、ローカルデータを扱う強力でコンテキスト認識型のアプリケーションを構築できます。
+このガイドでは、ローカルファイルシステムと対話できるチャットボットを構築する方法を説明します。これらの手順に従うことで、AIGNE File System (AFS) と `SystemFS` モジュールを使用して、お使いのマシン上のファイルをリスト表示、読み取り、書き込み、検索できる Agent を作成します。
 
 ## 概要
 
-この例の中核は `SystemFS` モジュールです。これは AIGNE フレームワークとコンピュータのファイルシステム間の橋渡しとして機能します。ローカルディレクトリを「マウント」することができ、その内容を `afs_list`、`afs_read`、`afs_write`、`afs_search` といった標準的なツールセットを通じて AI Agentがアクセスできるようになります。Agentはこれらのツールを使用して、自然言語のコマンドに基づいてファイル操作を実行できます。これにより、ドキュメントの要約、ファイルの整理、コードベースに関する質問への回答などのユースケースが可能になります。
+この例では、AIGNE フレームワークを介してローカルファイルシステムと AI Agent の統合を紹介します。`SystemFS` モジュールはブリッジとして機能し、指定されたローカルディレクトリを AIGNE File System (AFS) にマウントします。これにより、AI Agent は標準化されたツールセットを使用してファイル操作を実行でき、ローカルファイルの内容に基づいて質問に答えたり、タスクを完了したりすることが可能になります。
 
-以下の図は、ユーザー、AI Agent、AFS ツール、およびローカルファイルシステムの関係を示しています。
+以下の図は、`SystemFS` モジュールがローカルファイルシステムを AI Agent に接続する方法を示しています。
 
 ```d2
 direction: down
 
-User: {
-  shape: c4-person
+AI-Agent: {
+  label: "AI Agent"
+  shape: rectangle
 }
 
 AIGNE-Framework: {
   label: "AIGNE フレームワーク"
   shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-width: 2
-    stroke-dash: 4
-  }
 
-  AI-Agent: {
-    label: "AI Agent"
+  AFS: {
+    label: "AIGNE File System (AFS)"
     shape: rectangle
-  }
 
-  AFS-Tools: {
-    label: "AFS ツール"
-    shape: rectangle
-    grid-columns: 2
-    afs_list: { label: "afs_list" }
-    afs_read: { label: "afs_read" }
-    afs_write: { label: "afs_write" }
-    afs_search: { label: "afs_search" }
-  }
-
-  SystemFS-Module: {
-    label: "SystemFS モジュール"
-    shape: rectangle
+    SystemFS-Module: {
+      label: "SystemFS モジュール"
+      shape: rectangle
+    }
   }
 }
 
 Local-File-System: {
-  label: "ローカルファイルシステム\n（サンドボックス化）"
-  shape: cylinder
+  label: "ローカルファイルシステム"
+  shape: rectangle
+
+  Local-Directory: {
+    label: "ローカルディレクトリ\n(/path/to/your/project)"
+    shape: cylinder
+  }
 }
 
-User -> AIGNE-Framework.AI-Agent: "自然言語コマンド"
-AIGNE-Framework.AI-Agent -> AIGNE-Framework.AFS-Tools: "適切なツールを選択"
-AIGNE-Framework.AFS-Tools -> AIGNE-Framework.SystemFS-Module: "ツール操作を呼び出し"
-AIGNE-Framework.SystemFS-Module -> Local-File-System: "ファイル I/O を実行"
-Local-File-System -> AIGNE-Framework.SystemFS-Module: "ファイルの内容/ステータスを返す"
-AIGNE-Framework.SystemFS-Module -> AIGNE-Framework.AI-Agent: "ツールの結果を返す"
-AIGNE-Framework.AI-Agent -> User: "コンテキストに応じた応答"
+AI-Agent <-> AIGNE-Framework.AFS: "3. ファイル操作を実行\n(リスト、読み取り、書き込み、検索)"
+AIGNE-Framework.AFS.SystemFS-Module <-> Local-File-System.Local-Directory: "2. ディレクトリをマウント"
 
 ```
 
 ## 前提条件
 
-始める前に、お使いのシステムが以下の要件を満たしていることを確認してください：
+次に進む前に、開発環境が以下の要件を満たしていることを確認してください。
 
 *   **Node.js**: バージョン 20.0 以上。
-*   **npm**: Node.js のインストールに含まれています。
-*   **OpenAI API キー**: AI Agentが OpenAI のモデルに接続するために有効な API キーが必要です。キーは [OpenAI Platform](https://platform.openai.com/api-keys) から取得できます。
-
-ソースコードからこの例を実行する予定がある場合は、以下も推奨されます：
-
-*   **pnpm**: 効率的なパッケージ管理のため。
-*   **Bun**: サンプルや単体テストの実行のため。
+*   **npm**: Node.js に含まれています。
+*   **OpenAI API キー**: 言語モデルに接続するために必要です。[OpenAI API キーページ](https://platform.openai.com/api-keys)から取得できます。
 
 ## クイックスタート
 
-完全なリポジトリをクローンすることなく、`npx` を使用してターミナルから直接この例を実行できます。これが最も早く動作を確認する方法です。
+`npx` を使用して、ローカルにインストールすることなくこの例を直接実行できます。
 
 ### 例を実行する
 
-ターミナルを開き、以下のいずれかのコマンドを選択してください。
+ターミナルで以下のコマンドを実行して、ディレクトリをマウントし、チャットボットと対話します。
 
-カレントディレクトリをマウントし、対話型のチャットセッションを開始する場合：
+現在のディレクトリをマウントし、対話型のチャットセッションを開始します。
 
-```bash チャットモードで実行 icon=lucide:terminal
+```bash aigne の依存関係をインストール icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --chat
 ```
 
-特定のディレクトリをカスタム名と説明でマウントする場合：
+ドキュメントフォルダなど、特定のディレクトリをマウントします。
 
-```bash 特定のディレクトリをマウント icon=lucide:terminal
+```bash aigne の依存関係をインストール icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path ~/Documents --mount /docs --description "My Documents" --chat
 ```
 
-対話型チャットを開始せずに単一の質問をする場合：
+対話モードに入らずに、一度だけの質問をします。
 
-```bash 単一の質問をする icon=lucide:terminal
+```bash aigne の依存関係をインストール icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "What files are in the current directory?"
 ```
 
-### AIモデルに接続する
+### AI モデルに接続する
 
-初めてこの例を実行すると、AI モデルへの接続を求められます。
+この例を初めて実行すると、API キーが設定されていないため、CLI は AI モデルへの接続を促します。
 
-![AIモデルに接続する](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/connect-to-aigne-hub.png)
+![AIGNE Hub への初回接続プロンプト](../../../examples/afs-system-fs/run-example.png)
 
-主な選択肢は3つあります：
+続行するには3つのオプションがあります。
 
-1.  **公式 AIGNE Hub を経由して接続する**: これが推奨オプションです。ブラウザで公式 AIGNE Hub が開き、サインインできます。新規ユーザーは、開始するための無料トークン割り当てを受け取ります。
-2.  **セルフホストの AIGNE Hub を経由して接続する**: 独自の AIGNE Hub インスタンスを実行している場合は、このオプションを選択し、その URL を入力します。
-3.  **サードパーティのモデルプロバイダー経由で接続する**: API キーを含む環境変数を設定することで、OpenAI のようなプロバイダーに直接接続できます。
+1.  **公式 AIGNE Hub に接続する**
+    これは新規ユーザーに推奨されるオプションです。ブラウザで AIGNE Hub が開き、そこで接続を承認できます。新規ユーザーは、すぐに始められるように無料のトークンが付与されます。
 
-OpenAI に接続するには、ターミナルで `OPENAI_API_KEY` 環境変数を設定します：
+    ![AIGNE Hub での AIGNE CLI の承認ダイアログ](../../../examples/images/connect-to-aigne-hub.png)
 
-```bash OpenAI APIキーを設定 icon=lucide:terminal
-export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+2.  **セルフホストの AIGNE Hub 経由で接続する**
+    セルフホストの AIGNE Hub インスタンスをお持ちの場合は、このオプションを選択し、その URL を入力して接続を完了します。[Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ) から独自の AIGNE Hub をデプロイできます。
+
+    ![セルフホスト AIGNE Hub の URL を入力するプロンプト](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+3.  **サードパーティのモデルプロバイダー経由で接続する**
+    OpenAI などのプロバイダーから直接 API キーを設定できます。ターミナルで適切な環境変数を設定し、再度この例を実行してください。
+
+    ```bash OpenAI API キーを設定 icon=lucide:terminal
+    export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+    ```
+
+    DeepSeek や Google Gemini などの他のプロバイダーとの設定については、プロジェクトソース内の `.env.local.example` ファイルを参照してください。
+
+### AIGNE Observe でのデバッグ
+
+Agent の動作を監視および分析するには、`aigne observe` コマンドを使用します。これにより、実行トレース、ツール呼び出し、モデルの相互作用の詳細なビューを提供するローカル Web サーバーが起動され、デバッグやパフォーマンスチューニングに非常に役立ちます。
+
+まず、監視サーバーを起動します。
+
+```bash 監視サーバーを起動 icon=lucide:terminal
+aigne observe
 ```
 
-キーを設定した後、再度 `npx` コマンドを実行してください。サポートされているプロバイダーとその必要な環境変数の完全なリストについては、この例の `.env.local.example` ファイルを参照してください。
+ターミナルはサーバーが実行中であることを確認し、ローカル URL を提供します。
 
-## ソースからのインストール
+![AIGNE Observe サーバーが起動したことを示すターミナル出力](../../../examples/images/aigne-observe-execute.png)
 
-ソースコードを確認したり、変更を加えたい場合は、以下の手順に従ってローカルでこの例を実行してください。
+Agent を実行した後、Web インターフェースで最近の実行リストを表示できます。
 
-### 1. リポジトリをクローンする
+![トレースのリストを示す AIGNE Observability Web インターフェース](../../../examples/images/aigne-observe-list.png)
 
-```bash リポジトリをクローンする icon=lucide:terminal
-git clone https://github.com/AIGNE-io/aigne-framework
-```
+## ローカルインストール
 
-### 2. 依存関係をインストールする
+開発目的で、リポジトリをクローンしてローカルでこの例を実行できます。
 
-例のディレクトリに移動し、`pnpm` を使用して必要なパッケージをインストールします。
+1.  **リポジトリをクローンする**
 
-```bash 依存関係をインストールする icon=lucide:terminal
-cd aigne-framework/examples/afs-system-fs
-pnpm install
-```
+    ```bash リポジトリをクローン icon=lucide:terminal
+    git clone https://github.com/AIGNE-io/aigne-framework
+    ```
 
-### 3. 例を実行する
+2.  **依存関係をインストールする**
+    例のディレクトリに移動し、pnpm を使用して必要なパッケージをインストールします。
 
-`pnpm start` コマンドを目的のフラグ付きで実行します。
+    ```bash 依存関係をインストール icon=lucide:terminal
+    cd aigne-framework/examples/afs-system-fs
+    pnpm install
+    ```
 
-カレントディレクトリをマウントして実行する場合：
+3.  **例を実行する**
+    `pnpm start` コマンドに必要なフラグを付けて使用します。
 
-```bash カレントディレクトリで実行 icon=lucide:terminal
-pnpm start --path .
-```
+    現在のディレクトリで実行します。
+    ```bash 現在のディレクトリで実行 icon=lucide:terminal
+    pnpm start --path .
+    ```
 
-対話型チャットモードで実行する場合：
-
-```bash チャットモードで実行 icon=lucide:terminal
-pnpm start --path . --chat
-```
+    対話型チャットモードで実行します。
+    ```bash チャットモードで実行 icon=lucide:terminal
+    pnpm start --path . --chat
+    ```
 
 ## 仕組み
 
-この例では `AIAgent` を初期化し、`SystemFS` モジュールを使用してローカルファイルシステムへのアクセス権を付与します。
+この例では、`SystemFS` モジュールを使用して、AIGNE File System (AFS) を介してローカルディレクトリを AI Agent に公開します。このサンドボックス化された環境により、Agent は標準化されたインターフェースを使用してファイルと対話し、安全性と制御を確保できます。
 
-### ローカルディレクトリのマウント
+### コアロジック
 
-`SystemFS` クラスは、ローカルの `path` を AFS 内の仮想 `mount` ポイントにマウントするために使用されます。この設定は新しい `AFS` インスタンスに渡され、それが `AIAgent` にアタッチされます。Agentは、マウントされたファイルシステムを使用してユーザーのクエリに答えるよう指示されます。
+1.  **ディレクトリのマウント**: `SystemFS` クラスは、ローカルの `path` と AFS 内の仮想的な `mount` ポイントでインスタンス化されます。
+2.  **Agent の初期化**: `AIAgent` は AFS インスタンスで設定され、`afs_list`、`afs_read`、`afs_write`、`afs_search` などのファイルシステムツールへのアクセス権が与えられます。
+3.  **ツール呼び出し**: ユーザーが質問（例：「このプロジェクトの目的は何ですか？」）をすると、Agent は使用する AFS ツールを決定します。最初に `afs_list` を呼び出してディレクトリの内容を確認し、次に `afs_read` を呼び出して `README.md` のような関連ファイルを調べることがあります。
+4.  **コンテキストの構築**: ファイルシステムから取得したコンテンツが Agent のコンテキストに追加されます。
+5.  **応答の生成**: Agent は、充実したコンテキストを使用して、ユーザーの元の質問に対する包括的な回答を作成します。
+
+以下のコードスニペットは、ローカルディレクトリが AFS にマウントされ、`AIAgent` に提供される方法を示しています。
 
 ```typescript index.ts icon=logos:typescript
 import { AFS } from "@aigne/afs";
 import { SystemFS } from "@aigne/afs-system-fs";
 import { AIAgent } from "@aigne/core";
 
-const agent = AIAgent.from({
-  name: "afs-system-fs-chatbot",
-  instructions:
-    "You are a friendly chatbot that can retrieve files from a virtual file system. You should use the provided functions to list, search, and read files as needed to answer user questions. The current folder points to the /fs mount point by default.",
-  inputKey: "message",
+AIAgent.from({
+  // ... 他の設定
   afs: new AFS().use(
-    new SystemFS({
-      mount: '/fs',
-      path: './',
-      description: 'Mounted file system'
-    }),
+    new SystemFS({ mount: '/source', path: '/PATH/TO/YOUR/PROJECT', description: 'プロジェクトのコードベース' }),
   ),
   afsConfig: {
     injectHistory: true,
@@ -185,78 +186,65 @@ const agent = AIAgent.from({
 });
 ```
 
-### Agentの対話フロー
+### SystemFS の主な機能
 
-ユーザーが質問をすると、AI Agentは自律的にどの AFS ツールを使用して答えを見つけるかを決定します。
-
-1.  **ユーザー入力**: ユーザーが「このプロジェクトの目的は何ですか？」のような質問をします。
-2.  **ツール呼び出し（リスト）**: Agentはファイル構造を理解する必要があると判断し、`afs_list` ツールを呼び出してルートディレクトリ内のファイルを確認します。
-3.  **ツール呼び出し（読み取り）**: `README.md` のような関連ファイルを特定した後、Agentは `afs_read` ツールを呼び出してその内容にアクセスします。
-4.  **コンテキストに応じた応答**: ファイルの内容がAgentのコンテキストに追加されます。Agentはこの新しい情報を使用して、ユーザーの元の質問に対する詳細な回答を構築します。
-
-このプロセス全体は自律的です。Agentは手動のガイダンスなしに、ツールの呼び出しを連鎖させ、コンテキストを収集し、応答を形成します。
+*   **ファイル操作**: 標準のリスト、読み取り、書き込み、検索機能。
+*   **再帰的トラバーサル**: 深さ制御付きでネストされたディレクトリをナビゲート。
+*   **高速コンテンツ検索**: 高性能なテキスト検索のために `ripgrep` を活用。
+*   **メタデータアクセス**: ファイルサイズ、タイプ、タイムスタンプなどのファイル詳細を提供。
+*   **パスの安全性**: ファイルアクセスをマウントされたディレクトリのみに制限。
 
 ## 使用例
 
-チャットボットが実行されたら、様々なコマンドを発行してマウントされたファイルと対話できます。
+チャットボットが実行されたら、自然言語コマンドを発行してファイルと対話できます。
 
-### 基本的なファイル操作
+### 基本コマンド
 
-```bash すべてのファイルをリスト表示 icon=lucide:terminal
+これらのコマンドを試して、簡単なファイル操作を実行してください。
+
+マウントされたディレクトリ内のすべてのファイルをリスト表示します。
+```bash ファイルをリスト表示 icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "List all files in the root directory"
 ```
 
-```bash 特定のファイルを読み取る icon=lucide:terminal
+特定のファイルの内容を読み取ります。
+```bash ファイルを読み取る icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "Read the contents of package.json"
 ```
 
+すべてのファイルでコンテンツを検索します。
 ```bash コンテンツを検索 icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "Find all files containing the word 'example'"
 ```
 
-### 対話型チャット
+### 対話型チャットプロンプト
 
-より会話的な体験を求める場合は、対話モードを開始してください。
+より会話的な体験のために、対話セッションを開始します。
 
-```bash 対話型チャットを開始 icon=lucide:terminal
+```bash 対話モードを開始 icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --chat
 ```
 
-チャット内に入ったら、次のような質問を試してみてください：
+チャットモードに入ったら、次のように尋ねてみてください。
 
 *   「このディレクトリにはどんなファイルがありますか？」
 *   「READMEファイルの内容を見せてください。」
 *   「すべてのTypeScriptファイルを見つけてください。」
-*   「`notes.txt` という新しいファイルを作成し、内容は『プロジェクトのドキュメントを完成させる』にしてください。」
-*   「深さ制限2ですべてのファイルを再帰的にリスト表示してください。」
-
-## デバッグ
-
-AIGNE CLI には、Agentの動作を分析およびデバッグするのに役立つ `observe` コマンドが含まれています。これは、ツール呼び出し、モデル入力、最終出力を含む実行トレースを検査するためのインターフェースを備えたローカルウェブサーバーを起動します。
-
-まず、ターミナルで観測サーバーを起動します：
-
-```bash 観測サーバーを起動 icon=lucide:terminal
-aigne observe
-```
-
-![AIGNE観測サーバーを起動する](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/aigne-observe-execute.png)
-
-Agentタスクを実行した後、ウェブインターフェースを開いて最近の実行リストを表示し、各ステップの詳細を掘り下げることができます。
-
-![最近の実行リストを表示する](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/aigne-observe-list.png)
+*   「コードベース内の関数を検索してください。」
+*   「`notes.txt` という名前の新しいファイルに何かコンテンツを書いて作成してください。」
+*   「深さ制限2で、すべてのファイルを再帰的にリスト表示してください。」
 
 ## まとめ
 
-この例では、AI Agentの機能をローカルファイルシステムに拡張するための実践的なガイドを提供します。`SystemFS` を使用することで、ユーザーのローカルデータや環境と深く統合された高度なアプリケーションを構築できます。
+この例では、AI Agent の機能を拡張してローカルファイルシステムの対話を含める方法を実践的に示します。`SystemFS` モジュールを使用することで、自然言語コマンドに基づいてタスクを自動化し、情報を取得し、ファイルを整理する強力なチャットボットを作成できます。
 
-その他の例や高度な機能については、以下のドキュメントを参照してください：
+より高度な例やワークフローについては、他のドキュメントセクションをご覧ください。
 
 <x-cards data-columns="2">
-  <x-card data-title="メモリ" data-icon="lucide:brain-circuit" data-href="/examples/memory">
-  FSMemory プラグインを使用して永続的なメモリを持つチャットボットを作成する方法を学びます。
+  <x-card data-title="メモリ" data-href="/examples/memory" data-icon="lucide:brain-circuit">
+  チャットボットに永続的なメモリを与える方法を学びます。
   </x-card>
-  <x-card data-title="MCP サーバー" data-icon="lucide:server" data-href="/examples/mcp-server">
-  AIGNE Agentを Model Context Protocol (MCP) サーバーとして実行する方法を発見します。
+  <x-card data-title="ワークフローオーケストレーション" data-href="/examples/workflow-orchestration" data-icon="lucide:milestone">
+  複雑なワークフローで複数の Agent を調整する方法を発見します。
   </x-card>
 </x-cards>

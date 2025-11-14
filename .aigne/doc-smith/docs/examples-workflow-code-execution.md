@@ -1,26 +1,30 @@
 # Workflow Code Execution
 
-This document provides a technical walkthrough for building a secure, AI-driven workflow that dynamically generates and executes code. By the end, you will understand how to orchestrate a "Coder" agent that writes JavaScript to solve problems and a "Sandbox" agent that safely runs the code, enabling complex, automated problem-solving.
+Executing dynamically generated code from an AI model presents significant security and reliability challenges. This guide provides a structured, step-by-step process for building a secure code execution workflow using the AIGNE Framework. You will learn how to orchestrate a `Coder` agent, which generates code, and a `Sandbox` agent, which executes it in an isolated environment.
 
 ## Overview
 
-In many advanced AI applications, it is necessary to solve problems that require computation or logic beyond the capabilities of a standard language model. This example implements a common and powerful pattern: using one AI agent to write code and another, isolated agent to execute it. This approach allows the system to perform complex calculations, data manipulation, and other programmatic tasks dynamically.
+The code execution workflow is designed to safely handle tasks that require dynamic code generation and execution. It employs a two-agent system:
 
-The workflow consists of two main agents:
-*   **Coder Agent**: An `AIAgent` tasked with understanding a user's request and writing JavaScript code to fulfill it.
-*   **Sandbox Agent**: A `FunctionAgent` that wraps a JavaScript evaluation environment. It receives code from the Coder, executes it, and returns the result. This isolates the code execution, preventing it from affecting the main application.
+1.  **Coder Agent**: An AI-driven agent responsible for interpreting a user's request and writing the necessary JavaScript code to solve it.
+2.  **Sandbox Agent**: A `FunctionAgent` that takes the generated code and executes it in a controlled environment, returning the result.
 
-This separation of concerns ensures both safety and modularity. The diagram below illustrates the high-level data flow.
+This separation of concerns ensures that the AI's code generation is isolated from direct execution, providing a layer of security.
+
+### Logical Flow
+
+The following diagram illustrates the high-level interaction between the agents. The `Coder` agent receives an input, generates code, passes it to the `Sandbox` for execution, and then formats the final output.
 
 ```d2
 direction: down
 
-User: {
-  shape: c4-person
+User-Input: {
+  label: "User Input\n(e.g., 'Calculate 15!')"
+  shape: rectangle
 }
 
-Workflow: {
-  label: "AI Workflow"
+AIGNE-Framework: {
+  label: "AIGNE Framework"
   shape: rectangle
 
   Coder-Agent: {
@@ -34,78 +38,115 @@ Workflow: {
   }
 }
 
-User -> Workflow.Coder-Agent: "1. Problem Request\n(e.g., 'Calculate 10!')"
-Workflow.Coder-Agent -> Workflow.Sandbox-Agent: "2. Generate & Execute JS\n(e.g., 'evaluateJs({ code: ... })')"
-Workflow.Sandbox-Agent -> Workflow.Coder-Agent: "3. Return Result\n(e.g., 3628800)"
-Workflow.Coder-Agent -> User: "4. Final Answer\n(e.g., '10! is 3628800')"
+Final-Output: {
+  label: "Final Output"
+  shape: rectangle
+}
+
+User-Input -> AIGNE-Framework.Coder-Agent: "1. Receives prompt"
+AIGNE-Framework.Coder-Agent -> AIGNE-Framework.Sandbox-Agent: "2. Generates JS code & passes for execution"
+AIGNE-Framework.Sandbox-Agent -> AIGNE-Framework.Coder-Agent: "3. Executes code & returns result"
+AIGNE-Framework.Coder-Agent -> Final-Output: "4. Formats final response"
 
 ```
 
-The following sequence diagram details the interaction between the user and the agents for a sample request.
+### Sequence of Interaction
+
+This sequence diagram details the turn-by-turn communication between the user and the agents for a specific task, such as calculating a factorial.
 
 DIAGRAM_PLACEHOLDER
 
-## Prerequisites
-
-Before proceeding, ensure your development environment meets the following requirements:
-
-*   **Node.js**: Version 20.0 or higher.
-*   **npm**: Included with Node.js.
-*   **OpenAI API Key**: Required for the Coder agent to interact with an AI model. You can obtain a key from the [OpenAI Platform](https://platform.openai.com/api-keys).
-
 ## Quick Start
 
-You can run this example directly from the command line without a local installation using `npx`.
+You can run this example directly without any local installation using `npx`.
 
 ### Run the Example
 
-Execute one of the following commands in your terminal:
+The example supports a one-shot execution mode for single tasks and an interactive chat mode for conversational workflows.
 
-*   **One-Shot Mode**: The agent processes a single input and exits.
+#### One-Shot Mode
 
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-code-execution
-    ```
+This is the default mode. The agent processes a single input and exits.
 
-*   **Interactive Chat Mode**: Start a continuous chat session with the agent.
+```bash icon=lucide:terminal
+npx -y @aigne/example-workflow-code-execution
+```
 
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-code-execution --chat
-    ```
+You can also provide input directly via standard input pipeline.
 
-*   **Pipeline Mode**: Pipe input from another command.
+```bash icon=lucide:terminal
+echo 'Calculate 15!' | npx -y @aigne/example-workflow-code-execution
+```
 
-    ```bash icon=lucide:terminal
-    echo 'Calculate 15!' | npx -y @aigne/example-workflow-code-execution
-    ```
+#### Interactive Chat Mode
+
+Use the `--chat` flag to start a persistent session where you can have a conversation with the agent.
+
+```bash icon=lucide:terminal
+npx -y @aigne/example-workflow-code-execution --chat
+```
 
 ### Connect to an AI Model
 
-The first time you run the example, you will be prompted to connect to an AI model provider.
+The first time you run the example, it will prompt you to connect to a Large Language Model (LLM) since one is required for the `Coder` agent to function.
 
-![Connect to a model provider](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/workflow-code-execution/run-example.png)
+DIAGRAM_PLACEHOLDER
 
-You have several options:
+You have several options to proceed.
 
-1.  **AIGNE Hub (Official)**: The easiest way to get started. It provides free credits for new users.
+#### Option 1: AIGNE Hub (Recommended)
 
-    ![Connect to official AIGNE Hub](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/connect-to-aigne-hub.png)
+This is the easiest way to get started. The official AIGNE Hub provides free credits for new users.
 
-2.  **AIGNE Hub (Self-Hosted)**: Connect to your own instance of AIGNE Hub.
+1.  Select the first option: `Connect to the Arcblock official AIGNE Hub`.
+2.  Your web browser will open an authorization page.
+3.  Follow the prompts to approve the connection.
 
-    ![Connect to self-hosted AIGNE Hub](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/connect-to-self-hosted-aigne-hub.png)
+DIAGRAM_PLACEHOLDER
 
-3.  **Third-Party Model Provider**: Configure a direct connection to a provider like OpenAI, DeepSeek, or Google Gemini. To do this, set the corresponding API key as an environment variable. For OpenAI, use:
+#### Option 2: Self-Hosted AIGNE Hub
+
+If you have your own instance of AIGNE Hub, you can connect to it.
+
+1.  Select the second option: `Connect to a self-hosted AIGNE Hub`.
+2.  You will be prompted to enter the URL of your AIGNE Hub instance.
+
+DIAGRAM_PLACEHOLDER
+
+#### Option 3: Third-Party Model Providers
+
+You can connect directly to a third-party model provider like OpenAI, Anthropic, or Google Gemini by setting the appropriate environment variables. For example, to use OpenAI, set your API key:
+
+```bash icon=lucide:terminal
+export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+```
+
+After setting the environment variable, run the example command again. For a list of all supported providers and their required environment variables, refer to the example `.env.local.example` file.
+
+### Debugging with AIGNE Observe
+
+The AIGNE Framework includes a powerful observability tool for debugging and analyzing agent behavior.
+
+1.  **Start the Server**: In your terminal, run the `aigne observe` command. This launches a local web server.
 
     ```bash icon=lucide:terminal
-    export OPENAI_API_KEY="your-openai-api-key"
+    aigne observe
     ```
 
-    After setting the environment variable, run the example again.
+    DIAGRAM_PLACEHOLDER
 
-## Full Installation and Usage
+2.  **View Traces**: Open your web browser and navigate to the local URL provided (e.g., `http://localhost:7893`). The interface displays a list of recent agent executions, allowing you to inspect inputs, outputs, tool calls, and performance metrics for each trace.
 
-For development or modification of the example, clone the repository and install the dependencies locally.
+    DIAGRAM_PLACEHOLDER
+
+## Local Installation and Usage
+
+For development purposes, you can clone the repository and run the example locally.
+
+### Prerequisites
+
+-   [Node.js](https://nodejs.org) (version 20.0 or higher)
+-   [pnpm](https://pnpm.io) for package management
 
 ### 1. Clone the Repository
 
@@ -115,7 +156,7 @@ git clone https://github.com/AIGNE-io/aigne-framework
 
 ### 2. Install Dependencies
 
-Navigate to the example directory and install the necessary packages using `pnpm`.
+Navigate to the example directory and install the required packages.
 
 ```bash icon=lucide:terminal
 cd aigne-framework/examples/workflow-code-execution
@@ -124,59 +165,61 @@ pnpm install
 
 ### 3. Run the Example
 
-Use the `pnpm start` command to run the workflow.
+Use the `pnpm start` command to execute the workflow.
 
-*   **One-Shot Mode**:
+```bash icon=lucide:terminal
+# Run in one-shot mode (default)
+pnpm start
 
-    ```bash icon=lucide:terminal
-    pnpm start
-    ```
+# Run in interactive chat mode
+pnpm start -- --chat
 
-*   **Interactive Chat Mode**:
-
-    ```bash icon=lucide:terminal
-    pnpm start -- --chat
-    ```
-
-*   **Pipeline Mode**:
-
-    ```bash icon=lucide:terminal
-    echo "Calculate 15!" | pnpm start
-    ```
+# Use pipeline input
+echo "Calculate 15!" | pnpm start
+```
 
 ### Command-Line Options
 
-The example supports several command-line arguments to customize its behavior.
+The script accepts several command-line arguments to customize its behavior.
 
-| Parameter | Description | Default |
-| :--- | :--- | :--- |
-| `--chat` | Run in interactive chat mode. | Disabled |
-| `--model <provider[:model]>` | Specify the AI model to use (e.g., `openai` or `openai:gpt-4o-mini`). | `openai` |
-| `--temperature <value>` | Set the temperature for model generation. | Provider default |
-| `--top-p <value>` | Set the top-p sampling value. | Provider default |
-| `--presence-penalty <value>` | Set the presence penalty value. | Provider default |
-| `--frequency-penalty <value>` | Set the frequency penalty value. | Provider default |
-| `--log-level <level>` | Set the logging level (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`). | `INFO` |
-| `--input`, `-i <input>` | Provide input directly as an argument. | None |
+| Parameter                   | Description                                                                                              | Default          |
+| --------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------- |
+| `--chat`                    | Run in interactive chat mode.                                                                            | Disabled         |
+| `--model <provider[:model]>` | Specify the AI model to use, e.g., `openai` or `openai:gpt-4o-mini`.                                     | `openai`         |
+| `--temperature <value>`     | Set the temperature for model generation.                                                                | Provider default |
+| `--top-p <value>`           | Set the top-p sampling value.                                                                            | Provider default |
+| `--presence-penalty <value>`| Set the presence penalty value.                                                                          | Provider default |
+| `--frequency-penalty <value>`| Set the frequency penalty value.                                                                         | Provider default |
+| `--log-level <level>`       | Set the logging level (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`).                                         | `INFO`           |
+| `--input`, `-i <input>`     | Provide input directly as an argument.                                                                   | None             |
+
+#### Usage Example
+
+This command runs the workflow in interactive mode with the `DEBUG` log level.
+
+```bash icon=lucide:terminal
+pnpm start -- --chat --log-level DEBUG
+```
 
 ## Code Implementation
 
-The following TypeScript code outlines the core logic for the code execution workflow. It defines the `sandbox` and `coder` agents and invokes them to solve a problem.
+The following TypeScript code demonstrates how to construct the code execution workflow. It defines the `sandbox` and `coder` agents and invokes them using the AIGNE instance.
 
-```typescript code-execution.ts icon=logos:typescript
+```typescript index.ts icon=logos:typescript
 import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
-// Ensure the OpenAI API key is available in the environment variables.
+// Retrieve the OpenAI API key from environment variables.
 const { OPENAI_API_KEY } = process.env;
 
-// 1. Initialize the AI Model
+// 1. Initialize the Chat Model
+// This model will power the AI agent.
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-// 2. Create the Sandbox Agent
+// 2. Define the Sandbox Agent
 // This agent safely executes JavaScript code using a FunctionAgent.
 const sandbox = FunctionAgent.from({
   name: "evaluateJs",
@@ -187,14 +230,14 @@ const sandbox = FunctionAgent.from({
   process: async (input: { code: string }) => {
     const { code } = input;
     // The use of eval is isolated within this sandboxed agent.
-    // biome-ignore lint/security/noGlobalEval: This is an intentional use for a sandboxed environment.
+    // biome-ignore lint/security/noGlobalEval: <This is a controlled sandbox environment for the example>
     const result = eval(code);
     return { result };
   },
 });
 
-// 3. Create the Coder Agent
-// This AI agent is instructed to write and execute code using the sandbox skill.
+// 3. Define the Coder Agent
+// This AI agent is instructed to write code and use the sandbox skill.
 const coder = AIAgent.from({
   name: "coder",
   instructions: `\
@@ -208,32 +251,22 @@ Work with the sandbox to execute your code.
 const aigne = new AIGNE({ model });
 
 // 5. Invoke the Workflow
+// The AIGNE instance runs the coder agent with the user's prompt.
 const result = await aigne.invoke(coder, "10! = ?");
+
 console.log(result);
+// Expected Output:
+// {
+//   $message: "The value of \\(10!\\) (10 factorial) is 3,628,800.",
+// }
 ```
 
-The expected output is a JSON object containing the final message from the agent:
+## Summary
 
-```json
-{
-  "$message": "The value of \\(10!\\) (10 factorial) is 3,628,800."
-}
-```
+This guide has demonstrated how to build and run a secure code execution workflow using the AIGNE Framework. By separating the concerns of code generation and execution into distinct `AIAgent` and `FunctionAgent` roles, you can safely leverage the power of LLMs for tasks that require dynamic code.
 
-## Debugging
-
-You can monitor and analyze agent executions using the AIGNE observer tool. It provides a web-based interface to inspect traces, view detailed calls, and understand the agent's behavior at runtime.
-
-First, start the observation server in a separate terminal:
-
-```bash icon=lucide:terminal
-aigne observe
-```
-
-After running your workflow, you can view the execution traces in the observer UI.
-
-![AIGNE Observe Execution](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/aigne-observe-execute.png)
-
-The UI provides a list of recent executions for detailed inspection.
-
-![AIGNE Observe List](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/aigne-observe-list.png)
+For more advanced workflow patterns, explore the following examples:
+<x-cards data-columns="2">
+  <x-card data-title="Sequential Workflow" data-href="/examples/workflow-sequential" data-icon="lucide:arrow-right-circle">Build step-by-step processing pipelines with guaranteed execution order.</x-card>
+  <x-card data-title="Workflow Orchestration" data-href="/examples/workflow-orchestration" data-icon="lucide:milestone">Coordinate multiple agents working together in sophisticated processing pipelines.</x-card>
+</x-cards>

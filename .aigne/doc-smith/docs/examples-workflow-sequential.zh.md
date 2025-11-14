@@ -1,234 +1,278 @@
 # 顺序工作流
 
-本指南演示了如何构建一个按保证顺序执行任务的分步处理管道。你将学习如何将多个 Agent 链接在一起，其中一个 Agent 的输出成为下一个 Agent 的输入，从而创建一个可靠且可预测的工作流。
-
-此示例非常适用于需要一系列转换或分析的流程，例如起草内容、对其进行优化，然后将其格式化以供发布。对于可以从同步任务执行中受益的工作流，请参阅[并发工作流](./examples-workflow-concurrency.md)示例。
+本指南演示了如何使用 AIGNE 框架构建并执行顺序工作流。您将学习如何将多个 Agent 链接在一起，其中一个 Agent 的输出成为下一个 Agent 的输入，从而创建一个逐步处理的管道。这种模式非常适合需要一系列明确、有序操作的任务。
 
 ## 概述
 
-顺序工作流按预定义的顺序处理任务。每个步骤必须完成后才能开始下一个步骤，从而确保从输入到最终输出的有序进行。这种模式是构建复杂、多阶段 Agent 系统的基础。
+顺序工作流按预定义顺序处理任务。序列中的每个 Agent 执行特定功能，并将其结果传递给后续 Agent。这确保了可预测且受控的执行流程，类似于流水线。
 
-```d2
-direction: down
+本示例构建了一个简单的营销内容生成管道，由三个 Agent 组成：
 
-Input: {
-  label: "输入\n(产品描述)"
-  shape: oval
-}
+1.  **概念提取器 (Concept Extractor)**：分析产品描述，以识别关键特性、目标受众和独特卖点。
+2.  **写作者 (Writer)**：利用提取的概念撰写引人注目的营销文案。
+3.  **格式校对 (Format Proof)**：通过纠正语法、提高清晰度并确保最终输出精炼来完善草稿。
 
-Sequential-Workflow: {
-  label: "顺序工作流 (TeamAgent)"
-  shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-width: 2
-    stroke-dash: 4
-  }
+数据按照下图所示的严格顺序流经各个 Agent。
 
-  Concept-Extractor: {
-    label: "1. 概念提取器"
-    shape: rectangle
-  }
+```mermaid
+flowchart LR
+in(输入)
+out(输出)
+conceptExtractor(概念提取器)
+writer(写作者)
+formatProof(格式校对)
 
-  Writer: {
-    label: "2. 撰写器"
-    shape: rectangle
-  }
+in --> conceptExtractor --> writer --> formatProof --> out
 
-  Format-Proofread: {
-    label: "3. 格式化与校对"
-    shape: rectangle
-  }
-}
+classDef inputOutput fill:#f9f0ed,stroke:#debbae,stroke-width:2px,color:#b35b39,font-weight:bolder;
+classDef processing fill:#F0F4EB,stroke:#C2D7A7,stroke-width:2px,color:#6B8F3C,font-weight:bolder;
 
-Output: {
-  label: "最终输出\n(概念、草稿、内容)"
-  shape: oval
-}
-
-Input -> Sequential-Workflow.Concept-Extractor
-Sequential-Workflow.Concept-Extractor -> Sequential-Workflow.Writer: "输出：概念"
-Sequential-Workflow.Writer -> Sequential-Workflow.Format-Proofread: "输出：草稿"
-Sequential-Workflow.Format-Proofread -> Output: "输出：内容"
+class in inputOutput
+class out inputOutput
+class conceptExtractor processing
+class writer processing
+class formatProof processing
 ```
 
-## 快速入门
+## 前置条件
 
-你可以使用 `npx` 直接运行此示例，无需任何本地安装。
+在运行示例之前，请确保您的开发环境满足以下要求：
 
-### 前提条件
+*   **Node.js**：版本 20.0 或更高。
+*   **npm**：随 Node.js 一同安装。
+*   **OpenAI API 密钥**：本示例中的模型交互需要使用。您可以从 [OpenAI Platform](https://platform.openai.com/api-keys) 获取。
 
-- [Node.js](https://nodejs.org) (20.0 或更高版本)
-- 来自受支持模型提供商的 API 密钥（例如 [OpenAI](https://platform.openai.com/api-keys)）
+## 快速开始
 
-### 执行工作流
+您可以使用 `npx` 直接运行此示例，无需本地安装。
 
-该示例可以在默认的一次性模式、交互式聊天模式下运行，也可以通过直接管道输入来运行。
+### 运行示例
 
-1.  **一次性模式**：使用预定义的输入执行工作流一次。
+在您的终端中执行以下命令。
 
-    ```sh icon=lucide:terminal
-    npx -y @aigne/example-workflow-sequential
-    ```
+以默认的单次模式运行：
+```bash icon=lucide:terminal
+npx -y @aigne/example-workflow-sequential
+```
 
-2.  **交互式聊天模式**：启动一个会话，你可以在其中提供连续输入。
+以交互式聊天模式运行：
+```bash icon=lucide:terminal
+npx -y @aigne/example-workflow-sequential --chat
+```
 
-    ```sh icon=lucide:terminal
-    npx -y @aigne/example-workflow-sequential --chat
-    ```
-
-3.  **管道输入**：处理从另一个命令通过管道传入的输入。
-
-    ```sh icon=lucide:terminal
-    echo "Create marketing content for our new AI-powered fitness app" | npx -y @aigne/example-workflow-sequential
-    ```
+您也可以将输入直接通过管道传递给命令：
+```bash icon=lucide:terminal
+echo "为我们新推出的人工智能健身应用创建营销内容" | npx -y @aigne/example-workflow-sequential
+```
 
 ### 连接到 AI 模型
 
-要执行工作流，你必须连接到一个 AI 模型。首次运行时，系统将提示你选择一种连接方法。
+首次运行该示例时，应用程序将检测到尚未配置 AI 模型，并提示您连接一个。
 
-- **AIGNE Hub (推荐)**：最简单的入门方式。新用户可获得免费代币。
-- **自托管 AIGNE Hub**：连接到你自己的 AIGNE Hub 实例。
-- **第三方提供商**：使用来自 OpenAI 等提供商的 API 密钥配置你的环境。
+![首次提示连接 AI 模型](../../../examples/workflow-sequential/run-example.png)
 
-要直接使用 OpenAI，请设置以下环境变量：
+您有多种选择可以继续：
 
-```sh icon=lucide:terminal
+**1. 通过 AIGNE 官方 Hub 连接（推荐）**
+
+这是最直接的入门方法。新用户会获得免费的试用额度。
+
+*   在提示中选择第一个选项：`Connect to the Arcblock official AIGNE Hub`。
+*   您的默认网络浏览器将打开一个新标签页，跳转到 AIGNE Hub 授权页面。
+*   按照屏幕上的说明批准连接。
+
+![授权连接到 AIGNE Hub](../../../examples/images/connect-to-aigne-hub.png)
+
+**2. 通过自托管的 AIGNE Hub 连接**
+
+如果您运行自己的 AIGNE Hub 实例，可以直接连接到它。
+
+*   选择第二个选项：`Connect to my own AIGNE Hub`。
+*   在终端提示时，输入您自托管的 AIGNE Hub 实例的 URL。
+
+![输入自托管的 AIGNE Hub URL](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+**3. 通过第三方模型提供商连接**
+
+您也可以直接连接到受支持的第三方模型提供商，例如 OpenAI。这需要将相应的 API 密钥设置为环境变量。对于 OpenAI，请导出 `OPENAI_API_KEY` 变量：
+
+```bash 设置 OpenAI API 密钥 icon=lucide:terminal
 export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 ```
 
-## 工作原理
+请将 `"YOUR_OPENAI_API_KEY"` 替换为您的实际密钥。设置环境变量后，再次执行运行命令。有关配置其他提供商的详细信息，请参阅项目代码仓库中的 `.env.local.example` 文件。
 
-顺序工作流是使用配置了 `ProcessMode.sequential` 的 `TeamAgent` 构建的。这确保了在 `skills` 数组中列出的 Agent 会按照它们定义的顺序执行。
+## 安装（可选）
 
-### 代码实现
+如果您希望从本地克隆的代码仓库运行示例，请按照以下步骤操作。
 
-核心逻辑涉及定义三个不同的 `AIAgent` 实例，并将它们在一个顺序的 `TeamAgent` 中进行编排。
+**1. 克隆代码仓库**
 
-```typescript sequential-workflow.ts icon=logos:typescript
+```bash icon=lucide:terminal
+git clone https://github.com/AIGNE-io/aigne-framework
+```
+
+**2. 安装依赖**
+
+导航到示例目录，并使用 `pnpm` 安装所需的包。
+
+```bash icon=lucide:terminal
+cd aigne-framework/examples/workflow-sequential
+pnpm install
+```
+
+**3. 运行示例**
+
+使用 `pnpm start` 命令执行工作流。
+
+以单次模式运行：
+```bash icon=lucide:terminal
+pnpm start
+```
+
+以交互式聊天模式运行（注意参数前的 `--`）：
+```bash icon=lucide:terminal
+pnpm start -- --chat
+```
+
+使用管道输入：
+```bash icon=lucide:terminal
+echo "为我们新推出的人工智能健身应用创建营销内容" | pnpm start
+```
+
+### 命令行选项
+
+该示例支持多个命令行参数以进行自定义：
+
+| 参数 | 描述 | 默认值 |
+|-----------|-------------|---------|
+| `--chat` | 以交互式聊天模式运行。 | 禁用 |
+| `--model <provider[:model]>` | 指定要使用的 AI 模型（例如 `openai` 或 `openai:gpt-4o-mini`）。 | `openai` |
+| `--temperature <value>` | 设置模型生成的温度。 | 提供商默认值 |
+| `--top-p <value>` | 设置 top-p 抽样值。 | 提供商默认值 |
+| `--presence-penalty <value>` | 设置存在惩罚值。 | 提供商默认值 |
+| `--frequency-penalty <value>` | 设置频率惩罚值。 | 提供商默认值 |
+| `--log-level <level>` | 设置日志级别（`ERROR`、`WARN`、`INFO`、`DEBUG`、`TRACE`）。 | `INFO` |
+| `--input`, `-i <input>` | 直接以参数形式提供输入。 | `None` |
+
+## 代码示例
+
+顺序工作流的核心逻辑定义在一个 TypeScript 文件中。它初始化了三个不同的 `AIAgent` 实例，并将它们配置为一个顺序执行的 `TeamAgent` 来进行编排。
+
+```typescript sequential-workflow.ts
 import { AIAgent, AIGNE, ProcessMode, TeamAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
+const { OPENAI_API_KEY } = process.env;
+
 // 1. 初始化模型
 const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: OPENAI_API_KEY,
 });
 
-// 2. 定义序列中的第一个 Agent：概念提取器
+// 2. 定义序列中的第一个 Agent
 const conceptExtractor = AIAgent.from({
   instructions: `\
-你是一名市场分析师。根据产品描述，识别出：
+您是一位市场分析师。根据产品描述，识别出：
 - 关键特性
 - 目标受众
-- 独特的卖点
+- 独特卖点
 
 产品描述：
 {{product}}`,
   outputKey: "concept",
 });
 
-// 3. 定义第二个 Agent：撰写器
+// 3. 定义第二个 Agent
 const writer = AIAgent.from({
   instructions: `\
-你是一名营销文案撰写人。根据描述特性、受众和独特卖点的一段文本，
-撰写一篇引人注目的营销文案（约 150 字）。
+您是一位营销文案撰稿人。根据一段描述特性、受众和独特卖点的文本，
+撰写一篇引人注目的营销文案（例如新闻简报的一个章节），突出这些要点。
+输出应简短（约 150 字），仅输出文案本身，作为一个单独的文本块。
 
 产品描述：
 {{product}}
 
-以下是关于该产品的信息：
-{{concept}}`, // 使用前一个 Agent 的输出
+以下是有关该产品的信息：
+{{concept}}`,
   outputKey: "draft",
 });
 
-// 4. 定义最后一个 Agent：格式化与校对
+// 4. 定义第三个 Agent
 const formatProof = AIAgent.from({
   instructions: `\
-你是一名编辑。根据草稿文案，纠正语法错误，提高清晰度，并确保语调一致。
-输出最终润色后的文案。
+您是一位编辑。根据草稿文案，纠正语法，提高清晰度，确保语调一致，
+进行格式化，使其更加精炼。将最终改进后的文案作为一个单独的文本块输出。
 
 产品描述：
 {{product}}
 
-以下是关于该产品的信息：
+以下是有关该产品的信息：
 {{concept}}
 
 草稿文案：
-{{draft}}`, // 使用前面 Agent 的输出
+{{draft}}`,
   outputKey: "content",
 });
 
-// 5. 配置 AIGNE 实例和 TeamAgent
+// 5. 初始化 AIGNE 实例
 const aigne = new AIGNE({ model });
 
+// 6. 创建一个 TeamAgent 来管理顺序工作流
 const teamAgent = TeamAgent.from({
   skills: [conceptExtractor, writer, formatProof],
-  mode: ProcessMode.sequential, // 将执行模式设置为顺序执行
+  mode: ProcessMode.sequential, // 这确保了 Agent 按顺序逐个运行
 });
 
-// 6. 调用工作流
+// 7. 使用初始输入调用工作流
 const result = await aigne.invoke(teamAgent, {
-  product: "AIGNE is a No-code Generative AI Apps Engine",
+  product: "AIGNE 是一个无代码的生成式 AI 应用引擎",
 });
 
 console.log(result);
-```
 
-### 执行分析
-
-1.  **模型初始化**：使用必要的 API 密钥配置一个 `OpenAIChatModel`。
-2.  **Agent 定义**：
-    *   `conceptExtractor`：接收初始的 `product` 描述并生成一个 `concept` 输出。
-    *   `writer`：使用原始的 `product` 描述和上一步的 `concept` 来创建一个 `draft`。
-    *   `formatProof`：接收之前所有的输出（`product`、`concept`、`draft`）来生成最终的 `content`。
-3.  **团队配置**：创建一个 `TeamAgent`，其中包含按期望执行顺序排列的三个 Agent。指定 `ProcessMode.sequential` 来强制执行此顺序。
-4.  **调用**：`aigne.invoke` 方法使用一个初始输入对象来启动工作流。框架会自动管理状态，将累积的输出传递给每个后续的 Agent。
-5.  **输出**：最终结果是一个对象，其中包含序列中所有 Agent 的输出。
-
-```json 输出示例
+/*
+// 预期的输出结构：
 {
-  "concept": "**Product Description: AIGNE - No-code Generative AI Apps Engine**\n\nAIGNE is a cutting-edge No-code Generative AI Apps Engine designed to empower users to seamlessly create ...",
-  "draft": "Unlock the power of creation with AIGNE, the revolutionary No-code Generative AI Apps Engine! Whether you're a small business looking to streamline operations, an entrepreneur ...",
-  "content": "Unlock the power of creation with AIGNE, the revolutionary No-Code Generative AI Apps Engine! Whether you are a small business aiming to streamline operations, an entrepreneur ..."
+  concept: "...", // 来自 conceptExtractor 的输出
+  draft: "...",   // 来自 writer 的输出
+  content: "..."  // 来自 formatProof 的输出
 }
+*/
 ```
 
-## 命令行选项
+该脚本演示了以下关键步骤：
+1.  创建一个 `OpenAIChatModel` 实例来处理与 LLM 的通信。
+2.  定义了三个具有特定指令的 `AIAgent` 实例（`conceptExtractor`、`writer`、`formatProof`）。每个 Agent 的 `outputKey` 决定了其结果存储时所使用的键。
+3.  `writer` Agent 通过 `{{concept}}` 占位符使用 `conceptExtractor` 的输出。同样，`formatProof` 使用 `{{concept}}` 和 `{{draft}}`。
+4.  配置一个 `TeamAgent`，将其 `skills` 数组中包含这三个 Agent。`mode` 设置为 `ProcessMode.sequential`，指示团队按其提供的顺序执行 Agent。
+5.  最后，`aigne.invoke()` 启动工作流，并传入初始产品描述。最终结果是一个包含序列中所有 Agent 输出的对象。
 
-你可以使用以下参数自定义执行：
+## 调试
 
-| Parameter                 | Description                                                                                              | Default            |
-| ------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------ |
-| `--chat`                  | 以交互式聊天模式运行。                                                                                   | 已禁用             |
-| `--model <provider[:model]>` | 指定要使用的 AI 模型（例如，`openai` 或 `openai:gpt-4o-mini`）。                                          | `openai`           |
-| `--temperature <value>`   | 设置模型生成的温度。                                                                                     | 提供商默认值       |
-| `--top-p <value>`         | 设置 top-p 采样值。                                                                                      | 提供商默认值       |
-| `--presence-penalty <value>`| 设置存在惩罚值。                                                                                         | 提供商默认值       |
-| `--frequency-penalty <value>`| 设置频率惩罚值。                                                                                         | 提供商默认值       |
-| `--log-level <level>`     | 设置日志级别（`ERROR`、`WARN`、`INFO`、`DEBUG`、`TRACE`）。                                                 | `INFO`             |
-| `--input, -i <input>`     | 通过命令行直接指定输入。                                                                                 | 无                 |
+要监控和调试 Agent 的执行情况，您可以使用 `aigne observe` 命令。该工具提供了一个基于 Web 的界面，用于检查跟踪、审查输入和输出，并分析工作流的性能。
 
-### 用法示例
+首先，在您的终端中启动观察服务器：
 
-```sh icon=lucide:terminal
-# 以聊天模式运行，并指定一个模型
-npx @aigne/example-workflow-sequential --chat --model openai:gpt-4o-mini
-
-# 将日志级别设置为 debug 以获取详细输出
-npx @aigne/example-workflow-sequential --log-level DEBUG
+```bash icon=lucide:terminal
+aigne observe
 ```
+
+服务器将启动，您可以通过 `http://localhost:7893` 访问 UI。
+
+![AIGNE Observe 服务器在终端中启动](../../../examples/images/aigne-observe-execute.png)
+
+运行您的工作流后，执行跟踪将显示在可观察性界面中，让您可以详细检查序列中的每一步。
+
+![AIGNE 可观察性 UI 中最近的 Agent 跟踪列表](../../../examples/images/aigne-observe-list.png)
 
 ## 总结
 
-本示例演示了如何使用 AIGNE 框架配置和执行顺序工作流。通过定义一系列 Agent 并将它们以 `ProcessMode.sequential` 模式安排在 `TeamAgent` 中，你可以为复杂的多步骤任务构建稳健、有序的管道。
+本指南介绍了顺序工作流的设置和执行。通过定义一系列 Agent 并使用 `TeamAgent` 以顺序模式进行编排，您可以为复杂任务构建功能强大的多步骤处理管道。
 
-要进一步阅读有关 Agent 协作的内容，请探索以下主题：
+要了解更高级的工作流模式，请浏览以下示例：
 
 <x-cards data-columns="2">
-  <x-card data-title="Team Agent" data-href="/developer-guide/agents/team-agent" data-icon="lucide:users">
-    了解更多关于以顺序、并行或自我修正模式编排多个 Agent 的信息。
-  </x-card>
-  <x-card data-title="工作流：并发" data-href="/examples/workflow-concurrency" data-icon="lucide:git-fork">
-    了解如何并行运行 Agent，以优化可同时执行的任务的性能。
-  </x-card>
+  <x-card data-title="工作流：并行执行" data-href="/examples/workflow-concurrency" data-icon="lucide:git-fork">了解如何同时运行多个 Agent 以提高性能。</x-card>
+  <x-card data-title="工作流：编排" data-href="/examples/workflow-orchestration" data-icon="lucide:network">在更复杂的非线性管道中协调多个 Agent。</x-card>
 </x-cards>

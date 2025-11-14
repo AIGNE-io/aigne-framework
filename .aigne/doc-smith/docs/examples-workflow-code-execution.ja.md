@@ -1,111 +1,152 @@
-# ワークフローコードの実行
+# ワークフローのコード実行
 
-このドキュメントでは、コードを動的に生成して実行する、安全なAI駆動型ワークフローを構築するための技術的なウォークスルーを提供します。最後まで読むと、問題を解決するためにJavaScriptを作成する「コーダー」Agentと、そのコードを安全に実行する「サンドボックス」Agentを連携させ、複雑で自動化された問題解決を可能にする方法を理解できます。
+AI モデルから動的に生成されたコードを実行することは、セキュリティと信頼性の面で大きな課題をもたらします。このガイドでは、AIGNE フレームワークを使用して安全なコード実行ワークフローを構築するための、構造化されたステップバイステップのプロセスを提供します。コードを生成する `Coder` Agent と、それを隔離された環境で実行する `Sandbox` Agent を連携させる方法を学びます。
 
 ## 概要
 
-多くの高度なAIアプリケーションでは、標準的な言語モデルの能力を超える計算やロジックを必要とする問題を解決する必要があります。この例では、一般的で強力なパターンを実装します。つまり、あるAI Agentがコードを書き、別の隔離されたAgentがそれを実行するというものです。このアプローチにより、システムは複雑な計算、データ操作、その他のプログラム的なタスクを動的に実行できます。
+コード実行ワークフローは、動的なコード生成と実行を必要とするタスクを安全に処理するように設計されています。これには、2つの Agent システムを採用しています。
 
-このワークフローは、主に2つのAgentで構成されています。
-*   **コーダーAgent**: ユーザーのリクエストを理解し、それを満たすためのJavaScriptコードを作成するタスクを担う `AIAgent` です。
-*   **サンドボックスAgent**: JavaScriptの評価環境をラップする `FunctionAgent` です。コーダーからコードを受け取り、それを実行して結果を返します。これにより、コードの実行が隔離され、メインアプリケーションに影響を与えるのを防ぎます。
+1.  **Coder Agent**: ユーザーのリクエストを解釈し、それを解決するために必要な JavaScript コードを作成する役割を担う AI 駆動の Agent。
+2.  **Sandbox Agent**: 生成されたコードを受け取り、それを制御された環境で実行して結果を返す `FunctionAgent`。
 
-この関心事の分離により、安全性とモジュール性の両方が確保されます。以下の図は、高レベルのデータフローを示しています。
+この関心の分離により、AI のコード生成が直接の実行から隔離され、セキュリティの層が提供されます。
+
+### 論理フロー
+
+以下の図は、Agent 間の高レベルな相互作用を示しています。`Coder` Agent は入力を受け取り、コードを生成し、それを実行のために `Sandbox` に渡し、最終的な出力をフォーマットします。
 
 ```d2
 direction: down
 
-User: {
-  shape: c4-person
+User-Input: {
+  label: "ユーザー入力\n(例: '15! を計算して')"
+  shape: rectangle
 }
 
-Workflow: {
-  label: "AI ワークフロー"
+AIGNE-Framework: {
+  label: "AIGNE フレームワーク"
   shape: rectangle
 
   Coder-Agent: {
-    label: "コーダーAgent\n(AIAgent)"
+    label: "Coder Agent\n(AIAgent)"
     shape: rectangle
   }
 
   Sandbox-Agent: {
-    label: "サンドボックスAgent\n(FunctionAgent)"
+    label: "Sandbox Agent\n(FunctionAgent)"
     shape: rectangle
   }
 }
 
-User -> Workflow.Coder-Agent: "1. 問題のリクエスト\n(例: '10!を計算して')"
-Workflow.Coder-Agent -> Workflow.Sandbox-Agent: "2. JSの生成と実行\n(例: 'evaluateJs({ code: ... })')"
-Workflow.Sandbox-Agent -> Workflow.Coder-Agent: "3. 結果の返却\n(例: 3628800)"
-Workflow.Coder-Agent -> User: "4. 最終回答\n(例: '10! は 3628800 です')"
+Final-Output: {
+  label: "最終出力"
+  shape: rectangle
+}
+
+User-Input -> AIGNE-Framework.Coder-Agent: "1. プロンプトを受信"
+AIGNE-Framework.Coder-Agent -> AIGNE-Framework.Sandbox-Agent: "2. JS コードを生成し、実行のために渡す"
+AIGNE-Framework.Sandbox-Agent -> AIGNE-Framework.Coder-Agent: "3. コードを実行し、結果を返す"
+AIGNE-Framework.Coder-Agent -> Final-Output: "4. 最終的なレスポンスをフォーマット"
 
 ```
 
-以下のシーケンス図は、サンプルリクエストに対するユーザーとAgent間のインタラクションを詳細に示しています。
+### 相互作用のシーケンス
+
+このシーケンス図は、階乗の計算などの特定のタスクに対するユーザーと Agent 間のターンごとの通信を詳細に示しています。
 
 DIAGRAM_PLACEHOLDER
 
-## 前提条件
-
-先に進む前に、開発環境が以下の要件を満たしていることを確認してください。
-
-*   **Node.js**: バージョン20.0以上。
-*   **npm**: Node.jsに同梱されています。
-*   **OpenAI APIキー**: コーダーAgentがAIモデルと対話するために必要です。[OpenAI Platform](https://platform.openai.com/api-keys) からキーを取得できます。
-
 ## クイックスタート
 
-この例は、`npx` を使用してローカルにインストールすることなく、コマンドラインから直接実行できます。
+この例は、`npx` を使用してローカルに何もインストールすることなく直接実行できます。
 
 ### 例を実行する
 
-ターミナルで以下のいずれかのコマンドを実行してください。
+この例では、単一のタスクのためのワンショット実行モードと、対話的なワークフローのためのインタラクティブチャットモードをサポートしています。
 
-*   **ワンショットモード**: Agentは単一の入力を処理して終了します。
+#### ワンショットモード
+
+これはデフォルトのモードです。Agent は単一の入力を処理して終了します。
+
+```bash icon=lucide:terminal
+npx -y @aigne/example-workflow-code-execution
+```
+
+標準入力パイプラインを介して直接入力を提供することもできます。
+
+```bash icon=lucide:terminal
+echo 'Calculate 15!' | npx -y @aigne/example-workflow-code-execution
+```
+
+#### インタラクティブチャットモード
+
+`--chat` フラグを使用して永続的なセッションを開始し、Agent と会話することができます。
+
+```bash icon=lucide:terminal
+npx -y @aigne/example-workflow-code-execution --chat
+```
+
+### AI モデルに接続する
+
+この例を初めて実行すると、`Coder` Agent が機能するために大規模言語モデル（LLM）が必要なため、接続を求めるプロンプトが表示されます。
+
+DIAGRAM_PLACEHOLDER
+
+続行するにはいくつかのオプションがあります。
+
+#### オプション 1: AIGNE Hub (推奨)
+
+これは最も簡単に始める方法です。公式の AIGNE Hub は、新規ユーザーに無料クレジットを提供しています。
+
+1.  最初のオプション「`Connect to the Arcblock official AIGNE Hub`」を選択します。
+2.  ウェブブラウザで認証ページが開きます。
+3.  プロンプトに従って接続を承認します。
+
+DIAGRAM_PLACEHOLDER
+
+#### オプション 2: 自己ホスト型 AIGNE Hub
+
+独自の AIGNE Hub のインスタンスをお持ちの場合は、それに接続できます。
+
+1.  2番目のオプション「`Connect to a self-hosted AIGNE Hub`」を選択します。
+2.  AIGNE Hub インスタンスの URL を入力するよう求められます。
+
+DIAGRAM_PLACEHOLDER
+
+#### オプション 3: サードパーティのモデルプロバイダー
+
+適切な環境変数を設定することで、OpenAI、Anthropic、Google Gemini などのサードパーティのモデルプロバイダーに直接接続できます。たとえば、OpenAI を使用するには、API キーを設定します。
+
+```bash icon=lucide:terminal
+export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+```
+
+環境変数を設定した後、再度サンプルコマンドを実行してください。サポートされているすべてのプロバイダーとその必要な環境変数のリストについては、サンプルの `.env.local.example` ファイルを参照してください。
+
+### AIGNE Observe でのデバッグ
+
+AIGNE フレームワークには、Agent の動作をデバッグおよび分析するための強力な可観測性ツールが含まれています。
+
+1.  **サーバーの起動**: ターミナルで `aigne observe` コマンドを実行します。これにより、ローカルウェブサーバーが起動します。
 
     ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-code-execution
+    aigne observe
     ```
 
-*   **インタラクティブチャットモード**: Agentとの継続的なチャットセッションを開始します。
+    DIAGRAM_PLACEHOLDER
 
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-code-execution --chat
-    ```
+2.  **トレースの表示**: ウェブブラウザを開き、提供されたローカル URL（例: `http://localhost:7893`）に移動します。インターフェースには最近の Agent 実行のリストが表示され、各トレースの入力、出力、ツールコール、およびパフォーマンスメトリクスを検査できます。
 
-*   **パイプラインモード**: 他のコマンドからの入力をパイプで渡します。
+    DIAGRAM_PLACEHOLDER
 
-    ```bash icon=lucide:terminal
-    echo 'Calculate 15!' | npx -y @aigne/example-workflow-code-execution
-    ```
+## ローカルでのインストールと使用方法
 
-### AIモデルに接続する
+開発目的で、リポジトリをクローンしてサンプルをローカルで実行できます。
 
-初めてこの例を実行すると、AIモデルプロバイダーへの接続を求められます。
+### 前提条件
 
-![モデルプロバイダーへの接続](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/workflow-code-execution/run-example.png)
-
-いくつかの選択肢があります。
-
-1.  **AIGNE Hub (公式)**: 最も簡単に始める方法です。新規ユーザー向けに無料クレジットが提供されます。
-
-    ![公式AIGNE Hubへの接続](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/connect-to-aigne-hub.png)
-
-2.  **AIGNE Hub (セルフホスト)**: 独自のAIGNE Hubインスタンスに接続します。
-
-    ![セルフホストAIGNE Hubへの接続](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/connect-to-self-hosted-aigne-hub.png)
-
-3.  **サードパーティモデルプロバイダー**: OpenAI、DeepSeek、Google Geminiなどのプロバイダーへの直接接続を設定します。これを行うには、対応するAPIキーを環境変数として設定します。OpenAIの場合は、以下を使用します。
-
-    ```bash icon=lucide:terminal
-    export OPENAI_API_KEY="your-openai-api-key"
-    ```
-
-    環境変数を設定した後、再度この例を実行してください。
-
-## 完全なインストールと使用法
-
-この例を開発または変更する場合は、リポジトリをクローンし、依存関係をローカルにインストールしてください。
+-   [Node.js](https://nodejs.org) (バージョン 20.0 以上)
+-   パッケージ管理のための [pnpm](https://pnpm.io)
 
 ### 1. リポジトリをクローンする
 
@@ -115,7 +156,7 @@ git clone https://github.com/AIGNE-io/aigne-framework
 
 ### 2. 依存関係をインストールする
 
-サンプルディレクトリに移動し、`pnpm` を使用して必要なパッケージをインストールします。
+サンプルディレクトリに移動し、必要なパッケージをインストールします。
 
 ```bash icon=lucide:terminal
 cd aigne-framework/examples/workflow-code-execution
@@ -126,58 +167,60 @@ pnpm install
 
 `pnpm start` コマンドを使用してワークフローを実行します。
 
-*   **ワンショットモード**:
+```bash icon=lucide:terminal
+# ワンショットモードで実行 (デフォルト)
+pnpm start
 
-    ```bash icon=lucide:terminal
-    pnpm start
-    ```
+# インタラクティブチャットモードで実行
+pnpm start -- --chat
 
-*   **インタラクティブチャットモード**:
-
-    ```bash icon=lucide:terminal
-    pnpm start -- --chat
-    ```
-
-*   **パイプラインモード**:
-
-    ```bash icon=lucide:terminal
-    echo "Calculate 15!" | pnpm start
-    ```
+# パイプライン入力を使用
+echo "Calculate 15!" | pnpm start
+```
 
 ### コマンドラインオプション
 
-この例では、その動作をカスタマイズするためのいくつかのコマンドライン引数をサポートしています。
+このスクリプトは、その動作をカスタマイズするためにいくつかのコマンドライン引数を受け入れます。
 
 | パラメータ | 説明 | デフォルト |
-| :--- | :--- | :--- |
+| --------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------- |
 | `--chat` | インタラクティブチャットモードで実行します。 | 無効 |
-| `--model <provider[:model]>` | 使用するAIモデルを指定します (例: `openai` または `openai:gpt-4o-mini`)。 | `openai` |
-| `--temperature <value>` | モデル生成のtemperatureを設定します。 | プロバイダーのデフォルト |
-| `--top-p <value>` | top-pサンプリングの値を設定します。 | プロバイダーのデフォルト |
-| `--presence-penalty <value>` | presence penaltyの値を設定します。 | プロバイダーのデフォルト |
-| `--frequency-penalty <value>` | frequency penaltyの値を設定します。 | プロバイダーのデフォルト |
+| `--model <provider[:model]>` | 使用する AI モデルを指定します。例: `openai` または `openai:gpt-4o-mini`。 | `openai` |
+| `--temperature <value>` | モデル生成の temperature を設定します。 | プロバイダーのデフォルト |
+| `--top-p <value>` | top-p サンプリング値を設定します。 | プロバイダーのデフォルト |
+| `--presence-penalty <value>`| presence penalty の値を設定します。 | プロバイダーのデフォルト |
+| `--frequency-penalty <value>`| frequency penalty の値を設定します。 | プロバイダーのデフォルト |
 | `--log-level <level>` | ログレベルを設定します (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`)。 | `INFO` |
 | `--input`, `-i <input>` | 引数として直接入力を提供します。 | なし |
 
-## コード実装
+#### 使用例
 
-以下のTypeScriptコードは、コード実行ワークフローのコアロジックの概要を示しています。`sandbox` Agentと `coder` Agentを定義し、それらを呼び出して問題を解決します。
+このコマンドは、`DEBUG` ログレベルでインタラクティブモードでワークフローを実行します。
 
-```typescript code-execution.ts icon=logos:typescript
+```bash icon=lucide:terminal
+pnpm start -- --chat --log-level DEBUG
+```
+
+## コードの実装
+
+以下の TypeScript コードは、コード実行ワークフローを構築する方法を示しています。`sandbox` と `coder` の Agent を定義し、AIGNE インスタンスを使用してそれらを呼び出します。
+
+```typescript index.ts icon=logos:typescript
 import { AIAgent, AIGNE, FunctionAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 import { z } from "zod";
 
-// OpenAI APIキーが環境変数で利用可能であることを確認します。
+// 環境変数から OpenAI API キーを取得します。
 const { OPENAI_API_KEY } = process.env;
 
-// 1. AIモデルを初期化する
+// 1. チャットモデルを初期化する
+// このモデルが AI Agent を動かします。
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-// 2. サンドボックスAgentを作成する
-// このAgentはFunctionAgentを使用してJavaScriptコードを安全に実行します。
+// 2. Sandbox Agent を定義する
+// この Agent は FunctionAgent を使用して JavaScript コードを安全に実行します。
 const sandbox = FunctionAgent.from({
   name: "evaluateJs",
   description: "A js sandbox for running javascript code",
@@ -186,15 +229,15 @@ const sandbox = FunctionAgent.from({
   }),
   process: async (input: { code: string }) => {
     const { code } = input;
-    // evalの使用はこのサンドボックス化されたAgent内に隔離されています。
-    // biome-ignore lint/security/noGlobalEval: This is an intentional use for a sandboxed environment.
+    // eval の使用はこのサンドボックス化された Agent 内に隔離されています。
+    // biome-ignore lint/security/noGlobalEval: <This is a controlled sandbox environment for the example>
     const result = eval(code);
     return { result };
   },
 });
 
-// 3. コーダーAgentを作成する
-// このAI Agentは、サンドボックススキルを使用してコードを書き、実行するように指示されます。
+// 3. Coder Agent を定義する
+// この AI Agent はコードを書き、サンドボックススキルを使用するように指示されています。
 const coder = AIAgent.from({
   name: "coder",
   instructions: `\
@@ -204,36 +247,26 @@ Work with the sandbox to execute your code.
   skills: [sandbox],
 });
 
-// 4. AIGNEフレームワークを初期化する
+// 4. AIGNE フレームワークを初期化する
 const aigne = new AIGNE({ model });
 
 // 5. ワークフローを呼び出す
+// AIGNE インスタンスは、ユーザーのプロンプトで Coder Agent を実行します。
 const result = await aigne.invoke(coder, "10! = ?");
+
 console.log(result);
+// 期待される出力:
+// {
+//   $message: "The value of \\(10!\\) (10 factorial) is 3,628,800.",
+// }
 ```
 
-期待される出力は、Agentからの最終メッセージを含むJSONオブジェクトです。
+## まとめ
 
-```json
-{
-  "$message": "The value of \\(10!\\) (10 factorial) is 3,628,800."
-}
-```
+このガイドでは、AIGNE フレームワークを使用して安全なコード実行ワークフローを構築し、実行する方法を実演しました。コード生成と実行の関心事を別々の `AIAgent` と `FunctionAgent` の役割に分離することで、動的なコードを必要とするタスクに対して LLM の能力を安全に活用できます。
 
-## デバッグ
-
-AIGNEオブザーバーツールを使用して、Agentの実行を監視および分析できます。これにより、トレースの検査、詳細な呼び出しの表示、実行時のAgentの動作を理解するためのWebベースのインターフェースが提供されます。
-
-まず、別のターミナルでオブザベーションサーバーを起動します。
-
-```bash icon=lucide:terminal
-aigne observe
-```
-
-ワークフローを実行した後、オブザーバーUIで実行トレースを表示できます。
-
-![AIGNEオブザーブ実行](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/aigne-observe-execute.png)
-
-UIには、詳細な検査のために最近の実行リストが表示されます。
-
-![AIGNEオブザーブリスト](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/aigne-observe-list.png)
+より高度なワークフローパターンについては、以下の例をご覧ください。
+<x-cards data-columns="2">
+  <x-card data-title="シーケンシャルワークフロー" data-href="/examples/workflow-sequential" data-icon="lucide:arrow-right-circle">保証された実行順序でステップバイステップの処理パイプラインを構築します。</x-card>
+  <x-card data-title="ワークフローオーケストレーション" data-href="/examples/workflow-orchestration" data-icon="lucide:milestone">洗練された処理パイプラインで連携する複数の Agent を調整します。</x-card>
+</x-cards>

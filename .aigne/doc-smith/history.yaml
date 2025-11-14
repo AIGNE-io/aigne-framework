@@ -1,4 +1,27 @@
 entries:
+  - timestamp: 2025-11-14T09:27:01.764Z
+    operation: document_update
+    feedback: 连接到 AI 模型的时候，应该尽可能详细描述，添加已有的配图。examples 下的子页面的标题不需要翻译成其他语言。
+    docPaths:
+      - /examples/chat-bot
+      - /examples/afs-system-fs
+      - /examples/memory
+      - /examples/memory-did-spaces
+      - /examples/mcp-server
+      - /examples/mcp-blocklet
+      - /examples/mcp-did-spaces
+      - /examples/mcp-github
+      - /examples/mcp-puppeteer
+      - /examples/mcp-sqlite
+      - /examples/nano-banana
+      - /examples/workflow-code-execution
+      - /examples/workflow-concurrency
+      - /examples/workflow-group-chat
+      - /examples/workflow-handoff
+      - /examples/workflow-orchestration
+      - /examples/workflow-reflection
+      - /examples/workflow-router
+      - /examples/workflow-sequential
   - timestamp: 2025-11-13T14:00:17.303Z
     operation: structure_update
     feedback: 根目录下创建一个 examples，然后里面描述各种示例的文档，上下文参考 examples/**/*.md

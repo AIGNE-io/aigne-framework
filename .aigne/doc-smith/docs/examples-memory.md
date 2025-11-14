@@ -1,173 +1,237 @@
 # Memory
 
-Want to build a chatbot that remembers you? This guide demonstrates how to create a chatbot with persistent memory using the AIGNE Framework and the `FSMemory` plugin. You'll learn how to enable an agent to recall information from previous conversations, leading to more continuous and context-aware interactions.
+This guide provides a step-by-step process for building a chatbot that remembers previous conversations. By following these instructions, you will create a stateful agent that uses the `FSMemory` plugin to persist session data, enabling continuous and context-aware interactions.
 
 ## Overview
 
-For a chatbot to be truly effective, it needs to remember past interactions. This example showcases how to achieve this using the `FSMemory` plugin, which saves conversation data to the local file system. This allows the chatbot to maintain state across different sessions, providing a more personalized user experience.
-
-This document will guide you through running the example, connecting it to an AI model, and understanding the mechanics of how memory is recorded and retrieved. For an alternative persistence method using decentralized storage, refer to the [DID Spaces Memory](./examples-memory-did-spaces.md) example.
+This example demonstrates how to implement memory in a chatbot using the AIGNE Framework. The agent leverages the `FSMemory` plugin, which stores conversation history and user profile information on the local file system. This allows the chatbot to recall past interactions within a session, providing a more personalized and coherent user experience.
 
 ## Prerequisites
 
-Before you begin, ensure you have the following:
+Before proceeding, ensure your development environment meets the following requirements:
 
 *   **Node.js**: Version 20.0 or higher.
-*   **OpenAI API Key**: An API key is required to connect to OpenAI models. You can get one from the [OpenAI Platform](https://platform.openai.com/api-keys).
+*   **npm**: Included with Node.js installation.
+*   **OpenAI API Key**: Required for connecting to OpenAI models. You can obtain a key from the [OpenAI API keys](https://platform.openai.com/api-keys) page.
 
 ## Quick Start
 
-You can run this example directly from your terminal without a local installation, thanks to `npx`.
+You can run this example directly without a local installation using `npx`.
 
 ### Run the Example
 
-Execute the following commands. The first command gives the chatbot a piece of information, and the second tests its ability to recall it.
+Execute the following commands in your terminal to interact with the memory-enabled chatbot. The first command informs the bot of your preference, and the second command tests its ability to recall that information.
 
-```sh Run the chatbot with memory icon=lucide:terminal
+```bash Run the chatbot with memory icon=lucide:terminal
+# Send the first message to establish a fact
 npx -y @aigne/example-memory --input 'I like blue color'
+
+# Send a second message to test the chatbot's memory
 npx -y @aigne/example-memory --input 'What is my favorite color?'
 ```
 
-For a more natural, back-and-forth conversation, you can launch the chatbot in interactive mode.
+To engage in a continuous conversation, run the chatbot in interactive mode:
 
-```sh Run in interactive chat mode icon=lucide:terminal
+```bash Run in interactive chat mode icon=lucide:terminal
 npx -y @aigne/example-memory --chat
 ```
 
-### Connect to an AI Model
+### Connecting to an AI Model
 
-The agent needs to connect to an AI model to function. The first time you run the example, you'll be prompted to choose a connection method.
+The chatbot requires a connection to a Large Language Model (LLM) to function. If you have not configured a model provider, the CLI will prompt you to choose a connection method upon the first run.
 
-#### 1. AIGNE Hub (Recommended)
+![Initial connection prompt for the AI model](../../../examples/memory/run-example.png)
 
-The simplest method is to connect via the official AIGNE Hub. Choose the first option, and your browser will open for authentication. New users automatically receive a generous token allocation to get started.
+You have three primary options for connecting to an AI model:
 
-![Connect to AIGNE Hub](../images/connect-to-aigne-hub.png)
+#### 1. Connect via the Official AIGNE Hub (Recommended)
 
-#### 2. Self-Hosted AIGNE Hub
+This is the simplest method. AIGNE Hub is a service that provides access to various models and includes free credits for new users.
 
-If your organization uses a self-hosted AIGNE Hub, select the second option and provide your instance's URL to connect.
+1.  Select the first option: `Connect to the Arcblock official AIGNE Hub`.
+2.  Your web browser will open to the AIGNE Hub authorization page.
+3.  Follow the on-screen instructions to approve the connection. New users will receive a complimentary grant of 400,000 tokens.
 
-![Connect to a self-hosted AIGNE Hub](../images/connect-to-self-hosted-aigne-hub.png)
+![Authorize AIGNE CLI to connect to AIGNE Hub](../../../examples/images/connect-to-aigne-hub.png)
 
-#### 3. Third-Party Model Provider
+#### 2. Connect via a Self-Hosted AIGNE Hub
 
-You can also connect directly to a third-party provider like OpenAI. To do this, configure your API key as an environment variable before running the example.
+If your organization runs a private instance of AIGNE Hub, you can connect to it directly.
 
-```sh Set your OpenAI API key icon=lucide:terminal
-export OPENAI_API_KEY="your_openai_api_key_here"
+1.  Select the second option: `Connect to your self-hosted AIGNE Hub`.
+2.  Enter the URL of your self-hosted AIGNE Hub instance when prompted.
+3.  Follow the subsequent prompts to complete the connection.
+
+For instructions on deploying a self-hosted AIGNE Hub, refer to the [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ).
+
+![Enter the URL for a self-hosted AIGNE Hub](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+#### 3. Connect via a Third-Party Model Provider
+
+You can connect directly to a third-party model provider, such as OpenAI, by configuring the appropriate API key as an environment variable.
+
+For example, to connect to OpenAI, set the `OPENAI_API_KEY` environment variable:
+
+```bash Set the OpenAI API Key icon=lucide:terminal
+export OPENAI_API_KEY="your-openai-api-key" # Replace with your actual key
 ```
 
-After setting the key, run the `npx` command again. For more configuration examples, see the `.env.local.example` file in the project source.
-
-## Local Installation
-
-If you prefer to examine the code or make modifications, you can set up the project locally.
-
-### 1. Clone the Repository
-
-Start by cloning the `aigne-framework` repository from GitHub.
-
-```sh Clone the repository icon=lucide:terminal
-git clone https://github.com/AIGNE-io/aigne-framework
-```
-
-### 2. Install Dependencies
-
-Navigate into the example's directory and install the required packages using `pnpm`.
-
-```sh Install dependencies icon=lucide:terminal
-cd aigne-framework/examples/memory
-pnpm install
-```
-
-### 3. Run the Example
-
-With the dependencies installed, you can execute the example with the `start` script.
-
-```sh Run the example locally icon=lucide:terminal
-pnpm start
-```
+After setting the environment variable, run the example again. For a list of supported providers and their corresponding environment variables, refer to the [`.env.local.example`](https://github.com/AIGNE-io/aigne-framework/blob/main/examples/memory/.env.local.example) file.
 
 ## How Memory Works
 
-The memory functionality is powered by two core modules within the AIGNE Framework's Augmented File System (AFS): `history` and `UserProfileMemory`.
+The memory functionality is implemented using the `history` and `UserProfileMemory` modules, which are components of the AIGNE Framework's Augmented File System (AFS).
+
+The following diagram illustrates how the chatbot records and retrieves information to maintain context across conversations.
+
+```d2
+direction: down
+
+User: {
+  shape: c4-person
+}
+
+AIGNE-Framework: {
+  label: "AIGNE Framework"
+  shape: rectangle
+
+  AI-Agent: {
+    label: "AI Agent"
+  }
+
+  UserProfileMemory: {
+    label: "UserProfileMemory"
+  }
+
+  AFS: {
+    label: "Augmented File System (AFS)"
+    shape: rectangle
+    style: {
+      stroke: "#888"
+      stroke-width: 2
+      stroke-dash: 4
+    }
+
+    history: {
+      label: "history"
+      shape: cylinder
+    }
+
+    user-profile: {
+      label: "user_profile"
+      shape: cylinder
+    }
+  }
+}
+
+AI-Model: {
+  label: "AI Model (LLM)"
+}
+
+# Recording Flow
+User -> AIGNE-Framework.AI-Agent: "1. Sends message"
+AIGNE-Framework.AI-Agent -> User: "2. Receives response"
+AIGNE-Framework.AI-Agent -> AIGNE-Framework.AFS.history: "3. Saves conversation"
+AIGNE-Framework.UserProfileMemory -> AIGNE-Framework.AFS.history: "4. Analyzes history"
+AIGNE-Framework.UserProfileMemory -> AIGNE-Framework.AFS.user-profile: "5. Stores extracted profile"
+
+# Retrieval Flow
+User -> AIGNE-Framework.AI-Agent: "6. Sends new message"
+AIGNE-Framework.AI-Agent -> AIGNE-Framework.AFS.user-profile: "7. Loads user profile"
+AIGNE-Framework.AI-Agent -> AIGNE-Framework.AFS.history: "8. Loads chat history"
+AIGNE-Framework.AI-Agent -> AI-Model: "9. Sends prompt with context"
+AI-Model -> AIGNE-Framework.AI-Agent: "10. Generates response"
+AIGNE-Framework.AI-Agent -> User: "11. Delivers informed response"
+```
 
 ### Recording Conversations
 
-1.  **History Logging**: When a user sends a message and the AI responds, this conversational pair is saved into the `history` module of AFS.
-2.  **Profile Extraction**: The `UserProfileMemory` module analyzes the conversation and extracts key details about the user, such as their name or preferences. This information is then stored separately in the `user_profile` module of AFS.
+1.  After the user sends a message and receives a response, the conversation pair (user input and AI output) is saved to the `history` module in AFS.
+2.  Simultaneously, the `UserProfileMemory` module analyzes the conversation history to extract and infer user profile details (e.g., name, preferences). This information is then stored in the `user_profile` module in AFS.
 
 ### Retrieving Conversations
 
-When the user sends a new message, the framework retrieves the stored information to provide the AI model with the necessary context.
+When a new user message is received, the framework retrieves stored information to provide context to the AI model.
 
-1.  **Inject User Profile**: The system first loads the user's profile and injects it directly into the system prompt within a `<related-memories>` block. This ensures the agent is immediately aware of key facts.
+1.  **Load User Profile**: The agent loads the data from `UserProfileMemory` and injects it into the system prompt. This ensures the AI is aware of the user's profile from the start.
 
     ```text System Prompt with Memory
     You are a friendly chatbot
-    
+
     <related-memories>
     - |
       name:
         - name: Bob
       interests:
         - content: likes blue color
-    
+
     </related-memories>
     ```
 
-2.  **Inject Conversation History**: Next, the recent conversation history is formatted into a series of messages. This history, combined with the system prompt, is sent to the AI model.
+2.  **Inject Conversation History**: Recent conversation turns from the `history` module are appended to the message list, providing immediate conversational context.
 
-    ```json Injected Chat Messages
+    ```json Chat Messages with History
     [
       {
         "role": "system",
-        "content": "You are a friendly chatbot ..." 
+        "content": "You are a friendly chatbot ..."
       },
       {
         "role": "user",
-        "content": [{ "type": "text", "text": "I'm Bob and I like blue color" }]
+        "content": [
+          {
+            "type": "text",
+            "text": "I'm Bob and I like blue color"
+          }
+        ]
       },
       {
         "role": "agent",
-        "content": [{ "type": "text", "text": "Nice to meet you, Bob! Blue is a great color.\n\nHow can I help you today?" }]
+        "content": [
+          {
+            "type": "text",
+            "text": "Nice to meet you, Bob! Blue is a great color.\n\nHow can I help you today?"
+          }
+        ]
       },
       {
         "role": "user",
-        "content": [{ "type": "text", "text": "What is my favorite color?" }]
+        "content": [
+          {
+            "type": "text",
+            "text": "What is my favorite color?"
+          }
+        ]
       }
     ]
     ```
 
-3.  **Generate Response**: The AI model processes the entire payload—system prompt, user profile, and chat history—to generate a contextually appropriate response.
+3.  **Generate Response**: The AI model processes the complete context—including the system prompt with the user profile and the recent chat history—to generate an informed response.
 
     **AI Response:**
+
     ```text
     You mentioned earlier that you like the color blue
     ```
 
 ## Debugging
 
-To inspect the agent's behavior, use the `aigne observe` command. This starts a local web server that provides a detailed, user-friendly interface for viewing execution traces. It is an essential tool for debugging, performance tuning, and understanding how your agent processes information.
+To monitor and analyze agent behavior, you can use the `aigne observe` command. This tool starts a local web server that provides a user interface for inspecting execution traces, call details, and other runtime data.
 
-![Execute aigne observe](../images/aigne-observe-execute.png)
+1.  Start the observation server:
 
-Once running, you can access the web UI to see a list of recent executions and drill down into the details of each call.
+    ```bash Start the AIGNE observer icon=lucide:terminal
+    aigne observe
+    ```
 
-![List of recent executions in aigne observe](../images/aigne-observe-list.png)
+    ![Terminal output showing the observability server is running](../../../examples/images/aigne-observe-execute.png)
+
+2.  Open your browser and navigate to the local URL provided (typically `http://localhost:7893`) to view a list of recent agent executions and inspect their traces.
+
+    ![Aigne Observability web interface showing a list of traces](../../../examples/images/aigne-observe-list.png)
 
 ## Summary
 
-This example has shown how to build a chatbot with persistent memory using the AIGNE Framework. By utilizing the `FSMemory` plugin, agents can store and recall conversation history and user profiles, creating more intelligent and personalized interactions.
+This example has demonstrated the implementation of a chatbot with persistent memory using the AIGNE Framework. By leveraging the `FSMemory` plugin, the chatbot can record and retrieve conversation history and user profile information, leading to more context-aware and personalized interactions.
 
-For further reading, explore these related topics:
-
-<x-cards data-columns="2">
-  <x-card data-title="DID Spaces Memory" data-icon="lucide:database" data-href="/examples/memory-did-spaces">
-    Learn how to use decentralized storage for memory persistence with DID Spaces.
-  </x-card>
-  <x-card data-title="Core Concepts: Memory" data-icon="lucide:brain-circuit" data-href="/developer-guide/core-concepts/memory">
-    Dive deeper into the architectural concepts behind memory in the AIGNE Framework.
-  </x-card>
-</x-cards>
+For more advanced memory persistence options, see the [DID Spaces Memory](./examples-memory-did-spaces.md) example, which demonstrates using decentralized storage.

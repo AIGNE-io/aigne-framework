@@ -1,16 +1,12 @@
 # MCP Puppeteer
 
-Leverage the power of Puppeteer for automated web scraping and content extraction directly within your AIGNE workflows. This example demonstrates how to integrate the Puppeteer MCP (Model Context Protocol) Server to create agents capable of navigating websites and extracting data, which can then be processed by an AI model.
-
-This guide will walk you through setting up and running a demonstration that extracts content from a website using an AI agent equipped with Puppeteer skills. You will learn how to run the example in different modes, connect to various AI models, and understand the underlying code.
+This guide provides a step-by-step demonstration of how to use the AIGNE Framework with a Puppeteer MCP Server for automated web scraping. By following this example, you will learn to build and run an AI agent capable of navigating to a website and extracting its content.
 
 ## Overview
 
-The workflow involves an `AIAgent` that uses a `MCPAgent` connected to a Puppeteer server. The AI agent receives a task, such as "summarize content from https://www.arcblock.io," and then intelligently utilizes the Puppeteer agent's skills—like `navigate` and `evaluate`—to perform the necessary web scraping operations.
+This example showcases an integration between an `AIAgent` and a `MCPAgent` that controls a Puppeteer instance. The `AIAgent` receives a natural language command to extract content from a URL. It then delegates the web automation tasks to the Puppeteer agent, which navigates to the specified page and executes JavaScript to scrape the content.
 
-### Workflow Diagram
-
-The following diagram illustrates the interaction between the AI Agent and the Puppeteer MCP Agent to fulfill a user's request.
+The general workflow is as follows:
 
 ```mermaid
 flowchart LR
@@ -42,9 +38,7 @@ class navigate processing
 class evaluate processing
 ```
 
-### Sequence of Operations
-
-Here is a step-by-step sequence of how a website summarization task is executed:
+The sequence of operations for summarizing website content is illustrated below:
 
 ```d2
 shape: sequence_diagram
@@ -75,16 +69,15 @@ P -> N: "navigate to https://www.arcblock.io"
 N -> P: "navigation completed"
 P -> E: "evaluate document.body.innerText"
 E -> P: "content extracted"
-P -> AI: "extracted content as context"
+E -> AI: "extracted content as context"
 AI -> User: "The content is as follows: ..."
 ```
 
 ## Prerequisites
 
-Before proceeding, ensure your development environment meets the following requirements:
-
-*   **Node.js:** Version 20.0 or higher.
-*   **OpenAI API Key:** Required for the default model configuration. You can obtain one from the [OpenAI Platform](https://platform.openai.com/api-keys).
+Before running the example, ensure the following requirements are met:
+*   Node.js version 20.0 or higher.
+*   An active OpenAI API key.
 
 ## Quick Start
 
@@ -92,53 +85,62 @@ You can run this example directly without cloning the repository using `npx`.
 
 ### Run the Example
 
-Execute one of the following commands in your terminal.
+Execute the following commands in your terminal. The example supports a one-shot mode, an interactive chat mode, and can receive input via a pipeline.
 
-To run in the default one-shot mode:
-```sh icon=lucide:terminal
+```sh Run in one-shot mode icon=lucide:terminal
+# Run in one-shot mode (default)
 npx -y @aigne/example-mcp-puppeteer
 ```
 
-To run in an interactive chat mode:
-```sh icon=lucide:terminal
+```sh Run in interactive chat mode icon=lucide:terminal
+# Run in interactive chat mode
 npx -y @aigne/example-mcp-puppeteer --chat
 ```
 
-You can also pipe input directly to the script:
-```sh icon=lucide:terminal
+```sh Use pipeline input icon=lucide:terminal
+# Use pipeline input
 echo "extract content from https://www.arcblock.io" | npx -y @aigne/example-mcp-puppeteer
 ```
 
 ### Connect to an AI Model
 
-The first time you run the example, you will be prompted to connect to an AI model. You have several options:
+On the first run, if no model provider is configured, the application will prompt you to connect to one.
 
-1.  **AIGNE Hub (Official):** The easiest way to get started. Your browser will open the official AIGNE Hub, where you can sign in. New users receive a complimentary token balance.
-2.  **AIGNE Hub (Self-Hosted):** If you have your own instance of AIGNE Hub, you can connect by providing its URL.
-3.  **Third-Party Model Provider:** You can configure a direct connection to a provider like OpenAI by setting the appropriate environment variables.
+![Initial connection prompt for AI model](../../../examples/mcp-puppeteer/run-example.png)
 
-For example, to use OpenAI, set the `OPENAI_API_KEY` variable:
-```sh icon=lucide:terminal
-export OPENAI_API_KEY="your-openai-api-key"
-```
+You have several options to proceed:
 
-After configuration, run the example command again. For more details on configuring other providers like DeepSeek or Google Gemini, refer to the `.env.local.example` file in the source repository.
+*   **Connect via the official AIGNE Hub:** This is the recommended option. Choosing it will open your web browser to the AIGNE Hub, where you can authorize the connection. New users receive a complimentary token balance for trial purposes.
+
+    ![Authorize connection to AIGNE Hub](../../../examples/images/connect-to-aigne-hub.png)
+
+*   **Connect via a self-hosted AIGNE Hub:** If you host your own AIGNE Hub, select this option and enter the URL of your instance to complete the connection. You can deploy your own AIGNE Hub from the [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ?utm_source=www.arcblock.io&utm_medium=blog_link&utm_campaign=default&utm_content=store.blocklet.dev#:~:text=%F0%9F%9A%80%20Get%20Started%20in%20Minutes).
+
+    ![Connect to a self-hosted AIGNE Hub instance](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+*   **Connect via a third-party model provider:** You can configure an API key from a provider like OpenAI directly using environment variables.
+
+    ```sh Configure OpenAI API Key icon=lucide:terminal
+    export OPENAI_API_KEY="YOUR_API_KEY"
+    ```
+
+    For a comprehensive list of supported providers and variables, refer to the example `.env.local.example` file within the project. After setting the environment variable, run the command again.
 
 ## Installation from Source
 
-If you prefer to run the example from the source code, follow these steps.
+To examine the code or make modifications, you can clone the repository and run the example locally.
 
 ### 1. Clone the Repository
 
-```sh icon=lucide:terminal
+```sh Clone the aigne-framework repository icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 ```
 
 ### 2. Install Dependencies
 
-Navigate to the example directory and install the necessary packages using `pnpm`.
+Navigate to the example directory and install the required packages using `pnpm`.
 
-```sh icon=lucide:terminal
+```sh Install dependencies icon=lucide:terminal
 cd aigne-framework/examples/mcp-puppeteer
 pnpm install
 ```
@@ -147,62 +149,44 @@ pnpm install
 
 Execute the start script to run the application.
 
-```sh icon=lucide:terminal
+```sh Run the example from source icon=lucide:terminal
 pnpm start
 ```
 
-To pass command-line arguments, add `--` before the arguments:
-```sh icon=lucide:terminal
-# Run in interactive chat mode
-pnpm start -- --chat
+To pass command-line arguments to the script, separate them with `--`.
 
-# Set the logging level for debugging
-pnpm start -- --log-level DEBUG
+```sh Run in chat mode from source icon=lucide:terminal
+pnpm start -- --chat
 ```
 
-## Command-Line Options
+## Code Example
 
-The script accepts several command-line arguments to customize its behavior.
+The following TypeScript code demonstrates the core logic for setting up the AIGNE instance, configuring the Puppeteer MCP agent, and invoking the AI agent to extract web content.
 
-| Parameter                 | Description                                                                                              | Default          |
-| ------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------- |
-| `--chat`                  | Run in interactive chat mode. If omitted, runs in one-shot mode.                                         | Disabled         |
-| `--model <provider[:model]>` | Specify the AI model to use. Examples: `openai` or `openai:gpt-4o-mini`.                               | `openai`         |
-| `--temperature <value>`   | Set the temperature for model generation.                                                                | Provider default |
-| `--top-p <value>`         | Set the top-p sampling value.                                                                            | Provider default |
-| `--presence-penalty <value>` | Set the presence penalty value.                                                                          | Provider default |
-| `--frequency-penalty <value>` | Set the frequency penalty value.                                                                         | Provider default |
-| `--log-level <level>`     | Set the logging level. Options: `ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`.                               | `INFO`           |
-| `--input, -i <input>`     | Provide input directly as an argument.                                                                   | None             |
-
-## Code Implementation
-
-The core logic involves setting up an `AIGNE` instance with an AI model and a `MCPAgent` configured to run the Puppeteer server. An `AIAgent` is then given instructions on how to use the Puppeteer skills to extract web content.
-
-```typescript index.ts
+```typescript agent.ts
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
 
-// 1. Initialize the AI model
+// Initialize the OpenAI model with an API key
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-// 2. Create an MCPAgent to manage the Puppeteer server
+// Create an MCPAgent that runs the Puppeteer server
 const puppeteerMCPAgent = await MCPAgent.from({
   command: "npx",
   args: ["-y", "@modelcontextprotocol/server-puppeteer"],
 });
 
-// 3. Instantiate the AIGNE framework with the model and Puppeteer skill
+// Initialize the AIGNE instance with the model and the Puppeteer agent as a skill
 const aigne = new AIGNE({
   model,
   skills: [puppeteerMCPAgent],
 });
 
-// 4. Define an AI agent with instructions for web scraping
+// Define the AI agent with instructions for web content extraction
 const agent = AIAgent.from({
   instructions: `\
 ## Steps to extract content from a website
@@ -211,37 +195,51 @@ const agent = AIAgent.from({
 `,
 });
 
-// 5. Invoke the agent with a prompt
+// Invoke the agent with a prompt
 const result = await aigne.invoke(
   agent,
   "extract content from https://www.arcblock.io",
 );
 
 console.log(result);
+// Expected output:
+// {
+//   $message: "The content extracted from the website [ArcBlock](https://www.arcblock.io) is as follows:\n\n---\n\n**Redefining Software Architect and Ecosystems**\n\nA total solution for building decentralized applications ...",
+// }
 
-// 6. Shut down the MCP agent and clean up resources
+// Shut down the AIGNE instance and its agents
 await aigne.shutdown();
 ```
 
-The output will be a JSON object containing the extracted content from the specified URL, summarized or processed as per the agent's instructions.
+## Command-Line Options
 
-```json
-{
-  "$message": "The content extracted from the website [ArcBlock](https://www.arcblock.io) is as follows:\n\n---\n\n**Redefining Software Architect and Ecosystems**\n\nA total solution for building decentralized applications ..."
-}
+The application supports several command-line arguments to customize its behavior.
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--chat` | Run in interactive chat mode. | Disabled |
+| `--model <provider[:model]>` | Specify the AI model. Examples: `openai`, `openai:gpt-4o-mini`. | `openai` |
+| `--temperature <value>` | Set the temperature for model generation. | Provider default |
+| `--top-p <value>` | Set the top-p sampling value. | Provider default |
+| `--presence-penalty <value>` | Set the presence penalty value. | Provider default |
+| `--frequency-penalty <value>` | Set the frequency penalty value. | Provider default |
+| `--log-level <level>` | Set the logging level (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`). | `INFO` |
+| `--input`, `-i <input>` | Provide input directly as an argument. | None |
+
+## Debugging
+
+The AIGNE Framework includes an observability tool to help you monitor and debug agent executions.
+
+To start the observation server, run:
+
+```sh Start the observability server icon=lucide:terminal
+aigne observe
 ```
 
-## Summary
+![AIGNE observability server running in the terminal](../../../examples/images/aigne-observe-execute.png)
 
-This example provides a practical demonstration of how to integrate external tools like Puppeteer into the AIGNE Framework using the Model Context Protocol. By equipping an `AIAgent` with web scraping skills, you can build powerful applications capable of interacting with the web to gather and process information automatically.
+Once running, you can open the web interface in your browser to view a detailed list of execution traces, inspect inputs, outputs, and tool calls for each agent.
 
-For further exploration, you can refer to the following related documents:
+![AIGNE observability interface showing a list of traces](../../../examples/images/aigne-observe-list.png)
 
-<x-cards data-columns="2">
-  <x-card data-title="MCP Agent" data-href="/developer-guide/agents/mcp-agent" data-icon="lucide:box">
-  Learn more about how to connect to external systems via the Model Context Protocol (MCP).
-  </x-card>
-  <x-card data-title="AI Agent" data-href="/developer-guide/agents/ai-agent" data-icon="lucide:bot">
-  Dive deeper into the primary agent for interacting with language models.
-  </x-card>
-</x-cards>
+This tool is essential for understanding agent behavior, diagnosing issues, and optimizing performance.

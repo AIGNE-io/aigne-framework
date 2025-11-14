@@ -1,12 +1,16 @@
-# ワークフロー グループチャット
+# ワークフローグループチャット
 
-このドキュメントでは、AIGNE フレームワークを使用してマルチ Agent グループチャットアプリケーションを構築し、実行するためのステップバイステップガイドを提供します。マネージャー、ライター、エディター、イラストレーターといった複数の AI Agent を連携させてタスクで協業させる方法を学び、複雑な Agent ワークフローの実用的な応用を示します。
+このガイドでは、AIGNE フレームワークを使用してマルチエージェントグループチャットワークフローを構築し、実行する方法を説明します。マネージャーを含む複数のエージェントを連携させてタスクに取り組ませ、メッセージを共有し、共通の目標を達成するために協力するチーム環境をシミュレートする方法を学びます。
 
 ## 概要
 
-このワークフローでは、`Group Manager` Agent が中心的なコーディネーターとして機能します。ユーザーが指示を出すと、マネージャーはリクエストを適切な専門 Agent に指示します。その後、Agent はグループ内でメッセージを共有して協業し、タスクを完了させます。
+グループチャットワークフローの例は、専門的な役割を持つさまざまなエージェントが協力してユーザーの要求を満たす、洗練されたマルチエージェントシステムを紹介します。このプロセスは、`Writer`、`Editor`、`Illustrator` などの他のエージェント間の会話とタスク実行を指示する `Group Manager` エージェントによって管理されます。
 
-以下の図は、このインタラクションフローを示しています。
+この例は、主に2つの操作モードをサポートしています。
+*   **ワンショットモード**: ワークフローは、単一の入力に基づいて一度だけ実行され、完了します。
+*   **インタラクティブモード**: ワークフローは継続的な会話を行い、フォローアップの質問や動的な対話を可能にします。
+
+中心となるインタラクションモデルは次のとおりです。
 
 ```d2
 direction: down
@@ -15,185 +19,201 @@ User: {
   shape: c4-person
 }
 
-AIGNE-Framework: {
-  label: "AIGNE Framework"
+GroupChat: {
+  label: "グループチャットワークフロー"
   shape: rectangle
 
   Group-Manager: {
     label: "グループマネージャー"
+    shape: rectangle
   }
 
-  Writer: {
-    label: "ライター"
-  }
+  Collaborators: {
+    label: "協力者"
+    shape: rectangle
+    grid-columns: 3
 
-  Editor: {
-    label: "エディター"
+    Writer: {
+      shape: rectangle
+    }
+    Editor: {
+      shape: rectangle
+    }
+    Illustrator: {
+      shape: rectangle
+    }
   }
-
-  Illustrator: {
-    label: "イラストレーター"
-  }
-
 }
 
-User -> AIGNE-Framework.Group-Manager: "1. 指示を送信"
-AIGNE-Framework.Group-Manager -> AIGNE-Framework.Writer: "2. タスクを委任"
-AIGNE-Framework.Writer -> AIGNE-Framework.Editor: "3. 下書きを共有（グループメッセージ）"
-AIGNE-Framework.Writer -> AIGNE-Framework.Illustrator: "3. 下書きを共有（グループメッセージ）"
-AIGNE-Framework.Writer -> User: "3. 下書きを共有（グループメッセージ）"
-AIGNE-Framework.Group-Manager -> AIGNE-Framework.Illustrator: "4. 画像作成をリクエスト"
+User -> GroupChat.Group-Manager: "1. ユーザーリクエスト"
+GroupChat.Group-Manager -> GroupChat.Collaborators.Writer: "2. タスクを委任"
+GroupChat.Collaborators.Writer <-> GroupChat.Collaborators.Editor: "3. 協力"
+GroupChat.Collaborators.Editor <-> GroupChat.Collaborators.Illustrator: "4. 協力"
+GroupChat.Collaborators.Writer -> GroupChat.Group-Manager: "5. 結果を送信"
+GroupChat.Group-Manager -> User: "6. 最終出力"
 ```
-
-インタラクションフローは以下の通りです。
-
-1.  **ユーザー**が**グループマネージャー**に指示を送信します。
-2.  **グループマネージャー**は最初のタスクを**ライター** Agent に委任します。
-3.  **ライター** Agent がコンテンツの下書きを作成し、グループメッセージとして共有します。これにより、**エディター**、**イラストレーター**、**ユーザー**が利用できるようになります。
-4.  次に**マネージャー**は、ストーリーに基づいて画像を制作するよう**イラストレーター**にリクエストします。
-5.  この協業プロセスは、最初の指示が完了するまで続きます。
 
 ## 前提条件
 
 進める前に、開発環境が以下の要件を満たしていることを確認してください。
-
-*   **Node.js**: バージョン 20.0 以上
-*   **npm**: Node.js のインストールに含まれています
-*   **OpenAI API キー**: Agent が OpenAI の言語モデルと対話するために必要です。[OpenAI プラットフォーム](https://platform.openai.com/api-keys)からキーを取得してください。
+*   **Node.js**: バージョン 20.0 以上。
+*   **npm**: Node.js に含まれています。
+*   **OpenAI API キー**: デフォルトのモデル設定に必要です。[OpenAI プラットフォーム](https://platform.openai.com/api-keys)から取得できます。
 
 ## クイックスタート
 
-リポジトリをクローンすることなく、`npx` を使ってこのサンプルを直接実行できます。
+`npx` を使用して、リポジトリをクローンせずにこの例を直接実行できます。
 
-### サンプルの実行
+### 例を実行する
 
-このアプリケーションは、いくつかの実行モードをサポートしています。
+ターミナルで次のいずれかのコマンドを実行します。
 
-#### ワンショットモード
-
-デフォルトモードでは、アプリケーションは単一の入力指示を処理した後に終了します。
-
+デフォルトのワンショットモードでワークフローを実行するには：
 ```bash ワンショットモードで実行 icon=lucide:terminal
 npx -y @aigne/example-workflow-group-chat
 ```
 
-#### 対話型チャットモード
-
-`--chat` フラグを使用すると、アプリケーションを対話モードで実行し、継続的な会話ができます。
-
-```bash 対話型チャットモードで実行 icon=lucide:terminal
+インタラクティブなチャットセッションを開始するには：
+```bash インタラクティブモードで実行 icon=lucide:terminal
 npx -y @aigne/example-workflow-group-chat --chat
 ```
 
-#### パイプライン入力
-
-ターミナルから直接入力をパイプすることもできます。
-
-```bash パイプライン入力を使用 icon=lucide:terminal
+パイプライン経由で直接入力を提供することもできます：
+```bash パイプライン入力で実行 icon=lucide:terminal
 echo "Write a short story about space exploration" | npx -y @aigne/example-workflow-group-chat
 ```
 
-### AI モデルに接続
+### AI モデルに接続する
 
-初めてサンプルを実行すると、AI モデルプロバイダーへの接続を求められます。
+初めて例を実行すると、API キーが設定されていないため、AI モデルプロバイダーに接続するように求められます。
 
-![Connect to an AI model](/sources/examples/workflow-group-chat/run-example.png)
+![AI モデルへの接続を求める初期設定プロンプト。](../../../examples/workflow-group-chat/run-example.png)
 
-いくつかの選択肢があります。
+続行するにはいくつかのオプションがあります。
 
-1.  **AIGNE Hub (公式)**: 推奨される方法です。公式ハブでは新規ユーザー向けに無料トークンを提供しています。
-2.  **セルフホスト AIGNE Hub**: URL を提供して、自身の AIGNE Hub インスタンスに接続します。
-3.  **サードパーティモデルプロバイダー**: 適切な環境変数を設定して、OpenAI などのプロバイダーに直接接続します。OpenAI の場合は、以下のように API キーを設定します。
+#### 1. AIGNE Hub に接続する (推奨)
+
+これは最も簡単な開始方法であり、新規ユーザー向けの無料クレジットが含まれています。
+
+1.  最初のオプションを選択します: `Connect to the Arcblock official AIGNE Hub`。
+2.  ウェブブラウザが AIGNE CLI を承認するためのページを開きます。
+3.  「Approve」をクリックして必要な権限を付与します。CLI は自動的に設定されます。
+
+![AIGNE Hub 接続の承認ダイアログ。](../../../examples/images/connect-to-aigne-hub.png)
+
+#### 2. セルフホストの AIGNE Hub に接続する
+
+独自の AIGNE Hub のインスタンスを実行している場合：
+
+1.  2番目のオプションを選択します: `Connect to your self-hosted AIGNE Hub`。
+2.  プロンプトが表示されたら、AIGNE Hub インスタンスの URL を入力します。
+3.  ブラウザの指示に従って接続を完了します。
+
+![セルフホストの AIGNE Hub の URL を入力するプロンプト。](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+#### 3. サードパーティのモデルプロバイダーを設定する
+
+環境変数を設定することで、OpenAI のようなプロバイダーに直接接続できます。
+
+1.  インタラクティブプロンプトを終了します。
+2.  ターミナルで `OPENAI_API_KEY` 環境変数を設定します。
 
     ```bash OpenAI API キーを設定 icon=lucide:terminal
-    export OPENAI_API_KEY="your-openai-api-key-here"
+    export OPENAI_API_KEY="your-openai-api-key"
     ```
 
-設定後、再度 `npx` コマンドを実行してください。
+3.  再度、例のコマンドを実行します。
 
-## ソースからの実行
+Google Gemini や DeepSeek などの他のプロバイダーについては、プロジェクト内の `.env.local.example` ファイルを参照して、正しい環境変数名を確認してください。
 
-コードを調査または変更するには、リポジトリをクローンしてサンプルをローカルで実行できます。
+## ローカルでのインストールと使用方法
 
-### 1. リポジトリのクローン
+開発目的で、リポジトリをクローンしてローカルで例を実行することができます。
 
-```bash リポジトリをクローン icon=lucide:terminal
+### 1. リポジトリをクローンする
+
+```bash フレームワークリポジトリをクローン icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 ```
 
-### 2. 依存関係のインストール
+### 2. 依存関係をインストールする
 
-サンプルディレクトリに移動し、`pnpm` を使用して必要なパッケージをインストールします。
+例のディレクトリに移動し、`pnpm` を使用して必要なパッケージをインストールします。
 
 ```bash 依存関係をインストール icon=lucide:terminal
 cd aigne-framework/examples/workflow-group-chat
 pnpm install
 ```
 
-### 3. サンプルの実行
+### 3. 例を実行する
 
-`pnpm start` コマンドを使用してアプリケーションを実行します。コマンドライン引数は `--` の後に渡す必要があります。
+`pnpm start` コマンドを使用してワークフローを実行します。コマンドライン引数は `--` の後に渡す必要があります。
 
+ワンショットモードで実行するには：
 ```bash ワンショットモードで実行 icon=lucide:terminal
 pnpm start
 ```
 
-```bash 対話型チャットモードで実行 icon=lucide:terminal
+インタラクティブチャットモードで実行するには：
+```bash インタラクティブモードで実行 icon=lucide:terminal
 pnpm start -- --chat
 ```
 
-```bash パイプライン入力を使用 icon=lucide:terminal
+パイプライン入力を使用するには：
+```bash パイプライン入力で実行 icon=lucide:terminal
 echo "Write a short story about space exploration" | pnpm start
 ```
 
-## コマンドラインオプション
+### コマンドラインオプション
 
-アプリケーションの動作は、以下のコマンドラインパラメータを使用してカスタマイズできます。
+この例では、その動作をカスタマイズするためにいくつかのコマンドライン引数を受け入れます。
 
 | パラメータ | 説明 | デフォルト |
-|---|---|---|
-| `--chat` | 対話型チャットモードで実行 | 無効（ワンショットモード） |
-| `--model <provider[:model]>` | 使用する AI モデルを 'provider\[:model]' 形式で指定します。model はオプションです。例: 'openai' または 'openai:gpt-4o-mini' | openai |
-| `--temperature <value>` | モデル生成時の Temperature | プロバイダーのデフォルト |
+|-----------|-------------|---------|
+| `--chat` | インタラクティブチャットモードで実行 | 無効 (ワンショットモード) |
+| `--model <provider[:model]>` | 使用するAIモデルを 'provider\[:model]' の形式で指定します。model はオプションです。例: 'openai' または 'openai:gpt-4o-mini' | openai |
+| `--temperature <value>` | モデル生成の温度 | プロバイダーのデフォルト |
 | `--top-p <value>` | Top-p サンプリング値 | プロバイダーのデフォルト |
-| `--presence-penalty <value>` | Presence penalty 値 | プロバイダーのデフォルト |
-| `--frequency-penalty <value>` | Frequency penalty 値 | プロバイダーのデフォルト |
-| `--log-level <level>` | ログレベルを設定（ERROR, WARN, INFO, DEBUG, TRACE） | INFO |
+| `--presence-penalty <value>` | 存在ペナルティ値 | プロバイダーのデフォルト |
+| `--frequency-penalty <value>` | 頻度ペナルティ値 | プロバイダーのデフォルト |
+| `--log-level <level>` | ログレベルを設定 (ERROR, WARN, INFO, DEBUG, TRACE) | INFO |
 | `--input`, `-i <input>` | 直接入力を指定 | なし |
 
-### 使用例
-
-次のコマンドは、ログレベルを `DEBUG` に設定してアプリケーションを実行します。
+#### 例
 
 ```bash ログレベルを設定 icon=lucide:terminal
 pnpm start -- --log-level DEBUG
 ```
 
-## デバッグ
-
-Agent の動作を調査・分析するには、`aigne observe` コマンドを使用します。このツールは、実行トレース、コール詳細、その他のランタイムデータを表示するためのインターフェースを備えたローカル Web サーバーを起動します。これは、Agent ワークフローのデバッグに不可欠です。
-
-監視サーバーを起動するには、以下を実行します。
-
-```bash 監視サーバーを起動 icon=lucide:terminal
-aigne observe
+```bash 特定のモデルを使用 icon=lucide:terminal
+pnpm start -- --model openai:gpt-4o-mini
 ```
 
-![Start aigne observe](/sources/examples/images/aigne-observe-execute.png)
+## AIGNE Observe でのデバッグ
 
-実行されると、Web インターフェースに最近の Agent 実行リストが表示され、各実行の詳細をドリルダウンして確認できます。
+エージェントの実行フローを検査し、動作をデバッグするには、`aigne observe` コマンドを使用できます。このツールは、エージェントのトレースの詳細なビューを提供するローカルウェブサーバーを起動します。
 
-![View recent executions](/sources/examples/images/aigne-observe-list.png)
+まず、別のターミナルで可観測性サーバーを起動します。
+```bash 可観測性サーバーを起動 icon=lucide:terminal
+aigne observe
+```
+![AIGNE Observe サーバーが起動する様子を示すターミナル出力。](../../../examples/images/aigne-observe-execute.png)
+
+ワークフローの例を実行した後、ブラウザで `http://localhost:7893` を開いてトレースを表示します。実行中の各エージェントの入力、出力、および内部状態を検査できます。
+
+![トレースのリストを示す AIGNE Observe のウェブインターフェース。](../../../examples/images/aigne-observe-list.png)
 
 ## まとめ
 
-このガイドでは、協調的なマルチ Agent グループチャットを実行し、設定する方法を説明しました。その他の高度なワークフローパターンを探るには、以下のサンプルを参照してください。
+このガイドでは、ワークフローグループチャットの例を実行するためのステップバイステップのウォークスルーを提供しました。`npx` を使用してワークフローを実行する方法、さまざまな AI モデルプロバイダーに接続する方法、そして開発用にローカルにインストールする方法を学びました。また、エージェントのインタラクションをデバッグするために `aigne observe` を使用する方法も確認しました。
+
+より複雑なパターンについては、AIGNE フレームワークのドキュメントにある他の例を参照してください。
 
 <x-cards data-columns="2">
-  <x-card data-title="ワークフロー：ハンドオフ" data-href="/examples/workflow-handoff" data-icon="lucide:arrow-right-left">
-  専門 Agent 間でシームレスな移行を作成し、複雑な問題を解決する方法を学びます。
+  <x-card data-title="ワークフロー: ハンドオフ" data-icon="lucide:arrow-right-left" data-href="/examples/workflow-handoff">
+    複雑な問題を解決するために、専門エージェント間のシームレスな移行を作成する方法を学びます。
   </x-card>
-  <x-card data-title="ワークフロー：オーケストレーション" data-href="/examples/workflow-orchestration" data-icon="lucide:network">
-  洗練された処理パイプラインで連携して動作する複数の Agent を調整します。
+  <x-card data-title="ワークフロー: オーケストレーション" data-icon="lucide:network" data-href="/examples/workflow-orchestration">
+    洗練された処理パイプラインで連携して動作する複数のエージェントを調整する方法を発見します。
   </x-card>
 </x-cards>

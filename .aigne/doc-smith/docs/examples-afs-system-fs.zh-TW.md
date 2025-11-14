@@ -1,183 +1,184 @@
-I have located the necessary files for the "AFS System FS" example documentation. The primary source will be `/sources/examples/afs-system-fs/README.md`, which will provide the structure, code snippets, and conceptual explanations. The core logic example will be drawn from `/sources/examples/afs-system-fs/index.ts`. I've noted the available image, `/sources/examples/afs-system-fs/run-example.png`, and will address the user's feedback regarding invalid image paths by verifying correct locations or substituting with valid images. My next step is to analyze the `README.md` to begin drafting the document.# AFS System FS
+# AFS System FS
 
-您是否曾經想過要建立一個可以直接且安全地與您本機檔案互動的聊天機器人？本指南將示範如何做到這一點。您將學習如何使用 AIGNE 檔案系統（AFS）和 `SystemFS` 模組，來授予 AI Agent 在沙箱環境中存取您電腦上檔案的權限，包括讀取、寫入和搜尋，從而實現能夠處理本機資料、功能強大且具備情境感知能力的應用程式。
+本指南將示範如何建構一個能夠與您本機檔案系統互動的聊天機器人。透過遵循這些步驟，您將使用 AIGNE 檔案系統 (AFS) 和 `SystemFS` 模組建立一個 Agent，使其能夠在您的機器上列出、讀取、寫入和搜尋檔案。
 
 ## 概覽
 
-此範例的核心是 `SystemFS` 模組，它扮演著 AIGNE 框架與您電腦檔案系統之間的橋樑。它允許您「掛載」一個本機目錄，使其內容可以透過一套標準工具（如 `afs_list`、`afs_read`、`afs_write` 和 `afs_search`）供 AI Agent 存取。然後，Agent 可以使用這些工具，根據自然語言指令執行檔案操作。這使得諸如總結文件、整理檔案或回答有關程式碼庫的問題等使用案例成為可能。
+此範例展示了如何透過 AIGNE 框架將本機檔案系統與 AI Agent 整合。`SystemFS` 模組作為一座橋樑，將指定的本機目錄掛載到 AIGNE 檔案系統 (AFS) 中。這使得 AI Agent 能夠使用一套標準化的工具執行檔案操作，從而能夠根據您本機檔案的內容回答問題並完成任務。
 
-下圖說明了使用者、AI Agent、AFS 工具和本機檔案系統之間的關係：
+下圖說明了 `SystemFS` 模組如何將本機檔案系統連接到 AI Agent：
 
 ```d2
 direction: down
 
-User: {
-  shape: c4-person
+AI-Agent: {
+  label: "AI Agent"
+  shape: rectangle
 }
 
 AIGNE-Framework: {
   label: "AIGNE 框架"
   shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-width: 2
-    stroke-dash: 4
-  }
 
-  AI-Agent: {
-    label: "AI Agent"
+  AFS: {
+    label: "AIGNE 檔案系統 (AFS)"
     shape: rectangle
-  }
 
-  AFS-Tools: {
-    label: "AFS 工具"
-    shape: rectangle
-    grid-columns: 2
-    afs_list: { label: "afs_list" }
-    afs_read: { label: "afs_read" }
-    afs_write: { label: "afs_write" }
-    afs_search: { label: "afs_search" }
-  }
-
-  SystemFS-Module: {
-    label: "SystemFS 模組"
-    shape: rectangle
+    SystemFS-Module: {
+      label: "SystemFS 模組"
+      shape: rectangle
+    }
   }
 }
 
 Local-File-System: {
-  label: "本機檔案系統\n（沙箱環境）"
-  shape: cylinder
+  label: "本機檔案系統"
+  shape: rectangle
+
+  Local-Directory: {
+    label: "本機目錄\n(/path/to/your/project)"
+    shape: cylinder
+  }
 }
 
-User -> AIGNE-Framework.AI-Agent: "自然語言指令"
-AIGNE-Framework.AI-Agent -> AIGNE-Framework.AFS-Tools: "選擇適當的工具"
-AIGNE-Framework.AFS-Tools -> AIGNE-Framework.SystemFS-Module: "調用工具操作"
-AIGNE-Framework.SystemFS-Module -> Local-File-System: "執行檔案 I/O"
-Local-File-System -> AIGNE-Framework.SystemFS-Module: "返回檔案內容/狀態"
-AIGNE-Framework.SystemFS-Module -> AIGNE-Framework.AI-Agent: "返回工具結果"
-AIGNE-Framework.AI-Agent -> User: "根據情境的回應"
+AI-Agent <-> AIGNE-Framework.AFS: "3. 執行檔案操作\n(列出、讀取、寫入、搜尋)"
+AIGNE-Framework.AFS.SystemFS-Module <-> Local-File-System.Local-Directory: "2. 掛載目錄"
 
 ```
 
 ## 先決條件
 
-在開始之前，請確保您的系統符合以下要求：
+在繼續之前，請確保您的開發環境符合以下要求：
 
-*   **Node.js**：版本 20.0 或更高。
-*   **npm**：隨您的 Node.js 安裝一同提供。
-*   **OpenAI API 金鑰**：需要有效的 API 金鑰，AI Agent 才能連線至 OpenAI 的模型。您可以從 [OpenAI 平台](https://platform.openai.com/api-keys)取得金鑰。
-
-如果您打算從原始碼執行此範例，也建議具備以下條件：
-
-*   **pnpm**：用於高效的套件管理。
-*   **Bun**：用於執行範例和單元測試。
+*   **Node.js**：20.0 或更高版本。
+*   **npm**：隨 Node.js 一起安裝。
+*   **OpenAI API 金鑰**：用於連接語言模型。您可以從 [OpenAI API 金鑰頁面](https://platform.openai.com/api-keys) 取得。
 
 ## 快速入門
 
-您可以直接在終端機中使用 `npx` 執行此範例，無需複製整個儲存庫。這是最快看到它實際運作的方式。
+您可以使用 `npx` 直接執行此範例，無需進行本機安裝。
 
 ### 執行範例
 
-開啟您的終端機並選擇以下其中一個指令。
+在您的終端機中執行以下命令，以掛載目錄並與聊天機器人互動。
 
-若要掛載您目前的目錄並啟動互動式聊天工作階段：
+掛載您目前的目錄並開始一個互動式聊天會話：
 
-```bash 以聊天模式執行 icon=lucide:terminal
+```bash Install aigne deps icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --chat
 ```
 
-若要以自訂名稱和描述掛載特定目錄：
+掛載特定目錄，例如您的文件資料夾：
 
-```bash 掛載特定目錄 icon=lucide:terminal
+```bash Install aigne deps icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path ~/Documents --mount /docs --description "My Documents" --chat
 ```
 
-若要只問一個問題而不啟動互動式聊天：
+提出一個一次性問題，而不進入互動模式：
 
-```bash 問一個問題 icon=lucide:terminal
+```bash Install aigne deps icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "What files are in the current directory?"
 ```
 
-### 連線至 AI 模型
+### 連接至 AI 模型
 
-首次執行範例時，系統會提示您連線至 AI 模型。
+首次執行範例時，由於尚未設定任何 API 金鑰，CLI 會提示您連接至 AI 模型。
 
-![連線至 AI 模型](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/connect-to-aigne-hub.png)
+![Initial connection prompt for AIGNE Hub](../../../examples/afs-system-fs/run-example.png)
 
-您有三個主要選項：
+您有三種選擇可以繼續：
 
-1.  **透過官方 AIGNE Hub 連線**：這是建議的選項。您的瀏覽器將開啟官方 AIGNE Hub，您可以在那裡登入。新使用者會獲得免費的 token 配額以開始使用。
-2.  **透過自行託管的 AIGNE Hub 連線**：如果您執行自己的 AIGNE Hub 實例，請選擇此選項並輸入其 URL。
-3.  **透過第三方模型供應商連線**：您可以透過設定帶有您 API 金鑰的環境變數，直接連線至像 OpenAI 這樣的供應商。
+1.  **連接至官方 AIGNE Hub**
+    這是推薦給新使用者的選項。您的瀏覽器將打開 AIGNE Hub，您可以在那裡授權連接。新使用者會獲得免費的 token 額度，以便立即開始使用。
 
-若要連線至 OpenAI，請在您的終端機中設定 `OPENAI_API_KEY` 環境變數：
+    ![Authorization dialog for AIGNE CLI in AIGNE Hub](../../../examples/images/connect-to-aigne-hub.png)
 
-```bash 設定 OpenAI API 金鑰 icon=lucide:terminal
-export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+2.  **透過自行託管的 AIGNE Hub 連接**
+    如果您有自行託管的 AIGNE Hub 實例，請選擇此選項並輸入其 URL 以完成連接。您可以從 [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ) 部署您自己的 AIGNE Hub。
+
+    ![Prompt to enter the URL for a self-hosted AIGNE Hub](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+3.  **透過第三方模型供應商連接**
+    您可以直接設定來自 OpenAI 等供應商的 API 金鑰。在您的終端機中設定相應的環境變數，然後再次執行範例。
+
+    ```bash Set OpenAI API Key icon=lucide:terminal
+    export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+    ```
+
+    若要使用其他供應商（如 DeepSeek 或 Google Gemini）進行設定，請參考專案原始碼中的 `.env.local.example` 檔案。
+
+### 使用 AIGNE Observe 進行偵錯
+
+要監控和分析 Agent 的行為，請使用 `aigne observe` 命令。此命令會啟動一個本機網頁伺服器，提供執行追蹤、工具呼叫和模型互動的詳細視圖，這對於偵錯和效能調整非常有價值。
+
+首先，啟動觀察伺服器：
+
+```bash Start Observe Server icon=lucide:terminal
+aigne observe
 ```
 
-設定金鑰後，再次執行 `npx` 指令。如需支援的供應商及其所需環境變數的完整列表，請參閱範例的 `.env.local.example` 檔案。
+終端機將確認伺服器正在執行並提供一個本機 URL。
 
-## 從原始碼安裝
+![Terminal output showing the AIGNE Observe server has started](../../../examples/images/aigne-observe-execute.png)
 
-如果您偏好檢視原始碼或進行修改，請按照以下步驟在本機執行範例。
+執行您的 Agent 後，您可以在網頁介面中查看最近執行的列表。
 
-### 1. 複製儲存庫
+![AIGNE Observability web interface showing a list of traces](../../../examples/images/aigne-observe-list.png)
 
-```bash 複製儲存庫 icon=lucide:terminal
-git clone https://github.com/AIGNE-io/aigne-framework
-```
+## 本機安裝
 
-### 2. 安裝依賴套件
+出於開發目的，您可以複製儲存庫並在本機執行範例。
 
-導覽至範例的目錄並使用 `pnpm` 安裝必要的套件。
+1.  **複製儲存庫**
 
-```bash 安裝依賴套件 icon=lucide:terminal
-cd aigne-framework/examples/afs-system-fs
-pnpm install
-```
+    ```bash Clone Repository icon=lucide:terminal
+    git clone https://github.com/AIGNE-io/aigne-framework
+    ```
 
-### 3. 執行範例
+2.  **安裝依賴套件**
+    導覽至範例目錄並使用 pnpm 安裝必要的套件。
 
-使用所需的旗標執行 `pnpm start` 指令。
+    ```bash Install Dependencies icon=lucide:terminal
+    cd aigne-framework/examples/afs-system-fs
+    pnpm install
+    ```
 
-若要掛載您目前的目錄執行：
+3.  **執行範例**
+    使用 `pnpm start` 命令並附上所需的標記。
 
-```bash 使用目前目錄執行 icon=lucide:terminal
-pnpm start --path .
-```
+    使用您目前的目錄執行：
+    ```bash Run with Current Directory icon=lucide:terminal
+    pnpm start --path .
+    ```
 
-若要在互動式聊天模式下執行：
-
-```bash 以聊天模式執行 icon=lucide:terminal
-pnpm start --path . --chat
-```
+    以互動式聊天模式執行：
+    ```bash Run in Chat Mode icon=lucide:terminal
+    pnpm start --path . --chat
+    ```
 
 ## 運作方式
 
-此範例會初始化一個 `AIAgent`，並使用 `SystemFS` 模組授予它存取本機檔案系統的權限。
+此範例使用 `SystemFS` 模組，透過 AIGNE 檔案系統 (AFS) 將本機目錄公開給 AI Agent。這個沙箱環境允許 Agent 使用標準化的介面與您的檔案互動，確保安全性和可控性。
 
-### 掛載本機目錄
+### 核心邏輯
 
-`SystemFS` 類別用於將本機 `path` 掛載到 AFS 內的虛擬 `mount` 點。此設定會傳遞給一個新的 `AFS` 實例，然後該實例會附加到 `AIAgent` 上。Agent 會被指示使用掛載的檔案系統來回答使用者的查詢。
+1.  **掛載目錄**：`SystemFS` 類別被實例化，並帶有一個本機 `path` 和 AFS 中的一個虛擬 `mount` 點。
+2.  **Agent 初始化**：`AIAgent` 使用 AFS 實例進行設定，使其能夠存取檔案系統工具，如 `afs_list`、`afs_read`、`afs_write` 和 `afs_search`。
+3.  **工具呼叫**：當使用者提出問題時（例如，「這個專案的目的是什麼？」），Agent 會決定使用哪個 AFS 工具。它可能首先呼叫 `afs_list` 來查看目錄內容，然後呼叫 `afs_read` 來檢查相關檔案，如 `README.md`。
+4.  **建立情境**：從檔案系統中檢索到的內容被添加到 Agent 的情境中。
+5.  **產生回應**：Agent 使用豐富後的情境來為使用者的原始問題制定一個全面的答案。
+
+以下程式碼片段展示了如何將本機目錄掛載到 AFS 中，並提供給 `AIAgent`。
 
 ```typescript index.ts icon=logos:typescript
 import { AFS } from "@aigne/afs";
 import { SystemFS } from "@aigne/afs-system-fs";
 import { AIAgent } from "@aigne/core";
 
-const agent = AIAgent.from({
-  name: "afs-system-fs-chatbot",
-  instructions:
-    "You are a friendly chatbot that can retrieve files from a virtual file system. You should use the provided functions to list, search, and read files as needed to answer user questions. The current folder points to the /fs mount point by default.",
-  inputKey: "message",
+AIAgent.from({
+  // ... 其他設定
   afs: new AFS().use(
-    new SystemFS({
-      mount: '/fs',
-      path: './',
-      description: 'Mounted file system'
-    }),
+    new SystemFS({ mount: '/source', path: '/PATH/TO/YOUR/PROJECT', description: 'Codebase of the project' }),
   ),
   afsConfig: {
     injectHistory: true,
@@ -185,78 +186,65 @@ const agent = AIAgent.from({
 });
 ```
 
-### Agent 互動流程
+### SystemFS 的主要功能
 
-當使用者提出問題時，AI Agent 會自主決定使用哪些 AFS 工具來尋找答案。
-
-1.  **使用者輸入**：使用者提出問題，例如「這個專案的目的是什麼？」
-2.  **工具呼叫（列表）**：Agent 判斷需要了解檔案結構，於是呼叫 `afs_list` 工具來查看根目錄中的檔案。
-3.  **工具呼叫（讀取）**：在識別出相關檔案（例如 `README.md`）後，Agent 呼叫 `afs_read` 工具來存取其內容。
-4.  **根據情境的回應**：檔案的內容被加入到 Agent 的情境中。然後，Agent 使用這些新資訊來建構對使用者原始問題的詳細回答。
-
-整個過程是自主的。Agent 會串連工具呼叫、收集情境，並在沒有手動指導的情況下形成回應。
+*   **檔案操作**：標準的列出、讀取、寫入和搜尋功能。
+*   **遞迴遍歷**：以深度控制來導覽巢狀目錄。
+*   **快速內容搜尋**：利用 `ripgrep` 進行高效能的文字搜尋。
+*   **元資料存取**：提供檔案詳細資訊，如大小、類型和時間戳。
+*   **路徑安全**：將檔案存取限制在僅掛載的目錄中。
 
 ## 使用範例
 
-一旦聊天機器人開始執行，您可以發出各種指令與掛載的檔案互動。
+一旦聊天機器人開始執行，您就可以發出自然語言命令來與您的檔案互動。
 
-### 基本檔案操作
+### 基本命令
 
-```bash 列出所有檔案 icon=lucide:terminal
+嘗試使用這些命令來執行簡單的檔案操作。
+
+列出掛載目錄中的所有檔案：
+```bash List Files icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "List all files in the root directory"
 ```
 
-```bash 讀取特定檔案 icon=lucide:terminal
+讀取特定檔案的內容：
+```bash Read a File icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "Read the contents of package.json"
 ```
 
-```bash 搜尋內容 icon=lucide:terminal
+在所有檔案中搜尋內容：
+```bash Search Content icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "Find all files containing the word 'example'"
 ```
 
-### 互動式聊天
+### 互動式聊天提示
 
-若要獲得更具對話性的體驗，請啟動互動模式。
+開始一個互動式會話以獲得更具對話性的體驗：
 
-```bash 啟動互動式聊天 icon=lucide:terminal
+```bash Start Interactive Mode icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --chat
 ```
 
-進入聊天後，嘗試提出以下問題：
+進入聊天模式後，試著詢問以下問題：
 
-*   「這個目錄裡有哪些檔案？」
-*   「顯示 README 檔案的內容給我看。」
-*   「找出所有的 TypeScript 檔案。」
-*   「建立一個名為 `notes.txt` 的新檔案，內容為『完成專案文件』。」
-*   「遞迴列出所有檔案，深度限制為 2。」
-
-## 偵錯
-
-AIGNE CLI 包含一個 `observe` 指令，可幫助您分析和偵錯 Agent 的行為。它會啟動一個本機網頁伺服器，提供一個介面來檢查執行追蹤，包括工具呼叫、模型輸入和最終輸出。
-
-首先，在您的終端機中啟動觀察伺服器：
-
-```bash 啟動觀察伺服器 icon=lucide:terminal
-aigne observe
-```
-
-![啟動 AIGNE 觀察伺服器](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/aigne-observe-execute.png)
-
-執行 Agent 任務後，您可以開啟網頁介面，查看最近執行的列表，並深入了解每一步的詳細資訊。
-
-![檢視最近執行的清單](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/aigne-observe-list.png)
+*   「這個目錄中有哪些檔案？」
+*   「顯示 README 檔案的內容。」
+*   「尋找所有 TypeScript 檔案。」
+*   「在程式碼庫中搜尋函式。」
+*   「建立一個名為 `notes.txt` 的新檔案，並寫入一些內容。」
+*   「以 2 的深度限制遞迴列出所有檔案。」
 
 ## 總結
 
-此範例提供了一個實用指南，將 AI Agent 的能力擴展至您的本機檔案系統。使用 `SystemFS`，您可以建立與使用者本機資料和環境深度整合的複雜應用程式。
+此範例實際展示了如何擴展 AI Agent 的能力，使其能夠進行本機檔案系統的互動。透過使用 `SystemFS` 模組，您可以建立功能強大的聊天機器人，根據自然語言命令自動化任務、檢索資訊和組織檔案。
 
-更多範例和進階功能，請參閱以下文件：
+若需更進階的範例和工作流程，您可以探索其他文件部分。
 
 <x-cards data-columns="2">
-  <x-card data-title="記憶體" data-icon="lucide:brain-circuit" data-href="/examples/memory">
-  了解如何使用 FSMemory 外掛程式建立具有持續性記憶體的聊天機器人。
+  <x-card data-title="Memory" data-href="/examples/memory" data-icon="lucide:brain-circuit">
+  了解如何為您的聊天機器人賦予持久的記憶。
   </x-card>
-  <x-card data-title="MCP 伺服器" data-icon="lucide:server" data-href="/examples/mcp-server">
-  探索如何將 AIGNE Agent 作為模型情境協定（MCP）伺服器執行。
+  <x-card data-title="Workflow Orchestration" data-href="/examples/workflow-orchestration" data-icon="lucide:milestone">
+  探索如何在複雜的工作流程中協調多個 Agent。
   </x-card>
 </x-cards>

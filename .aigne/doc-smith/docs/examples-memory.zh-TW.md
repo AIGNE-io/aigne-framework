@@ -1,173 +1,240 @@
+<content>
 # 記憶體
 
-想建立一個能記住您的聊天機器人嗎？本指南將示範如何使用 AIGNE 框架和 `FSMemory` 外掛程式來建立一個具有持久記憶體的聊天機器人。您將學習如何讓 Agent 回憶起先前對話的資訊，從而實現更具連續性和上下文感知能力的互動。
+本指南提供了建置能記住先前對話的聊天機器人的逐步流程。遵循這些說明，您將建立一個有狀態的 Agent，它使用 `FSMemory` 外掛程式來持久化會話資料，從而實現連續且具有情境感知能力的互動。
 
 ## 總覽
 
-一個聊天機器人要真正有效，就需要記住過去的互動。本範例展示如何使用 `FSMemory` 外掛程式來實現這一點，該外掛程式將對話資料儲存到本機檔案系統中。這使得聊天機器人能夠在不同會話之間保持狀態，提供更個人化的使用者體驗。
-
-本文件將引導您執行範例、將其連接到 AI 模型，並理解記憶體如何被記錄和擷取的機制。若想了解使用去中心化儲存的另一種持久化方法，請參閱 [DID Spaces 記憶體](./examples-memory-did-spaces.md)範例。
+此範例示範如何使用 AIGNE 框架在聊天機器人中實現記憶體功能。該 Agent 利用 `FSMemory` 外掛程式，將對話歷史和使用者個人資料資訊儲存在本機檔案系統上。這使得聊天機器人能夠回憶起會話中的過往互動，提供更個人化且連貫的使用者體驗。
 
 ## 先決條件
 
-在開始之前，請確保您具備以下條件：
+在繼續之前，請確保您的開發環境符合以下要求：
 
 *   **Node.js**：版本 20.0 或更高。
-*   **OpenAI API 金鑰**：需要 API 金鑰才能連接到 OpenAI 模型。您可以從 [OpenAI Platform](https://platform.openai.com/api-keys) 取得。
+*   **npm**：隨 Node.js 安裝一同提供。
+*   **OpenAI API 金鑰**：連接 OpenAI 模型所需。您可以從 [OpenAI API keys](https://platform.openai.com/api-keys) 頁面取得金鑰。
 
 ## 快速入門
 
-得益於 `npx`，您可以直接在終端機中執行此範例，無需在本機安裝。
+您可以使用 `npx` 直接執行此範例，無需本機安裝。
 
 ### 執行範例
 
-執行以下指令。第一個指令給予聊天機器人一條資訊，第二個指令測試其回憶該資訊的能力。
+在您的終端機中執行以下指令，與啟用記憶體的聊天機器人互動。第一個指令告知機器人您的偏好，第二個指令測試其回憶該資訊的能力。
 
-```sh 使用記憶體執行聊天機器人 icon=lucide:terminal
+```bash 執行帶有記憶體的聊天機器人 icon=lucide:terminal
+# 發送第一則訊息以建立一個事實
 npx -y @aigne/example-memory --input 'I like blue color'
+
+# 發送第二則訊息以測試聊天機器人的記憶體
 npx -y @aigne/example-memory --input 'What is my favorite color?'
 ```
 
-若想進行更自然的來回對話，您可以在互動模式下啟動聊天機器人。
+若要進行連續對話，請在互動模式下執行聊天機器人：
 
-```sh 在互動式聊天模式下執行 icon=lucide:terminal
+```bash 在互動式聊天模式下執行 icon=lucide:terminal
 npx -y @aigne/example-memory --chat
 ```
 
-### 連接到 AI 模型
+### 連接至 AI 模型
 
-Agent 需要連接到 AI 模型才能運作。首次執行範例時，系統會提示您選擇一種連接方法。
+聊天機器人需要連接至大型語言模型 (LLM) 才能運作。如果您尚未設定模型提供者，CLI 將在首次執行時提示您選擇一種連接方式。
 
-#### 1. AIGNE Hub (建議)
+![AI 模型的初始連接提示](../../../examples/memory/run-example.png)
 
-最簡單的方法是透過官方 AIGNE Hub 連接。選擇第一個選項，您的瀏覽器將會開啟以進行身份驗證。新使用者會自動獲得豐厚的 token 配額以供入門使用。
+您有三種主要選項來連接 AI 模型：
 
-![連線至 AIGNE Hub](../images/connect-to-aigne-hub.png)
+#### 1. 透過官方 AIGNE Hub 連接（建議）
 
-#### 2. 自行託管的 AIGNE Hub
+這是最簡單的方法。AIGNE Hub 是一項提供多種模型存取權的服務，並為新使用者提供免費額度。
 
-如果您的組織使用自行託管的 AIGNE Hub，請選擇第二個選項並提供您實例的 URL 進行連接。
+1.  選擇第一個選項：`Connect to the Arcblock official AIGNE Hub`。
+2.  您的網頁瀏覽器將打開 AIGNE Hub 授權頁面。
+3.  按照螢幕上的指示批准連接。新使用者將獲得 400,000 個 token 的免費贈款。
 
-![連線至自行託管的 AIGNE Hub](../images/connect-to-self-hosted-aigne-hub.png)
+![授權 AIGNE CLI 連接至 AIGNE Hub](../../../examples/images/connect-to-aigne-hub.png)
 
-#### 3. 第三方模型供應商
+#### 2. 透過自架的 AIGNE Hub 連接
 
-您也可以直接連接到像 OpenAI 這樣的第三方供應商。為此，請在執行範例前將您的 API 金鑰設定為環境變數。
+如果您的組織執行 AIGNE Hub 的私有實例，您可以直接連接到它。
 
-```sh 設定您的 OpenAI API 金鑰 icon=lucide:terminal
-export OPENAI_API_KEY="your_openai_api_key_here"
+1.  選擇第二個選項：`Connect to your self-hosted AIGNE Hub`。
+2.  在提示時輸入您自架的 AIGNE Hub 實例的 URL。
+3.  按照後續提示完成連接。
+
+有關部署自架 AIGNE Hub 的說明，請參閱 [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ)。
+
+![輸入自架 AIGNE Hub 的 URL](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+#### 3. 透過第三方模型提供者連接
+
+您可以透過將適當的 API 金鑰設定為環境變數，直接連接到第三方模型提供者，例如 OpenAI。
+
+例如，若要連接到 OpenAI，請設定 `OPENAI_API_KEY` 環境變數：
+
+```bash 設定 OpenAI API 金鑰 icon=lucide:terminal
+export OPENAI_API_KEY="your-openai-api-key" # 替換為您的實際金鑰
 ```
 
-設定金鑰後，再次執行 `npx` 指令。更多設定範例，請參閱專案原始碼中的 `.env.local.example` 檔案。
-
-## 本機安裝
-
-如果您希望檢查程式碼或進行修改，可以在本機設定專案。
-
-### 1. 複製儲存庫
-
-首先，從 GitHub 複製 `aigne-framework` 儲存庫。
-
-```sh 複製儲存庫 icon=lucide:terminal
-git clone https://github.com/AIGNE-io/aigne-framework
-```
-
-### 2. 安裝依賴項
-
-導覽至範例的目錄，並使用 `pnpm` 安裝所需的套件。
-
-```sh 安裝依賴項 icon=lucide:terminal
-cd aigne-framework/examples/memory
-pnpm install
-```
-
-### 3. 執行範例
-
-安裝完依賴項後，您可以使用 `start` 指令碼執行範例。
-
-```sh 在本機執行範例 icon=lucide:terminal
-pnpm start
-```
+設定環境變數後，再次執行範例。有關支援的提供者及其對應環境變數的列表，請參閱 [`.env.local.example`](https://github.com/AIGNE-io/aigne-framework/blob/main/examples/memory/.env.local.example) 檔案。
 
 ## 記憶體如何運作
 
-記憶體功能由 AIGNE 框架的增強檔案系統 (AFS) 中的兩個核心模組提供支援：`history` 和 `UserProfileMemory`。
+記憶體功能是使用 `history` 和 `UserProfileMemory` 模組實現的，這些模組是 AIGNE 框架的增強檔案系統 (AFS) 的一部分。
+
+下圖說明了聊天機器人如何記錄和檢索資訊，以在對話中維持情境。
+
+```d2
+direction: down
+
+User: {
+  shape: c4-person
+}
+
+AIGNE-Framework: {
+  label: "AIGNE 框架"
+  shape: rectangle
+
+  AI-Agent: {
+    label: "AI Agent"
+  }
+
+  UserProfileMemory: {
+    label: "UserProfileMemory"
+  }
+
+  AFS: {
+    label: "增強檔案系統 (AFS)"
+    shape: rectangle
+    style: {
+      stroke: "#888"
+      stroke-width: 2
+      stroke-dash: 4
+    }
+
+    history: {
+      label: "history"
+      shape: cylinder
+    }
+
+    user-profile: {
+      label: "user_profile"
+      shape: cylinder
+    }
+  }
+}
+
+AI-Model: {
+  label: "AI 模型 (LLM)"
+}
+
+# 記錄流程
+User -> AIGNE-Framework.AI-Agent: "1. 發送訊息"
+AIGNE-Framework.AI-Agent -> User: "2. 接收回應"
+AIGNE-Framework.AI-Agent -> AIGNE-Framework.AFS.history: "3. 儲存對話"
+AIGNE-Framework.UserProfileMemory -> AIGNE-Framework.AFS.history: "4. 分析歷史記錄"
+AIGNE-Framework.UserProfileMemory -> AIGNE-Framework.AFS.user-profile: "5. 儲存提取的個人資料"
+
+# 檢索流程
+User -> AIGNE-Framework.AI-Agent: "6. 發送新訊息"
+AIGNE-Framework.AI-Agent -> AIGNE-Framework.AFS.user-profile: "7. 載入使用者個人資料"
+AIGNE-Framework.AI-Agent -> AIGNE-Framework.AFS.history: "8. 載入聊天歷史記錄"
+AIGNE-Framework.AI-Agent -> AI-Model: "9. 發送帶有情境的提示"
+AI-Model -> AIGNE-Framework.AI-Agent: "10. 產生回應"
+AIGNE-Framework.AI-Agent -> User: "11. 傳遞有根據的回應"
+```
 
 ### 記錄對話
 
-1.  **歷史記錄**：當使用者傳送訊息且 AI 回應時，這個對話配對會被儲存到 AFS 的 `history` 模組中。
-2.  **個人資料提取**：`UserProfileMemory` 模組會分析對話並提取關於使用者的關鍵細節，例如他們的名字或偏好。這些資訊隨後會被分別儲存在 AFS 的 `user_profile` 模組中。
+1.  在使用者發送訊息並收到回應後，該對話配對（使用者輸入和 AI 輸出）將被儲存到 AFS 中的 `history` 模組。
+2.  同時，`UserProfileMemory` 模組會分析對話歷史，以提取和推斷使用者個人資料的詳細資訊（例如，姓名、偏好）。然後，這些資訊將被儲存在 AFS 中的 `user_profile` 模組。
 
-### 擷取對話
+### 檢索對話
 
-當使用者傳送新訊息時，框架會擷取儲存的資訊，為 AI 模型提供必要的上下文。
+當收到新的使用者訊息時，框架會檢索已儲存的資訊，為 AI 模型提供情境。
 
-1.  **注入使用者個人資料**：系統首先載入使用者的個人資料，並將其直接注入到系統提示中的 `<related-memories>` 區塊內。這確保了 Agent 能立即意識到關鍵事實。
+1.  **載入使用者個人資料**：Agent 從 `UserProfileMemory` 載入資料，並將其注入到系統提示中。這確保 AI 從一開始就了解使用者的個人資料。
 
     ```text 帶有記憶體的系統提示
     You are a friendly chatbot
-    
+
     <related-memories>
     - |
       name:
         - name: Bob
       interests:
         - content: likes blue color
-    
+
     </related-memories>
     ```
 
-2.  **注入對話歷史**：接下來，最近的對話歷史會被格式化為一系列訊息。這段歷史與系統提示一起被傳送給 AI 模型。
+2.  **注入對話歷史**：來自 `history` 模組的近期對話回合將附加到訊息列表中，提供即時的對話情境。
 
-    ```json 注入的聊天訊息
+    ```json 帶有歷史記錄的聊天訊息
     [
       {
         "role": "system",
-        "content": "You are a friendly chatbot ..." 
+        "content": "You are a friendly chatbot ..."
       },
       {
         "role": "user",
-        "content": [{ "type": "text", "text": "I'm Bob and I like blue color" }]
+        "content": [
+          {
+            "type": "text",
+            "text": "I'm Bob and I like blue color"
+          }
+        ]
       },
       {
         "role": "agent",
-        "content": [{ "type": "text", "text": "Nice to meet you, Bob! Blue is a great color.\n\nHow can I help you today?" }]
+        "content": [
+          {
+            "type": "text",
+            "text": "Nice to meet you, Bob! Blue is a great color.\n\nHow can I help you today?"
+          }
+        ]
       },
       {
         "role": "user",
-        "content": [{ "type": "text", "text": "What is my favorite color?" }]
+        "content": [
+          {
+            "type": "text",
+            "text": "What is my favorite color?"
+          }
+        ]
       }
     ]
     ```
 
-3.  **生成回應**：AI 模型處理整個負載——系統提示、使用者個人資料和聊天歷史——以生成一個符合上下文的回應。
+3.  **產生回應**：AI 模型處理完整的上下文——包括帶有使用者個人資料的系統提示和近期的聊天歷史——以產生一個有根據的回應。
 
     **AI 回應：**
+
     ```text
     You mentioned earlier that you like the color blue
     ```
 
 ## 偵錯
 
-若要檢查 Agent 的行為，請使用 `aigne observe` 指令。這會啟動一個本機網頁伺服器，提供一個詳細且使用者友善的介面來檢視執行追蹤。它是偵錯、效能調整以及理解您的 Agent 如何處理資訊的重要工具。
+若要監控和分析 Agent 的行為，您可以使用 `aigne observe` 指令。此工具會啟動一個本機網頁伺服器，提供一個使用者介面，用於檢查執行追蹤、呼叫詳細資訊和其他執行期資料。
 
-![執行 aigne observe](../images/aigne-observe-execute.png)
+1.  啟動觀察伺服器：
 
-一旦執行，您就可以存取網頁使用者介面，查看最近執行的列表，並深入了解每次呼叫的詳細資訊。
+    ```bash 啟動 AIGNE 觀察器 icon=lucide:terminal
+    aigne observe
+    ```
 
-![aigne observe 中最近執行的列表](../images/aigne-observe-list.png)
+    ![顯示可觀察性伺服器正在執行的終端機輸出](../../../examples/images/aigne-observe-execute.png)
+
+2.  打開您的瀏覽器並導覽至提供的本機 URL（通常是 `http://localhost:7893`），以查看最近的 Agent 執行列表並檢查其追蹤。
+
+    ![顯示追蹤列表的 Aigne 可觀察性網頁介面](../../../examples/images/aigne-observe-list.png)
 
 ## 總結
 
-本範例展示了如何使用 AIGNE 框架建立一個具有持久記憶體的聊天機器人。透過利用 `FSMemory` 外掛程式，Agent 可以儲存和回憶對話歷史及使用者個人資料，從而創造更智慧化和個人化的互動。
+此範例展示了如何使用 AIGNE 框架實現具有持久性記憶體的聊天機器人。透過利用 `FSMemory` 外掛程式，聊天機器人可以記錄和檢索對話歷史及使用者個人資料資訊，從而實現更具情境感知和個人化的互動。
 
-若需進一步閱讀，請探索以下相關主題：
+有關更進階的記憶體持久化選項，請參閱 [DID Spaces Memory](./examples-memory-did-spaces.md) 範例，該範例展示了如何使用去中心化儲存。
 
-<x-cards data-columns="2">
-  <x-card data-title="DID Spaces 記憶體" data-icon="lucide:database" data-href="/examples/memory-did-spaces">
-    了解如何使用 DID Spaces 進行記憶體的去中心化儲存持久化。
-  </x-card>
-  <x-card data-title="核心概念：記憶體" data-icon="lucide:brain-circuit" data-href="/developer-guide/core-concepts/memory">
-    深入探討 AIGNE 框架中記憶體背後的架構概念。
-  </x-card>
-</x-cards>
+</content>

@@ -1,19 +1,8 @@
 # MCP SQLite
 
-このガイドでは、AIGNEフレームワークとモデルコンテキストプロトコル（MCP）を使用してSQLiteデータベースを操作するための包括的なウォークスルーを提供します。この例に従うことで、自然言語のコマンドを通じて、テーブルの作成、データの挿入、レコードのクエリなどのデータベース操作を実行できるAgentをセットアップする方法を学びます。
+このガイドでは、AIGNE フレームワークを活用した AI Agent を使用して SQLite データベースと対話するための包括的なウォークスルーを提供します。これらの手順に従うことで、必要なコンポーネントのセットアップ、サンプルアプリケーションの実行、Agent を使用したテーブル作成やデータクエリなどのデータベース操作の実行方法を学びます。
 
-## 概要
-
-MCP SQLiteの例は、MCPサーバーを介してAI Agentを外部のSQLiteデータベースに接続する方法を示しています。これにより、Agentはデータの作成、読み取り、書き込みなど、データベース管理のための事前定義された一連のスキルを活用できます。Agentはユーザーのリクエストを解釈し、それらを適切なデータベースコマンドに変換し、SQLite MCPサーバーを通じて実行します。
-
-基本的なワークフローは次のとおりです：
-1.  ユーザーが自然言語のコマンドを提供します（例：「製品テーブルを作成して」）。
-2.  `AIAgent`がコマンドを処理します。
-3.  Agentは、SQLiteサーバーに接続された`MCPAgent`から適切なスキル（例：`create_table`）を特定します。
-4.  `MCPAgent`がデータベース上で対応するSQLコマンドを実行します。
-5.  結果がAgentに返され、Agentはユーザーへの応答を作成します。
-
-次の図は、このワークフローを示しています：
+このサンプルの中心は、`MCPAgent` を使用して実行中の [SQLite MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/sqlite) に接続することです。このサーバーはデータベース機能をスキルとして公開し、`AIAgent` はユーザープロンプトに基づいてそれらをインテリジェントに呼び出すことができます。
 
 ```d2
 direction: down
@@ -22,175 +11,225 @@ User: {
   shape: c4-person
 }
 
-AIAgent: {
-  label: "AI Agent"
+App: {
+  label: "@aigne/example-mcp-sqlite"
   shape: rectangle
+
+  AIGNE-Framework: {
+    label: "AIGNE Framework (@aigne/core)"
+    shape: rectangle
+
+    AIGNE-Instance: {
+      label: "AIGNE インスタンス"
+    }
+
+    AIAgent: {
+      label: "AIAgent"
+    }
+
+    MCPAgent: {
+      label: "MCPAgent"
+    }
+  }
+
+  AI-Model: {
+    label: "AI モデル\n(例: OpenAI)"
+    shape: rectangle
+  }
 }
 
-MCPAgent: {
-  label: "MCP Agent \n(SQLiteスキル)"
+SQLite-MCP-Server: {
+  label: "SQLite MCP サーバー"
   shape: rectangle
 }
 
 SQLite-DB: {
-  label: "SQLiteデータベース"
+  label: "SQLite データベース\n(usages.db)"
   shape: cylinder
 }
 
-User -> AIAgent: "1. 自然言語コマンド\n(例: 'テーブルを作成して')"
-AIAgent -> MCPAgent: "2. スキルを選択して呼び出す\n(例: create_table)"
-MCPAgent -> SQLite-DB: "3. SQLコマンドを実行"
-SQLite-DB -> MCPAgent: "4. 結果を返す"
-MCPAgent -> AIAgent: "5. 結果を転送"
-AIAgent -> User: "6. 応答を作成して送信"
-
+User -> App: "1. コマンド実行\n(例: '製品テーブルを作成')"
+App.AIGNE-Framework.AIAgent -> App.AI-Model: "2. プロンプトを解釈"
+App.AI-Model -> App.AIGNE-Framework.AIAgent: "3. 必要なスキル呼び出しを返す"
+App.AIGNE-Framework.AIAgent -> App.AIGNE-Framework.MCPAgent: "4. スキルを呼び出す"
+App.AIGNE-Framework.MCPAgent -> SQLite-MCP-Server: "5. コマンドを送信"
+SQLite-MCP-Server -> SQLite-DB: "6. SQL を実行"
+SQLite-DB -> SQLite-MCP-Server: "7. 結果を返す"
+SQLite-MCP-Server -> App.AIGNE-Framework.MCPAgent: "8. 応答を送信"
+App.AIGNE-Framework.MCPAgent -> App.AIGNE-Framework.AIAgent: "9. 応答を転送"
+App.AIGNE-Framework.AIAgent -> App: "10. 最終出力を処理"
+App -> User: "11. 結果メッセージを表示"
 ```
 
 ## 前提条件
 
-先に進む前に、開発環境が次の要件を満たしていることを確認してください：
+先に進む前に、開発環境が以下の要件を満たしていることを確認してください。サンプルを正常に実行するためには、これらの前提条件を遵守する必要があります。
 
-*   **Node.js**: バージョン20.0以上。
-*   **npm**: Node.jsに同梱されています。
-*   **uv**: Pythonの仮想環境およびパッケージインストーラー。[uvインストールガイド](https://github.com/astral-sh/uv)でセットアップ手順を確認してください。
-*   **AIモデルAPIキー**: OpenAIなどのサポートされているプロバイダーからのAPIキー。
+*   **Node.js:** バージョン 20.0 以上。
+*   **npm:** Node.js に同梱されている Node.js パッケージマネージャー。
+*   **uv:** Python パッケージインストーラー。SQLite MCP サーバーの実行に必要です。インストール手順は [`uv` の公式リポジトリ](https://github.com/astral-sh/uv) で確認できます。
+*   **AI モデル API キー:** AI Agent が機能するためには、サポートされているプロバイダーの API キーが必要です。この例ではデフォルトで OpenAI を使用しますが、他のプロバイダーもサポートされています。[OpenAI API キー](https://platform.openai.com/api-keys) は彼らのプラットフォームから取得できます。
+
+ソースコードからサンプルを実行する開発者向けには、以下の依存関係も必要です。
+
+*   **Pnpm:** 高速でディスクスペース効率の良いパッケージマネージャー。
+*   **Bun:** テストやサンプルの実行に使用される高速な JavaScript オールインワンツールキット。
 
 ## クイックスタート
 
-ローカルにインストールすることなく、`npx`を使用してこの例を直接実行できます。これは、MCP SQLite連携を最も早く確認する方法です。
+このセクションでは、手動インストールなしで直接サンプルを実行する手順を説明します。これは、予備評価のための最も効率的な方法です。
 
-### 例の実行
+アプリケーションは、単一コマンド用のワンショットモード、対話型のチャットモード、またはスクリプトへの直接パイプ入力で実行できます。
 
-ターミナルで次のコマンドを実行してください。この例は、単一コマンド用のワンショットモードと、対話型のチャットモードをサポートしています。
+ターミナルで以下のいずれかのコマンドを実行してください。
 
-1.  **ワンショットモード（デフォルト）**
-    このモードは単一のコマンドを受け取り、それを実行して終了します。
-
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-mcp-sqlite --input "create a product table with columns name, description, and createdAt"
-    ```
-
-2.  **パイプライン入力**
-    入力をコマンドに直接パイプすることもできます。
-
-    ```bash icon=lucide:terminal
-    echo "how many products are in the table?" | npx -y @aigne/example-mcp-sqlite
-    ```
-
-3.  **対話型チャットモード**
-    対話形式で利用するには、`--chat`フラグを使用します。
-
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-mcp-sqlite --chat
-    ```
-
-### AIモデルへの接続
-
-コマンドを実行するには、Agentが大規模言語モデルに接続する必要があります。これにはいくつかのオプションがあります。
-
-*   **AIGNE Hub（推奨）**: 初めて例を実行すると、公式のAIGNE Hub経由での接続を求められます。これは最も簡単な方法であり、新規ユーザーにはすぐに始められる無料トークンが提供されます。
-*   **セルフホストのAIGNE Hub**: 独自のAIGNE Hubインスタンスをお持ちの場合は、そのURLを提供することで接続できます。
-*   **サードパーティのモデルプロバイダー**: 必要なAPIキーを環境変数として設定することで、OpenAIなどのモデルプロバイダーに直接接続できます。
-
-例えば、OpenAIを使用するには、APIキーをエクスポートします：
-
-```bash title="OpenAI APIキーの設定" icon=lucide:terminal
-export OPENAI_API_KEY="your-openai-api-key"
+```bash title="ワンショットモードで実行 (デフォルト)" icon=lucide:terminal
+npx -y @aigne/example-mcp-sqlite
 ```
 
-さまざまなモデルプロバイダーの設定例については、ソースリポジトリの`.env.local.example`ファイルを参照してください。
+```bash title="対話型チャットモードで実行" icon=lucide:terminal
+npx -y @aigne/example-mcp-sqlite --chat
+```
+
+```bash title="パイプライン入力を使用" icon=lucide:terminal
+echo "create a product table with columns name description and createdAt" | npx -y @aigne/example-mcp-sqlite
+```
+
+## AI モデルへの接続
+
+AI Agent は、指示を処理するために大規模言語モデル (LLM) への接続を必要とします。モデルが事前に設定されていない状態でサンプルを実行すると、接続方法を選択するよう求められます。
+
+![AI モデルが設定されていない場合の初期接続プロンプト。](../../../examples/mcp-sqlite/run-example.png)
+
+この接続を確立するには、主に 3 つの方法があります。
+
+### 1. 公式 AIGNE Hub への接続
+
+これは新規ユーザーに推奨される方法です。合理化されたブラウザベースの認証プロセスを提供します。新規ユーザーはプラットフォームをテストするための無料クレジットを受け取れます。
+
+1.  最初のオプション `Connect to the Arcblock official AIGNE Hub` を選択します。
+2.  デフォルトの Web ブラウザが開き、認証ページが表示されます。
+3.  画面の指示に従って接続を承認します。
+
+![AIGNE CLI を AIGNE Hub に接続するための認証プロンプト。](../../../examples/images/connect-to-aigne-hub.png)
+
+### 2. セルフホストの AIGNE Hub への接続
+
+組織が AIGNE Hub のプライベートインスタンスを運用している場合は、2 番目のオプションを選択し、ハブの URL を入力して接続を完了します。
+
+![セルフホストの AIGNE Hub の URL を入力するプロンプト。](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+### 3. サードパーティモデルプロバイダー経由での接続
+
+適切な API キーを環境変数として設定することで、OpenAI などのサポートされているサードパーティモデルプロバイダーに直接接続できます。
+
+例えば、OpenAI に接続するには、`OPENAI_API_KEY` 変数を設定します。
+
+```bash title="OpenAI API キーを設定" icon=lucide:terminal
+export OPENAI_API_KEY="your-openai-api-key-here"
+```
+
+環境変数を設定した後、`npx` コマンドを再実行してください。サポートされているプロバイダーとその必要な環境変数の包括的なリストについては、リポジトリ内の `.env.local.example` ファイルを参照してください。
 
 ## ソースからのインストール
 
-開発やカスタマイズのために、リポジトリをクローンしてローカルで例を実行することができます。
+ソースコードを調査または変更したい開発者は、以下の手順に従ってリポジトリをクローンし、サンプルをローカルで実行してください。
 
-1.  **リポジトリのクローン**
+### 1. リポジトリをクローンする
 
-    ```bash icon=lucide:terminal
-    git clone https://github.com/AIGNE-io/aigne-framework
-    ```
+公式 AIGNE フレームワークリポジトリをローカルマシンにクローンします。
 
-2.  **依存関係のインストール**
-    例のディレクトリに移動し、`pnpm`を使用して必要なパッケージをインストールします。
+```bash title="リポジトリをクローン" icon=lucide:terminal
+git clone https://github.com/AIGNE-io/aigne-framework
+```
 
-    ```bash icon=lucide:terminal
-    cd aigne-framework/examples/mcp-sqlite
-    pnpm install
-    ```
+### 2. 依存関係をインストールする
 
-3.  **例の実行**
-    `pnpm start`コマンドを使用してスクリプトを実行します。
+サンプルディレクトリに移動し、`pnpm` を使用して必要な依存関係をインストールします。
 
-    ```bash icon=lucide:terminal
-    # ワンショットモードで実行
-    pnpm start -- --input "create 10 products for test"
+```bash title="依存関係をインストール" icon=lucide:terminal
+cd aigne-framework/examples/mcp-sqlite
+pnpm install
+```
 
-    # 対話型チャットモードで実行
-    pnpm start -- --chat
-    ```
+### 3. サンプルを実行する
 
-## コマンドラインオプション
+`pnpm start` コマンドを使用してアプリケーションを実行します。
 
-このスクリプトは、その動作をカスタマイズするためにいくつかのコマンドライン引数を受け入れます。
+```bash title="ワンショットモードで実行 (デフォルト)" icon=lucide:terminal
+pnpm start
+```
 
-| パラメータ                | 説明                                                                                      | デフォルト       |
-| ------------------------- | ------------------------------------------------------------------------------------------------- | ---------------- |
-| `--chat`                  | 対話型チャットモードで実行します。                                                                | 無効             |
-| `--model <provider[:model]>` | 使用するAIモデルを指定します。例：`openai` または `openai:gpt-4o-mini`。                            | `openai`         |
-| `--temperature <value>`   | モデル生成のtemperatureを設定します。                                                           | プロバイダーのデフォルト |
-| `--top-p <value>`         | top-pサンプリングの値を設定します。                                                                 | プロバイダーのデフォルト |
-| `--presence-penalty <value>` | presence penaltyの値を設定します。                                                                | プロバイダーのデフォルト |
-| `--frequency-penalty <value>`| frequency penaltyの値を設定します。                                                               | プロバイダーのデフォルト |
-| `--log-level <level>`     | ログレベルを設定します（`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`）。                           | `INFO`           |
-| `--input`, `-i <input>`   | 引数として直接入力を提供します。                                                                  | なし             |
+対話モードで実行したり、パイプライン入力を使用したりするには、`--` 区切り文字の後に目的のフラグを追加します。
 
-## コード実装
+```bash title="対話型チャットモードで実行" icon=lucide:terminal
+pnpm start -- --chat
+```
 
-中心的なロジックは、AIモデルの初期化、SQLiteサーバーに接続するための`MCPAgent`のセットアップ、そしてそのAgentとスキルを使用する`AIGNE`インスタンスの作成を含みます。
+```bash title="パイプライン入力を使用" icon=lucide:terminal
+echo "create a product table with columns name description and createdAt" | pnpm start
+```
 
-次の例は、テーブルの作成、レコードの挿入、データベースのクエリの全プロセスを示しています。
+### コマンドラインオプション
 
-```typescript index.ts
+アプリケーションは、その動作をカスタマイズするためのいくつかのコマンドライン引数をサポートしています。
+
+| パラメータ | 説明 | デフォルト |
+| :--- | :--- | :--- |
+| `--chat` | 対話型チャットモードを有効にします。 | 無効 (ワンショット) |
+| `--model <provider[:model]>` | AI モデルを指定します。フォーマット: `'provider[:model]'`。 | `openai` |
+| `--temperature <value>` | 生成のためのモデルの temperature を設定します。 | プロバイダーのデフォルト |
+| `--top-p <value>` | モデルの top-p サンプリング値を設定します。 | プロバイダーのデフォルト |
+| `--presence-penalty <value>`| モデルの presence penalty を設定します。 | プロバイダーのデフォルト |
+| `--frequency-penalty <value>`| モデルの frequency penalty を設定します。 | プロバイダーのデフォルト |
+| `--log-level <level>` | ログの詳細度 (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`) を設定します。 | `INFO` |
+| `--input`, `-i <input>` | 引数として直接入力を提供します。 | `None` |
+
+## コード例
+
+以下の TypeScript コードは、SQLite データベースと対話するために AI Agent をセットアップして呼び出すためのコアロジックを示しています。
+
+このスクリプトは `OpenAIChatModel` を初期化し、SQLite サーバーに接続された `MCPAgent` を開始し、モデルと Agent のスキルで `AIGNE` インスタンスを設定します。最後に、データベースタスクを実行するための特定の指示を持つ `AIAgent` を呼び出します。
+
+```typescript title="index.ts" icon=logos:typescript-icon
 import { join } from "node:path";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
-// 環境変数にOpenAI APIキーが設定されていることを確認します
 const { OPENAI_API_KEY } = process.env;
 
-// 1. AIモデルを初期化します
+// 1. チャットモデルを初期化
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-// 2. SQLiteサーバープロセスを管理するためのMCPAgentを作成します
+// 2. SQLite MCP サーバーを管理されたサブプロセスとして開始
 const sqlite = await MCPAgent.from({
   command: "uvx",
   args: [
     "-q",
     "mcp-server-sqlite",
     "--db-path",
-    join(process.cwd(), "usages.db"), // データベースファイルのパスを指定します
+    join(process.cwd(), "usages.db"),
   ],
 });
 
-// 3. モデルとSQLiteスキルでAIGNEをインスタンス化します
+// 3. モデルと MCP スキルで AIGNE インスタンスを設定
 const aigne = new AIGNE({
   model,
   skills: [sqlite],
 });
 
-// 4. 特定の指示を持つAI Agentを定義します
+// 4. 特定の指示を持つ AI Agent を定義
 const agent = AIAgent.from({
-  instructions: "You are a database administrator",
+  instructions: "あなたはデータベース管理者です",
 });
 
-// 5. Agentを呼び出してデータベース操作を実行します
+// 5. Agent を呼び出してテーブルを作成
 console.log(
-  "Creating table...",
   await aigne.invoke(
     agent,
-    "create a product table with columns name, description, and createdAt",
+    "create a product table with columns name description and createdAt",
   ),
 );
 // 期待される出力:
@@ -198,51 +237,40 @@ console.log(
 //   $message: "The product table has been created successfully with the columns: `name`, `description`, and `createdAt`.",
 // }
 
-console.log(
-  "Inserting test data...",
-  await aigne.invoke(agent, "create 10 products for test"),
-);
+// 6. Agent を呼び出してデータを挿入
+console.log(await aigne.invoke(agent, "create 10 products for test"));
 // 期待される出力:
 // {
 //   $message: "I have successfully created 10 test products in the database...",
 // }
 
-console.log(
-  "Querying data...",
-  await aigne.invoke(agent, "how many products?"),
-);
+// 7. Agent を呼び出してデータをクエリ
+console.log(await aigne.invoke(agent, "how many products?"));
 // 期待される出力:
 // {
 //   $message: "There are 10 products in the database.",
 // }
 
-// 6. AIGNEインスタンスをシャットダウンしてMCPサーバーを終了します
+// 8. AIGNE インスタンスと MCP サーバーをシャットダウン
 await aigne.shutdown();
 ```
 
-このスクリプトは、ライフサイクル全体を自動化します。MCPサーバーを起動し、それを使用するようにAI Agentを設定し、自然言語に基づいて一連のデータベースタスクを実行し、クリーンにシャットダウンします。
-
 ## デバッグ
 
-Agentの動作を監視および分析するには、`aigne observe`コマンドを使用できます。このツールは、モデルやツールとのやり取りを含む、Agentの実行トレースの詳細なビューを提供するローカルWebサーバーを起動します。これは、デバッグや情報の流れを理解するために非常に貴重です。
+Agent の実行フローを監視および分析するには、`aigne observe` コマンドを使用できます。このツールは、トレース、ツール呼び出し、モデルとの対話の詳細なビューを提供するローカル Web サーバーを起動し、デバッグやパフォーマンス分析に非常に役立ちます。
 
-```bash icon=lucide:terminal
-aigne observe
-```
+1.  **観測サーバーを開始:**
 
-このコマンドを実行した後、提供されたURLをブラウザで開いて、最近のAgentの呼び出しを検査できます。
+    ```bash title="観測サーバーを開始" icon=lucide:terminal
+    aigne observe
+    ```
 
-## まとめ
+    ![aigne observe コマンドがサーバーを開始したことを示すターミナル出力。](../../../examples/images/aigne-observe-execute.png)
 
-この例は、AIGNEフレームワークとモデルコンテキストプロトコルを組み合わせて、データベースのような外部システムと対話できるAgentを作成する強力さを示しています。データベース操作をスキルとして抽象化することにより、開発者は最小限の労力で洗練された言語駆動型のアプリケーションを構築できます。
+2.  **トレースを表示:**
 
-より高度なユースケースやその他の例については、以下のドキュメントを参照してください：
+    提供された URL (例: `http://localhost:7893`) を Web ブラウザで開き、観測インターフェースにアクセスします。「Traces」ページには、最近の Agent 実行が一覧表示されます。
 
-<x-cards data-columns="2">
-  <x-card data-title="MCP Agent" data-icon="lucide:box" data-href="/developer-guide/agents/mcp-agent">
-    モデルコンテキストプロトコルを介して外部システムに接続する方法について詳しく学びます。
-  </x-card>
-  <x-card data-title="AI Agent" data-icon="lucide:bot" data-href="/developer-guide/agents/ai-agent">
-    言語モデルと対話し、ツールを使用するための主要なAgentについて探ります。
-  </x-card>
-</x-cards>
+    ![Agent 実行トレースのリストを表示する AIGNE 観測インターフェース。](../../../examples/images/aigne-observe-list.png)
+
+    ここから個々のトレースを選択して、モデルに送信されたプロンプト、Agent によって呼び出されたスキル、最終出力など、操作の完全なシーケンスを検査できます。

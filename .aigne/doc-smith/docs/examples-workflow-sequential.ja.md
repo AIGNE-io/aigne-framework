@@ -1,151 +1,208 @@
 # ワークフロー逐次実行
 
-このガイドでは、タスクが保証された順序で実行されるステップバイステップの処理パイプラインを構築する方法を説明します。複数の Agent を連結し、ある Agent の出力を次の Agent の入力とすることで、信頼性が高く予測可能なワークフローを作成する方法を学びます。
-
-この例は、コンテンツの下書き、推敲、そして公開のためのフォーマット化など、一連の変換や分析を必要とするプロセスに最適です。タスクの同時実行が有効なワークフローについては、[ワークフロー並行実行](./examples-workflow-concurrency.md) の例を参照してください。
+このガイドでは、AIGNE フレームワークを使用して逐次ワークフローを構築し、実行する方法を説明します。複数の Agent を連鎖させ、ある Agent の出力が次の Agent の入力となることで、ステップバイステップの処理パイプラインを作成する方法を学びます。このパターンは、一連の明確で順序付けられた操作を必要とするタスクに最適です。
 
 ## 概要
 
-逐次実行ワークフローは、事前に定義された順序でタスクを処理します。各ステップは次のステップが始まる前に完了する必要があり、入力から最終出力まで順序正しい進行を保証します。このパターンは、複雑な多段階の Agent システムを構築するための基本です。
+逐次ワークフローは、事前に定義された順序でタスクを処理します。シーケンス内の各 Agent は特定の機能を実行し、その結果を後続の Agent に渡します。これにより、組み立てラインのように、予測可能で制御された実行フローが保証されます。
 
-```d2
-direction: down
+この例では、3つの Agent で構成されるシンプルなマーケティングコンテンツ生成パイプラインを構築します。
 
-Input: {
-  label: "入力\n(製品説明)"
-  shape: oval
-}
+1.  **コンセプト抽出 Agent (Concept Extractor)**: 製品説明を分析し、主要な機能、ターゲットオーディエンス、独自のセールスポイントを特定します。
+2.  **ライター Agent (Writer)**: 抽出されたコンセプトを使用して、説得力のあるマーケティングコピーを作成します。
+3.  **フォーマット校正 Agent (Format Proof)**: 下書きのコピーを洗練させ、文法を修正し、明瞭さを向上させ、洗練された最終的な出力を保証します。
 
-Sequential-Workflow: {
-  label: "逐次実行ワークフロー (TeamAgent)"
-  shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-width: 2
-    stroke-dash: 4
-  }
+データは、以下に示すように、厳密なシーケンスで Agent を通過します。
 
-  Concept-Extractor: {
-    label: "1. コンセプト抽出"
-    shape: rectangle
-  }
+```mermaid
+flowchart LR
+in(In)
+out(Out)
+conceptExtractor(コンセプト抽出 Agent)
+writer(ライター Agent)
+formatProof(フォーマット校正 Agent)
 
-  Writer: {
-    label: "2. ライター"
-    shape: rectangle
-  }
+in --> conceptExtractor --> writer --> formatProof --> out
 
-  Format-Proofread: {
-    label: "3. フォーマットと校正"
-    shape: rectangle
-  }
-}
+classDef inputOutput fill:#f9f0ed,stroke:#debbae,stroke-width:2px,color:#b35b39,font-weight:bolder;
+classDef processing fill:#F0F4EB,stroke:#C2D7A7,stroke-width:2px,color:#6B8F3C,font-weight:bolder;
 
-Output: {
-  label: "最終出力\n(コンセプト、下書き、コンテンツ)"
-  shape: oval
-}
-
-Input -> Sequential-Workflow.Concept-Extractor
-Sequential-Workflow.Concept-Extractor -> Sequential-Workflow.Writer: "output: concept"
-Sequential-Workflow.Writer -> Sequential-Workflow.Format-Proofread: "output: draft"
-Sequential-Workflow.Format-Proofread -> Output: "output: content"
+class in inputOutput
+class out inputOutput
+class conceptExtractor processing
+class writer processing
+class formatProof processing
 ```
+
+## 前提条件
+
+この例を実行する前に、開発環境が以下の要件を満たしていることを確認してください。
+
+*   **Node.js**: バージョン 20.0 以上。
+*   **npm**: Node.js に含まれています。
+*   **OpenAI API キー**: この例でのモデルとの対話に必要です。[OpenAI Platform](https://platform.openai.com/api-keys) から取得できます。
 
 ## クイックスタート
 
-この例は、`npx` を使用してローカルにインストールすることなく直接実行できます。
+`npx` を使用すると、ローカルにインストールすることなくこの例を直接実行できます。
 
-### 前提条件
+### 例を実行する
 
-- [Node.js](https://nodejs.org) (バージョン 20.0 以上)
-- サポートされているモデルプロバイダー (例: [OpenAI](https://platform.openai.com/api-keys)) の API キー
+ターミナルで以下のコマンドを実行します。
 
-### ワークフローの実行
+デフォルトのワンショットモードで実行する場合:
+```bash icon=lucide:terminal
+npx -y @aigne/example-workflow-sequential
+```
 
-この例は、デフォルトのワンショットモード、対話型のチャットモード、または入力を直接パイプで渡す方法で実行できます。
+対話型のチャットモードで実行する場合:
+```bash icon=lucide:terminal
+npx -y @aigne/example-workflow-sequential --chat
+```
 
-1.  **ワンショットモード**: 事前に定義された入力でワークフローを一度実行します。
+コマンドに直接入力をパイプすることもできます:
+```bash icon=lucide:terminal
+echo "Create marketing content for our new AI-powered fitness app" | npx -y @aigne/example-workflow-sequential
+```
 
-    ```sh icon=lucide:terminal
-    npx -y @aigne/example-workflow-sequential
-    ```
+### AI モデルに接続する
 
-2.  **対話型チャットモード**: 継続的に入力できるセッションを開始します。
+初めてこの例を実行すると、アプリケーションは AI モデルが設定されていないことを検出し、接続を促すプロンプトを表示します。
 
-    ```sh icon=lucide:terminal
-    npx -y @aigne/example-workflow-sequential --chat
-    ```
+![AI モデルへの接続を促す初期プロンプト](../../../examples/workflow-sequential/run-example.png)
 
-3.  **パイプライン入力**: 他のコマンドからパイプで渡された入力を処理します。
+続行するにはいくつかのオプションがあります。
 
-    ```sh icon=lucide:terminal
-    echo "Create marketing content for our new AI-powered fitness app" | npx -y @aigne/example-workflow-sequential
-    ```
+**1. 公式 AIGNE Hub 経由で接続する (推奨)**
 
-### AI モデルへの接続
+これは最も簡単に始めることができる方法です。新規ユーザーは試用目的で無料のトークン残高を受け取れます。
 
-ワークフローを実行するには、AI モデルに接続する必要があります。初回実行時に接続方法を選択するよう求められます。
+*   プロンプトの最初のオプションを選択します: `Connect to the Arcblock official AIGNE Hub`。
+*   デフォルトのウェブブラウザが新しいタブで AIGNE Hub の認証ページを開きます。
+*   画面の指示に従って接続を承認します。
 
-- **AIGNE Hub (推奨)**: 最も簡単に始められる方法です。新規ユーザーには無料のトークンが付与されます。
-- **セルフホスト AIGNE Hub**: 独自の AIGNE Hub インスタンスに接続します。
-- **サードパーティプロバイダー**: OpenAI などのプロバイダーの API キーで環境を設定します。
+![AIGNE Hub への接続を承認する](../../../examples/images/connect-to-aigne-hub.png)
 
-OpenAI を直接使用するには、以下の環境変数を設定してください。
+**2. セルフホストの AIGNE Hub 経由で接続する**
 
-```sh icon=lucide:terminal
+独自の AIGNE Hub インスタンスを運用している場合は、直接接続できます。
+
+*   2番目のオプションを選択します: `Connect to my own AIGNE Hub`。
+*   ターミナルでプロンプトが表示されたら、セルフホストの AIGNE Hub インスタンスの URL を入力します。
+
+![セルフホストの AIGNE Hub の URL を入力する](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+**3. サードパーティのモデルプロバイダー経由で接続する**
+
+OpenAI などのサポートされているサードパーティのモデルプロバイダーに直接接続することもできます。これには、適切な API キーを環境変数として設定する必要があります。OpenAI の場合、`OPENAI_API_KEY` 変数をエクスポートします。
+
+```bash OpenAI API キーを設定 icon=lucide:terminal
 export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 ```
 
-## 仕組み
+`"YOUR_OPENAI_API_KEY"` を実際のキーに置き換えてください。環境変数を設定した後、再度実行コマンドを実行します。他のプロバイダーの設定に関する詳細は、プロジェクトリポジトリの `.env.local.example` ファイルを参照してください。
 
-逐次実行ワークフローは、`ProcessMode.sequential` で設定された `TeamAgent` を使用して構築されます。これにより、`skills` 配列にリストされている Agent が定義された順序で実行されることが保証されます。
+## インストール (オプション)
 
-### コード実装
+リポジトリのローカルクローンから例を実行したい場合は、以下の手順に従ってください。
 
-中核となるロジックは、3つの異なる `AIAgent` インスタンスを定義し、それらを逐次実行の `TeamAgent` 内で連携させることです。
+**1. リポジトリをクローンする**
 
-```typescript sequential-workflow.ts icon=logos:typescript
+```bash icon=lucide:terminal
+git clone https://github.com/AIGNE-io/aigne-framework
+```
+
+**2. 依存関係をインストールする**
+
+例のディレクトリに移動し、`pnpm` を使用して必要なパッケージをインストールします。
+
+```bash icon=lucide:terminal
+cd aigne-framework/examples/workflow-sequential
+pnpm install
+```
+
+**3. 例を実行する**
+
+`pnpm start` コマンドを使用してワークフローを実行します。
+
+ワンショットモードで実行する場合:
+```bash icon=lucide:terminal
+pnpm start
+```
+
+対話型のチャットモードで実行する場合 (引数の前に `--` があることに注意してください):
+```bash icon=lucide:terminal
+pnpm start -- --chat
+```
+
+パイプライン入力を使用する場合:
+```bash icon=lucide:terminal
+echo "Create marketing content for our new AI-powered fitness app" | pnpm start
+```
+
+### コマンドラインオプション
+
+この例では、カスタマイズのためにいくつかのコマンドライン引数をサポートしています。
+
+| パラメータ | 説明 | デフォルト |
+|-----------|-------------|---------|
+| `--chat` | 対話型のチャットモードで実行します。 | 無効 |
+| `--model <provider[:model]>` | 使用する AI モデルを指定します (例: `openai` または `openai:gpt-4o-mini`)。 | `openai` |
+| `--temperature <value>` | モデル生成の temperature を設定します。 | プロバイダーのデフォルト |
+| `--top-p <value>` | top-p サンプリングの値を設定します。 | プロバイダーのデフォルト |
+| `--presence-penalty <value>` | presence penalty の値を設定します。 | プロバイダーのデフォルト |
+| `--frequency-penalty <value>` | frequency penalty の値を設定します。 | プロバイダーのデフォルト |
+| `--log-level <level>` | ログレベルを設定します (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`)。 | `INFO` |
+| `--input`, `-i <input>` | 引数として直接入力を提供します。 | `None` |
+
+## コード例
+
+逐次ワークフローのコアロジックは、1つの TypeScript ファイルで定義されています。3つの異なる `AIAgent` インスタンスを初期化し、それらを逐次実行用に設定された `TeamAgent` 内で編成します。
+
+```typescript sequential-workflow.ts
 import { AIAgent, AIGNE, ProcessMode, TeamAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
+const { OPENAI_API_KEY } = process.env;
+
 // 1. モデルを初期化する
 const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: OPENAI_API_KEY,
 });
 
-// 2. シーケンスの最初の Agent を定義する: コンセプト抽出
+// 2. シーケンスの最初の Agent を定義する
 const conceptExtractor = AIAgent.from({
   instructions: `\
 あなたはマーケティングアナリストです。製品説明が与えられたら、以下を特定してください:
 - 主要な機能
 - ターゲットオーディエンス
-- ユニークセリングポイント (USP)
+- 独自のセールスポイント
 
 製品説明:
 {{product}}`,
   outputKey: "concept",
 });
 
-// 3. 2番目の Agent を定義する: ライター
+// 3. 2番目の Agent を定義する
 const writer = AIAgent.from({
   instructions: `\
-あなたはマーケティングコピーライターです。機能、オーディエンス、USP を記述したテキストブロックが与えられたら、
-魅力的なマーケティングコピー (約150語) を作成してください。
+あなたはマーケティングコピーライターです。機能、オーディエンス、USP を説明するテキストブロックが与えられたら、
+これらの点を強調する説得力のあるマーケティングコピー (ニュースレターのセクションのようなもの) を作成してください。
+出力は短く (約 150 ワード)、コピーのみを単一のテキストブロックとして出力してください。
 
 製品説明:
 {{product}}
 
 以下は製品に関する情報です:
-{{concept}}`, // 前の Agent の出力を使用する
+{{concept}}`,
   outputKey: "draft",
 });
 
-// 4. 最後の Agent を定義する: フォーマットと校正
+// 4. 3番目の Agent を定義する
 const formatProof = AIAgent.from({
   instructions: `\
-あなたは編集者です。下書きのコピーが与えられたら、文法を修正し、明瞭さを向上させ、一貫したトーンを確保してください。
-最終的に磨き上げられたコピーを出力してください。
+あなたは編集者です。下書きのコピーが与えられたら、文法を修正し、明瞭さを向上させ、一貫したトーンを確保し、
+フォーマットを整え、洗練させてください。最終的に改善されたコピーを単一のテキストブロックとして出力してください。
 
 製品説明:
 {{product}}
@@ -153,82 +210,69 @@ const formatProof = AIAgent.from({
 以下は製品に関する情報です:
 {{concept}}
 
-下書きコピー:
-{{draft}}`, // 前の Agent たちの出力を使用する
+下書きのコピー:
+{{draft}}`,
   outputKey: "content",
 });
 
-// 5. AIGNE インスタンスと TeamAgent を設定する
+// 5. AIGNE インスタンスを初期化する
 const aigne = new AIGNE({ model });
 
+// 6. 逐次ワークフローを管理するための TeamAgent を作成する
 const teamAgent = TeamAgent.from({
   skills: [conceptExtractor, writer, formatProof],
-  mode: ProcessMode.sequential, // 実行モードを逐次実行に設定する
+  mode: ProcessMode.sequential, // これにより、Agent が次々に実行されることが保証されます
 });
 
-// 6. ワークフローを呼び出す
+// 7. 初期入力でワークフローを呼び出す
 const result = await aigne.invoke(teamAgent, {
   product: "AIGNE is a No-code Generative AI Apps Engine",
 });
 
 console.log(result);
-```
 
-### 実行分析
-
-1.  **モデルの初期化**: `OpenAIChatModel` が必要な API キーで設定されます。
-2.  **Agent の定義**:
-    *   `conceptExtractor`: 初期の `product` 説明を受け取り、`concept` の出力を生成します。
-    *   `writer`: 元の `product` 説明と前のステップからの `concept` を使用して `draft` を作成します。
-    *   `formatProof`: これまでのすべての出力 (`product`, `concept`, `draft`) を受け取り、最終的な `content` を生成します。
-3.  **チームの設定**: `TeamAgent` が、目的の実行順序で3つの Agent と共に作成されます。この順序を強制するために `ProcessMode.sequential` が指定されています。
-4.  **呼び出し**: `aigne.invoke` メソッドが、初期入力オブジェクトでワークフローを開始します。フレームワークは自動的に状態を管理し、蓄積された出力を後続の各 Agent に渡します。
-5.  **出力**: 最終結果は、シーケンス内のすべての Agent からの出力を含むオブジェクトです。
-
-```json 出力例
+/*
+// 期待される出力構造:
 {
-  "concept": "**製品説明: AIGNE - ノーコード生成AIアプリエンジン**\n\nAIGNE は、ユーザーがシームレスに作成できるように設計された最先端のノーコード生成AIアプリエンジンです...",
-  "draft": "革新的なノーコード生成AIアプリエンジンである AIGNE で、創造の力を解き放ちましょう！業務を効率化したい中小企業でも、起業家でも...",
-  "content": "革新的なノーコード生成AIアプリエンジンである AIGNE で、創造の力を解き放ちましょう！業務の効率化を目指す中小企業であろうと、起業家であろうと..."
+  concept: "...", // conceptExtractor からの出力
+  draft: "...",   // writer からの出力
+  content: "..."  // formatProof からの出力
 }
+*/
 ```
 
-## コマンドラインオプション
+このスクリプトは、以下の主要なステップを示しています。
+1.  LLM との通信を処理するために `OpenAIChatModel` インスタンスが作成されます。
+2.  3つの `AIAgent` インスタンス (`conceptExtractor`, `writer`, `formatProof`) が特定の指示で定義されます。各 Agent の `outputKey` は、その結果が格納されるキーを決定します。
+3.  `writer` Agent は `{{concept}}` プレースホルダーを介して `conceptExtractor` の出力を使用します。同様に、`formatProof` は `{{concept}}` と `{{draft}}` を使用します。
+4.  `TeamAgent` は、その `skills` 配列に3つの Agent を設定して構成されます。`mode` は `ProcessMode.sequential` に設定されており、これによりチームは提供された順序で Agent を実行するように指示されます。
+5.  最後に、`aigne.invoke()` がワークフローを開始し、初期の製品説明を渡します。最終結果は、シーケンス内のすべての Agent からの出力を含むオブジェクトです。
 
-以下のパラメータで実行をカスタマイズできます。
+## デバッグ
 
-| パラメータ                | 説明                                                                                             | デフォルト         |
-| ------------------------- | ------------------------------------------------------------------------------------------------ | ------------------ |
-| `--chat`                  | 対話型チャットモードで実行します。                                                               | 無効               |
-| `--model <provider[:model]>` | 使用する AI モデルを指定します (例: `openai` または `openai:gpt-4o-mini`)。                     | `openai`           |
-| `--temperature <value>`   | モデル生成の temperature を設定します。                                                          | プロバイダーのデフォルト |
-| `--top-p <value>`         | top-p サンプリング値を設定します。                                                               | プロバイダーのデフォルト |
-| `--presence-penalty <value>`| presence penalty の値を設定します。                                                              | プロバイダーのデフォルト |
-| `--frequency-penalty <value>`| frequency penalty の値を設定します。                                                             | プロバイダーのデフォルト |
-| `--log-level <level>`     | ログレベルを設定します (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`)。                               | `INFO`             |
-| `--input, -i <input>`     | コマンドライン経由で直接入力を指定します。                                                       | なし               |
+Agent の実行を監視およびデバッグするには、`aigne observe` コマンドを使用できます。このツールは、トレースの検査、入力と出力の確認、ワークフローのパフォーマンス分析を行うためのウェブベースのインターフェースを提供します。
 
-### 使用例
+まず、ターミナルで監視サーバーを起動します。
 
-```sh icon=lucide:terminal
-# 特定のモデルを使用してチャットモードで実行
-npx @aigne/example-workflow-sequential --chat --model openai:gpt-4o-mini
-
-# 詳細な出力のためにログレベルをデバッグに設定
-npx @aigne/example-workflow-sequential --log-level DEBUG
+```bash icon=lucide:terminal
+aigne observe
 ```
+
+サーバーが起動し、`http://localhost:7893` で UI にアクセスできます。
+
+![ターミナルで起動中の AIGNE Observe サーバー](../../../examples/images/aigne-observe-execute.png)
+
+ワークフローを実行すると、実行トレースが可観測性インターフェースに表示され、シーケンスの各ステップを詳細に調べることができます。
+
+![AIGNE 可観測性 UI の最近の Agent トレースのリスト](../../../examples/images/aigne-observe-list.png)
 
 ## まとめ
 
-この例では、AIGNE フレームワークを使用した逐次実行ワークフローの設定と実行方法を説明しました。一連の Agent を定義し、それらを `ProcessMode.sequential` を持つ `TeamAgent` に配置することで、複雑な多段階タスクのための堅牢で順序正しいパイプラインを構築できます。
+このガイドでは、逐次ワークフローのセットアップと実行について説明しました。一連の Agent を定義し、それらを逐次モードの `TeamAgent` で編成することにより、複雑なタスクのための強力な多段階処理パイプラインを構築できます。
 
-Agent の連携に関するさらなる情報については、以下のトピックをご覧ください。
+より高度なワークフローパターンについては、以下の例をご覧ください。
 
 <x-cards data-columns="2">
-  <x-card data-title="Team Agent" data-href="/developer-guide/agents/team-agent" data-icon="lucide:users">
-    複数の Agent を逐次、並列、または自己修正モードで連携させる方法について詳しく学びます。
-  </x-card>
-  <x-card data-title="ワークフロー: 並行実行" data-href="/examples/workflow-concurrency" data-icon="lucide:git-fork">
-    同時に実行できるタスクのパフォーマンスを最適化するために、Agent を並列実行する方法を発見します。
-  </x-card>
+  <x-card data-title="ワークフロー: 並列実行" data-href="/examples/workflow-concurrency" data-icon="lucide:git-fork">パフォーマンスを向上させるために複数の Agent を同時に実行する方法を学びます。</x-card>
+  <x-card data-title="ワークフロー: オーケストレーション" data-href="/examples/workflow-orchestration" data-icon="lucide:network">より複雑で非線形のパイプラインで複数の Agent を調整します。</x-card>
 </x-cards>

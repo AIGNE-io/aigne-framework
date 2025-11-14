@@ -1,19 +1,8 @@
 # MCP SQLite
 
-This guide provides a comprehensive walkthrough for interacting with SQLite databases using the AIGNE Framework and the Model Context Protocol (MCP). By following this example, you will learn how to set up an agent that can execute database operations, such as creating tables, inserting data, and querying records, through natural language commands.
+This guide provides a comprehensive walkthrough for interacting with an SQLite database using an AI agent powered by the AIGNE Framework. By following these steps, you will learn how to set up the necessary components, run the example application, and use an agent to perform database operations like creating tables and querying data.
 
-## Overview
-
-The MCP SQLite example demonstrates how to connect an AI agent to an external SQLite database via an MCP server. This allows the agent to leverage a set of predefined skills for database management, including creating, reading, and writing data. The agent interprets user requests, translates them into the appropriate database commands, and executes them through the SQLite MCP server.
-
-The fundamental workflow is as follows:
-1.  A user provides a natural language command (e.g., "create a product table").
-2.  The `AIAgent` processes the command.
-3.  The agent identifies the appropriate skill (e.g., `create_table`) from the `MCPAgent` connected to the SQLite server.
-4.  The `MCPAgent` executes the corresponding SQL command on the database.
-5.  The result is returned to the agent, which then formulates a response for the user.
-
-The following diagram illustrates this workflow:
+The core of this example involves using an `MCPAgent` to connect to a running [SQLite MCP Server](https://github.com/modelcontextprotocol/servers/tree/main/src/sqlite). This server exposes database functionalities as skills that an `AIAgent` can intelligently invoke based on user prompts.
 
 ```d2
 direction: down
@@ -22,159 +11,210 @@ User: {
   shape: c4-person
 }
 
-AIAgent: {
-  label: "AI Agent"
+App: {
+  label: "@aigne/example-mcp-sqlite"
   shape: rectangle
+
+  AIGNE-Framework: {
+    label: "AIGNE Framework (@aigne/core)"
+    shape: rectangle
+
+    AIGNE-Instance: {
+      label: "AIGNE Instance"
+    }
+
+    AIAgent: {
+      label: "AIAgent"
+    }
+
+    MCPAgent: {
+      label: "MCPAgent"
+    }
+  }
+
+  AI-Model: {
+    label: "AI Model\n(e.g., OpenAI)"
+    shape: rectangle
+  }
 }
 
-MCPAgent: {
-  label: "MCP Agent \n(SQLite Skill)"
+SQLite-MCP-Server: {
+  label: "SQLite MCP Server"
   shape: rectangle
 }
 
 SQLite-DB: {
-  label: "SQLite Database"
+  label: "SQLite Database\n(usages.db)"
   shape: cylinder
 }
 
-User -> AIAgent: "1. Natural Language Command\n(e.g., 'create a table')"
-AIAgent -> MCPAgent: "2. Selects & invokes skill\n(e.g., create_table)"
-MCPAgent -> SQLite-DB: "3. Executes SQL command"
-SQLite-DB -> MCPAgent: "4. Returns result"
-MCPAgent -> AIAgent: "5. Forwards result"
-AIAgent -> User: "6. Formulates & sends response"
-
+User -> App: "1. Run command\n(e.g., 'create a product table')"
+App.AIGNE-Framework.AIAgent -> App.AI-Model: "2. Interpret prompt"
+App.AI-Model -> App.AIGNE-Framework.AIAgent: "3. Return required skill call"
+App.AIGNE-Framework.AIAgent -> App.AIGNE-Framework.MCPAgent: "4. Invoke skill"
+App.AIGNE-Framework.MCPAgent -> SQLite-MCP-Server: "5. Send command"
+SQLite-MCP-Server -> SQLite-DB: "6. Execute SQL"
+SQLite-DB -> SQLite-MCP-Server: "7. Return result"
+SQLite-MCP-Server -> App.AIGNE-Framework.MCPAgent: "8. Send response"
+App.AIGNE-Framework.MCPAgent -> App.AIGNE-Framework.AIAgent: "9. Forward response"
+App.AIGNE-Framework.AIAgent -> App: "10. Process final output"
+App -> User: "11. Display result message"
 ```
 
 ## Prerequisites
 
-Before proceeding, ensure your development environment meets the following requirements:
+Before proceeding, ensure your development environment meets the following requirements. Adherence to these prerequisites is necessary for the successful execution of the example.
 
-*   **Node.js**: Version 20.0 or higher.
-*   **npm**: Included with Node.js.
-*   **uv**: A Python virtual environment and package installer. See the [uv installation guide](https://github.com/astral-sh/uv) for setup instructions.
-*   **AI Model API Key**: An API key from a supported provider, such as OpenAI.
+*   **Node.js:** Version 20.0 or higher.
+*   **npm:** Node.js package manager, included with Node.js.
+*   **uv:** A Python package installer. Required for running the SQLite MCP Server. Installation instructions can be found at the [official `uv` repository](https://github.com/astral-sh/uv).
+*   **AI Model API Key:** An API key from a supported provider is required for the AI agent to function. This example defaults to OpenAI, but other providers are supported. You can obtain an [OpenAI API key](https://platform.openai.com/api-keys) from their platform.
+
+For developers intending to run the example from the source code, the following dependencies are also required:
+
+*   **Pnpm:** A fast, disk space-efficient package manager.
+*   **Bun:** A fast JavaScript all-in-one toolkit used for running tests and examples.
 
 ## Quick Start
 
-You can run this example directly without a local installation using `npx`. This is the fastest way to see the MCP SQLite integration in action.
+This section provides instructions to run the example directly without a manual installation, which is the most efficient method for a preliminary evaluation.
 
-### Run the Example
+The application can be executed in a one-shot mode for single commands, in an interactive chat mode, or by piping input directly to the script.
 
-Execute the following commands in your terminal. The example supports a one-shot mode for single commands and an interactive chat mode.
+Execute one of the following commands in your terminal:
 
-1.  **One-Shot Mode (Default)**
-    This mode takes a single command, executes it, and exits.
-
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-mcp-sqlite --input "create a product table with columns name, description, and createdAt"
-    ```
-
-2.  **Pipeline Input**
-    You can also pipe input directly to the command.
-
-    ```bash icon=lucide:terminal
-    echo "how many products are in the table?" | npx -y @aigne/example-mcp-sqlite
-    ```
-
-3.  **Interactive Chat Mode**
-    For a conversational experience, use the `--chat` flag.
-
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-mcp-sqlite --chat
-    ```
-
-### Connect to an AI Model
-
-To execute commands, the agent needs to connect to a large language model. You have several options for this.
-
-*   **AIGNE Hub (Recommended)**: The first time you run the example, you will be prompted to connect via the official AIGNE Hub. This is the simplest method and provides new users with free tokens to get started.
-*   **Self-Hosted AIGNE Hub**: If you have your own instance of AIGNE Hub, you can connect to it by providing its URL.
-*   **Third-Party Model Provider**: You can directly connect to a model provider like OpenAI by setting the required API key as an environment variable.
-
-For example, to use OpenAI, export your API key:
-
-```bash title="Set OpenAI API Key" icon=lucide:terminal
-export OPENAI_API_KEY="your-openai-api-key"
+```bash title="Run in one-shot mode (default)" icon=lucide:terminal
+npx -y @aigne/example-mcp-sqlite
 ```
 
-Refer to the `.env.local.example` file in the source repository for more examples of configuring different model providers.
+```bash title="Run in interactive chat mode" icon=lucide:terminal
+npx -y @aigne/example-mcp-sqlite --chat
+```
+
+```bash title="Use pipeline input" icon=lucide:terminal
+echo "create a product table with columns name description and createdAt" | npx -y @aigne/example-mcp-sqlite
+```
+
+## Connecting to an AI Model
+
+The AI agent requires a connection to a Large Language Model (LLM) to process instructions. If you run the example without a pre-configured model, you will be prompted to select a connection method.
+
+![Initial connection prompt when no AI model is configured.](../../../examples/mcp-sqlite/run-example.png)
+
+There are three primary methods for establishing this connection:
+
+### 1. Connect to the Official AIGNE Hub
+
+This is the recommended method for new users. It provides a streamlined, browser-based authentication process. New users receive complimentary credits to test the platform.
+
+1.  Select the first option: `Connect to the Arcblock official AIGNE Hub`.
+2.  Your default web browser will open to an authorization page.
+3.  Follow the on-screen instructions to approve the connection.
+
+![Authorization prompt for connecting the AIGNE CLI to the AIGNE Hub.](../../../examples/images/connect-to-aigne-hub.png)
+
+### 2. Connect to a Self-Hosted AIGNE Hub
+
+If your organization operates a private instance of AIGNE Hub, select the second option and provide the URL of your hub to complete the connection.
+
+![Prompt to enter the URL for a self-hosted AIGNE Hub.](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+### 3. Connect via a Third-Party Model Provider
+
+You can connect directly to a supported third-party model provider, such as OpenAI, by configuring the appropriate API key as an environment variable.
+
+For example, to connect to OpenAI, set the `OPENAI_API_KEY` variable:
+
+```bash title="Set OpenAI API key" icon=lucide:terminal
+export OPENAI_API_KEY="your-openai-api-key-here"
+```
+
+After setting the environment variable, re-run the `npx` command. For a comprehensive list of supported providers and their required environment variables, refer to the example `.env.local.example` file in the repository.
 
 ## Installation from Source
 
-For development or customization, you can clone the repository and run the example locally.
+For developers who wish to inspect or modify the source code, follow these steps to clone the repository and run the example locally.
 
-1.  **Clone the Repository**
+### 1. Clone the Repository
 
-    ```bash icon=lucide:terminal
-    git clone https://github.com/AIGNE-io/aigne-framework
-    ```
+Clone the official AIGNE Framework repository to your local machine.
 
-2.  **Install Dependencies**
-    Navigate to the example directory and install the necessary packages using `pnpm`.
+```bash title="Clone the repository" icon=lucide:terminal
+git clone https://github.com/AIGNE-io/aigne-framework
+```
 
-    ```bash icon=lucide:terminal
-    cd aigne-framework/examples/mcp-sqlite
-    pnpm install
-    ```
+### 2. Install Dependencies
 
-3.  **Run the Example**
-    Use the `pnpm start` command to execute the script.
+Navigate to the example directory and install the required dependencies using `pnpm`.
 
-    ```bash icon=lucide:terminal
-    # Run in one-shot mode
-    pnpm start -- --input "create 10 products for test"
+```bash title="Install dependencies" icon=lucide:terminal
+cd aigne-framework/examples/mcp-sqlite
+pnpm install
+```
 
-    # Run in interactive chat mode
-    pnpm start -- --chat
-    ```
+### 3. Run the Example
 
-## Command-Line Options
+Execute the application using the `pnpm start` command.
 
-The script accepts several command-line arguments to customize its behavior.
+```bash title="Run in one-shot mode (default)" icon=lucide:terminal
+pnpm start
+```
 
-| Parameter                 | Description                                                                                       | Default          |
-| ------------------------- | ------------------------------------------------------------------------------------------------- | ---------------- |
-| `--chat`                  | Run in interactive chat mode.                                                                     | Disabled         |
-| `--model <provider[:model]>` | Specify the AI model to use, e.g., `openai` or `openai:gpt-4o-mini`.                                | `openai`         |
-| `--temperature <value>`   | Set the temperature for model generation.                                                         | Provider default |
-| `--top-p <value>`         | Set the top-p sampling value.                                                                     | Provider default |
-| `--presence-penalty <value>` | Set the presence penalty value.                                                                   | Provider default |
-| `--frequency-penalty <value>`| Set the frequency penalty value.                                                                  | Provider default |
-| `--log-level <level>`     | Set the logging level (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`).                                  | `INFO`           |
-| `--input`, `-i <input>`   | Provide input directly as an argument.                                                            | None             |
+To run in interactive mode or use pipeline input, append the desired flags after a `--` separator.
 
-## Code Implementation
+```bash title="Run in interactive chat mode" icon=lucide:terminal
+pnpm start -- --chat
+```
 
-The core logic involves initializing the AI model, setting up the `MCPAgent` to connect to the SQLite server, and then creating an `AIGNE` instance that uses the agent and its skills.
+```bash title="Use pipeline input" icon=lucide:terminal
+echo "create a product table with columns name description and createdAt" | pnpm start
+```
 
-The following example demonstrates the complete process of creating a table, inserting records, and querying the database.
+### Command-Line Options
 
-```typescript index.ts
+The application supports several command-line arguments to customize its behavior.
+
+| Parameter | Description | Default |
+| :--- | :--- | :--- |
+| `--chat` | Enables interactive chat mode. | Disabled (one-shot) |
+| `--model <provider[:model]>` | Specifies the AI model. Format: `'provider[:model]'`. | `openai` |
+| `--temperature <value>` | Sets the model's temperature for generation. | Provider default |
+| `--top-p <value>` | Sets the model's top-p sampling value. | Provider default |
+| `--presence-penalty <value>`| Sets the model's presence penalty. | Provider default |
+| `--frequency-penalty <value>`| Sets the model's frequency penalty. | Provider default |
+| `--log-level <level>` | Sets the logging verbosity (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`). | `INFO` |
+| `--input`, `-i <input>` | Provides input directly as an argument. | `None` |
+
+## Code Example
+
+The following TypeScript code demonstrates the core logic for setting up and invoking the AI agent to interact with the SQLite database.
+
+The script initializes an `OpenAIChatModel`, starts an `MCPAgent` connected to the SQLite server, and configures an `AIGNE` instance with the model and the agent's skills. Finally, it invokes an `AIAgent` with specific instructions to perform database tasks.
+
+```typescript title="index.ts" icon=logos:typescript-icon
 import { join } from "node:path";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
-// Ensure the OpenAI API key is set in your environment variables
 const { OPENAI_API_KEY } = process.env;
 
-// 1. Initialize the AI model
+// 1. Initialize the chat model
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-// 2. Create an MCPAgent to manage the SQLite server process
+// 2. Start the SQLite MCP server as a managed subprocess
 const sqlite = await MCPAgent.from({
   command: "uvx",
   args: [
     "-q",
     "mcp-server-sqlite",
     "--db-path",
-    join(process.cwd(), "usages.db"), // Specify the database file path
+    join(process.cwd(), "usages.db"),
   ],
 });
 
-// 3. Instantiate the AIGNE with the model and the SQLite skill
+// 3. Configure the AIGNE instance with the model and MCP skills
 const aigne = new AIGNE({
   model,
   skills: [sqlite],
@@ -185,12 +225,11 @@ const agent = AIAgent.from({
   instructions: "You are a database administrator",
 });
 
-// 5. Invoke the agent to perform database operations
+// 5. Invoke the agent to create a table
 console.log(
-  "Creating table...",
   await aigne.invoke(
     agent,
-    "create a product table with columns name, description, and createdAt",
+    "create a product table with columns name description and createdAt",
   ),
 );
 // Expected output:
@@ -198,51 +237,40 @@ console.log(
 //   $message: "The product table has been created successfully with the columns: `name`, `description`, and `createdAt`.",
 // }
 
-console.log(
-  "Inserting test data...",
-  await aigne.invoke(agent, "create 10 products for test"),
-);
+// 6. Invoke the agent to insert data
+console.log(await aigne.invoke(agent, "create 10 products for test"));
 // Expected output:
 // {
 //   $message: "I have successfully created 10 test products in the database...",
 // }
 
-console.log(
-  "Querying data...",
-  await aigne.invoke(agent, "how many products?"),
-);
+// 7. Invoke the agent to query data
+console.log(await aigne.invoke(agent, "how many products?"));
 // Expected output:
 // {
 //   $message: "There are 10 products in the database.",
 // }
 
-// 6. Shutdown the AIGNE instance to terminate the MCP server
+// 8. Shut down the AIGNE instance and the MCP server
 await aigne.shutdown();
 ```
 
-This script automates the entire lifecycle: it starts the MCP server, configures an AI agent to use it, executes a series of database tasks based on natural language, and shuts down cleanly.
-
 ## Debugging
 
-To monitor and analyze the agent's behavior, you can use the `aigne observe` command. This tool launches a local web server that provides a detailed view of agent execution traces, including interactions with models and tools. It is invaluable for debugging and understanding the flow of information.
+To monitor and analyze the agent's execution flow, you can use the `aigne observe` command. This tool launches a local web server that provides a detailed view of traces, tool calls, and model interactions, which is invaluable for debugging and performance analysis.
 
-```bash icon=lucide:terminal
-aigne observe
-```
+1.  **Start the Observation Server:**
 
-After running this command, you can open the provided URL in your browser to inspect recent agent invocations.
+    ```bash title="Start the observability server" icon=lucide:terminal
+    aigne observe
+    ```
 
-## Summary
+    ![Terminal output showing the aigne observe command has started the server.](../../../examples/images/aigne-observe-execute.png)
 
-This example illustrates the power of combining the AIGNE Framework with the Model Context Protocol to create agents capable of interacting with external systems like databases. By abstracting database operations into skills, developers can build sophisticated, language-driven applications with minimal effort.
+2.  **View Traces:**
 
-For more advanced use cases and other examples, please refer to the following documents:
+    Open the provided URL (e.g., `http://localhost:7893`) in your web browser to access the observability interface. The "Traces" page lists recent agent executions.
 
-<x-cards data-columns="2">
-  <x-card data-title="MCP Agent" data-icon="lucide:box" data-href="/developer-guide/agents/mcp-agent">
-    Learn more about how to connect to external systems via the Model Context Protocol.
-  </x-card>
-  <x-card data-title="AI Agent" data-icon="lucide:bot" data-href="/developer-guide/agents/ai-agent">
-    Explore the primary agent for interacting with language models and using tools.
-  </x-card>
-</x-cards>
+    ![AIGNE observability interface displaying a list of agent execution traces.](../../../examples/images/aigne-observe-list.png)
+
+    From here, you can select an individual trace to inspect the complete sequence of operations, including prompts sent to the model, skills invoked by the agent, and the final output.

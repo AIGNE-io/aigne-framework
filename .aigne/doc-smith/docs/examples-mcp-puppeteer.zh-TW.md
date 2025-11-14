@@ -1,16 +1,12 @@
 # MCP Puppeteer
 
-在您的 AIGNE 工作流程中，直接利用 Puppeteer 的強大功能進行自動化網頁抓取和內容提取。本範例將示範如何整合 Puppeteer MCP (模型情境協議) 伺服器，以建立能夠瀏覽網站和提取資料的 Agent，這些資料隨後可由 AI 模型進行處理。
+本指南逐步示範如何將 AIGNE 框架與 Puppeteer MCP 伺服器結合使用，以實現自動化網頁抓取。透過此範例，您將學習如何建構並執行一個能夠瀏覽網站並擷取其內容的 AI Agent。
 
-本指南將引導您設定並執行一個示範，該示範使用配備 Puppeteer 技能的 AI Agent 從網站提取內容。您將學習如何以不同模式執行範例、連接到各種 AI 模型，並理解其底層程式碼。
+## 概覽
 
-## 概述
+此範例展示了 `AIAgent` 和一個控制 Puppeteer 執行個體的 `MCPAgent` 之間的整合。`AIAgent` 接收一個自然語言指令，要求從某個 URL 擷取內容。然後，它將網頁自動化任務委派給 Puppeteer Agent，後者會瀏覽到指定頁面並執行 JavaScript 來抓取內容。
 
-此工作流程包含一個 `AIAgent`，它使用一個連接到 Puppeteer 伺服器的 `MCPAgent`。AI Agent 接收一個任務，例如「摘要 https://www.arcblock.io 的內容」，然後智慧地利用 Puppeteer Agent 的技能——如 `navigate` 和 `evaluate`——來執行必要的網頁抓取操作。
-
-### 工作流程圖
-
-下圖說明了 AI Agent 和 Puppeteer MCP Agent 之間為完成使用者請求而進行的互動。
+一般工作流程如下：
 
 ```mermaid
 flowchart LR
@@ -42,9 +38,7 @@ class navigate processing
 class evaluate processing
 ```
 
-### 操作順序
-
-以下是執行網站摘要任務的逐步順序：
+摘要網站內容的操作順序如下所示：
 
 ```d2
 shape: sequence_diagram
@@ -69,179 +63,183 @@ E: {
   label: "Evaluate JS"
 }
 
-User -> AI: "摘要 https://www.arcblock.io 的內容"
-AI -> P: "從 https://www.arcblock.io 提取內容"
-P -> N: "瀏覽至 https://www.arcblock.io"
-N -> P: "瀏覽完成"
-P -> E: "執行 document.body.innerText"
-E -> P: "內容已提取"
-P -> AI: "已提取的內容作為情境"
-AI -> User: "內容如下：..."
+User -> AI: "summarize content from https://www.arcblock.io"
+AI -> P: "extract content from https://www.arcblock.io"
+P -> N: "navigate to https://www.arcblock.io"
+N -> P: "navigation completed"
+P -> E: "evaluate document.body.innerText"
+E -> P: "content extracted"
+E -> AI: "extracted content as context"
+AI -> User: "The content is as follows: ..."
 ```
 
 ## 先決條件
 
-在繼續之前，請確保您的開發環境符合以下要求：
-
-*   **Node.js：** 20.0 或更高版本。
-*   **OpenAI API 金鑰：** 預設模型設定所需。您可以從 [OpenAI Platform](https://platform.openai.com/api-keys) 取得。
+在執行此範例前，請確保滿足以下要求：
+*   Node.js 版本 20.0 或更高。
+*   有效的 OpenAI API 金鑰。
 
 ## 快速入門
 
-您可以使用 `npx` 直接執行此範例，無需克隆程式碼倉庫。
+您可以使用 `npx` 直接執行此範例，無需複製儲存庫。
 
 ### 執行範例
 
-在您的終端機中執行以下指令之一。
+在您的終端機中執行以下指令。此範例支援單次模式、互動式聊天模式，並可透過管道接收輸入。
 
-以預設的單次執行模式執行：
-```sh icon=lucide:terminal
+```sh 在單次模式下執行 icon=lucide:terminal
+# 在單次模式下執行（預設）
 npx -y @aigne/example-mcp-puppeteer
 ```
 
-以互動式聊天模式執行：
-```sh icon=lucide:terminal
+```sh 在互動式聊天模式下執行 icon=lucide:terminal
+# 在互動式聊天模式下執行
 npx -y @aigne/example-mcp-puppeteer --chat
 ```
 
-您也可以將輸入直接傳送給腳本：
-```sh icon=lucide:terminal
+```sh 使用管道輸入 icon=lucide:terminal
+# 使用管道輸入
 echo "extract content from https://www.arcblock.io" | npx -y @aigne/example-mcp-puppeteer
 ```
 
-### 連接到 AI 模型
+### 連線至 AI 模型
 
-首次執行範例時，系統將提示您連接到 AI 模型。您有幾個選項：
+首次執行時，如果未設定模型提供者，應用程式將提示您進行連線。
 
-1.  **AIGNE Hub (官方)：** 最簡單的入門方式。您的瀏覽器將打開官方的 AIGNE Hub，您可以在那裡登入。新使用者會獲得免費的 token 餘額。
-2.  **AIGNE Hub (自行託管)：** 如果您有自己的 AIGNE Hub 實例，可以透過提供其 URL 進行連接。
-3.  **第三方模型提供商：** 您可以透過設定適當的環境變數，設定直接連接到像 OpenAI 這樣的提供商。
+![AI 模型初始連線提示](../../../examples/mcp-puppeteer/run-example.png)
 
-例如，要使用 OpenAI，請設定 `OPENAI_API_KEY` 變數：
-```sh icon=lucide:terminal
-export OPENAI_API_KEY="your-openai-api-key"
-```
+您有以下幾個選項可以繼續：
 
-設定完成後，再次執行範例指令。有關設定其他提供商（如 DeepSeek 或 Google Gemini）的更多詳細資訊，請參閱原始碼倉庫中的 `.env.local.example` 檔案。
+*   **透過官方 AIGNE Hub 連線：** 這是建議選項。選擇此選項將在您的網頁瀏覽器中開啟 AIGNE Hub，您可以在那裡授權連線。新使用者會獲得免費的試用代幣餘額。
+
+    ![授權連線至 AIGNE Hub](../../../examples/images/connect-to-aigne-hub.png)
+
+*   **透過自行託管的 AIGNE Hub 連線：** 如果您自行託管 AIGNE Hub，請選擇此選項並輸入您執行個體的 URL 以完成連線。您可以從 [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ?utm_source=www.arcblock.io&utm_medium=blog_link&utm_campaign=default&utm_content=store.blocklet.dev#:~:text=%F0%9F%9A%80%20Get%20Started%20in%20Minutes) 部署自己的 AIGNE Hub。
+
+    ![連線至自行託管的 AIGNE Hub 執行個體](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+*   **透過第三方模型提供者連線：** 您可以直接使用環境變數設定來自 OpenAI 等提供者的 API 金鑰。
+
+    ```sh 設定 OpenAI API 金鑰 icon=lucide:terminal
+    export OPENAI_API_KEY="YOUR_API_KEY"
+    ```
+
+    有關支援的提供者和變數的完整清單，請參考專案中的 `.env.local.example` 範例檔案。設定環境變數後，請重新執行指令。
 
 ## 從原始碼安裝
 
-如果您偏好從原始碼執行範例，請按照以下步驟操作。
+若要檢視程式碼或進行修改，您可以複製儲存庫並在本機執行此範例。
 
-### 1. 克隆程式碼倉庫
+### 1. 複製儲存庫
 
-```sh icon=lucide:terminal
+```sh 複製 aigne-framework 儲存庫 icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 ```
 
 ### 2. 安裝依賴項
 
-導覽至範例目錄並使用 `pnpm` 安裝必要的套件。
+瀏覽至範例目錄並使用 `pnpm` 安裝所需套件。
 
-```sh icon=lucide:terminal
+```sh 安裝依賴項 icon=lucide:terminal
 cd aigne-framework/examples/mcp-puppeteer
 pnpm install
 ```
 
 ### 3. 執行範例
 
-執行啟動腳本來執行應用程式。
+執行啟動腳本以執行應用程式。
 
-```sh icon=lucide:terminal
+```sh 從原始碼執行範例 icon=lucide:terminal
 pnpm start
 ```
 
-若要傳遞命令列參數，請在參數前加上 `--`：
-```sh icon=lucide:terminal
-# 以互動式聊天模式執行
-pnpm start -- --chat
+若要將命令列參數傳遞給腳本，請使用 `--` 將它們分開。
 
-# 設定日誌級別以進行除錯
-pnpm start -- --log-level DEBUG
+```sh 從原始碼以聊天模式執行 icon=lucide:terminal
+pnpm start -- --chat
 ```
 
-## 命令列選項
+## 程式碼範例
 
-此腳本接受多個命令列參數來自訂其行為。
+以下 TypeScript 程式碼展示了設定 AIGNE 執行個體、配置 Puppeteer MCP Agent 以及呼叫 AI Agent 以擷取網頁內容的核心邏輯。
 
-| 參數 | 說明 | 預設值 |
-| ------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------- |
-| `--chat` | 以互動式聊天模式執行。若省略，則以單次執行模式執行。 | 已停用 |
-| `--model <provider[:model]>` | 指定要使用的 AI 模型。例如：`openai` 或 `openai:gpt-4o-mini`。 | `openai` |
-| `--temperature <value>` | 設定模型生成的溫度。 | 提供商預設值 |
-| `--top-p <value>` | 設定 top-p 取樣值。 | 提供商預設值 |
-| `--presence-penalty <value>` | 設定存在懲罰值。 | 提供商預設值 |
-| `--frequency-penalty <value>` | 設定頻率懲罰值。 | 提供商預設值 |
-| `--log-level <level>` | 設定日誌級別。選項：`ERROR`、`WARN`、`INFO`、`DEBUG`、`TRACE`。 | `INFO` |
-| `--input, -i <input>` | 直接以參數形式提供輸入。 | 無 |
-
-## 程式碼實作
-
-核心邏輯包括設定一個帶有 AI 模型和一個設定為執行 Puppeteer 伺服器的 `MCPAgent` 的 `AIGNE` 實例。然後，給予一個 `AIAgent` 指令，說明如何使用 Puppeteer 技能來提取網頁內容。
-
-```typescript index.ts
+```typescript agent.ts
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
 
-// 1. 初始化 AI 模型
+// 使用 API 金鑰初始化 OpenAI 模型
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-// 2. 建立一個 MCPAgent 來管理 Puppeteer 伺服器
+// 建立一個執行 Puppeteer 伺服器的 MCPAgent
 const puppeteerMCPAgent = await MCPAgent.from({
   command: "npx",
   args: ["-y", "@modelcontextprotocol/server-puppeteer"],
 });
 
-// 3. 使用模型和 Puppeteer 技能實例化 AIGNE 框架
+// 初始化 AIGNE 執行個體，將模型和 Puppeteer Agent 作為技能
 const aigne = new AIGNE({
   model,
   skills: [puppeteerMCPAgent],
 });
 
-// 4. 定義一個帶有網頁抓取指令的 AI Agent
+// 定義 AI Agent，包含網頁內容擷取的指令
 const agent = AIAgent.from({
   instructions: `\
-## 從網站提取內容的步驟
+## 從網站擷取內容的步驟
 1. 瀏覽至該 url
 2. 執行 document.body.innerText 以取得內容
 `,
 });
 
-// 5. 使用提示叫用 Agent
+// 使用提示呼叫 Agent
 const result = await aigne.invoke(
   agent,
   "extract content from https://www.arcblock.io",
 );
 
 console.log(result);
+// 預期輸出：
+// {
+//   $message: "The content extracted from the website [ArcBlock](https://www.arcblock.io) is as follows:\n\n---\n\n**Redefining Software Architect and Ecosystems**\n\nA total solution for building decentralized applications ...",
+// }
 
-// 6. 關閉 MCP Agent 並清理資源
+// 關閉 AIGNE 執行個體及其 Agent
 await aigne.shutdown();
 ```
 
-輸出將是一個 JSON 物件，其中包含從指定 URL 提取的內容，並根據 Agent 的指令進行摘要或處理。
+## 命令列選項
 
-```json
-{
-  "$message": "從網站 [ArcBlock](https://www.arcblock.io) 提取的內容如下：\n\n---\n\n**重新定義軟體架構與生態系**\n\n一個用於建構去中心化應用程式的完整解決方案..."
-}
+應用程式支援多個命令列參數以自訂其行為。
+
+| 參數 | 說明 | 預設值 |
+|-----------|-------------|---------|
+| `--chat` | 以互動式聊天模式執行。 | 已停用 |
+| `--model <provider[:model]>` | 指定 AI 模型。範例：`openai`、`openai:gpt-4o-mini`。 | `openai` |
+| `--temperature <value>` | 設定模型生成的溫度。 | 提供者預設值 |
+| `--top-p <value>` | 設定 top-p 取樣值。 | 提供者預設值 |
+| `--presence-penalty <value>` | 設定存在懲罰值。 | 提供者預設值 |
+| `--frequency-penalty <value>` | 設定頻率懲罰值。 | 提供者預設值 |
+| `--log-level <level>` | 設定記錄層級（`ERROR`、`WARN`、`INFO`、`DEBUG`、`TRACE`）。 | `INFO` |
+| `--input`, `-i <input>` | 直接以參數形式提供輸入。 | 無 |
+
+## 偵錯
+
+AIGNE 框架包含一個可觀測性工具，可協助您監控和偵錯 Agent 的執行。
+
+若要啟動可觀測性伺服器，請執行：
+
+```sh 啟動可觀測性伺服器 icon=lucide:terminal
+aigne observe
 ```
 
-## 總結
+![AIGNE 可觀測性伺服器在終端機中執行](../../../examples/images/aigne-observe-execute.png)
 
-本範例實際展示了如何使用模型情境協議將像 Puppeteer 這樣的外部工具整合到 AIGNE 框架中。透過為 `AIAgent` 配備網頁抓取技能，您可以建構強大的應用程式，能夠與網路互動以自動收集和處理資訊。
+一旦執行，您可以在瀏覽器中開啟網頁介面，以檢視詳細的執行追蹤清單，並檢查每個 Agent 的輸入、輸出和工具呼叫。
 
-若要進一步探索，您可以參考以下相關文件：
+![顯示追蹤清單的 AIGNE 可觀測性介面](../../../examples/images/aigne-observe-list.png)
 
-<x-cards data-columns="2">
-  <x-card data-title="MCP Agent" data-href="/developer-guide/agents/mcp-agent" data-icon="lucide:box">
-  了解更多關於如何透過模型情境協議 (MCP) 連接到外部系統的資訊。
-  </x-card>
-  <x-card data-title="AI Agent" data-href="/developer-guide/agents/ai-agent" data-icon="lucide:bot">
-  深入了解用於與語言模型互動的主要 Agent。
-  </x-card>
-</x-cards>
+此工具對於理解 Agent 行為、診斷問題和最佳化效能至關重要。

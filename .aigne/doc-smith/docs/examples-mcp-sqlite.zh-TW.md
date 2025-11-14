@@ -1,19 +1,8 @@
 # MCP SQLite
 
-本指南全面介紹如何使用 AIGNE 框架和模型情境協定 (Model Context Protocol, MCP) 與 SQLite 資料庫互動。透過此範例，您將學習如何設定一個 Agent，使其能夠透過自然語言指令執行資料庫操作，例如建立資料表、插入資料和查詢記錄。
+本指南全面介紹如何使用由 AIGNE 框架驅動的 AI agent 與 SQLite 資料庫進行互動。透過遵循這些步驟，您將學會如何設定必要的元件、執行範例應用程式，並使用 agent 執行建立資料表和查詢資料等資料庫操作。
 
-## 概述
-
-MCP SQLite 範例展示了如何透過 MCP 伺服器將 AI Agent 連接到外部 SQLite 資料庫。這使得 Agent 能夠利用一組預先定義的技能進行資料庫管理，包括建立、讀取和寫入資料。Agent 會解讀使用者請求，將其轉換為適當的資料庫指令，並透過 SQLite MCP 伺服器執行。
-
-基本工作流程如下：
-1.  使用者提供一個自然語言指令（例如，「建立一個產品資料表」）。
-2.  `AIAgent` 處理該指令。
-3.  Agent 從連接到 SQLite 伺服器的 `MCPAgent` 中識別出適當的技能（例如，`create_table`）。
-4.  `MCPAgent` 在資料庫上執行相應的 SQL 指令。
-5.  結果返回給 Agent，然後 Agent 為使用者產生回應。
-
-下圖說明了此工作流程：
+此範例的核心是使用 `MCPAgent` 連接到一個正在執行的 [SQLite MCP 伺服器](https://github.com/modelcontextprotocol/servers/tree/main/src/sqlite)。該伺服器將資料庫功能公開為技能，`AIAgent` 可以根據使用者提示智慧地呼叫這些技能。
 
 ```d2
 direction: down
@@ -22,227 +11,266 @@ User: {
   shape: c4-person
 }
 
-AIAgent: {
-  label: "AI Agent"
+App: {
+  label: "@aigne/example-mcp-sqlite"
   shape: rectangle
+
+  AIGNE-Framework: {
+    label: "AIGNE 框架 (@aigne/core)"
+    shape: rectangle
+
+    AIGNE-Instance: {
+      label: "AIGNE 實例"
+    }
+
+    AIAgent: {
+      label: "AIAgent"
+    }
+
+    MCPAgent: {
+      label: "MCPAgent"
+    }
+  }
+
+  AI-Model: {
+    label: "AI 模型\n（例如 OpenAI）"
+    shape: rectangle
+  }
 }
 
-MCPAgent: {
-  label: "MCP Agent \n(SQLite 技能)"
+SQLite-MCP-Server: {
+  label: "SQLite MCP 伺服器"
   shape: rectangle
 }
 
 SQLite-DB: {
-  label: "SQLite 資料庫"
+  label: "SQLite 資料庫\n(usages.db)"
   shape: cylinder
 }
 
-User -> AIAgent: "1. 自然語言指令\n(例如，'建立一個資料表')"
-AIAgent -> MCPAgent: "2. 選擇並呼叫技能\n(例如，create_table)"
-MCPAgent -> SQLite-DB: "3. 執行 SQL 指令"
-SQLite-DB -> MCPAgent: "4. 返回結果"
-MCPAgent -> AIAgent: "5. 轉發結果"
-AIAgent -> User: "6. 產生並傳送回應"
-
+User -> App: "1. 執行指令\n（例如『建立一個產品資料表』）"
+App.AIGNE-Framework.AIAgent -> App.AI-Model: "2. 解釋提示"
+App.AI-Model -> App.AIGNE-Framework.AIAgent: "3. 回傳所需的技能呼叫"
+App.AIGNE-Framework.AIAgent -> App.AIGNE-Framework.MCPAgent: "4. 呼叫技能"
+App.AIGNE-Framework.MCPAgent -> SQLite-MCP-Server: "5. 傳送指令"
+SQLite-MCP-Server -> SQLite-DB: "6. 執行 SQL"
+SQLite-DB -> SQLite-MCP-Server: "7. 回傳結果"
+SQLite-MCP-Server -> App.AIGNE-Framework.MCPAgent: "8. 傳送回應"
+App.AIGNE-Framework.MCPAgent -> App.AIGNE-Framework.AIAgent: "9. 轉發回應"
+App.AIGNE-Framework.AIAgent -> App: "10. 處理最終輸出"
+App -> User: "11. 顯示結果訊息"
 ```
 
 ## 先決條件
 
-在繼續之前，請確保您的開發環境符合以下要求：
+在繼續之前，請確保您的開發環境符合以下要求。為成功執行此範例，必須遵守這些先決條件。
 
-*   **Node.js**：版本 20.0 或更高。
-*   **npm**：隨 Node.js 一起提供。
-*   **uv**：一個 Python 虛擬環境和套件安裝程式。請參閱 [uv 安裝指南](https://github.com/astral-sh/uv) 以取得設定說明。
-*   **AI 模型 API 金鑰**：來自支援的供應商（例如 OpenAI）的 API 金鑰。
+*   **Node.js：** 20.0 或更高版本。
+*   **npm：** Node.js 套件管理器，隨 Node.js 一併安裝。
+*   **uv：** 一個 Python 套件安裝程式。執行 SQLite MCP 伺服器所需。安裝說明可在 [`uv` 官方儲存庫](https://github.com/astral-sh/uv)找到。
+*   **AI 模型 API 金鑰：** AI agent 需要來自支援的供應商的 API 金鑰才能運作。此範例預設使用 OpenAI，但也支援其他供應商。您可以從其平台取得 [OpenAI API 金鑰](https://platform.openai.com/api-keys)。
+
+對於打算從原始碼執行範例的開發人員，還需要以下相依套件：
+
+*   **Pnpm：** 一個快速、節省磁碟空間的套件管理器。
+*   **Bun：** 一個快速的 JavaScript 多合一工具包，用於執行測試和範例。
 
 ## 快速入門
 
-您可以使用 `npx` 直接執行此範例，無需在本機安裝。這是查看 MCP SQLite 整合實際運作的最快方法。
+本節提供直接執行範例的說明，無需手動安裝，這是進行初步評估最有效率的方法。
 
-### 執行範例
+應用程式可以一次性模式執行單一指令，也可以在互動式聊天模式下執行，或直接將輸入透過管道傳送給腳本。
 
-在您的終端機中執行以下指令。此範例支援用於單一指令的單次模式和互動式聊天模式。
+在您的終端機中執行以下指令之一：
 
-1.  **單次模式 (預設)**
-    此模式接受單一指令，執行後即退出。
-
-    ```bash icon=lucude:terminal
-    npx -y @aigne/example-mcp-sqlite --input "create a product table with columns name, description, and createdAt"
-    ```
-
-2.  **管道輸入**
-    您也可以將輸入直接透過管道傳送給指令。
-
-    ```bash icon=lucude:terminal
-    echo "how many products are in the table?" | npx -y @aigne/example-mcp-sqlite
-    ```
-
-3.  **互動式聊天模式**
-    若要進行對話式體驗，請使用 `--chat` 旗標。
-
-    ```bash icon=lucude:terminal
-    npx -y @aigne/example-mcp-sqlite --chat
-    ```
-
-### 連接到 AI 模型
-
-為了執行指令，Agent 需要連接到一個大型語言模型。您有多種選擇。
-
-*   **AIGNE Hub (建議)**：首次執行範例時，系統會提示您透過官方 AIGNE Hub 連接。這是最簡單的方法，並為新使用者提供免費的權杖以開始使用。
-*   **自行託管的 AIGNE Hub**：如果您有自己的 AIGNE Hub 實例，可以透過提供其 URL 來連接。
-*   **第三方模型供應商**：您可以透過將所需的 API 金鑰設定為環境變數，直接連接到像 OpenAI 這樣的模型供應商。
-
-例如，要使用 OpenAI，請匯出您的 API 金鑰：
-
-```bash title="設定 OpenAI API 金鑰" icon=lucide:terminal
-export OPENAI_API_KEY="your-openai-api-key"
+```bash title="以一次性模式執行（預設）" icon=lucide:terminal
+npx -y @aigne/example-mcp-sqlite
 ```
 
-有關設定不同模型供應商的更多範例，請參閱原始碼儲存庫中的 `.env.local.example` 檔案。
+```bash title="以互動式聊天模式執行" icon=lucide:terminal
+npx -y @aigne/example-mcp-sqlite --chat
+```
+
+```bash title="使用管道輸入" icon=lucide:terminal
+echo "create a product table with columns name description and createdAt" | npx -y @aigne/example-mcp-sqlite
+```
+
+## 連接到 AI 模型
+
+AI agent 需要連接到大型語言模型 (LLM) 以處理指令。如果您在未預先設定模型的情況下執行範例，系統將提示您選擇一種連接方法。
+
+![未設定 AI 模型時的初始連接提示。](../../../examples/mcp-sqlite/run-example.png)
+
+建立此連接主要有三種方法：
+
+### 1. 連接到官方 AIGNE Hub
+
+這是推薦給新使用者的方法。它提供了一個簡化的、基於瀏覽器的驗證流程。新使用者會收到免費的點數來測試平台。
+
+1.  選擇第一個選項：`Connect to the Arcblock official AIGNE Hub`。
+2.  您的預設網頁瀏覽器將開啟一個授權頁面。
+3.  按照螢幕上的說明批准連接。
+
+![將 AIGNE CLI 連接到 AIGNE Hub 的授權提示。](../../../examples/images/connect-to-aigne-hub.png)
+
+### 2. 連接到自架的 AIGNE Hub
+
+如果您的組織營運一個私有的 AIGNE Hub 實例，請選擇第二個選項並提供您的 Hub 的 URL 以完成連接。
+
+![提示輸入自架 AIGNE Hub 的 URL。](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+### 3. 透過第三方模型供應商連接
+
+您可以透過將適當的 API 金鑰設定為環境變數，直接連接到支援的第三方模型供應商，例如 OpenAI。
+
+例如，要連接到 OpenAI，請設定 `OPENAI_API_KEY` 變數：
+
+```bash title="設定 OpenAI API 金鑰" icon=lucide:terminal
+export OPENAI_API_KEY="your-openai-api-key-here"
+```
+
+設定環境變數後，重新執行 `npx` 指令。有關支援的供應商及其所需環境變數的完整列表，請參閱儲存庫中的範例 `.env.local.example` 檔案。
 
 ## 從原始碼安裝
 
-若要進行開發或自訂，您可以複製儲存庫並在本機執行範例。
+對於希望檢查或修改原始碼的開發人員，請按照以下步驟複製儲存庫並在本地執行範例。
 
-1.  **複製儲存庫**
+### 1. 複製儲存庫
 
-    ```bash icon=lucude:terminal
-    git clone https://github.com/AIGNE-io/aigne-framework
-    ```
+將官方 AIGNE 框架儲存庫複製到您的本地機器。
 
-2.  **安裝依賴項**
-    導覽至範例目錄並使用 `pnpm` 安裝必要的套件。
+```bash title="複製儲存庫" icon=lucide:terminal
+git clone https://github.com/AIGNE-io/aigne-framework
+```
 
-    ```bash icon=lucude:terminal
-    cd aigne-framework/examples/mcp-sqlite
-    pnpm install
-    ```
+### 2. 安裝相依套件
 
-3.  **執行範例**
-    使用 `pnpm start` 指令執行指令碼。
+導覽至範例目錄並使用 `pnpm` 安裝所需的相依套件。
 
-    ```bash icon=lucude:terminal
-    # 以單次模式執行
-    pnpm start -- --input "create 10 products for test"
+```bash title="安裝相依套件" icon=lucide:terminal
+cd aigne-framework/examples/mcp-sqlite
+pnpm install
+```
 
-    # 以互動式聊天模式執行
-    pnpm start -- --chat
-    ```
+### 3. 執行範例
 
-## 命令列選項
+使用 `pnpm start` 指令執行應用程式。
 
-該指令碼接受多個命令列參數來自訂其行為。
+```bash title="以一次性模式執行（預設）" icon=lucide:terminal
+pnpm start
+```
+
+若要在互動模式下執行或使用管道輸入，請在 `--` 分隔符後附加所需的旗標。
+
+```bash title="以互動式聊天模式執行" icon=lucide:terminal
+pnpm start -- --chat
+```
+
+```bash title="使用管道輸入" icon=lucide:terminal
+echo "create a product table with columns name description and createdAt" | pnpm start
+```
+
+### 命令列選項
+
+應用程式支援多個命令列參數來自訂其行為。
 
 | 參數 | 說明 | 預設值 |
-| ------------------------- | ------------------------------------------------------------------------------------------------- | ---------------- |
-| `--chat` | 以互動式聊天模式執行。 | 已停用 |
-| `--model <provider[:model]>` | 指定要使用的 AI 模型，例如 `openai` 或 `openai:gpt-4o-mini`。 | `openai` |
-| `--temperature <value>` | 設定模型生成的溫度。 | 供應商預設值 |
-| `--top-p <value>` | 設定 top-p 取樣值。 | 供應商預設值 |
-| `--presence-penalty <value>` | 設定存在懲罰值。 | 供應商預設值 |
-| `--frequency-penalty <value>`| 設定頻率懲罰值。 | 供應商預設值 |
-| `--log-level <level>` | 設定記錄等級 (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`)。 | `INFO` |
-| `--input`, `-i <input>` | 直接以參數形式提供輸入。 | 無 |
+| :--- | :--- | :--- |
+| `--chat` | 啟用互動式聊天模式。 | 停用（一次性） |
+| `--model <provider[:model]>` | 指定 AI 模型。格式：`'provider[:model]'`。 | `openai` |
+| `--temperature <value>` | 設定模型的生成溫度。 | 供應商預設值 |
+| `--top-p <value>` | 設定模型的 top-p 取樣值。 | 供應商預設值 |
+| `--presence-penalty <value>`| 設定模型的存在懲罰。 | 供應商預設值 |
+| `--frequency-penalty <value>`| 設定模型的頻率懲罰。 | 供應商預設值 |
+| `--log-level <level>` | 設定記錄詳細程度（`ERROR`、`WARN`、`INFO`、`DEBUG`、`TRACE`）。 | `INFO` |
+| `--input`, `-i <input>` | 直接以參數形式提供輸入。 | `None` |
 
-## 程式碼實作
+## 程式碼範例
 
-核心邏輯包括初始化 AI 模型、設定 `MCPAgent` 以連接到 SQLite 伺服器，然後建立一個使用該 Agent 及其技能的 `AIGNE` 實例。
+以下 TypeScript 程式碼展示了設定和呼叫 AI agent 與 SQLite 資料庫互動的核心邏輯。
 
-以下範例展示了建立資料表、插入記錄和查詢資料庫的完整過程。
+該腳本初始化一個 `OpenAIChatModel`，啟動一個連接到 SQLite 伺服器的 `MCPAgent`，並使用模型和 agent 的技能設定一個 `AIGNE` 實例。最後，它以具體指令呼叫一個 `AIAgent` 來執行資料庫任務。
 
-```typescript index.ts
+```typescript title="index.ts" icon=logos:typescript-icon
 import { join } from "node:path";
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
-// 確保您的環境變數中已設定 OpenAI API 金鑰
 const { OPENAI_API_KEY } = process.env;
 
-// 1. 初始化 AI 模型
+// 1. 初始化聊天模型
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-// 2. 建立一個 MCPAgent 來管理 SQLite 伺服器程序
+// 2. 將 SQLite MCP 伺服器作為受管理的子程序啟動
 const sqlite = await MCPAgent.from({
   command: "uvx",
   args: [
     "-q",
     "mcp-server-sqlite",
     "--db-path",
-    join(process.cwd(), "usages.db"), // 指定資料庫檔案路徑
+    join(process.cwd(), "usages.db"),
   ],
 });
 
-// 3. 使用模型和 SQLite 技能實例化 AIGNE
+// 3. 使用模型和 MCP 技能設定 AIGNE 實例
 const aigne = new AIGNE({
   model,
   skills: [sqlite],
 });
 
-// 4. 定義帶有特定指令的 AI Agent
+// 4. 以具體指令定義 AI agent
 const agent = AIAgent.from({
-  instructions: "You are a database administrator",
+  instructions: "你是一名資料庫管理員",
 });
 
-// 5. 呼叫 Agent 以執行資料庫操作
+// 5. 呼叫 agent 建立資料表
 console.log(
-  "Creating table...",
   await aigne.invoke(
     agent,
-    "create a product table with columns name, description, and createdAt",
+    "create a product table with columns name description and createdAt",
   ),
 );
 // 預期輸出：
 // {
-//   $message: "The product table has been created successfully with the columns: `name`, `description`, and `createdAt`.",
+//   $message: "產品資料表已成功建立，包含以下欄位：`name`、`description` 和 `createdAt`。",
 // }
 
-console.log(
-  "Inserting test data...",
-  await aigne.invoke(agent, "create 10 products for test"),
-);
+// 6. 呼叫 agent 插入資料
+console.log(await aigne.invoke(agent, "create 10 products for test"));
 // 預期輸出：
 // {
-//   $message: "I have successfully created 10 test products in the database...",
+//   $message: "我已成功在資料庫中建立 10 個測試產品...",
 // }
 
-console.log(
-  "Querying data...",
-  await aigne.invoke(agent, "how many products?"),
-);
+// 7. 呼叫 agent 查詢資料
+console.log(await aigne.invoke(agent, "how many products?"));
 // 預期輸出：
 // {
-//   $message: "There are 10 products in the database.",
+//   $message: "資料庫中有 10 個產品。",
 // }
 
-// 6. 關閉 AIGNE 實例以終止 MCP 伺服器
+// 8. 關閉 AIGNE 實例和 MCP 伺服器
 await aigne.shutdown();
 ```
 
-此指令碼自動化了整個生命週期：它啟動 MCP 伺服器，設定一個 AI Agent 來使用它，根據自然語言執行一系列資料庫任務，並乾淨地關閉。
-
 ## 偵錯
 
-要監控和分析 Agent 的行為，您可以使用 `aigne observe` 指令。此工具會啟動一個本機 Web 伺服器，提供 Agent 執行追蹤的詳細視圖，包括與模型和工具的互動。這對於偵錯和理解資訊流非常有價值。
+要監控和分析 agent 的執行流程，您可以使用 `aigne observe` 指令。此工具會啟動一個本地網頁伺服器，提供追蹤、工具呼叫和模型互動的詳細視圖，這對於偵錯和效能分析非常有價值。
 
-```bash icon=lucude:terminal
-aigne observe
-```
+1.  **啟動觀察伺服器：**
 
-執行此指令後，您可以在瀏覽器中開啟提供的 URL 來檢查最近的 Agent 呼叫。
+    ```bash title="啟動可觀察性伺服器" icon=lucide:terminal
+    aigne observe
+    ```
 
-## 總結
+    ![終端機輸出顯示 aigne observe 指令已啟動伺服器。](../../../examples/images/aigne-observe-execute.png)
 
-此範例說明了將 AIGNE 框架與模型情境協定相結合的強大功能，以建立能夠與資料庫等外部系統互動的 Agent。透過將資料庫操作抽象為技能，開發人員可以輕鬆地建構複雜的、由語言驅動的應用程式。
+2.  **檢視追蹤：**
 
-有關更進階的用例和其他範例，請參閱以下文件：
+    在您的網頁瀏覽器中開啟提供的 URL（例如 `http://localhost:7893`）以存取可觀察性介面。「Traces」頁面列出了最近的 agent 執行。
 
-<x-cards data-columns="2">
-  <x-card data-title="MCP Agent" data-icon="lucide:box" data-href="/developer-guide/agents/mcp-agent">
-    深入了解如何透過模型情境協定連接到外部系統。
-  </x-card>
-  <x-card data-title="AI Agent" data-icon="lucide:bot" data-href="/developer-guide/agents/ai-agent">
-    探索用於與語言模型互動和使用工具的主要 Agent。
-  </x-card>
-</x-cards>
+    ![顯示 agent 執行追蹤列表的 AIGNE 可觀察性介面。](../../../examples/images/aigne-observe-list.png)
+
+    從這裡，您可以選擇單個追蹤來檢查完整的操作序列，包括傳送給模型的提示、agent 呼叫的技能以及最終輸出。

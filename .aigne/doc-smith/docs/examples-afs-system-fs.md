@@ -1,183 +1,184 @@
-I have located the necessary files for the "AFS System FS" example documentation. The primary source will be `/sources/examples/afs-system-fs/README.md`, which will provide the structure, code snippets, and conceptual explanations. The core logic example will be drawn from `/sources/examples/afs-system-fs/index.ts`. I've noted the available image, `/sources/examples/afs-system-fs/run-example.png`, and will address the user's feedback regarding invalid image paths by verifying correct locations or substituting with valid images. My next step is to analyze the `README.md` to begin drafting the document.# AFS System FS
+# AFS System FS
 
-Ever wanted to build a chatbot that could directly and safely interact with your local files? This guide demonstrates how to do just that. You will learn how to use the AIGNE File System (AFS) and the `SystemFS` module to grant an AI agent sandboxed access to read, write, and search files on your machine, enabling powerful, context-aware applications that work with local data.
+This guide demonstrates how to build a chatbot capable of interacting with your local file system. By following these steps, you will create an agent that can list, read, write, and search files on your machine using the AIGNE File System (AFS) and the `SystemFS` module.
 
 ## Overview
 
-The core of this example is the `SystemFS` module, which acts as a bridge between the AIGNE Framework and your computer's file system. It allows you to "mount" a local directory, making its contents accessible to an AI agent through a standard set of tools like `afs_list`, `afs_read`, `afs_write`, and `afs_search`. The agent can then use these tools to perform file operations based on natural language commands. This enables use cases like summarizing documents, organizing files, or answering questions about a codebase.
+This example showcases the integration of a local file system with an AI agent through the AIGNE Framework. The `SystemFS` module acts as a bridge, mounting a specified local directory into the AIGNE File System (AFS). This allows the AI agent to perform file operations using a standardized set of tools, enabling it to answer questions and complete tasks based on the contents of your local files.
 
-The following diagram illustrates the relationship between the user, the AI Agent, the AFS tools, and the local file system:
+The following diagram illustrates how the `SystemFS` module connects the local file system to the AI agent:
 
 ```d2
 direction: down
 
-User: {
-  shape: c4-person
+AI-Agent: {
+  label: "AI Agent"
+  shape: rectangle
 }
 
 AIGNE-Framework: {
   label: "AIGNE Framework"
   shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-width: 2
-    stroke-dash: 4
-  }
 
-  AI-Agent: {
-    label: "AI Agent"
+  AFS: {
+    label: "AIGNE File System (AFS)"
     shape: rectangle
-  }
 
-  AFS-Tools: {
-    label: "AFS Tools"
-    shape: rectangle
-    grid-columns: 2
-    afs_list: { label: "afs_list" }
-    afs_read: { label: "afs_read" }
-    afs_write: { label: "afs_write" }
-    afs_search: { label: "afs_search" }
-  }
-
-  SystemFS-Module: {
-    label: "SystemFS Module"
-    shape: rectangle
+    SystemFS-Module: {
+      label: "SystemFS Module"
+      shape: rectangle
+    }
   }
 }
 
 Local-File-System: {
-  label: "Local File System\n(Sandboxed)"
-  shape: cylinder
+  label: "Local File System"
+  shape: rectangle
+
+  Local-Directory: {
+    label: "Local Directory\n(/path/to/your/project)"
+    shape: cylinder
+  }
 }
 
-User -> AIGNE-Framework.AI-Agent: "Natural Language Command"
-AIGNE-Framework.AI-Agent -> AIGNE-Framework.AFS-Tools: "Selects appropriate tool"
-AIGNE-Framework.AFS-Tools -> AIGNE-Framework.SystemFS-Module: "Invokes tool operation"
-AIGNE-Framework.SystemFS-Module -> Local-File-System: "Performs file I/O"
-Local-File-System -> AIGNE-Framework.SystemFS-Module: "Returns file content/status"
-AIGNE-Framework.SystemFS-Module -> AIGNE-Framework.AI-Agent: "Returns tool result"
-AIGNE-Framework.AI-Agent -> User: "Contextual Response"
+AI-Agent <-> AIGNE-Framework.AFS: "3. Performs file operations\n(list, read, write, search)"
+AIGNE-Framework.AFS.SystemFS-Module <-> Local-File-System.Local-Directory: "2. Mounts directory"
 
 ```
 
 ## Prerequisites
 
-Before you begin, ensure your system meets the following requirements:
+Before proceeding, ensure your development environment meets the following requirements:
 
 *   **Node.js**: Version 20.0 or higher.
-*   **npm**: Included with your Node.js installation.
-*   **OpenAI API Key**: A valid API key is required for the AI agent to connect to OpenAI's models. You can get a key from the [OpenAI Platform](https://platform.openai.com/api-keys).
-
-If you plan to run this example from the source code, the following are also recommended:
-
-*   **pnpm**: For efficient package management.
-*   **Bun**: For running examples and unit tests.
+*   **npm**: Included with Node.js.
+*   **OpenAI API Key**: Required for connecting to the language model. You can obtain one from the [OpenAI API keys page](https://platform.openai.com/api-keys).
 
 ## Quick Start
 
-You can run this example directly from your terminal using `npx` without needing to clone the full repository. This is the fastest way to see it in action.
+You can run this example directly without a local installation using `npx`.
 
 ### Run the Example
 
-Open your terminal and choose one of the following commands.
+Execute the following commands in your terminal to mount a directory and interact with the chatbot.
 
-To mount your current directory and start an interactive chat session:
+Mount your current directory and start an interactive chat session:
 
-```bash Run in Chat Mode icon=lucide:terminal
+```bash Install aigne deps icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --chat
 ```
 
-To mount a specific directory with a custom name and description:
+Mount a specific directory, such as your Documents folder:
 
-```bash Mount a Specific Directory icon=lucide:terminal
+```bash Install aigne deps icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path ~/Documents --mount /docs --description "My Documents" --chat
 ```
 
-To ask a single question without starting an interactive chat:
+Ask a one-off question without entering interactive mode:
 
-```bash Ask a Single Question icon=lucide:terminal
+```bash Install aigne deps icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "What files are in the current directory?"
 ```
 
 ### Connect to an AI Model
 
-The first time you run the example, you will be prompted to connect to an AI model.
+The first time you run the example, the CLI will prompt you to connect to an AI model, as no API keys have been configured.
 
-![Connect to an AI model](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/connect-to-aigne-hub.png)
+![Initial connection prompt for AIGNE Hub](../../../examples/afs-system-fs/run-example.png)
 
-You have three main options:
+You have three options to proceed:
 
-1.  **Connect via the official AIGNE Hub**: This is the recommended option. Your browser will open the official AIGNE Hub, where you can sign in. New users receive a free token allocation to get started.
-2.  **Connect via a self-hosted AIGNE Hub**: If you run your own AIGNE Hub instance, choose this option and enter its URL.
-3.  **Connect via a third-party model provider**: You can connect directly to a provider like OpenAI by setting an environment variable with your API key.
+1.  **Connect to the official AIGNE Hub**
+    This is the recommended option for new users. Your browser will open the AIGNE Hub, where you can authorize the connection. New users receive a complimentary token grant to get started immediately.
 
-To connect to OpenAI, set the `OPENAI_API_KEY` environment variable in your terminal:
+    ![Authorization dialog for AIGNE CLI in AIGNE Hub](../../../examples/images/connect-to-aigne-hub.png)
 
-```bash Set OpenAI API Key icon=lucide:terminal
-export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+2.  **Connect via a self-hosted AIGNE Hub**
+    If you have a self-hosted AIGNE Hub instance, select this option and enter its URL to complete the connection. You can deploy your own AIGNE Hub from the [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ).
+
+    ![Prompt to enter the URL for a self-hosted AIGNE Hub](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+3.  **Connect via a third-party model provider**
+    You can configure an API key from a provider like OpenAI directly. Set the appropriate environment variable in your terminal, then run the example again.
+
+    ```bash Set OpenAI API Key icon=lucide:terminal
+    export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+    ```
+
+    For configurations with other providers such as DeepSeek or Google Gemini, refer to the `.env.local.example` file in the project source.
+
+### Debugging with AIGNE Observe
+
+To monitor and analyze the agent's behavior, use the `aigne observe` command. This launches a local web server that provides a detailed view of execution traces, tool calls, and model interactions, which is invaluable for debugging and performance tuning.
+
+First, start the observation server:
+
+```bash Start Observe Server icon=lucide:terminal
+aigne observe
 ```
 
-After setting the key, run the `npx` command again. For a full list of supported providers and their required environment variables, refer to the example's `.env.local.example` file.
+The terminal will confirm that the server is running and provide a local URL.
 
-## Installation from Source
+![Terminal output showing the AIGNE Observe server has started](../../../examples/images/aigne-observe-execute.png)
 
-If you prefer to examine the source code or make modifications, follow these steps to run the example locally.
+After running your agent, you can view a list of recent executions in the web interface.
 
-### 1. Clone the Repository
+![AIGNE Observability web interface showing a list of traces](../../../examples/images/aigne-observe-list.png)
 
-```bash Clone the repository icon=lucide:terminal
-git clone https://github.com/AIGNE-io/aigne-framework
-```
+## Local Installation
 
-### 2. Install Dependencies
+For development purposes, you can clone the repository and run the example locally.
 
-Navigate to the example's directory and use `pnpm` to install the necessary packages.
+1.  **Clone the Repository**
 
-```bash Install dependencies icon=lucide:terminal
-cd aigne-framework/examples/afs-system-fs
-pnpm install
-```
+    ```bash Clone Repository icon=lucide:terminal
+    git clone https://github.com/AIGNE-io/aigne-framework
+    ```
 
-### 3. Run the Example
+2.  **Install Dependencies**
+    Navigate to the example directory and install the necessary packages using pnpm.
 
-Execute the `pnpm start` command with the desired flags.
+    ```bash Install Dependencies icon=lucide:terminal
+    cd aigne-framework/examples/afs-system-fs
+    pnpm install
+    ```
 
-To run with your current directory mounted:
+3.  **Run the Example**
+    Use the `pnpm start` command with the desired flags.
 
-```bash Run with Current Directory icon=lucide:terminal
-pnpm start --path .
-```
+    Run with your current directory:
+    ```bash Run with Current Directory icon=lucide:terminal
+    pnpm start --path .
+    ```
 
-To run in interactive chat mode:
-
-```bash Run in Chat Mode icon=lucide:terminal
-pnpm start --path . --chat
-```
+    Run in interactive chat mode:
+    ```bash Run in Chat Mode icon=lucide:terminal
+    pnpm start --path . --chat
+    ```
 
 ## How It Works
 
-This example initializes an `AIAgent` and grants it access to the local file system using the `SystemFS` module.
+This example uses the `SystemFS` module to expose a local directory to an AI agent through the AIGNE File System (AFS). This sandboxed environment allows the agent to interact with your files using a standardized interface, ensuring safety and control.
 
-### Mounting a Local Directory
+### Core Logic
 
-The `SystemFS` class is used to mount a local `path` to a virtual `mount` point within the AFS. This configuration is passed to a new `AFS` instance, which is then attached to the `AIAgent`. The agent is instructed to use the mounted file system to answer user queries.
+1.  **Mounting a Directory**: The `SystemFS` class is instantiated with a local `path` and a virtual `mount` point within the AFS.
+2.  **Agent Initialization**: An `AIAgent` is configured with the AFS instance, giving it access to file system tools like `afs_list`, `afs_read`, `afs_write`, and `afs_search`.
+3.  **Tool Calls**: When the user asks a question (e.g., "What's the purpose of this project?"), the agent determines which AFS tool to use. It might first call `afs_list` to see the directory contents, then `afs_read` to inspect a relevant file like `README.md`.
+4.  **Context Building**: The content retrieved from the file system is added to the agent's context.
+5.  **Response Generation**: The agent uses the enriched context to formulate a comprehensive answer to the user's original question.
+
+The following code snippet shows how a local directory is mounted into the AFS and provided to an `AIAgent`.
 
 ```typescript index.ts icon=logos:typescript
 import { AFS } from "@aigne/afs";
 import { SystemFS } from "@aigne/afs-system-fs";
 import { AIAgent } from "@aigne/core";
 
-const agent = AIAgent.from({
-  name: "afs-system-fs-chatbot",
-  instructions:
-    "You are a friendly chatbot that can retrieve files from a virtual file system. You should use the provided functions to list, search, and read files as needed to answer user questions. The current folder points to the /fs mount point by default.",
-  inputKey: "message",
+AIAgent.from({
+  // ... other configurations
   afs: new AFS().use(
-    new SystemFS({
-      mount: '/fs',
-      path: './',
-      description: 'Mounted file system'
-    }),
+    new SystemFS({ mount: '/source', path: '/PATH/TO/YOUR/PROJECT', description: 'Codebase of the project' }),
   ),
   afsConfig: {
     injectHistory: true,
@@ -185,78 +186,65 @@ const agent = AIAgent.from({
 });
 ```
 
-### Agent Interaction Flow
+### Key Features of SystemFS
 
-When a user asks a question, the AI agent autonomously decides which AFS tools to use to find the answer.
-
-1.  **User Input**: A user asks a question like, "What's the purpose of this project?"
-2.  **Tool Call (List)**: The agent determines it needs to understand the file structure and calls the `afs_list` tool to see the files in the root directory.
-3.  **Tool Call (Read)**: After identifying a relevant file, such as `README.md`, the agent calls the `afs_read` tool to access its contents.
-4.  **Contextual Response**: The file's content is added to the agent's context. The agent then uses this new information to construct a detailed answer to the user's original question.
-
-This entire process is autonomous. The agent chains tool calls, gathers context, and formulates a response without manual guidance.
+*   **File Operations**: Standard list, read, write, and search capabilities.
+*   **Recursive Traversal**: Navigate nested directories with depth control.
+*   **Fast Content Search**: Leverages `ripgrep` for high-performance text search.
+*   **Metadata Access**: Provides file details like size, type, and timestamps.
+*   **Path Safety**: Restricts file access to only the mounted directories.
 
 ## Example Usage
 
-Once the chatbot is running, you can issue various commands to interact with the mounted files.
+Once the chatbot is running, you can issue natural language commands to interact with your files.
 
-### Basic File Operations
+### Basic Commands
 
-```bash List all files icon=lucide:terminal
+Try these commands to perform simple file operations.
+
+List all files in the mounted directory:
+```bash List Files icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "List all files in the root directory"
 ```
 
-```bash Read a specific file icon=lucide:terminal
+Read the contents of a specific file:
+```bash Read a File icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "Read the contents of package.json"
 ```
 
-```bash Search for content icon=lucide:terminal
+Search for content across all files:
+```bash Search Content icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "Find all files containing the word 'example'"
 ```
 
-### Interactive Chat
+### Interactive Chat Prompts
 
-For a more conversational experience, start the interactive mode.
+Start an interactive session for a more conversational experience:
 
-```bash Start Interactive Chat icon=lucide:terminal
+```bash Start Interactive Mode icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --chat
 ```
 
-Once inside the chat, try asking questions like:
+Once in chat mode, try asking the following:
 
 *   "What files are in this directory?"
 *   "Show me the contents of the README file."
 *   "Find all TypeScript files."
-*   "Create a new file called `notes.txt` with the content 'Finish project documentation'."
+*   "Search for functions in the codebase."
+*   "Create a new file called `notes.txt` with some content."
 *   "List all files recursively with a depth limit of 2."
-
-## Debugging
-
-The AIGNE CLI includes an `observe` command that helps you analyze and debug your agent's behavior. It launches a local web server with an interface for inspecting execution traces, including tool calls, model inputs, and final outputs.
-
-First, start the observation server in your terminal:
-
-```bash Start Observation Server icon=lucide:terminal
-aigne observe
-```
-
-![Start the AIGNE observation server](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/aigne-observe-execute.png)
-
-After running an agent task, you can open the web interface to see a list of recent executions and drill down into the details of each step.
-
-![View a list of recent executions](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/aigne-observe-list.png)
 
 ## Summary
 
-This example provides a practical guide for extending an AI agent's capabilities to your local file system. Using `SystemFS`, you can build sophisticated applications that are deeply integrated with a user's local data and environment.
+This example provides a practical demonstration of how to extend an AI agent's capabilities to include local file system interactions. By using the `SystemFS` module, you can create powerful chatbots that automate tasks, retrieve information, and organize files based on natural language commands.
 
-For more examples and advanced features, see the following documentation:
+For more advanced examples and workflows, you can explore other documentation sections.
 
 <x-cards data-columns="2">
-  <x-card data-title="Memory" data-icon="lucide:brain-circuit" data-href="/examples/memory">
-  Learn how to create a chatbot with persistent memory using the FSMemory plugin.
+  <x-card data-title="Memory" data-href="/examples/memory" data-icon="lucide:brain-circuit">
+  Learn how to give your chatbot a persistent memory.
   </x-card>
-  <x-card data-title="MCP Server" data-icon="lucide:server" data-href="/examples/mcp-server">
-  Discover how to run AIGNE agents as a Model Context Protocol (MCP) Server.
+  <x-card data-title="Workflow Orchestration" data-href="/examples/workflow-orchestration" data-icon="lucide:milestone">
+  Discover how to coordinate multiple agents in complex workflows.
   </x-card>
 </x-cards>

@@ -1,136 +1,176 @@
 # ワークフローリフレクション
 
-AI ワークフローが自身の誤りを修正するようにするにはどうすればよいか、考えたことはありますか？このガイドでは、1つの AI Agent がコンテンツを生成し、別の AI Agent がそれをレビューして改良することで、継続的な改善のためのフィードバックループを作成する自己改善システムを構築する方法を実演します。洗練された最終成果物を生成するために協力する「コーダー」と「レビュアー」の Agent チームを設定する方法を学びます。
+AI にコンテンツを生成させるだけでなく、自身の成果物を批評し改善させたいと思ったことはありませんか？このガイドでは、ある Agent の出力を別の Agent がレビューして改良する、自己修正ワークフローの構築方法を解説します。これらの手順に従うことで、AIGNE フレームワークを使用してこの強力な反復パターンを実装する方法を学びます。
 
-## 概要
+この例では、`Coder` と `Reviewer` という 2 つの異なる Agent を持つワークフローを確立します。`Coder` Agent はユーザーのリクエストを解決するためのコードを作成する責任を負い、`Reviewer` Agent はそのコードを評価します。`Reviewer` がコードを不十分だと判断した場合、建設的なフィードバックを提供し、修正のために `Coder` に送り返します。これにより、出力が必要な基準を満たすまで継続的な改善のループが生まれます。
 
-ワークフローリフレクションパターンには、反復的な改良のために設計されたマルチ Agent システムが含まれます。この例では、2つの異なる Agent を持つワークフローを作成します。
+以下の図は、このプロセスを示しています。
 
-*   **コーダー Agent**: ユーザーのリクエストに基づいて初期ソリューションを生成する責任があります（例：コードの一部を記述する）。
-*   **レビュアー Agent**: 特定の基準（例：正確性、効率性、安全性）に対してコーダーの出力を評価します。
+```mermaid
+flowchart LR
+in(In)
+out(Out)
+coder(Coder)
+reviewer(Reviewer)
 
-ワークフローは構造化されたループに従います。
+in --Ideas--> coder ==Solution==> reviewer --Approved--> out
+reviewer ==Rejected==> coder
 
-1.  ユーザーが初期のアイデアや問題を提供します。
-2.  `Coder` Agent がアイデアを受け取り、解決策を生成します。
-3.  `Reviewer` Agent が解決策を検証します。
-4.  解決策が承認された場合、最終出力に送られます。
-5.  解決策が拒否された場合、`Reviewer` はフィードバックを提供し、リクエストは修正のために `Coder` に送り返されます。
+classDef inputOutput fill:#f9f0ed,stroke:#debbae,stroke-width:2px,color:#b35b39,font-weight:bolder;
+classDef processing fill:#F0F4EB,stroke:#C2D7A7,stroke-width:2px,color:#6B8F3C,font-weight:bolder;
 
-この周期的なプロセスは、`Reviewer` が出力を承認するまで続き、高品質な結果を保証します。
+class in inputOutput
+class out inputOutput
+class coder processing
+class reviewer processing
+```
+
+## 前提条件
+
+この例を正常に実行するには、開発環境が以下の基準を満たしている必要があります。
+
+*   **Node.js**: バージョン 20.0 以上。
+*   **npm**: Node.js のインストールに含まれています。
+*   **OpenAI API キー**: この例が OpenAI モデルと通信するために API キーが必要です。[OpenAI Platform](https://platform.openai.com/api-keys) から取得できます。
+
+## クイックスタート
+
+この例は、ローカルへのインストールを必要とせず、`npx` を使用してコマンドラインから直接実行できます。
+
+### 例の実行
+
+ターミナルを開き、以下のいずれかのコマンドを使用してワークフローを実行します。
+
+単一のリクエストを処理して終了する、デフォルトのワンショットモードで実行するには：
+```bash npx command icon=lucide:terminal
+npx -y @aigne/example-workflow-reflection
+```
+
+インタラクティブセッションに参加するには、`--chat` フラグを使用します：
+```bash npx command icon=lucide:terminal
+npx -y @aigne/example-workflow-reflection --chat
+```
+
+コマンドに直接入力をパイプすることもできます：
+```bash npx command icon=lucide:terminal
+echo "Write a function to validate email addresses" | npx -y @aigne/example-workflow-reflection
+```
+
+### AI モデルへの接続
+
+初回実行時、API キーがまだ設定されていないため、アプリケーションは AI モデルへの接続を設定するように求めます。
 
 ```d2
 direction: down
 
-User: {
-  shape: c4-person
+In: {
+  shape: oval
 }
 
-Coder-Agent: {
-  label: "コーダー Agent"
+Out: {
+  shape: oval
+}
+
+Coder: {
   shape: rectangle
 }
 
-Reviewer-Agent: {
-  label: "レビュアー Agent"
+Reviewer: {
   shape: rectangle
 }
 
-Decision: {
-  label: "承認？"
-  shape: diamond
-}
-
-Final-Output: {
-  label: "最終出力"
-  shape: rectangle
-}
-
-User -> Coder-Agent: "1. アイデアの提供"
-Coder-Agent -> Reviewer-Agent: "2. 解決策の生成"
-Reviewer-Agent -> Decision: "3. 解決策の検証"
-Decision -> Final-Output: "4. はい"
-Decision -> Coder-Agent: "5. いいえ、フィードバックを提供"
+In -> Coder: "Ideas"
+Coder -> Reviewer: "Solution"
+Reviewer -> Out: "Approved"
+Reviewer -> Coder: "Rejected"
 ```
 
-## クイックスタート
+以下のオプションが表示されます：
 
-この例は、`npx` を使用してローカルにインストールすることなく直接実行できます。
+#### 1. 公式 AIGNE Hub 経由で接続 (推奨)
 
-### 例を実行する
+これが最も簡単な方法です。新規ユーザーには、すぐに始められる無料クレジットが付与されます。
 
-ターミナルで以下のコマンドを実行してください。
+1.  最初のオプション `Connect to the Arcblock official AIGNE Hub` を選択します。
+2.  デフォルトのウェブブラウザで新しいタブが開き、認証ページが表示されます。
+3.  画面の指示に従い、接続リクエストを承認します。
 
-*   **ワンショットモード**: Agent は単一の入力を処理して終了します。
+DIAGRAM_PLACEHOLDER
 
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-reflection
-    ```
+#### 2. セルフホストの AIGNE Hub 経由で接続
 
-*   **対話型チャットモード**: Agent チームとの継続的なチャットセッションを開始します。
+あなたやあなたの組織がプライベートな AIGNE Hub インスタンスを運用している場合は、以下の手順に従ってください：
 
-    ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-reflection --chat
-    ```
+1.  2 番目のオプション `Connect to a self-hosted AIGNE Hub` を選択します。
+2.  プロンプトが表示されたら、セルフホストの AIGNE Hub インスタンスの URL を入力します。
+3.  画面の指示に従って接続を完了します。
 
-*   **パイプラインモード**: 他のコマンドから直接入力をパイプします。
+DIAGRAM_PLACEHOLDER
 
-    ```bash icon=lucide:terminal
-    echo "Write a function to validate email addresses" | npx -y @aigne/example-workflow-reflection
-    ```
+#### 3. サードパーティのモデルプロバイダー経由で接続
 
-### AI モデルに接続する
+適切な API キーを環境変数として設定することで、OpenAI などのサードパーティ LLM プロバイダーに直接接続できます。
 
-AIGNE フレームワークが機能するには、大規模言語モデル（LLM）への接続が必要です。AIGNE Hub を通じて接続して管理された体験を得るか、サードパーティプロバイダーを直接設定することができます。
-
-例えば、OpenAI を使用するには、`OPENAI_API_KEY` 環境変数を設定します。
-
+例えば、OpenAI モデルを使用するには、ターミナルで `OPENAI_API_KEY` 環境変数を設定します：
 ```bash OpenAI API キーを設定 icon=lucide:terminal
-export OPENAI_API_KEY="your-openai-api-key"
+export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 ```
 
-API キーを設定した後、再度この例を実行してください。異なるモデルプロバイダーの設定に関する詳細なガイドについては、[モデル設定](./models-configuration.md) のドキュメントを参照してください。
+`"YOUR_OPENAI_API_KEY"` を実際のキーに置き換えてください。環境変数を設定したら、`npx` コマンドを再度実行します。Google Gemini や DeepSeek などの他のプロバイダーの設定方法については、ソースコードに含まれる `.env.local.example` ファイルを参照してください。
 
-## ソースから実行する
+## ソースからのインストール
 
-コードを調査または変更したい開発者は、以下の手順に従ってソースリポジトリからこの例を実行してください。
+コードを確認したりカスタマイズしたい開発者のために、リポジトリをクローンしてローカルで例を実行することができます。
 
-### 1. リポジトリをクローンする
+### 1. リポジトリのクローン
 
-まず、AIGNE フレームワークのリポジトリをローカルマシンにクローンします。
-
-```bash icon=lucide:terminal
+```bash リポジトリをクローン icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 ```
 
-### 2. 依存関係をインストールする
+### 2. 依存関係のインストール
 
-この例のディレクトリに移動し、`pnpm` を使用して必要な依存関係をインストールします。
+例のディレクトリに移動し、`pnpm` を使用して必要なパッケージをインストールします。
 
-```bash icon=lucide:terminal
+```bash 依存関係をインストール icon=lucide:terminal
 cd aigne-framework/examples/workflow-reflection
 pnpm install
 ```
 
-### 3. 例を実行する
+### 3. 例の実行
 
-開始スクリプトを実行してワークフローを起動します。
+`pnpm start` コマンドを使用してスクリプトを実行します。
 
-*   **ワンショットモード（デフォルト）**
+```bash ワンショットモードで実行 icon=lucide:terminal
+pnpm start
+```
 
-    ```bash icon=lucide:terminal
-    pnpm start
-    ```
+インタラクティブなチャットモードで実行するには、`--chat` フラグを追加します。追加の `--` は、フラグを `pnpm` 自身ではなくスクリプトに渡すために必要です。
 
-*   **対話型チャットモード**
+```bash インタラクティブモードで実行 icon=lucide:terminal
+pnpm start -- --chat
+```
 
-    ```bash icon=lucide:terminal
-    pnpm start -- --chat
-    ```
+パイプライン経由で入力を提供するには：
+```bash パイプライン入力で実行 icon=lucide:terminal
+echo "Write a function to validate email addresses" | pnpm start
+```
 
-## コード実装
+## 仕組み
 
-この例の中核は、`Coder` と `Reviewer` の Agent を定義し、編成する TypeScript ファイルです。主要なコンポーネントを見ていきましょう。
+このワークフローは、`coder` と `reviewer` という 2 つの `AIAgent` インスタンスによって編成され、これらはトピックのシステムを通じて通信します。これにより、メッセージ駆動型のステートマシンが作成されます。
+
+1.  **初期化**：ユーザーのリクエストを含むメッセージが `UserInputTopic` に公開されると、プロセスが開始されます。
+2.  **Coder Agent**：`UserInputTopic` を購読している `coder` Agent がリクエストを受け取ります。初期コードを生成し、その解決策を `review_request` トピックに公開します。
+3.  **Reviewer Agent**：`reviewer` Agent は `review_request` トピックを購読します。提出されたコードを、正確性、効率性、安全性などの基準で評価します。
+4.  **決定とルーティング**：
+    *   コードが**承認された**場合、`reviewer` は最終的に検証された結果を `UserOutputTopic` に公開し、ワークフローを終了します。
+    *   コードが**拒否された**場合、`reviewer` はフィードバックを作成し、それを `rewrite_request` トピックに公開します。
+5.  **反復**：`coder` Agent は `rewrite_request` トピックも購読しています。フィードバックを受け取ると、それに応じてコードを修正し、`review_request` トピックに再提出します。これにより、承認が得られるまでサイクルが繰り返されます。
+
+### コード実装
+
+以下の TypeScript コードは、`coder` と `reviewer` Agent を定義し、実行するための完全な実装を提供します。
 
 ```typescript reflection-workflow.ts icon=logos:typescript
 import { AIAgent, AIGNE, UserInputTopic, UserOutputTopic } from "@aigne/core";
@@ -139,12 +179,12 @@ import { z } from "zod";
 
 const { OPENAI_API_KEY } = process.env;
 
-// 1. AI モデルを初期化
+// モデルを初期化
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-// 2. コーダー Agent を定義
+// Coder agent を定義
 const coder = AIAgent.from({
   subscribeTopic: [UserInputTopic, "rewrite_request"],
   publishTopic: "review_request",
@@ -174,7 +214,7 @@ User's question:
   }),
 });
 
-// 3. レビュアー Agent を定義
+// Reviewer agent を定義
 const reviewer = AIAgent.from({
   subscribeTopic: "review_request",
   publishTopic: (output) =>
@@ -207,7 +247,7 @@ Please review the code. If previous feedback was provided, see if it was address
   includeInputInOutput: true,
 });
 
-// 4. AIGNE インスタンスを初期化して実行
+// AIGNE インスタンスを初期化して実行
 const aigne = new AIGNE({ model, agents: [coder, reviewer] });
 aigne.publish(
   UserInputTopic,
@@ -218,29 +258,11 @@ const { message } = await aigne.subscribe(UserOutputTopic);
 console.log(message);
 ```
 
-### 説明
-
-1.  **モデルを初期化**: `OpenAIChatModel` インスタンスが作成され、両方の Agent の基盤となる LLM として機能します。
-2.  **コーダー Agent を定義**:
-    *   `subscribeTopic`: 初期のユーザー入力 (`UserInputTopic`) と、レビュアーからの修正リクエスト (`rewrite_request`) をリッスンします。
-    *   `publishTopic`: 生成したコードを `review_request` トピックに送信し、レビュアーが受け取れるようにします。
-    *   `instructions`: 役割、出力形式、フィードバックの処理方法を定義する詳細なプロンプトです。
-    *   `outputSchema`: Zod スキーマを使用して、出力に `code` 文字列が含まれていることを強制します。
-3.  **レビュアー Agent を定義**:
-    *   `subscribeTopic`: `review_request` トピックでのコード提出をリッスンします。
-    *   `publishTopic`: 出力を動的にルーティングする関数です。`approval` が `true` の場合、結果は最終的な `UserOutputTopic` に送信されます。それ以外の場合は、コーダーが修正するために `rewrite_request` トピックに送り返されます。
-    *   `instructions`: コードをどのように評価するかをレビュアーに指示するプロンプトです。
-    *   `outputSchema`: ブール値の `approval` フィールドと構造化された `feedback` オブジェクトを要求する Zod スキーマです。
-4.  **ワークフローを実行**:
-    *   モデルと2つの Agent を持つ `AIGNE` インスタンスが作成されます。
-    *   `aigne.publish()` は、最初の問題提起を `UserInputTopic` に送信し、ワークフローを開始します。
-    *   `aigne.subscribe()` は、`UserOutputTopic` でのメッセージを待ちます。これは、レビュアーがコードを承認した場合にのみ発生します。
-
 ### 出力例
 
-スクリプトが実行されると、最終的に承認された出力がコンソールに記録されます。
+ワークフローが正常に完了すると、最終的に承認されたコードとレビュー担当者のフィードバックが JSON オブジェクトとしてコンソールにログ出力されます。
 
-```json
+```json 出力例
 {
   "code": "def sum_of_even_numbers(numbers):\n    \"\"\"Function to calculate the sum of all even numbers in a list.\"\"\"\n    return sum(number for number in numbers if number % 2 == 0)",
   "approval": true,
@@ -253,38 +275,30 @@ console.log(message);
 }
 ```
 
-## コマンドラインオプション
+## AIGNE Observe を使ったデバッグ
 
-以下のコマンドラインフラグを使用して実行をカスタマイズできます。
+Agent のインタラクション、メッセージフロー、および全体的な実行についての洞察を得るには、AIGNE の可観測性ツールを使用できます。
 
-| パラメータ | 説明 | デフォルト |
-| :--- | :--- | :--- |
-| `--chat` | 対話型チャットモードで実行します。 | 無効 |
-| `--model <provider[:model]>` | 使用するAIモデル（例：'openai' または 'openai:gpt-4o-mini'）。 | `openai` |
-| `--temperature <value>` | モデル生成時の Temperature。 | プロバイダーのデフォルト |
-| `--top-p <value>` | モデル生成時の Top-p サンプリング値。 | プロバイダーのデフォルト |
-| `--presence-penalty <value>` | モデル生成時の Presence penalty 値。 | プロバイダーのデフォルト |
-| `--frequency-penalty <value>` | モデル生成時の Frequency penalty 値。 | プロバイダーのデフォルト |
-| `--log-level <level>` | ログレベルを設定します (ERROR, WARN, INFO, DEBUG, TRACE)。 | `INFO` |
-| `--input`, `-i <input>` | コマンドライン経由で直接入力を指定します。 | なし |
-
-#### 使用例
-
-```bash ログレベルを DEBUG に設定 icon=lucide:terminal
-pnpm start -- --log-level DEBUG
+まず、別のターミナルウィンドウから観測サーバーを起動します：
+```bash AIGNE Observe を起動 icon=lucide:terminal
+aigne observe
 ```
+DIAGRAM_PLACEHOLDER
+
+サーバーはローカルで実行され、`http://localhost:7893` でアクセスできます。サーバーが実行されている状態で AIGNE アプリケーションを実行すると、詳細なトレースがキャプチャされます。ブラウザでウェブインターフェースを開くと、最近の実行リストを表示し、ワークフローの各ステップの詳細を確認できます。
+
+DIAGRAM_PLACEHOLDER
 
 ## まとめ
 
-この例は、堅牢で自己修正可能なAIシステムを構築する上でのワークフローリフレクションの力を示しています。生成と評価の役割を別々の Agent に分けることで、最終的な出力の品質と信頼性を大幅に向上させるフィードバックループを作成できます。
+このガイドでは、Agent が協調して出力を反復的に改善するリフレクションワークフローの構築プロセスを詳述しました。このパターンは、自己修正が可能な、より信頼性が高く洗練された AI システムを開発するための重要なテクニックです。
 
-他の高度なワークフローパターンを探るには、以下の例を参照してください。
-
+Agent を協調させる他の方法を探るには、以下のワークフローパターンを検討してください：
 <x-cards data-columns="2">
-  <x-card data-title="ワークフローオーケストレーション" data-href="/examples/workflow-orchestration" data-icon="lucide:workflow">
-  洗練された処理パイプラインで連携して動作する複数の Agent を調整します。
+  <x-card data-title="シーケンシャルワークフロー" data-icon="lucide:arrow-right-circle" data-href="/examples/workflow-sequential">
+    実行順序が保証されたステップバイステップの処理パイプラインを構築します。
   </x-card>
-  <x-card data-title="ワークフロールーター" data-href="/examples/workflow-router" data-icon="lucide:git-fork">
-  リクエストを適切なハンドラーに誘導するためのインテリジェントなルーティングロジックを実装します。
+  <x-card data-title="ワークフローオーケストレーション" data-icon="lucide:network" data-href="/examples/workflow-orchestration">
+    洗練された処理パイプラインで連携して動作する複数の Agent を調整します。
   </x-card>
 </x-cards>

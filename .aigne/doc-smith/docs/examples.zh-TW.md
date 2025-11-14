@@ -1,149 +1,134 @@
 # 範例
 
-本節提供了一系列實用、可立即執行的範例，展示 AIGNE 框架的核心功能和工作流程模式。透過探索這些示範，您將對如何實現智慧聊天機器人、整合外部服務、管理 Agent 記憶體以及編排複雜的多 Agent 工作流程有具體的了解。
+準備好看看 AIGNE 框架的實際應用了嗎？本節提供了一系列全面的實用範例，展示各種功能和工作流程模式。跳過複雜的設定，直接透過一鍵式指令執行功能齊全的 Agent。
 
-這些範例設計為獨立且只需最少的設定即可執行，涵蓋了從基本對話到進階整合的廣泛應用。每個範例都可作為建構您自己的 Agent AI 應用程式的參考實作。
+## 總覽
+
+AIGNE 框架範例為從智慧聊天機器人到複雜的多 Agent 工作流程等一系列應用程式提供了實作示範。每個範例都是一個獨立、可執行的示範，旨在說明框架的特定功能。您可以探索諸如模型內容協議（MCP）整合、記憶體持久化、並行和順序任務處理以及動態程式碼執行等主題。
+
+有關特定功能或工作流程的詳細資訊，請參考相應的範例文件：
+
+<x-cards data-columns="3">
+  <x-card data-title="聊天機器人" data-icon="lucide:bot" data-href="/examples/chat-bot">示範如何建立並執行一個基於 Agent 的聊天機器人。</x-card>
+  <x-card data-title="AFS System FS" data-icon="lucide:folder-git-2" data-href="/examples/afs-system-fs">展示如何建構一個能與本機檔案系統互動的聊天機器人。</x-card>
+  <x-card data-title="記憶體" data-icon="lucide:database" data-href="/examples/memory">說明如何建立一個具有持久性記憶體的聊天機器人。</x-card>
+  <x-card data-title="MCP 伺服器" data-icon="lucide:server" data-href="/examples/mcp-server">展示如何將 AIGNE Agent 作為 MCP 伺服器執行。</x-card>
+  <x-card data-title="MCP 整合" data-icon="lucide:plug" data-href="/examples/mcp-blocklet">探索與 Blocklet、GitHub、Puppeteer 和 SQLite 的整合。</x-card>
+  <x-card data-title="程式碼執行" data-icon="lucide:terminal" data-href="/examples/workflow-code-execution">學習如何在工作流程中安全地執行動態產生的程式碼。</x-card>
+  <x-card data-title="並行處理" data-icon="lucide:git-compare-arrows" data-href="/examples/workflow-concurrency">透過平行處理多個任務來最佳化效能。</x-card>
+  <x-card data-title="群組聊天" data-icon="lucide:messages-square" data-href="/examples/workflow-group-chat">建構多個 Agent 可以互動和分享訊息的環境。</x-card>
+  <x-card data-title="順序執行" data-icon="lucide:arrow-right" data-href="/examples/workflow-sequential">建構具有保證執行順序的逐步處理流程。</x-card>
+</x-cards>
 
 ## 快速入門
 
-如果您已安裝 Node.js 和 npm，則無需本機安裝即可直接執行任何範例。以下步驟示範如何使用 `npx` 執行基本的聊天機器人範例。
+您無需複製程式碼倉庫或進行本機安裝，即可直接在終端機中使用 `npx` 執行任何範例。
 
-首先，設定必要的環境變數。對於大多數範例，需要一個 OpenAI API 金鑰。
+### 先決條件
 
-```bash 設定您的 OpenAI API 金鑰 icon=lucide:terminal
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
-```
+請確保您的系統上已安裝 Node.js 和 npm。
 
-接下來，執行範例。您可以以一次性模式執行以獲得單一回應，也可以以互動式聊天模式執行。
+### 執行範例
 
-```bash 以一次性模式執行 icon=lucide:terminal
-npx -y @aigne/example-chat-bot
-```
+要執行範例，您需要設定必要的環境變數，例如大型語言模型供應商的 API 金鑰。
 
-若要進行連續對話，請加入 `--chat` 旗標。
+1.  **設定您的 API 金鑰：**
 
-```bash 以互動式聊天模式執行 icon=lucide:terminal
-npx -y @aigne/example-chat-bot --chat
-```
+    ```bash 設定您的 OpenAI API 金鑰 icon=lucide:key-round
+    export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
+    ```
 
-## 範例集
+2.  **執行聊天機器人範例：**
 
-此範例集涵蓋了基本概念、模型內容協定（MCP）整合以及進階工作流程模式。
+    以下指令以單次模式執行基本的聊天機器人範例，它會使用預設提示並退出。
 
-### 核心概念
+    ```bash 以單次模式執行 icon=lucide:terminal
+    npx -y @aigne/example-chat-bot
+    ```
 
-<x-cards data-columns="2">
-  <x-card data-title="基本聊天機器人" data-href="/examples/chat-bot" data-icon="lucide:bot">
-  示範如何建立並執行一個簡單的基於 Agent 的聊天機器人。
-  </x-card>
-  <x-card data-title="具備記憶體的聊天機器人" data-href="/examples/memory" data-icon="lucide:database">
-  說明如何為 Agent 新增狀態記憶體以實現持續性對話。
-  </x-card>
-</x-cards>
+    要與 Agent 進行互動式對話，請新增 `--chat` 旗標。
 
-### MCP 與整合
+    ```bash 以互動模式執行 icon=lucide:terminal
+    npx -y @aigne/example-chat-bot --chat
+    ```
 
-<x-cards data-columns="2">
-  <x-card data-title="MCP 伺服器" data-href="/examples/mcp-server" data-icon="lucide:server">
-  展示如何將 AIGNE 框架的 Agent 作為模型內容協定（MCP）伺服器執行。
-  </x-card>
-  <x-card data-title="Blocklet 整合" data-href="/examples/mcp-blocklet" data-icon="lucide:box">
-  解釋如何與 Blocklet 整合並將其功能公開為 MCP 技能。
-  </x-card>
-  <x-card data-title="GitHub 整合" data-href="/examples/mcp-github" data-icon="lucide:github">
-  一個使用 GitHub MCP 伺服器與 GitHub 儲存庫互動的範例。
-  </x-card>
-  <x-card data-title="網頁內容擷取" data-href="/examples/mcp-puppeteer" data-icon="lucide:mouse-pointer-click">
-  學習如何透過 AIGNE 框架利用 Puppeteer 進行自動化網頁抓取。
-  </x-card>
-  <x-card data-title="智慧資料庫互動" data-href="/examples/mcp-sqlite" data-icon="lucide:database-zap">
-  透過模型內容協定連接到 SQLite，探索資料庫操作。
-  </x-card>
-</x-cards>
+## 設定語言模型
 
-### 進階工作流程
+透過設定 `MODEL` 環境變數以及相應的 API 金鑰，可以將範例設定為使用各種大型語言模型。`MODEL` 變數的格式為 `provider:model-name`。
 
-<x-cards data-columns="2">
-  <x-card data-title="程式碼執行" data-href="/examples/workflow-code-execution" data-icon="lucide:code-2">
-  展示如何在 AI 驅動的工作流程中安全地執行動態產生的程式碼。
-  </x-card>
-  <x-card data-title="並行處理" data-href="/examples/workflow-concurrency" data-icon="lucide:git-compare-arrows">
-  透過平行執行同時處理多個任務來優化效能。
-  </x-card>
-  <x-card data-title="循序管線" data-href="/examples/workflow-sequential" data-icon="lucide:git-commit-horizontal">
-  建構具有保證執行順序的逐步處理管線。
-  </x-card>
-  <x-card data-title="群組聊天" data-href="/examples/workflow-group-chat" data-icon="lucide:messages-square">
-  展示如何在群組聊天環境中與多個 Agent 分享訊息並互動。
-  </x-card>
-  <x-card data-title="任務交接" data-href="/examples/workflow-handoff" data-icon="lucide:arrow-right-left">
-  在專業 Agent 之間建立無縫過渡，以解決複雜問題。
-  </x-card>
-  <x-card data-title="智慧編排" data-href="/examples/workflow-orchestration" data-icon="lucide:workflow">
-  協調多個 Agent 在複雜的處理管線中協同工作。
-  </x-card>
-  <x-card data-title="反思" data-href="/examples/workflow-reflection" data-icon="lucide:rotate-cw">
-  透過輸出評估和精煉能力實現自我改進。
-  </x-card>
-  <x-card data-title="路由器" data-href="/examples/workflow-router" data-icon="lucide:git-fork">
-  實作智慧路由邏輯，根據內容將請求導向至適當的處理程式。
-  </x-card>
-</x-cards>
-
-## 進階設定
-
-### 使用不同的大型語言模型
-
-可以透過設定 `MODEL` 環境變數以及對應的 API 金鑰，將範例設定為使用各種大型語言模型。有關支援的供應商完整列表，請參閱[模型總覽](./models-overview.md)。
-
-#### OpenAI
+### OpenAI
 
 ```bash OpenAI 設定 icon=lucide:terminal
 export MODEL=openai:gpt-4o
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
 ```
 
-#### Anthropic
+### Anthropic
 
 ```bash Anthropic 設定 icon=lucide:terminal
-export MODEL=anthropic:claude-3-opus-20240229
+export MODEL=anthropic:claude-3-5-sonnet-20240620
 export ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY
 ```
 
-#### Google Gemini
+### Google Gemini
 
-```bash Gemini 設定 icon=lucide:terminal
+```bash Google Gemini 設定 icon=lucide:terminal
 export MODEL=gemini:gemini-1.5-flash
 export GEMINI_API_KEY=YOUR_GEMINI_API_KEY
 ```
 
-#### AWS Bedrock
+### AWS Bedrock
 
-```bash Bedrock 設定 icon=lucide:terminal
-export MODEL=bedrock:us-east-1.anthropic.claude-3-sonnet-20240229-v1:0
-export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY"
-export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_KEY"
+```bash AWS Bedrock 設定 icon=lucide:terminal
+export MODEL=bedrock:anthropic.claude-3-sonnet-20240229-v1:0
+export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY_ID"
+export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_ACCESS_KEY"
 export AWS_REGION="us-east-1"
 ```
 
-#### Ollama (本機)
+### DeepSeek
 
-```bash Ollama 設定 icon=lucide:terminal
-export MODEL=llama3
-export OLLAMA_DEFAULT_BASE_URL="http://localhost:11434/v1"
-export OLLAMA_API_KEY=ollama
+```bash DeepSeek 設定 icon=lucide:terminal
+export MODEL=deepseek:deepseek-chat
+export DEEPSEEK_API_KEY=YOUR_DEEPSEEK_API_KEY
 ```
 
-### 輸出偵錯日誌
+### Doubao
 
-若要深入了解 Agent 的內部操作，例如模型呼叫和回應，您可以透過設定 `DEBUG` 環境變數來啟用偵錯日誌記錄。
+```bash Doubao 設定 icon=lucide:terminal
+export MODEL=doubao:Doubao-pro-128k
+export DOUBAO_API_KEY=YOUR_DOUBAO_API_KEY
+```
+
+### xAI (Grok)
+
+```bash xAI 設定 icon=lucide:terminal
+export MODEL=xai:grok-1.5-flash
+export XAI_API_KEY=YOUR_XAI_API_KEY
+```
+
+### Ollama (本機模型)
+
+```bash Ollama 設定 icon=lucide:terminal
+export MODEL=ollama:llama3
+export OLLAMA_DEFAULT_BASE_URL="http://localhost:11434"
+```
+
+### LMStudio (本機模型)
+
+```bash LMStudio 設定 icon=lucide:terminal
+export MODEL=lmstudio:local-model/llama-3.1-8b-instruct-gguf
+export LM_STUDIO_DEFAULT_BASE_URL="http://localhost:1234/v1"
+```
+
+有關支援模型的完整列表及其設定詳細資訊，請參考[模型](./models-overview.md)部分。
+
+## 偵錯
+
+要深入了解 Agent 的執行流程，包括模型的呼叫和回應，您可以透過設定 `DEBUG` 環境變數來啟用偵錯日誌。
 
 ```bash 啟用偵錯日誌 icon=lucide:terminal
 DEBUG=* npx -y @aigne/example-chat-bot --chat
 ```
 
-此命令將產生詳細輸出，這對於故障排除和理解 Agent 的執行流程很有用。
-
-## 總結
-
-這些範例為使用 AIGNE 框架進行建構提供了一個實用的起點。我們建議從[基本聊天機器人](./examples-chat-bot.md)開始，以了解基礎知識，然後根據需要探索更複雜的工作流程。若要獲得更深入的理論理解，請參閱[核心概念](./developer-guide-core-concepts.md)文件。
+此指令將在您的終端機中列印詳細的日誌，這有助於了解 Agent 的內部運作並對其行為進行疑難排解。

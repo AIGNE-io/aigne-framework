@@ -1,167 +1,139 @@
 # ワークフローのハンドオフ
 
-このドキュメントでは、ある Agent が別の Agent にシームレスに制御を引き継ぐワークフローを構築する方法について説明します。この手法により、タスクを専門の Agent に委任する洗練されたマルチ Agent システムを作成でき、より複雑な問題の解決が可能になります。このガイドを完了することで、異なる能力を持つ 2 つの Agent 間でハンドオフメカニズムを実装する方法を理解できます。
+このガイドでは、ある Agent が別の専門 Agent にシームレスに制御をハンドオフ（引き渡し）するワークフローの構築方法を解説します。最後まで読むと、ユーザーの入力に基づいてタスクを委任し、より複雑で動的な問題解決を可能にするマルチ Agent システムを作成する方法を理解できます。
 
-## 仕組み
+## 概要
 
-ハンドオフワークフローには、最初のコンタクトおよびディスパッチャーとして機能するプライマリ Agent (Agent A) が関与します。ユーザーの入力に基づき、この Agent は会話をセカンダリの専門 Agent (Agent B) に転送する「スキル」をトリガーできます。その後、Agent B が対話を引き継ぎ、独自の指示セットに従います。このパターンは、モジュール式でスケーラブルな AI アプリケーションを構築するために不可欠です。
+多くの高度な AI アプリケーションでは、単一の Agent が幅広いタスクを処理するために必要なスキルをすべて備えているとは限りません。ワークフローのハンドオフパターンは、プライマリ Agent がディスパッチャーとして機能し、特定のトリガーや条件が満たされたときに専門 Agent に制御を移すことで、この問題に対処します。これによりシームレスな移行が実現し、異なる Agent が協力して複雑な問題を解決できるようになります。
 
-プロセスフローを以下に示します。
+この例では、単純なハンドオフを実装します。
+*   **Agent A:** 汎用 Agent。
+*   **Agent B:** 俳句でのみ対話する専門 Agent。
 
-```mermaid
-flowchart LR
-
-in(In)
-out(Out)
-agentA(Agent A)
-agentB(Agent B)
-
-in --> agentA --transfer to b--> agentB --> out
-
-classDef inputOutput fill:#f9f0ed,stroke:#debbae,stroke-width:2px,color:#b35b39,font-weight:bolder;
-classDef processing fill:#F0F4EB,stroke:#C2D7A7,stroke-width:2px,color:#6B8F3C,font-weight:bolder;
-
-class in inputOutput
-class out inputOutput
-class agentA processing
-class agentB processing
-```
-
-典型的なユーザーインタラクションシーケンスは次のとおりです。
+ユーザーが Agent A に「transfer to agent b」と指示すると、システムはシームレスに会話を Agent B にハンドオフし、以降のすべての対話は Agent B が行います。
 
 ```d2
 shape: sequence_diagram
 
-User: { 
-  shape: c4-person 
+User: {
+  shape: c4-person
 }
 
-A: {
-  label: "Agent A"
+AIGNE-Framework: {
+  label: "AIGNE フレームワーク"
 }
 
-B: {
-  label: "Agent B"
+Agent-A: {
+  label: "Agent A\n(汎用)"
 }
 
-User -> A: "transfer to agent b"
-A -> B: "transfer to agent b"
-B -> User: "What do you need, friend?"
-
-loop: {
-  User -> B: "It's a beautiful day"
-  B -> User: "Sunshine warms the earth,\nGentle breeze whispers softly,\nNature sings with joy."
+Agent-B: {
+  label: "Agent B\n(俳句専門)"
 }
+
+User -> AIGNE-Framework: "1. 'transfer to agent b'"
+AIGNE-Framework -> Agent-A: "2. 入力で呼び出す"
+Agent-A -> Agent-A: "3. スキル実行: transfer_to_b()"
+Agent-A -> AIGNE-Framework: "4. Agent B オブジェクトを返す"
+AIGNE-Framework -> AIGNE-Framework: "5. ハンドオフ: Agent A を B に置き換える"
+AIGNE-Framework -> Agent-B: "6. 応答のために Agent B を呼び出す"
+Agent-B -> AIGNE-Framework: "7. 俳句の応答を生成"
+AIGNE-Framework -> User: "8. Agent B の応答を表示"
+
+User -> AIGNE-Framework: "9. 'It's a beautiful day'"
+AIGNE-Framework -> Agent-B: "10. 新しい入力で呼び出す"
+Agent-B -> AIGNE-Framework: "11. 別の俳句を生成"
+AIGNE-Framework -> User: "12. Agent B の応答を表示"
 ```
 
 ## 前提条件
 
-続行する前に、システムに以下のソフトウェアがインストールされていることを確認してください。
+この例を実行する前に、開発環境が以下の要件を満たしていることを確認してください。
 
-*   Node.js (バージョン 20.0 以上)
-*   OpenAI API キー。[OpenAI Platform](https://platform.openai.com/api-keys) から取得できます。
+*   **Node.js:** バージョン 20.0 以上。
+*   **npm:** Node.js に同梱されています。
+*   **AI モデルプロバイダーのアカウント:** Agent を動作させるために、OpenAI などのプロバイダーから発行された API キーが必要です。
 
 ## クイックスタート
 
-この例は、`npx` を使用してローカルにインストールすることなく、コマンドラインから直接実行できます。
+`npx` を使用すると、リポジトリをクローンせずにこの例を直接実行できます。
 
-### 例を実行する
+### ステップ1：例を実行する
 
-このワークフローは、ワンショットモードまたは対話型のチャットセッションとして実行できます。
+ターミナルを開き、以下のいずれかのコマンドを実行します。`--chat` フラグを使用すると、継続的な会話ができる対話型セッションが有効になります。
 
-*   **ワンショットモード (デフォルト)**: 1 つの入力で実行され、出力を返します。
+```bash ワンショットモードで実行 icon=lucide:terminal
+npx -y @aigne/example-workflow-handoff
+```
 
-    ```sh icon=lucide:terminal
-    npx -y @aigne/example-workflow-handoff
+```bash 対話型チャットモードで実行 icon=lucide:terminal
+npx -y @aigne/example-workflow-handoff --chat
+```
+
+コマンドに直接入力をパイプすることもできます。
+
+```bash パイプライン入力を使用 icon=lucide:terminal
+echo "transfer to agent b" | npx -y @aigne/example-workflow-handoff
+```
+
+### ステップ2：AI モデルに接続する
+
+初めてこの例を実行する場合、API キーが設定されていないため、AI モデルに接続するよう求められます。
+
+![run example](../../../examples/workflow-handoff/run-example.png)
+
+続行するには、いくつかの選択肢があります。
+
+1.  **AIGNE Hub に接続する（推奨）**
+    これが最も簡単な開始方法です。公式の AIGNE Hub は、新規ユーザー向けに無料クレジットを提供しています。最初のオプションを選択すると、ブラウザが開き、接続を承認するためのページが表示されます。
+
+    ![connect to official aigne hub](../../../examples/images/connect-to-aigne-hub.png)
+
+2.  **セルフホストの AIGNE Hub に接続する**
+    独自の AIGNE Hub インスタンスをお持ちの場合は、2番目のオプションを選択し、その URL を入力して接続します。
+
+    ![connect to self hosted aigne hub](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+3.  **サードパーティのモデルプロバイダーを設定する**
+    適切な環境変数を設定することで、OpenAI、DeepSeek、Google Gemini などのプロバイダーに直接接続できます。例えば、OpenAI を使用する場合は、ターミナルで API キーを設定します。
+
+    ```bash OpenAI API キーを設定 icon=lucide:terminal
+    export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
     ```
 
-*   **対話型チャットモード**: 継続的な会話ができるセッションを開始します。
+    環境変数を設定した後、再度 `npx` コマンドを実行してください。
 
-    ```sh icon=lucide:terminal
-    npx -y @aigne/example-workflow-handoff --chat
-    ```
+## コードの詳細
 
-*   **パイプライン入力**: スクリプトに直接入力をパイプすることもできます。
+この例の核となるのは、最初の Agent の「スキル」として機能する関数です。モデルがユーザーの入力に基づいてこのスキルを使用すべきだと判断すると、この関数は新しい Agent を返し、効果的に制御を移譲します。
 
-    ```sh icon=lucide:terminal
-    echo "transfer to agent b" | npx -y @aigne/example-workflow-handoff
-    ```
+### 仕組み
 
-### AI モデルに接続する
+1.  **Agent A (ディスパッチャー):** この Agent は `transfer_to_b` スキルで設定されています。その指示は汎用的なものです。
+2.  **Agent B (スペシャリスト):** この Agent には「俳句でのみ話すこと」という非常に具体的な指示があります。特別なスキルはありません。
+3.  **ハンドオフの仕組み:** `transfer_to_b` 関数は、単に `agentB` オブジェクトを返します。AIGNE フレームワークは、スキル実行の結果として Agent オブジェクトを受け取ると、セッション内の現在の Agent を新しい Agent に置き換えます。
 
-初めてこの例を実行すると、AI モデルへの接続を求められます。主に 3 つの選択肢があります。
+### 実装例
 
-1.  **公式 AIGNE Hub 経由で接続**: 新規ユーザーに推奨されるオプションです。画面の指示に従ってブラウザを接続してください。新規ユーザーには無料のトークンが付与されます。
-2.  **セルフホストの AIGNE Hub 経由で接続**: 独自の AIGNE Hub インスタンスをホストしている場合は、このオプションを選択し、その URL を提供してください。
-3.  **サードパーティのモデルプロバイダー経由で接続**: OpenAI のようなプロバイダーに直接接続するには、対応する API キーを環境変数として設定します。
+以下のコードは、2つの Agent を定義し、ハンドオフのロジックを実装する方法を示しています。
 
-    ```sh icon=lucide:terminal
-    export OPENAI_API_KEY="your-openai-api-key"
-    ```
-
-    環境変数を設定した後、再度 `npx` コマンドを実行してください。サポートされているプロバイダーとその必要な環境変数のリストについては、[モデル設定](./models-configuration.md)のドキュメントを参照してください。
-
-## ローカルへのインストールと設定
-
-ソースコードを確認または変更したい開発者は、以下の手順に従ってプロジェクトをローカルに設定してください。
-
-1.  **リポジトリをクローンする**
-
-    ```sh icon=lucide:terminal
-    git clone https://github.com/AIGNE-io/aigne-framework
-    ```
-
-2.  **サンプルディレクトリに移動する**
-
-    ```sh icon=lucide:terminal
-    cd aigne-framework/examples/workflow-handoff
-    ```
-
-3.  **依存関係をインストールする**
-
-    このリポジトリ内では、パッケージ管理に `pnpm` を使用することをお勧めします。
-
-    ```sh icon=lucide:terminal
-    pnpm install
-    ```
-
-4.  **例を実行する**
-
-    ローカルスクリプトは、`npx` での実行と同じコマンドライン引数をサポートしています。
-
-    ```sh icon=lucide:terminal
-    # ワンショットモードで実行
-    pnpm start
-    
-    # 対話型チャットモードで実行
-    pnpm start -- --chat
-    
-    # パイプライン入力を使用
-    echo "transfer to agent b" | pnpm start
-    ```
-
-## コードの実装
-
-ハンドオフワークフローの中核となるロジックは、単一の TypeScript ファイルに含まれています。このファイルでは、2 つの Agent と、制御の移譲を容易にする関数が定義されています。
-
-```typescript handoff-workflow.ts icon=logos:typescript
+```typescript index.ts icon=logos:typescript
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
 
-// 1. API キーでチャットモデルを初期化します。
+// 1. AI モデルを初期化する
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-// 2. ハンドオフ関数を定義します。この関数は、アクティブ化する Agent を返します。
+// 2. ハンドオフを実行するスキルを定義する
 function transfer_to_b() {
   return agentB;
 }
 
-// 3. Agent A (最初のコンタクトポイント) を定義します。
-// これは、Agent B に制御を移すスキルを持つ役立つ Agent です。
+// 3. ハンドオフスキルを持つ Agent A を定義する
 const agentA = AIAgent.from({
   name: "AgentA",
   instructions: "You are a helpful agent.",
@@ -169,105 +141,105 @@ const agentA = AIAgent.from({
   skills: [transfer_to_b],
 });
 
-// 4. Agent B (専門 Agent) を定義します。
-// その指示は、俳句でのみ応答することです。
+// 4. 専門家である Agent B を定義する
 const agentB = AIAgent.from({
   name: "AgentB",
   instructions: "Only speak in Haikus.",
   outputKey: "B",
 });
 
-// 5. モデルを使用して AIGNE ランタイムをインスタンス化します。
+// 5. AIGNE ランタイムを初期化する
 const aigne = new AIGNE({ model });
 
-// 6. 初期 Agent (Agent A) を呼び出してセッションを開始します。
+// 6. Agent A でセッションを開始する
 const userAgent = aigne.invoke(agentA);
 
-// 7. 最初の呼び出しで Agent B へのハンドオフがトリガーされます。
+// 7. 最初の呼び出し：ハンドオフをトリガーする
 const result1 = await userAgent.invoke("transfer to agent b");
 console.log(result1);
-// Output:
+// 期待される出力:
 // {
 //   B: "Transfer now complete,  \nAgent B is here to help.  \nWhat do you need, friend?",
 // }
 
-// 8. 2 回目の呼び出しは Agent B と直接対話します。
+// 8. 2回目の呼び出し：今度は Agent B と対話する
 const result2 = await userAgent.invoke("It's a beautiful day");
 console.log(result2);
-// Output:
+// 期待される出力:
 // {
 //   B: "Sunshine warms the earth,  \nGentle breeze whispers softly,  \nNature sings with joy.  ",
 // }
 ```
 
-### 解説
+## ソースからの実行（オプション）
 
-1.  **モデルの初期化**: `OpenAIChatModel` のインスタンスが作成され、Agent の頭脳として機能します。
-2.  **ハンドオフスキル**: `transfer_to_b` 関数は標準的な JavaScript 関数です。`agentA` の `skills` に追加されると、AIGNE フレームワークはこれを AI が使用を決定できるツールとして利用可能にします。呼び出されると、`agentB` オブジェクトを返し、フレームワークに制御をハンドオフするよう信号を送ります。
-3.  **Agent A**: この Agent はディスパッチャーとして機能します。このワークフローにおける主な役割は、ユーザーの Agent 切り替えの意図を認識し、適切なスキルを呼び出すことです。
-4.  **Agent B**: この Agent は、俳句でのみ話すという `instructions` によって定義された専門的なペルソナを持っています。独立して動作し、Agent A のことは認識していません。
-5.  **AIGNE の呼び出し**: `aigne.invoke(agentA)` は、Agent A で始まるステートフルなセッションを作成します。その後の `userAgent.invoke()` の呼び出しは、セッションで現在アクティブな Agent に向けられます。ハンドオフ後、それ以降の入力はすべて Agent B に送られます。
+コードをローカルで変更または確認したい場合は、以下の手順に従ってください。
+
+### 1. リポジトリをクローンする
+
+```bash icon=lucide:terminal
+git clone https://github.com/AIGNE-io/aigne-framework
+```
+
+### 2. 依存関係をインストールする
+
+サンプルディレクトリに移動し、`pnpm` を使用して必要なパッケージをインストールします。
+
+```bash icon=lucide:terminal
+cd aigne-framework/examples/workflow-handoff
+pnpm install
+```
+
+### 3. 例を実行する
+
+`pnpm start` コマンドを使用します。`--chat` のような追加の引数を渡すには、その前に `--` を追加します。
+
+```bash ワンショットモードで実行 icon=lucide:terminal
+pnpm start
+```
+
+```bash 対話型チャットモードで実行 icon=lucide:terminal
+pnpm start -- --chat
+```
 
 ## コマンドラインオプション
 
-スクリプトの動作は、以下のコマンドラインパラメータを使用してカスタマイズできます。
+このサンプルスクリプトは、動作をカスタマイズするためのいくつかのコマンドライン引数を受け付けます。
 
 | パラメータ | 説明 | デフォルト |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------- |
-| `--chat` | 対話型チャットモードで実行します。 | 無効 |
-| `--model <provider[:model]>` | 使用する AI モデルを指定します。例: `openai` または `openai:gpt-4o-mini`。 | `openai` |
-| `--temperature <value>` | モデル生成の temperature を設定します。 | プロバイダーのデフォルト |
-| `--top-p <value>` | top-p サンプリング値を設定します。 | プロバイダーのデフォルト |
-| `--presence-penalty <value>` | presence penalty の値を設定します。 | プロバイダーのデフォルト |
-| `--frequency-penalty <value>` | frequency penalty の値を設定します。 | プロバイダーのデフォルト |
-| `--log-level <level>` | ログレベル (`ERROR`、`WARN`、`INFO`、`DEBUG`、`TRACE`) を設定します。 | `INFO` |
-| `--input`, `-i <input>` | コマンドライン経由で直接入力を提供します。 | なし |
+|---|---|---|
+| `--chat` | 対話型のチャットモードで実行します。 | 無効 |
+| `--model <provider[:model]>` | 使用する AI モデル（例：`openai` または `openai:gpt-4o-mini`）。 | `openai` |
+| `--temperature <value>` | モデル生成時の Temperature。 | プロバイダーのデフォルト |
+| `--top-p <value>` | Top-p サンプリングの値。 | プロバイダーのデフォルト |
+| `--presence-penalty <value>` | Presence penalty の値。 | プロバイダーのデフォルト |
+| `--frequency-penalty <value>` | Frequency penalty の値。 | プロバイダーのデフォルト |
+| `--log-level <level>` | ログレベルを設定します（ERROR, WARN, INFO, DEBUG, TRACE）。 | INFO |
+| `--input`, `-i <input>` | コマンドライン経由で直接入力を指定します。 | なし |
 
-#### 使用例
+## デバッグと監視
 
-```sh icon=lucide:terminal
-# 特定の OpenAI モデルを使用してチャットモードで実行
-pnpm start -- --chat --model openai:gpt-4o-mini
+Agent の実行フローを検査するには、`aigne observe` コマンドを使用できます。このツールは、トレース、呼び出し、その他のランタイムデータを詳細に表示するローカルウェブサーバーを起動し、デバッグに非常に役立ちます。
 
-# 詳細な出力のためにログレベルを DEBUG に設定
-pnpm start -- --log-level DEBUG
+まず、別のターミナルで監視サーバーを起動します。
+
+```bash 監視サーバーを起動 icon=lucide:terminal
+aigne observe
 ```
 
-## AIGNE Observe を使用したデバッグ
+![aigne-observe-execute](../../../examples/images/aigne-observe-execute.png)
 
-Agent の実行フローを調査するには、`aigne observe` コマンドを使用できます。これにより、Agent の動作を監視および分析するための UI を備えたローカルウェブサーバーが起動し、デバッグに非常に役立ちます。
+例を実行した後、ウェブインターフェース（通常は `http://localhost:7893` で利用可能）で実行トレースを表示できます。
 
-1.  **監視サーバーを起動する**
-
-    ```sh icon=lucide:terminal
-    aigne observe
-    ```
-
-2.  **Agent を実行する**
-
-    別のターミナルウィンドウでハンドオフの例を実行します。
-
-3.  **トレースを表示する**
-
-    `aigne observe` によって提供されるウェブインターフェースに移動します。最近の実行リストが表示されます。いずれかをクリックすると、Agent A による初期処理とそれに続く Agent B へのハンドオフを含む、ワークフロー全体の詳細なトレースが表示されます。
+![aigne-observe-list](../../../examples/images/aigne-observe-list.png)
 
 ## まとめ
 
-このガイドでは、モジュール式のマルチ Agent システムを構築するための基本的なテクニックであるワークフローハンドオフパターンについて詳しく説明しました。専門的な指示を持つ Agent にタスクを委任することで、より強力で保守性の高い AI アプリケーションを作成できます。
+これで、タスクを専門の Agent に委任するマルチ Agent システムを構築するための強力なパターンである、ワークフローのハンドオフを実装する方法を学びました。このアプローチにより、異なるスキルを持つ Agent を組み合わせることで、より堅牢で有能な AI アプリケーションを構築できます。
 
-関連トピックに関する詳細については、以下のドキュメントを参照してください。
+より高度な Agent オーケストレーションを探求するには、以下の関連例をご覧ください。
 
 <x-cards data-columns="2">
-  <x-card data-title="AI Agent" data-icon="lucide:bot" data-href="/developer-guide/agents/ai-agent">
-    AI モデルと対話する Agent を作成するためのコアコンポーネントについて学びます。
-  </x-card>
-  <x-card data-title="Team Agent" data-icon="lucide:users" data-href="/developer-guide/agents/team-agent">
-    複雑なタスクで協力するために複数の Agent を編成する方法を発見します。
-  </x-card>
-  <x-card data-title="Workflow Orchestration" data-icon="lucide:workflow" data-href="/examples/workflow-orchestration">
-    処理パイプラインで複数の Agent を調整する別の例を探ります。
-  </x-card>
-  <x-card data-title="Workflow Router" data-icon="lucide:git-branch" data-href="/examples/workflow-router">
-    リクエストを適切な Agent に転送するためのインテリジェントなルーティングを実装する方法を学びます。
-  </x-card>
+  <x-card data-title="ワークフローオーケストレーション" data-icon="lucide:milestone" data-href="/examples/workflow-orchestration">高度な処理パイプラインで連携する複数の Agent を調整します。</x-card>
+  <x-card data-title="ワークフロールーター" data-icon="lucide:git-fork" data-href="/examples/workflow-router">コンテンツに基づいてリクエストを適切なハンドラに転送するためのインテリジェントなルーティングロジックを実装します。</x-card>
 </x-cards>

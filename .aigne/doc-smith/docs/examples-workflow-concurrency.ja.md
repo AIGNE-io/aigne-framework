@@ -1,194 +1,220 @@
 # ワークフローの並行処理
 
-AI ワークフローを高速化したいとお考えですか？このガイドでは、AIGNE フレームワークを使用して並行ワークフローを構築し、複数のタスクを並列で処理する方法を解説します。`TeamAgent` を設定して異なる分析を同時に実行し、その結果を効率的に統合する方法を学びます。
+タスクを並列実行することで、複雑なワークフローの効率を大幅に向上させることができます。このガイドでは、AIGNE フレームワークを使用して並行ワークフローを構築する方法を示します。このワークフローでは、複数の Agent が同時に同じ入力を処理し、その出力が集約されます。製品を異なる視点から同時に分析する実践的な例を設定し、実行する方法を学びます。
 
 ## 概要
 
-多くの実世界のシナリオでは、複雑な問題はより小さく独立したサブタスクに分解できます。これらのタスクを順次処理する代わりに、並行して実行することで時間を節約できます。この例では、製品説明という単一の入力を、異なる Agent が複数の視点から分析する一般的な並行処理パターンを示します。それぞれの個別の出力は、最終的に包括的な結果に集約されます。
+この例では、製品説明を入力として受け取るワークフローを構築します。その後、2つの専門 Agent が並行して動作します。
 
-ワークフローは次のように構成されています：
+1.  **特徴抽出 Agent (Feature Extractor)**: 説明を分析して、主要な製品特徴を特定し、要約します。
+2.  **オーディエンス分析 Agent (Audience Analyzer)**: 同じ説明を分析して、ターゲットオーディエンスを決定します。
+
+最後に、**アグリゲーター (Aggregator)** が両方の Agent からの出力を1つの統合された結果にまとめます。この並列処理モデルは、独立したサブタスクに分割できるタスクに最適であり、総実行時間を短縮します。
+
+以下の図は、この並行ワークフローを示しています。
 
 ```d2
 direction: down
 
 Input: {
-  label: "入力\n(製品説明)"
+  label: "製品説明"
   shape: oval
 }
 
-TeamAgent: {
-  label: "並列処理 (TeamAgent)"
-  shape: rectangle
+Parallel-Processing: {
+  label: "並列処理"
+  style.stroke-dash: 2
 
   Feature-Extractor: {
-    label: "特徴抽出器"
-    shape: rectangle
+    label: "特徴抽出 Agent\n(Agent 1)"
   }
 
   Audience-Analyzer: {
-    label: "オーディエンス分析器"
-    shape: rectangle
+    label: "オーディエンス分析 Agent\n(Agent 2)"
   }
 }
 
-Aggregation: {
-  label: "集約"
-  shape: diamond
+Aggregator: {
+  label: "アグリゲーター"
 }
 
-Output: {
-  label: "出力\n({ features, audience })"
+Result: {
+  label: "統合結果"
   shape: oval
 }
 
-Input -> TeamAgent.Feature-Extractor
-Input -> TeamAgent.Audience-Analyzer
-TeamAgent.Feature-Extractor -> Aggregation: "features"
-TeamAgent.Audience-Analyzer -> Aggregation: "audience"
-Aggregation -> Output
+Input -> Parallel-Processing.Feature-Extractor: "特徴を分析"
+Input -> Parallel-Processing.Audience-Analyzer: "オーディエンスを分析"
+Parallel-Processing.Feature-Extractor -> Aggregator: "特徴の要約"
+Parallel-Processing.Audience-Analyzer -> Aggregator: "オーディエンスのプロファイル"
+Aggregator -> Result
 ```
-
--   **入力**: ワークフローに製品説明が提供されます。
--   **並列処理**:
-    -   `Feature Extractor` Agent が説明を分析し、主要な製品の特徴を特定します。
-    -   `Audience Analyzer` Agent が同時に同じ説明を分析し、ターゲットオーディエンスを特定します。
--   **集約**: 両方の Agent からの出力（`features` と `audience`）が収集されます。
--   **出力**: 抽出された特徴とオーディエンス分析の両方を含む、単一の構造化されたオブジェクトが返されます。
-
-この例は、単一の入力に対するワンショット実行モードと、対話形式の分析のためのインタラクティブチャットモードの両方をサポートしています。
 
 ## 前提条件
 
-この例を実行する前に、お使いのシステムが以下の要件を満たしていることを確認してください：
-
--   [Node.js](https://nodejs.org) (バージョン 20.0 以上)。
--   [OpenAI API キー](https://platform.openai.com/api-keys)。
+先に進む前に、開発環境が以下の要件を満たしていることを確認してください。
+*   **Node.js**: バージョン 20.0 以降。
+*   **npm**: Node.js に同梱されています。
+*   **OpenAI API キー**: OpenAI モデルに接続するために必要です。[OpenAI Platform](https://platform.openai.com/api-keys) から取得できます。
 
 ## クイックスタート
 
-リポジトリをクローンすることなく、`npx` を使用してコマンドラインから直接この例を実行できます。
+`npx` を使用して、インストールなしでこの例を直接実行できます。
 
-### 例の実行
+### 例を実行する
 
-ターミナルで以下のいずれかのコマンドを実行してください。
+ターミナルで以下のコマンドを実行して、さまざまなモードでワークフローを実行します。
 
-デフォルトのワンショットモードで実行する場合：
-```bash npx command icon=lucide:terminal
-npx -y @aigne/example-workflow-concurrency
-```
+*   **ワンショットモード (デフォルト)**: 事前に定義された単一の入力を処理して終了します。
 
-インタラクティブなチャットセッションで実行する場合：
-```bash npx command icon=lucide:terminal
-npx -y @aigne/example-workflow-concurrency --chat
-```
+    ```bash icon=lucide:terminal
+    npx -y @aigne/example-workflow-concurrency
+    ```
 
-パイプライン経由で入力を提供する場合：
-```bash npx command icon=lucide:terminal
-echo "Analyze product: Smart home assistant with voice control and AI learning capabilities" | npx -y @aigne/example-workflow-concurrency
-```
+*   **インタラクティブチャットモード**: 複数の入力を提供できるチャットセッションを開始します。
 
-### AI モデルへの接続
+    ```bash icon=lucide:terminal
+    npx -y @aigne/example-workflow-concurrency --chat
+    ```
 
-初めてこの例を実行する際には、AI モデルプロバイダーへの接続を求められます。
+*   **パイプラインモード**: 別のコマンドからパイプされた入力を使用します。
 
-![Connect to a model provider](/media/examples/workflow-concurrency/run-example.png)
+    ```bash icon=lucide:terminal
+    echo "Analyze product: Smart home assistant with voice control and AI learning capabilities" | npx -y @aigne/example-workflow-concurrency
+    ```
 
-接続にはいくつかのオプションがあります：
+### AI モデルに接続する
 
-1.  **AIGNE Hub (公式)**: 新規ユーザーにおすすめのオプションです。すぐに始められる無料のトークンが提供されます。
-2.  **AIGNE Hub (セルフホスト)**: 独自の AIGNE Hub インスタンスを実行しているユーザー向けです。
-3.  **サードパーティのモデルプロバイダー**: 必要な API キーを環境変数として設定することで、OpenAI などのプロバイダーに直接接続できます。
+この例を初めて実行すると、API キーが設定されていないため、AI モデルプロバイダーに接続するように求められます。
 
-例えば、OpenAI を直接使用する場合：
-```bash Set OpenAI API Key icon=lucide:terminal
-export OPENAI_API_KEY="your-openai-api-key"
-```
-環境変数を設定した後、再度 `npx` コマンドを実行してください。
+![AI モデル設定のための初期接続プロンプト](../../../examples/workflow-concurrency/run-example.png)
 
-## インストールとローカルセットアップ
+続行するにはいくつかのオプションがあります。
 
-開発目的の場合、リポジトリをクローンしてソースコードからこの例を実行できます。
+1.  **公式 AIGNE Hub 経由で接続する (推奨)**
 
-### 1. リポジトリのクローン
+    これが最も簡単に始める方法です。新規ユーザーは無料クレジットを受け取れます。最初のオプションを選択すると、ブラウザが AIGNE Hub の認証ページに開きます。画面の指示に従って接続を承認してください。
 
-```bash Clone the repository icon=lucide:terminal
+    ![AIGNE CLI が AIGNE Hub に接続することを承認する](../../../examples/images/connect-to-aigne-hub.png)
+
+2.  **セルフホストの AIGNE Hub 経由で接続する**
+
+    独自の AIGNE Hub インスタンスをお持ちの場合は、2番目のオプションを選択してください。接続を完了するために、セルフホスト Hub の URL を入力するように求められます。
+
+    ![セルフホストの AIGNE Hub の URL を入力する](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+3.  **サードパーティのモデルプロバイダー経由で接続する**
+
+    API キーを含む環境変数を設定することで、OpenAI のようなプロバイダーに直接接続できます。例えば、OpenAI を使用するには、キーをエクスポートしてコマンドを再実行します。
+
+    ```bash icon=lucide:terminal
+    export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+    npx -y @aigne/example-workflow-concurrency --chat
+    ```
+
+## ソースからのインストール
+
+開発やカスタマイズのために、リポジトリをクローンしてローカルで例を実行することができます。
+
+### 1. リポジトリをクローンする
+
+```bash icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 ```
 
-### 2. 依存関係のインストール
+### 2. 依存関係をインストールする
 
-例のディレクトリに移動し、`pnpm` を使用して必要なパッケージをインストールします。
+例のディレクトリに移動し、pnpm を使用して必要なパッケージをインストールします。
 
-```bash Install dependencies icon=lucide:terminal
+```bash icon=lucide:terminal
 cd aigne-framework/examples/workflow-concurrency
 pnpm install
 ```
 
-### 3. ローカルでの例の実行
+### 3. 例を実行する
 
-`pnpm start` コマンドを使用してスクリプトを実行します。
+`pnpm start` コマンドを使用してワークフローを実行します。コマンドライン引数は `--` の後に渡す必要があります。
 
-ワンショットモードで実行する場合：
-```bash Run in one-shot mode icon=lucide:terminal
-pnpm start
-```
+*   **ワンショットモードで実行:**
 
-インタラクティブなチャットモードで実行するには、`--chat` フラグを追加します。`pnpm start` に渡す引数は `--` の後に記述する必要があることに注意してください。
-```bash Run in chat mode icon=lucide:terminal
-pnpm start -- --chat
-```
+    ```bash icon=lucide:terminal
+    pnpm start
+    ```
 
-パイプライン入力を使用する場合：
-```bash Run with pipeline input icon=lucide:terminal
-echo "Analyze product: Smart home assistant with voice control and AI learning capabilities" | pnpm start
-```
+*   **インタラクティブチャットモードで実行:**
 
-## コードの実装
+    ```bash icon=lucide:terminal
+    pnpm start -- --chat
+    ```
 
-中心的なロジックは、並列実行用に設定された `TeamAgent` を使用して実装されています。2つの `AIAgent` インスタンスがチーム内のスキルとして定義されています。1つは特徴抽出用、もう1つはオーディエンス分析用です。
+*   **パイプライン入力を使用:**
 
-```typescript index.ts icon=logos:typescript
+    ```bash icon=lucide:terminal
+    echo "Analyze product: Smart home assistant with voice control and AI learning capabilities" | pnpm start
+    ```
+
+## 実行オプション
+
+このアプリケーションは、カスタマイズのためにいくつかのコマンドラインパラメータをサポートしています。
+
+| パラメータ | 説明 | デフォルト |
+|-----------|-------------|---------|
+| `--chat` | インタラクティブチャットモードで実行します。 | 無効 (ワンショットモード) |
+| `--model <provider[:model]>` | 使用する AI モデルを指定します (例: `openai` または `openai:gpt-4o-mini`)。 | `openai` |
+| `--temperature <value>` | モデル生成の temperature を設定します。 | プロバイダーのデフォルト |
+| `--top-p <value>` | top-p サンプリング値を設定します。 | プロバイダーのデフォルト |
+| `--presence-penalty <value>` | presence penalty 値を設定します。 | プロバイダーのデフォルト |
+| `--frequency-penalty <value>` | frequency penalty 値を設定します。 | プロバイダーのデフォルト |
+| `--log-level <level>` | ログレベル (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`) を設定します。 | `INFO` |
+| `--input`, `-i <input>` | コマンドライン経由で直接入力を指定します。 | なし |
+
+## コード例
+
+以下の TypeScript コードは、`TeamAgent` と `ProcessMode.parallel` を使用して、並行ワークフローを定義し、オーケストレーションする方法を示しています。
+
+```typescript concurrency-workflow.ts
 import { AIAgent, AIGNE, ProcessMode, TeamAgent } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
 const { OPENAI_API_KEY } = process.env;
 
-// OpenAI モデルを初期化
+// AI モデルを初期化する
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-// 製品の特徴を抽出する最初の Agent を定義
+// 製品の特徴を抽出する最初の Agent を定義する
 const featureExtractor = AIAgent.from({
   instructions: `\
 You are a product analyst. Extract and summarize the key features of the product.\n\nProduct description:\n{{product}}`,
   outputKey: "features",
 });
 
-// ターゲットオーディエンスを分析する2番目の Agent を定義
+// ターゲットオーディエンスを分析する2番目の Agent を定義する
 const audienceAnalyzer = AIAgent.from({
   instructions: `\
 You are a market researcher. Identify the target audience for the product.\n\nProduct description:\n{{product}}`,
   outputKey: "audience",
 });
 
-// AIGNE インスタンスを初期化
+// AIGNE インスタンスを初期化する
 const aigne = new AIGNE({ model });
 
-// 並列ワークフローを管理する TeamAgent を作成
+// 並列ワークフローを管理するために TeamAgent を作成する
 const teamAgent = TeamAgent.from({
   skills: [featureExtractor, audienceAnalyzer],
-  mode: ProcessMode.parallel, // 実行モードを並列に設定
+  mode: ProcessMode.parallel,
 });
 
-// 製品説明を渡してチームを呼び出す
+// 製品説明でチームを呼び出す
 const result = await aigne.invoke(teamAgent, {
   product: "AIGNE is a No-code Generative AI Apps Engine",
 });
 
 console.log(result);
 
-/* 期待される出力:
+/*
+期待される出力:
 {
   features: "**Product Name:** AIGNE\n\n**Product Type:** No-code Generative AI Apps Engine\n\n...",
   audience: "**Small to Medium Enterprises (SMEs)**: \n   - Businesses that may not have extensive IT resources or budget for app development but are looking to leverage AI to enhance their operations or customer engagement.\n\n...",
@@ -196,46 +222,31 @@ console.log(result);
 */
 ```
 
-### 主要な概念
-
--   **`AIAgent`**: 特定の指示を持つ個々の AI 搭載ワーカーを表します。ここでは、`featureExtractor` と `audienceAnalyzer` が `AIAgent` のインスタンスです。
--   **`TeamAgent`**: 他の Agent（スキル）を統括する Agent です。それらを順次または並列に実行できます。
--   **`ProcessMode.parallel`**: `TeamAgent` のこの設定は、すべてのスキルを同時に実行するように指示します。`TeamAgent` は、すべての並列タスクが完了するのを待ってから、それらの出力を集約します。
--   **`outputKey`**: 各 `AIAgent` のこのプロパティは、その結果が最終的な出力オブジェクトに格納されるキーを定義します。
-
-## コマンドラインオプション
-
-この例のスクリプトは、その動作をカスタマイズするためにいくつかのコマンドライン引数を受け付けます。
-
-| パラメータ                | 説明                                                                                             | デフォルト         |
-| ------------------------- | ------------------------------------------------------------------------------------------------ | ------------------ |
-| `--chat`                  | Agent を単一実行ではなく、インタラクティブなチャットモードで実行します。                         | 無効               |
-| `--model <provider[:model]>` | 使用する AI モデルを指定します。例：`openai` または `openai:gpt-4o-mini`。                     | `openai`           |
-| `--temperature <value>`   | モデル生成の温度を設定して、創造性を制御します。                                                 | プロバイダーのデフォルト |
-| `--top-p <value>`         | top-p（核サンプリング）の値を設定します。                                                        | プロバイダーのデフォルト |
-| `--presence-penalty <value>` | 存在ペナルティの値を設定して、トークンの繰り返しを抑制します。                                 | プロバイダーのデフォルト |
-| `--frequency-penalty <value>` | 頻度ペナルティの値を設定して、頻繁なトークンの繰り返しを抑制します。                           | プロバイダーのデフォルト |
-| `--log-level <level>`     | ログの詳細度を設定します。受け入れられる値は `ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE` です。      | `INFO`             |
-| `--input`, `-i <input>`   | 引数として直接入力を提供します。                                                                 | なし               |
-
-#### 使用例
-
-特定のモデルとログレベルを指定してチャットモードで実行する場合：
-```bash Command example icon=lucide:terminal
-pnpm start -- --chat --model openai:gpt-4o-mini --log-level DEBUG
-```
-
 ## デバッグ
 
-AIGNE 監視サーバーを使用して、Agent の実行を監視および分析できます。このツールは、トレースの検査、各ステップの詳細情報の表示、Agent のランタイム動作の理解を可能にするウェブベースのインターフェースを提供します。
+AIGNE フレームワークには、Agent の実行を監視およびデバッグするのに役立つ、組み込みのオブザーバビリティツールが含まれています。
 
-まず、別のターミナルウィンドウで監視サーバーを起動します：
-```bash Start observer icon=lucide:terminal
+オブザーバビリティサーバーを起動するには、以下を実行します。
+
+```bash icon=lucide:terminal
 aigne observe
 ```
 
-![Start observation server](/media/examples/images/aigne-observe-execute.png)
+![aigne observe コマンドが実行されていることを示すターミナル出力](../../../examples/images/aigne-observe-execute.png)
 
-この例を実行した後、Web インターフェース（通常は `http://localhost:3333`）を開くと、最近の実行リストが表示され、並行ワークフローの詳細をドリルダウンして確認できます。
+このコマンドは、通常 `http://localhost:7893` でローカルウェブサーバーを起動します。ブラウザでこの URL を開くと、オブザーバビリティインターフェースにアクセスでき、入力、出力、パフォーマンスメトリクスを含む各 Agent の実行の詳細なトレースを検査できます。
 
-![View execution list](/media/examples/images/aigne-observe-list.png)
+![最近のトレースのリストを示す Aigne オブザーバビリティインターフェース](../../../examples/images/aigne-observe-list.png)
+
+## まとめ
+
+このガイドでは、AIGNE フレームワークを使用して並行ワークフローを作成し、実行する方法について説明しました。並列モードで `TeamAgent` を活用することで、複数の独立したタスクを同時に効率的に処理できます。他のワークフローパターンを調べるには、以下の例を参照してください。
+
+<x-cards data-columns="2">
+  <x-card data-title="シーケンシャルワークフロー" data-icon="lucide:arrow-right-circle" data-href="/examples/workflow-sequential">
+    Agent を特定の順序で実行する方法を学びます。
+  </x-card>
+  <x-card data-title="ワークフローオーケストレーション" data-icon="lucide:milestone" data-href="/examples/workflow-orchestration">
+    より複雑で洗練されたパイプラインで複数の Agent を調整します。
+  </x-card>
+</x-cards>

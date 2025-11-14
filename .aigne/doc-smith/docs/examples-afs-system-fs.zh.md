@@ -1,183 +1,184 @@
-I have located the necessary files for the "AFS System FS" example documentation. The primary source will be `/sources/examples/afs-system-fs/README.md`, which will provide the structure, code snippets, and conceptual explanations. The core logic example will be drawn from `/sources/examples/afs-system-fs/index.ts`. I've noted the available image, `/sources/examples/afs-system-fs/run-example.png`, and will address the user's feedback regarding invalid image paths by verifying correct locations or substituting with valid images. My next step is to analyze the `README.md` to begin drafting the document.# AFS System FS
+# AFS System FS
 
-您是否曾经想过构建一个可以直接且安全地与本地文件交互的聊天机器人？本指南将演示如何实现这一点。您将学习如何使用 AIGNE 文件系统（AFS）和 `SystemFS` 模块，授予 AI Agent 沙盒化的访问权限来读取、写入和搜索您机器上的文件，从而实现能够处理本地数据的强大、具备上下文感知能力的应用程序。
+本指南演示了如何构建一个能够与本地文件系统交互的聊天机器人。通过遵循以下步骤，您将创建一个 Agent，该 Agent 能使用 AIGNE 文件系统（AFS）和 `SystemFS` 模块在您的机器上列出、读取、写入和搜索文件。
 
 ## 概述
 
-本示例的核心是 `SystemFS` 模块，它充当了 AIGNE 框架与您计算机文件系统之间的桥梁。它允许您“挂载”一个本地目录，使其内容可以通过一套标准工具（如 `afs_list`、`afs_read`、`afs_write` 和 `afs_search`）供 AI Agent 访问。然后，Agent 可以使用这些工具根据自然语言命令执行文件操作。这使得诸如总结文档、整理文件或回答有关代码库的问题等用例成为可能。
+本示例展示了如何通过 AIGNE 框架将本地文件系统与 AI Agent 集成。`SystemFS` 模块充当桥梁，将指定的本地目录挂载到 AIGNE 文件系统（AFS）中。这使得 AI Agent 能够使用一套标准化的工具执行文件操作，从而能够根据本地文件的内容回答问题和完成任务。
 
-下图说明了用户、AI Agent、AFS 工具和本地文件系统之间的关系：
+下图说明了 `SystemFS` 模块如何将本地文件系统连接到 AI Agent：
 
 ```d2
 direction: down
 
-User: {
-  shape: c4-person
+AI-Agent: {
+  label: "AI Agent"
+  shape: rectangle
 }
 
 AIGNE-Framework: {
   label: "AIGNE 框架"
   shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-width: 2
-    stroke-dash: 4
-  }
 
-  AI-Agent: {
-    label: "AI Agent"
+  AFS: {
+    label: "AIGNE 文件系统 (AFS)"
     shape: rectangle
-  }
 
-  AFS-Tools: {
-    label: "AFS 工具"
-    shape: rectangle
-    grid-columns: 2
-    afs_list: { label: "afs_list" }
-    afs_read: { label: "afs_read" }
-    afs_write: { label: "afs_write" }
-    afs_search: { label: "afs_search" }
-  }
-
-  SystemFS-Module: {
-    label: "SystemFS 模块"
-    shape: rectangle
+    SystemFS-Module: {
+      label: "SystemFS 模块"
+      shape: rectangle
+    }
   }
 }
 
 Local-File-System: {
-  label: "本地文件系统\n（沙盒化）"
-  shape: cylinder
+  label: "本地文件系统"
+  shape: rectangle
+
+  Local-Directory: {
+    label: "本地目录\n(/path/to/your/project)"
+    shape: cylinder
+  }
 }
 
-User -> AIGNE-Framework.AI-Agent: "自然语言命令"
-AIGNE-Framework.AI-Agent -> AIGNE-Framework.AFS-Tools: "选择合适的工具"
-AIGNE-Framework.AFS-Tools -> AIGNE-Framework.SystemFS-Module: "调用工具操作"
-AIGNE-Framework.SystemFS-Module -> Local-File-System: "执行文件 I/O"
-Local-File-System -> AIGNE-Framework.SystemFS-Module: "返回文件内容/状态"
-AIGNE-Framework.SystemFS-Module -> AIGNE-Framework.AI-Agent: "返回工具结果"
-AIGNE-Framework.AI-Agent -> User: "上下文相关的响应"
+AI-Agent <-> AIGNE-Framework.AFS: "3. 执行文件操作\n(列出、读取、写入、搜索)"
+AIGNE-Framework.AFS.SystemFS-Module <-> Local-File-System.Local-Directory: "2. 挂载目录"
 
 ```
 
-## 前置要求
+## 前提条件
 
-在开始之前，请确保您的系统满足以下要求：
+在继续之前，请确保您的开发环境满足以下要求：
 
-*   **Node.js**：20.0 或更高版本。
-*   **npm**：随 Node.js 一同安装。
-*   **OpenAI API 密钥**：需要一个有效的 API 密钥，以便 AI Agent 连接到 OpenAI 的模型。您可以从 [OpenAI Platform](https://platform.openai.com/api-keys) 获取密钥。
+*   **Node.js**: 20.0 或更高版本。
+*   **npm**: Node.js 自带。
+*   **OpenAI API 密钥**: 用于连接语言模型。您可以从 [OpenAI API 密钥页面](https://platform.openai.com/api-keys)获取。
 
-如果您计划从源代码运行此示例，还建议满足以下条件：
+## 快速入门
 
-*   **pnpm**：用于高效的包管理。
-*   **Bun**：用于运行示例和单元测试。
-
-## 快速开始
-
-您可以使用 `npx` 直接从终端运行此示例，无需克隆完整的代码仓库。这是查看其运行效果的最快方法。
+您可以使用 `npx` 直接运行此示例，无需本地安装。
 
 ### 运行示例
 
-打开您的终端并选择以下命令之一。
+在您的终端中执行以下命令以挂载目录并与聊天机器人交互。
 
-要挂载当前目录并启动交互式聊天会话：
+挂载当前目录并启动一个交互式聊天会话：
 
-```bash 在聊天模式下运行 icon=lucide:terminal
+```bash 安装 aigne 依赖 icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --chat
 ```
 
-要使用自定义名称和描述挂载特定目录：
+挂载特定目录，例如您的“文稿”文件夹：
 
-```bash 挂载特定目录 icon=lucide:terminal
+```bash 安装 aigne 依赖 icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path ~/Documents --mount /docs --description "My Documents" --chat
 ```
 
-要提出单个问题而不启动交互式聊天：
+提出一次性问题，而不进入交互模式：
 
-```bash 提出单个问题 icon=lucide:terminal
+```bash 安装 aigne 依赖 icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "What files are in the current directory?"
 ```
 
 ### 连接到 AI 模型
 
-首次运行该示例时，系统将提示您连接到一个 AI 模型。
+首次运行该示例时，由于尚未配置 API 密钥，CLI 将提示您连接到 AI 模型。
 
-![连接到 AI 模型](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/connect-to-aigne-hub.png)
+![AIGNE Hub 的初始连接提示](../../../examples/afs-system-fs/run-example.png)
 
-您有三个主要选项：
+您有三个选项可以继续：
 
-1.  **通过官方 AIGNE Hub 连接**：这是推荐的选项。您的浏览器将打开官方的 AIGNE Hub，您可以在那里登录。新用户会获得免费的 token 配额以供入门。
-2.  **通过自托管的 AIGNE Hub 连接**：如果您运行自己的 AIGNE Hub 实例，请选择此选项并输入其 URL。
-3.  **通过第三方模型提供商连接**：您可以通过设置包含 API 密钥的环境变量，直接连接到像 OpenAI 这样的提供商。
+1.  **连接到官方 AIGNE Hub**
+    这是推荐给新用户的选项。您的浏览器将打开 AIGNE Hub，您可以在其中授权连接。新用户会获得免费的令牌赠款，以便立即开始使用。
 
-要连接到 OpenAI，请在您的终端中设置 `OPENAI_API_KEY` 环境变量：
+    ![AIGNE Hub 中 AIGNE CLI 的授权对话框](../../../examples/images/connect-to-aigne-hub.png)
 
-```bash 设置 OpenAI API 密钥 icon=lucide:terminal
-export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+2.  **通过自托管的 AIGNE Hub 连接**
+    如果您有自托管的 AIGNE Hub 实例，请选择此选项并输入其 URL 以完成连接。您可以从 [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ) 部署自己的 AIGNE Hub。
+
+    ![提示输入自托管 AIGNE Hub 的 URL](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+3.  **通过第三方模型提供商连接**
+    您可以直接配置来自 OpenAI 等提供商的 API 密钥。在终端中设置相应的环境变量，然后再次运行该示例。
+
+    ```bash 设置 OpenAI API 密钥 icon=lucide:terminal
+    export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+    ```
+
+    对于与其他提供商（如 DeepSeek 或 Google Gemini）的配置，请参阅项目源代码中的 `.env.local.example` 文件。
+
+### 使用 AIGNE Observe 进行调试
+
+要监控和分析 Agent 的行为，请使用 `aigne observe` 命令。这将启动一个本地 Web 服务器，提供执行跟踪、工具调用和模型交互的详细视图，这对于调试和性能调优非常有价值。
+
+首先，启动观察服务器：
+
+```bash 启动 Observe 服务器 icon=lucide:terminal
+aigne observe
 ```
 
-设置密钥后，再次运行 `npx` 命令。有关支持的提供商及其所需环境变量的完整列表，请参阅示例的 `.env.local.example` 文件。
+终端将确认服务器正在运行并提供一个本地 URL。
 
-## 从源代码安装
+![显示 AIGNE Observe 服务器已启动的终端输出](../../../examples/images/aigne-observe-execute.png)
 
-如果您希望查看源代码或进行修改，请按照以下步骤在本地运行该示例。
+运行您的 Agent 后，您可以在 Web 界面中查看最近执行的列表。
 
-### 1. 克隆代码仓库
+![显示跟踪列表的 AIGNE 可观察性 Web 界面](../../../examples/images/aigne-observe-list.png)
 
-```bash 克隆代码仓库 icon=lucide:terminal
-git clone https://github.com/AIGNE-io/aigne-framework
-```
+## 本地安装
 
-### 2. 安装依赖项
+出于开发目的，您可以克隆仓库并在本地运行该示例。
 
-导航到示例的目录，并使用 `pnpm` 安装必要的软件包。
+1.  **克隆仓库**
 
-```bash 安装依赖项 icon=lucide:terminal
-cd aigne-framework/examples/afs-system-fs
-pnpm install
-```
+    ```bash 克隆仓库 icon=lucide:terminal
+    git clone https://github.com/AIGNE-io/aigne-framework
+    ```
 
-### 3. 运行示例
+2.  **安装依赖**
+    导航到示例目录并使用 pnpm 安装必要的包。
 
-使用所需的标志执行 `pnpm start` 命令。
+    ```bash 安装依赖 icon=lucide:terminal
+    cd aigne-framework/examples/afs-system-fs
+    pnpm install
+    ```
 
-要挂载当前目录并运行：
+3.  **运行示例**
+    使用 `pnpm start` 命令并带上所需的标志。
 
-```bash 使用当前目录运行 icon=lucide:terminal
-pnpm start --path .
-```
+    使用当前目录运行：
+    ```bash 使用当前目录运行 icon=lucide:terminal
+    pnpm start --path .
+    ```
 
-要在交互式聊天模式下运行：
-
-```bash 在聊天模式下运行 icon=lucide:terminal
-pnpm start --path . --chat
-```
+    以交互式聊天模式运行：
+    ```bash 以聊天模式运行 icon=lucide:terminal
+    pnpm start --path . --chat
+    ```
 
 ## 工作原理
 
-此示例初始化一个 `AIAgent`，并使用 `SystemFS` 模块授予其访问本地文件系统的权限。
+本示例使用 `SystemFS` 模块通过 AIGNE 文件系统（AFS）向 AI Agent 暴露一个本地目录。这个沙盒环境允许 Agent 使用标准化的接口与您的文件进行交互，确保安全和可控。
 
-### 挂载本地目录
+### 核心逻辑
 
-`SystemFS` 类用于将本地 `path` 挂载到 AFS 内的虚拟 `mount` 点。此配置被传递给一个新的 `AFS` 实例，然后该实例被附加到 `AIAgent`。Agent 被指示使用已挂载的文件系统来回答用户的查询。
+1.  **挂载目录**：使用本地 `path` 和 AFS 内的虚拟 `mount` 点实例化 `SystemFS` 类。
+2.  **Agent 初始化**：使用 AFS 实例配置一个 `AIAgent`，使其能够访问文件系统工具，如 `afs_list`、`afs_read`、`afs_write` 和 `afs_search`。
+3.  **工具调用**：当用户提问时（例如，“这个项目的目的是什么？”），Agent 会决定使用哪个 AFS 工具。它可能首先调用 `afs_list` 查看目录内容，然后调用 `afs_read` 检查像 `README.md` 这样的相关文件。
+4.  **构建上下文**：从文件系统检索到的内容被添加到 Agent 的上下文中。
+5.  **生成响应**：Agent 使用丰富的上下文为用户的原始问题制定一个全面的答案。
+
+以下代码片段展示了如何将本地目录挂载到 AFS 中，并提供给 `AIAgent`。
 
 ```typescript index.ts icon=logos:typescript
 import { AFS } from "@aigne/afs";
 import { SystemFS } from "@aigne/afs-system-fs";
 import { AIAgent } from "@aigne/core";
 
-const agent = AIAgent.from({
-  name: "afs-system-fs-chatbot",
-  instructions:
-    "You are a friendly chatbot that can retrieve files from a virtual file system. You should use the provided functions to list, search, and read files as needed to answer user questions. The current folder points to the /fs mount point by default.",
-  inputKey: "message",
+AIAgent.from({
+  // ... 其他配置
   afs: new AFS().use(
-    new SystemFS({
-      mount: '/fs',
-      path: './',
-      description: 'Mounted file system'
-    }),
+    new SystemFS({ mount: '/source', path: '/PATH/TO/YOUR/PROJECT', description: '项目的代码库' }),
   ),
   afsConfig: {
     injectHistory: true,
@@ -185,78 +186,65 @@ const agent = AIAgent.from({
 });
 ```
 
-### Agent 交互流程
+### SystemFS 的主要特性
 
-当用户提问时，AI Agent 会自主决定使用哪些 AFS 工具来寻找答案。
-
-1.  **用户输入**：用户提出一个问题，例如“这个项目的目的是什么？”
-2.  **工具调用（列出）**：Agent 判断需要了解文件结构，并调用 `afs_list` 工具来查看根目录中的文件。
-3.  **工具调用（读取）**：在识别出相关文件（如 `README.md`）后，Agent 调用 `afs_read` 工具来访问其内容。
-4.  **上下文相关的响应**：文件的内容被添加到 Agent 的上下文中。然后，Agent 利用这些新信息为用户的原始问题构建一个详细的答案。
-
-这整个过程是自主的。Agent 会链接工具调用、收集上下文并制定响应，无需人工指导。
+*   **文件操作**：标准的列出、读取、写入和搜索功能。
+*   **递归遍历**：通过深度控制导航嵌套目录。
+*   **快速内容搜索**：利用 `ripgrep` 实现高性能文本搜索。
+*   **元数据访问**：提供文件大小、类型和时间戳等详细信息。
+*   **路径安全**：将文件访问限制在仅已挂载的目录内。
 
 ## 用法示例
 
-聊天机器人运行后，您可以发出各种命令与挂载的文件进行交互。
+聊天机器人运行后，您可以使用自然语言命令与您的文件进行交互。
 
-### 基本文件操作
+### 基本命令
 
-```bash 列出所有文件 icon=lucide:terminal
+尝试使用这些命令来执行简单的文件操作。
+
+列出挂载目录中的所有文件：
+```bash 列出文件 icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "List all files in the root directory"
 ```
 
-```bash 读取特定文件 icon=lucide:terminal
+读取特定文件的内容：
+```bash 读取文件 icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "Read the contents of package.json"
 ```
 
+在所有文件中搜索内容：
 ```bash 搜索内容 icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --input "Find all files containing the word 'example'"
 ```
 
-### 交互式聊天
+### 交互式聊天提示
 
-要获得更具对话性的体验，请启动交互模式。
+启动一个交互式会话以获得更具对话性的体验：
 
-```bash 启动交互式聊天 icon=lucide:terminal
+```bash 启动交互模式 icon=lucide:terminal
 npx -y @aigne/example-afs-system-fs --path . --chat
 ```
 
-进入聊天后，可以尝试提出以下问题：
+进入聊天模式后，尝试询问以下问题：
 
 *   “这个目录里有哪些文件？”
 *   “给我看看 README 文件的内容。”
-*   “查找所有 TypeScript 文件。”
-*   “创建一个名为 `notes.txt` 的新文件，内容为‘完成项目文档’。”
-*   “以深度限制为 2 递归列出所有文件。”
-
-## 调试
-
-AIGNE CLI 包含一个 `observe` 命令，可帮助您分析和调试 Agent 的行为。它会启动一个本地 Web 服务器，提供一个界面来检查执行跟踪，包括工具调用、模型输入和最终输出。
-
-首先，在您的终端中启动观察服务器：
-
-```bash 启动观察服务器 icon=lucide:terminal
-aigne observe
-```
-
-![启动 AIGNE 观察服务器](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/aigne-observe-execute.png)
-
-运行 Agent 任务后，您可以打开 Web 界面，查看最近执行的列表，并深入了解每个步骤的详细信息。
-
-![查看最近执行的列表](https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/examples/images/aigne-observe-list.png)
+*   “找出所有的 TypeScript 文件。”
+*   “在代码库中搜索函数。”
+*   “创建一个名为 `notes.txt` 的新文件，并写入一些内容。”
+*   “以 2 的深度限制递归列出所有文件。”
 
 ## 总结
 
-本示例提供了一个实用的指南，用于将 AI Agent 的能力扩展到您的本地文件系统。通过使用 `SystemFS`，您可以构建与用户本地数据和环境深度集成的复杂应用程序。
+本示例提供了一个实际演示，说明如何扩展 AI Agent 的能力以包括本地文件系统交互。通过使用 `SystemFS` 模块，您可以创建功能强大的聊天机器人，根据自然语言命令自动执行任务、检索信息和组织文件。
 
-有关更多示例和高级功能，请参阅以下文档：
+有关更高级的示例和工作流，您可以探索其他文档部分。
 
 <x-cards data-columns="2">
-  <x-card data-title="Memory" data-icon="lucide:brain-circuit" data-href="/examples/memory">
-  了解如何使用 FSMemory 插件创建一个具有持久记忆的聊天机器人。
+  <x-card data-title="记忆" data-href="/examples/memory" data-icon="lucide:brain-circuit">
+  了解如何为您的聊天机器人赋予持久记忆。
   </x-card>
-  <x-card data-title="MCP Server" data-icon="lucide:server" data-href="/examples/mcp-server">
-  了解如何将 AIGNE Agent 作为模型上下文协议（MCP）服务器运行。
+  <x-card data-title="工作流编排" data-href="/examples/workflow-orchestration" data-icon="lucide:milestone">
+  探索如何在复杂的工作流中协调多个 Agent。
   </x-card>
 </x-cards>

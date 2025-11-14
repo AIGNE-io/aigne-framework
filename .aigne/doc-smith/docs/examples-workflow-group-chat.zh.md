@@ -1,12 +1,16 @@
 # 工作流群聊
 
-本文档提供了使用 AIGNE 框架构建和运行多 Agent 群聊应用程序的分步指南。您将学习如何协调多个 AI Agent——管理者、作者、编辑和插画师——以协作完成一项任务，展示复杂 Agent 工作流的实际应用。
+本指南将演示如何使用 AIGNE 框架构建和运行一个多 Agent 群聊工作流。您将学习如何协调包括一个管理者在内的多个 Agent 来协同完成一项任务，模拟一个团队环境，其中 Agent 共享信息并共同努力实现一个共同目标。
 
 ## 概述
 
-在此工作流中，`群组管理者` Agent 担任中心协调员。当用户提供指令时，管理者会将请求引导至合适的专业 Agent。然后，这些 Agent 通过在群组内共享消息来协作完成任务。
+群聊工作流示例展示了一个复杂的多 Agent 系统，其中具有不同专业角色的 Agent 协同工作以完成用户的请求。该过程由一个 `Group Manager` Agent 管理，它负责指导其他 Agent（如 `Writer`、`Editor` 和 `Illustrator`）之间的对话和任务执行。
 
-下图说明了此交互流程：
+此示例支持两种主要操作模式：
+*   **单次模式 (One-shot mode)**：工作流根据单个输入一次性运行至完成。
+*   **交互模式 (Interactive mode)**：工作流进行持续对话，允许后续提问和动态交互。
+
+核心交互模型如下：
 
 ```d2
 direction: down
@@ -15,185 +19,201 @@ User: {
   shape: c4-person
 }
 
-AIGNE-Framework: {
-  label: "AIGNE 框架"
+GroupChat: {
+  label: "群聊工作流"
   shape: rectangle
 
   Group-Manager: {
-    label: "群组管理者"
+    label: "群组管理器"
+    shape: rectangle
   }
 
-  Writer: {
-    label: "作者"
-  }
+  Collaborators: {
+    label: "协作者"
+    shape: rectangle
+    grid-columns: 3
 
-  Editor: {
-    label: "编辑"
+    Writer: {
+      shape: rectangle
+    }
+    Editor: {
+      shape: rectangle
+    }
+    Illustrator: {
+      shape: rectangle
+    }
   }
-
-  Illustrator: {
-    label: "插画师"
-  }
-
 }
 
-User -> AIGNE-Framework.Group-Manager: "1. 发送指令"
-AIGNE-Framework.Group-Manager -> AIGNE-Framework.Writer: "2. 委派任务"
-AIGNE-Framework.Writer -> AIGNE-Framework.Editor: "3. 共享草稿（群组消息）"
-AIGNE-Framework.Writer -> AIGNE-Framework.Illustrator: "3. 共享草稿（群组消息）"
-AIGNE-Framework.Writer -> User: "3. 共享草稿（群组消息）"
-AIGNE-Framework.Group-Manager -> AIGNE-Framework.Illustrator: "4. 请求创建图像"
+User -> GroupChat.Group-Manager: "1. 用户请求"
+GroupChat.Group-Manager -> GroupChat.Collaborators.Writer: "2. 委派任务"
+GroupChat.Collaborators.Writer <-> GroupChat.Collaborators.Editor: "3. 协作"
+GroupChat.Collaborators.Editor <-> GroupChat.Collaborators.Illustrator: "4. 协作"
+GroupChat.Collaborators.Writer -> GroupChat.Group-Manager: "5. 发送结果"
+GroupChat.Group-Manager -> User: "6. 最终输出"
 ```
 
-交互流程如下：
-
-1.  **用户**向**群组管理者**发送一条指令。
-2.  **群组管理者**将初始任务委派给**作者** Agent。
-3.  **作者** Agent 起草内容并将其作为群组消息共享，使其可供**编辑**、**插画师**和**用户**查看。
-4.  然后，**管理者**请求**插画师**根据故事创作一幅图像。
-5.  这个协作过程会一直持续，直到最初的指令被完成。
-
-## 先决条件
+## 前提条件
 
 在继续之前，请确保您的开发环境满足以下要求：
-
 *   **Node.js**：版本 20.0 或更高。
-*   **npm**：随您的 Node.js 安装一同提供。
-*   **OpenAI API 密钥**：Agent 与 OpenAI 语言模型交互时需要。请从 [OpenAI 平台](https://platform.openai.com/api-keys)获取密钥。
+*   **npm**：随 Node.js 一起提供。
+*   **OpenAI API 密钥**：默认模型配置所需。您可以从 [OpenAI 平台](https://platform.openai.com/api-keys)获取。
 
 ## 快速入门
 
-您可以使用 `npx` 直接运行此示例，无需克隆仓库。
+您可以使用 `npx` 直接运行此示例，而无需克隆代码仓库。
 
 ### 运行示例
 
-该应用程序支持多种执行模式。
+在您的终端中执行以下命令之一：
 
-#### 一次性模式
-
-在默认模式下，应用程序处理单个输入指令然后终止。
-
-```bash 以一次性模式运行 icon=lucide:terminal
+要在默认的单次模式下运行工作流：
+```bash 在单次模式下运行 icon=lucide:terminal
 npx -y @aigne/example-workflow-group-chat
 ```
 
-#### 交互式聊天模式
-
-使用 `--chat` 标志以交互模式运行应用程序，以便进行连续对话。
-
-```bash 以交互式聊天模式运行 icon=lucide:terminal
+要启动交互式聊天会话：
+```bash 在交互模式下运行 icon=lucide:terminal
 npx -y @aigne/example-workflow-group-chat --chat
 ```
 
-#### 管道输入
-
-您也可以直接从终端通过管道输入。
-
-```bash 使用管道输入 icon=lucide:terminal
+您也可以通过管道直接提供输入：
+```bash 使用管道输入运行 icon=lucide:terminal
 echo "Write a short story about space exploration" | npx -y @aigne/example-workflow-group-chat
 ```
 
 ### 连接到 AI 模型
 
-首次运行示例时，系统将提示您连接到 AI 模型提供商。
+首次运行该示例时，由于尚未配置任何 API 密钥，它会提示您连接到一个 AI 模型提供商。
 
-![连接到 AI 模型](https://assets.aig nej.com/content/docs/examples/workflow-group-chat/run-example.png)
+![连接到 AI 模型的初始设置提示。](../../../examples/workflow-group-chat/run-example.png)
 
-您有以下几个选项：
+您有以下几种选择：
 
-1.  **AIGNE Hub (官方)**：推荐的方法。官方 Hub 为新用户提供免费的令牌。
-2.  **自托管 AIGNE Hub**：通过提供其 URL 连接到您自己的 AIGNE Hub 实例。
-3.  **第三方模型提供商**：通过设置适当的环境变量，直接连接到像 OpenAI 这样的提供商。对于 OpenAI，请按如下方式设置您的 API 密钥：
+#### 1. 连接到 AIGNE Hub (推荐)
 
-    ```bash 设置 OpenAI API 密钥 icon=lucide:terminal
-    export OPENAI_API_KEY="your-openai-api-key-here"
+这是最简单的入门方式，并且为新用户提供免费额度。
+
+1.  选择第一个选项：`Connect to the Arcblock official AIGNE Hub`。
+2.  您的网络浏览器将打开一个页面以授权 AIGNE CLI。
+3.  点击“Approve”以授予必要的权限。CLI 将自动配置。
+
+![AIGNE Hub 连接的授权对话框。](../../../examples/images/connect-to-aigne-hub.png)
+
+#### 2. 连接到自托管的 AIGNE Hub
+
+如果您正在运行自己的 AIGNE Hub 实例：
+
+1.  选择第二个选项：`Connect to your self-hosted AIGNE Hub`。
+2.  在提示时输入您的 AIGNE Hub 实例的 URL。
+3.  按照浏览器中的说明完成连接。
+
+![提示输入自托管 AIGNE Hub URL 的界面。](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+#### 3. 配置第三方模型提供商
+
+您可以通过设置环境变量直接连接到像 OpenAI 这样的提供商。
+
+1.  退出交互式提示。
+2.  在您的终端中设置 `OPENAI_API_KEY` 环境变量：
+
+    ```bash 配置 OpenAI API 密钥 icon=lucide:terminal
+    export OPENAI_API_KEY="your-openai-api-key"
     ```
 
-配置完成后，再次运行 `npx` 命令。
+3.  再次运行示例命令。
 
-## 从源代码运行
+对于其他提供商，如 Google Gemini 或 DeepSeek，请参阅项目中的 `.env.local.example` 文件以获取正确的环境变量名称。
 
-要检查或修改代码，您可以克隆仓库并在本地运行示例。
+## 本地安装和使用
 
-### 1. 克隆仓库
+出于开发目的，您可以克隆代码仓库并在本地运行示例。
 
-```bash 克隆仓库 icon=lucide:terminal
+### 1. 克隆代码仓库
+
+```bash 克隆框架代码仓库 icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 ```
 
-### 2. 安装依赖
+### 2. 安装依赖项
 
 导航到示例目录并使用 `pnpm` 安装所需的包。
 
-```bash 安装依赖 icon=lucide:terminal
+```bash 安装依赖项 icon=lucide:terminal
 cd aigne-framework/examples/workflow-group-chat
 pnpm install
 ```
 
 ### 3. 运行示例
 
-使用 `pnpm start` 命令执行应用程序。命令行参数必须在 `--` 之后传递。
+使用 `pnpm start` 命令来运行工作流。命令行参数必须在 `--` 之后传递。
 
-```bash 以一次性模式运行 icon=lucide:terminal
+要在单次模式下运行：
+```bash 在单次模式下运行 icon=lucide:terminal
 pnpm start
 ```
 
-```bash 以交互式聊天模式运行 icon=lucide:terminal
+要在交互式聊天模式下运行：
+```bash 在交互模式下运行 icon=lucide:terminal
 pnpm start -- --chat
 ```
 
-```bash 使用管道输入 icon=lucide:terminal
+要使用管道输入：
+```bash 使用管道输入运行 icon=lucide:terminal
 echo "Write a short story about space exploration" | pnpm start
 ```
 
-## 命令行选项
+### 命令行选项
 
-可以使用以下命令行参数自定义应用程序的行为。
+该示例接受几个命令行参数来自定义其行为：
 
 | 参数 | 描述 | 默认值 |
-|---|---|---|
-| `--chat` | 以交互式聊天模式运行 | 已禁用（一次性模式） |
-| `--model <provider[:model]>` | 要使用的 AI 模型，格式为 'provider\[:model]'，其中 model 是可选的。示例：'openai' 或 'openai:gpt-4o-mini' | openai |
-| `--temperature <value>` | 模型生成的温度 | 提供商默认值 |
+|-----------|-------------|---------|
+| `--chat` | 以交互式聊天模式运行 | 禁用 (单次模式) |
+| `--model <provider[:model]>` | 要使用的 AI 模型，格式为 'provider\[:model]'，其中 model 是可选的。例如：'openai' 或 'openai:gpt-4o-mini' | openai |
+| `--temperature <value>` | 模型生成的温度值 | 提供商默认值 |
 | `--top-p <value>` | Top-p 采样值 | 提供商默认值 |
 | `--presence-penalty <value>` | 存在惩罚值 | 提供商默认值 |
 | `--frequency-penalty <value>` | 频率惩罚值 | 提供商默认值 |
 | `--log-level <level>` | 设置日志级别 (ERROR, WARN, INFO, DEBUG, TRACE) | INFO |
 | `--input`, `-i <input>` | 直接指定输入 | 无 |
 
-### 用法示例
-
-以下命令以 `DEBUG` 日志级别运行应用程序：
+#### 示例
 
 ```bash 设置日志级别 icon=lucide:terminal
 pnpm start -- --log-level DEBUG
 ```
 
-## 调试
-
-要检查和分析 Agent 的行为，请使用 `aigne observe` 命令。此工具会启动一个本地 Web 服务器，并提供一个界面用于查看执行跟踪、调用详情和其他运行时数据，这对于调试 Agent 工作流至关重要。
-
-要启动观察服务器，请运行：
-
-```bash 启动观察服务器 icon=lucide:terminal
-aigne observe
+```bash 使用特定模型 icon=lucide:terminal
+pnpm start -- --model openai:gpt-4o-mini
 ```
 
-![启动 aigne observe](https://assets.aig nej.com/content/docs/examples/images/aigne-observe-execute.png)
+## 使用 AIGNE Observe 进行调试
 
-运行后，Web 界面将显示最近的 Agent 执行列表，让您可以深入了解每次运行的详细信息。
+要检查执行流程并调试 Agent 的行为，您可以使用 `aigne observe` 命令。该工具会启动一个本地 Web 服务器，提供 Agent 追踪的详细视图。
 
-![查看最近的执行](https://assets.aig nej.com/content/docs/examples/images/aigne-observe-list.png)
+首先，在另一个终端中启动可观测性服务器：
+```bash 启动可观测性服务器 icon=lucide:terminal
+aigne observe
+```
+![显示 AIGNE Observe 服务器启动的终端输出。](../../../examples/images/aigne-observe-execute.png)
+
+运行工作流示例后，在浏览器中打开 `http://localhost:7893` 查看追踪信息。您可以检查每个 Agent 在整个执行过程中的输入、输出和内部状态。
+
+![AIGNE Observe Web 界面显示追踪列表。](../../../examples/images/aigne-observe-list.png)
 
 ## 总结
 
-本指南演示了如何运行和配置一个协作式、多 Agent 的群聊。要探索其他高级工作流模式，请参考以下示例：
+本指南提供了运行工作流群聊示例的逐步演练。您学习了如何使用 `npx` 执行工作流、连接到各种 AI 模型提供商以及在本地安装以进行开发。您还了解了如何使用 `aigne observe` 来调试 Agent 交互。
+
+要了解更复杂的模式，请浏览 AIGNE 框架文档中的其他示例。
 
 <x-cards data-columns="2">
-  <x-card data-title="工作流：交接" data-href="/examples/workflow-handoff" data-icon="lucide:arrow-right-left">
-  学习如何在专业 Agent 之间创建无缝过渡，以解决复杂问题。
+  <x-card data-title="工作流：切换" data-icon="lucide:arrow-right-left" data-href="/examples/workflow-handoff">
+    学习如何在专业 Agent 之间创建无缝过渡以解决复杂问题。
   </x-card>
-  <x-card data-title="工作流：编排" data-href="/examples/workflow-orchestration" data-icon="lucide:network">
-  在复杂的处理流水线中协调多个 Agent 协同工作。
+  <x-card data-title="工作流：编排" data-icon="lucide:network" data-href="/examples/workflow-orchestration">
+    探索如何协调多个 Agent 在复杂的处理管道中协同工作。
   </x-card>
 </x-cards>

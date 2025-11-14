@@ -1,149 +1,134 @@
-# サンプル
+# 事例
 
-このセクションでは、AIGNE フレームワークのコア機能とワークフローパターンを示す、すぐに実行できる実践的なサンプルのコレクションを提供します。これらのデモンストレーションを調べることで、インテリジェントなチャットボットの実装、外部サービスの統合、Agent のメモリ管理、および複雑なマルチ Agent ワークフローのオーケストレーション方法について具体的な理解を得ることができます。
+AIGNE フレームワークの動作を見る準備はできましたか？このセクションでは、様々な機能やワークフローのパターンを実証する実践的な事例を包括的に提供します。複雑な設定をスキップして、ワンクリックコマンドで機能的な Agent を直接実行してみましょう。
 
-これらのサンプルは、自己完結型で最小限のセットアップで実行できるように設計されており、基本的な会話から高度な統合まで、幅広いアプリケーションをカバーしています。各サンプルは、独自の Agent AI アプリケーションを構築するためのリファレンス実装として機能します。
+## 概要
+
+AIGNE フレームワークの事例は、インテリジェントなチャットボットから複雑なマルチ Agent ワークフローまで、さまざまなアプリケーションに関する実践的なデモンストレーションを提供します。各事例は、フレームワークの特定の能力を説明するために設計された、自己完結型で実行可能なデモです。Model Context Protocol (MCP) の統合、メモリの永続化、並行および順次タスク処理、動的なコード実行などのトピックを探求できます。
+
+特定の機能やワークフローに関する詳細情報については、対応する事例ドキュメントを参照してください：
+
+<x-cards data-columns="3">
+  <x-card data-title="チャットボット" data-icon="lucide:bot" data-href="/examples/chat-bot">Agent ベースのチャットボットを作成し、実行する方法を実証します。</x-card>
+  <x-card data-title="AFS システム FS" data-icon="lucide:folder-git-2" data-href="/examples/afs-system-fs">ローカルファイルシステムと対話できるチャットボットを構築する方法を示します。</x-card>
+  <x-card data-title="メモリ" data-icon="lucide:database" data-href="/examples/memory">永続的なメモリを持つチャットボットを作成する方法を説明します。</x-card>
+  <x-card data-title="MCP サーバー" data-icon="lucide:server" data-href="/examples/mcp-server">AIGNE Agent を MCP サーバーとして実行する方法を示します。</x-card>
+  <x-card data-title="MCP 統合" data-icon="lucide:plug" data-href="/examples/mcp-blocklet">Blocklet、GitHub、Puppeteer、SQLite との統合を探ります。</x-card>
+  <x-card data-title="コード実行" data-icon="lucide:terminal" data-href="/examples/workflow-code-execution">動的に生成されたコードをワークフロー内で安全に実行する方法を学びます。</x-card>
+  <x-card data-title="並行処理" data-icon="lucide:git-compare-arrows" data-href="/examples/workflow-concurrency">複数のタスクを並行処理してパフォーマンスを最適化します。</x-card>
+  <x-card data-title="グループチャット" data-icon="lucide:messages-square" data-href="/examples/workflow-group-chat">複数の Agent が対話し、メッセージを共有できる環境を構築します。</x-card>
+  <x-card data-title="順次処理" data-icon="lucide:arrow-right" data-href="/examples/workflow-sequential">実行順序が保証されたステップバイステップの処理パイプラインを構築します。</x-card>
+</x-cards>
 
 ## クイックスタート
 
-Node.js と npm が利用可能であれば、ローカルにインストールすることなく、どのサンプルでも直接実行できます。以下の手順は、`npx` を使用して基本的なチャットボットのサンプルを実行する方法を示しています。
+リポジトリをクローンしたり、ローカルにインストールしたりすることなく、`npx` を使用してターミナルから直接任意の事例を実行できます。
 
-まず、必要な環境変数を設定します。ほとんどのサンプルでは、OpenAI API キーが必要です。
+### 前提条件
 
-```bash OpenAI API キーを設定する icon=lucide:terminal
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
-```
+システムに Node.js と npm がインストールされていることを確認してください。
 
-次に、サンプルを実行します。1 回の応答のためにワンショットモードで実行するか、対話型のチャットモードで実行することができます。
+### 事例の実行
 
-```bash ワンショットモードで実行 icon=lucide:terminal
-npx -y @aigne/example-chat-bot
-```
+事例を実行するには、大規模言語モデルプロバイダーの API キーなど、必要な環境変数を設定する必要があります。
 
-継続的な会話を行うには、`--chat` フラグを追加します。
+1.  **API キーを設定します：**
 
-```bash 対話型チャットモードで実行 icon=lucide:terminal
-npx -y @aigne/example-chat-bot --chat
-```
+    ```bash OpenAI API キーを設定する icon=lucide:key-round
+    export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
+    ```
 
-## サンプルコレクション
+2.  **チャットボットの事例を実行します：**
 
-このコレクションは、基本的な概念、Model Context Protocol (MCP) の統合、および高度なワークフローパターンをカバーしています。
+    次のコマンドは、基本的なチャットボットの事例をワンショットモードで実行します。このモードでは、デフォルトのプロンプトを受け取って終了します。
 
-### コアコンセプト
+    ```bash ワンショットモードで実行 icon=lucide:terminal
+    npx -y @aigne/example-chat-bot
+    ```
 
-<x-cards data-columns="2">
-  <x-card data-title="基本的なチャットボット" data-href="/examples/chat-bot" data-icon="lucide:bot">
-  シンプルな Agent ベースのチャットボットを作成し、実行する方法を示します。
-  </x-card>
-  <x-card data-title="メモリ付きチャットボット" data-href="/examples/memory" data-icon="lucide:database">
-  永続的な会話のために、Agent にステートフルなメモリを追加する方法を説明します。
-  </x-card>
-</x-cards>
+    Agent と対話的な会話をするには、`--chat` フラグを追加します。
 
-### MCP とインテグレーション
+    ```bash 対話モードで実行 icon=lucide:terminal
+    npx -y @aigne/example-chat-bot --chat
+    ```
 
-<x-cards data-columns="2">
-  <x-card data-title="MCP サーバー" data-href="/examples/mcp-server" data-icon="lucide:server">
-  AIGNE フレームワークの Agent を Model Context Protocol (MCP) サーバーとして実行する方法を示します。
-  </x-card>
-  <x-card data-title="Blocklet とのインテグレーション" data-href="/examples/mcp-blocklet" data-icon="lucide:box">
-  Blocklet と統合し、その機能を MCP スキルとして公開する方法を説明します。
-  </x-card>
-  <x-card data-title="GitHub とのインテグレーション" data-href="/examples/mcp-github" data-icon="lucide:github">
-  GitHub MCP サーバーを使用して GitHub リポジトリと対話する例です。
-  </x-card>
-  <x-card data-title="Web コンテンツの抽出" data-href="/examples/mcp-puppeteer" data-icon="lucide:mouse-pointer-click">
-  AIGNE フレームワークを介して、自動化された Web スクレイピングのために Puppeteer を活用する方法を学びます。
-  </x-card>
-  <x-card data-title="スマートなデータベース操作" data-href="/examples/mcp-sqlite" data-icon="lucide:database-zap">
-  Model Context Protocol を介して SQLite に接続し、データベース操作を探求します。
-  </x-card>
-</x-cards>
+## 言語モデルの設定
 
-### 高度なワークフロー
+`MODEL` 環境変数を対応する API キーと一緒に設定することで、さまざまな大規模言語モデルを使用するように事例を設定できます。`MODEL` 変数は `provider:model-name` の形式に従います。
 
-<x-cards data-columns="2">
-  <x-card data-title="コード実行" data-href="/examples/workflow-code-execution" data-icon="lucide:code-2">
-  AI 駆動のワークフロー内で動的に生成されたコードを安全に実行する方法を示します。
-  </x-card>
-  <x-card data-title="並行処理" data-href="/examples/workflow-concurrency" data-icon="lucide:git-compare-arrows">
-  並列実行により複数のタスクを同時に処理し、パフォーマンスを最適化します。
-  </x-card>
-  <x-card data-title="シーケンシャルパイプライン" data-href="/examples/workflow-sequential" data-icon="lucide:git-commit-horizontal">
-  実行順序が保証されたステップバイステップの処理パイプラインを構築します。
-  </x-card>
-  <x-card data-title="グループチャット" data-href="/examples/workflow-group-chat" data-icon="lucide:messages-square">
-  グループチャット環境でメッセージを共有し、複数の Agent と対話する方法を示します。
-  </x-card>
-  <x-card data-title="タスクの引き継ぎ" data-href="/examples/workflow-handoff" data-icon="lucide:arrow-right-left">
-  専門的な Agent 間でシームレスな移行を作成し、複雑な問題を解決します。
-  </x-card>
-  <x-card data-title="スマートオーケストレーション" data-href="/examples/workflow-orchestration" data-icon="lucide:workflow">
-  洗練された処理パイプラインで連携して動作する複数の Agent を調整します。
-  </x-card>
-  <x-card data-title="リフレクション" data-href="/examples/workflow-reflection" data-icon="lucide:rotate-cw">
-  出力の評価と改良機能を通じて自己改善を可能にします。
-  </x-card>
-  <x-card data-title="ルーター" data-href="/examples/workflow-router" data-icon="lucide:git-fork">
-  インテリジェントなルーティングロジックを実装し、コンテンツに基づいてリクエストを適切なハンドラに転送します。
-  </x-card>
-</x-cards>
-
-## 高度な設定
-
-### 異なる大規模言語モデルの使用
-
-`MODEL` 環境変数と対応する API キーを設定することで、さまざまな大規模言語モデルを使用するようにサンプルを設定できます。サポートされているプロバイダーの完全なリストについては、[モデルの概要](./models-overview.md) を参照してください。
-
-#### OpenAI
+### OpenAI
 
 ```bash OpenAI の設定 icon=lucide:terminal
 export MODEL=openai:gpt-4o
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
 ```
 
-#### Anthropic
+### Anthropic
 
 ```bash Anthropic の設定 icon=lucide:terminal
-export MODEL=anthropic:claude-3-opus-20240229
+export MODEL=anthropic:claude-3-5-sonnet-20240620
 export ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY
 ```
 
-#### Google Gemini
+### Google Gemini
 
-```bash Gemini の設定 icon=lucide:terminal
+```bash Google Gemini の設定 icon=lucide:terminal
 export MODEL=gemini:gemini-1.5-flash
 export GEMINI_API_KEY=YOUR_GEMINI_API_KEY
 ```
 
-#### AWS Bedrock
+### AWS Bedrock
 
-```bash Bedrock の設定 icon=lucide:terminal
-export MODEL=bedrock:us-east-1.anthropic.claude-3-sonnet-20240229-v1:0
-export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY"
-export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_KEY"
+```bash AWS Bedrock の設定 icon=lucide:terminal
+export MODEL=bedrock:anthropic.claude-3-sonnet-20240229-v1:0
+export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY_ID"
+export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_ACCESS_KEY"
 export AWS_REGION="us-east-1"
 ```
 
-#### Ollama (ローカル)
+### DeepSeek
 
-```bash Ollama の設定 icon=lucide:terminal
-export MODEL=llama3
-export OLLAMA_DEFAULT_BASE_URL="http://localhost:11434/v1"
-export OLLAMA_API_KEY=ollama
+```bash DeepSeek の設定 icon=lucide:terminal
+export MODEL=deepseek:deepseek-chat
+export DEEPSEEK_API_KEY=YOUR_DEEPSEEK_API_KEY
 ```
 
-### デバッグログの出力
+### Doubao
 
-モデルの呼び出しや応答など、Agent の内部操作に関する洞察を得るには、`DEBUG` 環境変数を設定してデバッグロギングを有効にすることができます。
+```bash Doubao の設定 icon=lucide:terminal
+export MODEL=doubao:Doubao-pro-128k
+export DOUBAO_API_KEY=YOUR_DOUBAO_API_KEY
+```
 
-```bash デバッグロギングを有効にする icon=lucide:terminal
+### xAI (Grok)
+
+```bash xAI の設定 icon=lucide:terminal
+export MODEL=xai:grok-1.5-flash
+export XAI_API_KEY=YOUR_XAI_API_KEY
+```
+
+### Ollama (ローカルモデル)
+
+```bash Ollama の設定 icon=lucide:terminal
+export MODEL=ollama:llama3
+export OLLAMA_DEFAULT_BASE_URL="http://localhost:11434"
+```
+
+### LMStudio (ローカルモデル)
+
+```bash LMStudio の設定 icon=lucide:terminal
+export MODEL=lmstudio:local-model/llama-3.1-8b-instruct-gguf
+export LM_STUDIO_DEFAULT_BASE_URL="http://localhost:1234/v1"
+```
+
+サポートされているモデルとその設定詳細の完全なリストについては、[モデル](./models-overview.md) セクションを参照してください。
+
+## デバッグ
+
+モデルの呼び出しや応答など、Agent の実行フローに関する洞察を得るには、`DEBUG` 環境変数を設定してデバッグログを有効にすることができます。
+
+```bash デバッグログを有効にする icon=lucide:terminal
 DEBUG=* npx -y @aigne/example-chat-bot --chat
 ```
 
-このコマンドは詳細な出力を生成し、トラブルシューティングや Agent の実行フローを理解するのに役立ちます。
-
-## まとめ
-
-これらのサンプルは、AIGNE フレームワークで構築を始めるための実践的な出発点を提供します。まず[基本的なチャットボット](./examples-chat-bot.md)から始めて基本を理解し、その後必要に応じてより複雑なワークフローを探求することをお勧めします。より深い理論的な理解については、[コアコンセプト](./developer-guide-core-concepts.md)のドキュメントを参照してください。
+このコマンドは詳細なログをターミナルに出力します。これは Agent の内部動作を理解し、その挙動をトラブルシューティングするのに役立ちます。

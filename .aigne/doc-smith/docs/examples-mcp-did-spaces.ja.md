@@ -1,209 +1,204 @@
 # MCP DID Spaces
 
-このガイドでは、Model Context Protocol（MCP）を介してDID Spacesと統合されたチャットボットを構築する方法を説明します。これらの手順に従うことで、分散ストレージと対話し、事前定義されたスキルを使用してファイルの読み取り、書き込み、一覧表示などの操作を実行できるAgentを作成します。
+このドキュメントは、モデルコンテキストプロトコル (MCP) を介して DID Spaces と統合されたチャットボットを構築するための包括的なガイドを提供します。これらの指示に従うことで、[AIGNE フレームワーク](https://github.com/AIGNE-io/aigne-framework) の機能を活用し、分散ストレージ環境で安全にファイルにアクセスし管理できる AI Agent を作成できます。
 
-## 概要
+## 前提条件
 
-この例では、AIGNEフレームワークとDID SpacesサービスをModel Context Protocol（MCP）を介して統合する方法を紹介します。主な目標は、チャットボットAgentにユーザーのDID Space内でファイルやデータ操作を実行できる一連のスキルを装備させることです。これにより、Agentが外部の分散型サービスと安全に対話する方法を具体的に示します。
+この例を正常に実行するためには、以下のコンポーネントがインストールされ、設定されていることを確認してください。
 
-以下の図は、チャットボットAgent、MCPサーバー、およびDID Space間の相互作用を示しています。
+*   **Node.js**: バージョン 20.0 以降。
+*   **OpenAI API キー**: AI モデルには有効な API キーが必要です。キーは [OpenAI プラットフォーム](https://platform.openai.com/api-keys) から取得できます。
+*   **DID Spaces MCP サーバーの認証情報**: 指定された DID Space とのやり取りには認証情報が必要です。
+
+## クイックスタート
+
+この例は、`npx` を使用してローカルにインストールすることなく、ターミナルから直接実行できます。
+
+### 1. 環境変数の設定
+
+まず、DID Spaces サーバーの認証情報で環境変数を設定します。スペースの URL とアクセスキーは、Blocklet の管理設定から生成できます。
+
+```bash DID Spaces の認証情報を設定 icon=lucide:terminal
+# あなたの DID Spaces アプリケーションの URL に置き換えてください
+export DID_SPACES_URL="https://spaces.staging.arcblock.io/app"
+
+# プロフィール -> 設定 -> アクセスキーでキーを作成し、認証タイプを「シンプル」に設定します
+export DID_SPACES_AUTHORIZATION="blocklet-xxx"
+```
+
+### 2. サンプルの実行
+
+環境変数を設定したら、以下のコマンドを実行してチャットボットを初期化します。
+
+```bash サンプルの実行 icon=lucide:terminal
+npx -y @aigne/example-mcp-did-spaces
+```
+
+### 3. AI モデルへの接続
+
+チャットボットが動作するには、大規模言語モデル (LLM) への接続が必要です。初回実行時には、接続設定をガイドするプロンプトが表示されます。
+
+![AI モデル接続の初回プロンプト](../../../examples/mcp-did-spaces/run-example.png)
+
+接続を確立するには、主に 3 つの方法があります。
+
+#### オプション 1: AIGNE Hub (推奨)
+
+これが最も直接的な方法です。公式の AIGNE Hub は、新規ユーザーに無料のトークンを提供しています。このオプションを使用するには、プロンプトで最初の選択肢を選びます。Web ブラウザが AIGNE Hub の認証ページで開き、そこで接続リクエストを承認できます。
+
+![AIGNE Hub 接続の承認](../../../examples/images/connect-to-aigne-hub.png)
+
+#### オプション 2: セルフホストの AIGNE Hub
+
+プライベートな AIGNE Hub インスタンスを運用しているユーザーは、2 番目のオプションを選択します。セルフホストのハブの URL を入力するよう求められます。個人用の AIGNE Hub をデプロイする手順は、[Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ) で入手できます。
+
+![セルフホストの AIGNE Hub に接続](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+#### オプション 3: サードパーティのモデルプロバイダー
+
+OpenAI などのサードパーティ LLM プロバイダーとの直接統合もサポートされています。対応する API キーを環境変数として設定し、再度実行コマンドを実行します。
+
+```bash OpenAI API キーの設定 icon=lucide:terminal
+export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+```
+
+DeepSeek や Google Gemini などのプロバイダーを含む追加の設定例については、ソースリポジトリ内の `.env.local.example` ファイルを参照してください。
+
+AI モデルが接続されると、この例はあなたの DID Space に対して一連のテスト操作を実行し、その結果をコンソールにログ出力し、結果をまとめたマークダウンファイルを生成します。
+
+## 仕組み
+
+この例では、`MCPAgent` を使用して、モデルコンテキストプロトコル (MCP) を介して DID Spaces サーバーと通信します。このプロトコルにより、Agent は「スキル」を動的に発見して利用できます。スキルは DID Spaces の機能に直接マッピングされます。
+
+以下の図は、操作の流れを示しています。
 
 ```d2
 direction: down
 
-AIGNE-Framework: {
-  label: "AIGNEフレームワーク"
+AI-Agent: {
+  label: "AI Agent"
+  shape: rectangle
+}
+
+MCPAgent: {
+  label: "MCPAgent"
+  shape: rectangle
+}
+
+DID-Spaces-Server: {
+  label: "DID Spaces MCP サーバー"
   shape: rectangle
 
-  MCPAgent: {
-    label: "チャットボットAgent\n(MCPAgent)"
+  Skills: {
+    label: "利用可能なスキル"
+    shape: rectangle
+    list-objects: "list_objects"
+    write-object: "write_object"
+    read-object: "read_object"
+    head-space: "head_space"
+    delete-object: "delete_object"
   }
 }
 
-MCP-Server: {
-  label: "MCPサーバー"
-  shape: rectangle
-}
-
-DID-Spaces: {
-  label: "DID Spaces"
+DID-Space: {
+  label: "DID Space"
   shape: cylinder
-  icon: "https://www.arcblock.io/image-bin/uploads/fb3d25d6fcd3f35c5431782a35bef879.svg"
 }
 
-AIGNE-Framework.MCPAgent -> MCP-Server: "1. 接続 & スキルの発見"
-MCP-Server -> AIGNE-Framework.MCPAgent: "2. スキルの提供 (例: list_objects, write_object)"
-AIGNE-Framework.MCPAgent -> MCP-Server: "3. スキルの実行 (例: 'report.md' を書き込む)"
-MCP-Server -> DID-Spaces: "4. ファイル操作の実行"
-DID-Spaces -> MCP-Server: "5. 結果の返却"
-MCP-Server -> AIGNE-Framework.MCPAgent: "6. Agentへの結果送信"
+AI-Agent -> MCPAgent: "3. コマンド実行\n(例: 'ファイルを一覧表示')"
+MCPAgent -> DID-Spaces-Server: "1. 接続と認証"
+DID-Spaces-Server -> MCPAgent: "2. スキルを提供"
+MCPAgent -> DID-Space: "4. スキル経由で操作を実行"
+
 ```
 
-実証される主な機能は次のとおりです。
-- DID Spaces MCPサーバーへの接続。
-- 利用可能なスキル（例：`list_objects`、`write_object`）の動的な読み込み。
-- メタデータの確認、オブジェクトの一覧表示、新規ファイルの書き込みなどの基本的なファイル操作の実行。
-- 結果をマークダウンレポートとして保存。
+操作の流れは以下の通りです。
+1. `MCPAgent` は、指定された DID Spaces MCP サーバーのエンドポイントに接続します。
+2. 提供された認証情報を使用して認証します。
+3. サーバーは、`list_objects` や `write_object` などの一連のスキルを Agent が利用できるようにします。
+4. `MCPAgent` はこれらのスキルを統合し、プライマリ AI Agent がユーザーの入力やプログラムされたロジックに応じて、DID Space 内でファイルやデータの管理タスクを実行できるようにします。
 
-## 前提条件
+### 利用可能なスキル
 
-始める前に、以下がインストールされ、設定されていることを確認してください。
-
-*   **Node.js**: バージョン20.0以上。
-*   **AIモデルプロバイダーのAPIキー**: OpenAIなどのプロバイダーからのAPIキーが必要です。
-*   **DID Spaces MCPサーバーの認証情報**: DID SpacesインスタンスのURLと認証キーが必要です。
-
-以下の依存関係は任意であり、クローンしたソースコードから例を実行する場合にのみ必要です。
-
-*   **pnpm**: パッケージ管理用。
-*   **Bun**: テストと例の実行用。
-
-## クイックスタート
-
-`npx` を使用して、ローカルにインストールすることなくこの例を直接実行できます。
-
-### 1. 環境変数を設定する
-
-まず、DID Spacesサーバーの認証情報を設定する必要があります。ターミナルを開き、以下の環境変数をエクスポートします。
-
-`DID_SPACES_AUTHORIZATION`キーを取得するには：
-1.  Blockletに移動します。
-2.  **プロフィール -> 設定 -> アクセスキー** に進みます。
-3.  **作成** をクリックし、**認証タイプ** を「シンプル」に設定します。
-4.  生成されたキーをコピーします。
-
-```bash 環境変数を設定 icon=lucide:terminal
-# あなたのDID Spaces URLに置き換えてください
-export DID_SPACES_URL="https://spaces.staging.arcblock.io/app"
-
-# 生成されたアクセスキーに置き換えてください
-export DID_SPACES_AUTHORIZATION="blocklet-xxx"
-```
-
-### 2. AIモデルに接続する
-
-Agentが機能するためには、大規模言語モデル（LLM）への接続が必要です。初めて例を実行すると、いくつかのオプションでAIモデルに接続するよう求められます。
-
-#### オプションA: AIGNE Hub経由で接続する（推奨）
-
-公式のAIGNE Hub経由で接続することを選択できます。ブラウザが開き、プロセスを案内するページが表示されます。新規ユーザーは、開始するための無料トークン割り当てを受け取ります。または、自己ホスト型のAIGNE Hubインスタンスがある場合は、そのオプションを選択してURLを入力できます。
-
-#### オプションB: サードパーティプロバイダー経由で接続する
-
-OpenAIのようなサードパーティプロバイダーのAPIキーを、環境変数を介して直接設定できます。
-
-```bash OpenAI APIキーを設定 icon=lucide:terminal
-export OPENAI_API_KEY="sk-..." # ここにOpenAI APIキーを設定してください
-```
-
-異なるモデルプロバイダー（例：DeepSeek、Google Gemini）の設定例については、ソースコード内の `.env.local.example` ファイルを参照してください。
-
-### 3. 例を実行する
-
-環境が設定されたら、次のコマンドを実行してチャットボットを開始します。
-
-```bash 例を実行する icon=lucide:terminal
-npx -y @aigne/example-mcp-did-spaces
-```
-
-スクリプトは以下の手順を実行します：
-1.  MCP DID Spacesサーバーへの接続をテストします。
-2.  3つの操作を実行します：メタデータの確認、オブジェクトの一覧表示、ファイルの書き込み。
-3.  コンソールに結果を表示します。
-4.  完全なマークダウンレポートをローカルファイルシステムに保存し、ファイルパスを表示します。
-
-## 仕組み
-
-この例では、`MCPAgent` を利用してDID Spacesサーバーに接続します。Model Context Protocol（MCP）は標準化されたインターフェースとして機能し、Agentがサーバーによって提供されるスキルを発見し、利用できるようにします。
-
--   **動的スキル読み込み**: `MCPAgent` はMCPサーバーにクエリを送信し、利用可能なすべてのスキルを動的に読み込みます。これにより、コード内でAgentの能力を事前に定義する必要がなくなります。
--   **安全な認証**: DID Spacesへの接続は、提供された認証情報を使用して保護されます。
--   **リアルタイムな対話**: AgentはDID Spacesとリアルタイムで対話し、操作を実行します。
-
-利用可能なスキルには通常、以下が含まれます。
+この統合により、Agent が利用できるいくつかの主要な DID Spaces 操作がスキルとして公開されます。
 
 | スキル | 説明 |
-| :--- | :--- |
-| `head_space` | DID Spaceに関するメタデータを取得します。 |
-| `read_object` | DID Space内のオブジェクトからコンテンツを読み取ります。 |
-| `write_object` | DID Space内のオブジェクトにコンテンツを書き込みます。 |
-| `list_objects` | DID Space内のディレクトリにあるオブジェクトを一覧表示します。 |
-| `delete_object` | DID Spaceからオブジェクトを削除します。 |
+| --------------- | ---------------------------------------------- |
+| `head_space` | DID Space に関するメタデータを取得します。 |
+| `read_object` | 指定されたオブジェクト (ファイル) の内容を読み取ります。 |
+| `write_object` | オブジェクト (ファイル) に新しい内容を書き込みます。 |
+| `list_objects` | ディレクトリ内のすべてのオブジェクト (ファイル) を一覧表示します。 |
+| `delete_object` | 指定されたオブジェクト (ファイル) を削除します。 |
 
 ## 設定
 
-本番環境では、通常、DID Spaces用に独自のMCPサーバーをホストします。`MCPAgent` は、カスタムエンドポイントを指し、特定の認証トークンを使用するように設定できます。
+本番環境へのデプロイでは、Agent の設定を特定の MCP サーバーを対象とし、安全な認証トークンを使用するように更新する必要があります。`MCPAgent` はサーバーの URL と適切な認証ヘッダーでインスタンス化されます。
 
-以下のコードスニペットは、`MCPAgent` をカスタムパラメータで初期化する方法を示しています。
-
-```typescript MCPAgentの初期化
-import { MCPAgent } from '@aigne/mcp-agent';
-
+```typescript agent-config.ts icon=logos:typescript
 const mcpAgent = await MCPAgent.from({
-  url: 'YOUR_MCP_SERVER_URL',
-  transport: 'streamableHttp',
+  url: "YOUR_MCP_SERVER_URL",
+  transport: "streamableHttp",
   opts: {
     requestInit: {
       headers: {
-        Authorization: 'Bearer YOUR_TOKEN',
+        Authorization: "Bearer YOUR_TOKEN",
       },
     },
   },
 });
 ```
 
-## ソースから実行する
+## デバッグ
 
-リポジトリのローカルクローンから例を実行したい場合は、以下の手順に従ってください。
+`aigne observe` コマンドは、Agent の実行時の動作を監視および分析するためのツールを提供します。実行トレースを可視化するローカルウェブサーバーを起動し、入力、出力、ツールとのやり取り、パフォーマンスメトリクスに関する洞察を提供します。
+
+1. **監視サーバーを起動します。**
+
+    ```bash aigne observe icon=lucide:terminal
+    aigne observe
+    ```
+
+    ![ターミナルで起動中の AIGNE Observe サーバー](../../../examples/images/aigne-observe-execute.png)
+
+2. **実行トレースを表示します。**
+
+    ウェブインターフェース `http://localhost:7893` にアクセスして、最近の Agent 実行のリストを確認します。各トレースを詳細に分析して、Agent の操作を調べることができます。
+
+    ![AIGNE Observe のトレースリスト](../../../examples/images/aigne-observe-list.png)
+
+## ローカルでのインストールとテスト
+
+ソースコードを変更する開発者向けに、以下の手順でローカルでのセットアップとテストのプロセスを概説します。
 
 ### 1. リポジトリをクローンする
 
-```bash リポジトリをクローンする icon=lucide:terminal
+```bash icon=lucide:terminal
 git clone https://github.com/AIGNE-io/aigne-framework
 ```
 
 ### 2. 依存関係をインストールする
 
-例のディレクトリに移動し、`pnpm` を使用して必要なパッケージをインストールします。
+サンプルのディレクトリに移動し、`pnpm` を使用して必要なパッケージをインストールします。
 
-```bash 依存関係をインストール icon=lucide:terminal
+```bash icon=lucide:terminal
 cd aigne-framework/examples/mcp-did-spaces
 pnpm install
 ```
 
-### 3. 例を実行する
+### 3. サンプルを実行する
 
-`pnpm start` コマンドでアプリケーションを開始します。
+開始スクリプトを実行して、ローカルソースからアプリケーションを実行します。
 
-```bash 例を実行する icon=lucide:terminal
+```bash icon=lucide:terminal
 pnpm start
 ```
 
-## テストとデバッグ
+### 4. テストを実行する
 
-### テストの実行
+統合と機能性を検証するために、テストスイートを実行します。
 
-統合が正しく機能していることを確認するために、テストスイートを実行できます。テストはMCPサーバーに接続し、利用可能なスキルを一覧表示し、基本的なDID Spaces操作を実行します。
-
-```bash テストスイートを実行 icon=lucide:terminal
+```bash icon=lucide:terminal
 pnpm test:llm
 ```
 
-### Agentの動作を監視する
-
-`aigne observe` コマンドは、Agentの実行データを監視および分析するためのローカルウェブサーバーを起動します。このツールは、デバッグ、パフォーマンスチューニング、およびAgentがモデルやツールとどのように相互作用するかを理解するために不可欠です。トレースを検査し、詳細な呼び出し情報を表示するための使いやすいインターフェースを提供します。
-
-```bash 監視サーバーを起動 icon=lucide:terminal
-aigne observe
-```
-
-## まとめ
-
-この例では、Model Context Protocolを使用してAIGNE AgentをDID Spacesのような外部サービスと統合するための実践的なガイドを提供しました。分散ストレージ操作を実行できるAgentの設定、実行、テストの方法を学びました。
-
-関連する概念の詳細については、以下のドキュメントを参照してください。
-
-<x-cards data-columns="2">
-  <x-card data-title="MCP Agent" data-href="/developer-guide/agents/mcp-agent" data-icon="lucide:box">MCPAgentとそれが外部サービスとどのように相互作用するかについて詳しく学びます。</x-card>
-  <x-card data-title="DID Spaces メモリ" data-href="/examples/memory-did-spaces" data-icon="lucide:database">永続的なAgentメモリとしてDID Spacesを使用する例をご覧ください。</x-card>
-</x-cards>
+テストプロセスでは、MCP サーバーへの接続を確立し、利用可能なスキルを列挙し、基本的な DID Spaces 操作を実行して、統合が期待通りに機能していることを確認します。

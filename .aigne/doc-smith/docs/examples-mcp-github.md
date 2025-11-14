@@ -1,16 +1,11 @@
+
 # MCP GitHub
 
-This document provides a comprehensive guide to an example that demonstrates how to interact with GitHub repositories. By the end of this guide, you will be able to run an AI agent that can search for repositories, read file contents, and perform other GitHub-related tasks using the AIGNE Framework and the GitHub Model Context Protocol (MCP) Server.
+This document provides a comprehensive guide to an example that demonstrates how to interact with GitHub repositories using the AIGNE Framework and the GitHub MCP (Model Context Protocol) Server. You will learn how to set up and run the example, enabling an AI agent to perform various GitHub operations like searching repositories and managing files.
 
 ## Overview
 
-This example showcases the integration of the AIGNE Framework with the GitHub MCP Server, enabling an AI agent to utilize GitHub's API as a set of tools. The agent can be run in a single-command (one-shot) mode or an interactive chat mode, allowing for flexible interaction.
-
-The core components involved are:
-- **AI Agent**: The primary agent responsible for understanding user requests and orchestrating tasks.
-- **GitHub MCP Agent**: A specialized agent that connects to the GitHub MCP Server, exposing its capabilities (like searching repos, reading files) as skills.
-
-The following diagram illustrates the relationship between these components and the flow of information:
+The example showcases the integration of an `MCPAgent` that connects to a GitHub MCP server. This agent equips the AI with a suite of tools (skills) to interact with the GitHub API. The workflow allows a user to make requests in natural language, which the AI agent then translates into specific function calls to the GitHub agent to perform actions such as searching for repositories, reading file contents, or creating issues.
 
 ```d2
 direction: down
@@ -23,21 +18,21 @@ AIGNE-Framework: {
   label: "AIGNE Framework"
   shape: rectangle
 
-  AI-Agent: {
-    label: "AI Agent"
+  AIAgent: {
+    label: "AI Agent\n(@aigne/core)"
     shape: rectangle
-    "Understands user requests\nand orchestrates tasks"
   }
 
-  GitHub-MCP-Agent: {
-    label: "GitHub MCP Agent"
+  MCPAgent: {
+    label: "GitHub MCP Agent\n(Skill)"
     shape: rectangle
-    "Exposes GitHub server\ncapabilities as skills"
   }
+
+  AIAgent -> MCPAgent: "Uses skill"
 }
 
 GitHub-MCP-Server: {
-  label: "GitHub MCP Server"
+  label: "GitHub MCP Server\n(@modelcontextprotocol/server-github)"
   shape: rectangle
 }
 
@@ -46,127 +41,159 @@ GitHub-API: {
   shape: cylinder
 }
 
-User -> AIGNE-Framework.AI-Agent: "1. Sends request (e.g., search repos)"
-AIGNE-Framework.AI-Agent -> AIGNE-Framework.GitHub-MCP-Agent: "2. Uses GitHub skills"
-AIGNE-Framework.GitHub-MCP-Agent -> GitHub-MCP-Server: "3. Connects and sends commands"
-GitHub-MCP-Server -> GitHub-API: "4. Makes API calls"
-GitHub-API -> GitHub-MCP-Server: "5. Returns data"
-GitHub-MCP-Server -> AIGNE-Framework.GitHub-MCP-Agent: "6. Forwards response"
-AIGNE-Framework.GitHub-MCP-Agent -> AIGNE-Framework.AI-Agent: "7. Returns result of skill execution"
-AIGNE-Framework.AI-Agent -> User: "8. Presents final answer"
-```
+AI-Model-Provider: {
+  label: "AI Model Provider\n(e.g., OpenAI, AIGNE Hub)"
+  shape: cylinder
+}
 
-For a deeper understanding of how MCP agents work, refer to the [MCP Agent](./developer-guide-agents-mcp-agent.md) documentation.
+AIGNE-Observe: {
+  label: "AIGNE Observe\n(Debugging UI)"
+  shape: rectangle
+}
+
+User -> AIGNE-Framework.AIAgent: "1. Natural language request"
+AIGNE-Framework.AIAgent -> AI-Model-Provider: "2. Process request"
+AI-Model-Provider -> AIGNE-Framework.AIAgent: "3. Return function call"
+AIGNE-Framework.AIAgent -> AIGNE-Framework.MCPAgent: "4. Execute function call"
+AIGNE-Framework.MCPAgent -> GitHub-MCP-Server: "5. Send command"
+GitHub-MCP-Server -> GitHub-API: "6. Call GitHub API"
+GitHub-API -> GitHub-MCP-Server: "7. Return API response"
+GitHub-MCP-Server -> AIGNE-Framework.MCPAgent: "8. Return result"
+AIGNE-Framework.MCPAgent -> AIGNE-Framework.AIAgent: "9. Return result"
+AIGNE-Framework.AIAgent -> AI-Model-Provider: "10. Process result"
+AI-Model-Provider -> AIGNE-Framework.AIAgent: "11. Return natural language response"
+AIGNE-Framework.AIAgent -> User: "12. Final response"
+AIGNE-Framework -> AIGNE-Observe: "Sends execution traces"
+```
 
 ## Prerequisites
 
-Before proceeding, ensure the following requirements are met:
+Before proceeding, ensure your system meets the following requirements:
 
-- **Node.js**: Version 20.0 or higher. You can download it from [nodejs.org](https://nodejs.org).
-- **GitHub Personal Access Token**: A token with appropriate repository permissions is required. You can generate one from your [GitHub settings](https://github.com/settings/tokens).
-- **AI Model Provider API Key**: An API key from a provider like OpenAI is necessary for the AI agent to function. Get your key from the [OpenAI platform](https://platform.openai.com/api-keys).
+*   **Node.js**: Version 20.0 or higher.
+*   **npm**: Included with Node.js.
+*   **GitHub Personal Access Token**: A token with the necessary permissions for the repositories you intend to interact with. You can create one from your [GitHub settings](https://github.com/settings/tokens).
+*   **AI Model Provider Account**: An API key from a provider like [OpenAI](https://platform.openai.com/api-keys) or a connection to an AIGNE Hub instance.
 
 ## Quick Start
 
-You can run this example directly without any local installation using `npx`.
+You can run this example directly without a local installation using `npx`.
 
 First, set your GitHub token as an environment variable.
 
-```sh Set GitHub Token icon=lucide:terminal
+```bash Set your GitHub token icon=lucide:terminal
 export GITHUB_TOKEN=YOUR_GITHUB_TOKEN
 ```
 
-Next, run the example.
+Next, execute the example.
 
-```sh Run Example icon=lucide:terminal
+```bash Run the example icon=lucide:terminal
 npx -y @aigne/example-mcp-github
 ```
 
-### Connecting to an AI Model
+### Connect to an AI Model
 
-The first time you run the example, you will be prompted to connect to an AI model. You have several options:
+Upon first execution, if no AI model is configured, you will be prompted to connect one.
 
-1.  **AIGNE Hub (Official)**: Select this option to connect via the official AIGNE Hub. A browser window will open for you to complete the connection. New users receive a complimentary token grant.
-2.  **AIGNE Hub (Self-hosted)**: If you host your own AIGNE Hub instance, choose this option and provide its URL to connect.
-3.  **Third-Party Model Provider**: To use a direct provider like OpenAI, set the corresponding API key as an environment variable.
+DIAGRAM_PLACEHOLDER
 
-For example, to use OpenAI, export your API key and re-run the command:
+You have several options to proceed:
 
-```sh Set OpenAI API Key icon=lucide:terminal
+#### 1. Connect to the Official AIGNE Hub
+
+This is the recommended approach. Selecting this option will open your browser to the official AIGNE Hub page. Follow the on-screen instructions to authorize the connection. New users receive complimentary credits to get started.
+
+DIAGRAM_PLACEHOLDER
+
+#### 2. Connect to a Self-Hosted AIGNE Hub
+
+If you operate your own instance of AIGNE Hub, choose this option. You will be prompted to enter the URL of your self-hosted Hub to complete the connection.
+
+DIAGRAM_PLACEHOLDER
+
+#### 3. Configure a Third-Party Model Provider
+
+You can also connect directly to a supported third-party model provider, such as OpenAI. To do this, set the provider's API key as an environment variable.
+
+For example, to use OpenAI, configure your `OPENAI_API_KEY`:
+
+```bash Set your OpenAI API key icon=lucide:terminal
 export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
-npx -y @aigne/example-mcp-github
 ```
 
-For more details on configuring other providers, see the example environment file in the repository.
+After setting the environment variable, run the `npx` command again. For a list of supported environment variables for other providers, refer to the `.env.local.example` file in the project source.
 
 ## Installation from Source
 
-For development or modification, you can clone the repository and run the example locally.
+For developers who wish to inspect or modify the code, follow these steps to run the example from a local clone.
 
-1.  **Clone the Repository**
+### 1. Clone the Repository
 
-    ```sh Clone Repository icon=lucide:terminal
-    git clone https://github.com/AIGNE-io/aigne-framework
-    ```
+Clone the main AIGNE Framework repository from GitHub.
 
-2.  **Navigate to Directory and Install Dependencies**
+```bash icon=lucide:terminal
+git clone https://github.com/AIGNE-io/aigne-framework
+```
 
-    ```sh Install Dependencies icon=lucide:terminal
-    cd aigne-framework/examples/mcp-github
-    pnpm install
-    ```
+### 2. Install Dependencies
 
-3.  **Run the Example**
+Navigate to the example's directory and install the necessary dependencies using `pnpm`.
 
-    You can run the agent in its default one-shot mode, in an interactive chat mode, or by piping input directly.
+```bash icon=lucide:terminal
+cd aigne-framework/examples/mcp-github
+pnpm install
+```
 
-    ```sh Run in one-shot mode icon=lucide:terminal
-    pnpm start
-    ```
+### 3. Run the Example
 
-    ```sh Run in interactive chat mode icon=lucide:terminal
-    pnpm start -- --chat
-    ```
+Execute the start script to run the example.
 
-    ```sh Run with pipeline input icon=lucide:terminal
-    echo "Search for repositories related to 'modelcontextprotocol'" | pnpm start
-    ```
+```bash Run in one-shot mode icon=lucide:terminal
+pnpm start
+```
+
+The example also supports interactive chat mode and can accept input piped from other commands.
+
+```bash Run in interactive chat mode icon=lucide:terminal
+pnpm start -- --chat
+```
+
+```bash Use pipeline input icon=lucide:terminal
+echo "Search for repositories related to 'modelcontextprotocol'" | pnpm start
+```
 
 ### Command-Line Options
 
-The application supports several command-line arguments for customized execution.
+You can customize the execution with the following command-line parameters:
 
-| Parameter | Description | Default |
-| :--- | :--- | :--- |
-| `--chat` | Runs the agent in interactive chat mode. | Disabled |
-| `--model <provider[:model]>` | Specifies the AI model to use (e.g., `openai` or `openai:gpt-4o-mini`). | `openai` |
-| `--temperature <value>` | Sets the temperature for model generation. | Provider default |
-| `--top-p <value>` | Sets the top-p sampling value. | Provider default |
-| `--presence-penalty <value>`| Sets the presence penalty value. | Provider default |
-| `--frequency-penalty <value>`| Sets the frequency penalty value. | Provider default |
-| `--log-level <level>` | Sets the logging level (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`). | `INFO` |
-| `--input`, `-i <input>` | Provides input directly as an argument. | None |
+| Parameter                 | Description                                                                                             | Default            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------ |
+| `--chat`                  | Run in interactive chat mode.                                                                           | Disabled           |
+| `--model <provider[:model]>` | Specify the AI model to use (e.g., `openai` or `openai:gpt-4o-mini`).                                     | `openai`           |
+| `--temperature <value>`   | Set the temperature for model generation.                                                               | Provider default   |
+| `--top-p <value>`         | Set the top-p sampling value.                                                                           | Provider default   |
+| `--presence-penalty <value>` | Set the presence penalty value.                                                                         | Provider default   |
+| `--frequency-penalty <value>` | Set the frequency penalty value.                                                                        | Provider default   |
+| `--log-level <level>`     | Set the logging level (`ERROR`, `WARN`, `INFO`, `DEBUG`, `TRACE`).                                        | `INFO`             |
+| `--input, -i <input>`     | Specify input directly as an argument.                                                                  | None               |
 
 ## Code Example
 
-The following TypeScript code illustrates the core logic for setting up and running the GitHub agent. It initializes the AI model and the GitHub MCP agent, combines them using `AIGNE`, and then invokes an `AIAgent` to perform a task.
+The following TypeScript code demonstrates the core logic of the example. It initializes an AI model, sets up the `MCPAgent` for GitHub, and invokes an `AIAgent` to perform a repository search.
 
-```typescript usages.ts icon=logos:typescript
-import assert from "node:assert";
+```typescript index.ts
 import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/openai";
+import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
 
-// Ensure environment variables are set
+// Load environment variables
 const { OPENAI_API_KEY, GITHUB_TOKEN } = process.env;
-assert(OPENAI_API_KEY, "Please set the OPENAI_API_KEY environment variable");
-assert(GITHUB_TOKEN, "Please set the GITHUB_TOKEN environment variable");
 
-// 1. Initialize the AI Model
+// Initialize OpenAI model
 const model = new OpenAIChatModel({
   apiKey: OPENAI_API_KEY,
 });
 
-// 2. Initialize the GitHub MCP Agent
+// Initialize GitHub MCP agent
 const githubMCPAgent = await MCPAgent.from({
   command: "npx",
   args: ["-y", "@modelcontextprotocol/server-github"],
@@ -175,13 +202,13 @@ const githubMCPAgent = await MCPAgent.from({
   },
 });
 
-// 3. Create an AIGNE instance with the model and GitHub skills
+// Create AIGNE instance with the model and GitHub skills
 const aigne = new AIGNE({
   model,
   skills: [githubMCPAgent],
 });
 
-// 4. Create an AI Agent with specific instructions
+// Create an AI agent with instructions for interacting with GitHub
 const agent = AIAgent.from({
   instructions: `\
 ## GitHub Interaction Assistant
@@ -195,48 +222,50 @@ You can perform various GitHub operations like:
 
 Always provide clear, concise responses with relevant information from GitHub.
 `,
-  inputKey: "message",
 });
 
-// 5. Invoke the agent to perform a task
-const result = await aigne.invoke(agent, {
-  message: "Search for repositories related to 'modelcontextprotocol' and limit to 3 results",
-});
+// Invoke the agent to search for repositories
+const result = await aigne.invoke(
+  agent,
+  "Search for repositories related to 'modelcontextprotocol'",
+);
 
 console.log(result);
 // Expected Output:
-// I found the following repositories related to 'modelcontextprotocol':
-// 1. **modelcontextprotocol/modelcontextprotocol**: The main repository for the Model Context Protocol.
-// 2. **modelcontextprotocol/servers**: A collection of MCP servers for various APIs and services.
-// 3. **AIGNE-io/aigne-framework**: The framework for building agentic AI applications.
+// I found several repositories related to 'modelcontextprotocol':
+//
+// 1. **modelcontextprotocol/servers** - MCP servers for various APIs and services
+// 2. **modelcontextprotocol/modelcontextprotocol** - The main ModelContextProtocol repository
+// ...
 
-// 6. Shutdown the AIGNE instance
+// Shutdown the AIGNE instance when done
 await aigne.shutdown();
 ```
 
-This script demonstrates a complete workflow: setting up the necessary components, defining the agent's purpose, and executing a specific task.
+## Available Operations
 
-## Available GitHub Operations
+The GitHub MCP server exposes a wide range of GitHub functionalities as skills that the AI agent can use, including:
 
-The GitHub MCP server exposes a wide range of functionalities. The AI agent can be instructed to perform operations across several categories:
+*   **Repository Operations**: Search, create, and get information about repositories.
+*   **File Operations**: Get file contents, create or update files, and push multiple files in a single commit.
+*   **Issue and PR Operations**: Create issues and pull requests, add comments, and merge pull requests.
+*   **Search Operations**: Search code, issues, and users.
+*   **Commit Operations**: List commits and get commit details.
 
-- **Repository Operations**: Search, create, and retrieve repository information.
-- **File Operations**: Get file contents, create or update files, and push multiple files in a single commit.
-- **Issue and PR Operations**: Create issues and pull requests, add comments, and merge pull requests.
-- **Search Operations**: Search code, issues, and users across GitHub.
-- **Commit Operations**: List commits and get details for a specific commit.
+## Debugging with AIGNE Observe
 
-## Summary
+To inspect and analyze the behavior of your agent, you can use the `aigne observe` command. This tool starts a local web server that provides a user interface for viewing execution traces, call details, and other runtime data.
 
-This example provides a practical demonstration of how to build a functional AI agent capable of interacting with external services like GitHub through the Model Context Protocol. By following the steps outlined, you can quickly set up and experiment with an agent that automates repository-related tasks.
+To start the observation server, run:
 
-For more information on other available examples and advanced workflows, please explore the following sections:
+```bash Start the AIGNE observe server icon=lucide:terminal
+aigne observe
+```
 
-<x-cards data-columns="2">
-  <x-card data-title="MCP Agent" data-icon="lucide:box" data-href="/developer-guide/agents/mcp-agent">
-    Learn the core concepts behind the MCPAgent and how it connects to external tools.
-  </x-card>
-  <x-card data-title="All Examples" data-icon="lucide:binary" data-href="/examples">
-    Browse the full list of examples to discover other capabilities of the AIGNE Framework.
-  </x-card>
-</x-cards>
+DIAGRAM_PLACEHOLDER
+
+Once the server is running, you can access the web interface in your browser to view a list of recent executions and drill down into the details of each trace.
+
+DIAGRAM_PLACEHOLDER
+
+This tool is invaluable for debugging, understanding how the agent interacts with tools and models, and optimizing performance.

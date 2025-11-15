@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.2.17-beta](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.16...default-memory-v1.2.17-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.1-beta
+    * @aigne/sqlite bumped to 0.4.5-beta
+  * devDependencies
+    * @aigne/openai bumped to 0.16.8-beta
+
 ## [1.2.16](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.2.16-beta...default-memory-v1.2.16) (2025-11-14)
 
 

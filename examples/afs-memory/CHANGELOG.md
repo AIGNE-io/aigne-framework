@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.10.71-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.70...example-afs-memory-v0.10.71-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.1-beta
+    * @aigne/afs-history bumped to 1.0.2-beta
+    * @aigne/afs-user-profile-memory bumped to 1.1.1-beta
+    * @aigne/cli bumped to 1.55.1-beta
+    * @aigne/core bumped to 1.68.1-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.61-beta
+
 ## [0.10.70](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.70-beta...example-afs-memory-v0.10.70) (2025-11-14)
 
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.68.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.68.0...core-v1.68.1-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.1-beta
+    * @aigne/afs-history bumped to 1.0.2-beta
+    * @aigne/observability-api bumped to 0.11.7-beta
+    * @aigne/platform-helpers bumped to 0.6.4-beta
+
 ## [1.68.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.68.0-beta...core-v1.68.0) (2025-11-14)
 
 

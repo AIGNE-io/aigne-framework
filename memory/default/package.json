@@ -1,6 +1,6 @@
 {
   "name": "@aigne/default-memory",
-  "version": "1.2.17-beta.0",
+  "version": "1.2.17-beta",
   "description": "Default memory for AIGNE framework",
   "publishConfig": {
     "access": "public"

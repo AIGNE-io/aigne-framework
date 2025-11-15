@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.5-beta](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.4...sqlite-v0.4.5-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
 ## [0.4.4](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.4-beta...sqlite-v0.4.4) (2025-11-12)
 
 ## [0.4.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.3...sqlite-v0.4.4-beta) (2025-11-12)

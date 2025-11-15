@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { SpanStatusCode } from "@opentelemetry/api";
 import Decimal from "decimal.js";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import { Trace } from "../server/models/trace.js";
 import type { TraceFormatSpans } from "./type.ts";
@@ -173,4 +174,18 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
   `;
 
   await db?.run?.(insertSql);
+
+  // Batch update status to ERROR if the root trace is ERROR
+  if (trace.rootId && !trace.parentId && (trace.status as any)?.code === SpanStatusCode.ERROR) {
+    await db
+      .update(Trace)
+      .set({ status: trace.status })
+      .where(
+        and(
+          eq(Trace.rootId, trace.rootId),
+          sql`json_extract(${Trace.status}, '$.code') = ${SpanStatusCode.UNSET}`,
+        ),
+      )
+      .execute();
+  }
 };

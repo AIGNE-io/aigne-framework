@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.86.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.86.1...aigne-framework-v1.86.2-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* **core:** memory leak in AIGNEContext by preventing duplicate signal handler ([#748](https://github.com/AIGNE-io/aigne-framework/issues/748)) ([7f17592](https://github.com/AIGNE-io/aigne-framework/commit/7f175929d78e4289e2d551746b12a73bb5c0eb22))
+
 ## [1.86.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.86.1-beta...aigne-framework-v1.86.1) (2025-11-15)
 
 ## [1.86.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.86.0...aigne-framework-v1.86.1-beta) (2025-11-15)

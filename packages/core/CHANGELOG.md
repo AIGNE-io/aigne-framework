@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.68.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.68.1...core-v1.68.2-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* **core:** memory leak in AIGNEContext by preventing duplicate signal handler ([#748](https://github.com/AIGNE-io/aigne-framework/issues/748)) ([7f17592](https://github.com/AIGNE-io/aigne-framework/commit/7f175929d78e4289e2d551746b12a73bb5c0eb22))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.8-beta
+
 ## [1.68.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.68.1-beta...core-v1.68.1) (2025-11-15)
 
 

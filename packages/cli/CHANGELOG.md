@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.55.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.55.1...cli-v1.55.2-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* **core:** memory leak in AIGNEContext by preventing duplicate signal handler ([#748](https://github.com/AIGNE-io/aigne-framework/issues/748)) ([7f17592](https://github.com/AIGNE-io/aigne-framework/commit/7f175929d78e4289e2d551746b12a73bb5c0eb22))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.1.2-beta
+    * @aigne/agent-library bumped to 1.21.55-beta
+    * @aigne/agentic-memory bumped to 1.0.55-beta
+    * @aigne/aigne-hub bumped to 0.10.9-beta
+    * @aigne/core bumped to 1.68.2-beta
+    * @aigne/default-memory bumped to 1.2.18-beta
+    * @aigne/observability-api bumped to 0.11.8-beta
+    * @aigne/openai bumped to 0.16.9-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.62-beta
+
 ## [1.55.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.55.1-beta...cli-v1.55.1) (2025-11-15)
 
 

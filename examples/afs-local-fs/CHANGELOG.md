@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.1](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-local-fs-v1.1.1-beta...example-afs-local-fs-v1.1.1) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.1
+    * @aigne/afs-history bumped to 1.0.2
+    * @aigne/afs-local-fs bumped to 1.1.1
+    * @aigne/cli bumped to 1.55.1
+    * @aigne/core bumped to 1.68.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.61
+
 ## [1.1.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-local-fs-v1.1.0...example-afs-local-fs-v1.1.1-beta) (2025-11-15)
 
 

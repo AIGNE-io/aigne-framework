@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.2.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.1-beta...afs-v1.2.1) (2025-11-15)
+
 ## [1.2.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.0...afs-v1.2.1-beta) (2025-11-15)
 
 

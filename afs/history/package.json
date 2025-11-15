@@ -1,6 +1,6 @@
 {
   "name": "@aigne/afs-history",
-  "version": "1.0.2-beta",
+  "version": "1.0.2",
   "description": "AIGNE AFS module for managing chat history",
   "publishConfig": {
     "access": "public"

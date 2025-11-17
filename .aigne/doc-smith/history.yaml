@@ -1,4 +1,9 @@
 entries:
+  - timestamp: 2025-11-16T11:16:30.889Z
+    operation: document_update
+    feedback: 连接到 AI 模型的时候，应该尽可能详细描述，添加已有的配图。可以参考 examples/chat-bot/README.md
+    docPaths:
+      - /examples
   - timestamp: 2025-11-14T09:27:01.764Z
     operation: document_update
     feedback: 连接到 AI 模型的时候，应该尽可能详细描述，添加已有的配图。examples 下的子页面的标题不需要翻译成其他语言。

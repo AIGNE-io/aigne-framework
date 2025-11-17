@@ -1,6 +1,6 @@
 # Examples
 
-Ready to see the AIGNE Framework in action? This section provides a comprehensive collection of practical examples that demonstrate various features and workflow patterns. Skip the complex setup and dive straight into running functional agents with one-click commands.
+Ready to see the AIGNE Framework in action? This section provides a comprehensive collection of practical examples that demonstrate various features and workflow patterns. You can skip the complex setup and dive straight into running functional agents with one-click commands.
 
 ## Overview
 
@@ -20,37 +20,74 @@ For detailed information on a specific feature or workflow, please refer to the 
   <x-card data-title="Sequential" data-icon="lucide:arrow-right" data-href="/examples/workflow-sequential">Build step-by-step processing pipelines with guaranteed execution order.</x-card>
 </x-cards>
 
-## Quick Start
+## Quick Start (No Installation Required)
 
 You can run any example directly from your terminal using `npx` without needing to clone the repository or perform a local installation.
 
 ### Prerequisites
 
-Ensure you have Node.js and npm installed on your system.
+Ensure you have Node.js (version 20.0 or higher) and npm installed on your system.
 
 ### Running an Example
 
-To run an example, you need to set the necessary environment variables, such as an API key for a large language model provider.
+The following command executes the basic chatbot example in one-shot mode, where it takes a default prompt, provides a response, and then exits.
 
-1.  **Set your API key:**
+```bash Run in one-shot mode icon=lucide:terminal
+npx -y @aigne/example-chat-bot
+```
 
-    ```bash Set your OpenAI API key icon=lucide:key-round
-    export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
-    ```
+To have an interactive conversation with the agent, add the `--chat` flag.
 
-2.  **Run the chatbot example:**
+```bash Run in interactive mode icon=lucide:terminal
+npx -y @aigne/example-chat-bot --chat
+```
 
-    The following command executes the basic chatbot example in one-shot mode, where it takes a default prompt and exits.
+You can also pipe input directly to the agent.
 
-    ```bash Run in one-shot mode icon=lucide:terminal
-    npx -y @aigne/example-chat-bot
-    ```
+```bash Use pipeline input icon=lucide:terminal
+echo "Tell me about AIGNE Framework" | npx -y @aigne/example-chat-bot
+```
 
-    To have an interactive conversation with the agent, add the `--chat` flag.
+## Connecting to an AI Model
 
-    ```bash Run in interactive mode icon=lucide:terminal
-    npx -y @aigne/example-chat-bot --chat
-    ```
+Running an example requires a connection to an AI model. If you run a command without any prior configuration, you will be prompted to connect.
+
+![Initial connection prompt when no model is configured](../../../examples/chat-bot/run-example.png)
+
+You have three options to establish a connection:
+
+### 1. Connect to the Official AIGNE Hub
+
+This is the recommended option for new users. The AIGNE Hub provides a seamless connection experience and grants new users free tokens to get started immediately.
+
+-   Select the first option in the prompt.
+-   Your browser will open the official AIGNE Hub page.
+-   Follow the on-screen instructions to authorize the AIGNE CLI.
+
+![Authorize AIGNE CLI to connect to the AIGNE Hub](../../../examples/images/connect-to-aigne-hub.png)
+
+### 2. Connect to a Self-Hosted AIGNE Hub
+
+If your organization runs a private instance of the AIGNE Hub, you can connect to it directly.
+
+-   Select the second option in the prompt.
+-   Enter the URL of your self-hosted AIGNE Hub and follow the prompts to complete the connection.
+
+![Enter the URL for a self-hosted AIGNE Hub](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+
+If you need to deploy your own AIGNE Hub, you can do so from the [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ).
+
+### 3. Connect via Third-Party Model Provider
+
+You can connect directly to a third-party AI model provider by setting the appropriate environment variables. Exit the interactive prompt and configure the API key for your chosen provider.
+
+For example, to use OpenAI, set the `OPENAI_API_KEY` environment variable:
+
+```bash Set your OpenAI API key icon=lucide:key-round
+export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+```
+
+After setting the key, run the example command again.
 
 ## Configuring Language Models
 
@@ -121,14 +158,40 @@ export MODEL=lmstudio:local-model/llama-3.1-8b-instruct-gguf
 export LM_STUDIO_DEFAULT_BASE_URL="http://localhost:1234/v1"
 ```
 
-For a complete list of supported models and their configuration details, please refer to the [Models](./models-overview.md) section.
+For a complete list of supported models and their configuration details, please refer to the [Models Overview](./models-overview.md) section.
 
-## Debugging
+## Debugging and Observation
 
-To gain insight into the agent's execution flow, including model calls and responses, you can enable debug logging by setting the `DEBUG` environment variable.
+To gain insight into an agent's execution flow, you can use two primary methods: debug logs for real-time terminal output and the AIGNE observability server for a more detailed, web-based analysis.
+
+### Debug Logs
+
+Enable debug logging by setting the `DEBUG` environment variable. This will print detailed information about model calls, responses, and other internal operations directly to your terminal.
 
 ```bash Enable Debug Logs icon=lucide:terminal
 DEBUG=* npx -y @aigne/example-chat-bot --chat
 ```
 
-This command will print detailed logs to your terminal, which is useful for understanding the internal operations of the agent and troubleshooting its behavior.
+### AIGNE Observe
+
+The `aigne observe` command starts a local web server to monitor and analyze agent execution data. This tool is essential for debugging, performance tuning, and understanding how your agent processes information.
+
+1.  **Install AIGNE CLI:**
+
+    ```bash Install AIGNE CLI icon=lucide:terminal
+    npm install -g @aigne/cli
+    ```
+
+2.  **Start the observation server:**
+
+    ```bash Start observation server icon=lucide:terminal
+    aigne observe
+    ```
+
+    ![AIGNE observability server starting in the terminal](../../../examples/images/aigne-observe-execute.png)
+
+3.  **View traces:**
+
+    After running an example, open your browser to `http://localhost:7893` to inspect traces, view detailed call information, and understand your agent’s runtime behavior.
+
+    ![List of recent agent executions in the AIGNE Observe UI](../../../examples/images/aigne-observe-list.png)

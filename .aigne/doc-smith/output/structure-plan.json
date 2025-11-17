@@ -508,7 +508,8 @@
     "path": "/examples",
     "parentId": null,
     "sourceIds": [
-      "examples/README.md"
+      "examples/README.md",
+      "examples/chat-bot/README.md"
     ],
     "icon": "lucide:flask-conical"
   },

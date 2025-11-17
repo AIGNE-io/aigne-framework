@@ -453,20 +453,19 @@ export default ({
   });
 
   router.delete("/tree", async (req: Request, res: Response) => {
-    const db = req.app.locals.db as LibSQLDatabase;
+    const db = req.app.locals.db as LibSQLDatabase & { clean: () => Promise<void> };
 
     const ids = req.body?.ids;
     if (Array.isArray(ids) && ids.length > 0) {
       await db.delete(Trace).where(inArray(Trace.id, ids)).execute();
+      await db.clean?.();
+
       res.json({ code: 0, message: `${ids.length} traces deleted` });
       return;
     }
 
     await db.delete(Trace).execute();
-
-    await (db as any).vacuum?.().catch((err: any) => {
-      console.error("Failed to vacuum:", err);
-    });
+    await db.clean?.();
 
     res.json({ code: 0, message: "all traces deleted" });
   });

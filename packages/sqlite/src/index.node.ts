@@ -15,7 +15,7 @@ export async function initDatabase({
 }: InitDatabaseOptions & { walAutocheckpoint?: number } = {}): Promise<
   LibSQLDatabase & { vacuum?: () => Promise<void> }
 > {
-  let db: LibSQLDatabase;
+  let db: LibSQLDatabase & { clean?: () => Promise<void> };
   let client: ReturnType<typeof createClient> | undefined;
 
   if (/^file:.*/.test(url)) {
@@ -54,7 +54,7 @@ PRAGMA busy_timeout = 5000;
     ]);
   }
 
-  (db as any).vacuum = async function checkpointWal() {
+  db.clean = async () => {
     if (client && typeof client.execute === "function") {
       try {
         await client.execute("PRAGMA wal_checkpoint(TRUNCATE);");

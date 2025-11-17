@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.7-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.6...observability-ui-v0.11.7-beta) (2025-11-17)
+
+
+### Bug Fixes
+
+* **sqlite:** improve WAL checkpoint and database cleanup ([#751](https://github.com/AIGNE-io/aigne-framework/issues/751)) ([85c7884](https://github.com/AIGNE-io/aigne-framework/commit/85c78849a8d2637349786c696d6eaa01f8c70fcf))
+
 ## [0.11.6](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.6-beta...observability-ui-v0.11.6) (2025-11-15)
 
 ## [0.11.6-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.5...observability-ui-v0.11.6-beta) (2025-11-15)

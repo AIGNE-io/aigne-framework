@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.6-beta](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.5...sqlite-v0.4.6-beta) (2025-11-17)
+
+
+### Bug Fixes
+
+* **sqlite:** improve WAL checkpoint and database cleanup ([#751](https://github.com/AIGNE-io/aigne-framework/issues/751)) ([85c7884](https://github.com/AIGNE-io/aigne-framework/commit/85c78849a8d2637349786c696d6eaa01f8c70fcf))
+
 ## [0.4.5](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.5-beta...sqlite-v0.4.5) (2025-11-15)
 
 ## [0.4.5-beta](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.4...sqlite-v0.4.5-beta) (2025-11-15)

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.86.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.86.2...aigne-framework-v1.86.3-beta) (2025-11-17)
+
+
+### Bug Fixes
+
+* **sqlite:** improve WAL checkpoint and database cleanup ([#751](https://github.com/AIGNE-io/aigne-framework/issues/751)) ([85c7884](https://github.com/AIGNE-io/aigne-framework/commit/85c78849a8d2637349786c696d6eaa01f8c70fcf))
+
 ## [1.86.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.86.2-beta...aigne-framework-v1.86.2) (2025-11-15)
 
 ## [1.86.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.86.1...aigne-framework-v1.86.2-beta) (2025-11-15)

@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.36-beta](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.35...poe-v1.0.36-beta) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta
+  * devDependencies
+    * @aigne/core bumped to 1.68.3-beta
+    * @aigne/test-utils bumped to 0.5.63-beta
+
 ## [1.0.35](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.35-beta...poe-v1.0.35) (2025-11-15)
 
 

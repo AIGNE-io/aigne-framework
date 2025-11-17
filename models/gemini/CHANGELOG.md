@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.14.10-beta](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.9...gemini-v0.14.10-beta) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.3-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63-beta
+
 ## [0.14.9](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.9-beta...gemini-v0.14.9) (2025-11-15)
 
 

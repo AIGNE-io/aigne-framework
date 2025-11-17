@@ -7,19 +7,23 @@ const Delete = ({
   dialogOpen,
   setDialogOpen,
   fetchTraces,
+  setLoading,
 }: {
   dialogOpen: boolean;
   setDialogOpen: (open: boolean) => void;
   fetchTraces: () => void;
+  setLoading: (loading: boolean) => void;
 }) => {
   const { t } = useLocaleContext();
 
   const deleteTraces = async () => {
     try {
+      setLoading(true);
       await fetch(joinURL(origin, "/api/trace/tree"), { method: "DELETE" });
       fetchTraces();
     } finally {
       setDialogOpen(false);
+      setLoading(false);
     }
   };
 

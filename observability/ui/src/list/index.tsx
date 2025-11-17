@@ -335,6 +335,7 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
                 setLive={setLive}
                 fetchTraces={fetchTraces}
                 page={page}
+                setLoading={setLoading}
               />
             )}
           </Box>

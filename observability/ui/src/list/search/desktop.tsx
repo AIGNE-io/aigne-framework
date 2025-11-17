@@ -22,6 +22,7 @@ const PcSearch = ({
   setLive,
   fetchTraces,
   page,
+  setLoading,
 }: {
   components: { data: string[] };
   search: SearchState;
@@ -31,6 +32,7 @@ const PcSearch = ({
   setLive: (live: boolean) => void;
   fetchTraces: (params: { page: number; pageSize: number }) => void;
   page: { page: number; pageSize: number };
+  setLoading: (loading: boolean) => void;
 }) => {
   const isBlocklet = !!window.blocklet?.prefix;
   const { t } = useLocaleContext();
@@ -111,6 +113,7 @@ const PcSearch = ({
         <Delete
           dialogOpen={dialogOpen}
           setDialogOpen={setDialogOpen}
+          setLoading={setLoading}
           fetchTraces={() => fetchTraces({ page: 0, pageSize: page.pageSize })}
         />
       )}

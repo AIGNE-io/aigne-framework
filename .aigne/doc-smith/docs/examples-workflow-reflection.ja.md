@@ -95,7 +95,6 @@ Reviewer -> Coder: "Rejected"
 2.  デフォルトのウェブブラウザで新しいタブが開き、認証ページが表示されます。
 3.  画面の指示に従い、接続リクエストを承認します。
 
-DIAGRAM_PLACEHOLDER
 
 #### 2. セルフホストの AIGNE Hub 経由で接続
 
@@ -105,7 +104,6 @@ DIAGRAM_PLACEHOLDER
 2.  プロンプトが表示されたら、セルフホストの AIGNE Hub インスタンスの URL を入力します。
 3.  画面の指示に従って接続を完了します。
 
-DIAGRAM_PLACEHOLDER
 
 #### 3. サードパーティのモデルプロバイダー経由で接続
 
@@ -283,11 +281,9 @@ Agent のインタラクション、メッセージフロー、および全体�
 ```bash AIGNE Observe を起動 icon=lucide:terminal
 aigne observe
 ```
-DIAGRAM_PLACEHOLDER
 
 サーバーはローカルで実行され、`http://localhost:7893` でアクセスできます。サーバーが実行されている状態で AIGNE アプリケーションを実行すると、詳細なトレースがキャプチャされます。ブラウザでウェブインターフェースを開くと、最近の実行リストを表示し、ワークフローの各ステップの詳細を確認できます。
 
-DIAGRAM_PLACEHOLDER
 
 ## まとめ
 

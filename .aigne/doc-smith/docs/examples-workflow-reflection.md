@@ -96,7 +96,6 @@ This is the most straightforward method. New users are granted free credits to g
 2.  Your default web browser will open a new tab, displaying an authorization page.
 3.  Follow the on-screen instructions to approve the connection request.
 
-DIAGRAM_PLACEHOLDER
 
 #### 2. Connect via a Self-Hosted AIGNE Hub
 
@@ -106,7 +105,6 @@ If you or your organization operates a private AIGNE Hub instance, follow these 
 2.  When prompted, enter the URL of your self-hosted AIGNE Hub instance.
 3.  Proceed with the on-screen instructions to finalize the connection.
 
-DIAGRAM_PLACEHOLDER
 
 #### 3. Connect via a Third-Party Model Provider
 
@@ -284,11 +282,9 @@ First, launch the observation server from a separate terminal window:
 ```bash Start AIGNE Observe icon=lucide:terminal
 aigne observe
 ```
-DIAGRAM_PLACEHOLDER
 
 The server runs locally and is accessible at `http://localhost:7893`. With the server running, any execution of your AIGNE application will capture detailed traces. Open the web interface in your browser to view a list of recent executions and inspect the specifics of each step in the workflow.
 
-DIAGRAM_PLACEHOLDER
 
 ## Summary
 

@@ -95,7 +95,6 @@ Reviewer -> Coder: "已拒絕"
 2.  您的預設網頁瀏覽器將開啟一個新分頁，顯示授權頁面。
 3.  遵循畫面上的指示，批准連接請求。
 
-DIAGRAM_PLACEHOLDER
 
 #### 2. 透過自架的 AIGNE Hub 連接
 
@@ -105,7 +104,6 @@ DIAGRAM_PLACEHOLDER
 2.  在提示時，輸入您自架 AIGNE Hub 實例的 URL。
 3.  繼續按照畫面上的指示完成連接。
 
-DIAGRAM_PLACEHOLDER
 
 #### 3. 透過第三方模型提供者連接
 
@@ -283,11 +281,9 @@ console.log(message);
 ```bash 啟動 AIGNE Observe icon=lucide:terminal
 aigne observe
 ```
-DIAGRAM_PLACEHOLDER
 
 該伺服器在本機執行，可透過 `http://localhost:7893` 存取。在伺服器執行期間，您 AIGNE 應用程式的任何執行都將捕獲詳細的追蹤資訊。在您的瀏覽器中開啟網頁介面，即可查看最近執行的列表，並檢查工作流中每個步驟的具體細節。
 
-DIAGRAM_PLACEHOLDER
 
 ## 總結
 

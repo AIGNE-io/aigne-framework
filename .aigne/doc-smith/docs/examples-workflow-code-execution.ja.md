@@ -54,7 +54,6 @@ AIGNE-Framework.Coder-Agent -> Final-Output: "4. 最終的なレスポンスを�
 
 このシーケンス図は、階乗の計算などの特定のタスクに対するユーザーと Agent 間のターンごとの通信を詳細に示しています。
 
-DIAGRAM_PLACEHOLDER
 
 ## クイックスタート
 
@@ -90,7 +89,6 @@ npx -y @aigne/example-workflow-code-execution --chat
 
 この例を初めて実行すると、`Coder` Agent が機能するために大規模言語モデル（LLM）が必要なため、接続を求めるプロンプトが表示されます。
 
-DIAGRAM_PLACEHOLDER
 
 続行するにはいくつかのオプションがあります。
 
@@ -102,7 +100,6 @@ DIAGRAM_PLACEHOLDER
 2.  ウェブブラウザで認証ページが開きます。
 3.  プロンプトに従って接続を承認します。
 
-DIAGRAM_PLACEHOLDER
 
 #### オプション 2: 自己ホスト型 AIGNE Hub
 
@@ -111,7 +108,6 @@ DIAGRAM_PLACEHOLDER
 1.  2番目のオプション「`Connect to a self-hosted AIGNE Hub`」を選択します。
 2.  AIGNE Hub インスタンスの URL を入力するよう求められます。
 
-DIAGRAM_PLACEHOLDER
 
 #### オプション 3: サードパーティのモデルプロバイダー
 
@@ -133,12 +129,10 @@ AIGNE フレームワークには、Agent の動作をデバッグおよび分�
     aigne observe
     ```
 
-    DIAGRAM_PLACEHOLDER
-
+    
 2.  **トレースの表示**: ウェブブラウザを開き、提供されたローカル URL（例: `http://localhost:7893`）に移動します。インターフェースには最近の Agent 実行のリストが表示され、各トレースの入力、出力、ツールコール、およびパフォーマンスメトリクスを検査できます。
 
-    DIAGRAM_PLACEHOLDER
-
+    
 ## ローカルでのインストールと使用方法
 
 開発目的で、リポジトリをクローンしてサンプルをローカルで実行できます。

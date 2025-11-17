@@ -95,7 +95,6 @@ npx -y @aigne/example-mcp-github
 
 Upon first execution, if no AI model is configured, you will be prompted to connect one.
 
-DIAGRAM_PLACEHOLDER
 
 You have several options to proceed:
 
@@ -103,13 +102,11 @@ You have several options to proceed:
 
 This is the recommended approach. Selecting this option will open your browser to the official AIGNE Hub page. Follow the on-screen instructions to authorize the connection. New users receive complimentary credits to get started.
 
-DIAGRAM_PLACEHOLDER
 
 #### 2. Connect to a Self-Hosted AIGNE Hub
 
 If you operate your own instance of AIGNE Hub, choose this option. You will be prompted to enter the URL of your self-hosted Hub to complete the connection.
 
-DIAGRAM_PLACEHOLDER
 
 #### 3. Configure a Third-Party Model Provider
 
@@ -262,10 +259,8 @@ To start the observation server, run:
 aigne observe
 ```
 
-DIAGRAM_PLACEHOLDER
 
 Once the server is running, you can access the web interface in your browser to view a list of recent executions and drill down into the details of each trace.
 
-DIAGRAM_PLACEHOLDER
 
 This tool is invaluable for debugging, understanding how the agent interacts with tools and models, and optimizing performance.

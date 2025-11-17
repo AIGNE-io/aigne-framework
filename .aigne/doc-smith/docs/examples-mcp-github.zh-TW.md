@@ -94,7 +94,6 @@ npx -y @aigne/example-mcp-github
 
 首次執行時，如果未設定 AI 模型，系統會提示您連線一個。
 
-DIAGRAM_PLACEHOLDER
 
 您有幾個選項可以繼續：
 
@@ -102,13 +101,11 @@ DIAGRAM_PLACEHOLDER
 
 這是建議的方法。選擇此選項將在瀏覽器中開啟官方 AIGNE Hub 頁面。請按照螢幕上的指示授權連線。新使用者會收到免費的點數以開始使用。
 
-DIAGRAM_PLACEHOLDER
 
 #### 2. 連線至自行託管的 AIGNE Hub
 
 如果您有自己運作的 AIGNE Hub 實例，請選擇此選項。系統會提示您輸入自行託管 Hub 的 URL 以完成連線。
 
-DIAGRAM_PLACEHOLDER
 
 #### 3. 設定第三方模型提供者
 
@@ -261,10 +258,8 @@ GitHub MCP 伺服器將廣泛的 GitHub 功能公開為 AI agent 可使用的技
 aigne observe
 ```
 
-DIAGRAM_PLACEHOLDER
 
 伺服器執行後，您可以在瀏覽器中存取網頁介面，檢視最近執行的列表，並深入查看每個追蹤的詳細資訊。
 
-DIAGRAM_PLACEHOLDER
 
 此工具對於偵錯、了解 agent 如何與工具和模型互動，以及最佳化效能非常有價值。

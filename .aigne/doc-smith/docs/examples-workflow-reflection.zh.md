@@ -95,7 +95,6 @@ Reviewer -> Coder: "已拒绝"
 2.  您的默认网络浏览器将打开一个新标签页，显示一个授权页面。
 3.  按照屏幕上的说明批准连接请求。
 
-DIAGRAM_PLACEHOLDER
 
 #### 2. 通过自托管的 AIGNE Hub 连接
 
@@ -105,7 +104,6 @@ DIAGRAM_PLACEHOLDER
 2.  在提示时，输入您自托管的 AIGNE Hub 实例的 URL。
 3.  继续按照屏幕上的说明完成连接。
 
-DIAGRAM_PLACEHOLDER
 
 #### 3. 通过第三方模型提供商连接
 
@@ -283,11 +281,9 @@ console.log(message);
 ```bash 启动 AIGNE Observe icon=lucide:terminal
 aigne observe
 ```
-DIAGRAM_PLACEHOLDER
 
 该服务器在本地运行，可通过 `http://localhost:7893` 访问。服务器运行时，您的任何 AIGNE 应用程序的执行都将捕获详细的追踪信息。在浏览器中打开 Web 界面，可以查看最近的执行列表，并检查工作流中每个步骤的具体细节。
 
-DIAGRAM_PLACEHOLDER
 
 ## 总结
 

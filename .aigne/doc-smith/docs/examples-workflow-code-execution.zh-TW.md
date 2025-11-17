@@ -54,7 +54,6 @@ AIGNE-Framework.Coder-Agent -> Final-Output: "4. 格式化最終回應"
 
 此循序圖詳細說明了使用者與 Agent 之間針對特定任務（例如計算階乘）的逐輪通訊。
 
-DIAGRAM_PLACEHOLDER
 
 ## 快速入門
 
@@ -90,7 +89,6 @@ npx -y @aigne/example-workflow-code-execution --chat
 
 首次執行範例時，它會提示您連接到一個大型語言模型 (LLM)，因為 `Coder` Agent 需要它才能運作。
 
-DIAGRAM_PLACEHOLDER
 
 您有幾種選擇可以繼續。
 
@@ -102,7 +100,6 @@ DIAGRAM_PLACEHOLDER
 2.  您的網頁瀏覽器將開啟一個授權頁面。
 3.  按照提示批准連接。
 
-DIAGRAM_PLACEHOLDER
 
 #### 選項 2：自行託管的 AIGNE Hub
 
@@ -111,7 +108,6 @@ DIAGRAM_PLACEHOLDER
 1.  選擇第二個選項：`Connect to a self-hosted AIGNE Hub`。
 2.  系統會提示您輸入您的 AIGNE Hub 執行個體的 URL。
 
-DIAGRAM_PLACEHOLDER
 
 #### 選項 3：第三方模型提供商
 
@@ -133,12 +129,10 @@ AIGNE 框架包含一個強大的可觀察性工具，用於偵錯和分析 Agen
     aigne observe
     ```
 
-    DIAGRAM_PLACEHOLDER
-
+    
 2.  **檢視追蹤**：開啟您的網頁瀏覽器並導覽至提供的本機 URL (例如 `http://localhost:7893`)。介面會顯示最近的 Agent 執行列表，讓您能夠檢查每個追蹤的輸入、輸出、工具呼叫和效能指標。
 
-    DIAGRAM_PLACEHOLDER
-
+    
 ## 本機安裝與使用
 
 出於開發目的，您可以複製儲存庫並在本機執行範例。

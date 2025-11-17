@@ -54,7 +54,6 @@ AIGNE-Framework.Coder-Agent -> Final-Output: "4. Formats final response"
 
 This sequence diagram details the turn-by-turn communication between the user and the agents for a specific task, such as calculating a factorial.
 
-DIAGRAM_PLACEHOLDER
 
 ## Quick Start
 
@@ -90,7 +89,6 @@ npx -y @aigne/example-workflow-code-execution --chat
 
 The first time you run the example, it will prompt you to connect to a Large Language Model (LLM) since one is required for the `Coder` agent to function.
 
-DIAGRAM_PLACEHOLDER
 
 You have several options to proceed.
 
@@ -102,7 +100,6 @@ This is the easiest way to get started. The official AIGNE Hub provides free cre
 2.  Your web browser will open an authorization page.
 3.  Follow the prompts to approve the connection.
 
-DIAGRAM_PLACEHOLDER
 
 #### Option 2: Self-Hosted AIGNE Hub
 
@@ -111,7 +108,6 @@ If you have your own instance of AIGNE Hub, you can connect to it.
 1.  Select the second option: `Connect to a self-hosted AIGNE Hub`.
 2.  You will be prompted to enter the URL of your AIGNE Hub instance.
 
-DIAGRAM_PLACEHOLDER
 
 #### Option 3: Third-Party Model Providers
 
@@ -133,12 +129,10 @@ The AIGNE Framework includes a powerful observability tool for debugging and ana
     aigne observe
     ```
 
-    DIAGRAM_PLACEHOLDER
-
+    
 2.  **View Traces**: Open your web browser and navigate to the local URL provided (e.g., `http://localhost:7893`). The interface displays a list of recent agent executions, allowing you to inspect inputs, outputs, tool calls, and performance metrics for each trace.
 
-    DIAGRAM_PLACEHOLDER
-
+    
 ## Local Installation and Usage
 
 For development purposes, you can clone the repository and run the example locally.

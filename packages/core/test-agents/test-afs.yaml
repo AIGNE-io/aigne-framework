@@ -1,5 +1,12 @@
 type: ai
-afs: true
-afs_config:
-  inject_history: true
-  history_window_size: 5
+afs:
+  modules:
+    - module: history
+      options:
+        storage:
+          url: ":memory:"
+    - module: local-fs
+      mountPoint: /working-dir
+      options:
+        localPath: ./afs-local-fs-storage
+        description: "Local file system storage for AFS example"

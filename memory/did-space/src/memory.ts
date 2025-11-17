@@ -84,7 +84,8 @@ export class DIDSpacesMemory extends MemoryAgent {
           ...options.recorderOptions,
         }),
       retriever:
-        options.retriever ??
+        // TODO: Agent implement AFS#read method, it's not compatible with did space retriever
+        (options.retriever as any) ??
         new DIDSpacesMemoryRetriever({
           url: options.url,
           auth: options.auth,
@@ -177,6 +178,7 @@ class DIDSpacesMemoryRetriever extends MemoryRetriever {
     return listObjectCommandOutput.statusCode === 200;
   }
 
+  // @ts-ignore: Agent base class implement AFS#read method, it's not compatible with did space retriever
   async read(input: MemoryRetrieverInput, options: AgentInvokeOptions): Promise<Memory[]> {
     const client = new SpaceClient({
       url: this.options.url,

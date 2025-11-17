@@ -3,7 +3,7 @@ import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
-import type { AFSConfig, AgentHooks, FunctionAgentFn, TaskRenderMode } from "../agents/agent.js";
+import type { AgentHooks, FunctionAgentFn, TaskRenderMode } from "../agents/agent.js";
 import { AIAgentToolChoice } from "../agents/ai-agent.js";
 import { type Role, roleSchema } from "../agents/chat-model.js";
 import { ProcessMode, type ReflectionMode } from "../agents/team-agent.js";
@@ -65,7 +65,6 @@ export interface BaseAgentSchema {
     | (Omit<AFSOptions, "modules"> & {
         modules?: AFSModuleSchema[];
       });
-  afsConfig?: AFSConfig;
 }
 
 export type Instructions = { role: Exclude<Role, "tool">; content: string; path: string }[];
@@ -189,33 +188,22 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
           z.boolean(),
           camelizeSchema(
             z.object({
-              storage: optionalize(
-                z.object({
-                  url: optionalize(z.string()),
-                }),
-              ),
               modules: optionalize(
                 z.array(
                   z.union([
                     z.string(),
-                    z.object({
-                      module: z.string(),
-                      options: optionalize(z.record(z.any())),
-                    }),
+                    camelizeSchema(
+                      z.object({
+                        module: z.string(),
+                        options: optionalize(z.record(z.any())),
+                      }),
+                    ),
                   ]),
                 ),
               ),
             }),
           ),
         ]),
-      ),
-      afsConfig: optionalize(
-        camelizeSchema(
-          z.object({
-            injectHistory: optionalize(z.boolean()),
-            historyWindowSize: optionalize(z.number().int().min(1)),
-          }),
-        ),
       ),
     });
 

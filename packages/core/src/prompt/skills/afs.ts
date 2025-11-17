@@ -105,5 +105,20 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
         };
       },
     }),
+    FunctionAgent.from({
+      name: "afs_exec",
+      description: "Execute a function or command available in the AFS modules",
+      inputSchema: z.object({
+        path: z.string().describe("The exact path to the executable entry in AFS"),
+        args: z
+          .string()
+          .describe(
+            "JSON stringified arguments to pass to the executable, must be an object matching the input schema of the executable",
+          ),
+      }),
+      process: async ({ path, args }, options) => {
+        return await afs.exec(path, JSON.parse(args), options);
+      },
+    }),
   ];
 }

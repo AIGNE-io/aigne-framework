@@ -1,5 +1,76 @@
 # Changelog
 
+## [0.10.14](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.14-beta...bedrock-v0.10.14) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.62
+
+## [0.10.14-beta](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.13...bedrock-v0.10.14-beta) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.2-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.62-beta
+
+## [0.10.13](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.13-beta...bedrock-v0.10.13) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.61
+
+## [0.10.13-beta](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.12...bedrock-v0.10.13-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.1-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.61-beta
+
+## [0.10.12](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.12-beta...bedrock-v0.10.12) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.60
+
+## [0.10.12-beta](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.11...bedrock-v0.10.12-beta) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.0-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.60-beta
+
 ## [0.10.11](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.11-beta.4...bedrock-v0.10.11) (2025-11-12)
 
 

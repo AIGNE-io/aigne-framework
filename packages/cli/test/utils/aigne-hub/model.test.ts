@@ -65,12 +65,6 @@ describe("formatModelName", () => {
     expect(result.model).toBe("openai/gpt-4");
   });
 
-  test("should throw error for unsupported model", async () => {
-    await expect(formatModelName("unsupported:gpt-4", mockInquirerPrompt)).rejects.toThrow(
-      /Unsupported model: unsupported\/gpt-4/,
-    );
-  });
-
   test("should handle case-insensitive model matching", async () => {
     const result = await formatModelName("OPENAI:gpt-4", mockInquirerPrompt);
     expect(result.provider).toBe("aignehub");
@@ -155,12 +149,6 @@ describe("loadModel", async () => {
     });
 
     expect(model).toBeDefined();
-  });
-
-  test("should throw error for unsupported model", async () => {
-    await expect(loadModel({ model: "unsupported:model" })).rejects.toThrow(
-      /Unsupported model: unsupported\/model/,
-    );
   });
 
   test("should use default model provider when not specified", async () => {

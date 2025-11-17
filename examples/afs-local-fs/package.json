@@ -1,0 +1,35 @@
+{
+  "name": "@aigne/example-afs-local-fs",
+  "version": "1.1.2",
+  "description": "A demonstration of using AIGNE Framework with AFS LocalFS module",
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/afs-local-fs",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "bin": "index.ts",
+  "files": [
+    ".env.local.example",
+    "*.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "bun run index.ts",
+    "lint": "tsc --noEmit",
+    "test:llm": "bun test index.test.ts"
+  },
+  "dependencies": {
+    "@aigne/afs": "workspace:^",
+    "@aigne/afs-history": "workspace:^",
+    "@aigne/afs-local-fs": "workspace:^",
+    "@aigne/cli": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "yargs": "^18.0.0"
+  },
+  "devDependencies": {
+    "@aigne/test-utils": "workspace:^",
+    "@types/bun": "^1.2.22"
+  }
+}

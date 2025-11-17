@@ -480,7 +480,9 @@ export class AIGNEContext implements Context {
   }
 
   initProcessExitHandler() {
-    process.on("SIGINT", async () => {
+    if (this.parentId) return;
+
+    process.once("SIGINT", async () => {
       try {
         if (process.env.AIGNE_OBSERVABILITY_DISABLED) return;
 

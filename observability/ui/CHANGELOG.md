@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.11.6](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.6-beta...observability-ui-v0.11.6) (2025-11-15)
+
+## [0.11.6-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.5...observability-ui-v0.11.6-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
 ## [0.11.5](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.5-beta.1...observability-ui-v0.11.5) (2025-11-12)
 
 ## [0.11.5-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.5-beta...observability-ui-v0.11.5-beta.1) (2025-11-12)

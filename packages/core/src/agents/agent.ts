@@ -1,9 +1,18 @@
-import { AFS, type AFSOptions } from "@aigne/afs";
+import {
+  AFS,
+  type AFSEntry,
+  type AFSListOptions,
+  type AFSModule,
+  type AFSOptions,
+  type AFSSearchOptions,
+} from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type * as prompts from "@inquirer/prompts";
 import equal from "fast-deep-equal";
 import nunjucks from "nunjucks";
+import { joinURL } from "ufo";
 import { type ZodObject, type ZodType, z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 import type { AgentEvent, Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import type { ContextUsage } from "../aigne/usage.js";
@@ -184,8 +193,6 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
 
   afs?: true | AFSOptions | AFS | ((afs: AFS) => AFS);
 
-  afsConfig?: AFSConfig;
-
   asyncMemoryRecord?: boolean;
 
   /**
@@ -196,11 +203,6 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
   hooks?: AgentHooks<I, O> | AgentHooks<I, O>[];
 
   retryOnError?: Agent<I, O>["retryOnError"] | boolean;
-}
-
-export interface AFSConfig {
-  injectHistory?: boolean;
-  historyWindowSize?: number;
 }
 
 const hooksSchema = z.object({
@@ -312,7 +314,7 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
  * Here's an example of how to create a custom agent:
  * {@includeCode ../../test/agents/agent.test.ts#example-custom-agent}
  */
-export abstract class Agent<I extends Message = any, O extends Message = any> {
+export abstract class Agent<I extends Message = any, O extends Message = any> implements AFSModule {
   constructor(options: AgentOptions<I, O> = {}) {
     checkArguments("Agent options", agentOptionsSchema, options);
 
@@ -351,7 +353,6 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
           : options.afs instanceof AFS
             ? options.afs
             : new AFS(options.afs);
-    this.afsConfig = options.afsConfig;
     this.asyncMemoryRecord = options.asyncMemoryRecord;
 
     this.maxRetrieveMemoryCount = options.maxRetrieveMemoryCount;
@@ -374,8 +375,6 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
   readonly memories: MemoryAgent[] = [];
 
   afs?: AFS;
-
-  afsConfig?: AFSConfig;
 
   asyncMemoryRecord?: boolean;
 
@@ -1199,6 +1198,78 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
   async [Symbol.asyncDispose]() {
     await this.shutdown();
   }
+
+  /** For AFSModule interface **/
+  private agentToAFSEntry(agent: Agent): AFSEntry {
+    return {
+      id: `/${this.name}/${agent.name}`,
+      path: agent === this ? "/" : joinURL("/", agent.name),
+      summary: agent.description,
+      metadata: {
+        execute: agent.isInvokable
+          ? {
+              name: agent.name,
+              description: agent.description,
+              inputSchema: zodToJsonSchema(agent.inputSchema),
+              outputSchema: zodToJsonSchema(agent.outputSchema),
+            }
+          : undefined,
+      },
+    };
+  }
+
+  private findAgentByAFSPath(path: string): Agent | undefined {
+    let agent: Agent | undefined;
+    if (path === "/") {
+      agent = this;
+    } else {
+      const name = path.split("/")[1];
+      agent = this.skills.find((s) => s.name === name);
+    }
+    return agent;
+  }
+
+  // TODO: support list skills inside agent path, and use options to filter skills
+  async list(
+    _path: string,
+    _options?: AFSListOptions,
+  ): Promise<{ list: AFSEntry[]; message?: string }> {
+    const agents = [this, ...this.skills];
+
+    return { list: agents.map((agent) => this.agentToAFSEntry(agent)) };
+  }
+
+  async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
+    const agent = this.findAgentByAFSPath(path);
+    if (!agent) {
+      return { message: `Agent not found at path: ${path}` };
+    }
+
+    return {
+      result: this.agentToAFSEntry(agent),
+    };
+  }
+
+  // TODO: implement search inside agent skills
+  async search(
+    path: string,
+    _query: string,
+    options?: AFSSearchOptions,
+  ): Promise<{ list: AFSEntry[]; message?: string }> {
+    return this.list(path, options);
+  }
+
+  async exec(
+    path: string,
+    args: Record<string, any>,
+    options: { context: Context },
+  ): Promise<{ result: Record<string, any> }> {
+    const agent = this.findAgentByAFSPath(path);
+    if (!agent) throw new Error(`Agent not found at path: ${path}`);
+    return { result: await options.context.invoke(agent, args) };
+  }
+
+  /** End AFSModule interface **/
 }
 
 export type AgentInput<T extends Agent> = T extends Agent<infer I, any> ? I : never;

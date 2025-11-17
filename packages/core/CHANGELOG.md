@@ -1,5 +1,87 @@
 # Changelog
 
+## [1.68.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.68.2-beta...core-v1.68.2) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.8
+
+## [1.68.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.68.1...core-v1.68.2-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* **core:** memory leak in AIGNEContext by preventing duplicate signal handler ([#748](https://github.com/AIGNE-io/aigne-framework/issues/748)) ([7f17592](https://github.com/AIGNE-io/aigne-framework/commit/7f175929d78e4289e2d551746b12a73bb5c0eb22))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.8-beta
+
+## [1.68.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.68.1-beta...core-v1.68.1) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.1
+    * @aigne/afs-history bumped to 1.0.2
+    * @aigne/observability-api bumped to 0.11.7
+    * @aigne/platform-helpers bumped to 0.6.4
+
+## [1.68.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.68.0...core-v1.68.1-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.1-beta
+    * @aigne/afs-history bumped to 1.0.2-beta
+    * @aigne/observability-api bumped to 0.11.7-beta
+    * @aigne/platform-helpers bumped to 0.6.4-beta
+
+## [1.68.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.68.0-beta...core-v1.68.0) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.0
+    * @aigne/afs-history bumped to 1.0.1
+
+## [1.68.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.67.0...core-v1.68.0-beta) (2025-11-14)
+
+
+### Features
+
+* support mount mcp agent into AFS ([#740](https://github.com/AIGNE-io/aigne-framework/issues/740)) ([6d474fc](https://github.com/AIGNE-io/aigne-framework/commit/6d474fc05845a15e2c3e8fa97727b409bdd70945))
+
+
+### Bug Fixes
+
+* properly handle SIGINT to flush observability data before exit ([#739](https://github.com/AIGNE-io/aigne-framework/issues/739)) ([99b4503](https://github.com/AIGNE-io/aigne-framework/commit/99b45033d5f3bcc1f830b583f9cca7258b00606f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.0-beta
+    * @aigne/afs-history bumped to 1.0.0
+
 ## [1.67.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.67.0-beta.4...core-v1.67.0) (2025-11-12)
 
 

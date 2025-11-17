@@ -1,5 +1,77 @@
 # Changelog
 
+## [1.1.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-user-profile-memory-v1.1.2-beta...afs-user-profile-memory-v1.1.2) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.2
+
+## [1.1.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-user-profile-memory-v1.1.1...afs-user-profile-memory-v1.1.2-beta) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.2-beta
+
+## [1.1.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-user-profile-memory-v1.1.1-beta...afs-user-profile-memory-v1.1.1) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.1
+    * @aigne/afs-history bumped to 1.0.2
+    * @aigne/core bumped to 1.68.1
+
+## [1.1.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-user-profile-memory-v1.1.0...afs-user-profile-memory-v1.1.1-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.1-beta
+    * @aigne/afs-history bumped to 1.0.2-beta
+    * @aigne/core bumped to 1.68.1-beta
+
+## [1.1.0](https://github.com/AIGNE-io/aigne-framework/compare/afs-user-profile-memory-v1.1.0-beta...afs-user-profile-memory-v1.1.0) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.0
+    * @aigne/afs-history bumped to 1.0.1
+    * @aigne/core bumped to 1.68.0
+
+## [1.1.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-user-profile-memory-v1.0.5...afs-user-profile-memory-v1.1.0-beta) (2025-11-14)
+
+
+### Features
+
+* support mount mcp agent into AFS ([#740](https://github.com/AIGNE-io/aigne-framework/issues/740)) ([6d474fc](https://github.com/AIGNE-io/aigne-framework/commit/6d474fc05845a15e2c3e8fa97727b409bdd70945))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.0-beta
+    * @aigne/afs-history bumped to 1.0.0
+    * @aigne/core bumped to 1.68.0-beta
+
 ## [1.0.5](https://github.com/AIGNE-io/aigne-framework/compare/afs-user-profile-memory-v1.0.5-beta.4...afs-user-profile-memory-v1.0.5) (2025-11-12)
 
 

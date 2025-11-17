@@ -43,6 +43,10 @@ export function createObservabilityCommand(): CommandModule<unknown, ServeMCPOpt
       const port = await detectPort(options.port || DEFAULT_PORT());
       const dbUrl = getObservabilityDbPath();
 
+      process.once("SIGINT", async () => {
+        process.exit(0);
+      });
+
       console.log("Observability database path:", chalk.greenBright(dbUrl));
       await startObservabilityCLIServer({ port, dbUrl });
     },

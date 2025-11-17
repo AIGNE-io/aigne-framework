@@ -1,5 +1,100 @@
 # Changelog
 
+## [1.17.31](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.31-beta...example-workflow-group-chat-v1.17.31) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.55
+    * @aigne/cli bumped to 1.55.2
+    * @aigne/core bumped to 1.68.2
+    * @aigne/default-memory bumped to 1.2.18
+    * @aigne/openai bumped to 0.16.9
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.62
+
+## [1.17.31-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.30...example-workflow-group-chat-v1.17.31-beta) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.55-beta
+    * @aigne/cli bumped to 1.55.2-beta
+    * @aigne/core bumped to 1.68.2-beta
+    * @aigne/default-memory bumped to 1.2.18-beta
+    * @aigne/openai bumped to 0.16.9-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.62-beta
+
+## [1.17.30](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.30-beta...example-workflow-group-chat-v1.17.30) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.54
+    * @aigne/cli bumped to 1.55.1
+    * @aigne/core bumped to 1.68.1
+    * @aigne/default-memory bumped to 1.2.17
+    * @aigne/openai bumped to 0.16.8
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.61
+
+## [1.17.30-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.29...example-workflow-group-chat-v1.17.30-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.54-beta
+    * @aigne/cli bumped to 1.55.1-beta
+    * @aigne/core bumped to 1.68.1-beta
+    * @aigne/default-memory bumped to 1.2.17-beta
+    * @aigne/openai bumped to 0.16.8-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.61-beta
+
+## [1.17.29](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.29-beta...example-workflow-group-chat-v1.17.29) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.53
+    * @aigne/cli bumped to 1.55.0
+    * @aigne/core bumped to 1.68.0
+    * @aigne/default-memory bumped to 1.2.16
+    * @aigne/openai bumped to 0.16.7
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.60
+
+## [1.17.29-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.28...example-workflow-group-chat-v1.17.29-beta) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.21.53-beta
+    * @aigne/cli bumped to 1.55.0-beta
+    * @aigne/core bumped to 1.68.0-beta
+    * @aigne/default-memory bumped to 1.2.16-beta
+    * @aigne/openai bumped to 0.16.7-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.60-beta
+
 ## [1.17.28](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-group-chat-v1.17.28-beta.4...example-workflow-group-chat-v1.17.28) (2025-11-12)
 
 

@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.11.8](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.8-beta...observability-api-v0.11.8) (2025-11-15)
+
+## [0.11.8-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.7...observability-api-v0.11.8-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* **core:** memory leak in AIGNEContext by preventing duplicate signal handler ([#748](https://github.com/AIGNE-io/aigne-framework/issues/748)) ([7f17592](https://github.com/AIGNE-io/aigne-framework/commit/7f175929d78e4289e2d551746b12a73bb5c0eb22))
+
+## [0.11.7](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.7-beta...observability-api-v0.11.7) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.5
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.6
+
+## [0.11.7-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.6...observability-api-v0.11.7-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.5-beta
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.6-beta
+
 ## [0.11.6](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.6-beta.2...observability-api-v0.11.6) (2025-11-12)
 
 

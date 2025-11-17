@@ -1,6 +1,6 @@
 {
   "name": "@aigne/cli",
-  "version": "1.54.1",
+  "version": "1.55.2",
   "description": "Your command center for agent development",
   "publishConfig": {
     "access": "public"
@@ -60,7 +60,9 @@
     "install:remote": "npm uninstall -g @aigne/cli && npm install -g @aigne/cli"
   },
   "dependencies": {
-    "@aigne/afs-system-fs": "workspace:^",
+    "@aigne/afs": "workspace:^",
+    "@aigne/afs-history": "workspace:^",
+    "@aigne/afs-local-fs": "workspace:^",
     "@aigne/agent-library": "workspace:^",
     "@aigne/agentic-memory": "workspace:^",
     "@aigne/aigne-hub": "workspace:^",
@@ -78,7 +80,7 @@
     "@inquirer/type": "^3.0.8",
     "@listr2/prompt-adapter-inquirer": "^3.0.4",
     "@modelcontextprotocol/sdk": "^1.18.0",
-    "@ocap/mcrypto": "^1.27.4",
+    "@ocap/mcrypto": "^1.27.6",
     "@smithy/node-http-handler": "^4.2.1",
     "ansi-escapes": "^7.1.0",
     "ansi-regex": "^6.2.2",
@@ -119,7 +121,6 @@
     "@types/archiver": "^6.0.3",
     "@types/bun": "^1.2.22",
     "@types/express": "^5.0.3",
-    "@types/glob": "^9.0.0",
     "@types/gradient-string": "^1.1.6",
     "@types/node": "^24.5.1",
     "@types/yargs": "^17.0.33",

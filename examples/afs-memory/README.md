@@ -128,7 +128,7 @@ This example uses two complementary memory modules that work together to provide
 $ pnpm start --input "I'm Bob, and I like blue color"
 Response: Nice to meet you, Bob — I've saved that your favorite color is blue...
 
-# The conversation is automatically saved to /history/{uuid}
+# The conversation is automatically saved to history.sqlite3
 ```
 
 ### 2. UserProfileMemory Module - User Information Extraction
@@ -139,7 +139,7 @@ Response: Nice to meet you, Bob — I've saved that your favorite color is blue.
 1. **Listens** to conversation history events
 2. **Analyzes** each conversation using AI to identify user information
 3. **Extracts** relevant details (name, interests, location, family, projects, etc.)
-4. **Stores** in a structured JSON profile at `/user-profile-memory`
+4. **Stores** in a structured JSON profile in user_profile.sqlite3
 5. **Updates** incrementally using JSON Patch operations
 
 **What it remembers**:

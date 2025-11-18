@@ -33,10 +33,10 @@
     "@aigne/sqlite": "workspace:^",
     "@aigne/transport": "workspace:^",
     "@aigne/uuid": "^13.0.1",
-    "@arcblock/did-connect-react": "^3.2.6",
-    "@arcblock/ux": "^3.2.6",
-    "@blocklet/sdk": "^1.17.2",
-    "@blocklet/ui-react": "^3.2.6",
+    "@arcblock/did-connect-react": "^3.2.7",
+    "@arcblock/ux": "^3.2.7",
+    "@blocklet/sdk": "^1.17.3-beta-20251118-061144-335cd35d",
+    "@blocklet/ui-react": "^3.2.7",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
     "@uiw/react-markdown-preview": "^5.1.5",
@@ -52,7 +52,7 @@
     "ufo": "^1.6.1"
   },
   "devDependencies": {
-    "@blocklet/js-sdk": "^1.17.2",
+    "@blocklet/js-sdk": "^1.17.3-beta-20251118-061144-335cd35d",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/dotenv-flow": "^3.3.3",
@@ -71,7 +71,7 @@
     "rimraf": "^6.0.1",
     "typescript": "^5.9.2",
     "vite": "^7.1.5",
-    "vite-plugin-blocklet": "^0.12.2",
+    "vite-plugin-blocklet": "^0.12.3",
     "vite-plugin-svgr": "^4.5.0",
     "zx": "^8.8.1"
   },

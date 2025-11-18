@@ -28,7 +28,7 @@ export default function RunDetailDrawer({
     [traceInfo.startTime, traceInfo.endTime],
   );
   const timestamp = useMemo(
-    () => new Date(traceInfo.startTime || Date.now()).toLocaleString(),
+    () => new Date(traceInfo.startTime || Date.now()).getTime(),
     [traceInfo.startTime],
   );
 

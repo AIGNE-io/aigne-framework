@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.86.3-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.86.3-beta...aigne-framework-v1.86.3-beta.1) (2025-11-18)
+
+
+### Bug Fixes
+
+* **examples:** use separate SQLite databases for each AFS memory module ([#753](https://github.com/AIGNE-io/aigne-framework/issues/753)) ([4454666](https://github.com/AIGNE-io/aigne-framework/commit/44546666c954041dab08adb5f3f8c9742b71f070))
+* **observability:** introduce TraceContext and improve delete UX ([#755](https://github.com/AIGNE-io/aigne-framework/issues/755)) ([dee54f1](https://github.com/AIGNE-io/aigne-framework/commit/dee54f1c548ed1046781e919f8c51a642b6b0dac))
+
 ## [1.86.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.86.2...aigne-framework-v1.86.3-beta) (2025-11-17)
 
 

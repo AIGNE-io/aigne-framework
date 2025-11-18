@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.7-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.7-beta...observability-ui-v0.11.7-beta.1) (2025-11-18)
+
+
+### Bug Fixes
+
+* **observability:** introduce TraceContext and improve delete UX ([#755](https://github.com/AIGNE-io/aigne-framework/issues/755)) ([dee54f1](https://github.com/AIGNE-io/aigne-framework/commit/dee54f1c548ed1046781e919f8c51a642b6b0dac))
+
 ## [0.11.7-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.6...observability-ui-v0.11.7-beta) (2025-11-17)
 
 

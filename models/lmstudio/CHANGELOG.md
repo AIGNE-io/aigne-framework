@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.1.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/lmstudio-v1.0.25-beta.1...lmstudio-v1.1.0-beta.1) (2025-11-18)
+
+
+### Features
+
+* add lmstudio model adapter ([#406](https://github.com/AIGNE-io/aigne-framework/issues/406)) ([6610993](https://github.com/AIGNE-io/aigne-framework/commit/6610993cb500b1fac2bf5d17f40f351d4c897bd7))
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta.2
+  * devDependencies
+    * @aigne/core bumped to 1.69.0-beta.1
+    * @aigne/test-utils bumped to 0.5.63-beta.2
+
 ## [1.0.25-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/lmstudio-v1.0.25-beta...lmstudio-v1.0.25-beta.1) (2025-11-18)
 
 

@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.5.63-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.63-beta.1...test-utils-v0.5.63-beta.2) (2025-11-18)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+* **cli:** prefer variables from process.env when loadChatModel ([#407](https://github.com/AIGNE-io/aigne-framework/issues/407)) ([d32b2db](https://github.com/AIGNE-io/aigne-framework/commit/d32b2db20435a022d944a674e90333899d881daf))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0-beta.1
+
 ## [0.5.63-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.63-beta...test-utils-v0.5.63-beta.1) (2025-11-18)
 
 

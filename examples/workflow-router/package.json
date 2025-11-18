@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-router",
-  "version": "1.18.73-beta.1",
+  "version": "1.19.0-beta.1",
   "description": "A demonstration of using AIGNE Framework to build a router workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-router",

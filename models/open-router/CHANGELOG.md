@@ -1,5 +1,52 @@
 # Changelog
 
+## [0.7.56-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.7.56-beta.1...open-router-v0.7.56-beta.2) (2025-11-18)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+* **core:** make getCredential async for aigne-hub mount point retrieval ([#372](https://github.com/AIGNE-io/aigne-framework/issues/372)) ([34ce7a6](https://github.com/AIGNE-io/aigne-framework/commit/34ce7a645fa83994d3dfe0f29ca70098cfecac9c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta.2
+  * devDependencies
+    * @aigne/core bumped to 1.69.0-beta.1
+    * @aigne/test-utils bumped to 0.5.63-beta.2
+
+## [0.7.56-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.7.56-beta...open-router-v0.7.56-beta.1) (2025-11-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta.1
+  * devDependencies
+    * @aigne/core bumped to 1.68.3-beta.1
+    * @aigne/test-utils bumped to 0.5.63-beta.1
+
+## [0.7.56-beta](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.7.55...open-router-v0.7.56-beta) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta
+  * devDependencies
+    * @aigne/core bumped to 1.68.3-beta
+    * @aigne/test-utils bumped to 0.5.63-beta
+
 ## [0.7.55](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.7.55-beta...open-router-v0.7.55) (2025-11-15)
 
 

@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.15.85-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.15.85-beta.1...example-chat-bot-v1.15.85-beta.2) (2025-11-18)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+* **cli:** run default agent if `entry-agent` argument not present ([#473](https://github.com/AIGNE-io/aigne-framework/issues/473)) ([8c46672](https://github.com/AIGNE-io/aigne-framework/commit/8c4667206a2336e74db07442dc296ef9f9265a0b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.56.0-beta.1
+
+## [1.15.85-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.15.85-beta...example-chat-bot-v1.15.85-beta.1) (2025-11-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.55.3-beta.1
+
+## [1.15.85-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.15.84...example-chat-bot-v1.15.85-beta) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.55.3-beta
+
 ## [1.15.84](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.15.84-beta...example-chat-bot-v1.15.84) (2025-11-15)
 
 

@@ -1,5 +1,52 @@
 # Changelog
 
+## [1.1.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.36-beta.1...poe-v1.1.0-beta.1) (2025-11-18)
+
+
+### Features
+
+* **model:** add poe chat model support ([#365](https://github.com/AIGNE-io/aigne-framework/issues/365)) ([b2cce67](https://github.com/AIGNE-io/aigne-framework/commit/b2cce67bdab1c6dec273929bcdd79e1d15410119))
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+* **core:** make getCredential async for aigne-hub mount point retrieval ([#372](https://github.com/AIGNE-io/aigne-framework/issues/372)) ([34ce7a6](https://github.com/AIGNE-io/aigne-framework/commit/34ce7a645fa83994d3dfe0f29ca70098cfecac9c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta.2
+  * devDependencies
+    * @aigne/core bumped to 1.69.0-beta.1
+    * @aigne/test-utils bumped to 0.5.63-beta.2
+
+## [1.0.36-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.36-beta...poe-v1.0.36-beta.1) (2025-11-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta.1
+  * devDependencies
+    * @aigne/core bumped to 1.68.3-beta.1
+    * @aigne/test-utils bumped to 0.5.63-beta.1
+
+## [1.0.36-beta](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.35...poe-v1.0.36-beta) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta
+  * devDependencies
+    * @aigne/core bumped to 1.68.3-beta
+    * @aigne/test-utils bumped to 0.5.63-beta
+
 ## [1.0.35](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.0.35-beta...poe-v1.0.35) (2025-11-15)
 
 

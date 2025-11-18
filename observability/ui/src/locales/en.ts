@@ -69,6 +69,7 @@ export default flatten({
     button: "Delete",
     restConfirmTitle: "Delete Traces",
     restConfirmDesc: "Are you sure you want to delete all traces?",
+    deleting: "Data is being deleted... Please wait.",
   },
   dateRange: "Date Range",
   reset: "Reset",
@@ -138,4 +139,5 @@ export default flatten({
     fullscreen: "Fullscreen",
     exitFullscreen: "Exit Fullscreen",
   },
+  deleting: "Deleting...",
 });

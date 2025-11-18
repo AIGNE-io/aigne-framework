@@ -1,5 +1,52 @@
 # Changelog
 
+## [0.10.73-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.73-beta.1...example-afs-memory-v0.10.73-beta.2) (2025-11-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-history bumped to 1.1.0-beta.1
+    * @aigne/afs-user-profile-memory bumped to 1.2.0-beta.1
+    * @aigne/cli bumped to 1.56.0-beta.1
+    * @aigne/core bumped to 1.69.0-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63-beta.2
+
+## [0.10.73-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.73-beta...example-afs-memory-v0.10.73-beta.1) (2025-11-18)
+
+
+### Bug Fixes
+
+* **examples:** use separate SQLite databases for each AFS memory module ([#753](https://github.com/AIGNE-io/aigne-framework/issues/753)) ([4454666](https://github.com/AIGNE-io/aigne-framework/commit/44546666c954041dab08adb5f3f8c9742b71f070))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-history bumped to 1.0.3-beta.1
+    * @aigne/afs-user-profile-memory bumped to 1.1.3-beta.1
+    * @aigne/cli bumped to 1.55.3-beta.1
+    * @aigne/core bumped to 1.68.3-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63-beta.1
+
+## [0.10.73-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.72...example-afs-memory-v0.10.73-beta) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-history bumped to 1.0.3-beta
+    * @aigne/afs-user-profile-memory bumped to 1.1.3-beta
+    * @aigne/cli bumped to 1.55.3-beta
+    * @aigne/core bumped to 1.68.3-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63-beta
+
 ## [0.10.72](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.72-beta...example-afs-memory-v0.10.72) (2025-11-15)
 
 

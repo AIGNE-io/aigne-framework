@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.2.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.1.11-beta.1...example-nano-banana-v1.2.0-beta.1) (2025-11-18)
+
+
+### Features
+
+* add modalities support for chat model ([#454](https://github.com/AIGNE-io/aigne-framework/issues/454)) ([70d1bf6](https://github.com/AIGNE-io/aigne-framework/commit/70d1bf631f4e711235d89c6df8ee210a19179b30))
+* improve image model architecture and file handling ([#527](https://github.com/AIGNE-io/aigne-framework/issues/527)) ([4db50aa](https://github.com/AIGNE-io/aigne-framework/commit/4db50aa0387a1a0f045ca11aaa61613e36ca7597))
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+* should not return local path from aigne hub service ([#460](https://github.com/AIGNE-io/aigne-framework/issues/460)) ([c959717](https://github.com/AIGNE-io/aigne-framework/commit/c95971774f7e84dbeb3313f60b3e6464e2bb22e4))
+* standardize file parameter naming across models ([#534](https://github.com/AIGNE-io/aigne-framework/issues/534)) ([f159a9d](https://github.com/AIGNE-io/aigne-framework/commit/f159a9d6af21ec0e99641996b150560929845845))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.22.0-beta.1
+    * @aigne/aigne-hub bumped to 0.10.10-beta.2
+    * @aigne/cli bumped to 1.56.0-beta.1
+    * @aigne/core bumped to 1.69.0-beta.1
+    * @aigne/default-memory bumped to 1.3.0-beta.1
+    * @aigne/fs-memory bumped to 1.1.0-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63-beta.2
+
 ## [1.1.11-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.1.11-beta...example-nano-banana-v1.1.11-beta.1) (2025-11-18)
 
 

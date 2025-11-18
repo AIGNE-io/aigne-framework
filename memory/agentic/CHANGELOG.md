@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.1.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/agentic-memory-v1.0.56-beta.1...agentic-memory-v1.1.0-beta.1) (2025-11-18)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+* **cli:** ensure aigne cli works in node.js v20+ ([#316](https://github.com/AIGNE-io/aigne-framework/issues/316)) ([9c9c3d2](https://github.com/AIGNE-io/aigne-framework/commit/9c9c3d2e57d6a8e1afb33ef903c3703283d73db7))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0-beta.1
+    * @aigne/default-memory bumped to 1.3.0-beta.1
+    * @aigne/openai bumped to 0.16.10-beta.2
+
 ## [1.0.56-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/agentic-memory-v1.0.56-beta...agentic-memory-v1.0.56-beta.1) (2025-11-18)
 
 

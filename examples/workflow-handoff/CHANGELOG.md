@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.17.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.73-beta.1...example-workflow-handoff-v1.17.0-beta.1) (2025-11-18)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.22.0-beta.1
+    * @aigne/cli bumped to 1.56.0-beta.1
+    * @aigne/core bumped to 1.69.0-beta.1
+    * @aigne/default-memory bumped to 1.3.0-beta.1
+    * @aigne/openai bumped to 0.16.10-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63-beta.2
+
 ## [1.16.73-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-handoff-v1.16.73-beta...example-workflow-handoff-v1.16.73-beta.1) (2025-11-18)
 
 

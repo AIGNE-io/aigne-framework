@@ -10,33 +10,27 @@ import { BlockletComponent, type SearchState } from "../../components/blocklet-c
 import CustomDateRangePicker from "../../components/date-picker.tsx";
 import LiveSwitch from "../../components/live-switch.tsx";
 import SwitchComponent from "../../components/switch.tsx";
+import { useTraceContext } from "../../contexts/trace-context.tsx";
 import Delete from "../delete.tsx";
 import Upload from "../upload.tsx";
 
 const PcSearch = ({
   components,
-  search,
   setSearch,
   onDateRangeChange,
   live,
   setLive,
-  fetchTraces,
-  page,
-  setLoading,
 }: {
   components: { data: string[] };
-  search: SearchState;
   setSearch: (data: Partial<SearchState>) => void;
   onDateRangeChange: (dateRange: [Date, Date]) => void;
   live: boolean;
   setLive: (live: boolean) => void;
-  fetchTraces: (params: { page: number; pageSize: number }) => void;
-  page: { page: number; pageSize: number };
-  setLoading: (loading: boolean) => void;
 }) => {
   const isBlocklet = !!window.blocklet?.prefix;
   const { t } = useLocaleContext();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { search, fetchTraces, page } = useTraceContext();
 
   return (
     <>
@@ -109,14 +103,7 @@ const PcSearch = ({
         </Tooltip>
       )}
 
-      {dialogOpen && (
-        <Delete
-          dialogOpen={dialogOpen}
-          setDialogOpen={setDialogOpen}
-          setLoading={setLoading}
-          fetchTraces={() => fetchTraces({ page: 0, pageSize: page.pageSize })}
-        />
-      )}
+      {dialogOpen && <Delete dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />}
     </>
   );
 };

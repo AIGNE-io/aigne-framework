@@ -32,13 +32,6 @@ PRAGMA wal_autocheckpoint = ${walAutocheckpoint};
 PRAGMA busy_timeout = 5000;
 `);
 
-    try {
-      await client.execute(`PRAGMA auto_vacuum = FULL;`);
-      await client.execute(`VACUUM;`);
-    } catch (e) {
-      console.warn("auto_vacuum failed", e);
-    }
-
     db = drizzle(client);
   } else {
     db = drizzle(url);
@@ -56,6 +49,13 @@ PRAGMA busy_timeout = 5000;
 
   db.clean = async () => {
     if (wal && client && typeof client.execute === "function") {
+      try {
+        await client.execute(`PRAGMA auto_vacuum = FULL;`);
+        await client.execute(`VACUUM;`);
+      } catch (e) {
+        console.warn("auto_vacuum failed", e);
+      }
+
       try {
         await client.execute("PRAGMA wal_checkpoint(TRUNCATE);");
         await client.execute(`VACUUM;`);

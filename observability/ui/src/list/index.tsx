@@ -8,15 +8,15 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import useDocumentVisibility from "ahooks/lib/useDocumentVisibility";
-import useLocalStorageState from "ahooks/lib/useLocalStorageState";
 import useRafInterval from "ahooks/lib/useRafInterval";
 import useRequest from "ahooks/lib/useRequest";
 import { useEffect, useImperativeHandle, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { joinURL, withQuery } from "ufo";
+import { joinURL } from "ufo";
 import type { SearchState } from "../components/blocklet-comp.tsx";
 import RunDetailDrawer from "../components/run/trace-detail-drawer.tsx";
 import type { TraceData } from "../components/run/types.ts";
+import { TraceProvider, useTraceContext } from "../contexts/trace-context.tsx";
 import { watchSSE } from "../utils/event.ts";
 import { origin } from "../utils/index.ts";
 import DesktopSearch from "./search/desktop.tsx";
@@ -27,12 +27,7 @@ interface ListRef {
   refetch: () => void;
 }
 
-interface TracesResponse {
-  data: TraceData[];
-  total: number;
-}
-
-const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
+const TraceList = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const isBlocklet = !!window.blocklet?.prefix;
   const { t } = useLocaleContext();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -41,23 +36,22 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const isMobile = useMediaQuery((x) => x.breakpoints.down("md"));
   const [open, setOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const {
+    traces,
+    total,
+    loading,
+    page,
+    search,
+    setPage,
+    setSearch,
+    setLoading,
+    setTraces,
+    setTotal,
+    fetchTraces,
+  } = useTraceContext();
 
   const toggleDrawer = (newOpen: boolean) => () => setOpen(newOpen);
 
-  const [page, setPage] = useLocalStorageState("observability-page", {
-    defaultValue: { page: 1, pageSize: 20 },
-  });
-
-  const [search, setSearch] = useState<SearchState>({
-    componentId: "",
-    searchText: "",
-    dateRange: [dayjs().subtract(1, "week").startOf("day").toDate(), dayjs().endOf("day").toDate()],
-    showImportedOnly: false,
-  });
-
-  const [traces, setTraces] = useState<TraceData[]>([]);
-  const [total, setTotal] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(true);
   const [selectedTrace, setSelectedTrace] = useState<TraceData | null>(null);
 
   const { data: components } = useRequest(async () => {
@@ -90,51 +84,6 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   const handleSearchTextUpdate = (data: Partial<SearchState>) => {
     setSearch((x) => ({ ...x, ...data }));
     setPage({ ...page, page: 1 });
-  };
-
-  const fetchTraces = async (
-    {
-      page,
-      pageSize,
-      searchText = "",
-      dateRange,
-      showImportedOnly,
-    }: {
-      page: number;
-      pageSize: number;
-      searchText?: string;
-      dateRange?: [Date, Date];
-      showImportedOnly?: boolean;
-    },
-    signal?: AbortSignal,
-  ) => {
-    try {
-      const res = await fetch(
-        withQuery(joinURL(origin, "/api/trace/tree"), {
-          page,
-          pageSize,
-          searchText,
-          startDate: dateRange?.[0]?.toISOString() ?? "",
-          endDate: dateRange?.[1]?.toISOString() ?? "",
-          componentId: search.componentId,
-          showImportedOnly: showImportedOnly ?? search.showImportedOnly ?? false,
-        }),
-        { signal },
-      ).then((r) => r.json() as Promise<TracesResponse>);
-      const formatted: TraceData[] = res.data.map((trace) => ({
-        ...trace,
-        startTime: Number(trace.startTime),
-        endTime: Number(trace.endTime),
-      }));
-      setTraces(formatted);
-      setTotal(res.total);
-    } catch (error) {
-      if ((error as Error)?.name !== "AbortError") {
-        console.error("Failed to fetch traces:", error);
-      }
-    } finally {
-      setLoading(false);
-    }
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: false positive
@@ -328,14 +277,10 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
             ) : (
               <DesktopSearch
                 components={components || { data: [] }}
-                search={search}
                 setSearch={(data) => handleSearchTextUpdate(data)}
                 onDateRangeChange={onDateRangeChange}
                 live={live}
                 setLive={setLive}
-                fetchTraces={fetchTraces}
-                page={page}
-                setLoading={setLoading}
               />
             )}
           </Box>
@@ -409,4 +354,10 @@ const List = ({ ref }: { ref?: React.RefObject<ListRef | null> }) => {
   );
 };
 
-export default List;
+export default (rest: React.ComponentProps<typeof TraceList>) => {
+  return (
+    <TraceProvider>
+      <TraceList {...rest} />
+    </TraceProvider>
+  );
+};

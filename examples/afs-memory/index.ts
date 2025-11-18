@@ -8,11 +8,12 @@ import { AIAgent } from "@aigne/core";
 
 const aigne = await loadAIGNEWithCmdOptions();
 
-const sharedStorage = { url: "file:./memory.sqlite3" };
-
-const afs = new AFS()
-  .mount(new AFSHistory({ storage: sharedStorage }))
-  .mount(new UserProfileMemory({ storage: sharedStorage, context: aigne.newContext() }));
+const afs = new AFS().mount(new AFSHistory({ storage: { url: "file:./history.sqlite3" } })).mount(
+  new UserProfileMemory({
+    storage: { url: "file:./user_profile.sqlite3" },
+    context: aigne.newContext(),
+  }),
+);
 
 const agent = AIAgent.from({
   instructions: "You are a friendly chatbot",

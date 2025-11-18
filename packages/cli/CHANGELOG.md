@@ -1,5 +1,48 @@
 # Changelog
 
+## [1.55.3-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.55.3-beta...cli-v1.55.3-beta.1) (2025-11-18)
+
+
+### Bug Fixes
+
+* **observability:** introduce TraceContext and improve delete UX ([#755](https://github.com/AIGNE-io/aigne-framework/issues/755)) ([dee54f1](https://github.com/AIGNE-io/aigne-framework/commit/dee54f1c548ed1046781e919f8c51a642b6b0dac))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-history bumped to 1.0.3-beta.1
+    * @aigne/afs-local-fs bumped to 1.1.3-beta.1
+    * @aigne/agent-library bumped to 1.21.56-beta.1
+    * @aigne/agentic-memory bumped to 1.0.56-beta.1
+    * @aigne/aigne-hub bumped to 0.10.10-beta.1
+    * @aigne/core bumped to 1.68.3-beta.1
+    * @aigne/default-memory bumped to 1.2.19-beta.1
+    * @aigne/observability-api bumped to 0.11.9-beta.1
+    * @aigne/openai bumped to 0.16.10-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63-beta.1
+
+## [1.55.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.55.2...cli-v1.55.3-beta) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-history bumped to 1.0.3-beta
+    * @aigne/afs-local-fs bumped to 1.1.3-beta
+    * @aigne/agent-library bumped to 1.21.56-beta
+    * @aigne/agentic-memory bumped to 1.0.56-beta
+    * @aigne/aigne-hub bumped to 0.10.10-beta
+    * @aigne/core bumped to 1.68.3-beta
+    * @aigne/default-memory bumped to 1.2.19-beta
+    * @aigne/observability-api bumped to 0.11.9-beta
+    * @aigne/openai bumped to 0.16.10-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63-beta
+
 ## [1.55.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.55.2-beta...cli-v1.55.2) (2025-11-15)
 
 

@@ -11,8 +11,12 @@ export * from "./reexport.js";
 export async function initDatabase({
   url = ":memory:",
   wal = false,
-}: InitDatabaseOptions = {}): Promise<LibSQLDatabase> {
-  let db: LibSQLDatabase;
+  walAutocheckpoint = 5000,
+}: InitDatabaseOptions & { walAutocheckpoint?: number } = {}): Promise<
+  LibSQLDatabase & { vacuum?: () => Promise<void> }
+> {
+  let db: LibSQLDatabase & { clean?: () => Promise<void> };
+  let client: ReturnType<typeof createClient> | undefined;
 
   if (/^file:.*/.test(url)) {
     const path = url.replace(/^file:(\/\/)?/, "");
@@ -20,13 +24,14 @@ export async function initDatabase({
   }
 
   if (wal) {
-    const client = createClient({ url });
+    client = createClient({ url });
     await client.execute(`\
 PRAGMA journal_mode = WAL;
 PRAGMA synchronous = normal;
-PRAGMA wal_autocheckpoint = 5000;
+PRAGMA wal_autocheckpoint = ${walAutocheckpoint};
 PRAGMA busy_timeout = 5000;
 `);
+
     db = drizzle(client);
   } else {
     db = drizzle(url);
@@ -42,5 +47,14 @@ PRAGMA busy_timeout = 5000;
     ]);
   }
 
-  return db;
+  db.clean = async () => {
+    if (wal && client && typeof client.execute === "function") {
+      await client.execute(`PRAGMA auto_vacuum = FULL;`);
+      await client.execute(`VACUUM;`);
+      await client.execute("PRAGMA wal_checkpoint(TRUNCATE);");
+      await client.execute(`VACUUM;`);
+    }
+  };
+
+  return db as LibSQLDatabase;
 }

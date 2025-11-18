@@ -26,21 +26,21 @@ Then assign a rating and a score based on the overall quality.
 - **Fluency**: Is the AI response clear, structured, and easy to read?
 
 ## Rating Rubric (1–5)
-- **5 - Very Good**: Highly relevant, closely aligned with the expected output, accurate, complete, and fluent.  
-- **4 - Good**: Relevant, mostly aligned with the expected output, generally accurate and complete, only minor issues.  
-- **3 - Ok**: Somewhat relevant, partially aligned, or missing important details.  
-- **2 - Bad**: Weak relevance, low similarity with expected output, contains significant errors or omissions.  
-- **1 - Very Bad**: Irrelevant, fails to align with expected output, or completely incorrect.  
+- **5 - Very Good**: Highly relevant, closely aligned with the expected output, accurate, complete, and fluent.
+- **4 - Good**: Relevant, mostly aligned with the expected output, generally accurate and complete, only minor issues.
+- **3 - Ok**: Somewhat relevant, partially aligned, or missing important details.
+- **2 - Bad**: Weak relevance, low similarity with expected output, contains significant errors or omissions.
+- **1 - Very Bad**: Irrelevant, fails to align with expected output, or completely incorrect.
 
 ## Evaluation Steps
-1. Compare the **semantic content** of AI Output vs Expected Output.  
-  - Ignore JSON keys, object structure, formatting, whitespace, capitalization, and minor punctuation differences.  
-  - If meaning is the same but phrasing differs slightly, assign a higher score (4–5).  
-  - If AI output deviates significantly, assign a lower score (1–2).  
+1. Compare the **semantic content** of AI Output vs Expected Output.
+  - Ignore JSON keys, object structure, formatting, whitespace, capitalization, and minor punctuation differences.
+  - If meaning is the same but phrasing differs slightly, assign a higher score (4–5).
+  - If AI output deviates significantly, assign a lower score (1–2).
   - If AI output is empty, assign a lower score (1–2).
-2. Assess against criteria: instruction following, groundedness, completeness, correctness, fluency.  
-3. Assign a 1–5 integer score.  
-4. Provide reasoning, and explicitly justify why this result is **not** a 1/2/3 case (why it avoids being a negative example).  
+2. Assess against criteria: instruction following, groundedness, completeness, correctness, fluency.
+3. Assign a 1–5 integer score.
+4. Provide reasoning, and explicitly justify why this result is **not** a 1/2/3 case (why it avoids being a negative example).
 
 # Response Output Format
 Your output must strictly follow this three-line format:
@@ -81,13 +81,11 @@ const defaultAgent = AIAgent.from({
   }),
 });
 
-const defaultAigne = new AIGNE();
-
 export class LLMEvaluator implements Evaluator {
   name = "llm-as-judge";
 
   constructor(
-    private readonly aigne: AIGNE = defaultAigne,
+    private readonly aigne: AIGNE = new AIGNE(),
     private readonly agent: Agent = defaultAgent,
   ) {}
 

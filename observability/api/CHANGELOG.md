@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.11.9-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.9-beta...observability-api-v0.11.9-beta.1) (2025-11-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.6-beta.1
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.7-beta.1
+
+## [0.11.9-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.8...observability-api-v0.11.9-beta) (2025-11-17)
+
+
+### Bug Fixes
+
+* **sqlite:** improve WAL checkpoint and database cleanup ([#751](https://github.com/AIGNE-io/aigne-framework/issues/751)) ([85c7884](https://github.com/AIGNE-io/aigne-framework/commit/85c78849a8d2637349786c696d6eaa01f8c70fcf))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.6-beta
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.7-beta
+
 ## [0.11.8](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.8-beta...observability-api-v0.11.8) (2025-11-15)
 
 ## [0.11.8-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.7...observability-api-v0.11.8-beta) (2025-11-15)

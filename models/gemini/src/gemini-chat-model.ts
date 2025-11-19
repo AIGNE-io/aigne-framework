@@ -276,7 +276,6 @@ export class GeminiChatModel extends ChatModel {
                 };
 
                 // Preserve thought_signature for 3.x models
-                // Note: thoughtSignature is on the Part level, not FunctionCall level
                 if (part.thoughtSignature && model.includes("gemini-3")) {
                   toolCall.metadata = {
                     thoughtSignature: part.thoughtSignature,
@@ -493,7 +492,6 @@ export class GeminiChatModel extends ChatModel {
               };
 
               // Restore thought_signature for 3.x models
-              // Note: thoughtSignature is on the Part level, not FunctionCall level
               if (call.metadata?.thoughtSignature) {
                 part.thoughtSignature = call.metadata.thoughtSignature;
               }

@@ -493,7 +493,7 @@ importers:
         version: link:../../memory/default
       '@modelcontextprotocol/sdk':
         specifier: ^1.21.1
-        version: 1.21.1
+        version: 1.22.0
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
@@ -1228,7 +1228,7 @@ importers:
         version: 13.0.1
       '@google/genai':
         specifier: ^1.24.0
-        version: 1.24.0(@modelcontextprotocol/sdk@1.21.1)(encoding@0.1.13)
+        version: 1.24.0(@modelcontextprotocol/sdk@1.22.0)(encoding@0.1.13)
       zod:
         specifier: ^3.25.67
         version: 3.25.67
@@ -3076,8 +3076,8 @@ packages:
   '@blocklet/did-space-js@1.2.4':
     resolution: {integrity: sha512-DMVRZ7y0Or1JQhvvmLmYujctp1Uv+SZcEXpxDeNFaw8M65cmVbrbm2h3CsrTuX9iV5eIr5ilxPnbiwYPGD3f0A==}
 
-  '@blocklet/did-space-react@1.2.4':
-    resolution: {integrity: sha512-rXWqUrkj2j9jNlTUOnTD22CQVv7g+7aaa/gcIlniJ7YZe5U1GcRAWOL+j4lL9nTV9VYgP1cZM2eKZyyZX734cw==}
+  '@blocklet/did-space-react@1.2.3':
+    resolution: {integrity: sha512-KDA+OhqjTYApocNldH4CGpOHIjNFDHNMo3g+6dr8bXKh0qNUJUnEN/nE7rpmkZtD+EhTKk3FYBpInt11L5Jz7w==}
     peerDependencies:
       '@arcblock/did-connect-react': ^3.1.2
       '@arcblock/ux': ^3.1.31
@@ -4189,8 +4189,8 @@ packages:
     resolution: {integrity: sha512-JvKyB6YwS3quM+88JPR0axeRgvdDu3Pv6mdZUy+w4qVkCzGgumb9bXG/TmtDRQv+671yaofVfXSQmFLlWU5qPQ==}
     engines: {node: '>=18'}
 
-  '@modelcontextprotocol/sdk@1.21.1':
-    resolution: {integrity: sha512-UyLFcJLDvUuZbGnaQqXFT32CpPpGj7VS19roLut6gkQVhb439xUzYWbsUvdI3ZPL+2hnFosuugtYWE0Mcs1rmQ==}
+  '@modelcontextprotocol/sdk@1.22.0':
+    resolution: {integrity: sha512-VUpl106XVTCpDmTBil2ehgJZjhyLY2QZikzF8NvTXtLRF1CvO5iEE2UNZdVIUer35vFOwMKYeUGbjJtvPWan3g==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
@@ -12718,7 +12718,7 @@ snapshots:
       '@ocap/wallet': 1.27.10
       archiver: 7.0.1
       axios: 1.12.2(debug@4.4.3)
-      axios-mock-adapter: 2.1.0(axios@1.12.2(debug@4.4.3))
+      axios-mock-adapter: 2.1.0(axios@1.12.2)
       axon: 2.0.3
       chalk: 4.1.2
       cookie: 1.0.2
@@ -15086,12 +15086,12 @@ snapshots:
       '@shikijs/types': 3.12.2
       '@shikijs/vscode-textmate': 10.0.2
 
-  '@google/genai@1.24.0(@modelcontextprotocol/sdk@1.21.1)(encoding@0.1.13)':
+  '@google/genai@1.24.0(@modelcontextprotocol/sdk@1.22.0)(encoding@0.1.13)':
     dependencies:
       google-auth-library: 9.15.1(encoding@0.1.13)
       ws: 8.18.2
     optionalDependencies:
-      '@modelcontextprotocol/sdk': 1.21.1
+      '@modelcontextprotocol/sdk': 1.22.0
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -16021,7 +16021,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@modelcontextprotocol/sdk@1.21.1':
+  '@modelcontextprotocol/sdk@1.22.0':
     dependencies:
       ajv: 8.17.1
       ajv-formats: 3.0.1(ajv@8.17.1)
@@ -18301,12 +18301,6 @@ snapshots:
   await-to-js@3.0.0: {}
 
   awesome-phonenumber@7.5.0: {}
-
-  axios-mock-adapter@2.1.0(axios@1.12.2(debug@4.4.3)):
-    dependencies:
-      axios: 1.12.2(debug@4.4.3)
-      fast-deep-equal: 3.1.3
-      is-buffer: 2.0.5
 
   axios-mock-adapter@2.1.0(axios@1.12.2):
     dependencies:

@@ -37,6 +37,16 @@ describe("findConfiguredProvider", () => {
     process.env = { ...originalEnv };
   });
 
+  beforeEach(() => {
+    delete process.env.OPENAI_API_KEY;
+    delete process.env.ANTHROPIC_API_KEY;
+    delete process.env.GEMINI_API_KEY;
+    delete process.env.DEEPSEEK_API_KEY;
+    delete process.env.AWS_ACCESS_KEY_ID;
+    delete process.env.OPEN_ROUTER_API_KEY;
+    delete process.env.POE_API_KEY;
+  });
+
   describe("Early returns", () => {
     test("should return undefined when provider is not aignehub", () => {
       const result = findConfiguredProvider("openai", "gpt-4");
@@ -163,9 +173,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should return undefined for gpt models without OPENAI_API_KEY", () => {
-      delete process.env.OPENAI_API_KEY;
-      delete process.env.OPEN_ROUTER_API_KEY;
-      delete process.env.POE_API_KEY;
       const result = findConfiguredProvider("aignehub", "gpt-4");
       expect(result).toBeUndefined();
     });
@@ -200,10 +207,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should return undefined for claude models without any API keys", () => {
-      delete process.env.ANTHROPIC_API_KEY;
-      delete process.env.AWS_ACCESS_KEY_ID;
-      delete process.env.OPEN_ROUTER_API_KEY;
-      delete process.env.POE_API_KEY;
       const result = findConfiguredProvider("aignehub", "claude-3-opus");
       expect(result).toBeUndefined();
     });
@@ -247,10 +250,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should return undefined for gemini models without API keys", () => {
-      delete process.env.GEMINI_API_KEY;
-      delete process.env.GOOGLE_API_KEY;
-      delete process.env.OPEN_ROUTER_API_KEY;
-      delete process.env.POE_API_KEY;
       const result = findConfiguredProvider("aignehub", "gemini-pro");
       expect(result).toBeUndefined();
     });
@@ -276,9 +275,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should return undefined for deepseek models without API keys", () => {
-      delete process.env.DEEPSEEK_API_KEY;
-      delete process.env.OPEN_ROUTER_API_KEY;
-      delete process.env.OLLAMA_API_KEY;
       const result = findConfiguredProvider("aignehub", "deepseek-chat");
       expect(result).toBeUndefined();
     });
@@ -304,9 +300,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should return undefined for grok models without API keys", () => {
-      delete process.env.XAI_API_KEY;
-      delete process.env.OPEN_ROUTER_API_KEY;
-      delete process.env.POE_API_KEY;
       const result = findConfiguredProvider("aignehub", "grok-1");
       expect(result).toBeUndefined();
     });
@@ -323,7 +316,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should return undefined for doubao models without API key", () => {
-      delete process.env.DOUBAO_API_KEY;
       const result = findConfiguredProvider("aignehub", "doubao-pro");
       expect(result).toBeUndefined();
     });
@@ -331,8 +323,6 @@ describe("findConfiguredProvider", () => {
 
   describe("Multi-provider fallback", () => {
     test("should use openrouter when primary provider for claude not configured", () => {
-      delete process.env.ANTHROPIC_API_KEY;
-      delete process.env.AWS_ACCESS_KEY_ID;
       process.env.OPEN_ROUTER_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "claude-3-opus");
       expect(result).toEqual({
@@ -342,9 +332,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use bedrock when primary and openrouter not configured for claude", () => {
-      delete process.env.ANTHROPIC_API_KEY;
-      delete process.env.OPEN_ROUTER_API_KEY;
-      delete process.env.POE_API_KEY;
       process.env.AWS_ACCESS_KEY_ID = "test-key";
       const result = findConfiguredProvider("aignehub", "claude-3-opus");
       expect(result).toEqual({
@@ -354,9 +341,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use bedrock with full version for claude", () => {
-      delete process.env.ANTHROPIC_API_KEY;
-      delete process.env.OPEN_ROUTER_API_KEY;
-      delete process.env.POE_API_KEY;
       process.env.AWS_ACCESS_KEY_ID = "test-key";
       const result = findConfiguredProvider("aignehub", "claude-3-5-sonnet-20241022");
       expect(result).toEqual({
@@ -366,9 +350,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use poe as last resort for claude", () => {
-      delete process.env.ANTHROPIC_API_KEY;
-      delete process.env.AWS_ACCESS_KEY_ID;
-      delete process.env.OPEN_ROUTER_API_KEY;
       process.env.POE_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "claude-3-opus");
       expect(result).toEqual({
@@ -378,7 +359,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use openrouter when primary provider for gpt not configured", () => {
-      delete process.env.OPENAI_API_KEY;
       process.env.OPEN_ROUTER_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "gpt-4");
       expect(result).toEqual({
@@ -388,8 +368,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use openrouter for gemini when primary provider not configured", () => {
-      delete process.env.GEMINI_API_KEY;
-      delete process.env.GOOGLE_API_KEY;
       process.env.OPEN_ROUTER_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "gemini-2.0-flash-exp");
       expect(result).toEqual({
@@ -399,8 +377,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use poe for gpt when openai and openrouter not configured", () => {
-      delete process.env.OPENAI_API_KEY;
-      delete process.env.OPEN_ROUTER_API_KEY;
       process.env.POE_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "gpt-4");
       expect(result).toEqual({
@@ -410,7 +386,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use openrouter when primary provider for deepseek not configured", () => {
-      delete process.env.DEEPSEEK_API_KEY;
       process.env.OPEN_ROUTER_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "deepseek-chat");
       expect(result).toEqual({
@@ -420,8 +395,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use ollama as last resort for deepseek", () => {
-      delete process.env.DEEPSEEK_API_KEY;
-      delete process.env.OPEN_ROUTER_API_KEY;
       process.env.OLLAMA_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "deepseek-chat");
       expect(result).toEqual({
@@ -451,7 +424,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use openrouter for llama when bedrock not configured", () => {
-      delete process.env.AWS_ACCESS_KEY_ID;
       process.env.OPEN_ROUTER_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "llama-3");
       expect(result).toEqual({
@@ -461,8 +433,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use ollama for llama when other providers not configured", () => {
-      delete process.env.AWS_ACCESS_KEY_ID;
-      delete process.env.OPEN_ROUTER_API_KEY;
       process.env.OLLAMA_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "llama-3");
       expect(result).toEqual({
@@ -481,7 +451,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use openrouter for mistral when bedrock not configured", () => {
-      delete process.env.AWS_ACCESS_KEY_ID;
       process.env.OPEN_ROUTER_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "mistral-7b");
       expect(result).toEqual({
@@ -491,8 +460,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use ollama for mistral when bedrock and openrouter not configured", () => {
-      delete process.env.AWS_ACCESS_KEY_ID;
-      delete process.env.OPEN_ROUTER_API_KEY;
       process.env.OLLAMA_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "mistral-7b");
       expect(result).toEqual({
@@ -511,7 +478,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use openrouter for mixtral when bedrock not configured", () => {
-      delete process.env.AWS_ACCESS_KEY_ID;
       process.env.OPEN_ROUTER_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "mixtral-8x7b");
       expect(result).toEqual({
@@ -530,7 +496,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use openrouter for qwen when bedrock not configured", () => {
-      delete process.env.AWS_ACCESS_KEY_ID;
       process.env.OPEN_ROUTER_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "qwen-72b");
       expect(result).toEqual({
@@ -549,7 +514,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use openrouter for gemma when bedrock not configured", () => {
-      delete process.env.AWS_ACCESS_KEY_ID;
       process.env.OPEN_ROUTER_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "gemma-7b");
       expect(result).toEqual({
@@ -568,7 +532,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use openrouter for yi when bedrock not configured", () => {
-      delete process.env.AWS_ACCESS_KEY_ID;
       process.env.OPEN_ROUTER_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "yi-34b");
       expect(result).toEqual({
@@ -587,7 +550,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should use openrouter for phi when bedrock not configured", () => {
-      delete process.env.AWS_ACCESS_KEY_ID;
       process.env.OPEN_ROUTER_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "phi-2");
       expect(result).toEqual({
@@ -597,9 +559,6 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should return undefined for llama when no providers configured", () => {
-      delete process.env.AWS_ACCESS_KEY_ID;
-      delete process.env.OPEN_ROUTER_API_KEY;
-      delete process.env.OLLAMA_API_KEY;
       const result = findConfiguredProvider("aignehub", "llama-3");
       expect(result).toBeUndefined();
     });

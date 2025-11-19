@@ -4,6 +4,8 @@ import {
   AIGNE_HUB_URL,
   findImageModel,
   findModel,
+  getDefaultProviderForModel,
+  getSupportedProviders,
   parseModel,
 } from "@aigne/aigne-hub";
 import type {
@@ -27,13 +29,40 @@ export function maskApiKey(apiKey?: string) {
   return `${start}${"*".repeat(8)}${end}`;
 }
 
+export function findConfiguredProvider(provider?: string, name?: string) {
+  if (provider && provider.trim().toLowerCase() !== AIGNE_HUB_PROVIDER.trim().toLowerCase()) {
+    return undefined;
+  }
+  if (!name) return undefined;
+
+  const supportedProviders = getSupportedProviders(name);
+  for (const supportedProvider of supportedProviders) {
+    const { match } = findModel(supportedProvider);
+    if (match) {
+      const requireEnvs = flat(match.apiKeyEnvName);
+      if (requireEnvs.some((name) => name && process.env[name])) {
+        const defaultProvider = getDefaultProviderForModel(name);
+        const isRouterProvider = supportedProvider.toLowerCase() === defaultProvider?.toLowerCase();
+
+        return {
+          provider: supportedProvider,
+          model: isRouterProvider ? name : `${defaultProvider}/${name}`,
+        };
+      }
+    }
+  }
+}
+
 export const formatModelName = async (
   model: string,
   inquirerPrompt: NonNullable<LoadCredentialOptions["inquirerPromptFn"]>,
 ): Promise<{ provider: string; model?: string }> => {
   let { provider, model: name } = parseModel(model);
-  provider ||= AIGNE_HUB_PROVIDER;
 
+  const configuredEnvProvider = findConfiguredProvider(provider, name);
+  if (configuredEnvProvider) return configuredEnvProvider;
+
+  provider ||= AIGNE_HUB_PROVIDER;
   const { match, all } = findModel(provider);
   if (!match) {
     throw new Error(

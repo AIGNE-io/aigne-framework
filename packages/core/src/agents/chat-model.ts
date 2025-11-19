@@ -486,6 +486,7 @@ export interface ChatModelInputMessage {
     id: string;
     type: "function";
     function: { name: string; arguments: Message };
+    metadata?: Record<string, any>;
   }[];
 
   /**
@@ -539,6 +540,7 @@ const chatModelInputMessageSchema = z.object({
           name: z.string(),
           arguments: z.record(z.string(), z.unknown()),
         }),
+        metadata: optionalize(z.record(z.string(), z.unknown())),
       }),
     ),
   ),
@@ -610,6 +612,12 @@ export interface ChatModelInputTool {
      */
     parameters: object;
   };
+
+  /**
+   * Provider-specific metadata for the tool
+   * For example, Gemini's thought_signature
+   */
+  metadata?: Record<string, any>;
 }
 
 const chatModelInputToolSchema = z.object({
@@ -619,6 +627,7 @@ const chatModelInputToolSchema = z.object({
     description: optionalize(z.string()),
     parameters: z.record(z.string(), z.unknown()),
   }),
+  metadata: optionalize(z.record(z.string(), z.unknown())),
 });
 
 /**
@@ -809,6 +818,12 @@ export interface ChatModelOutputToolCall {
      */
     arguments: Message;
   };
+
+  /**
+   * Provider-specific metadata for the tool call
+   * For example, Gemini's thought_signature
+   */
+  metadata?: Record<string, any>;
 }
 
 const chatModelOutputToolCallSchema = z.object({
@@ -818,6 +833,7 @@ const chatModelOutputToolCallSchema = z.object({
     name: z.string(),
     arguments: z.record(z.string(), z.unknown()),
   }),
+  metadata: optionalize(z.record(z.string(), z.unknown())),
 });
 
 /**

@@ -27,6 +27,7 @@ import {
   GoogleGenAI,
   type GoogleGenAIOptions,
   type Part,
+  type ThinkingLevel,
   type ToolListUnion,
 } from "@google/genai";
 import { z } from "zod";
@@ -148,6 +149,13 @@ export class GeminiChatModel extends ChatModel {
     minimal: 200,
   };
 
+  protected thinkingLevelMap = {
+    high: "high",
+    medium: "high",
+    low: "low",
+    minimal: "high",
+  };
+
   protected getThinkingBudget(
     model: string,
     effort: ChatModelInputOptions["reasoningEffort"],
@@ -175,17 +183,34 @@ export class GeminiChatModel extends ChatModel {
     const { contents, config } = await this.buildContents(input);
 
     const thinkingBudget = this.getThinkingBudget(model, modelOptions.reasoningEffort);
+    const getThinkingConfig = () => {
+      if (thinkingBudget.support) {
+        return {
+          includeThoughts: true,
+          thinkingBudget: thinkingBudget.budget,
+        };
+      }
+
+      if (model.includes("gemini-3")) {
+        const thinkingLevel =
+          typeof modelOptions.reasoningEffort === "string"
+            ? this.thinkingLevelMap[modelOptions.reasoningEffort] || this.thinkingLevelMap["high"]
+            : this.thinkingLevelMap["high"];
+
+        return {
+          includeThoughts: true,
+          thinkingLevel: thinkingLevel as ThinkingLevel,
+        };
+      }
+
+      return undefined;
+    };
 
     const parameters: GenerateContentParameters = {
       model,
       contents,
       config: {
-        thinkingConfig: thinkingBudget.support
-          ? {
-              includeThoughts: true,
-              thinkingBudget: thinkingBudget.budget,
-            }
-          : undefined,
+        thinkingConfig: getThinkingConfig(),
         responseModalities: modelOptions.modalities,
         temperature: modelOptions.temperature,
         topP: modelOptions.topP,
@@ -241,14 +266,24 @@ export class GeminiChatModel extends ChatModel {
               if (part.functionCall.name === OUTPUT_FUNCTION_NAME) {
                 json = part.functionCall.args;
               } else {
-                toolCalls.push({
+                const toolCall: ChatModelOutputToolCall = {
                   id: part.functionCall.id || v7(),
                   type: "function",
                   function: {
                     name: part.functionCall.name,
                     arguments: part.functionCall.args || {},
                   },
-                });
+                };
+
+                // Preserve thought_signature for Gemini 2.0+ and 3.x models
+                // Note: thoughtSignature is on the Part level, not FunctionCall level
+                if (part.thoughtSignature) {
+                  toolCall.metadata = {
+                    thoughtSignature: part.thoughtSignature,
+                  };
+                }
+
+                toolCalls.push(toolCall);
 
                 yield { delta: { json: { toolCalls } } };
               }
@@ -448,13 +483,23 @@ export class GeminiChatModel extends ChatModel {
           };
 
           if (msg.toolCalls) {
-            content.parts = msg.toolCalls.map((call) => ({
-              functionCall: {
-                id: call.id,
-                name: call.function.name,
-                args: call.function.arguments,
-              },
-            }));
+            content.parts = msg.toolCalls.map((call) => {
+              const part: Part = {
+                functionCall: {
+                  id: call.id,
+                  name: call.function.name,
+                  args: call.function.arguments,
+                },
+              };
+
+              // Restore thought_signature for Gemini 2.0+ and 3.x models
+              // Note: thoughtSignature is on the Part level, not FunctionCall level
+              if (call.metadata?.thoughtSignature) {
+                part.thoughtSignature = call.metadata.thoughtSignature;
+              }
+
+              return part;
+            });
           } else if (msg.toolCallId) {
             const call = input.messages
               .flatMap((i) => i.toolCalls)

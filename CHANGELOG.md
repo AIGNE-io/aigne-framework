@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.87.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.86.3-beta.1...aigne-framework-v1.87.0-beta.1) (2025-11-19)
+
+
+### Features
+
+* **models:** support gemini 3.x thinking level and thoughtSignature ([#760](https://github.com/AIGNE-io/aigne-framework/issues/760)) ([243f2d4](https://github.com/AIGNE-io/aigne-framework/commit/243f2d457792a20ba2b87378576092e6f88e319c))
+
+
+### Bug Fixes
+
+* **models:** add provider inference for model params ([#759](https://github.com/AIGNE-io/aigne-framework/issues/759)) ([0b050ae](https://github.com/AIGNE-io/aigne-framework/commit/0b050ae5132c7fbdd80091a81b7e0d00b21a0da5))
+* upgrade dependencies and fix timestamp type ([#757](https://github.com/AIGNE-io/aigne-framework/issues/757)) ([652e8f4](https://github.com/AIGNE-io/aigne-framework/commit/652e8f4b6e9af1461b25336888d76fe1d731b9b5))
+
 ## [1.86.3-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.86.3-beta...aigne-framework-v1.86.3-beta.1) (2025-11-18)
 
 

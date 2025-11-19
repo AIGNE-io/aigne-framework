@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.69.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.0-beta.1...core-v1.69.0-beta.2) (2025-11-19)
+
+
+### Features
+
+* **models:** support gemini 3.x thinking level and thoughtSignature ([#760](https://github.com/AIGNE-io/aigne-framework/issues/760)) ([243f2d4](https://github.com/AIGNE-io/aigne-framework/commit/243f2d457792a20ba2b87378576092e6f88e319c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.9-beta.3
+
 ## [1.69.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.68.3-beta.1...core-v1.69.0-beta.1) (2025-11-18)
 
 

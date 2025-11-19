@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.16.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.16.0-beta.1...blocklet-observability-v1.16.0-beta.2) (2025-11-19)
+
+
+### Bug Fixes
+
+* upgrade dependencies and fix timestamp type ([#757](https://github.com/AIGNE-io/aigne-framework/issues/757)) ([652e8f4](https://github.com/AIGNE-io/aigne-framework/commit/652e8f4b6e9af1461b25336888d76fe1d731b9b5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.9-beta.3
+    * @aigne/observability-ui bumped to 0.11.7-beta.3
+
 ## [1.16.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.15.5-beta.1...blocklet-observability-v1.16.0-beta.1) (2025-11-18)
 
 

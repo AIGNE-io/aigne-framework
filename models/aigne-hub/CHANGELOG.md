@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.10.10-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.10-beta.2...aigne-hub-v0.10.10-beta.3) (2025-11-19)
+
+
+### Bug Fixes
+
+* **models:** add provider inference for model params ([#759](https://github.com/AIGNE-io/aigne-framework/issues/759)) ([0b050ae](https://github.com/AIGNE-io/aigne-framework/commit/0b050ae5132c7fbdd80091a81b7e0d00b21a0da5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.10-beta.3
+    * @aigne/bedrock bumped to 0.10.15-beta.3
+    * @aigne/core bumped to 1.69.0-beta.2
+    * @aigne/deepseek bumped to 0.7.56-beta.3
+    * @aigne/doubao bumped to 1.2.0-beta.2
+    * @aigne/gemini bumped to 0.14.10-beta.3
+    * @aigne/ideogram bumped to 0.4.10-beta.3
+    * @aigne/ollama bumped to 0.7.56-beta.3
+    * @aigne/open-router bumped to 0.7.56-beta.3
+    * @aigne/openai bumped to 0.16.10-beta.3
+    * @aigne/poe bumped to 1.1.0-beta.2
+    * @aigne/transport bumped to 0.15.19-beta.3
+    * @aigne/xai bumped to 0.7.56-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63-beta.3
+
 ## [0.10.10-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.10-beta.1...aigne-hub-v0.10.10-beta.2) (2025-11-18)
 
 

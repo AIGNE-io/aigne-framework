@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.10-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.10-beta.2...gemini-v0.14.10-beta.3) (2025-11-19)
+
+
+### Features
+
+* **models:** support gemini 3.x thinking level and thoughtSignature ([#760](https://github.com/AIGNE-io/aigne-framework/issues/760)) ([243f2d4](https://github.com/AIGNE-io/aigne-framework/commit/243f2d457792a20ba2b87378576092e6f88e319c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63-beta.3
+
 ## [0.14.10-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.10-beta.1...gemini-v0.14.10-beta.2) (2025-11-18)
 
 

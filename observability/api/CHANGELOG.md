@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.11.9-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.9-beta.2...observability-api-v0.11.9-beta.3) (2025-11-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.7-beta.3
+
 ## [0.11.9-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.9-beta.1...observability-api-v0.11.9-beta.2) (2025-11-18)
 
 

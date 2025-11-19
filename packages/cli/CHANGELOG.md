@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.56.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.56.0-beta.1...cli-v1.56.0-beta.2) (2025-11-19)
+
+
+### Bug Fixes
+
+* **models:** add provider inference for model params ([#759](https://github.com/AIGNE-io/aigne-framework/issues/759)) ([0b050ae](https://github.com/AIGNE-io/aigne-framework/commit/0b050ae5132c7fbdd80091a81b7e0d00b21a0da5))
+* upgrade dependencies and fix timestamp type ([#757](https://github.com/AIGNE-io/aigne-framework/issues/757)) ([652e8f4](https://github.com/AIGNE-io/aigne-framework/commit/652e8f4b6e9af1461b25336888d76fe1d731b9b5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.2.0-beta.2
+    * @aigne/agent-library bumped to 1.22.0-beta.2
+    * @aigne/agentic-memory bumped to 1.1.0-beta.2
+    * @aigne/aigne-hub bumped to 0.10.10-beta.3
+    * @aigne/core bumped to 1.69.0-beta.2
+    * @aigne/default-memory bumped to 1.3.0-beta.2
+    * @aigne/observability-api bumped to 0.11.9-beta.3
+    * @aigne/openai bumped to 0.16.10-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63-beta.3
+
 ## [1.56.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.55.3-beta.1...cli-v1.56.0-beta.1) (2025-11-18)
 
 

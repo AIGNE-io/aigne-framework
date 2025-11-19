@@ -117,6 +117,11 @@ export class GeminiChatModel extends ChatModel {
 
   // References: https://ai.google.dev/gemini-api/docs/thinking#set-budget
   protected thinkingBudgetModelMap = [
+    // 注意：gemini-2.5-flash-image-preview 模型并不支持 thinking。see: https://github.com/CherryHQ/cherry-studio/issues/9614
+    {
+      pattern: /gemini-2.5-flash-image-preview/,
+      support: false,
+    },
     {
       pattern: /gemini-2.5-pro/,
       support: true,

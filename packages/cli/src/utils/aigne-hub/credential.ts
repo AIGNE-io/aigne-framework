@@ -260,7 +260,7 @@ export async function loadAIGNEHubCredential(options?: LoadCredentialOptions) {
           });
           aigneHubUrl = customUrl;
         } else if (subscribe === "manual") {
-          console.log("You chose to configure your own LLM API Keys. Exiting...");
+          console.log("You chose to configure your own LLM API Keys. Please follow the instructions in the documentation: https://www.arcblock.io/docs/aigne-framework/models-configuration-9dc03e");
           process.exit(0);
         }
       }

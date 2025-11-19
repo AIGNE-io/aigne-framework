@@ -43,6 +43,47 @@ npx -y @aigne/example-afs-memory --input "Tell me all info about me you known"
 npx -y @aigne/example-afs-memory --chat
 ```
 
+### Connect to an AI Model
+
+As an example, running `npx -y @aigne/example-afs-memory --input "I'm Bob, and I like blue color"` requires an AI model. If this is your first run, you need to connect one.
+
+![run example](./run-example.png)
+
+- Connect via the official AIGNE Hub
+
+Choose the first option and your browser will open the official AIGNE Hub page. Follow the prompts to complete the connection. If you're a new user, the system automatically grants 400,000 tokens for you to use.
+
+![connect to official aigne hub](../images/connect-to-aigne-hub.png)
+
+- Connect via a self-hosted AIGNE Hub
+
+Choose the second option, enter the URL of your self-hosted AIGNE Hub, and follow the prompts to complete the connection. If you need to set up a self-hosted AIGNE Hub, visit the Blocklet Store to install and deploy it: [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ?utm_source=www.arcblock.io&utm_medium=blog_link&utm_campaign=default&utm_content=store.blocklet.dev#:~:text=%F0%9F%9A%80%20Get%20Started%20in%20Minutes).
+
+![connect to self hosted aigne hub](../images/connect-to-self-hosted-aigne-hub.png)
+
+- Connect via a third-party model provider
+
+Using OpenAI as an example, you can configure the provider's API key via environment variables. After configuration, run the example again:
+
+```bash
+export OPENAI_API_KEY="" # Set your OpenAI API key here
+```
+For more details on third-party model configuration (e.g., OpenAI, DeepSeek, Google Gemini), see [.env.local.example](./.env.local.example).
+
+After configuration, run the example again.
+
+### Debugging
+
+The `aigne observe` command starts a local web server to monitor and analyze agent execution data. It provides a user-friendly interface to inspect traces, view detailed call information, and understand your agent’s behavior during runtime. This tool is essential for debugging, performance tuning, and gaining insight into how your agent processes information and interacts with tools and models.
+
+Start the observation server.
+
+![aigne-observe-execute](../images/aigne-observe-execute.png)
+
+View a list of recent executions.
+
+![aigne-observe-list](../images/aigne-observe-list.png)
+
 ## Installation
 
 ### Clone the Repository

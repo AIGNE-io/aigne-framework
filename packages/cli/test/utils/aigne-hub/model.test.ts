@@ -349,7 +349,19 @@ describe("findConfiguredProvider", () => {
       const result = findConfiguredProvider("aignehub", "claude-3-opus");
       expect(result).toEqual({
         provider: "bedrock",
-        model: "anthropic/claude-3-opus",
+        model: "anthropic.claude-3-opus",
+      });
+    });
+
+    test("should use bedrock with full version for claude", () => {
+      delete process.env.ANTHROPIC_API_KEY;
+      delete process.env.OPEN_ROUTER_API_KEY;
+      delete process.env.POE_API_KEY;
+      process.env.AWS_ACCESS_KEY_ID = "test-key";
+      const result = findConfiguredProvider("aignehub", "claude-3-5-sonnet-20241022");
+      expect(result).toEqual({
+        provider: "bedrock",
+        model: "anthropic.claude-3-5-sonnet-20241022",
       });
     });
 
@@ -361,7 +373,7 @@ describe("findConfiguredProvider", () => {
       const result = findConfiguredProvider("aignehub", "claude-3-opus");
       expect(result).toEqual({
         provider: "poe",
-        model: "anthropic/claude-3-opus",
+        model: "claude-3-opus",
       });
     });
 
@@ -375,6 +387,17 @@ describe("findConfiguredProvider", () => {
       });
     });
 
+    test("should use openrouter for gemini when primary provider not configured", () => {
+      delete process.env.GEMINI_API_KEY;
+      delete process.env.GOOGLE_API_KEY;
+      process.env.OPEN_ROUTER_API_KEY = "test-key";
+      const result = findConfiguredProvider("aignehub", "gemini-2.0-flash-exp");
+      expect(result).toEqual({
+        provider: "openrouter",
+        model: "google/gemini-2.0-flash-exp",
+      });
+    });
+
     test("should use poe for gpt when openai and openrouter not configured", () => {
       delete process.env.OPENAI_API_KEY;
       delete process.env.OPEN_ROUTER_API_KEY;
@@ -382,7 +405,7 @@ describe("findConfiguredProvider", () => {
       const result = findConfiguredProvider("aignehub", "gpt-4");
       expect(result).toEqual({
         provider: "poe",
-        model: "openai/gpt-4",
+        model: "gpt-4",
       });
     });
 
@@ -403,7 +426,7 @@ describe("findConfiguredProvider", () => {
       const result = findConfiguredProvider("aignehub", "deepseek-chat");
       expect(result).toEqual({
         provider: "ollama",
-        model: "deepseek/deepseek-chat",
+        model: "deepseek-chat",
       });
     });
   });
@@ -414,17 +437,26 @@ describe("findConfiguredProvider", () => {
       const result = findConfiguredProvider("aignehub", "llama-3");
       expect(result).toEqual({
         provider: "bedrock",
-        model: "llama-3",
+        model: "meta.llama-3",
       });
     });
 
-    test("should use openrouter for llama when configured", () => {
+    test("should use bedrock for llama with full version", () => {
+      process.env.AWS_ACCESS_KEY_ID = "test-key";
+      const result = findConfiguredProvider("aignehub", "llama-3-70b-instruct");
+      expect(result).toEqual({
+        provider: "bedrock",
+        model: "meta.llama-3-70b-instruct",
+      });
+    });
+
+    test("should use openrouter for llama when bedrock not configured", () => {
       delete process.env.AWS_ACCESS_KEY_ID;
       process.env.OPEN_ROUTER_API_KEY = "test-key";
       const result = findConfiguredProvider("aignehub", "llama-3");
       expect(result).toEqual({
         provider: "openrouter",
-        model: "bedrock/llama-3",
+        model: "meta/llama-3",
       });
     });
 
@@ -435,7 +467,7 @@ describe("findConfiguredProvider", () => {
       const result = findConfiguredProvider("aignehub", "llama-3");
       expect(result).toEqual({
         provider: "ollama",
-        model: "bedrock/llama-3",
+        model: "llama-3",
       });
     });
 
@@ -444,7 +476,7 @@ describe("findConfiguredProvider", () => {
       const result = findConfiguredProvider("aignehub", "mistral-7b");
       expect(result).toEqual({
         provider: "bedrock",
-        model: "mistral-7b",
+        model: "mistral.mistral-7b",
       });
     });
 
@@ -454,7 +486,37 @@ describe("findConfiguredProvider", () => {
       const result = findConfiguredProvider("aignehub", "mistral-7b");
       expect(result).toEqual({
         provider: "openrouter",
-        model: "bedrock/mistral-7b",
+        model: "mistral/mistral-7b",
+      });
+    });
+
+    test("should use ollama for mistral when bedrock and openrouter not configured", () => {
+      delete process.env.AWS_ACCESS_KEY_ID;
+      delete process.env.OPEN_ROUTER_API_KEY;
+      process.env.OLLAMA_API_KEY = "test-key";
+      const result = findConfiguredProvider("aignehub", "mistral-7b");
+      expect(result).toEqual({
+        provider: "ollama",
+        model: "mistral-7b",
+      });
+    });
+
+    test("should use bedrock for mixtral when configured", () => {
+      process.env.AWS_ACCESS_KEY_ID = "test-key";
+      const result = findConfiguredProvider("aignehub", "mixtral-8x7b");
+      expect(result).toEqual({
+        provider: "bedrock",
+        model: "mistral.mixtral-8x7b",
+      });
+    });
+
+    test("should use openrouter for mixtral when bedrock not configured", () => {
+      delete process.env.AWS_ACCESS_KEY_ID;
+      process.env.OPEN_ROUTER_API_KEY = "test-key";
+      const result = findConfiguredProvider("aignehub", "mixtral-8x7b");
+      expect(result).toEqual({
+        provider: "openrouter",
+        model: "mistral/mixtral-8x7b",
       });
     });
 
@@ -463,7 +525,17 @@ describe("findConfiguredProvider", () => {
       const result = findConfiguredProvider("aignehub", "qwen-72b");
       expect(result).toEqual({
         provider: "bedrock",
-        model: "qwen-72b",
+        model: "qwen.qwen-72b",
+      });
+    });
+
+    test("should use openrouter for qwen when bedrock not configured", () => {
+      delete process.env.AWS_ACCESS_KEY_ID;
+      process.env.OPEN_ROUTER_API_KEY = "test-key";
+      const result = findConfiguredProvider("aignehub", "qwen-72b");
+      expect(result).toEqual({
+        provider: "openrouter",
+        model: "qwen/qwen-72b",
       });
     });
 
@@ -472,7 +544,17 @@ describe("findConfiguredProvider", () => {
       const result = findConfiguredProvider("aignehub", "gemma-7b");
       expect(result).toEqual({
         provider: "bedrock",
-        model: "gemma-7b",
+        model: "google.gemma-7b",
+      });
+    });
+
+    test("should use openrouter for gemma when bedrock not configured", () => {
+      delete process.env.AWS_ACCESS_KEY_ID;
+      process.env.OPEN_ROUTER_API_KEY = "test-key";
+      const result = findConfiguredProvider("aignehub", "gemma-7b");
+      expect(result).toEqual({
+        provider: "openrouter",
+        model: "google/gemma-7b",
       });
     });
 
@@ -481,7 +563,17 @@ describe("findConfiguredProvider", () => {
       const result = findConfiguredProvider("aignehub", "yi-34b");
       expect(result).toEqual({
         provider: "bedrock",
-        model: "yi-34b",
+        model: "yi.yi-34b",
+      });
+    });
+
+    test("should use openrouter for yi when bedrock not configured", () => {
+      delete process.env.AWS_ACCESS_KEY_ID;
+      process.env.OPEN_ROUTER_API_KEY = "test-key";
+      const result = findConfiguredProvider("aignehub", "yi-34b");
+      expect(result).toEqual({
+        provider: "openrouter",
+        model: "yi/yi-34b",
       });
     });
 
@@ -490,7 +582,17 @@ describe("findConfiguredProvider", () => {
       const result = findConfiguredProvider("aignehub", "phi-2");
       expect(result).toEqual({
         provider: "bedrock",
-        model: "phi-2",
+        model: "microsoft.phi-2",
+      });
+    });
+
+    test("should use openrouter for phi when bedrock not configured", () => {
+      delete process.env.AWS_ACCESS_KEY_ID;
+      process.env.OPEN_ROUTER_API_KEY = "test-key";
+      const result = findConfiguredProvider("aignehub", "phi-2");
+      expect(result).toEqual({
+        provider: "openrouter",
+        model: "microsoft/phi-2",
       });
     });
 
@@ -522,21 +624,57 @@ describe("findConfiguredProvider", () => {
       });
     });
 
-    test("should handle mixtral models", () => {
+    test("should handle gemini model with version", () => {
+      process.env.GEMINI_API_KEY = "test-key";
+      const result = findConfiguredProvider("aignehub", "gemini-1.5-pro");
+      expect(result).toEqual({
+        provider: "google",
+        model: "gemini-1.5-pro",
+      });
+    });
+
+    test("should handle o1 models", () => {
+      process.env.OPENAI_API_KEY = "test-key";
+      const result = findConfiguredProvider("aignehub", "o1-mini");
+      expect(result).toEqual({
+        provider: "openai",
+        model: "o1-mini",
+      });
+    });
+
+    test("should handle o3 models", () => {
+      process.env.OPENAI_API_KEY = "test-key";
+      const result = findConfiguredProvider("aignehub", "o3-mini");
+      expect(result).toEqual({
+        provider: "openai",
+        model: "o3-mini",
+      });
+    });
+
+    test("should handle mixtral models with bedrock", () => {
       process.env.AWS_ACCESS_KEY_ID = "test-key";
       const result = findConfiguredProvider("aignehub", "mixtral-8x7b");
       expect(result).toEqual({
         provider: "bedrock",
-        model: "mixtral-8x7b",
+        model: "mistral.mixtral-8x7b",
       });
     });
 
-    test("should handle llama2 model", () => {
+    test("should handle llama2 model with bedrock", () => {
       process.env.AWS_ACCESS_KEY_ID = "test-key";
       const result = findConfiguredProvider("aignehub", "llama2");
       expect(result).toEqual({
         provider: "bedrock",
-        model: "llama2",
+        model: "meta.llama2",
+      });
+    });
+
+    test("should handle qwen2 model with bedrock", () => {
+      process.env.AWS_ACCESS_KEY_ID = "test-key";
+      const result = findConfiguredProvider("aignehub", "qwen2");
+      expect(result).toEqual({
+        provider: "bedrock",
+        model: "qwen.qwen2",
       });
     });
   });

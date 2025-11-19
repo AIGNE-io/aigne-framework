@@ -4,9 +4,9 @@ import {
   AIGNE_HUB_URL,
   findImageModel,
   findModel,
-  getDefaultProviderForModel,
   getSupportedProviders,
   parseModel,
+  resolveProviderModelId,
 } from "@aigne/aigne-hub";
 import type {
   ChatModel,
@@ -41,12 +41,9 @@ export function findConfiguredProvider(provider?: string, name?: string) {
     if (match) {
       const requireEnvs = flat(match.apiKeyEnvName);
       if (requireEnvs.some((name) => name && process.env[name])) {
-        const defaultProvider = getDefaultProviderForModel(name);
-        const isRouterProvider = supportedProvider.toLowerCase() === defaultProvider?.toLowerCase();
-
         return {
           provider: supportedProvider,
-          model: isRouterProvider ? name : `${defaultProvider}/${name}`,
+          model: resolveProviderModelId(supportedProvider, name),
         };
       }
     }

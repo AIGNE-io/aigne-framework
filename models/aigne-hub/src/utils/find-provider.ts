@@ -99,3 +99,36 @@ export function getSupportedProviders(model: string): AIProviderType[] {
 
   return config.supportedProviders.sort((a, b) => PROVIDER_RANK[a] - PROVIDER_RANK[b]);
 }
+
+/**
+ * Resolve provider-specific model ID based on platform conventions
+ * @param provider - The provider name (e.g., 'openrouter', 'bedrock', 'google')
+ * @param canonicalModel - The canonical model name (e.g., 'gemini-2.5-pro', 'claude-3-5-sonnet-20241022')
+ * @param vendor - Optional vendor hint (e.g., 'google' for gemini models, 'anthropic' for claude)
+ * @returns Provider-specific model ID
+ *
+ * Examples:
+ * - OpenRouter: 'google/gemini-2.5-pro', 'openai/gpt-4o', 'anthropic/claude-3-5-sonnet'
+ * - Bedrock: 'anthropic.claude-3-5-sonnet-20241022-v2:0', 'meta.llama3-70b-instruct-v1:0'
+ * - Direct providers (google, openai, etc.): 'gemini-2.5-pro', 'gpt-4o'
+ */
+export function resolveProviderModelId(
+  provider: AIProviderType,
+  canonicalModel: string,
+  vendor?: string,
+): string {
+  const v = vendor || inferVendorFromModel(canonicalModel);
+
+  if (provider === "bedrock" && v) {
+    if (canonicalModel.includes(".")) {
+      return canonicalModel;
+    }
+    return `${v}.${canonicalModel}`;
+  }
+
+  if (provider === "openrouter" && v && !canonicalModel.startsWith(`${v}/`)) {
+    return `${v}/${canonicalModel}`;
+  }
+
+  return canonicalModel;
+}

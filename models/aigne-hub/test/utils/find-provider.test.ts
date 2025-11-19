@@ -3,6 +3,7 @@ import {
   getDefaultProviderForModel,
   getSupportedProviders,
   inferVendorFromModel,
+  resolveProviderModelId,
 } from "../../src/utils/find-provider.js";
 
 describe("inferVendorFromModel", () => {
@@ -354,5 +355,59 @@ describe("getSupportedProviders", () => {
     test("should handle sora models", () => {
       expect(getSupportedProviders("sora-1")).toEqual(["openai", "openrouter", "poe"]);
     });
+  });
+});
+
+describe("resolveProviderModelId - Platform-specific formatting", () => {
+  test("should format model ID correctly for OpenRouter", () => {
+    expect(resolveProviderModelId("openrouter", "gemini-2.0-flash-exp", "google")).toBe(
+      "google/gemini-2.0-flash-exp",
+    );
+    expect(resolveProviderModelId("openrouter", "gpt-4o", "openai")).toBe("openai/gpt-4o");
+    expect(resolveProviderModelId("openrouter", "claude-3-5-sonnet", "anthropic")).toBe(
+      "anthropic/claude-3-5-sonnet",
+    );
+  });
+
+  test("should format model ID correctly for Bedrock", () => {
+    expect(resolveProviderModelId("bedrock", "claude-3-5-sonnet-20241022", "anthropic")).toBe(
+      "anthropic.claude-3-5-sonnet-20241022",
+    );
+    expect(resolveProviderModelId("bedrock", "llama-3-70b", "meta")).toBe("meta.llama-3-70b");
+  });
+
+  test("should handle Bedrock models already in correct format", () => {
+    const bedrockModel = "anthropic.claude-3-5-sonnet-20241022-v2:0";
+    expect(resolveProviderModelId("bedrock", bedrockModel, "anthropic")).toBe(bedrockModel);
+  });
+
+  test("should keep model name unchanged for direct providers", () => {
+    expect(resolveProviderModelId("google", "gemini-2.0-flash-exp")).toBe("gemini-2.0-flash-exp");
+    expect(resolveProviderModelId("openai", "gpt-4o")).toBe("gpt-4o");
+    expect(resolveProviderModelId("anthropic", "claude-3-5-sonnet")).toBe("claude-3-5-sonnet");
+    expect(resolveProviderModelId("deepseek", "deepseek-chat")).toBe("deepseek-chat");
+  });
+
+  test("should keep model name unchanged for Poe", () => {
+    expect(resolveProviderModelId("poe", "gemini-2.0-flash-exp", "google")).toBe(
+      "gemini-2.0-flash-exp",
+    );
+    expect(resolveProviderModelId("poe", "gpt-4o", "openai")).toBe("gpt-4o");
+  });
+
+  test("should infer vendor when not provided", () => {
+    expect(resolveProviderModelId("openrouter", "gemini-2.0-flash-exp")).toBe(
+      "google/gemini-2.0-flash-exp",
+    );
+    expect(resolveProviderModelId("openrouter", "gpt-4o")).toBe("openai/gpt-4o");
+    expect(resolveProviderModelId("bedrock", "claude-3-5-sonnet")).toBe(
+      "anthropic.claude-3-5-sonnet",
+    );
+  });
+
+  test("should handle models with vendor prefix already present", () => {
+    expect(resolveProviderModelId("openrouter", "google/gemini-2.0-flash-exp", "google")).toBe(
+      "google/gemini-2.0-flash-exp",
+    );
   });
 });

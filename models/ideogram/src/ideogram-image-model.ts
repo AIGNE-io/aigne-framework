@@ -139,6 +139,7 @@ export class IdeogramImageModel extends ImageModel<
       method: "POST",
       headers: { "api-key": apiKey },
       body: formData,
+      timeout: 60 * 1000,
     });
 
     const data: { data: { url: string }[] } = await response.json();

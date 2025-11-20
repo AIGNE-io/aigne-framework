@@ -172,6 +172,7 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify(body),
+      timeout: 60 * 1000,
     });
 
     if (body.stream) {

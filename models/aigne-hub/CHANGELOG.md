@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.10-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.10-beta.3...aigne-hub-v0.10.10-beta.4) (2025-11-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/doubao bumped to 1.2.0-beta.3
+    * @aigne/ideogram bumped to 0.4.10-beta.4
+
 ## [0.10.10-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.10-beta.2...aigne-hub-v0.10.10-beta.3) (2025-11-19)
 
 

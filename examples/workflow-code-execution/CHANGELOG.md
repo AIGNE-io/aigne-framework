@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.18.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.18.0-beta.2...example-workflow-code-execution-v1.18.0-beta.3) (2025-11-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.56.0-beta.3
+
 ## [1.18.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-code-execution-v1.18.0-beta.1...example-workflow-code-execution-v1.18.0-beta.2) (2025-11-19)
 
 

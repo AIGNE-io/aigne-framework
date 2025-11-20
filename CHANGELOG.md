@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.87.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.87.0-beta.1...aigne-framework-v1.87.0-beta.2) (2025-11-20)
+
+
+### Bug Fixes
+
+* add timeout to doubao and ideogram image models ([#761](https://github.com/AIGNE-io/aigne-framework/issues/761)) ([c232483](https://github.com/AIGNE-io/aigne-framework/commit/c232483c6024426524c3310e64b22d9f63206227))
+
 ## [1.87.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.86.3-beta.1...aigne-framework-v1.87.0-beta.1) (2025-11-19)
 
 

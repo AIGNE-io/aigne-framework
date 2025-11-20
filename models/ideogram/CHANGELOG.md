@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.10-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.10-beta.3...ideogram-v0.4.10-beta.4) (2025-11-20)
+
+
+### Bug Fixes
+
+* add timeout to doubao and ideogram image models ([#761](https://github.com/AIGNE-io/aigne-framework/issues/761)) ([c232483](https://github.com/AIGNE-io/aigne-framework/commit/c232483c6024426524c3310e64b22d9f63206227))
+
 ## [0.4.10-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.10-beta.2...ideogram-v0.4.10-beta.3) (2025-11-19)
 
 

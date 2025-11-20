@@ -36,6 +36,7 @@ export interface IdeogramImageModelOptions
   baseURL?: string;
   model?: string;
   modelOptions?: Omit<Partial<IdeogramImageModelInput>, "model">;
+  clientOptions?: Record<string, any>;
 }
 
 const ideogramImageModelInputSchema = imageModelInputSchema.extend({});
@@ -45,6 +46,7 @@ const ideogramImageModelOptionsSchema = z.object({
   baseURL: z.string().optional(),
   model: z.string().optional(),
   modelOptions: z.object({}).optional(),
+  clientOptions: z.object({}).optional(),
 });
 
 export class IdeogramImageModel extends ImageModel<
@@ -139,7 +141,7 @@ export class IdeogramImageModel extends ImageModel<
       method: "POST",
       headers: { "api-key": apiKey },
       body: formData,
-      timeout: 60 * 1000,
+      timeout: this.options?.clientOptions?.timeout ?? 60 * 1000,
     });
 
     const data: { data: { url: string }[] } = await response.json();

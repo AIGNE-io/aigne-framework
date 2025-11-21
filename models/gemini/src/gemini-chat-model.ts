@@ -27,7 +27,7 @@ import {
   GoogleGenAI,
   type GoogleGenAIOptions,
   type Part,
-  type ThinkingLevel,
+  ThinkingLevel,
   type ToolListUnion,
 } from "@google/genai";
 import { z } from "zod";
@@ -119,6 +119,11 @@ export class GeminiChatModel extends ChatModel {
   // References: https://ai.google.dev/gemini-api/docs/thinking#set-budget
   protected thinkingBudgetModelMap = [
     {
+      pattern: /gemini-3/,
+      support: true,
+      type: "level",
+    },
+    {
       pattern: /gemini-2.5-pro/,
       support: true,
       min: 128,
@@ -150,18 +155,31 @@ export class GeminiChatModel extends ChatModel {
   };
 
   protected thinkingLevelMap = {
-    high: "high",
-    medium: "high",
-    low: "low",
-    minimal: "high",
+    high: ThinkingLevel.HIGH,
+    medium: ThinkingLevel.HIGH,
+    low: ThinkingLevel.LOW,
+    minimal: ThinkingLevel.LOW,
   };
 
   protected getThinkingBudget(
     model: string,
     effort: ChatModelInputOptions["reasoningEffort"],
-  ): { support: boolean; budget?: number } {
+  ): { support: boolean; budget?: number; level?: ThinkingLevel } {
     const m = this.thinkingBudgetModelMap.find((i) => i.pattern.test(model));
     if (!m?.support) return { support: false };
+
+    if (m.type === "level") {
+      let level = ThinkingLevel.THINKING_LEVEL_UNSPECIFIED;
+
+      if (typeof effort === "string") {
+        level = this.thinkingLevelMap[effort];
+      } else if (typeof effort === "number") {
+        level =
+          effort >= this.thinkingBudgetLevelMap["medium"] ? ThinkingLevel.HIGH : ThinkingLevel.LOW;
+      }
+
+      return { support: true, level };
+    }
 
     let budget =
       typeof effort === "string" ? this.thinkingBudgetLevelMap[effort] || undefined : effort;
@@ -183,34 +201,18 @@ export class GeminiChatModel extends ChatModel {
     const { contents, config } = await this.buildContents(input);
 
     const thinkingBudget = this.getThinkingBudget(model, modelOptions.reasoningEffort);
-    const getThinkingConfig = () => {
-      if (thinkingBudget.support) {
-        return {
-          includeThoughts: true,
-          thinkingBudget: thinkingBudget.budget,
-        };
-      }
-
-      if (model.includes("gemini-3")) {
-        const thinkingLevel =
-          typeof modelOptions.reasoningEffort === "string"
-            ? this.thinkingLevelMap[modelOptions.reasoningEffort] || this.thinkingLevelMap["high"]
-            : this.thinkingLevelMap["high"];
-
-        return {
-          includeThoughts: true,
-          thinkingLevel: thinkingLevel as ThinkingLevel,
-        };
-      }
-
-      return undefined;
-    };
 
     const parameters: GenerateContentParameters = {
       model,
       contents,
       config: {
-        thinkingConfig: getThinkingConfig(),
+        thinkingConfig: thinkingBudget.support
+          ? {
+              includeThoughts: true,
+              thinkingBudget: thinkingBudget.budget,
+              thinkingLevel: thinkingBudget.level,
+            }
+          : undefined,
         responseModalities: modelOptions.modalities,
         temperature: modelOptions.temperature,
         topP: modelOptions.topP,

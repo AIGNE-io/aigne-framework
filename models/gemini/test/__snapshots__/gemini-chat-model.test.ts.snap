@@ -16,6 +16,7 @@ exports[`GeminiChatModel.invoke should use tool result correctly 1`] = `
       "thinkingConfig": {
         "includeThoughts": true,
         "thinkingBudget": undefined,
+        "thinkingLevel": undefined,
       },
       "toolConfig": {
         "functionCallingConfig": {
@@ -110,4 +111,262 @@ exports[`GeminiChatModel.invoke should use tool result correctly 1`] = `
     "model": "gemini-2.5-flash",
   },
 ]
+`;
+
+exports[`GeminiChatModel should handle model options correctly for {
+  model: "gemini-3-pro-preview",
+} 1`] = `
+{
+  "frequencyPenalty": undefined,
+  "presencePenalty": undefined,
+  "responseModalities": undefined,
+  "temperature": undefined,
+  "thinkingConfig": {
+    "includeThoughts": true,
+    "thinkingBudget": undefined,
+    "thinkingLevel": "THINKING_LEVEL_UNSPECIFIED",
+  },
+  "toolConfig": {
+    "functionCallingConfig": undefined,
+  },
+  "tools": [],
+  "topP": undefined,
+}
+`;
+
+exports[`GeminiChatModel should handle model options correctly for {
+  model: "gemini-3-pro-preview",
+  reasoningEffort: "high",
+} 1`] = `
+{
+  "frequencyPenalty": undefined,
+  "presencePenalty": undefined,
+  "responseModalities": undefined,
+  "temperature": undefined,
+  "thinkingConfig": {
+    "includeThoughts": true,
+    "thinkingBudget": undefined,
+    "thinkingLevel": "HIGH",
+  },
+  "toolConfig": {
+    "functionCallingConfig": undefined,
+  },
+  "tools": [],
+  "topP": undefined,
+}
+`;
+
+exports[`GeminiChatModel should handle model options correctly for {
+  model: "gemini-3-pro-preview",
+  reasoningEffort: "medium",
+} 1`] = `
+{
+  "frequencyPenalty": undefined,
+  "presencePenalty": undefined,
+  "responseModalities": undefined,
+  "temperature": undefined,
+  "thinkingConfig": {
+    "includeThoughts": true,
+    "thinkingBudget": undefined,
+    "thinkingLevel": "HIGH",
+  },
+  "toolConfig": {
+    "functionCallingConfig": undefined,
+  },
+  "tools": [],
+  "topP": undefined,
+}
+`;
+
+exports[`GeminiChatModel should handle model options correctly for {
+  model: "gemini-3-pro-preview",
+  reasoningEffort: "low",
+} 1`] = `
+{
+  "frequencyPenalty": undefined,
+  "presencePenalty": undefined,
+  "responseModalities": undefined,
+  "temperature": undefined,
+  "thinkingConfig": {
+    "includeThoughts": true,
+    "thinkingBudget": undefined,
+    "thinkingLevel": "LOW",
+  },
+  "toolConfig": {
+    "functionCallingConfig": undefined,
+  },
+  "tools": [],
+  "topP": undefined,
+}
+`;
+
+exports[`GeminiChatModel should handle model options correctly for {
+  model: "gemini-3-pro-preview",
+  reasoningEffort: "minimal",
+} 1`] = `
+{
+  "frequencyPenalty": undefined,
+  "presencePenalty": undefined,
+  "responseModalities": undefined,
+  "temperature": undefined,
+  "thinkingConfig": {
+    "includeThoughts": true,
+    "thinkingBudget": undefined,
+    "thinkingLevel": "LOW",
+  },
+  "toolConfig": {
+    "functionCallingConfig": undefined,
+  },
+  "tools": [],
+  "topP": undefined,
+}
+`;
+
+exports[`GeminiChatModel should handle model options correctly for {
+  model: "gemini-3-pro-preview",
+  reasoningEffort: 10000,
+} 1`] = `
+{
+  "frequencyPenalty": undefined,
+  "presencePenalty": undefined,
+  "responseModalities": undefined,
+  "temperature": undefined,
+  "thinkingConfig": {
+    "includeThoughts": true,
+    "thinkingBudget": undefined,
+    "thinkingLevel": "HIGH",
+  },
+  "toolConfig": {
+    "functionCallingConfig": undefined,
+  },
+  "tools": [],
+  "topP": undefined,
+}
+`;
+
+exports[`GeminiChatModel should handle model options correctly for {
+  model: "gemini-2.5-pro",
+} 1`] = `
+{
+  "frequencyPenalty": undefined,
+  "presencePenalty": undefined,
+  "responseModalities": undefined,
+  "temperature": undefined,
+  "thinkingConfig": {
+    "includeThoughts": true,
+    "thinkingBudget": undefined,
+    "thinkingLevel": undefined,
+  },
+  "toolConfig": {
+    "functionCallingConfig": undefined,
+  },
+  "tools": [],
+  "topP": undefined,
+}
+`;
+
+exports[`GeminiChatModel should handle model options correctly for {
+  model: "gemini-2.5-pro",
+  reasoningEffort: "high",
+} 1`] = `
+{
+  "frequencyPenalty": undefined,
+  "presencePenalty": undefined,
+  "responseModalities": undefined,
+  "temperature": undefined,
+  "thinkingConfig": {
+    "includeThoughts": true,
+    "thinkingBudget": 32768,
+    "thinkingLevel": undefined,
+  },
+  "toolConfig": {
+    "functionCallingConfig": undefined,
+  },
+  "tools": [],
+  "topP": undefined,
+}
+`;
+
+exports[`GeminiChatModel should handle model options correctly for {
+  model: "gemini-2.5-pro",
+  reasoningEffort: "medium",
+} 1`] = `
+{
+  "frequencyPenalty": undefined,
+  "presencePenalty": undefined,
+  "responseModalities": undefined,
+  "temperature": undefined,
+  "thinkingConfig": {
+    "includeThoughts": true,
+    "thinkingBudget": 10000,
+    "thinkingLevel": undefined,
+  },
+  "toolConfig": {
+    "functionCallingConfig": undefined,
+  },
+  "tools": [],
+  "topP": undefined,
+}
+`;
+
+exports[`GeminiChatModel should handle model options correctly for {
+  model: "gemini-2.5-pro",
+  reasoningEffort: "low",
+} 1`] = `
+{
+  "frequencyPenalty": undefined,
+  "presencePenalty": undefined,
+  "responseModalities": undefined,
+  "temperature": undefined,
+  "thinkingConfig": {
+    "includeThoughts": true,
+    "thinkingBudget": 5000,
+    "thinkingLevel": undefined,
+  },
+  "toolConfig": {
+    "functionCallingConfig": undefined,
+  },
+  "tools": [],
+  "topP": undefined,
+}
+`;
+
+exports[`GeminiChatModel should handle model options correctly for {
+  model: "gemini-2.5-pro",
+  reasoningEffort: "minimal",
+} 1`] = `
+{
+  "frequencyPenalty": undefined,
+  "presencePenalty": undefined,
+  "responseModalities": undefined,
+  "temperature": undefined,
+  "thinkingConfig": {
+    "includeThoughts": true,
+    "thinkingBudget": 200,
+    "thinkingLevel": undefined,
+  },
+  "toolConfig": {
+    "functionCallingConfig": undefined,
+  },
+  "tools": [],
+  "topP": undefined,
+}
+`;
+
+exports[`GeminiChatModel should handle model options correctly for {
+  model: "gemini-1.5-pro",
+  reasoningEffort: "high",
+} 1`] = `
+{
+  "frequencyPenalty": undefined,
+  "presencePenalty": undefined,
+  "responseModalities": undefined,
+  "temperature": undefined,
+  "thinkingConfig": undefined,
+  "toolConfig": {
+    "functionCallingConfig": undefined,
+  },
+  "tools": [],
+  "topP": undefined,
+}
 `;

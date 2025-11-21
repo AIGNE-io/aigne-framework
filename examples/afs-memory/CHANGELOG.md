@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.10.73-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.73-beta.4...example-afs-memory-v0.10.73-beta.5) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.56.0-beta.4
+
 ## [0.10.73-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.73-beta.3...example-afs-memory-v0.10.73-beta.4) (2025-11-20)
 
 

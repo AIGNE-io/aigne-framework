@@ -486,7 +486,7 @@ export class AIGNEContext implements Context {
 
     AIGNEContext.exitCount++;
 
-    process.on("SIGINT", async () => {
+    process.once("SIGINT", async () => {
       try {
         if (process.env.AIGNE_OBSERVABILITY_DISABLED) return;
 

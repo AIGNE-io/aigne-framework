@@ -523,41 +523,25 @@ export class AIGNEContext implements Context {
 
           span.setAttribute("metadata", JSON.stringify(this.internal.metadata ?? {}));
           span.setAttribute("custom.started_at", b.timestamp);
-          // span.setAttribute("input", JSON.stringify(input));
           span.setAttribute("agentTag", agent.tag ?? "UnknownAgent");
 
           if (taskTitle) {
             span.setAttribute("taskTitle", taskTitle);
           }
 
-          try {
-            span.setAttribute("userContext", JSON.stringify(this.userContext));
-          } catch (_e) {
-            logger.error("parse userContext error", _e.message);
-            span.setAttribute("userContext", JSON.stringify({}));
-          }
-
-          try {
-            span.setAttribute("memories", JSON.stringify(this.memories));
-          } catch (_e) {
-            logger.error("parse memories error", _e.message);
-            span.setAttribute("memories", JSON.stringify([]));
-          }
-
           await this.observer?.flush(span);
-          await this.observer?.update(this.id, { input });
+          await this.observer?.update(this.id, {
+            input,
+            memories: this.memories,
+            userContext: this.userContext,
+          });
 
           break;
         }
         case "agentSucceed": {
           const { output } = args[0] as ContextEventMap["agentSucceed"][0];
 
-          try {
-            span.setAttribute("output", JSON.stringify(output));
-          } catch (_e) {
-            logger.error("parse output error", _e.message);
-            span.setAttribute("output", JSON.stringify({}));
-          }
+          await this.observer?.update(this.id, { output });
 
           span.setStatus({ code: SpanStatusCode.OK });
           span.end();

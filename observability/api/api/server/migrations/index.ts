@@ -113,21 +113,6 @@ const migrations = [
       );
     },
   },
-  {
-    hash: "20251120_add_input_output_columns",
-    async sql(db: DB) {
-      const hasInputColumn = await columnExists(db, "Trace", "input");
-      const hasOutputColumn = await columnExists(db, "Trace", "output");
-
-      if (!hasInputColumn) {
-        await db.run(sql`ALTER TABLE Trace ADD COLUMN input TEXT;`);
-      }
-
-      if (!hasOutputColumn) {
-        await db.run(sql`ALTER TABLE Trace ADD COLUMN output TEXT;`);
-      }
-    },
-  },
 ];
 
 export default migrations;

@@ -121,8 +121,6 @@ export default ({
           inputLength: sql<number>`LENGTH(COALESCE(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT), ''))`,
           outputPreview: sql<string>`SUBSTR(COALESCE(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT), ''), 1, 150)`,
           outputLength: sql<number>`LENGTH(COALESCE(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT), ''))`,
-          inputPreview1: sql<string>`SUBSTR(COALESCE(CAST(${Trace.input} AS TEXT), ''), 1, 150)`,
-          inputLength1: sql<number>`LENGTH(COALESCE(CAST(${Trace.input} AS TEXT), ''))`,
           metadata: sql<string>`JSON_EXTRACT(${Trace.attributes}, '$.metadata')`,
           userId: Trace.userId,
           componentId: Trace.componentId,
@@ -141,23 +139,12 @@ export default ({
     const total = Number((count[0] as { count: string }).count ?? 0);
 
     const processedRootCalls = rootCalls.map((call) => {
-      const {
-        inputPreview,
-        inputLength,
-        inputPreview1,
-        inputLength1,
-        outputPreview,
-        outputLength,
-        metadata,
-        ...rest
-      } = call;
+      const { inputPreview, inputLength, outputPreview, outputLength, metadata, ...rest } = call;
 
       return {
         ...rest,
         attributes: {
-          input: inputLength
-            ? inputPreview + (inputLength > 150 ? "..." : "")
-            : inputPreview1 + (inputLength1 > 150 ? "..." : ""),
+          input: inputPreview + (inputLength > 150 ? "..." : ""),
           output: outputPreview + (outputLength > 150 ? "..." : ""),
           metadata: metadata ? JSON.parse(metadata) : null,
         },

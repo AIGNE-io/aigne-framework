@@ -113,8 +113,7 @@ export default function TraceDetailPanel({
 
   const value = useMemo(() => {
     if (tab === "input") {
-      // New version save to input not attributes
-      return trace?.attributes?.input || trace?.input;
+      return trace?.attributes?.input;
     }
 
     if (tab === "output") {
@@ -147,7 +146,6 @@ export default function TraceDetailPanel({
     trace?.attributes?.userContext,
     trace?.attributes?.memories,
     output,
-    trace?.input,
   ]);
 
   const prices = useMemo(() => {

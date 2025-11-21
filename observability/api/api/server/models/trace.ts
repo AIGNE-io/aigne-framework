@@ -31,6 +31,4 @@ export const Trace = sqliteTable("Trace", {
   cost: real("cost").$defaultFn(() => 0),
   remark: text("remark"),
   isImport: integer("isImport").$defaultFn(() => 0),
-  input: json("input").notNull(), // 数据量比较大，最好单独存，不走 span
-  output: json("output").notNull(), // 数据量比较大，最好单独存，不走 span
 });

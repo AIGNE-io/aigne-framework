@@ -48,81 +48,93 @@ const getPriceValue = (
   return price;
 };
 
-export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
-  if (Number(trace.endTime) > 0) {
-    const model = trace.attributes?.output?.model;
+const getTokenAndCost = async (
+  db: LibSQLDatabase,
+  data: {
+    id: string;
+    output: Record<string, any>;
+  },
+) => {
+  const { id, output } = data;
+  const model = output?.model;
 
-    const traces: { id: string; token: number | null; cost: number | null }[] = await db
-      .select({
-        id: Trace.id,
-        token: Trace.token,
-        cost: Trace.cost,
-      })
-      .from(Trace)
-      .where(eq(Trace.parentId, trace.id))
-      .execute();
+  const traces: { id: string; token: number | null; cost: number | null }[] = await db
+    .select({
+      id: Trace.id,
+      token: Trace.token,
+      cost: Trace.cost,
+    })
+    .from(Trace)
+    .where(eq(Trace.parentId, id))
+    .execute();
 
-    if (traces.length > 0) {
-      const tokenDecimal = traces.reduce((acc, curr) => acc.plus(curr.token || 0), new Decimal(0));
-      trace.token = tokenDecimal.toNumber();
+  let token = 0;
+  let cost = 0;
 
-      const costDecimal = traces.reduce((acc, curr) => acc.plus(curr.cost || 0), new Decimal(0));
-      trace.cost = costDecimal.gt(0) ? Number(costDecimal.toFixed(6)) : 0;
-    } else {
-      const inputTokens = trace.attributes?.output?.usage?.inputTokens || 0;
-      const outputTokens = trace.attributes?.output?.usage?.outputTokens || 0;
-      const seconds = trace.attributes?.output?.seconds || 4;
+  if (traces.length > 0) {
+    const tokenDecimal = traces.reduce((acc, curr) => acc.plus(curr.token || 0), new Decimal(0));
+    token = tokenDecimal.toNumber();
 
-      trace.token = new Decimal(inputTokens).plus(outputTokens).toNumber();
+    const costDecimal = traces.reduce((acc, curr) => acc.plus(curr.cost || 0), new Decimal(0));
+    cost = costDecimal.gt(0) ? Number(costDecimal.toFixed(6)) : 0;
+  } else {
+    const inputTokens = output?.usage?.inputTokens || 0;
+    const outputTokens = output?.usage?.outputTokens || 0;
+    const seconds = output?.seconds || 4;
 
-      let prices: Record<string, ModelPrice> = {};
-      try {
-        if (process?.env?.BLOCKLET_APP_DIR) {
-          const fullPath = path.resolve(process.env.BLOCKLET_APP_DIR, "dist", "model-prices.json");
-          const content = readFileSync(fullPath, "utf-8");
-          prices = JSON.parse(content);
-        } else {
-          const fullPath = "../../../dist/model-prices.json";
-          // @ts-ignore
-          prices = await import(fullPath, { with: { type: "json" } }).then((res) => res.default);
-        }
-      } catch (err) {
-        console.warn(
-          `[Observability] Failed to load model prices: ${err.message}. Cost calculation will be disabled.`,
-        );
-        prices = {};
-      }
+    token = new Decimal(inputTokens).plus(outputTokens).toNumber();
 
-      const getCost = (value?: ModelPrice) => {
-        if (!value) return 0;
-
-        if (value.mode === "image_generation") {
-          return value.output_cost_per_image || 0;
-        }
-
-        if (value.mode === "video_generation") {
-          return Number(
-            new Decimal(seconds).mul(value.output_cost_per_video_per_second || 0).toFixed(6),
-          );
-        }
-
-        return Number(
-          new Decimal(inputTokens)
-            .mul(value.input_cost_per_token || 0)
-            .plus(new Decimal(outputTokens).mul(value.output_cost_per_token || 0))
-            .toFixed(6),
-        );
-      };
-
-      if (prices && Object.keys(prices).length > 0 && model) {
-        const value = getPriceValue(prices, model);
-        trace.cost = getCost(value);
+    let prices: Record<string, ModelPrice> = {};
+    try {
+      if (process?.env?.BLOCKLET_APP_DIR) {
+        const fullPath = path.resolve(process.env.BLOCKLET_APP_DIR, "dist", "model-prices.json");
+        const content = readFileSync(fullPath, "utf-8");
+        prices = JSON.parse(content);
       } else {
-        trace.cost = 0;
+        const fullPath = "../../../dist/model-prices.json";
+        // @ts-ignore
+        prices = await import(fullPath, { with: { type: "json" } }).then((res) => res.default);
       }
+    } catch (err) {
+      console.warn(
+        `[Observability] Failed to load model prices: ${err.message}. Cost calculation will be disabled.`,
+      );
+      prices = {};
+    }
+
+    const getCost = (value?: ModelPrice) => {
+      if (!value) return 0;
+
+      if (value.mode === "image_generation") {
+        return value.output_cost_per_image || 0;
+      }
+
+      if (value.mode === "video_generation") {
+        return Number(
+          new Decimal(seconds).mul(value.output_cost_per_video_per_second || 0).toFixed(6),
+        );
+      }
+
+      return Number(
+        new Decimal(inputTokens)
+          .mul(value.input_cost_per_token || 0)
+          .plus(new Decimal(outputTokens).mul(value.output_cost_per_token || 0))
+          .toFixed(6),
+      );
+    };
+
+    if (prices && Object.keys(prices).length > 0 && model) {
+      const value = getPriceValue(prices, model);
+      cost = getCost(value);
+    } else {
+      cost = 0;
     }
   }
 
+  return { token, cost };
+};
+
+export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
   const insertSql = sql`
     INSERT INTO Trace (
       id,
@@ -162,7 +174,6 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
       name = excluded.name,
       startTime = excluded.startTime,
       endTime = excluded.endTime,
-      attributes = excluded.attributes,
       status = excluded.status,
       userId = excluded.userId,
       sessionId = excluded.sessionId,
@@ -191,29 +202,45 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
 };
 
 export const updateTrace = async (db: LibSQLDatabase, id: string, data: AttributeParams) => {
-  const count = await db
-    .select({ count: sql`count(*)` })
+  // get existing attributes
+  const existing = await db
+    .select({ attributes: Trace.attributes })
     .from(Trace)
     .where(eq(Trace.id, id))
     .execute();
-  const total = Number((count[0] as { count: string }).count ?? 0);
-  if (!total) return;
 
-  if (data.input && Object.keys(data.input).length > 0) {
-    const updateSql = sql`
-      UPDATE Trace
-      SET input = ${JSON.stringify(data.input)}
-      WHERE id = ${id}
-    `;
-    await db?.run?.(updateSql);
-  }
+  if (!existing.length) return;
 
-  if (data.output && Object.keys(data.output).length > 0) {
-    const updateSql = sql`
-      UPDATE Trace
-      SET output = ${JSON.stringify(data.output)}
-      WHERE id = ${id}
-    `;
-    await db?.run?.(updateSql);
-  }
+  const currentAttributes = (existing[0]?.attributes || {}) as AttributeParams;
+  const hasInput = data.input && Object.keys(data.input).length > 0;
+  const hasOutput = data.output && Object.keys(data.output).length > 0;
+  const hasUserContext = data.userContext && Object.keys(data.userContext).length > 0;
+  const hasMemories = data.memories && Object.keys(data.memories).length > 0;
+
+  if (!hasInput && !hasOutput && !hasUserContext && !hasMemories) return;
+
+  // merge attributes
+  const updatedAttributes = {
+    ...currentAttributes,
+    ...(hasInput && { input: data.input }),
+    ...(hasOutput && { output: data.output }),
+    ...(hasUserContext && { userContext: data.userContext }),
+    ...(hasMemories && { memories: data.memories }),
+  };
+
+  // calculate token and cost
+  const { token, cost } =
+    hasOutput && data.output
+      ? await getTokenAndCost(db, { id, output: data.output })
+      : { token: 0, cost: 0 };
+
+  // update all fields at once
+  const updateSql = sql`
+    UPDATE Trace
+    SET attributes = ${JSON.stringify(updatedAttributes)}
+    ${hasOutput ? sql`, token = ${token}, cost = ${cost}` : sql``}
+    WHERE id = ${id}
+  `;
+
+  await db?.run?.(updateSql);
 };

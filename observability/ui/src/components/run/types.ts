@@ -35,7 +35,6 @@ export interface TraceData {
   token?: number;
   cost?: number;
   remark?: string;
-  input?: Record<string, unknown>;
 }
 
 export interface RunDetailDrawerProps {

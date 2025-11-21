@@ -14,6 +14,7 @@ export type AttributeParams = {
   output?: { [key: string]: any };
   userContext?: { [key: string]: any };
   memories?: { [key: string]: any };
+  status?: { [key: string]: any };
 };
 
 export type TraceFormatSpans = Omit<

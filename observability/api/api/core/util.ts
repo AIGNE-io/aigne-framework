@@ -134,6 +134,24 @@ const getTokenAndCost = async (
   return { token, cost };
 };
 
+/**
+ * Propagate the error status of the root trace to all child traces that have not set the status.
+ */
+const propagateErrorStatusToChildren = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
+  if (trace.rootId && !trace.parentId && (trace.status as any)?.code === SpanStatusCode.ERROR) {
+    await db
+      .update(Trace)
+      .set({ status: trace.status })
+      .where(
+        and(
+          eq(Trace.rootId, trace.rootId),
+          sql`json_extract(${Trace.status}, '$.code') = ${SpanStatusCode.UNSET}`,
+        ),
+      )
+      .execute();
+  }
+};
+
 export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
   const insertSql = sql`
     INSERT INTO Trace (
@@ -185,38 +203,23 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
   await db?.run?.(insertSql);
 
   // Batch update status to ERROR if the root trace is ERROR
-  if (trace.rootId && !trace.parentId && (trace.status as any)?.code === SpanStatusCode.ERROR) {
-    await db
-      .update(Trace)
-      .set({ status: trace.status })
-      .where(
-        and(
-          eq(Trace.rootId, trace.rootId),
-          sql`json_extract(${Trace.status}, '$.code') = ${SpanStatusCode.UNSET}`,
-        ),
-      )
-      .execute();
-  }
+  await propagateErrorStatusToChildren(db, trace);
 };
 
 export const updateTrace = async (db: LibSQLDatabase, id: string, data: AttributeParams) => {
   // get existing attributes
-  const existing = await db
-    .select({ attributes: Trace.attributes })
-    .from(Trace)
-    .where(eq(Trace.id, id))
-    .execute();
-
+  const existing = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
   if (!existing.length) return;
 
   const trace = existing[0];
+  if (!trace) return;
+
   const currentAttributes = trace?.attributes as AttributeParams;
+
   const hasInput = data.input && Object.keys(data.input).length > 0;
   const hasOutput = data.output && Object.keys(data.output).length > 0;
   const hasUserContext = data.userContext && Object.keys(data.userContext).length > 0;
   const hasMemories = data.memories && Object.keys(data.memories).length > 0;
-
-  if (!hasInput && !hasOutput && !hasUserContext && !hasMemories) return;
 
   let attributes: AttributeParams = {};
   if (currentAttributes && typeof currentAttributes === "string") {
@@ -245,13 +248,25 @@ export const updateTrace = async (db: LibSQLDatabase, id: string, data: Attribut
       ? await getTokenAndCost(db, { id, output: data.output })
       : { token: 0, cost: 0 };
 
-  await db
-    .update(Trace)
-    .set({
-      attributes: updatedAttributes,
-      token: token || 0,
-      cost: cost || 0,
-    })
-    .where(eq(Trace.id, id))
-    .execute();
+  const params: {
+    attributes: AttributeParams;
+    token: number;
+    cost: number;
+    status?: { [key: string]: any };
+    endTime?: number;
+  } = {
+    attributes: updatedAttributes,
+    token: token || 0,
+    cost: cost || 0,
+  };
+
+  if (data.status) {
+    params.status = data.status;
+    params.endTime = Date.now();
+  }
+
+  await db.update(Trace).set(params).where(eq(Trace.id, id)).execute();
+
+  // @ts-ignore
+  await propagateErrorStatusToChildren(db, { ...trace, status: data.status });
 };

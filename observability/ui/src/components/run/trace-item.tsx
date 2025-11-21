@@ -140,17 +140,19 @@ function TraceItem({
           {name}
         </Typography>
 
-        <Typography
-          sx={{
-            fontSize: 12,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            color: hasError ? "error.light" : isPending ? "warning.light" : "action.active",
-          }}
-        >
-          {`${taskTitle ? `(${taskTitle})` : ""}`}
-        </Typography>
+        {taskTitle && (
+          <Typography
+            sx={{
+              fontSize: 12,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              color: hasError ? "error.light" : isPending ? "warning.light" : "action.active",
+            }}
+          >
+            {`(${taskTitle})`}
+          </Typography>
+        )}
 
         {hasError && (
           <ErrorIcon sx={{ fontSize: 16, color: "error.light", opacity: 0.8, flexShrink: 0 }} />

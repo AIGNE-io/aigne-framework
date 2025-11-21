@@ -277,7 +277,6 @@ export class GeminiChatModel extends ChatModel {
                   },
                 };
 
-                console.log("toolCall", part.thoughtSignature);
                 // Preserve thought_signature for 3.x models
                 if (part.thoughtSignature && model.includes("gemini-3")) {
                   toolCall.metadata = {

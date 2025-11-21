@@ -19,7 +19,7 @@ export type AttributeParams = {
 
 export type TraceFormatSpans = Omit<
   InferInsertModel<typeof Trace>,
-  "id" | "rootId" | "attributes" | "input" | "output"
+  "id" | "rootId" | "attributes"
 > & {
   id: string;
   rootId: string;

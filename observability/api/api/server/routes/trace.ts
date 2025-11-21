@@ -330,9 +330,7 @@ export default ({
     const db = req.app.locals.db as LibSQLDatabase;
     const trace = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
     if (trace.length === 0) throw new Error(`Not found trace: ${id}`);
-    const data = trace[0];
-
-    res.json({ data });
+    res.json({ data: trace[0] });
   });
 
   router.get("/tree/:id", async (req: Request, res: Response) => {

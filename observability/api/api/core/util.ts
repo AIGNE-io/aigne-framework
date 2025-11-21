@@ -48,7 +48,7 @@ const getPriceValue = (
   return price;
 };
 
-const getTokenAndCost = async (
+const calculateTokenAndCost = async (
   db: LibSQLDatabase,
   data: {
     id: string;
@@ -245,7 +245,7 @@ export const updateTrace = async (db: LibSQLDatabase, id: string, data: Attribut
   // calculate token and cost
   const { token, cost } =
     hasOutput && data.output
-      ? await getTokenAndCost(db, { id, output: data.output })
+      ? await calculateTokenAndCost(db, { id, output: data.output })
       : { token: 0, cost: 0 };
 
   const params: {
@@ -267,6 +267,8 @@ export const updateTrace = async (db: LibSQLDatabase, id: string, data: Attribut
 
   await db.update(Trace).set(params).where(eq(Trace.id, id)).execute();
 
-  // @ts-ignore
-  await propagateErrorStatusToChildren(db, { ...trace, status: data.status });
+  if (data.status) {
+    // @ts-ignore
+    await propagateErrorStatusToChildren(db, { ...trace, status: data.status });
+  }
 };

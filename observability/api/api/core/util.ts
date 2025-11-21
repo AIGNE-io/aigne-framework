@@ -179,8 +179,6 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
       sessionId = excluded.sessionId,
       componentId = excluded.componentId,
       action = excluded.action,
-      token = excluded.token,
-      cost = excluded.cost,
       isImport = excluded.isImport;
   `;
 
@@ -211,7 +209,8 @@ export const updateTrace = async (db: LibSQLDatabase, id: string, data: Attribut
 
   if (!existing.length) return;
 
-  const currentAttributes = (existing[0]?.attributes || {}) as AttributeParams;
+  const trace = existing[0];
+  const currentAttributes = trace?.attributes as AttributeParams;
   const hasInput = data.input && Object.keys(data.input).length > 0;
   const hasOutput = data.output && Object.keys(data.output).length > 0;
   const hasUserContext = data.userContext && Object.keys(data.userContext).length > 0;
@@ -219,9 +218,21 @@ export const updateTrace = async (db: LibSQLDatabase, id: string, data: Attribut
 
   if (!hasInput && !hasOutput && !hasUserContext && !hasMemories) return;
 
+  let attributes: AttributeParams = {};
+  if (currentAttributes && typeof currentAttributes === "string") {
+    try {
+      attributes = JSON.parse(currentAttributes);
+    } catch (error) {
+      console.error("parse attributes error", error.message);
+      attributes = {};
+    }
+  } else if (currentAttributes && typeof currentAttributes === "object") {
+    attributes = currentAttributes;
+  }
+
   // merge attributes
   const updatedAttributes = {
-    ...currentAttributes,
+    ...attributes,
     ...(hasInput && { input: data.input }),
     ...(hasOutput && { output: data.output }),
     ...(hasUserContext && { userContext: data.userContext }),
@@ -234,13 +245,13 @@ export const updateTrace = async (db: LibSQLDatabase, id: string, data: Attribut
       ? await getTokenAndCost(db, { id, output: data.output })
       : { token: 0, cost: 0 };
 
-  // update all fields at once
-  const updateSql = sql`
-    UPDATE Trace
-    SET attributes = ${JSON.stringify(updatedAttributes)}
-    ${hasOutput ? sql`, token = ${token}, cost = ${cost}` : sql``}
-    WHERE id = ${id}
-  `;
-
-  await db?.run?.(updateSql);
+  await db
+    .update(Trace)
+    .set({
+      attributes: updatedAttributes,
+      token: token || 0,
+      cost: cost || 0,
+    })
+    .where(eq(Trace.id, id))
+    .execute();
 };

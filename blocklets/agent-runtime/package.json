@@ -1,7 +1,7 @@
 {
   "name": "agent-runtime",
   "private": true,
-  "version": "1.6.5-beta.5",
+  "version": "1.6.5",
   "scripts": {
     "dev": "blocklet dev",
     "lint": "tsc --noEmit && tsc -p tsconfig.api.json --noEmit && biome check",

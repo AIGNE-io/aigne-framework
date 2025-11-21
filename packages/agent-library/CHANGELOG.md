@@ -7,6 +7,17 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.22.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.0-beta.2...agent-library-v1.22.0) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0
+    * @aigne/openai bumped to 0.16.10
+    * @aigne/sqlite bumped to 0.4.6
+
 ## [1.22.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.0-beta.1...agent-library-v1.22.0-beta.2) (2025-11-19)
 
 

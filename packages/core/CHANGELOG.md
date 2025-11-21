@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.69.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.0-beta.2...core-v1.69.0) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-history bumped to 1.1.0
+    * @aigne/observability-api bumped to 0.11.9
+
 ## [1.69.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.0-beta.1...core-v1.69.0-beta.2) (2025-11-19)
 
 

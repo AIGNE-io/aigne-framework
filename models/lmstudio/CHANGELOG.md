@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/AIGNE-io/aigne-framework/compare/lmstudio-v1.1.0-beta.2...lmstudio-v1.1.0) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10
+  * devDependencies
+    * @aigne/core bumped to 1.69.0
+    * @aigne/test-utils bumped to 0.5.63
+
 ## [1.1.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/lmstudio-v1.1.0-beta.1...lmstudio-v1.1.0-beta.2) (2025-11-19)
 
 

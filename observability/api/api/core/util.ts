@@ -5,7 +5,7 @@ import Decimal from "decimal.js";
 import { and, eq, sql } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import { Trace } from "../server/models/trace.js";
-import type { TraceFormatSpans } from "./type.ts";
+import type { AttributeParams, TraceFormatSpans } from "./type.ts";
 
 export const isBlocklet = !!process.env.BLOCKLET_APP_DIR && !!process.env.BLOCKLET_PORT;
 
@@ -187,5 +187,33 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
         ),
       )
       .execute();
+  }
+};
+
+export const updateTrace = async (db: LibSQLDatabase, id: string, data: AttributeParams) => {
+  const count = await db
+    .select({ count: sql`count(*)` })
+    .from(Trace)
+    .where(eq(Trace.id, id))
+    .execute();
+  const total = Number((count[0] as { count: string }).count ?? 0);
+  if (!total) return;
+
+  if (data.input && Object.keys(data.input).length > 0) {
+    const updateSql = sql`
+      UPDATE Trace
+      SET input = ${JSON.stringify(data.input)}
+      WHERE id = ${id}
+    `;
+    await db?.run?.(updateSql);
+  }
+
+  if (data.output && Object.keys(data.output).length > 0) {
+    const updateSql = sql`
+      UPDATE Trace
+      SET output = ${JSON.stringify(data.output)}
+      WHERE id = ${id}
+    `;
+    await db?.run?.(updateSql);
   }
 };

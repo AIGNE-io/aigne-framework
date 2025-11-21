@@ -9,18 +9,16 @@ export const AIGNEObserverOptionsSchema = z
 
 export type AIGNEObserverOptions = z.infer<typeof AIGNEObserverOptionsSchema>;
 
+export type AttributeParams = {
+  input?: { [key: string]: any };
+  output?: { [key: string]: any };
+};
+
 export type TraceFormatSpans = Omit<
   InferInsertModel<typeof Trace>,
-  "id" | "rootId" | "attributes"
+  "id" | "rootId" | "attributes" | "input" | "output"
 > & {
   id: string;
   rootId: string;
-  attributes?: {
-    input?: {
-      [key: string]: any;
-    };
-    output?: {
-      [key: string]: any;
-    };
-  };
+  attributes?: AttributeParams;
 };

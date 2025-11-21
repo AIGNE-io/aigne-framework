@@ -523,7 +523,7 @@ export class AIGNEContext implements Context {
 
           span.setAttribute("metadata", JSON.stringify(this.internal.metadata ?? {}));
           span.setAttribute("custom.started_at", b.timestamp);
-          span.setAttribute("input", JSON.stringify(input));
+          // span.setAttribute("input", JSON.stringify(input));
           span.setAttribute("agentTag", agent.tag ?? "UnknownAgent");
 
           if (taskTitle) {
@@ -545,6 +545,7 @@ export class AIGNEContext implements Context {
           }
 
           await this.observer?.flush(span);
+          await this.observer?.update(this.id, { input });
 
           break;
         }

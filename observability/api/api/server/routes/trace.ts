@@ -8,7 +8,7 @@ import type SSE from "express-sse";
 import unzipper from "unzipper";
 import { parse, stringify } from "yaml";
 import { z } from "zod";
-import { insertTrace } from "../../core/util.js";
+import { insertTrace, updateTrace } from "../../core/util.js";
 import type { FileData, ImageData } from "../base.js";
 import { Trace } from "../models/trace.js";
 import { getGlobalSettingPath } from "../utils/index.js";
@@ -121,6 +121,8 @@ export default ({
           inputLength: sql<number>`LENGTH(COALESCE(CAST(JSON_EXTRACT(${Trace.attributes}, '$.input') AS TEXT), ''))`,
           outputPreview: sql<string>`SUBSTR(COALESCE(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT), ''), 1, 150)`,
           outputLength: sql<number>`LENGTH(COALESCE(CAST(JSON_EXTRACT(${Trace.attributes}, '$.output') AS TEXT), ''))`,
+          inputPreview1: sql<string>`SUBSTR(COALESCE(CAST(${Trace.input} AS TEXT), ''), 1, 150)`,
+          inputLength1: sql<number>`LENGTH(COALESCE(CAST(${Trace.input} AS TEXT), ''))`,
           metadata: sql<string>`JSON_EXTRACT(${Trace.attributes}, '$.metadata')`,
           userId: Trace.userId,
           componentId: Trace.componentId,
@@ -139,11 +141,23 @@ export default ({
     const total = Number((count[0] as { count: string }).count ?? 0);
 
     const processedRootCalls = rootCalls.map((call) => {
-      const { inputPreview, inputLength, outputPreview, outputLength, metadata, ...rest } = call;
+      const {
+        inputPreview,
+        inputLength,
+        inputPreview1,
+        inputLength1,
+        outputPreview,
+        outputLength,
+        metadata,
+        ...rest
+      } = call;
+
       return {
         ...rest,
         attributes: {
-          input: inputPreview + (inputLength > 150 ? "..." : ""),
+          input: inputLength
+            ? inputPreview + (inputLength > 150 ? "..." : "")
+            : inputPreview1 + (inputLength1 > 150 ? "..." : ""),
           output: outputPreview + (outputLength > 150 ? "..." : ""),
           metadata: metadata ? JSON.parse(metadata) : null,
         },
@@ -329,7 +343,9 @@ export default ({
     const db = req.app.locals.db as LibSQLDatabase;
     const trace = await db.select().from(Trace).where(eq(Trace.id, id)).execute();
     if (trace.length === 0) throw new Error(`Not found trace: ${id}`);
-    res.json({ data: trace[0] });
+    const data = trace[0];
+
+    res.json({ data });
   });
 
   router.get("/tree/:id", async (req: Request, res: Response) => {
@@ -449,6 +465,20 @@ export default ({
       sse.send({ type: "event", data: {} });
     }
 
+    res.json({ code: 0, message: "ok" });
+  });
+
+  router.put("/tree/:id", async (req: Request, res: Response) => {
+    const db = req.app.locals.db as LibSQLDatabase;
+    const { id } = req.params;
+    const { input, output } = req.body;
+
+    if (!id) {
+      res.status(400).json({ error: "id is required" });
+      return;
+    }
+
+    await updateTrace(db, id, { input, output });
     res.json({ code: 0, message: "ok" });
   });
 

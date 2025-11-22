@@ -442,6 +442,9 @@ export class AIGNE<U extends UserContext = UserContext> {
    * {@includeCode ../../test/aigne/aigne.test.ts#example-shutdown}
    */
   async shutdown() {
+    // Close observer first to flush any pending traces
+    await this.observer?.close();
+
     for (const tool of this.skills) {
       await tool.shutdown();
     }

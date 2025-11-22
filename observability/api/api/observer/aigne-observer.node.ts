@@ -1,22 +1,30 @@
 import type { Span } from "@opentelemetry/api";
 import { trace } from "@opentelemetry/api";
+import type { NodeSDK } from "@opentelemetry/sdk-node";
 import type { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import getObservabilityDbPath from "../core/db-path.js";
-import type { TraceFormatSpans } from "../core/type.js";
+import type { AttributeParams, TraceFormatSpans } from "../core/type.js";
 import { type AIGNEObserverOptions, AIGNEObserverOptionsSchema } from "../core/type.js";
 import { isBlocklet } from "../core/util.js";
+import type HttpExporter from "../opentelemetry/exporter/http-exporter.js";
 import { initOpenTelemetry } from "../opentelemetry/instrument/init.js";
 
 export class AIGNEObserver {
   private storage?: AIGNEObserverOptions["storage"];
   public tracer = trace.getTracer("aigne-tracer");
   public processor: SimpleSpanProcessor | undefined;
+  public exporter: HttpExporter | undefined;
+  private sdk: NodeSDK | undefined;
   private sdkServerStarted: Promise<void> | undefined;
 
   static exportFn?: (spans: TraceFormatSpans[]) => Promise<void>;
-
   static setExportFn(exportFn: (spans: TraceFormatSpans[]) => Promise<void>) {
     AIGNEObserver.exportFn = exportFn;
+  }
+
+  static updateFn?: (id: string, data: AttributeParams) => Promise<void>;
+  static setUpdateFn(updateFn: (id: string, data: AttributeParams) => Promise<void>) {
+    AIGNEObserver.updateFn = updateFn;
   }
 
   constructor(options?: AIGNEObserverOptions) {
@@ -34,10 +42,15 @@ export class AIGNEObserver {
       throw new Error("Server storage is not configured");
     }
 
-    this.processor = await initOpenTelemetry({
+    const { sdk, spanProcessor, traceExporter } = await initOpenTelemetry({
       dbPath: this.storage,
       exportFn: AIGNEObserver.exportFn,
+      updateFn: AIGNEObserver.updateFn,
     });
+
+    this.sdk = sdk;
+    this.processor = spanProcessor;
+    this.exporter = traceExporter;
   }
 
   async flush(span: Span): Promise<void> {
@@ -45,5 +58,22 @@ export class AIGNEObserver {
     await this.processor?.forceFlush();
   }
 
-  async close(): Promise<void> {}
+  async update(id: string, data: AttributeParams) {
+    await this.exporter?.update(id, data);
+  }
+
+  async close(): Promise<void> {
+    try {
+      // Shutdown processor
+      await this.processor?.shutdown();
+
+      // Shutdown exporter
+      await this.exporter?.shutdown();
+
+      // Shutdown SDK
+      await this.sdk?.shutdown();
+    } catch (error) {
+      console.error("[Observability] Error during shutdown:", error);
+    }
+  }
 }

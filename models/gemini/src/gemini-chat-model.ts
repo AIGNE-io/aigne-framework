@@ -379,7 +379,9 @@ export class GeminiChatModel extends ChatModel {
           usage,
           files: files.length ? files : undefined,
           modelOptions: {
-            reasoningEffort: parameters.config?.thinkingConfig?.thinkingBudget,
+            reasoningEffort:
+              parameters.config?.thinkingConfig?.thinkingLevel ||
+              parameters.config?.thinkingConfig?.thinkingBudget,
           },
         },
       },

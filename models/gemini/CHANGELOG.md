@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.14.10](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.10-beta.4...gemini-v0.14.10) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63
+
+## [0.14.10-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.10-beta.3...gemini-v0.14.10-beta.4) (2025-11-21)
+
+
+### Bug Fixes
+
+* **gemini:** properly handle thinking level for gemini 3.x models ([#763](https://github.com/AIGNE-io/aigne-framework/issues/763)) ([a5dc892](https://github.com/AIGNE-io/aigne-framework/commit/a5dc8921635811ed9ca2ff9e3e0699006f79cf22))
+* **gemini:** return reasoningEffort in model options for gemini-3 ([#765](https://github.com/AIGNE-io/aigne-framework/issues/765)) ([682bfda](https://github.com/AIGNE-io/aigne-framework/commit/682bfda353b31fd432232baa57f8e0b0838eb76d))
+
 ## [0.14.10-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.10-beta.2...gemini-v0.14.10-beta.3) (2025-11-19)
 
 

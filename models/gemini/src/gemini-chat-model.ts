@@ -17,9 +17,12 @@ import {
 import { logger } from "@aigne/core/utils/logger.js";
 import { mergeUsage } from "@aigne/core/utils/model-utils.js";
 import { isNonNullable, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { v7 } from "@aigne/uuid";
 import {
   type Content,
+  createPartFromUri,
+  createUserContent,
   type FunctionCallingConfig,
   FunctionCallingConfigMode,
   type GenerateContentConfig,
@@ -36,6 +39,7 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 const GEMINI_DEFAULT_CHAT_MODEL = "gemini-2.0-flash";
 
 const OUTPUT_FUNCTION_NAME = "output";
+const NEED_UPLOAD_MAX_FILE_SIZE_MB = 18;
 
 export interface GeminiChatModelOptions extends ChatModelOptions {
   /**
@@ -198,7 +202,7 @@ export class GeminiChatModel extends ChatModel {
     const modelOptions = await this.getModelOptions(input, options);
 
     const model = modelOptions.model || this.credential.model;
-    const { contents, config } = await this.buildContents(input);
+    const { contents, config } = await this.buildContents(input, options);
 
     const thinkingBudget = this.getThinkingBudget(model, modelOptions.reasoningEffort);
 
@@ -454,8 +458,56 @@ export class GeminiChatModel extends ChatModel {
     return { tools, toolConfig: { functionCallingConfig } };
   }
 
+  private async buildVideoContentParts(
+    media: FileUnionContent,
+    options: AgentInvokeOptions,
+  ): Promise<Part | undefined> {
+    const { path: filePath, mimeType: fileMimeType } = await this.transformFileType(
+      "local",
+      media,
+      options,
+    );
+
+    if (filePath) {
+      const stats = await nodejs.fs.stat(filePath);
+      const fileSizeInBytes = stats.size;
+      const fileSizeMB = fileSizeInBytes / (1024 * 1024);
+
+      if (fileSizeMB > NEED_UPLOAD_MAX_FILE_SIZE_MB) {
+        const uploadedFile = await this.googleClient.files.upload({
+          file: filePath,
+          config: { mimeType: fileMimeType },
+        });
+
+        let file = uploadedFile;
+        while (file.state === "PROCESSING") {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          if (file.name) {
+            file = await this.googleClient.files.get({ name: file.name });
+          }
+        }
+
+        if (file.state !== "ACTIVE") {
+          throw new Error(`File ${file.name} failed to process: ${file.state}`);
+        }
+
+        if (file.uri && file.mimeType) {
+          const result = createUserContent([createPartFromUri(file.uri, file.mimeType), ""]);
+          const part = result.parts?.find((x) => x.fileData);
+
+          if (part) {
+            await nodejs.fs.rm(filePath);
+            return part;
+          }
+        }
+      }
+    }
+  }
+
   private async buildContents(
     input: ChatModelInput,
+    options: AgentInvokeOptions,
   ): Promise<Omit<GenerateContentParameters, "model">> {
     const result: Omit<GenerateContentParameters, "model"> = {
       contents: [],
@@ -548,8 +600,12 @@ export class GeminiChatModel extends ChatModel {
                     return { text: item.text };
                   case "url":
                     return { fileData: { fileUri: item.url, mimeType: item.mimeType } };
-                  case "file":
+                  case "file": {
+                    const part = await this.buildVideoContentParts(item, options);
+                    if (part) return part;
+
                     return { inlineData: { data: item.data, mimeType: item.mimeType } };
+                  }
                   case "local":
                     throw new Error(
                       `Unsupported local file: ${item.path}, it should be converted to base64 at ChatModel`,

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.87.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.87.0...aigne-framework-v1.87.1-beta) (2025-11-24)
+
+
+### Bug Fixes
+
+* **observability:** prevent OOM by optimizing trace data storage strategy ([#767](https://github.com/AIGNE-io/aigne-framework/issues/767)) ([acd6476](https://github.com/AIGNE-io/aigne-framework/commit/acd6476936423c2186cb633086177541b0c0b558))
+
 ## [1.87.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.87.0-beta.3...aigne-framework-v1.87.0) (2025-11-21)
 
 ## [1.87.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.87.0-beta.2...aigne-framework-v1.87.0-beta.3) (2025-11-21)

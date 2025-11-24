@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.15.20-beta](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.15.19...transport-v0.15.20-beta) (2025-11-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.11-beta
+  * devDependencies
+    * @aigne/agent-library bumped to 1.22.1-beta
+    * @aigne/core bumped to 1.69.1-beta
+    * @aigne/default-memory bumped to 1.3.1-beta
+    * @aigne/test-utils bumped to 0.5.64-beta
+
 ## [0.15.19](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.15.19-beta.3...transport-v0.15.19) (2025-11-21)
 
 

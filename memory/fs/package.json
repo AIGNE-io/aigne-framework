@@ -1,6 +1,6 @@
 {
   "name": "@aigne/fs-memory",
-  "version": "1.1.0",
+  "version": "1.1.1-beta",
   "description": "FS memory for AIGNE framework",
   "publishConfig": {
     "access": "public"

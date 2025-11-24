@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.11.10-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.9...observability-api-v0.11.10-beta) (2025-11-24)
+
+
+### Bug Fixes
+
+* **observability:** prevent OOM by optimizing trace data storage strategy ([#767](https://github.com/AIGNE-io/aigne-framework/issues/767)) ([acd6476](https://github.com/AIGNE-io/aigne-framework/commit/acd6476936423c2186cb633086177541b0c0b558))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.8-beta
+
 ## [0.11.9](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.9-beta.3...observability-api-v0.11.9) (2025-11-21)
 
 

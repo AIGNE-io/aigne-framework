@@ -51,9 +51,9 @@
     "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text"
   },
   "dependencies": {
-    "@abtnode/util": "^1.17.3-beta-20251118-061144-335cd35d",
-    "@arcblock/ux": "^3.2.7",
-    "@blocklet/sdk": "^1.17.3-beta-20251118-061144-335cd35d",
+    "@abtnode/util": "^1.17.3-beta-20251123-232619-53258789",
+    "@arcblock/ux": "^3.2.8",
+    "@blocklet/sdk": "^1.17.3-beta-20251123-232619-53258789",
     "@iconify/react": "^6.0.2",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@monaco-editor/react": "^4.7.0",

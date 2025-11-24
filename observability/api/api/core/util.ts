@@ -137,7 +137,10 @@ const calculateTokenAndCost = async (
 /**
  * Propagate the error status of the root trace to all child traces that have not set the status.
  */
-const propagateErrorStatusToChildren = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
+const propagateErrorStatusToChildren = async (
+  db: LibSQLDatabase,
+  trace: { [key: string]: any },
+) => {
   if (trace.rootId && !trace.parentId && (trace.status as any)?.code === SpanStatusCode.ERROR) {
     await db
       .update(Trace)
@@ -268,7 +271,6 @@ export const updateTrace = async (db: LibSQLDatabase, id: string, data: Attribut
   await db.update(Trace).set(params).where(eq(Trace.id, id)).execute();
 
   if (data.status) {
-    // @ts-ignore
     await propagateErrorStatusToChildren(db, { ...trace, status: data.status });
   }
 };

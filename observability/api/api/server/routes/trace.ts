@@ -453,7 +453,7 @@ export default ({
     res.json({ code: 0, message: "ok" });
   });
 
-  router.put("/tree/:id", async (req: Request, res: Response) => {
+  router.patch("/tree/:id", async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
     const { id } = req.params;
     const { input, output } = req.body;

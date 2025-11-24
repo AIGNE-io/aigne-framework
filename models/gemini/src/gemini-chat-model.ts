@@ -39,7 +39,7 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 const GEMINI_DEFAULT_CHAT_MODEL = "gemini-2.0-flash";
 
 const OUTPUT_FUNCTION_NAME = "output";
-const NEED_UPLOAD_MAX_FILE_SIZE_MB = 18;
+const NEED_UPLOAD_MAX_FILE_SIZE_MB = 20；
 
 export interface GeminiChatModelOptions extends ChatModelOptions {
   /**

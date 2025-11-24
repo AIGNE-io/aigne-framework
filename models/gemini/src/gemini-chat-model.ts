@@ -123,8 +123,7 @@ export class GeminiChatModel extends ChatModel {
   // References: https://ai.google.dev/gemini-api/docs/thinking#set-budget
   protected thinkingBudgetModelMap = [
     {
-      pattern: /gemini-3/,
-      excludePattern: /-image-/,
+      pattern: /gemini-3(?!.*-image-)/,
       support: true,
       type: "level",
     },
@@ -170,9 +169,7 @@ export class GeminiChatModel extends ChatModel {
     model: string,
     effort: ChatModelInputOptions["reasoningEffort"],
   ): { support: boolean; budget?: number; level?: ThinkingLevel } {
-    const m = this.thinkingBudgetModelMap.find(
-      (i) => i.pattern.test(model) && (!i.excludePattern || !i.excludePattern.test(model)),
-    );
+    const m = this.thinkingBudgetModelMap.find((i) => i.pattern.test(model));
 
     if (!m?.support) return { support: false };
 

@@ -8,25 +8,25 @@ import type {
 
 export abstract class BaseSecretStore<
   K extends string = "AIGNE_HUB_API_KEY",
-  A extends string = "AIGNE_HUB_API_URL",
-> implements ISecretStore<K, A>
+  U extends string = "AIGNE_HUB_API_URL",
+> implements ISecretStore<K, U>
 {
-  outputConfig: { key: K; api: A };
-  constructor(options: Pick<StoreOptions<K, A>, "outputConfig">) {
+  outputConfig: { key: K; url: U };
+  constructor(options: Pick<StoreOptions<K, U>, "outputConfig">) {
     this.outputConfig = {
-      api: options.outputConfig?.api || "AIGNE_HUB_API_URL",
+      url: options.outputConfig?.url || "AIGNE_HUB_API_URL",
       key: options.outputConfig?.key || "AIGNE_HUB_API_KEY",
-    } as { key: K; api: A };
+    } as { key: K; url: U };
   }
 
   abstract available(): Promise<boolean>;
   abstract setKey(url: string, secret: string): Promise<void>;
-  abstract getKey(url: string): Promise<AIGNEHubAPIInfo<K, A> | null>;
+  abstract getKey(url: string): Promise<AIGNEHubAPIInfo<K, U> | null>;
   abstract deleteKey(url: string): Promise<boolean>;
   abstract listCredentials(): Promise<CredentialEntry[] | null>;
-  abstract listHosts(): Promise<AIGNEHubAPIInfo<K, A>[]>;
+  abstract listHosts(): Promise<AIGNEHubAPIInfo<K, U>[]>;
   abstract setDefault(value: string): Promise<void>;
-  abstract getDefault(options?: GetDefaultOptions): Promise<AIGNEHubAPIInfo<K, A> | null>;
+  abstract getDefault(options?: GetDefaultOptions): Promise<AIGNEHubAPIInfo<K, U> | null>;
   abstract deleteDefault(): Promise<void>;
 
   normalizeHostFrom(url: string): string {
@@ -37,14 +37,14 @@ export abstract class BaseSecretStore<
     }
   }
 
-  async listHostsMap(): Promise<Record<string, AIGNEHubAPIInfo<K, A>>> {
+  async listHostsMap(): Promise<Record<string, AIGNEHubAPIInfo<K, U>>> {
     const hosts = await this.listHosts();
     return hosts.reduce(
       (acc, host) => {
-        acc[this.normalizeHostFrom(host[this.outputConfig.api])] = host;
+        acc[this.normalizeHostFrom(host[this.outputConfig.url])] = host;
         return acc;
       },
-      {} as Record<string, AIGNEHubAPIInfo<K, A>>,
+      {} as Record<string, AIGNEHubAPIInfo<K, U>>,
     );
   }
 }

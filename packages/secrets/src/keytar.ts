@@ -43,14 +43,14 @@ class KeyringStore extends BaseSecretStore {
     return this._impl.setPassword(
       this.secretStoreKey,
       this.normalizeHostFrom(url),
-      JSON.stringify({ [this.outputConfig.api]: url, [this.outputConfig.key]: secret }),
+      JSON.stringify({ [this.outputConfig.url]: url, [this.outputConfig.key]: secret }),
     );
   }
 
   private parseKey(v: string): AIGNEHubAPIInfo | null {
     try {
       const parsed = JSON.parse(v);
-      if (!parsed[this.outputConfig.api] || !parsed[this.outputConfig.key]) return null;
+      if (!parsed[this.outputConfig.url] || !parsed[this.outputConfig.key]) return null;
       return parsed;
     } catch {
       return null;
@@ -138,9 +138,9 @@ class KeyringStore extends BaseSecretStore {
     const firstHost = hosts[0];
     if (!firstHost) return null;
 
-    if (presetIfFallback && firstHost[this.outputConfig.api]) {
+    if (presetIfFallback && firstHost[this.outputConfig.url]) {
       try {
-        await this.setDefault(firstHost[this.outputConfig.api]);
+        await this.setDefault(firstHost[this.outputConfig.url]);
       } catch {
         // ignore
       }

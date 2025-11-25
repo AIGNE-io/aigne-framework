@@ -58,7 +58,7 @@ class FileStore extends BaseSecretStore {
     }
 
     data[host][this.outputConfig.key] = secret;
-    data[host][this.outputConfig.api] = url;
+    data[host][this.outputConfig.url] = url;
 
     await this.save(data);
   }
@@ -103,7 +103,7 @@ class FileStore extends BaseSecretStore {
 
         if (config[this.outputConfig.key]) {
           entries.push({
-            account: config[this.outputConfig.api],
+            account: config[this.outputConfig.url],
             password: config[this.outputConfig.key],
           });
         }
@@ -122,7 +122,7 @@ class FileStore extends BaseSecretStore {
     return creds.reduce<AIGNEHubAPIInfo[]>((acc, c) => {
       if (c.password && c.account) {
         acc.push({
-          [this.outputConfig.api]: c.account,
+          [this.outputConfig.url]: c.account,
           [this.outputConfig.key]: c.password,
         });
       }
@@ -138,7 +138,7 @@ class FileStore extends BaseSecretStore {
       data.default = {} as AIGNEHubAPIInfo;
     }
 
-    data.default[this.outputConfig.api] = url;
+    data.default[this.outputConfig.url] = url;
     await this.save(data);
   }
 
@@ -148,7 +148,7 @@ class FileStore extends BaseSecretStore {
 
     try {
       const data = await this.load();
-      const defaultUrl = data.default?.[this.outputConfig.api];
+      const defaultUrl = data.default?.[this.outputConfig.url];
 
       if (defaultUrl) {
         const host = this.normalizeHostFrom(defaultUrl);
@@ -167,7 +167,7 @@ class FileStore extends BaseSecretStore {
         try {
           const data = await this.load();
           const url =
-            data[this.normalizeHostFrom(firstHost[this.outputConfig.api])]?.[this.outputConfig.api];
+            data[this.normalizeHostFrom(firstHost[this.outputConfig.url])]?.[this.outputConfig.url];
 
           if (url) {
             await this.setDefault(url);

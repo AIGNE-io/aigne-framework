@@ -7,7 +7,7 @@ import type { StoreOptions } from "./types.js";
 export async function migrateFileToKeyring(options: StoreOptions = {}): Promise<boolean> {
   const { filepath } = options;
   const outputConfig = {
-    api: options.outputConfig?.api || "AIGNE_HUB_API_URL",
+    url: options.outputConfig?.url || "AIGNE_HUB_API_URL",
     key: options.outputConfig?.key || "AIGNE_HUB_API_KEY",
   };
 
@@ -40,8 +40,8 @@ export async function migrateFileToKeyring(options: StoreOptions = {}): Promise<
     const hosts = await fileStore.listHosts();
     const migrations = [];
     for (const host of hosts) {
-      if (host[outputConfig.api] && host[outputConfig.key]) {
-        migrations.push(keyring.setKey(host[outputConfig.api], host[outputConfig.key]));
+      if (host[outputConfig.url] && host[outputConfig.key]) {
+        migrations.push(keyring.setKey(host[outputConfig.url], host[outputConfig.key]));
       }
     }
 
@@ -49,11 +49,11 @@ export async function migrateFileToKeyring(options: StoreOptions = {}): Promise<
 
     const defaultKey = await fileStore.getDefault();
     if (defaultKey) {
-      await keyring.setDefault(defaultKey[outputConfig.api]);
+      await keyring.setDefault(defaultKey[outputConfig.url]);
     }
 
     await fs.rm(filepath);
-    await fs.rm(backupPath);
+    // await fs.rm(backupPath);
 
     return true;
   } catch (error) {

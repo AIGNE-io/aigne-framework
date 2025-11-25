@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import KeyringStore from "../src/keytar.js";
 
-const describeKeyring =
-  process.env.CI || process.env.NODE_ENV === "test" ? describe.skip : describe;
+const describeKeyring = process.env.CI ? describe.skip : describe;
 
 describeKeyring("KeyringStore", () => {
   let store: KeyringStore;

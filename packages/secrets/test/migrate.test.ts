@@ -6,8 +6,7 @@ import FileStore from "../src/file.js";
 import KeyringStore from "../src/keytar.js";
 import { migrateFileToKeyring } from "../src/migrate.js";
 
-const describeMigrate =
-  process.env.CI || process.env.NODE_ENV === "test" ? describe.skip : describe;
+const describeMigrate = process.env.CI ? describe.skip : describe;
 
 describeMigrate("migrateFileToKeyring", () => {
   let testDir: string;

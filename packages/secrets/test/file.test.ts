@@ -314,6 +314,18 @@ describe("FileStore", () => {
       await store.setDefault("https://host2.com");
       expect((await store.getDefault())?.AIGNE_HUB_API_KEY).toBe("key2");
     });
+
+    test("should correctly handle default value", async () => {
+      await store.setKey("https://default.com", "default-key");
+      await store.setDefault("https://default.com");
+
+      const defaultValue = await store.getDefault();
+      expect(defaultValue?.AIGNE_HUB_API_KEY).toBe("default-key");
+
+      await store.deleteDefault();
+      const noDefault = await store.getDefault();
+      expect(noDefault).toBe(null);
+    });
   });
 
   describe("file format", () => {

@@ -4,15 +4,19 @@ import { parse, stringify } from "yaml";
 import { BaseSecretStore } from "./base.js";
 import type { AIGNEHubAPIInfo, CredentialEntry, GetDefaultOptions, StoreOptions } from "./types.js";
 
-interface AIGNEEnv {
-  [host: string]: AIGNEHubAPIInfo;
+interface AIGNEEnv<K extends string = "AIGNE_HUB_API_KEY", U extends string = "AIGNE_HUB_API_URL"> {
+  [host: string]: AIGNEHubAPIInfo<K, U>;
 }
 
-class FileStore extends BaseSecretStore {
+class FileStore<
+  K extends string = "AIGNE_HUB_API_KEY",
+  U extends string = "AIGNE_HUB_API_URL",
+> extends BaseSecretStore<K, U> {
   private filepath: string;
 
   constructor(
-    options: Required<Pick<StoreOptions, "filepath">> & Pick<StoreOptions, "outputConfig">,
+    options: Required<Pick<StoreOptions<K, U>, "filepath">> &
+      Pick<StoreOptions<K, U>, "outputConfig">,
   ) {
     super(options);
 
@@ -28,10 +32,10 @@ class FileStore extends BaseSecretStore {
     }
   }
 
-  private async load(): Promise<AIGNEEnv> {
+  private async load(): Promise<AIGNEEnv<K, U>> {
     try {
       const data = await fs.readFile(this.filepath, "utf-8");
-      const parsed = parse(data) as AIGNEEnv;
+      const parsed = parse(data) as AIGNEEnv<K, U>;
       if (!parsed || typeof parsed !== "object") {
         return {};
       }
@@ -41,7 +45,7 @@ class FileStore extends BaseSecretStore {
     }
   }
 
-  private async save(data: AIGNEEnv): Promise<void> {
+  private async save(data: AIGNEEnv<K, U>): Promise<void> {
     const yaml = stringify(data);
     await fs.mkdir(path.dirname(this.filepath), { recursive: true });
     await fs.writeFile(this.filepath, yaml, "utf-8");
@@ -54,7 +58,7 @@ class FileStore extends BaseSecretStore {
     const host = this.normalizeHostFrom(url);
 
     if (!data[host]) {
-      data[host] = {} as AIGNEHubAPIInfo;
+      data[host] = {} as AIGNEHubAPIInfo<K, U>;
     }
 
     data[host][this.outputConfig.key] = secret;
@@ -63,7 +67,7 @@ class FileStore extends BaseSecretStore {
     await this.save(data);
   }
 
-  async getKey(url: string): Promise<AIGNEHubAPIInfo | null> {
+  async getKey(url: string): Promise<AIGNEHubAPIInfo<K, U> | null> {
     if (!(await this.available())) return null;
 
     try {
@@ -115,16 +119,16 @@ class FileStore extends BaseSecretStore {
     }
   }
 
-  override async listHosts(): Promise<AIGNEHubAPIInfo[]> {
+  override async listHosts(): Promise<AIGNEHubAPIInfo<K, U>[]> {
     const creds = await this.listCredentials();
     if (!creds) return [];
 
-    return creds.reduce<AIGNEHubAPIInfo[]>((acc, c) => {
+    return creds.reduce<AIGNEHubAPIInfo<K, U>[]>((acc, c) => {
       if (c.password && c.account) {
         acc.push({
           [this.outputConfig.url]: c.account,
           [this.outputConfig.key]: c.password,
-        });
+        } as AIGNEHubAPIInfo<K, U>);
       }
       return acc;
     }, []);
@@ -135,14 +139,16 @@ class FileStore extends BaseSecretStore {
     const data = await this.load();
 
     if (!data.default) {
-      data.default = {} as AIGNEHubAPIInfo;
+      data.default = {} as AIGNEHubAPIInfo<K, U>;
     }
 
     data.default[this.outputConfig.url] = url;
     await this.save(data);
   }
 
-  override async getDefault(options: GetDefaultOptions = {}): Promise<AIGNEHubAPIInfo | null> {
+  override async getDefault(
+    options: GetDefaultOptions = {},
+  ): Promise<AIGNEHubAPIInfo<K, U> | null> {
     const { fallbackToFirst = false, presetIfFallback = false } = options;
     if (!(await this.available())) return null;
 

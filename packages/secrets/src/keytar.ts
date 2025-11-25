@@ -5,13 +5,16 @@ import type { AIGNEHubAPIInfo, CredentialEntry, GetDefaultOptions, StoreOptions 
 const DEFAULT_SERVICE_NAME = "-secrets";
 const DEFAULT_ACCOUNT_NAME_FOR_DEFAULT = "-default";
 
-class KeyringStore extends BaseSecretStore {
+class KeyringStore<
+  K extends string = "AIGNE_HUB_API_KEY",
+  U extends string = "AIGNE_HUB_API_URL",
+> extends BaseSecretStore<K, U> {
   private _impl: typeof zoweKeyring;
   private secretStoreKey: string;
   private defaultAccount: string;
   private _forceUnavailable: boolean;
 
-  constructor(options: StoreOptions = {}) {
+  constructor(options: StoreOptions<K, U> = {}) {
     super(options);
 
     const { secretStoreKey, forceUnavailable = false } = options;
@@ -47,7 +50,7 @@ class KeyringStore extends BaseSecretStore {
     );
   }
 
-  private parseKey(v: string): AIGNEHubAPIInfo | null {
+  private parseKey(v: string): AIGNEHubAPIInfo<K, U> | null {
     try {
       const parsed = JSON.parse(v);
       if (!parsed[this.outputConfig.url] || !parsed[this.outputConfig.key]) return null;
@@ -57,7 +60,7 @@ class KeyringStore extends BaseSecretStore {
     }
   }
 
-  async getKey(url: string): Promise<AIGNEHubAPIInfo | null> {
+  async getKey(url: string): Promise<AIGNEHubAPIInfo<K, U> | null> {
     if (!(await this.available())) return null;
 
     try {
@@ -95,11 +98,11 @@ class KeyringStore extends BaseSecretStore {
     }
   }
 
-  override async listHosts(): Promise<AIGNEHubAPIInfo[]> {
+  override async listHosts(): Promise<AIGNEHubAPIInfo<K, U>[]> {
     const creds = await this.listCredentials();
     if (!creds) return [];
 
-    return creds.reduce<AIGNEHubAPIInfo[]>((acc, c) => {
+    return creds.reduce<AIGNEHubAPIInfo<K, U>[]>((acc, c) => {
       if (c.password) {
         const parsed = this.parseKey(c.password);
         if (parsed) acc.push(parsed);
@@ -114,7 +117,9 @@ class KeyringStore extends BaseSecretStore {
     return this._impl.setPassword(account, account, this.normalizeHostFrom(url));
   }
 
-  override async getDefault(options: GetDefaultOptions = {}): Promise<AIGNEHubAPIInfo | null> {
+  override async getDefault(
+    options: GetDefaultOptions = {},
+  ): Promise<AIGNEHubAPIInfo<K, U> | null> {
     const { fallbackToFirst = false, presetIfFallback = false } = options;
 
     if (!(await this.available())) return null;

@@ -4,7 +4,10 @@ import FileStore from "./file.js";
 import KeyringStore from "./keytar.js";
 import type { StoreOptions } from "./types.js";
 
-export async function migrateFileToKeyring(options: StoreOptions = {}): Promise<boolean> {
+export async function migrateFileToKeyring<
+  K extends string = "AIGNE_HUB_API_KEY",
+  U extends string = "AIGNE_HUB_API_URL",
+>(options: StoreOptions<K, U> = {}): Promise<boolean> {
   const { filepath } = options;
   const outputConfig = {
     url: options.outputConfig?.url || "AIGNE_HUB_API_URL",
@@ -21,12 +24,12 @@ export async function migrateFileToKeyring(options: StoreOptions = {}): Promise<
     return true;
   }
 
-  const keyring = new KeyringStore(options);
+  const keyring = new KeyringStore<K, U>(options);
   if (!(await keyring.available())) {
     return false;
   }
 
-  const fileStore = new FileStore({ filepath, outputConfig: outputConfig });
+  const fileStore = new FileStore({ filepath, outputConfig });
   if (!(await fileStore.available())) {
     return false;
   }

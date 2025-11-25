@@ -7,7 +7,10 @@ import type { ISecretStore, StoreOptions } from "./types.js";
 export * from "./types.js";
 export { FileStore, KeyringStore };
 
-async function createSecretStore(options: StoreOptions = {}): Promise<ISecretStore> {
+async function createSecretStore<
+  K extends string = "AIGNE_HUB_API_KEY",
+  U extends string = "AIGNE_HUB_API_URL",
+>(options: StoreOptions<K, U> = {}): Promise<ISecretStore<K, U>> {
   if (!options.secretStoreKey) {
     throw new Error("Secret store key is required");
   }

@@ -51,7 +51,6 @@ describeMigrate("migrateFileToKeyring", () => {
 
     try {
       await fs.access(testFilePath);
-      expect(true).toBe(true);
     } catch {
       expect.unreachable("File should still exist");
     }

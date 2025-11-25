@@ -56,7 +56,7 @@ export async function migrateFileToKeyring<
     }
 
     await fs.rm(filepath);
-    // await fs.rm(backupPath);
+    await fs.rm(backupPath);
 
     return true;
   } catch (error) {

@@ -261,7 +261,7 @@ describe("FileStore", () => {
       await store.setKey("https://host1.com", "key1");
       await store.setKey("https://host2.com", "key2");
 
-      const defaultKey = await store.getDefault();
+      const defaultKey = await store.getDefault({ fallbackToFirst: true });
       expect(defaultKey?.AIGNE_HUB_API_KEY).toBe("key1");
     });
 
@@ -272,10 +272,17 @@ describe("FileStore", () => {
       expect(defaultKey).toBe(null);
     });
 
+    test("should not fallback by default when default not set", async () => {
+      await store.setKey("https://example.com", "test-key");
+
+      const defaultKey = await store.getDefault();
+      expect(defaultKey).toBe(null);
+    });
+
     test("should preset default when fallback occurs and presetIfFallback is true", async () => {
       await store.setKey("https://example.com/api", "test-key");
 
-      const defaultKey = await store.getDefault({ presetIfFallback: true });
+      const defaultKey = await store.getDefault({ fallbackToFirst: true, presetIfFallback: true });
       expect(defaultKey?.AIGNE_HUB_API_KEY).toBe("test-key");
 
       const defaultAgain = await store.getDefault({ fallbackToFirst: false });
@@ -285,7 +292,7 @@ describe("FileStore", () => {
     test("should not preset when presetIfFallback is false", async () => {
       await store.setKey("https://example.com", "test-key");
 
-      await store.getDefault({ presetIfFallback: false });
+      await store.getDefault({ fallbackToFirst: true, presetIfFallback: false });
 
       // Verify it was not set
       const defaultKey = await store.getDefault({ fallbackToFirst: false });

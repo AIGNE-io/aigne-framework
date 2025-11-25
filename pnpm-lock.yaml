@@ -1916,6 +1916,9 @@ importers:
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
+      '@aigne/secrets':
+        specifier: workspace:^
+        version: link:../secrets
       '@fast-csv/format':
         specifier: ^5.0.5
         version: 5.0.5
@@ -2224,6 +2227,34 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.18.0
         version: 1.18.0
+    devDependencies:
+      '@types/bun':
+        specifier: ^1.2.22
+        version: 1.2.22(@types/react@19.1.13)
+      '@types/node':
+        specifier: ^24.5.1
+        version: 24.5.1
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
+  packages/secrets:
+    dependencies:
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../core
+      '@zowe/secrets-for-zowe-sdk':
+        specifier: ^8.29.4
+        version: 8.29.4
+      yaml:
+        specifier: ^2.8.1
+        version: 2.8.1
     devDependencies:
       '@types/bun':
         specifier: ^1.2.22
@@ -5681,6 +5712,10 @@ packages:
   '@zenoaihq/tson@1.0.0':
     resolution: {integrity: sha512-sYziUsCIeMYn1RZQXgaCnXrOlYHST0NMOt4XEDkwLrii93lM5jApfwt5J3c7QsBBLzkvilQoUSZitk1rgALJ1Q==}
     engines: {node: '>=16.0.0'}
+
+  '@zowe/secrets-for-zowe-sdk@8.29.4':
+    resolution: {integrity: sha512-fiRfuEuFNapwhVbN3LJIA2ZgVajNB+QNFN7O7ES/fIYGM612PKcXuvbZUJSlU69IZ8eUF8SP+9OnveK4s+GLgw==}
+    engines: {node: '>=14'}
 
   a-sync-waterfall@1.0.1:
     resolution: {integrity: sha512-RYTOHHdWipFUliRFMCS4X2Yn2X8M87V/OpSqWzKKOGhzqyUxzyVmhHDH9sAvG+ZuQf/TAOFsLCpMw09I1ufUnA==}
@@ -18004,6 +18039,8 @@ snapshots:
   '@xobotyi/scrollbar-width@1.9.5': {}
 
   '@zenoaihq/tson@1.0.0': {}
+
+  '@zowe/secrets-for-zowe-sdk@8.29.4': {}
 
   a-sync-waterfall@1.0.1: {}
 

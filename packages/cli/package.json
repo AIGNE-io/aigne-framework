@@ -62,6 +62,7 @@
     "@aigne/afs-local-fs": "workspace:^",
     "@aigne/agent-library": "workspace:^",
     "@aigne/agentic-memory": "workspace:^",
+    "@aigne/secrets": "workspace:^",
     "@aigne/aigne-hub": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/default-memory": "workspace:^",

@@ -2,6 +2,7 @@
   ".": "1.87.1-beta",
   "packages/platform-helpers": "0.6.4",
   "packages/sqlite": "0.4.6",
+  "packages/secrets": "0.1.0",
   "packages/agent-library": "1.22.1-beta",
   "packages/core": "1.69.1-beta",
   "packages/cli": "1.56.1-beta",

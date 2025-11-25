@@ -41,7 +41,7 @@ export async function migrateFileToKeyring(options: StoreOptions = {}): Promise<
     const migrations = [];
     for (const host of hosts) {
       if (host[outputConfig.api] && host[outputConfig.key]) {
-        migrations.push(keyring.setKey(host[outputConfig.api]!, host[outputConfig.key]!));
+        migrations.push(keyring.setKey(host[outputConfig.api], host[outputConfig.key]));
       }
     }
 
@@ -49,7 +49,7 @@ export async function migrateFileToKeyring(options: StoreOptions = {}): Promise<
 
     const defaultKey = await fileStore.getDefault();
     if (defaultKey) {
-      await keyring.setDefault(defaultKey[outputConfig.api]!);
+      await keyring.setDefault(defaultKey[outputConfig.api]);
     }
 
     await fs.rm(filepath);

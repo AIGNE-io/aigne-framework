@@ -25,7 +25,7 @@ export type AIGNEHubAPIInfo<
   K extends string = typeof AIGNE_HUB_API_KEY,
   A extends string = typeof AIGNE_HUB_API_URL,
 > = {
-  [key in K | A]: string | undefined;
+  [key in K | A]: string;
 };
 
 export interface ISecretStore<

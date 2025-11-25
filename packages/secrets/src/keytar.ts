@@ -140,7 +140,7 @@ class KeyringStore extends BaseSecretStore {
 
     if (presetIfFallback && firstHost[this.outputConfig.api]) {
       try {
-        await this.setDefault(firstHost[this.outputConfig.api]!);
+        await this.setDefault(firstHost[this.outputConfig.api]);
       } catch {
         // ignore
       }

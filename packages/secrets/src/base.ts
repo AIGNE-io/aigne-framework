@@ -41,7 +41,7 @@ export abstract class BaseSecretStore<
     const hosts = await this.listHosts();
     return hosts.reduce(
       (acc, host) => {
-        acc[this.normalizeHostFrom(host[this.outputConfig.api]!)] = host;
+        acc[this.normalizeHostFrom(host[this.outputConfig.api])] = host;
         return acc;
       },
       {} as Record<string, AIGNEHubAPIInfo<K, A>>,

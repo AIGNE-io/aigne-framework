@@ -103,8 +103,8 @@ class FileStore extends BaseSecretStore {
 
         if (config[this.outputConfig.key]) {
           entries.push({
-            account: config[this.outputConfig.api as keyof AIGNEHubAPIInfo] ?? "",
-            password: config[this.outputConfig.key as keyof AIGNEHubAPIInfo] ?? null,
+            account: config[this.outputConfig.api],
+            password: config[this.outputConfig.key],
           });
         }
       }
@@ -167,9 +167,7 @@ class FileStore extends BaseSecretStore {
         try {
           const data = await this.load();
           const url =
-            data[this.normalizeHostFrom(firstHost[this.outputConfig.api]!)]?.[
-              this.outputConfig.api
-            ];
+            data[this.normalizeHostFrom(firstHost[this.outputConfig.api])]?.[this.outputConfig.api];
 
           if (url) {
             await this.setDefault(url);

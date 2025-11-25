@@ -1,6 +1,6 @@
 import { keyring as zoweKeyring } from "@zowe/secrets-for-zowe-sdk";
 import { BaseSecretStore } from "./base.js";
-import type { AIGNEHubAPIInfo, CredentialEntry, GetDefaultOptions, Options } from "./types.js";
+import type { AIGNEHubAPIInfo, CredentialEntry, GetDefaultOptions, StoreOptions } from "./types.js";
 
 const DEFAULT_SERVICE_NAME = "-secrets";
 const DEFAULT_ACCOUNT_NAME_FOR_DEFAULT = "-default";
@@ -11,8 +11,8 @@ class KeyringStore extends BaseSecretStore {
   private defaultAccount: string;
   private _forceUnavailable: boolean;
 
-  constructor(options: Options = {}) {
-    super();
+  constructor(options: StoreOptions = {}) {
+    super(options);
 
     const { secretStoreKey, forceUnavailable = false } = options;
 
@@ -43,16 +43,15 @@ class KeyringStore extends BaseSecretStore {
     return this._impl.setPassword(
       this.secretStoreKey,
       this.normalizeHostFrom(url),
-      JSON.stringify({ AIGNE_HUB_API_URL: url, AIGNE_HUB_API_KEY: secret }),
+      JSON.stringify({ [this.outputConfig.api]: url, [this.outputConfig.key]: secret }),
     );
   }
 
   private parseKey(v: string): AIGNEHubAPIInfo | null {
     try {
       const parsed = JSON.parse(v);
-      const { AIGNE_HUB_API_URL, AIGNE_HUB_API_KEY } = parsed;
-      if (!AIGNE_HUB_API_URL || !AIGNE_HUB_API_KEY) return null;
-      return { AIGNE_HUB_API_URL, AIGNE_HUB_API_KEY };
+      if (!parsed[this.outputConfig.api] || !parsed[this.outputConfig.key]) return null;
+      return parsed;
     } catch {
       return null;
     }
@@ -108,6 +107,7 @@ class KeyringStore extends BaseSecretStore {
       return acc;
     }, []);
   }
+
   override async setDefault(url: string): Promise<void> {
     if (!(await this.available())) throw new Error("Keyring not available");
     const account = this.defaultAccount;
@@ -138,9 +138,9 @@ class KeyringStore extends BaseSecretStore {
     const firstHost = hosts[0];
     if (!firstHost) return null;
 
-    if (presetIfFallback && firstHost.AIGNE_HUB_API_URL) {
+    if (presetIfFallback && firstHost[this.outputConfig.api]) {
       try {
-        await this.setDefault(firstHost.AIGNE_HUB_API_URL);
+        await this.setDefault(firstHost[this.outputConfig.api]!);
       } catch {
         // ignore
       }

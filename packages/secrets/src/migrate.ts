@@ -2,10 +2,14 @@ import fs from "node:fs/promises";
 import { logger } from "@aigne/core/utils/logger.js";
 import FileStore from "./file.js";
 import KeyringStore from "./keytar.js";
-import type { Options } from "./types.js";
+import type { StoreOptions } from "./types.js";
 
-export async function migrateFileToKeyring(options: Options = {}): Promise<boolean> {
+export async function migrateFileToKeyring(options: StoreOptions = {}): Promise<boolean> {
   const { filepath } = options;
+  const outputConfig = {
+    api: options.outputConfig?.api || "AIGNE_HUB_API_URL",
+    key: options.outputConfig?.key || "AIGNE_HUB_API_KEY",
+  };
 
   if (!filepath) {
     throw new Error("Filepath is required for migration");
@@ -22,7 +26,7 @@ export async function migrateFileToKeyring(options: Options = {}): Promise<boole
     return false;
   }
 
-  const fileStore = new FileStore({ filepath, config: options.config });
+  const fileStore = new FileStore({ filepath, outputConfig: outputConfig });
   if (!(await fileStore.available())) {
     return false;
   }
@@ -36,8 +40,8 @@ export async function migrateFileToKeyring(options: Options = {}): Promise<boole
     const hosts = await fileStore.listHosts();
     const migrations = [];
     for (const host of hosts) {
-      if (host.AIGNE_HUB_API_URL && host.AIGNE_HUB_API_KEY) {
-        migrations.push(keyring.setKey(host.AIGNE_HUB_API_URL, host.AIGNE_HUB_API_KEY));
+      if (host[outputConfig.api] && host[outputConfig.key]) {
+        migrations.push(keyring.setKey(host[outputConfig.api]!, host[outputConfig.key]!));
       }
     }
 
@@ -45,7 +49,7 @@ export async function migrateFileToKeyring(options: Options = {}): Promise<boole
 
     const defaultKey = await fileStore.getDefault();
     if (defaultKey) {
-      await keyring.setDefault(defaultKey.AIGNE_HUB_API_URL);
+      await keyring.setDefault(defaultKey[outputConfig.api]!);
     }
 
     await fs.rm(filepath);

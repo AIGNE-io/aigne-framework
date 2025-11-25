@@ -2,12 +2,12 @@ import { logger } from "@aigne/core/utils/logger.js";
 import FileStore from "./file.js";
 import KeyringStore from "./keytar.js";
 import { migrateFileToKeyring } from "./migrate.js";
-import type { ISecretStore, Options } from "./types.js";
+import type { ISecretStore, StoreOptions } from "./types.js";
 
 export * from "./types.js";
 export { FileStore, KeyringStore };
 
-async function createSecretStore(options: Options = {}): Promise<ISecretStore> {
+async function createSecretStore(options: StoreOptions = {}): Promise<ISecretStore> {
   if (!options.secretStoreKey) {
     throw new Error("Secret store key is required");
   }

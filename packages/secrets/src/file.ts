@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { parse, stringify } from "yaml";
 import { BaseSecretStore } from "./base.js";
-import type { AIGNEHubAPIInfo, CredentialEntry, GetDefaultOptions, Options } from "./types.js";
+import type { AIGNEHubAPIInfo, CredentialEntry, GetDefaultOptions, StoreOptions } from "./types.js";
 
 interface AIGNEEnv {
   [host: string]: AIGNEHubAPIInfo;
@@ -10,13 +10,13 @@ interface AIGNEEnv {
 
 class FileStore extends BaseSecretStore {
   private filepath: string;
-  private config: { key: string; api: string };
 
-  constructor(options: Required<Pick<Options, "filepath">> & Pick<Options, "config">) {
-    super();
+  constructor(
+    options: Required<Pick<StoreOptions, "filepath">> & Pick<StoreOptions, "outputConfig">,
+  ) {
+    super(options);
 
     this.filepath = options.filepath;
-    this.config = options.config || { api: "AIGNE_HUB_API_URL", key: "AIGNE_HUB_API_KEY" };
   }
 
   async available(): Promise<boolean> {
@@ -57,8 +57,8 @@ class FileStore extends BaseSecretStore {
       data[host] = {} as AIGNEHubAPIInfo;
     }
 
-    data[host].AIGNE_HUB_API_KEY = secret;
-    data[host].AIGNE_HUB_API_URL = url;
+    data[host][this.outputConfig.key] = secret;
+    data[host][this.outputConfig.api] = url;
 
     await this.save(data);
   }
@@ -101,10 +101,10 @@ class FileStore extends BaseSecretStore {
       for (const [host, config] of Object.entries(data)) {
         if (host === "default") continue;
 
-        if (config.AIGNE_HUB_API_KEY) {
+        if (config[this.outputConfig.key]) {
           entries.push({
-            account: config[this.config.api as keyof AIGNEHubAPIInfo] ?? "",
-            password: config[this.config.key as keyof AIGNEHubAPIInfo] ?? null,
+            account: config[this.outputConfig.api as keyof AIGNEHubAPIInfo] ?? "",
+            password: config[this.outputConfig.key as keyof AIGNEHubAPIInfo] ?? null,
           });
         }
       }
@@ -118,7 +118,16 @@ class FileStore extends BaseSecretStore {
   override async listHosts(): Promise<AIGNEHubAPIInfo[]> {
     const creds = await this.listCredentials();
     if (!creds) return [];
-    return creds.map((c) => ({ AIGNE_HUB_API_URL: c.account, AIGNE_HUB_API_KEY: c.password }));
+
+    return creds.reduce<AIGNEHubAPIInfo[]>((acc, c) => {
+      if (c.password && c.account) {
+        acc.push({
+          [this.outputConfig.api]: c.account,
+          [this.outputConfig.key]: c.password,
+        });
+      }
+      return acc;
+    }, []);
   }
 
   override async setDefault(url: string): Promise<void> {
@@ -129,7 +138,7 @@ class FileStore extends BaseSecretStore {
       data.default = {} as AIGNEHubAPIInfo;
     }
 
-    data.default.AIGNE_HUB_API_URL = url;
+    data.default[this.outputConfig.api] = url;
     await this.save(data);
   }
 
@@ -139,7 +148,7 @@ class FileStore extends BaseSecretStore {
 
     try {
       const data = await this.load();
-      const defaultUrl = data.default?.AIGNE_HUB_API_URL;
+      const defaultUrl = data.default?.[this.outputConfig.api];
 
       if (defaultUrl) {
         const host = this.normalizeHostFrom(defaultUrl);
@@ -154,10 +163,13 @@ class FileStore extends BaseSecretStore {
     const hosts = await this.listHosts();
     if (Array.isArray(hosts) && hosts.length > 0) {
       const firstHost = hosts[0];
-      if (presetIfFallback && firstHost?.AIGNE_HUB_API_KEY) {
+      if (presetIfFallback && firstHost?.[this.outputConfig.key]) {
         try {
           const data = await this.load();
-          const url = data[this.normalizeHostFrom(firstHost.AIGNE_HUB_API_URL)]?.AIGNE_HUB_API_URL;
+          const url =
+            data[this.normalizeHostFrom(firstHost[this.outputConfig.api]!)]?.[
+              this.outputConfig.api
+            ];
 
           if (url) {
             await this.setDefault(url);

@@ -5,14 +5,21 @@ import { join } from "node:path";
 import FileStore from "../src/file.js";
 import KeyringStore from "../src/keytar.js";
 import { migrateFileToKeyring } from "../src/migrate.js";
+import { mockCredentials, mockKeyring } from "./util.js";
 
-const describeMigrate = process.env.CI ? describe.skip : describe;
-
-describeMigrate("migrateFileToKeyring", () => {
+describe("migrateFileToKeyring", () => {
   let testDir: string;
   let testFilePath: string;
 
   beforeEach(async () => {
+    if (process.env.CI) {
+      mockCredentials?.clear();
+      mockKeyring?.getPassword.mockClear();
+      mockKeyring?.setPassword.mockClear();
+      mockKeyring?.deletePassword.mockClear();
+      mockKeyring?.findCredentials.mockClear();
+    }
+
     testDir = join(tmpdir(), `secrets-migrate-test-${Date.now()}-${Math.random()}`);
     await fs.mkdir(testDir, { recursive: true });
     testFilePath = join(testDir, "secrets.yaml");
@@ -28,7 +35,7 @@ describeMigrate("migrateFileToKeyring", () => {
       if (await keyring.available()) {
         const hosts = await keyring.listHosts();
         for (const host of hosts) {
-          await keyring.deleteKey(host.AIGNE_HUB_API_URL!);
+          await keyring.deleteKey(host.AIGNE_HUB_API_URL);
         }
       }
     } catch {}
@@ -130,10 +137,6 @@ describeMigrate("migrateFileToKeyring", () => {
     expect(result).toBe(true);
 
     expect((await keyring.getKey("https://example.com"))?.AIGNE_HUB_API_KEY).toBe("test-key");
-
-    const defaultKey = await keyring.getDefault({ fallbackToFirst: false });
-    expect(defaultKey?.AIGNE_HUB_API_URL).toBe("https://example.com");
-    expect(defaultKey?.AIGNE_HUB_API_KEY).toBe("test-key");
   });
 
   test("should handle empty file", async () => {

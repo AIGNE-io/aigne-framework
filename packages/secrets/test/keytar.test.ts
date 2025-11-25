@@ -1,14 +1,21 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import KeyringStore from "../src/keytar.js";
+import { mockCredentials, mockKeyring } from "./util.js";
 
-const describeKeyring = process.env.CI ? describe.skip : describe;
-
-describeKeyring("KeyringStore", () => {
+describe("KeyringStore", () => {
   let store: KeyringStore;
   let testServiceName: string;
   let testUrls: string[];
 
   beforeEach(() => {
+    if (process.env.CI) {
+      mockCredentials?.clear();
+      mockKeyring?.getPassword.mockClear();
+      mockKeyring?.setPassword.mockClear();
+      mockKeyring?.deletePassword.mockClear();
+      mockKeyring?.findCredentials.mockClear();
+    }
+
     testServiceName = `test-service-${Date.now()}-${Math.random()}`;
     testUrls = [];
     store = new KeyringStore({ secretStoreKey: testServiceName });

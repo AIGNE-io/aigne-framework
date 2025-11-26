@@ -2,24 +2,17 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { parse, stringify } from "yaml";
 import { BaseSecretStore } from "./base.js";
-import type { AIGNEHubAPIInfo, CredentialEntry, GetDefaultOptions, StoreOptions } from "./types.js";
+import type { CredentialEntry, StoreOptions, ValueInfo } from "./types.js";
 
-interface AIGNEEnv<K extends string = "AIGNE_HUB_API_KEY", U extends string = "AIGNE_HUB_API_URL"> {
-  [host: string]: AIGNEHubAPIInfo<K, U>;
+interface AIGNEEnv {
+  [key: string]: ValueInfo;
 }
 
-class FileStore<
-  K extends string = "AIGNE_HUB_API_KEY",
-  U extends string = "AIGNE_HUB_API_URL",
-> extends BaseSecretStore<K, U> {
+export class FileStore extends BaseSecretStore {
   private filepath: string;
 
-  constructor(
-    options: Required<Pick<StoreOptions<K, U>, "filepath">> &
-      Pick<StoreOptions<K, U>, "outputConfig">,
-  ) {
-    super(options);
-
+  constructor(options: Required<Pick<StoreOptions, "filepath">>) {
+    super();
     this.filepath = options.filepath;
   }
 
@@ -32,10 +25,10 @@ class FileStore<
     }
   }
 
-  private async load(): Promise<AIGNEEnv<K, U>> {
+  async load(): Promise<AIGNEEnv> {
     try {
       const data = await fs.readFile(this.filepath, "utf-8");
-      const parsed = parse(data) as AIGNEEnv<K, U>;
+      const parsed = parse(data) as AIGNEEnv;
       if (!parsed || typeof parsed !== "object") {
         return {};
       }
@@ -45,48 +38,44 @@ class FileStore<
     }
   }
 
-  private async save(data: AIGNEEnv<K, U>): Promise<void> {
+  private async save(data: AIGNEEnv): Promise<void> {
     const yaml = stringify(data);
     await fs.mkdir(path.dirname(this.filepath), { recursive: true });
     await fs.writeFile(this.filepath, yaml, "utf-8");
   }
 
-  async setKey(url: string, secret: string): Promise<void> {
+  async setItem(key: string, value: ValueInfo): Promise<void> {
     if (!(await this.available())) throw new Error("File store not available");
 
     const data = await this.load();
-    const host = this.normalizeHostFrom(url);
 
-    if (!data[host]) {
-      data[host] = {} as AIGNEHubAPIInfo<K, U>;
+    if (!data[key]) {
+      data[key] = {} as ValueInfo;
     }
 
-    data[host][this.outputConfig.key] = secret;
-    data[host][this.outputConfig.url] = url;
+    data[key] = value;
 
     await this.save(data);
   }
 
-  async getKey(url: string): Promise<AIGNEHubAPIInfo<K, U> | null> {
+  async getItem(key: string): Promise<ValueInfo | null> {
     if (!(await this.available())) return null;
 
     try {
       const data = await this.load();
-      const host = this.normalizeHostFrom(url);
-      return data[host] || null;
+      return data[key] || null;
     } catch {
       return null;
     }
   }
 
-  async deleteKey(url: string): Promise<boolean> {
+  async deleteItem(key: string): Promise<boolean> {
     if (!(await this.available())) return false;
 
     try {
       const data = await this.load();
-      const host = this.normalizeHostFrom(url);
-      if (data[host]) {
-        delete data[host];
+      if (data[key]) {
+        delete data[key];
         await this.save(data);
         return true;
       }
@@ -96,21 +85,16 @@ class FileStore<
     }
   }
 
-  async listCredentials(): Promise<CredentialEntry[] | null> {
+  async listItems(): Promise<CredentialEntry[] | null> {
     if (!(await this.available())) return null;
+
     try {
       const data = await this.load();
       const entries: CredentialEntry[] = [];
 
       for (const [host, config] of Object.entries(data)) {
         if (host === "default") continue;
-
-        if (config[this.outputConfig.key]) {
-          entries.push({
-            account: config[this.outputConfig.url],
-            password: config[this.outputConfig.key],
-          });
-        }
+        entries.push({ account: host, password: JSON.stringify(config) });
       }
 
       return entries.length > 0 ? entries : null;
@@ -119,78 +103,65 @@ class FileStore<
     }
   }
 
-  override async listHosts(): Promise<AIGNEHubAPIInfo<K, U>[]> {
-    const creds = await this.listCredentials();
-    if (!creds) return [];
+  override async listEntries(): Promise<ValueInfo[]> {
+    const list = await this.listItems();
+    if (!list) return [];
 
-    return creds.reduce<AIGNEHubAPIInfo<K, U>[]>((acc, c) => {
+    return list.reduce<ValueInfo[]>((acc, c) => {
       if (c.password && c.account) {
-        acc.push({
-          [this.outputConfig.url]: c.account,
-          [this.outputConfig.key]: c.password,
-        } as AIGNEHubAPIInfo<K, U>);
+        acc.push(this.parseKey(c.password) as ValueInfo);
       }
+
       return acc;
     }, []);
   }
 
-  override async setDefault(url: string): Promise<void> {
+  override async listMap(): Promise<Record<string, ValueInfo>> {
+    const list = await this.listItems();
+    if (!list) return {};
+
+    return list.reduce(
+      (acc, host) => {
+        if (host.account && host.password) {
+          const parsed = this.parseKey(host.password);
+          if (parsed) acc[host.account] = parsed;
+        }
+
+        return acc;
+      },
+      {} as Record<string, ValueInfo>,
+    );
+  }
+
+  override async setDefaultItem(value: ValueInfo): Promise<void> {
     if (!(await this.available())) throw new Error("File store not available");
+
     const data = await this.load();
 
     if (!data.default) {
-      data.default = {} as AIGNEHubAPIInfo<K, U>;
+      data.default = {} as ValueInfo;
     }
 
-    data.default[this.outputConfig.url] = url;
+    data.default = value;
     await this.save(data);
   }
 
-  override async getDefault(
-    options: GetDefaultOptions = {},
-  ): Promise<AIGNEHubAPIInfo<K, U> | null> {
-    const { fallbackToFirst = false, presetIfFallback = false } = options;
+  override async getDefaultItem(): Promise<ValueInfo | null> {
     if (!(await this.available())) return null;
 
     try {
       const data = await this.load();
-      const defaultUrl = data.default?.[this.outputConfig.url];
-
-      if (defaultUrl) {
-        const host = this.normalizeHostFrom(defaultUrl);
-        return data[host] ?? null;
-      }
+      return data.default ?? null;
     } catch {
       // ignore
-    }
-
-    if (!fallbackToFirst) return null;
-
-    const hosts = await this.listHosts();
-    if (Array.isArray(hosts) && hosts.length > 0) {
-      const firstHost = hosts[0];
-      if (presetIfFallback && firstHost?.[this.outputConfig.key]) {
-        try {
-          const data = await this.load();
-          const url =
-            data[this.normalizeHostFrom(firstHost[this.outputConfig.url])]?.[this.outputConfig.url];
-
-          if (url) {
-            await this.setDefault(url);
-          }
-        } catch {
-          // ignore set failure
-        }
-      }
-
-      return firstHost ?? null;
     }
 
     return null;
   }
 
-  override async deleteDefault(): Promise<void> {
+  override async deleteDefaultItem(): Promise<void> {
     if (!(await this.available())) throw new Error("File store not available");
+
     const data = await this.load();
     delete data.default;
     await this.save(data);

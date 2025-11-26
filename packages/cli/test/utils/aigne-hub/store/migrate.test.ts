@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import fs from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import FileStore from "../src/file.js";
-import KeyringStore from "../src/keytar.js";
-import { migrateFileToKeyring } from "../src/migrate.js";
+import FileStore from "../../../../src/utils/aigne-hub/store/file.js";
+import KeyringStore from "../../../../src/utils/aigne-hub/store/keytar.js";
+import { migrateFileToKeyring } from "../../../../src/utils/aigne-hub/store/migrate.js";
 import { mockCredentials, mockKeyring } from "./util.js";
 
 describe("migrateFileToKeyring", () => {

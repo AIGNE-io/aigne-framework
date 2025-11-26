@@ -10,7 +10,7 @@ import pWaitFor from "p-wait-for";
 import { joinURL, withQuery } from "ufo";
 import { ACCESS_KEY_SESSION_API, isTest, WELLKNOWN_SERVICE_PATH_PREFIX } from "./constants.js";
 import { decrypt, encodeEncryptionKey } from "./crypto.js";
-import getSecretStore from "./get-secret-store.js";
+import getSecretStore from "./store/index.js";
 import type { CreateConnectOptions, FetchResult, LoadCredentialOptions } from "./type.js";
 
 const request = async (config: { url: string; method?: string; requestCount?: number }) => {

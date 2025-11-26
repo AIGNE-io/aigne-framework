@@ -1,25 +1,22 @@
-import { keyring as zoweKeyring } from "@zowe/secrets-for-zowe-sdk";
+import { keyring } from "@zowe/secrets-for-zowe-sdk";
 import { BaseSecretStore } from "./base.js";
-import type { AIGNEHubAPIInfo, CredentialEntry, GetDefaultOptions, StoreOptions } from "./types.js";
+import type { CredentialEntry, StoreOptions, ValueInfo } from "./types.js";
 
 const DEFAULT_SERVICE_NAME = "-secrets";
 const DEFAULT_ACCOUNT_NAME_FOR_DEFAULT = "-default";
 
-class KeyringStore<
-  K extends string = "AIGNE_HUB_API_KEY",
-  U extends string = "AIGNE_HUB_API_URL",
-> extends BaseSecretStore<K, U> {
-  private _impl: typeof zoweKeyring;
+export class KeyringStore extends BaseSecretStore {
+  private _impl: typeof keyring;
   private secretStoreKey: string;
   private defaultAccount: string;
   private _forceUnavailable: boolean;
 
-  constructor(options: StoreOptions<K, U> = {}) {
-    super(options);
+  constructor(options: StoreOptions = {}) {
+    super();
 
     const { secretStoreKey, forceUnavailable = false } = options;
 
-    this._impl = zoweKeyring;
+    this._impl = keyring;
     this.secretStoreKey = `${secretStoreKey}${DEFAULT_SERVICE_NAME}`;
     this.defaultAccount = `${secretStoreKey}${DEFAULT_ACCOUNT_NAME_FOR_DEFAULT}`;
     this._forceUnavailable = !!forceUnavailable;
@@ -40,31 +37,16 @@ class KeyringStore<
     }
   }
 
-  async setKey(url: string, secret: string) {
+  async setItem(key: string, value: ValueInfo) {
     if (!(await this.available())) throw new Error("Keyring not available");
-
-    return this._impl.setPassword(
-      this.secretStoreKey,
-      this.normalizeHostFrom(url),
-      JSON.stringify({ [this.outputConfig.url]: url, [this.outputConfig.key]: secret }),
-    );
+    return this._impl.setPassword(this.secretStoreKey, key, JSON.stringify(value));
   }
 
-  private parseKey(v: string): AIGNEHubAPIInfo<K, U> | null {
-    try {
-      const parsed = JSON.parse(v);
-      if (!parsed[this.outputConfig.url] || !parsed[this.outputConfig.key]) return null;
-      return parsed;
-    } catch {
-      return null;
-    }
-  }
-
-  async getKey(url: string): Promise<AIGNEHubAPIInfo<K, U> | null> {
+  async getItem(key: string): Promise<ValueInfo | null> {
     if (!(await this.available())) return null;
 
     try {
-      const v = await this._impl.getPassword(this.secretStoreKey, this.normalizeHostFrom(url));
+      const v = await this._impl.getPassword(this.secretStoreKey, key);
       if (!v) return null;
       return this.parseKey(v);
     } catch {
@@ -72,37 +54,37 @@ class KeyringStore<
     }
   }
 
-  async deleteKey(url: string): Promise<boolean> {
+  async deleteItem(key: string): Promise<boolean> {
     if (!(await this.available())) return false;
 
     try {
-      const ok = await this._impl.deletePassword(this.secretStoreKey, this.normalizeHostFrom(url));
+      const ok = await this._impl.deletePassword(this.secretStoreKey, key);
       return !!ok;
     } catch {
       return false;
     }
   }
 
-  async listCredentials(): Promise<CredentialEntry[] | null> {
+  async listItems(): Promise<CredentialEntry[] | null> {
     if (!(await this.available())) return null;
 
     try {
       if (typeof this._impl.findCredentials === "function") {
-        const creds = await this._impl.findCredentials(this.secretStoreKey);
-        return Array.isArray(creds) && creds.length > 0 ? creds : null;
+        const list = await this._impl.findCredentials(this.secretStoreKey);
+        return Array.isArray(list) && list.length > 0 ? list : null;
       }
 
       return null;
-    } catch (_err) {
+    } catch {
       return null;
     }
   }
 
-  override async listHosts(): Promise<AIGNEHubAPIInfo<K, U>[]> {
-    const creds = await this.listCredentials();
-    if (!creds) return [];
+  override async listEntries(): Promise<ValueInfo[]> {
+    const list = await this.listItems();
+    if (!list) return [];
 
-    return creds.reduce<AIGNEHubAPIInfo<K, U>[]>((acc, c) => {
+    return list.reduce<ValueInfo[]>((acc, c) => {
       if (c.password) {
         const parsed = this.parseKey(c.password);
         if (parsed) acc.push(parsed);
@@ -111,50 +93,45 @@ class KeyringStore<
     }, []);
   }
 
-  override async setDefault(url: string): Promise<void> {
-    if (!(await this.available())) throw new Error("Keyring not available");
-    const account = this.defaultAccount;
-    return this._impl.setPassword(account, account, this.normalizeHostFrom(url));
+  override async listMap(): Promise<Record<string, ValueInfo>> {
+    const list = await this.listItems();
+    if (!list) return {};
+
+    return list.reduce(
+      (acc, host) => {
+        if (host.account && host.password) {
+          const parsed = this.parseKey(host.password);
+          if (parsed) acc[host.account] = parsed;
+        }
+
+        return acc;
+      },
+      {} as Record<string, ValueInfo>,
+    );
   }
 
-  override async getDefault(
-    options: GetDefaultOptions = {},
-  ): Promise<AIGNEHubAPIInfo<K, U> | null> {
-    const { fallbackToFirst = false, presetIfFallback = false } = options;
+  override async setDefaultItem(value: ValueInfo): Promise<void> {
+    if (!(await this.available())) throw new Error("Keyring not available");
+    const account = this.defaultAccount;
+    return this._impl.setPassword(account, account, JSON.stringify(value));
+  }
 
+  override async getDefaultItem(): Promise<ValueInfo | null> {
     if (!(await this.available())) return null;
 
     const account = this.defaultAccount;
     try {
-      const storedUrl = await this._impl.getPassword(account, account);
-      if (storedUrl) {
-        const defaultInfo = await this.getKey(storedUrl);
-        if (defaultInfo) return defaultInfo;
-      }
+      const value = await this._impl.getPassword(account, account);
+      if (!value) return null;
+      return this.parseKey(value);
     } catch {
       // ignore
     }
 
-    if (!fallbackToFirst) return null;
-
-    const hosts = await this.listHosts();
-    if (hosts.length === 0) return null;
-
-    const firstHost = hosts[0];
-    if (!firstHost) return null;
-
-    if (presetIfFallback && firstHost[this.outputConfig.url]) {
-      try {
-        await this.setDefault(firstHost[this.outputConfig.url]);
-      } catch {
-        // ignore
-      }
-    }
-
-    return firstHost;
+    return null;
   }
 
-  override async deleteDefault(): Promise<void> {
+  override async deleteDefaultItem(): Promise<void> {
     if (!(await this.available())) throw new Error("Keyring not available");
     const account = this.defaultAccount;
     await this._impl.deletePassword(account, account);

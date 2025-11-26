@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import FileStore from "../src/file.js";
+import type { ValueInfo } from "../src/types.js";
 
 describe("FileStore", () => {
   let testDir: string;
@@ -36,388 +37,305 @@ describe("FileStore", () => {
     });
   });
 
-  describe("setKey() and getKey()", () => {
-    test("should store and retrieve a key", async () => {
-      const url = "https://example.com";
-      const secret = "test-api-key";
+  describe("setItem() and getItem()", () => {
+    test("should store and retrieve an item", async () => {
+      const key = "example.com";
+      const value: ValueInfo = { apiKey: "test-key", apiUrl: "https://example.com" };
 
-      await store.setKey(url, secret);
-      const retrieved = await store.getKey(url);
+      await store.setItem(key, value);
+      const retrieved = await store.getItem(key);
 
-      expect(retrieved).toEqual({ AIGNE_HUB_API_URL: url, AIGNE_HUB_API_KEY: secret });
+      expect(retrieved).toEqual(value);
     });
 
-    test("should handle multiple hosts", async () => {
-      await store.setKey("https://host1.com", "key1");
-      await store.setKey("https://host2.com", "key2");
-      await store.setKey("https://host3.com/path", "key3");
+    test("should handle multiple items", async () => {
+      await store.setItem("host1", { apiKey: "key1" });
+      await store.setItem("host2", { apiKey: "key2" });
+      await store.setItem("host3", { apiKey: "key3" });
 
-      expect((await store.getKey("https://host1.com"))?.AIGNE_HUB_API_KEY).toBe("key1");
-      expect((await store.getKey("https://host2.com"))?.AIGNE_HUB_API_KEY).toBe("key2");
-      expect((await store.getKey("https://host3.com/path"))?.AIGNE_HUB_API_KEY).toBe("key3");
+      expect((await store.getItem("host1"))?.apiKey).toBe("key1");
+      expect((await store.getItem("host2"))?.apiKey).toBe("key2");
+      expect((await store.getItem("host3"))?.apiKey).toBe("key3");
     });
 
-    test("should normalize URLs to host", async () => {
-      await store.setKey("https://example.com/api/v1", "test-key");
+    test("should overwrite existing item", async () => {
+      const key = "example.com";
 
-      const retrieved = await store.getKey("https://example.com/another/path");
-      expect(retrieved?.AIGNE_HUB_API_KEY).toBe("test-key");
+      await store.setItem(key, { apiKey: "old-key" });
+      await store.setItem(key, { apiKey: "new-key" });
+
+      const retrieved = await store.getItem(key);
+      expect(retrieved?.apiKey).toBe("new-key");
     });
 
-    test("should overwrite existing key", async () => {
-      const url = "https://example.com";
-
-      await store.setKey(url, "old-key");
-      await store.setKey(url, "new-key");
-
-      const retrieved = await store.getKey(url);
-      expect(retrieved?.AIGNE_HUB_API_KEY).toBe("new-key");
-    });
-
-    test("should return null for non-existent key", async () => {
-      const retrieved = await store.getKey("https://nonexistent.com");
+    test("should return null for non-existent item", async () => {
+      const retrieved = await store.getItem("nonexistent");
       expect(retrieved).toBe(null);
     });
 
-    test("should throw error when setting key and store unavailable", async () => {
+    test("should throw error when setting item and store unavailable", async () => {
       const invalidStore = new FileStore({ filepath: "/non/existent/path/secrets.yaml" });
 
-      await expect(invalidStore.setKey("https://test.com", "key")).rejects.toThrow(
+      await expect(invalidStore.setItem("test", { apiKey: "key" })).rejects.toThrow(
         "File store not available",
       );
     });
 
-    test("should return null when getting key and store unavailable", async () => {
+    test("should return null when getting item and store unavailable", async () => {
       const invalidStore = new FileStore({ filepath: "/non/existent/path/secrets.yaml" });
-      const result = await invalidStore.getKey("https://test.com");
+      const result = await invalidStore.getItem("test");
       expect(result).toBe(null);
     });
 
     test("should persist data to file", async () => {
-      await store.setKey("https://example.com", "test-key");
+      await store.setItem("example.com", { apiKey: "test-key" });
 
       const newStore = new FileStore({ filepath: testFilePath });
-      const retrieved = await newStore.getKey("https://example.com");
+      const retrieved = await newStore.getItem("example.com");
 
-      expect(retrieved?.AIGNE_HUB_API_KEY).toBe("test-key");
+      expect(retrieved?.apiKey).toBe("test-key");
     });
 
-    test("should store both API key and URL", async () => {
-      const url = "https://example.com/api";
-      await store.setKey(url, "test-key");
+    test("should store complex ValueInfo objects", async () => {
+      const value: ValueInfo = {
+        apiKey: "test-key",
+        apiUrl: "https://example.com/api",
+        customField: "custom-value",
+      };
 
-      const fileContent = await fs.readFile(testFilePath, "utf-8");
-      expect(fileContent).toContain("AIGNE_HUB_API_KEY");
-      expect(fileContent).toContain("AIGNE_HUB_API_URL");
-      expect(fileContent).toContain(url);
+      await store.setItem("example.com", value);
+      const retrieved = await store.getItem("example.com");
+
+      expect(retrieved).toEqual(value);
     });
   });
 
-  describe("deleteKey()", () => {
-    test("should delete existing key", async () => {
-      await store.setKey("https://example.com", "test-key");
+  describe("deleteItem()", () => {
+    test("should delete existing item", async () => {
+      await store.setItem("example.com", { apiKey: "test-key" });
 
-      const deleted = await store.deleteKey("https://example.com");
+      const deleted = await store.deleteItem("example.com");
       expect(deleted).toBe(true);
 
-      const retrieved = await store.getKey("https://example.com");
+      const retrieved = await store.getItem("example.com");
       expect(retrieved).toBe(null);
     });
 
-    test("should return false when deleting non-existent key", async () => {
-      const deleted = await store.deleteKey("https://nonexistent.com");
+    test("should return false when deleting non-existent item", async () => {
+      const deleted = await store.deleteItem("nonexistent");
       expect(deleted).toBe(false);
     });
 
     test("should return false when store unavailable", async () => {
       const invalidStore = new FileStore({ filepath: "/non/existent/path/secrets.yaml" });
-      const result = await invalidStore.deleteKey("https://test.com");
+      const result = await invalidStore.deleteItem("test");
       expect(result).toBe(false);
     });
 
-    test("should not affect other keys", async () => {
-      await store.setKey("https://host1.com", "key1");
-      await store.setKey("https://host2.com", "key2");
+    test("should not affect other items", async () => {
+      await store.setItem("host1", { apiKey: "key1" });
+      await store.setItem("host2", { apiKey: "key2" });
 
-      await store.deleteKey("https://host1.com");
+      await store.deleteItem("host1");
 
-      expect(await store.getKey("https://host1.com")).toBe(null);
-      expect((await store.getKey("https://host2.com"))?.AIGNE_HUB_API_KEY).toBe("key2");
+      expect(await store.getItem("host1")).toBe(null);
+      expect((await store.getItem("host2"))?.apiKey).toBe("key2");
     });
   });
 
-  describe("listCredentials()", () => {
+  describe("listItems()", () => {
     test("should return null for empty store", async () => {
-      const creds = await store.listCredentials();
-      expect(creds).toBe(null);
+      const items = await store.listItems();
+      expect(items).toBe(null);
     });
 
-    test("should list all stored credentials", async () => {
-      await store.setKey("https://host1.com", "key1");
-      await store.setKey("https://host2.com", "key2");
+    test("should list all items excluding default", async () => {
+      await store.setItem("host1", { apiKey: "key1" });
+      await store.setItem("host2", { apiKey: "key2" });
 
-      const creds = await store.listCredentials();
+      const items = await store.listItems();
 
-      expect(creds).toBeDefined();
-      expect(creds).not.toBeNull();
-      if (!creds) return;
-
-      expect(creds.length).toBe(2);
-
-      const accounts = creds.map((c) => c.account).sort();
-      expect(accounts).toEqual(["https://host1.com", "https://host2.com"]);
+      expect(items).not.toBe(null);
+      expect(items?.length).toBe(2);
+      expect(items?.[0]?.account).toBe("host1");
+      expect(items?.[1]?.account).toBe("host2");
     });
 
-    test("should not include default in credentials list", async () => {
-      await store.setKey("https://example.com", "test-key");
-      await store.setDefault("https://example.com");
+    test("should not include default in list", async () => {
+      await store.setItem("host1", { apiKey: "key1" });
+      await store.setDefaultItem({ apiKey: "default-key" });
 
-      const creds = await store.listCredentials();
+      const items = await store.listItems();
 
-      expect(creds).not.toBeNull();
-      if (!creds || creds.length === 0) return;
-
-      expect(creds.length).toBe(1);
-      expect(creds[0]?.account).toBe("https://example.com");
+      expect(items?.length).toBe(1);
+      expect(items?.[0]?.account).toBe("host1");
     });
 
     test("should return null when store unavailable", async () => {
       const invalidStore = new FileStore({ filepath: "/non/existent/path/secrets.yaml" });
-      const result = await invalidStore.listCredentials();
+      const result = await invalidStore.listItems();
       expect(result).toBe(null);
     });
-
-    test("should include password in credentials", async () => {
-      await store.setKey("https://example.com", "secret-key");
-
-      const creds = await store.listCredentials();
-
-      expect(creds).not.toBeNull();
-      if (!creds || creds.length === 0) return;
-
-      expect(creds[0]?.password).toBe("secret-key");
-    });
   });
 
-  describe("listHosts()", () => {
+  describe("listEntries()", () => {
     test("should return empty array for empty store", async () => {
-      const hosts = await store.listHosts();
-      expect(hosts).toEqual([]);
+      const entries = await store.listEntries();
+      expect(entries).toEqual([]);
     });
 
-    test("should list all hosts with details", async () => {
-      await store.setKey("https://host1.com/api", "key1");
-      await store.setKey("https://host2.com", "key2");
+    test("should list all entries as ValueInfo array", async () => {
+      await store.setItem("host1", { apiKey: "key1", apiUrl: "https://host1.com" });
+      await store.setItem("host2", { apiKey: "key2", apiUrl: "https://host2.com" });
 
-      const hosts = await store.listHosts();
+      const entries = await store.listEntries();
 
-      expect(hosts.length).toBe(2);
-      expect(hosts[0]).toBeDefined();
-      if (!hosts[0]) return;
-
-      expect(hosts[0]).toHaveProperty("AIGNE_HUB_API_URL");
-      expect(hosts[0]).toHaveProperty("AIGNE_HUB_API_KEY");
-    });
-
-    test("should include host in entry", async () => {
-      const url = "https://example.com/api/v1";
-      await store.setKey(url, "test-key");
-
-      const hosts = await store.listHosts();
-
-      expect(hosts[0]).toBeDefined();
-      if (!hosts[0]) return;
-
-      expect(hosts[0].AIGNE_HUB_API_URL).toBe("https://example.com/api/v1");
-      expect(hosts[0].AIGNE_HUB_API_KEY).toBe("test-key");
+      expect(entries.length).toBe(2);
+      expect(entries[0]?.apiKey).toBe("key1");
+      expect(entries[1]?.apiKey).toBe("key2");
     });
   });
 
-  describe("setDefault() and getDefault()", () => {
-    test("should set and get default", async () => {
-      const url = "https://example.com";
-      await store.setKey(url, "test-key");
-      await store.setDefault(url);
+  describe("listMap()", () => {
+    test("should return empty object for empty store", async () => {
+      const map = await store.listMap();
+      expect(map).toEqual({});
+    });
 
-      const defaultKey = await store.getDefault();
-      expect(defaultKey?.AIGNE_HUB_API_KEY).toBe("test-key");
+    test("should return map of all entries", async () => {
+      await store.setItem("host1", { apiKey: "key1" });
+      await store.setItem("host2", { apiKey: "key2" });
+
+      const map = await store.listMap();
+
+      expect(map.host1?.apiKey).toBe("key1");
+      expect(map.host2?.apiKey).toBe("key2");
+    });
+  });
+
+  describe("setDefaultItem() and getDefaultItem()", () => {
+    test("should set and get default item", async () => {
+      const value: ValueInfo = { apiKey: "default-key", apiUrl: "https://default.com" };
+      await store.setDefaultItem(value);
+
+      const retrieved = await store.getDefaultItem();
+      expect(retrieved).toEqual(value);
     });
 
     test("should throw when setting default and store unavailable", async () => {
       const invalidStore = new FileStore({ filepath: "/non/existent/path/secrets.yaml" });
 
-      await expect(invalidStore.setDefault("https://test.com")).rejects.toThrow(
+      await expect(invalidStore.setDefaultItem({ apiKey: "key" })).rejects.toThrow(
         "File store not available",
       );
     });
 
     test("should return null when getting default and store unavailable", async () => {
       const invalidStore = new FileStore({ filepath: "/non/existent/path/secrets.yaml" });
-      const result = await invalidStore.getDefault();
+      const result = await invalidStore.getDefaultItem();
       expect(result).toBe(null);
     });
 
-    test("should fallback to first host when default not set", async () => {
-      await store.setKey("https://host1.com", "key1");
-      await store.setKey("https://host2.com", "key2");
-
-      const defaultKey = await store.getDefault({ fallbackToFirst: true });
-      expect(defaultKey?.AIGNE_HUB_API_KEY).toBe("key1");
-    });
-
-    test("should not fallback when fallbackToFirst is false", async () => {
-      await store.setKey("https://example.com", "test-key");
-
-      const defaultKey = await store.getDefault({ fallbackToFirst: false });
-      expect(defaultKey).toBe(null);
-    });
-
-    test("should not fallback by default when default not set", async () => {
-      await store.setKey("https://example.com", "test-key");
-
-      const defaultKey = await store.getDefault();
-      expect(defaultKey).toBe(null);
-    });
-
-    test("should preset default when fallback occurs and presetIfFallback is true", async () => {
-      await store.setKey("https://example.com/api", "test-key");
-
-      const defaultKey = await store.getDefault({ fallbackToFirst: true, presetIfFallback: true });
-      expect(defaultKey?.AIGNE_HUB_API_KEY).toBe("test-key");
-
-      const defaultAgain = await store.getDefault({ fallbackToFirst: false });
-      expect(defaultAgain?.AIGNE_HUB_API_KEY).toBe("test-key");
-    });
-
-    test("should not preset when presetIfFallback is false", async () => {
-      await store.setKey("https://example.com", "test-key");
-
-      await store.getDefault({ fallbackToFirst: true, presetIfFallback: false });
-
-      // Verify it was not set
-      const defaultKey = await store.getDefault({ fallbackToFirst: false });
-      expect(defaultKey).toBe(null);
-    });
-
-    test("should return null when no hosts exist", async () => {
-      const defaultKey = await store.getDefault();
-      expect(defaultKey).toBe(null);
+    test("should return null when no default set", async () => {
+      const retrieved = await store.getDefaultItem();
+      expect(retrieved).toBe(null);
     });
 
     test("should update default when changed", async () => {
-      await store.setKey("https://host1.com", "key1");
-      await store.setKey("https://host2.com", "key2");
+      await store.setDefaultItem({ apiKey: "key1" });
+      expect((await store.getDefaultItem())?.apiKey).toBe("key1");
 
-      await store.setDefault("https://host1.com");
-      expect((await store.getDefault())?.AIGNE_HUB_API_KEY).toBe("key1");
+      await store.setDefaultItem({ apiKey: "key2" });
+      expect((await store.getDefaultItem())?.apiKey).toBe("key2");
+    });
+  });
 
-      await store.setDefault("https://host2.com");
-      expect((await store.getDefault())?.AIGNE_HUB_API_KEY).toBe("key2");
+  describe("deleteDefaultItem()", () => {
+    test("should delete default item", async () => {
+      await store.setDefaultItem({ apiKey: "default-key" });
+      expect(await store.getDefaultItem()).not.toBe(null);
+
+      await store.deleteDefaultItem();
+      expect(await store.getDefaultItem()).toBe(null);
     });
 
-    test("should correctly handle default value", async () => {
-      await store.setKey("https://default.com", "default-key");
-      await store.setDefault("https://default.com");
+    test("should throw when store unavailable", async () => {
+      const invalidStore = new FileStore({ filepath: "/non/existent/path/secrets.yaml" });
+      await expect(invalidStore.deleteDefaultItem()).rejects.toThrow("File store not available");
+    });
 
-      const defaultValue = await store.getDefault();
-      expect(defaultValue?.AIGNE_HUB_API_KEY).toBe("default-key");
+    test("should not affect other items", async () => {
+      await store.setItem("host1", { apiKey: "key1" });
+      await store.setDefaultItem({ apiKey: "default-key" });
 
-      await store.deleteDefault();
-      const noDefault = await store.getDefault();
-      expect(noDefault).toBe(null);
+      await store.deleteDefaultItem();
+
+      expect(await store.getDefaultItem()).toBe(null);
+      expect((await store.getItem("host1"))?.apiKey).toBe("key1");
     });
   });
 
   describe("file format", () => {
     test("should create valid YAML file", async () => {
-      await store.setKey("https://example.com", "test-key");
+      await store.setItem("example.com", { apiKey: "test-key", apiUrl: "https://example.com" });
 
       const fileContent = await fs.readFile(testFilePath, "utf-8");
 
       expect(fileContent).toContain("example.com:");
-      expect(fileContent).toContain("AIGNE_HUB_API_KEY:");
-      expect(fileContent).toContain("AIGNE_HUB_API_URL:");
+      expect(fileContent).toContain("apiKey:");
+      expect(fileContent).toContain("apiUrl:");
     });
 
     test("should handle empty or corrupted file gracefully", async () => {
       await fs.writeFile(testFilePath, "invalid: yaml: content: [[[", "utf-8");
 
-      await store.setKey("https://example.com", "test-key");
-      const retrieved = await store.getKey("https://example.com");
+      await store.setItem("example.com", { apiKey: "test-key" });
+      const retrieved = await store.getItem("example.com");
 
-      expect(retrieved?.AIGNE_HUB_API_KEY).toBe("test-key");
+      expect(retrieved?.apiKey).toBe("test-key");
     });
 
     test("should handle non-object YAML content", async () => {
       await fs.writeFile(testFilePath, "just a string", "utf-8");
 
-      await store.setKey("https://example.com", "test-key");
-      const retrieved = await store.getKey("https://example.com");
+      await store.setItem("example.com", { apiKey: "test-key" });
+      const retrieved = await store.getItem("example.com");
 
-      expect(retrieved?.AIGNE_HUB_API_KEY).toBe("test-key");
+      expect(retrieved?.apiKey).toBe("test-key");
     });
   });
 
   describe("edge cases", () => {
-    test("should handle URLs without protocol", async () => {
-      await store.setKey("example.com", "test-key");
-      const retrieved = await store.getKey("example.com");
-      expect(retrieved?.AIGNE_HUB_API_KEY).toBe("test-key");
+    test("should handle keys with special characters", async () => {
+      const key = "example.com:8080/api/v1";
+      await store.setItem(key, { apiKey: "test-key" });
+      const retrieved = await store.getItem(key);
+      expect(retrieved?.apiKey).toBe("test-key");
     });
 
-    test("should handle URLs with port", async () => {
-      await store.setKey("https://example.com:8080", "test-key");
-      const retrieved = await store.getKey("https://example.com:8080/api");
-      expect(retrieved?.AIGNE_HUB_API_KEY).toBe("test-key");
+    test("should handle complex nested ValueInfo", async () => {
+      const value: ValueInfo = {
+        apiKey: "key",
+        nested: { prop: "value" },
+        array: [1, 2, 3],
+      };
+      await store.setItem("example.com", value);
+      const retrieved = await store.getItem("example.com");
+      expect(retrieved).toEqual(value);
     });
 
-    test("should handle special characters in secret", async () => {
-      const secret = "key!@#$%^&*()_+-=[]{}|;':\",./<>?";
-      await store.setKey("https://example.com", secret);
-      const retrieved = await store.getKey("https://example.com");
-      expect(retrieved?.AIGNE_HUB_API_KEY).toBe(secret);
+    test("should handle empty string values", async () => {
+      await store.setItem("example.com", { apiKey: "" });
+      const retrieved = await store.getItem("example.com");
+      expect(retrieved?.apiKey).toBe("");
     });
 
-    test("should handle empty secret", async () => {
-      await store.setKey("https://example.com", "");
-      const retrieved = await store.getKey("https://example.com");
-      expect(retrieved?.AIGNE_HUB_API_KEY === "" || retrieved === null).toBe(true);
-    });
-
-    test("should handle very long secrets", async () => {
-      const longSecret = "x".repeat(10000);
-      await store.setKey("https://example.com", longSecret);
-      const retrieved = await store.getKey("https://example.com");
-      expect(retrieved?.AIGNE_HUB_API_KEY).toBe(longSecret);
-    });
-  });
-
-  describe("concurrent operations", () => {
-    test("should handle concurrent writes", async () => {
-      for (let i = 0; i < 10; i++) {
-        await store.setKey(`https://host${i}.com`, `key${i}`);
-      }
-
-      for (let i = 0; i < 10; i++) {
-        const key = await store.getKey(`https://host${i}.com`);
-        expect(key?.AIGNE_HUB_API_KEY).toBe(`key${i}`);
-      }
-    });
-
-    test("should handle mixed operations", async () => {
-      await store.setKey("https://example.com", "initial-key");
-
-      const operations = [
-        store.getKey("https://example.com"),
-        store.setKey("https://example.com", "updated-key"),
-        store.listCredentials(),
-        store.getKey("https://example.com"),
-      ];
-
-      await Promise.all(operations);
-
-      const finalKey = await store.getKey("https://example.com");
-      expect(finalKey?.AIGNE_HUB_API_KEY).toBe("updated-key");
+    test("should handle very long keys and values", async () => {
+      const longKey = "x".repeat(1000);
+      const longValue = { apiKey: "y".repeat(10000) };
+      await store.setItem(longKey, longValue);
+      const retrieved = await store.getItem(longKey);
+      expect(retrieved?.apiKey).toBe(longValue.apiKey);
     });
   });
 });

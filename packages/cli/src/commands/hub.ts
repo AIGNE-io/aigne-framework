@@ -5,7 +5,7 @@ import inquirer from "inquirer";
 import type { CommandModule } from "yargs";
 import { isTest } from "../utils/aigne-hub/constants.js";
 import { connectToAIGNEHub } from "../utils/aigne-hub/credential.js";
-import getSecretStore from "../utils/aigne-hub/get-secret-store.js";
+import getSecretStore from "../utils/aigne-hub/store/index.js";
 import { getUserInfo } from "../utils/aigne-hub-user.js";
 import { getUrlOrigin } from "../utils/get-url-origin.js";
 

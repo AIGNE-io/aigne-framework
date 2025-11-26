@@ -1,35 +1,21 @@
-import type {
-  AIGNEHubAPIInfo,
-  CredentialEntry,
-  GetDefaultOptions,
-  ISecretStore,
-  StoreOptions,
-} from "./types.js";
+import type { CredentialEntry, GetDefaultOptions, ISecretStore, ValueInfo } from "./types.js";
 
-export abstract class BaseSecretStore<
-  K extends string = "AIGNE_HUB_API_KEY",
-  U extends string = "AIGNE_HUB_API_URL",
-> implements ISecretStore<K, U>
-{
-  outputConfig: { key: K; url: U };
-  constructor(options: Pick<StoreOptions<K, U>, "outputConfig">) {
-    this.outputConfig = {
-      url: options.outputConfig?.url || "AIGNE_HUB_API_URL",
-      key: options.outputConfig?.key || "AIGNE_HUB_API_KEY",
-    } as { key: K; url: U };
-  }
-
+export abstract class BaseSecretStore implements ISecretStore {
   abstract available(): Promise<boolean>;
-  abstract setKey(url: string, secret: string): Promise<void>;
-  abstract getKey(url: string): Promise<AIGNEHubAPIInfo<K, U> | null>;
-  abstract deleteKey(url: string): Promise<boolean>;
-  abstract listCredentials(): Promise<CredentialEntry[] | null>;
-  abstract listHosts(): Promise<AIGNEHubAPIInfo<K, U>[]>;
-  abstract setDefault(value: string): Promise<void>;
-  abstract getDefault(options?: GetDefaultOptions): Promise<AIGNEHubAPIInfo<K, U> | null>;
-  abstract deleteDefault(): Promise<void>;
 
-  normalizeHostFrom(url: string): string {
+  abstract setItem(key: string, value: ValueInfo): Promise<void>;
+  abstract getItem(key: string): Promise<ValueInfo | null>;
+  abstract deleteItem(key: string): Promise<boolean>;
+
+  abstract listItems(): Promise<CredentialEntry[] | null>;
+  abstract listEntries(): Promise<ValueInfo[]>;
+  abstract listMap(): Promise<Record<string, ValueInfo>>;
+
+  abstract setDefaultItem(value: ValueInfo): Promise<void>;
+  abstract getDefaultItem(options?: GetDefaultOptions): Promise<ValueInfo | null>;
+  abstract deleteDefaultItem(): Promise<void>;
+
+  protected normalizeHostFrom(url: string): string {
     try {
       return new URL(url).host;
     } catch {
@@ -37,14 +23,12 @@ export abstract class BaseSecretStore<
     }
   }
 
-  async listHostsMap(): Promise<Record<string, AIGNEHubAPIInfo<K, U>>> {
-    const hosts = await this.listHosts();
-    return hosts.reduce(
-      (acc, host) => {
-        acc[this.normalizeHostFrom(host[this.outputConfig.url])] = host;
-        return acc;
-      },
-      {} as Record<string, AIGNEHubAPIInfo<K, U>>,
-    );
+  protected parseKey(v: string): ValueInfo | null {
+    try {
+      const parsed = JSON.parse(v);
+      return parsed;
+    } catch {
+      return null;
+    }
   }
 }

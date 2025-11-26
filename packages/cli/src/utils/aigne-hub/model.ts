@@ -18,7 +18,7 @@ import chalk from "chalk";
 import inquirer from "inquirer";
 import { AIGNE_HUB_PROVIDER } from "./constants.js";
 import { loadAIGNEHubCredential } from "./credential.js";
-import getSecretStore from "./get-secret-store.js";
+import getSecretStore from "./store/index.js";
 import type { LoadCredentialOptions } from "./type.js";
 
 export function maskApiKey(apiKey?: string) {

@@ -1,4 +1,4 @@
-import type { GetDefaultOptions, StoreOptions, ValueInfo } from "@aigne/secrets";
+import type { GetDefaultOptions, ItemInfo, StoreOptions } from "@aigne/secrets";
 import { FileStore as BaseFileStore } from "@aigne/secrets";
 
 class FileStore extends BaseFileStore {
@@ -20,7 +20,7 @@ class FileStore extends BaseFileStore {
     });
   }
 
-  async getKey(url: string): Promise<ValueInfo | null> {
+  async getKey(url: string): Promise<ItemInfo | null> {
     const host = this.normalizeHostFrom(url);
     return this.getItem(host);
   }
@@ -30,11 +30,11 @@ class FileStore extends BaseFileStore {
     return this.deleteItem(host);
   }
 
-  async listHosts(): Promise<ValueInfo[]> {
+  async listHosts(): Promise<ItemInfo[]> {
     return this.listEntries();
   }
 
-  async listHostsMap(): Promise<Record<string, ValueInfo>> {
+  async listHostsMap(): Promise<Record<string, ItemInfo>> {
     return this.listMap();
   }
 
@@ -44,7 +44,7 @@ class FileStore extends BaseFileStore {
     });
   }
 
-  async getDefault(options: GetDefaultOptions = {}): Promise<ValueInfo | null> {
+  async getDefault(options: GetDefaultOptions = {}): Promise<ItemInfo | null> {
     const { fallbackToFirst = false, presetIfFallback = false } = options;
     if (!(await this.available())) return null;
 

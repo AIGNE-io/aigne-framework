@@ -14,22 +14,22 @@ export interface StoreOptions {
   forceUnavailable?: boolean;
 }
 
-export type ValueInfo = {
+export type ItemInfo = {
   [key: string]: any;
 };
 
 export interface ISecretStore {
   available(): Promise<boolean>;
 
-  setItem(key: string, value: ValueInfo): Promise<void>;
-  getItem(key: string): Promise<ValueInfo | null>;
+  setItem(key: string, value: ItemInfo): Promise<void>;
+  getItem(key: string): Promise<ItemInfo | null>;
   deleteItem(key: string): Promise<boolean>;
 
   listItems(): Promise<CredentialEntry[] | null>;
-  listEntries(): Promise<ValueInfo[]>;
-  listMap(): Promise<Record<string, ValueInfo>>;
+  listEntries(): Promise<ItemInfo[]>;
+  listMap(): Promise<Record<string, ItemInfo>>;
 
-  setDefaultItem(value: ValueInfo): Promise<void>;
-  getDefaultItem(options?: GetDefaultOptions): Promise<ValueInfo | null>;
+  setDefaultItem(value: ItemInfo): Promise<void>;
+  getDefaultItem(options?: GetDefaultOptions): Promise<ItemInfo | null>;
   deleteDefaultItem(): Promise<void>;
 }

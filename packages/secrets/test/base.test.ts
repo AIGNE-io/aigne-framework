@@ -1,21 +1,21 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { BaseSecretStore } from "../src/base.js";
-import type { CredentialEntry, GetDefaultOptions, ValueInfo } from "../src/types.js";
+import type { CredentialEntry, GetDefaultOptions, ItemInfo } from "../src/types.js";
 
 class TestSecretStore extends BaseSecretStore {
-  private storage = new Map<string, ValueInfo>();
-  private defaultValue: ValueInfo | null = null;
+  private storage = new Map<string, ItemInfo>();
+  private defaultValue: ItemInfo | null = null;
 
   async available(): Promise<boolean> {
     return true;
   }
 
-  async setItem(key: string, value: ValueInfo): Promise<void> {
+  async setItem(key: string, value: ItemInfo): Promise<void> {
     const host = this.normalizeHostFrom(key);
     this.storage.set(host, value);
   }
 
-  async getItem(key: string): Promise<ValueInfo | null> {
+  async getItem(key: string): Promise<ItemInfo | null> {
     const host = this.normalizeHostFrom(key);
     return this.storage.get(host) || null;
   }
@@ -33,23 +33,23 @@ class TestSecretStore extends BaseSecretStore {
     return entries;
   }
 
-  async listEntries(): Promise<ValueInfo[]> {
+  async listEntries(): Promise<ItemInfo[]> {
     return Array.from(this.storage.values());
   }
 
-  async listMap(): Promise<Record<string, ValueInfo>> {
-    const map: Record<string, ValueInfo> = {};
+  async listMap(): Promise<Record<string, ItemInfo>> {
+    const map: Record<string, ItemInfo> = {};
     for (const [key, value] of this.storage.entries()) {
       map[key] = value;
     }
     return map;
   }
 
-  async setDefaultItem(value: ValueInfo): Promise<void> {
+  async setDefaultItem(value: ItemInfo): Promise<void> {
     this.defaultValue = value;
   }
 
-  async getDefaultItem(options?: GetDefaultOptions): Promise<ValueInfo | null> {
+  async getDefaultItem(options?: GetDefaultOptions): Promise<ItemInfo | null> {
     if (this.defaultValue) {
       return this.defaultValue;
     }

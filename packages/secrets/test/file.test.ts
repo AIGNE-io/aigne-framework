@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import FileStore from "../src/file.js";
-import type { ValueInfo } from "../src/types.js";
+import type { ItemInfo } from "../src/types.js";
 
 describe("FileStore", () => {
   let testDir: string;
@@ -40,7 +40,7 @@ describe("FileStore", () => {
   describe("setItem() and getItem()", () => {
     test("should store and retrieve an item", async () => {
       const key = "example.com";
-      const value: ValueInfo = { apiKey: "test-key", apiUrl: "https://example.com" };
+      const value: ItemInfo = { apiKey: "test-key", apiUrl: "https://example.com" };
 
       await store.setItem(key, value);
       const retrieved = await store.getItem(key);
@@ -96,8 +96,8 @@ describe("FileStore", () => {
       expect(retrieved?.apiKey).toBe("test-key");
     });
 
-    test("should store complex ValueInfo objects", async () => {
-      const value: ValueInfo = {
+    test("should store complex ItemInfo objects", async () => {
+      const value: ItemInfo = {
         apiKey: "test-key",
         apiUrl: "https://example.com/api",
         customField: "custom-value",
@@ -184,7 +184,7 @@ describe("FileStore", () => {
       expect(entries).toEqual([]);
     });
 
-    test("should list all entries as ValueInfo array", async () => {
+    test("should list all entries as ItemInfo array", async () => {
       await store.setItem("host1", { apiKey: "key1", apiUrl: "https://host1.com" });
       await store.setItem("host2", { apiKey: "key2", apiUrl: "https://host2.com" });
 
@@ -215,7 +215,7 @@ describe("FileStore", () => {
 
   describe("setDefaultItem() and getDefaultItem()", () => {
     test("should set and get default item", async () => {
-      const value: ValueInfo = { apiKey: "default-key", apiUrl: "https://default.com" };
+      const value: ItemInfo = { apiKey: "default-key", apiUrl: "https://default.com" };
       await store.setDefaultItem(value);
 
       const retrieved = await store.getDefaultItem();
@@ -313,8 +313,8 @@ describe("FileStore", () => {
       expect(retrieved?.apiKey).toBe("test-key");
     });
 
-    test("should handle complex nested ValueInfo", async () => {
-      const value: ValueInfo = {
+    test("should handle complex nested ItemInfo", async () => {
+      const value: ItemInfo = {
         apiKey: "key",
         nested: { prop: "value" },
         array: [1, 2, 3],

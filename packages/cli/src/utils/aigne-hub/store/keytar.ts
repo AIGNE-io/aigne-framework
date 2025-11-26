@@ -1,4 +1,4 @@
-import type { GetDefaultOptions, StoreOptions, ValueInfo } from "@aigne/secrets";
+import type { GetDefaultOptions, ItemInfo, StoreOptions } from "@aigne/secrets";
 import { KeyringStore as BaseKeyringStore } from "@aigne/secrets";
 
 class KeyringStore extends BaseKeyringStore {
@@ -20,7 +20,7 @@ class KeyringStore extends BaseKeyringStore {
     });
   }
 
-  async getKey(url: string): Promise<ValueInfo | null> {
+  async getKey(url: string): Promise<ItemInfo | null> {
     try {
       const v = await this.getItem(this.normalizeHostFrom(url));
       return v;
@@ -38,11 +38,11 @@ class KeyringStore extends BaseKeyringStore {
     }
   }
 
-  async listHosts(): Promise<ValueInfo[]> {
+  async listHosts(): Promise<ItemInfo[]> {
     return this.listEntries();
   }
 
-  async listHostsMap(): Promise<Record<string, ValueInfo>> {
+  async listHostsMap(): Promise<Record<string, ItemInfo>> {
     return this.listMap();
   }
 
@@ -52,7 +52,7 @@ class KeyringStore extends BaseKeyringStore {
     });
   }
 
-  async getDefault(options: GetDefaultOptions = {}): Promise<ValueInfo | null> {
+  async getDefault(options: GetDefaultOptions = {}): Promise<ItemInfo | null> {
     const { fallbackToFirst = false, presetIfFallback = false } = options;
 
     try {

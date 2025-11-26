@@ -2,10 +2,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { parse, stringify } from "yaml";
 import { BaseSecretStore } from "./base.js";
-import type { CredentialEntry, StoreOptions, ValueInfo } from "./types.js";
+import type { CredentialEntry, ItemInfo, StoreOptions } from "./types.js";
 
 interface AIGNEEnv {
-  [key: string]: ValueInfo;
+  [key: string]: ItemInfo;
 }
 
 export class FileStore extends BaseSecretStore {
@@ -44,13 +44,13 @@ export class FileStore extends BaseSecretStore {
     await fs.writeFile(this.filepath, yaml, "utf-8");
   }
 
-  async setItem(key: string, value: ValueInfo): Promise<void> {
+  async setItem(key: string, value: ItemInfo): Promise<void> {
     if (!(await this.available())) throw new Error("File store not available");
 
     const data = await this.load();
 
     if (!data[key]) {
-      data[key] = {} as ValueInfo;
+      data[key] = {} as ItemInfo;
     }
 
     data[key] = value;
@@ -58,7 +58,7 @@ export class FileStore extends BaseSecretStore {
     await this.save(data);
   }
 
-  async getItem(key: string): Promise<ValueInfo | null> {
+  async getItem(key: string): Promise<ItemInfo | null> {
     if (!(await this.available())) return null;
 
     try {
@@ -103,20 +103,20 @@ export class FileStore extends BaseSecretStore {
     }
   }
 
-  override async listEntries(): Promise<ValueInfo[]> {
+  override async listEntries(): Promise<ItemInfo[]> {
     const list = await this.listItems();
     if (!list) return [];
 
-    return list.reduce<ValueInfo[]>((acc, c) => {
+    return list.reduce<ItemInfo[]>((acc, c) => {
       if (c.password && c.account) {
-        acc.push(this.parseKey(c.password) as ValueInfo);
+        acc.push(this.parseKey(c.password) as ItemInfo);
       }
 
       return acc;
     }, []);
   }
 
-  override async listMap(): Promise<Record<string, ValueInfo>> {
+  override async listMap(): Promise<Record<string, ItemInfo>> {
     const list = await this.listItems();
     if (!list) return {};
 
@@ -129,24 +129,24 @@ export class FileStore extends BaseSecretStore {
 
         return acc;
       },
-      {} as Record<string, ValueInfo>,
+      {} as Record<string, ItemInfo>,
     );
   }
 
-  override async setDefaultItem(value: ValueInfo): Promise<void> {
+  override async setDefaultItem(value: ItemInfo): Promise<void> {
     if (!(await this.available())) throw new Error("File store not available");
 
     const data = await this.load();
 
     if (!data.default) {
-      data.default = {} as ValueInfo;
+      data.default = {} as ItemInfo;
     }
 
     data.default = value;
     await this.save(data);
   }
 
-  override async getDefaultItem(): Promise<ValueInfo | null> {
+  override async getDefaultItem(): Promise<ItemInfo | null> {
     if (!(await this.available())) return null;
 
     try {

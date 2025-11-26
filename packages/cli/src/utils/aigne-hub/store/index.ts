@@ -1,11 +1,11 @@
 import { logger } from "@aigne/core/utils/logger.js";
-import type { ISecretStore, StoreOptions } from "@aigne/secrets";
+import type { StoreOptions } from "@aigne/secrets";
 import { AIGNE_ENV_FILE } from "../constants.js";
 import FileStore from "./file.js";
 import KeyringStore from "./keytar.js";
 import { migrateFileToKeyring } from "./migrate.js";
 
-async function createSecretStore(options: StoreOptions = {}): Promise<ISecretStore> {
+async function createSecretStore(options: StoreOptions = {}): Promise<KeyringStore | FileStore> {
   if (!options.secretStoreKey) {
     throw new Error("Secret store key is required");
   }
@@ -35,7 +35,7 @@ async function createSecretStore(options: StoreOptions = {}): Promise<ISecretSto
   return new FileStore({ filepath });
 }
 
-let cachedSecretStore: ISecretStore | undefined;
+let cachedSecretStore: KeyringStore | FileStore | undefined;
 const getSecretStore = async () => {
   if (!cachedSecretStore) {
     cachedSecretStore = await createSecretStore({

@@ -1,18 +1,18 @@
-import type { CredentialEntry, GetDefaultOptions, ISecretStore, ValueInfo } from "./types.js";
+import type { CredentialEntry, GetDefaultOptions, ISecretStore, ItemInfo } from "./types.js";
 
 export abstract class BaseSecretStore implements ISecretStore {
   abstract available(): Promise<boolean>;
 
-  abstract setItem(key: string, value: ValueInfo): Promise<void>;
-  abstract getItem(key: string): Promise<ValueInfo | null>;
+  abstract setItem(key: string, value: ItemInfo): Promise<void>;
+  abstract getItem(key: string): Promise<ItemInfo | null>;
   abstract deleteItem(key: string): Promise<boolean>;
 
   abstract listItems(): Promise<CredentialEntry[] | null>;
-  abstract listEntries(): Promise<ValueInfo[]>;
-  abstract listMap(): Promise<Record<string, ValueInfo>>;
+  abstract listEntries(): Promise<ItemInfo[]>;
+  abstract listMap(): Promise<Record<string, ItemInfo>>;
 
-  abstract setDefaultItem(value: ValueInfo): Promise<void>;
-  abstract getDefaultItem(options?: GetDefaultOptions): Promise<ValueInfo | null>;
+  abstract setDefaultItem(value: ItemInfo): Promise<void>;
+  abstract getDefaultItem(options?: GetDefaultOptions): Promise<ItemInfo | null>;
   abstract deleteDefaultItem(): Promise<void>;
 
   protected normalizeHostFrom(url: string): string {
@@ -23,7 +23,7 @@ export abstract class BaseSecretStore implements ISecretStore {
     }
   }
 
-  protected parseKey(v: string): ValueInfo | null {
+  protected parseKey(v: string): ItemInfo | null {
     try {
       const parsed = JSON.parse(v);
       return parsed;

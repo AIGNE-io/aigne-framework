@@ -1,6 +1,6 @@
 import { keyring } from "@zowe/secrets-for-zowe-sdk";
 import { BaseSecretStore } from "./base.js";
-import type { CredentialEntry, StoreOptions, ValueInfo } from "./types.js";
+import type { CredentialEntry, ItemInfo, StoreOptions } from "./types.js";
 
 const DEFAULT_SERVICE_NAME = "-secrets";
 const DEFAULT_ACCOUNT_NAME_FOR_DEFAULT = "-default";
@@ -37,12 +37,12 @@ export class KeyringStore extends BaseSecretStore {
     }
   }
 
-  async setItem(key: string, value: ValueInfo) {
+  async setItem(key: string, value: ItemInfo) {
     if (!(await this.available())) throw new Error("Keyring not available");
     return this._impl.setPassword(this.secretStoreKey, key, JSON.stringify(value));
   }
 
-  async getItem(key: string): Promise<ValueInfo | null> {
+  async getItem(key: string): Promise<ItemInfo | null> {
     if (!(await this.available())) return null;
 
     try {
@@ -80,11 +80,11 @@ export class KeyringStore extends BaseSecretStore {
     }
   }
 
-  override async listEntries(): Promise<ValueInfo[]> {
+  override async listEntries(): Promise<ItemInfo[]> {
     const list = await this.listItems();
     if (!list) return [];
 
-    return list.reduce<ValueInfo[]>((acc, c) => {
+    return list.reduce<ItemInfo[]>((acc, c) => {
       if (c.password) {
         const parsed = this.parseKey(c.password);
         if (parsed) acc.push(parsed);
@@ -93,7 +93,7 @@ export class KeyringStore extends BaseSecretStore {
     }, []);
   }
 
-  override async listMap(): Promise<Record<string, ValueInfo>> {
+  override async listMap(): Promise<Record<string, ItemInfo>> {
     const list = await this.listItems();
     if (!list) return {};
 
@@ -106,17 +106,17 @@ export class KeyringStore extends BaseSecretStore {
 
         return acc;
       },
-      {} as Record<string, ValueInfo>,
+      {} as Record<string, ItemInfo>,
     );
   }
 
-  override async setDefaultItem(value: ValueInfo): Promise<void> {
+  override async setDefaultItem(value: ItemInfo): Promise<void> {
     if (!(await this.available())) throw new Error("Keyring not available");
     const account = this.defaultAccount;
     return this._impl.setPassword(account, account, JSON.stringify(value));
   }
 
-  override async getDefaultItem(): Promise<ValueInfo | null> {
+  override async getDefaultItem(): Promise<ItemInfo | null> {
     if (!(await this.available())) return null;
 
     const account = this.defaultAccount;

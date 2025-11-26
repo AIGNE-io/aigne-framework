@@ -10,6 +10,17 @@ import { mockCredentials, mockKeyring } from "./util.js";
 describe("migrateFileToKeyring", () => {
   let testDir: string;
   let testFilePath: string;
+  let testServiceName: string;
+
+  beforeEach(() => {
+    if (process.env.CI) {
+      mockCredentials?.clear();
+      mockKeyring?.getPassword.mockClear();
+      mockKeyring?.setPassword.mockClear();
+      mockKeyring?.deletePassword.mockClear();
+      mockKeyring?.findCredentials.mockClear();
+    }
+  });
 
   beforeEach(async () => {
     if (process.env.CI) {
@@ -20,6 +31,7 @@ describe("migrateFileToKeyring", () => {
       mockKeyring?.findCredentials.mockClear();
     }
 
+    testServiceName = `test-service-${Date.now()}-${Math.random()}`;
     testDir = join(tmpdir(), `secrets-migrate-test-${Date.now()}-${Math.random()}`);
     await fs.mkdir(testDir, { recursive: true });
     testFilePath = join(testDir, "secrets.yaml");
@@ -31,7 +43,7 @@ describe("migrateFileToKeyring", () => {
     } catch {}
 
     try {
-      const keyring = new KeyringStore();
+      const keyring = new KeyringStore({ serviceName: testServiceName });
       if (await keyring.available()) {
         const hosts = await keyring.listHosts();
         for (const host of hosts) {
@@ -42,7 +54,9 @@ describe("migrateFileToKeyring", () => {
   });
 
   test("should return false when filepath is not provided", async () => {
-    await expect(migrateFileToKeyring({})).rejects.toThrow("Filepath is required for migration");
+    await expect(migrateFileToKeyring({ serviceName: testServiceName })).rejects.toThrow(
+      "Filepath is required for migration",
+    );
   });
 
   test("should return false when keyring is not available", async () => {
@@ -51,6 +65,7 @@ describe("migrateFileToKeyring", () => {
 
     const result = await migrateFileToKeyring({
       filepath: testFilePath,
+      serviceName: testServiceName,
       forceUnavailable: true,
     });
 
@@ -64,20 +79,23 @@ describe("migrateFileToKeyring", () => {
   });
 
   test("should return true when file does not exist (already migrated)", async () => {
-    const keyring = new KeyringStore();
+    const keyring = new KeyringStore({ serviceName: testServiceName });
     if (!(await keyring.available())) {
       console.log("Skipping test: keyring not available");
       return;
     }
 
     const nonExistentPath = join(testDir, "nonexistent.yaml");
-    const result = await migrateFileToKeyring({ filepath: nonExistentPath });
+    const result = await migrateFileToKeyring({
+      filepath: nonExistentPath,
+      serviceName: testServiceName,
+    });
 
     expect(result).toBe(true);
   });
 
   test("should migrate all hosts from file to keyring", async () => {
-    const keyring = new KeyringStore();
+    const keyring = new KeyringStore({ serviceName: testServiceName });
     if (!(await keyring.available())) {
       console.log("Skipping test: keyring not available");
       return;
@@ -87,7 +105,10 @@ describe("migrateFileToKeyring", () => {
     await fileStore.setKey("https://host1.com", "key1");
     await fileStore.setKey("https://host2.com", "key2");
     await fileStore.setKey("https://host3.com/api", "key3");
-    const result = await migrateFileToKeyring({ filepath: testFilePath });
+    const result = await migrateFileToKeyring({
+      filepath: testFilePath,
+      serviceName: testServiceName,
+    });
 
     expect(result).toBe(true);
 
@@ -104,7 +125,7 @@ describe("migrateFileToKeyring", () => {
   });
 
   test("should migrate default setting", async () => {
-    const keyring = new KeyringStore();
+    const keyring = new KeyringStore({ serviceName: testServiceName });
     if (!(await keyring.available())) {
       console.log("Skipping test: keyring not available");
       return;
@@ -114,7 +135,10 @@ describe("migrateFileToKeyring", () => {
     await fileStore.setKey("https://example.com", "test-key");
     await fileStore.setDefault("https://example.com");
 
-    const result = await migrateFileToKeyring({ filepath: testFilePath });
+    const result = await migrateFileToKeyring({
+      filepath: testFilePath,
+      serviceName: testServiceName,
+    });
 
     expect(result).toBe(true);
 
@@ -123,7 +147,7 @@ describe("migrateFileToKeyring", () => {
   });
 
   test("should handle file with no default setting", async () => {
-    const keyring = new KeyringStore();
+    const keyring = new KeyringStore({ serviceName: testServiceName });
     if (!(await keyring.available())) {
       console.log("Skipping test: keyring not available");
       return;
@@ -132,7 +156,10 @@ describe("migrateFileToKeyring", () => {
     const fileStore = new FileStore({ filepath: testFilePath });
     await fileStore.setKey("https://example.com", "test-key");
 
-    const result = await migrateFileToKeyring({ filepath: testFilePath });
+    const result = await migrateFileToKeyring({
+      filepath: testFilePath,
+      serviceName: testServiceName,
+    });
 
     expect(result).toBe(true);
 
@@ -140,7 +167,7 @@ describe("migrateFileToKeyring", () => {
   });
 
   test("should handle empty file", async () => {
-    const keyring = new KeyringStore();
+    const keyring = new KeyringStore({ serviceName: testServiceName });
     if (!(await keyring.available())) {
       console.log("Skipping test: keyring not available");
       return;
@@ -148,7 +175,10 @@ describe("migrateFileToKeyring", () => {
 
     await fs.writeFile(testFilePath, "", "utf-8");
 
-    const result = await migrateFileToKeyring({ filepath: testFilePath });
+    const result = await migrateFileToKeyring({
+      filepath: testFilePath,
+      serviceName: testServiceName,
+    });
 
     expect(result).toBe(true);
 
@@ -161,7 +191,7 @@ describe("migrateFileToKeyring", () => {
   });
 
   test("should preserve special characters in secrets", async () => {
-    const keyring = new KeyringStore();
+    const keyring = new KeyringStore({ serviceName: testServiceName });
     if (!(await keyring.available())) {
       console.log("Skipping test: keyring not available");
       return;
@@ -171,7 +201,10 @@ describe("migrateFileToKeyring", () => {
     const fileStore = new FileStore({ filepath: testFilePath });
     await fileStore.setKey("https://example.com", specialSecret);
 
-    const result = await migrateFileToKeyring({ filepath: testFilePath });
+    const result = await migrateFileToKeyring({
+      filepath: testFilePath,
+      serviceName: testServiceName,
+    });
 
     expect(result).toBe(true);
 
@@ -180,7 +213,7 @@ describe("migrateFileToKeyring", () => {
   });
 
   test("should not migrate if keyring already has data", async () => {
-    const keyring = new KeyringStore();
+    const keyring = new KeyringStore({ serviceName: testServiceName });
     if (!(await keyring.available())) {
       console.log("Skipping test: keyring not available");
       return;
@@ -191,7 +224,10 @@ describe("migrateFileToKeyring", () => {
     const fileStore = new FileStore({ filepath: testFilePath });
     await fileStore.setKey("https://example.com", "test-key");
 
-    const result = await migrateFileToKeyring({ filepath: testFilePath });
+    const result = await migrateFileToKeyring({
+      filepath: testFilePath,
+      serviceName: testServiceName,
+    });
 
     expect(result).toBe(true);
 
@@ -200,7 +236,7 @@ describe("migrateFileToKeyring", () => {
   });
 
   test("should overwrite existing keys in keyring during migration", async () => {
-    const keyring = new KeyringStore();
+    const keyring = new KeyringStore({ serviceName: testServiceName });
     if (!(await keyring.available())) {
       console.log("Skipping test: keyring not available");
       return;
@@ -211,7 +247,10 @@ describe("migrateFileToKeyring", () => {
     const fileStore = new FileStore({ filepath: testFilePath });
     await fileStore.setKey("https://example.com", "new-key");
 
-    const result = await migrateFileToKeyring({ filepath: testFilePath });
+    const result = await migrateFileToKeyring({
+      filepath: testFilePath,
+      serviceName: testServiceName,
+    });
 
     expect(result).toBe(true);
 

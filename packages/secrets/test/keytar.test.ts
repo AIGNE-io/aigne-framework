@@ -29,24 +29,6 @@ describe("KeyringStore", () => {
     }
   });
 
-  describe("constructor", () => {
-    test("should use default service name when not provided", () => {
-      const defaultStore = new KeyringStore();
-      expect(defaultStore).toBeDefined();
-    });
-
-    test("should use custom service name when provided", () => {
-      const customStore = new KeyringStore({ serviceName: "custom-service" });
-      expect(customStore).toBeDefined();
-    });
-
-    test("should handle forceUnavailable option", async () => {
-      const unavailableStore = new KeyringStore({ forceUnavailable: true });
-      const available = await unavailableStore.available();
-      expect(available).toBe(false);
-    });
-  });
-
   describe("available()", () => {
     test("should return true when keyring is available", async () => {
       const result = await store.available();
@@ -54,7 +36,10 @@ describe("KeyringStore", () => {
     });
 
     test("should return false when forceUnavailable is set", async () => {
-      const unavailableStore = new KeyringStore({ forceUnavailable: true });
+      const unavailableStore = new KeyringStore({
+        serviceName: testServiceName,
+        forceUnavailable: true,
+      });
       const result = await unavailableStore.available();
       expect(result).toBe(false);
     });
@@ -106,7 +91,10 @@ describe("KeyringStore", () => {
     });
 
     test("should throw when setting item and keyring unavailable", async () => {
-      const unavailableStore = new KeyringStore({ forceUnavailable: true });
+      const unavailableStore = new KeyringStore({
+        serviceName: testServiceName,
+        forceUnavailable: true,
+      });
 
       await expect(unavailableStore.setItem("test-key", { data: "value" })).rejects.toThrow(
         "Keyring not available",
@@ -114,7 +102,10 @@ describe("KeyringStore", () => {
     });
 
     test("should return null when getting item and keyring unavailable", async () => {
-      const unavailableStore = new KeyringStore({ forceUnavailable: true });
+      const unavailableStore = new KeyringStore({
+        serviceName: testServiceName,
+        forceUnavailable: true,
+      });
       const result = await unavailableStore.getItem("test-key");
       expect(result).toBe(null);
     });
@@ -152,7 +143,10 @@ describe("KeyringStore", () => {
     });
 
     test("should return false when keyring unavailable", async () => {
-      const unavailableStore = new KeyringStore({ forceUnavailable: true });
+      const unavailableStore = new KeyringStore({
+        serviceName: testServiceName,
+        forceUnavailable: true,
+      });
       const result = await unavailableStore.deleteItem("test-key");
       expect(result).toBe(false);
     });
@@ -250,7 +244,10 @@ describe("KeyringStore", () => {
     });
 
     test("should throw when setting default and keyring unavailable", async () => {
-      const unavailableStore = new KeyringStore({ forceUnavailable: true });
+      const unavailableStore = new KeyringStore({
+        serviceName: testServiceName,
+        forceUnavailable: true,
+      });
 
       await expect(unavailableStore.setDefaultItem({ data: "value" })).rejects.toThrow(
         "Keyring not available",
@@ -258,7 +255,10 @@ describe("KeyringStore", () => {
     });
 
     test("should return null when getting default and keyring unavailable", async () => {
-      const unavailableStore = new KeyringStore({ forceUnavailable: true });
+      const unavailableStore = new KeyringStore({
+        serviceName: testServiceName,
+        forceUnavailable: true,
+      });
       const result = await unavailableStore.getDefaultItem();
       expect(result).toBe(null);
     });

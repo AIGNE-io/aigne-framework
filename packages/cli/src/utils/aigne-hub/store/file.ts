@@ -64,7 +64,7 @@ class FileStore extends BaseFileStore {
     const hosts = await this.listHosts();
     if (Array.isArray(hosts) && hosts.length > 0) {
       const firstHost = hosts[0];
-      if (presetIfFallback && firstHost?.[this.outputConfig.key]) {
+      if (presetIfFallback && firstHost?.[this.outputConfig.url]) {
         try {
           const data = await this.load();
           const url =

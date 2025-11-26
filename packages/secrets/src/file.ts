@@ -49,10 +49,6 @@ export class FileStore extends BaseSecretStore {
 
     const data = await this.load();
 
-    if (!data[key]) {
-      data[key] = {} as ItemInfo;
-    }
-
     data[key] = value;
 
     await this.save(data);
@@ -137,12 +133,7 @@ export class FileStore extends BaseSecretStore {
     if (!(await this.available())) throw new Error("File store not available");
 
     const data = await this.load();
-
-    if (!data.default) {
-      data.default = {} as ItemInfo;
-    }
-
-    data.default = value;
+    data["default"] = value;
     await this.save(data);
   }
 

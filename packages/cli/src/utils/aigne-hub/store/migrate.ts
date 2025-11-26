@@ -38,14 +38,11 @@ export async function migrateFileToKeyring(options: StoreOptions): Promise<boole
     await fs.copyFile(filepath, backupPath);
 
     const hosts = await fileStore.listHosts();
-    const migrations = [];
     for (const host of hosts) {
       if (host[outputConfig.url] && host[outputConfig.key]) {
-        migrations.push(keyring.setKey(host[outputConfig.url], host[outputConfig.key]));
+        await keyring.setKey(host[outputConfig.url], host[outputConfig.key]);
       }
     }
-
-    await Promise.all(migrations);
 
     const defaultKey = await fileStore.getDefault();
     if (defaultKey) {

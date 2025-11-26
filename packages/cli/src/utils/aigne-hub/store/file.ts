@@ -6,11 +6,7 @@ class FileStore extends BaseFileStore {
 
   constructor(options: Required<Pick<StoreOptions, "filepath">>) {
     super(options);
-
-    this.outputConfig = {
-      url: "AIGNE_HUB_API_URL",
-      key: "AIGNE_HUB_API_KEY",
-    };
+    this.outputConfig = { url: "AIGNE_HUB_API_URL", key: "AIGNE_HUB_API_KEY" };
   }
 
   async setKey(url: string, secret: string): Promise<void> {

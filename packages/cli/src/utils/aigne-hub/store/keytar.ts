@@ -6,11 +6,7 @@ class KeyringStore extends BaseKeyringStore {
 
   constructor(options: StoreOptions = {}) {
     super(options);
-
-    this.outputConfig = {
-      url: "AIGNE_HUB_API_URL",
-      key: "AIGNE_HUB_API_KEY",
-    };
+    this.outputConfig = { url: "AIGNE_HUB_API_URL", key: "AIGNE_HUB_API_KEY" };
   }
 
   async setKey(url: string, apiKey: string) {

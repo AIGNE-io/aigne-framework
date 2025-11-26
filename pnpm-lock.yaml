@@ -2246,9 +2246,6 @@ importers:
 
   packages/secrets:
     dependencies:
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../core
       '@zowe/secrets-for-zowe-sdk':
         specifier: ^8.29.4
         version: 8.29.4

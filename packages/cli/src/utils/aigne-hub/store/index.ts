@@ -17,10 +17,7 @@ async function createSecretStore(options: StoreOptions = {}): Promise<KeyringSto
         await migrateFileToKeyring(options);
         logger.debug("Successfully migrated credentials from file to keyring");
       } catch (error) {
-        logger.warn(
-          "Failed to migrate credentials from file to keyring:",
-          error instanceof Error ? error.message : String(error),
-        );
+        logger.warn("Failed to migrate credentials from file to keyring:", error.message);
       }
     }
 

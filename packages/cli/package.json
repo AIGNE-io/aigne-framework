@@ -1,6 +1,6 @@
 {
   "name": "@aigne/cli",
-  "version": "1.56.1-beta",
+  "version": "1.57.0-beta",
   "description": "Your command center for agent development",
   "publishConfig": {
     "access": "public"

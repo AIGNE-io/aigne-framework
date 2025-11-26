@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.11-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.11-beta...gemini-v0.14.11-beta.1) (2025-11-26)
+
+
+### Bug Fixes
+
+* **model:** handle large video files by uploading to Files API ([#769](https://github.com/AIGNE-io/aigne-framework/issues/769)) ([5fd7661](https://github.com/AIGNE-io/aigne-framework/commit/5fd76613bd7301cc76bde933de2095a6d86f8c7e))
+
 ## [0.14.11-beta](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.10...gemini-v0.14.11-beta) (2025-11-24)
 
 

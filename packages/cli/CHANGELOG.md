@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.57.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.56.1-beta...cli-v1.57.0-beta) (2025-11-26)
+
+
+### Features
+
+* **secure:** secure credential storage with keyring support ([#771](https://github.com/AIGNE-io/aigne-framework/issues/771)) ([023c202](https://github.com/AIGNE-io/aigne-framework/commit/023c202f75eddb37d003b1fad447b491e8e1a8c2))
+
+
+### Bug Fixes
+
+* **secrets:** support system keyring for secure credential storage ([#773](https://github.com/AIGNE-io/aigne-framework/issues/773)) ([859ac2d](https://github.com/AIGNE-io/aigne-framework/commit/859ac2d9eb6019d7a68726076d65841cd96bc9a4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/secrets bumped to 0.1.1-beta
+    * @aigne/aigne-hub bumped to 0.10.11-beta.1
+
 ## [1.56.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.56.0...cli-v1.56.1-beta) (2025-11-24)
 
 

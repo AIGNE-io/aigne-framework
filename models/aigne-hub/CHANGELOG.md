@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.10.11-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.11-beta...aigne-hub-v0.10.11-beta.1) (2025-11-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/gemini bumped to 0.14.11-beta.1
+
 ## [0.10.11-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.10...aigne-hub-v0.10.11-beta) (2025-11-24)
 
 

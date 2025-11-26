@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.88.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.87.1-beta...aigne-framework-v1.88.0-beta) (2025-11-26)
+
+
+### Features
+
+* **secure:** secure credential storage with keyring support ([#771](https://github.com/AIGNE-io/aigne-framework/issues/771)) ([023c202](https://github.com/AIGNE-io/aigne-framework/commit/023c202f75eddb37d003b1fad447b491e8e1a8c2))
+
+
+### Bug Fixes
+
+* **model:** handle large video files by uploading to Files API ([#769](https://github.com/AIGNE-io/aigne-framework/issues/769)) ([5fd7661](https://github.com/AIGNE-io/aigne-framework/commit/5fd76613bd7301cc76bde933de2095a6d86f8c7e))
+* **secrets:** implement lazy loading for keyring to prevent crashes in unsupported environments ([#775](https://github.com/AIGNE-io/aigne-framework/issues/775)) ([78b8c87](https://github.com/AIGNE-io/aigne-framework/commit/78b8c873b067e1dea1c05e8bc9dc3ec0a4c86a47))
+* **secrets:** support system keyring for secure credential storage ([#773](https://github.com/AIGNE-io/aigne-framework/issues/773)) ([859ac2d](https://github.com/AIGNE-io/aigne-framework/commit/859ac2d9eb6019d7a68726076d65841cd96bc9a4))
+
 ## [1.87.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.87.0...aigne-framework-v1.87.1-beta) (2025-11-24)
 
 

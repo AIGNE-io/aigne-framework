@@ -1,12 +1,29 @@
-import { keyring } from "@zowe/secrets-for-zowe-sdk";
 import { BaseSecretStore } from "./base.js";
 import type { CredentialEntry, ItemInfo, StoreOptions } from "./types.js";
 
 const DEFAULT_SERVICE_NAME = "-secrets";
 const DEFAULT_ACCOUNT_NAME_FOR_DEFAULT = "-default";
 
+// Lazy loading of keyring prevents direct crashes in unsupported environments
+let keyringModule: any = null;
+let keyringLoadError: Error | null = null;
+
+async function loadKeyring() {
+  if (keyringModule) return keyringModule;
+  if (keyringLoadError) return null;
+
+  try {
+    const module = await import("@zowe/secrets-for-zowe-sdk");
+    keyringModule = module.keyring;
+    return keyringModule;
+  } catch (error) {
+    keyringLoadError = error as Error;
+    return null;
+  }
+}
+
 export class KeyringStore extends BaseSecretStore {
-  private _impl: typeof keyring;
+  private _impl: any = null;
   private serviceName: string;
   private defaultAccount: string;
   private _forceUnavailable: boolean;
@@ -16,7 +33,6 @@ export class KeyringStore extends BaseSecretStore {
 
     const { serviceName, forceUnavailable = false } = options;
 
-    this._impl = keyring;
     this.serviceName = `${serviceName}${DEFAULT_SERVICE_NAME}`;
     this.defaultAccount = `${serviceName}${DEFAULT_ACCOUNT_NAME_FOR_DEFAULT}`;
     this._forceUnavailable = !!forceUnavailable;
@@ -26,6 +42,10 @@ export class KeyringStore extends BaseSecretStore {
     if (this._forceUnavailable) return false;
 
     try {
+      if (!this._impl) {
+        this._impl = await loadKeyring();
+      }
+
       return !!(
         this._impl &&
         typeof this._impl.getPassword === "function" &&
@@ -39,11 +59,14 @@ export class KeyringStore extends BaseSecretStore {
 
   async setItem(key: string, value: ItemInfo) {
     if (!(await this.available())) throw new Error("Keyring not available");
+    if (!this._impl) throw new Error("Keyring not loaded");
+
     return this._impl.setPassword(this.serviceName, key, JSON.stringify(value));
   }
 
   async getItem(key: string): Promise<ItemInfo | null> {
     if (!(await this.available())) return null;
+    if (!this._impl) return null;
 
     try {
       const v = await this._impl.getPassword(this.serviceName, key);
@@ -56,6 +79,7 @@ export class KeyringStore extends BaseSecretStore {
 
   async deleteItem(key: string): Promise<boolean> {
     if (!(await this.available())) return false;
+    if (!this._impl) return false;
 
     try {
       const ok = await this._impl.deletePassword(this.serviceName, key);
@@ -67,6 +91,7 @@ export class KeyringStore extends BaseSecretStore {
 
   async listItems(): Promise<CredentialEntry[] | null> {
     if (!(await this.available())) return null;
+    if (!this._impl) return null;
 
     try {
       if (typeof this._impl.findCredentials === "function") {
@@ -112,12 +137,15 @@ export class KeyringStore extends BaseSecretStore {
 
   override async setDefaultItem(value: ItemInfo): Promise<void> {
     if (!(await this.available())) throw new Error("Keyring not available");
+    if (!this._impl) throw new Error("Keyring not loaded");
+
     const account = this.defaultAccount;
     return this._impl.setPassword(account, account, JSON.stringify(value));
   }
 
   override async getDefaultItem(): Promise<ItemInfo | null> {
     if (!(await this.available())) return null;
+    if (!this._impl) return null;
 
     const account = this.defaultAccount;
     try {
@@ -133,6 +161,8 @@ export class KeyringStore extends BaseSecretStore {
 
   override async deleteDefaultItem(): Promise<void> {
     if (!(await this.available())) throw new Error("Keyring not available");
+    if (!this._impl) throw new Error("Keyring not loaded");
+
     const account = this.defaultAccount;
     await this._impl.deletePassword(account, account);
   }

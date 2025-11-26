@@ -4,7 +4,7 @@ import type { StoreOptions } from "@aigne/secrets";
 import FileStore from "./file.js";
 import KeyringStore from "./keytar.js";
 
-export async function migrateFileToKeyring(options: StoreOptions = {}): Promise<boolean> {
+export async function migrateFileToKeyring(options: StoreOptions): Promise<boolean> {
   const { filepath } = options;
   const outputConfig = {
     url: "AIGNE_HUB_API_URL",

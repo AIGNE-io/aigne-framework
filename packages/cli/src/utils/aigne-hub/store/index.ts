@@ -5,8 +5,8 @@ import FileStore from "./file.js";
 import KeyringStore from "./keytar.js";
 import { migrateFileToKeyring } from "./migrate.js";
 
-async function createSecretStore(options: StoreOptions = {}): Promise<KeyringStore | FileStore> {
-  if (!options.secretStoreKey) {
+async function createSecretStore(options: StoreOptions): Promise<KeyringStore | FileStore> {
+  if (!options.serviceName) {
     throw new Error("Secret store key is required");
   }
 
@@ -37,7 +37,7 @@ const getSecretStore = async () => {
   if (!cachedSecretStore) {
     cachedSecretStore = await createSecretStore({
       filepath: AIGNE_ENV_FILE,
-      secretStoreKey: "aigne-hub-keyring",
+      serviceName: "aigne-hub-keyring",
     });
   }
 

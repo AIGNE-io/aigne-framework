@@ -10,7 +10,7 @@ export interface GetDefaultOptions {
 
 export interface StoreOptions {
   filepath?: string;
-  secretStoreKey?: string;
+  serviceName: string;
   forceUnavailable?: boolean;
 }
 

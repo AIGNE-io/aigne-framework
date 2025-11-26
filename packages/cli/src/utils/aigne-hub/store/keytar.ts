@@ -4,7 +4,7 @@ import { KeyringStore as BaseKeyringStore } from "@aigne/secrets";
 class KeyringStore extends BaseKeyringStore {
   private outputConfig: { key: string; url: string };
 
-  constructor(options: StoreOptions = {}) {
+  constructor(options: StoreOptions) {
     super(options);
     this.outputConfig = { url: "AIGNE_HUB_API_URL", key: "AIGNE_HUB_API_KEY" };
   }

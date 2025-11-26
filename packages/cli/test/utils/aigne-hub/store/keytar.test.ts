@@ -18,7 +18,7 @@ describe("KeyringStore", () => {
 
     testServiceName = `test-service-${Date.now()}-${Math.random()}`;
     testUrls = [];
-    store = new KeyringStore({ secretStoreKey: testServiceName });
+    store = new KeyringStore({ serviceName: testServiceName });
   });
 
   afterEach(async () => {
@@ -36,7 +36,7 @@ describe("KeyringStore", () => {
     });
 
     test("should use custom service name when provided", () => {
-      const customStore = new KeyringStore({ secretStoreKey: "custom-service" });
+      const customStore = new KeyringStore({ serviceName: "custom-service" });
       expect(customStore).toBeDefined();
     });
 
@@ -145,7 +145,7 @@ describe("KeyringStore", () => {
 
       await store.setKey(url, "test-key");
 
-      const newStore = new KeyringStore({ secretStoreKey: testServiceName });
+      const newStore = new KeyringStore({ serviceName: testServiceName });
       const retrieved = await newStore.getKey(url);
 
       expect(retrieved?.AIGNE_HUB_API_KEY).toBe("test-key");

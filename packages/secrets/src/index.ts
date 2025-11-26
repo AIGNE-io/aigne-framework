@@ -5,8 +5,8 @@ import type { ISecretStore, StoreOptions } from "./types.js";
 export * from "./types.js";
 export { FileStore, KeyringStore };
 
-async function createSecretStore(options: StoreOptions = {}): Promise<ISecretStore> {
-  if (!options.secretStoreKey) {
+async function createSecretStore(options: StoreOptions): Promise<ISecretStore> {
+  if (!options.serviceName) {
     throw new Error("Secret store key is required");
   }
 

@@ -7,18 +7,18 @@ const DEFAULT_ACCOUNT_NAME_FOR_DEFAULT = "-default";
 
 export class KeyringStore extends BaseSecretStore {
   private _impl: typeof keyring;
-  private secretStoreKey: string;
+  private serviceName: string;
   private defaultAccount: string;
   private _forceUnavailable: boolean;
 
-  constructor(options: StoreOptions = {}) {
+  constructor(options: StoreOptions) {
     super();
 
-    const { secretStoreKey, forceUnavailable = false } = options;
+    const { serviceName, forceUnavailable = false } = options;
 
     this._impl = keyring;
-    this.secretStoreKey = `${secretStoreKey}${DEFAULT_SERVICE_NAME}`;
-    this.defaultAccount = `${secretStoreKey}${DEFAULT_ACCOUNT_NAME_FOR_DEFAULT}`;
+    this.serviceName = `${serviceName}${DEFAULT_SERVICE_NAME}`;
+    this.defaultAccount = `${serviceName}${DEFAULT_ACCOUNT_NAME_FOR_DEFAULT}`;
     this._forceUnavailable = !!forceUnavailable;
   }
 
@@ -39,14 +39,14 @@ export class KeyringStore extends BaseSecretStore {
 
   async setItem(key: string, value: ItemInfo) {
     if (!(await this.available())) throw new Error("Keyring not available");
-    return this._impl.setPassword(this.secretStoreKey, key, JSON.stringify(value));
+    return this._impl.setPassword(this.serviceName, key, JSON.stringify(value));
   }
 
   async getItem(key: string): Promise<ItemInfo | null> {
     if (!(await this.available())) return null;
 
     try {
-      const v = await this._impl.getPassword(this.secretStoreKey, key);
+      const v = await this._impl.getPassword(this.serviceName, key);
       if (!v) return null;
       return this.parseKey(v);
     } catch {
@@ -58,7 +58,7 @@ export class KeyringStore extends BaseSecretStore {
     if (!(await this.available())) return false;
 
     try {
-      const ok = await this._impl.deletePassword(this.secretStoreKey, key);
+      const ok = await this._impl.deletePassword(this.serviceName, key);
       return !!ok;
     } catch {
       return false;
@@ -70,7 +70,7 @@ export class KeyringStore extends BaseSecretStore {
 
     try {
       if (typeof this._impl.findCredentials === "function") {
-        const list = await this._impl.findCredentials(this.secretStoreKey);
+        const list = await this._impl.findCredentials(this.serviceName);
         return Array.isArray(list) && list.length > 0 ? list : null;
       }
 

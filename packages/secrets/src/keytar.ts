@@ -5,17 +5,17 @@ const DEFAULT_SERVICE_NAME = "-secrets";
 const DEFAULT_ACCOUNT_NAME_FOR_DEFAULT = "-default";
 
 // Lazy loading of keyring prevents direct crashes in unsupported environments
-let keyringModule: any = null;
+let loadedKeyring: any = null;
 let keyringLoadError: Error | null = null;
 
 async function loadKeyring() {
-  if (keyringModule) return keyringModule;
+  if (loadedKeyring) return loadedKeyring;
   if (keyringLoadError) return null;
 
   try {
     const module = await import("@zowe/secrets-for-zowe-sdk");
-    keyringModule = module.keyring;
-    return keyringModule;
+    loadedKeyring = module.keyring;
+    return loadedKeyring;
   } catch (error) {
     keyringLoadError = error as Error;
     return null;

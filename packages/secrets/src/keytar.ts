@@ -1,7 +1,7 @@
 import { BaseSecretStore } from "./base.js";
 import type { CredentialEntry, ItemInfo, StoreOptions } from "./types.js";
 
-const DEFAULT_SERVICE_NAME = "-api-key";
+const DEFAULT_SERVICE_NAME = "-secrets";
 const DEFAULT_ACCOUNT_NAME_FOR_DEFAULT = "-default";
 
 export class KeyringStore extends BaseSecretStore {

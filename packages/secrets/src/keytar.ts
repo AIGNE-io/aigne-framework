@@ -4,24 +4,6 @@ import type { CredentialEntry, ItemInfo, StoreOptions } from "./types.js";
 const DEFAULT_SERVICE_NAME = "-secrets";
 const DEFAULT_ACCOUNT_NAME_FOR_DEFAULT = "-default";
 
-// Lazy loading of keyring prevents direct crashes in unsupported environments
-let loadedKeyring: any = null;
-let keyringLoadError: Error | null = null;
-
-async function loadKeyring() {
-  if (loadedKeyring) return loadedKeyring;
-  if (keyringLoadError) return null;
-
-  try {
-    const module = await import("@zowe/secrets-for-zowe-sdk");
-    loadedKeyring = module.keyring;
-    return loadedKeyring;
-  } catch (error) {
-    keyringLoadError = error as Error;
-    return null;
-  }
-}
-
 export class KeyringStore extends BaseSecretStore {
   private _impl: any = null;
   private serviceName: string;
@@ -43,7 +25,8 @@ export class KeyringStore extends BaseSecretStore {
 
     try {
       if (!this._impl) {
-        this._impl = await loadKeyring();
+        const module = await import("@zowe/secrets-for-zowe-sdk");
+        this._impl = module.keyring;
       }
 
       return !!(

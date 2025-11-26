@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/secrets-v0.1.1-beta...secrets-v0.1.1-beta.1) (2025-11-26)
+
+
+### Bug Fixes
+
+* **cli:** use sequential migration to handle keyring and callback file save ([#776](https://github.com/AIGNE-io/aigne-framework/issues/776)) ([da0db46](https://github.com/AIGNE-io/aigne-framework/commit/da0db46597b76cc0f41d604fd51bcd64931f0315))
+
 ## [0.1.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/secrets-v0.1.0...secrets-v0.1.1-beta) (2025-11-26)
 
 

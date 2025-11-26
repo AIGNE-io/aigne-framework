@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.57.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.0-beta...cli-v1.57.0-beta.1) (2025-11-26)
+
+
+### Bug Fixes
+
+* **cli:** use sequential migration to handle keyring and callback file save ([#776](https://github.com/AIGNE-io/aigne-framework/issues/776)) ([da0db46](https://github.com/AIGNE-io/aigne-framework/commit/da0db46597b76cc0f41d604fd51bcd64931f0315))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/secrets bumped to 0.1.1-beta.1
+
 ## [1.57.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.56.1-beta...cli-v1.57.0-beta) (2025-11-26)
 
 

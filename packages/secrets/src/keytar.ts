@@ -13,11 +13,11 @@ export class KeyringStore extends BaseSecretStore {
   constructor(options: StoreOptions) {
     super();
 
-    const { serviceName, forceUnavailable = false } = options;
+    const { serviceName, forceKeytarUnavailable = false } = options;
 
     this.serviceName = `${serviceName}${DEFAULT_SERVICE_NAME}`;
     this.defaultAccount = `${serviceName}${DEFAULT_ACCOUNT_NAME_FOR_DEFAULT}`;
-    this._forceUnavailable = !!forceUnavailable;
+    this._forceUnavailable = !!forceKeytarUnavailable;
   }
 
   async available() {

@@ -11,7 +11,7 @@ export interface GetDefaultOptions {
 export interface StoreOptions {
   filepath?: string;
   serviceName: string;
-  forceUnavailable?: boolean;
+  forceKeytarUnavailable?: boolean;
 }
 
 export type ItemInfo = {

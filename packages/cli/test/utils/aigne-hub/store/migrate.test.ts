@@ -66,7 +66,7 @@ describe("migrateFileToKeyring", () => {
     const result = await migrateFileToKeyring({
       filepath: testFilePath,
       serviceName: testServiceName,
-      forceUnavailable: true,
+      forceKeytarUnavailable: true,
     });
 
     expect(result).toBe(false);

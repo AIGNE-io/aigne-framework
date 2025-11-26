@@ -38,7 +38,7 @@ describe("createSecretStore", () => {
       await expect(
         createSecretStore({
           serviceName: testServiceName,
-          forceUnavailable: true,
+          forceKeytarUnavailable: true,
         }),
       ).rejects.toThrow("Filepath is required");
     });
@@ -59,7 +59,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       expect(store).toBeInstanceOf(FileStore);
@@ -81,7 +81,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       const key = "test-key";
@@ -97,7 +97,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       const key = "test-key";
@@ -115,7 +115,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       const defaultValue = { data: "default-value", type: "default" };
@@ -132,7 +132,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       const items = [
@@ -154,7 +154,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       const items = [
@@ -177,7 +177,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       expect(store).toBeInstanceOf(FileStore);
@@ -195,7 +195,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       await store.setItem("example.com", { apiKey: "test-key" });
@@ -209,7 +209,7 @@ describe("createSecretStore", () => {
       const newStore = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       const retrieved = await newStore.getItem("example.com");
@@ -222,7 +222,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       await store.setItem("key1", { data: "value1" });
@@ -250,7 +250,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       const complexValue = {
@@ -275,7 +275,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       for (let i = 0; i < 5; i++) {
@@ -294,7 +294,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       const specialKey = "key!@#$%^&*()_+-=[]{}|;':\",./<>?";
@@ -310,7 +310,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       const key = "empty-key";
@@ -326,7 +326,7 @@ describe("createSecretStore", () => {
       const store = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       const key = "long-key";
@@ -360,7 +360,7 @@ describe("createSecretStore", () => {
       const store1 = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       await store1.setItem("persist-key", { data: "persist-value" });
@@ -368,7 +368,7 @@ describe("createSecretStore", () => {
       const store2 = await createSecretStore({
         serviceName: testServiceName,
         filepath: testFilePath,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       const retrieved = await store2.getItem("persist-key");

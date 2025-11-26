@@ -35,10 +35,10 @@ describe("KeyringStore", () => {
       expect(result).toBe(true);
     });
 
-    test("should return false when forceUnavailable is set", async () => {
+    test("should return false when forceKeytarUnavailable is set", async () => {
       const unavailableStore = new KeyringStore({
         serviceName: testServiceName,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
       const result = await unavailableStore.available();
       expect(result).toBe(false);
@@ -103,7 +103,7 @@ describe("KeyringStore", () => {
     test("should throw when setting key and keyring unavailable", async () => {
       const unavailableStore = new KeyringStore({
         serviceName: testServiceName,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       await expect(unavailableStore.setKey("https://test.com", "key")).rejects.toThrow(
@@ -114,7 +114,7 @@ describe("KeyringStore", () => {
     test("should return null when getting key and keyring unavailable", async () => {
       const unavailableStore = new KeyringStore({
         serviceName: testServiceName,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
       const result = await unavailableStore.getKey("https://test.com");
       expect(result).toBe(null);
@@ -165,7 +165,7 @@ describe("KeyringStore", () => {
     test("should return false when keyring unavailable", async () => {
       const unavailableStore = new KeyringStore({
         serviceName: testServiceName,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
       const result = await unavailableStore.deleteKey("https://test.com");
       expect(result).toBe(false);
@@ -241,7 +241,7 @@ describe("KeyringStore", () => {
     test("should throw when setting default and keyring unavailable", async () => {
       const unavailableStore = new KeyringStore({
         serviceName: testServiceName,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
 
       await expect(unavailableStore.setDefault("https://test.com")).rejects.toThrow(
@@ -252,7 +252,7 @@ describe("KeyringStore", () => {
     test("should return null when getting default and keyring unavailable", async () => {
       const unavailableStore = new KeyringStore({
         serviceName: testServiceName,
-        forceUnavailable: true,
+        forceKeytarUnavailable: true,
       });
       const result = await unavailableStore.getDefault();
       expect(result).toBe(null);

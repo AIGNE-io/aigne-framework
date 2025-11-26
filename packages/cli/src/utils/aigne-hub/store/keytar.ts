@@ -17,21 +17,13 @@ class KeyringStore extends BaseKeyringStore {
   }
 
   async getKey(url: string): Promise<ItemInfo | null> {
-    try {
-      const v = await this.getItem(this.normalizeHostFrom(url));
-      return v;
-    } catch {
-      return null;
-    }
+    const v = await this.getItem(this.normalizeHostFrom(url));
+    return v;
   }
 
   async deleteKey(url: string): Promise<boolean> {
-    try {
-      const ok = await this.deleteItem(this.normalizeHostFrom(url));
-      return !!ok;
-    } catch {
-      return false;
-    }
+    const ok = await this.deleteItem(this.normalizeHostFrom(url));
+    return !!ok;
   }
 
   async listHosts(): Promise<ItemInfo[]> {
@@ -43,9 +35,7 @@ class KeyringStore extends BaseKeyringStore {
   }
 
   async setDefault(url: string): Promise<void> {
-    return this.setDefaultItem({
-      [this.outputConfig.url]: url,
-    });
+    return this.setDefaultItem({ [this.outputConfig.url]: url });
   }
 
   async getDefault(options: GetDefaultOptions = {}): Promise<ItemInfo | null> {
@@ -53,9 +43,9 @@ class KeyringStore extends BaseKeyringStore {
 
     try {
       const value = await this.getDefaultItem();
-      const storedUrl = value?.[this.outputConfig.url];
-      if (storedUrl) {
-        const defaultInfo = await this.getKey(storedUrl);
+      const apiUrl = value?.[this.outputConfig.url];
+      if (apiUrl) {
+        const defaultInfo = await this.getKey(apiUrl);
         if (defaultInfo) return defaultInfo;
       }
     } catch {

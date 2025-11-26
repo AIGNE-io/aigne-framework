@@ -9,10 +9,10 @@ class FileStore extends BaseFileStore {
     this.outputConfig = { url: "AIGNE_HUB_API_URL", key: "AIGNE_HUB_API_KEY" };
   }
 
-  async setKey(url: string, secret: string): Promise<void> {
+  async setKey(url: string, apiKey: string): Promise<void> {
     return this.setItem(this.normalizeHostFrom(url), {
       [this.outputConfig.url]: url,
-      [this.outputConfig.key]: secret,
+      [this.outputConfig.key]: apiKey,
     });
   }
 
@@ -35,9 +35,7 @@ class FileStore extends BaseFileStore {
   }
 
   async setDefault(url: string): Promise<void> {
-    return this.setDefaultItem({
-      [this.outputConfig.url]: url,
-    });
+    return this.setDefaultItem({ [this.outputConfig.url]: url });
   }
 
   async getDefault(options: GetDefaultOptions = {}): Promise<ItemInfo | null> {
@@ -46,9 +44,9 @@ class FileStore extends BaseFileStore {
 
     try {
       const value = await this.getDefaultItem();
-      const storedUrl = value?.[this.outputConfig.url];
-      if (storedUrl) {
-        const defaultInfo = await this.getKey(storedUrl);
+      const apiUrl = value?.[this.outputConfig.url];
+      if (apiUrl) {
+        const defaultInfo = await this.getKey(apiUrl);
         if (defaultInfo) return defaultInfo;
       }
     } catch {
@@ -58,26 +56,20 @@ class FileStore extends BaseFileStore {
     if (!fallbackToFirst) return null;
 
     const hosts = await this.listHosts();
-    if (Array.isArray(hosts) && hosts.length > 0) {
-      const firstHost = hosts[0];
-      if (presetIfFallback && firstHost?.[this.outputConfig.url]) {
-        try {
-          const data = await this.load();
-          const url =
-            data[this.normalizeHostFrom(firstHost[this.outputConfig.url])]?.[this.outputConfig.url];
+    if (hosts.length === 0) return null;
 
-          if (url) {
-            await this.setDefault(url);
-          }
-        } catch {
-          // ignore set failure
-        }
+    const firstHost = hosts[0];
+    if (!firstHost) return null;
+
+    if (presetIfFallback && firstHost[this.outputConfig.url]) {
+      try {
+        await this.setDefault(firstHost[this.outputConfig.url]);
+      } catch {
+        // ignore
       }
-
-      return firstHost ?? null;
     }
 
-    return null;
+    return firstHost;
   }
 
   async deleteDefault(): Promise<void> {

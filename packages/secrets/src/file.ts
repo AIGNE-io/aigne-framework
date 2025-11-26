@@ -25,7 +25,7 @@ export class FileStore extends BaseSecretStore {
     }
   }
 
-  async load(): Promise<AIGNEEnv> {
+  private async load(): Promise<AIGNEEnv> {
     try {
       const data = await fs.readFile(this.filepath, "utf-8");
       const parsed = parse(data) as AIGNEEnv;

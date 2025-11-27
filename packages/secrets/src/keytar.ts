@@ -1,3 +1,4 @@
+import { logger } from "@aigne/core/utils/logger.js";
 import { BaseSecretStore } from "./base.js";
 import type { CredentialEntry, ItemInfo, StoreOptions } from "./types.js";
 import { isKeyringEnvironmentReady } from "./util.js";
@@ -28,7 +29,13 @@ export class KeyringStore extends BaseSecretStore {
 
     // Check environment prerequisites before attempting to load the module
     if (!this._environmentChecked) {
-      this._environmentReady = isKeyringEnvironmentReady();
+      const { ready, reason } = isKeyringEnvironmentReady();
+      this._environmentReady = ready;
+
+      if (!ready) {
+        logger.warn(`Keyring environment not ready: ${reason}`);
+      }
+
       this._environmentChecked = true;
     }
 
@@ -48,7 +55,9 @@ export class KeyringStore extends BaseSecretStore {
         typeof this._impl.setPassword === "function" &&
         typeof this._impl.deletePassword === "function"
       );
-    } catch {
+    } catch (error) {
+      logger.error(`Failed to load keyring: ${error.message}`);
+
       return false;
     }
   }

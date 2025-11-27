@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.88.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0-beta.2...aigne-framework-v1.88.0-beta.3) (2025-11-27)
+
+
+### Bug Fixes
+
+* **secrets:** simplify default item handling in KeyringStore ([#780](https://github.com/AIGNE-io/aigne-framework/issues/780)) ([4c1ff51](https://github.com/AIGNE-io/aigne-framework/commit/4c1ff51e982ed5787df37b127a381276537ec92f))
+
 ## [1.88.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0-beta.1...aigne-framework-v1.88.0-beta.2) (2025-11-27)
 
 

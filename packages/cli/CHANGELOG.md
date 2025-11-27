@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.57.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.0-beta.2...cli-v1.57.0-beta.3) (2025-11-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/secrets bumped to 0.1.1-beta.3
+
 ## [1.57.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.0-beta.1...cli-v1.57.0-beta.2) (2025-11-27)
 
 

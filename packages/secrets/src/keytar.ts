@@ -4,12 +4,11 @@ import type { CredentialEntry, ItemInfo, StoreOptions } from "./types.js";
 import { isKeyringEnvironmentReady } from "./util.js";
 
 const DEFAULT_SERVICE_NAME = "-api-key";
-const DEFAULT_ACCOUNT_NAME_FOR_DEFAULT = "-default";
+const DEFAULT_ACCOUNT_NAME_FOR_DEFAULT = "default";
 
 export class KeyringStore extends BaseSecretStore {
   private _impl: any = null;
   private serviceName: string;
-  private defaultAccount: string;
   private _forceUnavailable: boolean;
   private _environmentChecked: boolean = false;
   private _environmentReady: boolean = false;
@@ -20,7 +19,6 @@ export class KeyringStore extends BaseSecretStore {
     const { serviceName, forceKeytarUnavailable = false } = options;
 
     this.serviceName = `${serviceName}${DEFAULT_SERVICE_NAME}`;
-    this.defaultAccount = `${serviceName}${DEFAULT_ACCOUNT_NAME_FOR_DEFAULT}`;
     this._forceUnavailable = !!forceKeytarUnavailable;
   }
 
@@ -101,7 +99,9 @@ export class KeyringStore extends BaseSecretStore {
     try {
       if (typeof this._impl.findCredentials === "function") {
         const list = await this._impl.findCredentials(this.serviceName);
-        return Array.isArray(list) && list.length > 0 ? list : null;
+        return Array.isArray(list) && list.length > 0
+          ? list.filter((c) => c.account !== DEFAULT_ACCOUNT_NAME_FOR_DEFAULT)
+          : null;
       }
 
       return null;
@@ -144,32 +144,21 @@ export class KeyringStore extends BaseSecretStore {
     if (!(await this.available())) throw new Error("Keyring not available");
     if (!this._impl) throw new Error("Keyring not loaded");
 
-    const account = this.defaultAccount;
-    return this._impl.setPassword(account, account, JSON.stringify(value));
+    return this.setItem(DEFAULT_ACCOUNT_NAME_FOR_DEFAULT, value);
   }
 
   override async getDefaultItem(): Promise<ItemInfo | null> {
     if (!(await this.available())) return null;
     if (!this._impl) return null;
 
-    const account = this.defaultAccount;
-    try {
-      const value = await this._impl.getPassword(account, account);
-      if (!value) return null;
-      return this.parseKey(value);
-    } catch {
-      // ignore
-    }
-
-    return null;
+    return this.getItem(DEFAULT_ACCOUNT_NAME_FOR_DEFAULT);
   }
 
   override async deleteDefaultItem(): Promise<void> {
     if (!(await this.available())) throw new Error("Keyring not available");
     if (!this._impl) throw new Error("Keyring not loaded");
 
-    const account = this.defaultAccount;
-    await this._impl.deletePassword(account, account);
+    await this.deleteItem(DEFAULT_ACCOUNT_NAME_FOR_DEFAULT);
   }
 }
 

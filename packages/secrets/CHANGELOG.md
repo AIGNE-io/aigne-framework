@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/secrets-v0.1.1-beta.1...secrets-v0.1.1-beta.2) (2025-11-27)
+
+
+### Bug Fixes
+
+* **secrets:** improve keyring availability detection with environment checks ([#778](https://github.com/AIGNE-io/aigne-framework/issues/778)) ([75dceab](https://github.com/AIGNE-io/aigne-framework/commit/75dceabeb7d6fd8c057759f003e703a2ebb41afd))
+
 ## [0.1.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/secrets-v0.1.1-beta...secrets-v0.1.1-beta.1) (2025-11-26)
 
 

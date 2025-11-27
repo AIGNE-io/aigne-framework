@@ -22,32 +22,13 @@ function isWSL(): boolean {
   return false;
 }
 
-function isDBusAvailable() {
-  return !!process.env.DBUS_SESSION_BUS_ADDRESS;
-}
-
-function isDisplayAvailable(): boolean {
-  return !!(process.env.DISPLAY || process.env.WAYLAND_DISPLAY);
-}
-
 export function isKeyringEnvironmentReady(): { ready: boolean; reason?: string } {
-  if (process.env.CI) return { ready: true };
   if (process.platform === "win32") return { ready: true };
   if (process.platform === "darwin") return { ready: true };
 
   if (process.platform === "linux") {
     if (isWSL()) {
       return { ready: false, reason: "Detected WSL (no GNOME keyring by default)" };
-    }
-
-    // Check for D-Bus (required for libsecret)
-    if (!isDBusAvailable()) {
-      return { ready: false, reason: "D-Bus not available" };
-    }
-
-    // Check for display server (most keyring services need it)
-    if (!isDisplayAvailable()) {
-      return { ready: false, reason: "Display not available" };
     }
 
     return { ready: true };

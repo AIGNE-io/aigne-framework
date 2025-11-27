@@ -343,11 +343,39 @@ async function deleteHub(url: string) {
   try {
     const secretStore = await getSecretStore();
     const key = await secretStore.getKey(url);
-    if (key) {
-      await secretStore.deleteKey(url);
+
+    if (!key) {
+      console.error(chalk.red("✗ Hub not found"));
+      return;
     }
 
-    await secretStore.deleteDefault();
+    const defaultHub = await getDefaultHub();
+
+    await secretStore.deleteKey(url);
+
+    if (!defaultHub) {
+      return;
+    }
+
+    const isDefaultHub = getUrlOrigin(url) === getUrlOrigin(defaultHub);
+    if (isDefaultHub) {
+      await secretStore.deleteDefault();
+      const remainingHubs = await getHubs();
+
+      if (remainingHubs.length > 0) {
+        const nextHub = remainingHubs[0];
+
+        await secretStore.setDefault(nextHub?.apiUrl!);
+
+        console.log(
+          chalk.green(
+            `✓ Hub ${getUrlOrigin(url)} removed, switched to ${getUrlOrigin(nextHub?.apiUrl!)}`,
+          ),
+        );
+        return;
+      }
+    }
+
     console.log(chalk.green(`✓ Hub ${getUrlOrigin(url)} removed`));
   } catch {
     console.error(chalk.red("✗ Failed to delete hub"));

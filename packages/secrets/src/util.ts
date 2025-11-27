@@ -31,6 +31,7 @@ function isDisplayAvailable(): boolean {
 }
 
 export function isKeyringEnvironmentReady(): { ready: boolean; reason?: string } {
+  if (process.env.CI) return { ready: true };
   if (process.platform === "win32") return { ready: true };
   if (process.platform === "darwin") return { ready: true };
 

@@ -61,7 +61,7 @@ function printHubStatus(data: {
   console.log(`${chalk.bold("Hub:".padEnd(10))} ${data.hub}`);
   console.log(
     `${chalk.bold("Status:".padEnd(10))} ${
-      data.status === "Connected" ? chalk.green(`${data.status} ✅`) : chalk.gray(`${data.status}`)
+      data.status === "Connected" ? chalk.green(`${data.status} ✅`) : `${data.status}`
     }`,
   );
   console.log("");

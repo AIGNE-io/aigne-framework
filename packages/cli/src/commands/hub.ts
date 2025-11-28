@@ -61,9 +61,7 @@ function printHubStatus(data: {
   console.log(`${chalk.bold("Hub:".padEnd(10))} ${data.hub}`);
   console.log(
     `${chalk.bold("Status:".padEnd(10))} ${
-      data.status === "Connected"
-        ? chalk.green(`${data.status} ✅`)
-        : chalk.red(`${data.status} ❌`)
+      data.status === "Connected" ? chalk.green(`${data.status} ✅`) : chalk.gray(`${data.status}`)
     }`,
   );
   console.log("");
@@ -395,7 +393,7 @@ async function printHubDetails(url: string) {
 
   printHubStatus({
     hub: getUrlOrigin(url),
-    status: isDefault ? "Connected" : "Not connected",
+    status: isDefault ? "Connected" : "Not Used",
     user: {
       name: userInfo?.user.fullName || "",
       did: userInfo?.user.did || "",

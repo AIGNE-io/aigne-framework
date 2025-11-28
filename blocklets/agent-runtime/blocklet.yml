@@ -17,7 +17,7 @@ repository:
   type: git
   url: git+https://github.com/blocklet/create-blocklet.git
 specVersion: 1.2.8
-version: 1.6.7-beta.1
+version: 1.6.7
 logo: logo.png
 files:
   - dist

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.88.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0...aigne-framework-v1.88.1-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+* **secrets:** use workspace protocol for @aigne/core dependency ([895f127](https://github.com/AIGNE-io/aigne-framework/commit/895f12791d788f9d7298504ab3de5425710b3292))
+
 ## [1.88.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0-beta.5...aigne-framework-v1.88.0) (2025-11-28)
 
 ## [1.88.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0-beta.4...aigne-framework-v1.88.0-beta.5) (2025-11-28)

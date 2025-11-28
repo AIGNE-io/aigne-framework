@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/secrets-v0.1.1...secrets-v0.1.2-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+* **secrets:** use workspace protocol for @aigne/core dependency ([895f127](https://github.com/AIGNE-io/aigne-framework/commit/895f12791d788f9d7298504ab3de5425710b3292))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.2-beta
+
 ## [0.1.1](https://github.com/AIGNE-io/aigne-framework/compare/secrets-v0.1.1-beta.3...secrets-v0.1.1) (2025-11-28)
 
 

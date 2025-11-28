@@ -1,6 +1,6 @@
 {
   "name": "@aigne/platform-helpers",
-  "version": "0.6.5-beta.0",
+  "version": "0.6.5-beta",
   "description": "AIGNE core library for building AI-powered applications",
   "publishConfig": {
     "access": "public"

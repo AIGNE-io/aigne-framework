@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.4.7](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.7-beta...sqlite-v0.4.7) (2025-11-28)
+
 ## [0.4.7-beta](https://github.com/AIGNE-io/aigne-framework/compare/sqlite-v0.4.6...sqlite-v0.4.7-beta) (2025-11-28)
 
 

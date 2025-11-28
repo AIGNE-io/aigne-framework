@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.1...afs-v1.2.2-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
 ## [1.2.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.1-beta...afs-v1.2.1) (2025-11-15)
 
 ## [1.2.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.0...afs-v1.2.1-beta) (2025-11-15)

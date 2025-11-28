@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.11.11-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.10...observability-api-v0.11.11-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.7-beta
+  * devDependencies
+    * @aigne/observability-ui bumped to 0.11.9-beta
+
 ## [0.11.10](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.10-beta...observability-api-v0.11.10) (2025-11-28)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@aigne/deepseek",
-  "version": "0.7.58-beta.0",
+  "version": "0.7.58-beta",
   "description": "AIGNE Deepseek SDK for integrating with Deepseek AI models",
   "publishConfig": {
     "access": "public"

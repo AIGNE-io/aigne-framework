@@ -62,14 +62,30 @@ export async function parseAgentInputByCommander(
   return input;
 }
 
+export async function loadAIGNEWithCmdOptions() {
+  const options = await withRunAgentCommonOptions(yargs())
+    .strict(false)
+    .parseAsync(hideBin(process.argv));
+  return await loadAIGNE({
+    modelOptions: {
+      ...omitBy(
+        pick(options, "model", "temperature", "topP", "presencePenalty", "frequencyPenalty"),
+        (v) => isNil(v),
+      ),
+    },
+  });
+}
+
 export async function runWithAIGNE(
   agentCreator: ((aigne: AIGNE) => PromiseOrValue<Agent>) | Agent,
   {
+    aigne,
     argv = process.argv,
     chatLoopOptions,
     modelOptions,
     outputKey,
   }: {
+    aigne?: AIGNE;
     argv?: typeof process.argv;
     chatLoopOptions?: ChatLoopOptions;
     modelOptions?: ChatModelInputOptions;
@@ -86,7 +102,7 @@ export async function runWithAIGNE(
           logger.level = options.logLevel;
         }
 
-        const aigne = await loadAIGNE({
+        aigne ??= await loadAIGNE({
           modelOptions: {
             ...modelOptions,
             ...omitBy(

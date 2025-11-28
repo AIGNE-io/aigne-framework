@@ -31,8 +31,6 @@ test("AIGNE.load should load agents correctly", async () => {
     }),
   );
 
-  expect(aigne.agents.length).toBe(5);
-
   const chat = aigne.agents[0];
   expect(chat).toEqual(
     expect.objectContaining({
@@ -109,24 +107,17 @@ test("loader should use override options", async () => {
   });
 
   expect(aigne.model).toBe(model);
-  expect([...aigne.agents]).toEqual([
-    expect.objectContaining({
-      name: "chat",
-    }),
-    expect.objectContaining({
-      name: "chat-with-prompt",
-    }),
-    expect.objectContaining({
-      name: "test-team-agent",
-    }),
-    expect.objectContaining({
-      name: "test-image-agent",
-    }),
-    expect.objectContaining({
-      name: "test-relative-prompt-paths",
-    }),
-    testAgent,
-  ]);
+  expect(aigne.agents.map((i) => i.name)).toMatchInlineSnapshot(`
+    [
+      "chat",
+      "chat-with-prompt",
+      "test-team-agent",
+      "test-image-agent",
+      "test-relative-prompt-paths",
+      "testJsonDefinitionAgent",
+      "test-agent",
+    ]
+  `);
   expect([...aigne.skills]).toEqual([expect.objectContaining({ name: "evaluateJs" }), testSkill]);
 });
 

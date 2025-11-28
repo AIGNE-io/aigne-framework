@@ -1,5 +1,197 @@
 # Changelog
 
+## [0.4.11-beta](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.10...ideogram-v0.4.11-beta) (2025-11-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.1-beta
+
+## [0.4.10](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.10-beta.4...ideogram-v0.4.10) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0
+
+## [0.4.10-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.10-beta.3...ideogram-v0.4.10-beta.4) (2025-11-20)
+
+
+### Bug Fixes
+
+* add timeout to doubao and ideogram image models ([#761](https://github.com/AIGNE-io/aigne-framework/issues/761)) ([c232483](https://github.com/AIGNE-io/aigne-framework/commit/c232483c6024426524c3310e64b22d9f63206227))
+
+## [0.4.10-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.10-beta.2...ideogram-v0.4.10-beta.3) (2025-11-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0-beta.2
+
+## [0.4.10-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.10-beta.1...ideogram-v0.4.10-beta.2) (2025-11-18)
+
+
+### Features
+
+* improve image model architecture and file handling ([#527](https://github.com/AIGNE-io/aigne-framework/issues/527)) ([4db50aa](https://github.com/AIGNE-io/aigne-framework/commit/4db50aa0387a1a0f045ca11aaa61613e36ca7597))
+* **models:** support aigne hub models ([#416](https://github.com/AIGNE-io/aigne-framework/issues/416)) ([b4f014c](https://github.com/AIGNE-io/aigne-framework/commit/b4f014cf5ed08ef930d3ddfc278d3610e64c6af3))
+* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
+* **models:** support gemini and ideogram images models ([#412](https://github.com/AIGNE-io/aigne-framework/issues/412)) ([6534fec](https://github.com/AIGNE-io/aigne-framework/commit/6534fecb0bdfb4b0a4440d44c0e563b9a029a68f))
+
+
+### Bug Fixes
+
+* add fetch utility with timeout and enhanced error handling ([#694](https://github.com/AIGNE-io/aigne-framework/issues/694)) ([c2d4076](https://github.com/AIGNE-io/aigne-framework/commit/c2d4076ec590150d2751591a4f723721f78381e9))
+* add prefer input file type option for image model ([#536](https://github.com/AIGNE-io/aigne-framework/issues/536)) ([3cba8a5](https://github.com/AIGNE-io/aigne-framework/commit/3cba8a5562233a1567b49b6dd5c446c0760f5c4c))
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+* move zod from devDependencies to dependencies in ideogram model ([#539](https://github.com/AIGNE-io/aigne-framework/issues/539)) ([9a08529](https://github.com/AIGNE-io/aigne-framework/commit/9a08529c53a40817acc831fb9b1925e200671f40))
+* standardize file parameter naming across models ([#534](https://github.com/AIGNE-io/aigne-framework/issues/534)) ([f159a9d](https://github.com/AIGNE-io/aigne-framework/commit/f159a9d6af21ec0e99641996b150560929845845))
+* support gemini-2.0-flash model for image model ([#429](https://github.com/AIGNE-io/aigne-framework/issues/429)) ([5a0bba1](https://github.com/AIGNE-io/aigne-framework/commit/5a0bba197cf8785384b70302f86cf702d04b7fc4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0-beta.1
+
+## [0.4.10-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.10-beta...ideogram-v0.4.10-beta.1) (2025-11-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.3-beta.1
+
+## [0.4.10-beta](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.9...ideogram-v0.4.10-beta) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.3-beta
+
+## [0.4.9](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.9-beta...ideogram-v0.4.9) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.2
+
+## [0.4.9-beta](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.8...ideogram-v0.4.9-beta) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.2-beta
+
+## [0.4.8](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.8-beta...ideogram-v0.4.8) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.1
+
+## [0.4.8-beta](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.7...ideogram-v0.4.8-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.1-beta
+
+## [0.4.7](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.7-beta...ideogram-v0.4.7) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.0
+
+## [0.4.7-beta](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.6...ideogram-v0.4.7-beta) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.0-beta
+
+## [0.4.6](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.6-beta.4...ideogram-v0.4.6) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0
+
+## [0.4.6-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.6-beta.3...ideogram-v0.4.6-beta.4) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta.4
+
+## [0.4.6-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.6-beta.2...ideogram-v0.4.6-beta.3) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta.3
+
+## [0.4.6-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.6-beta.1...ideogram-v0.4.6-beta.2) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta.2
+
+## [0.4.6-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.6-beta...ideogram-v0.4.6-beta.1) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta.1
+
+## [0.4.6-beta](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.5...ideogram-v0.4.6-beta) (2025-11-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta
+
 ## [0.4.5](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.5-beta.6...ideogram-v0.4.5) (2025-11-07)
 
 

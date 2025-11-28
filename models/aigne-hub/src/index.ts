@@ -22,6 +22,7 @@ import type {
 
 export * from "./utils/blocklet.js";
 export * from "./utils/constants.js";
+export * from "./utils/find-provider.js";
 export * from "./utils/model.js";
 
 export class AIGNEHubChatModel extends ChatModel {

@@ -1,6 +1,6 @@
 {
   "name": "@aigne/core",
-  "version": "1.66.0",
+  "version": "1.69.1-beta",
   "description": "The functional core of agentic AI",
   "publishConfig": {
     "access": "public"
@@ -75,6 +75,7 @@
   },
   "dependencies": {
     "@aigne/afs": "workspace:^",
+    "@aigne/afs-history": "workspace:^",
     "@aigne/json-schema-to-zod": "^1.3.3",
     "@aigne/observability-api": "workspace:^",
     "@aigne/platform-helpers": "workspace:^",

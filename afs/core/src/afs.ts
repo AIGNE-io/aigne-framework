@@ -1,8 +1,5 @@
 import { Emitter } from "strict-event-emitter";
 import { joinURL } from "ufo";
-import { AFSHistory } from "./history/index.js";
-import { SharedAFSStorage, type SharedAFSStorageOptions } from "./storage/index.js";
-import type { AFSStorage } from "./storage/type.js";
 import type {
   AFSEntry,
   AFSListOptions,
@@ -15,50 +12,51 @@ import type {
 
 const DEFAULT_MAX_DEPTH = 1;
 
+const MODULES_ROOT_DIR = "/modules";
+
 export interface AFSOptions {
-  storage?: SharedAFSStorage | SharedAFSStorageOptions;
   modules?: AFSModule[];
 }
 
 export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
-  moduleId: string = "AFSRoot";
-
-  path = "/";
+  name: string = "AFSRoot";
 
   constructor(options?: AFSOptions) {
     super();
 
-    this._storage =
-      options?.storage instanceof SharedAFSStorage
-        ? options.storage
-        : new SharedAFSStorage(options?.storage);
-
-    this.use(new AFSHistory());
-
     for (const module of options?.modules ?? []) {
-      this.use(module);
+      this.mount(module);
     }
-  }
-
-  private _storage: SharedAFSStorage;
-
-  storage(module: AFSModule): AFSStorage {
-    return this._storage.withModule(module);
   }
 
   private modules = new Map<string, AFSModule>();
 
-  use(module: AFSModule) {
-    this.modules.set(module.path, module);
+  mount(module: AFSModule): this {
+    let path = joinURL("/", module.name);
+
+    if (!/^\/[^/]+$/.test(path)) {
+      throw new Error(`Invalid mount path: ${path}. Must start with '/' and contain no other '/'`);
+    }
+
+    if (this.modules.has(path)) {
+      throw new Error(`Module already mounted at path: ${path}`);
+    }
+
+    path = joinURL(MODULES_ROOT_DIR, path);
+
+    this.modules.set(path, module);
     module.onMount?.(this);
     return this;
   }
 
-  async listModules(): Promise<{ moduleId: string; path: string; description?: string }[]> {
+  async listModules(): Promise<
+    { name: string; path: string; description?: string; module: AFSModule }[]
+  > {
     return Array.from(this.modules.entries()).map(([path, module]) => ({
-      moduleId: module.moduleId,
       path,
+      name: module.name,
       description: module.description,
+      module,
     }));
   }
 
@@ -76,7 +74,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
     for (const matched of matches) {
       const moduleEntry = {
-        id: matched.module.moduleId,
+        id: matched.module.name,
         path: matched.remainedModulePath,
         summary: matched.module.description,
       };
@@ -98,7 +96,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
           results.push(
             ...list.map((entry) => ({
               ...entry,
-              path: joinURL(matched.module.path, entry.path),
+              path: joinURL(matched.modulePath, entry.path),
             })),
           );
         } else {
@@ -107,7 +105,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
         if (message) messages.push(message);
       } catch (error) {
-        console.error(`Error listing from module at ${matched.module.path}`, error);
+        console.error(`Error listing from module at ${matched.modulePath}`, error);
       }
     }
 
@@ -117,7 +115,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
   async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
     const modules = this.findModules(path, { exactMatch: true });
 
-    for (const { module, subpath } of modules) {
+    for (const { module, modulePath, subpath } of modules) {
       const res = await module.read?.(subpath);
 
       if (res?.result) {
@@ -125,7 +123,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
           ...res,
           result: {
             ...res.result,
-            path: joinURL(module.path, res.result.path),
+            path: joinURL(modulePath, res.result.path),
           },
         };
       }
@@ -147,7 +145,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       ...res,
       result: {
         ...res.result,
-        path: joinURL(module.module.path, res.result.path),
+        path: joinURL(module.modulePath, res.result.path),
       },
     };
   }
@@ -160,7 +158,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     const results: AFSEntry[] = [];
     const messages: string[] = [];
 
-    for (const { module, subpath } of this.findModules(path)) {
+    for (const { module, modulePath, subpath } of this.findModules(path)) {
       if (!module.search) continue;
 
       try {
@@ -169,12 +167,12 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
         results.push(
           ...list.map((entry) => ({
             ...entry,
-            path: joinURL(module.path, entry.path),
+            path: joinURL(modulePath, entry.path),
           })),
         );
         if (message) messages.push(message);
       } catch (error) {
-        console.error(`Error searching in module at ${module.path}`, error);
+        console.error(`Error searching in module at ${modulePath}`, error);
       }
     }
 
@@ -186,6 +184,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     options?: { maxDepth?: number; exactMatch?: boolean },
   ): {
     module: AFSModule;
+    modulePath: string;
     maxDepth: number;
     subpath: string;
     remainedModulePath: string;
@@ -218,9 +217,20 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
       if (newMaxDepth < 0) continue;
 
-      matched.push({ module, maxDepth: newMaxDepth, subpath, remainedModulePath });
+      matched.push({ module, modulePath, maxDepth: newMaxDepth, subpath, remainedModulePath });
     }
 
     return matched;
+  }
+
+  async exec(
+    path: string,
+    args: Record<string, any>,
+    options: { context: any },
+  ): Promise<{ result: Record<string, any> }> {
+    const module = this.findModules(path)[0];
+    if (!module?.module.exec) throw new Error(`No module found for path: ${path}`);
+
+    return await module.module.exec(module.subpath, args, options);
   }
 }

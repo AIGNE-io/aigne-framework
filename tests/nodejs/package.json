@@ -1,9 +1,9 @@
 {
   "name": "@aigne/test-nodejs",
-  "version": "0.0.1",
+  "version": "0.0.2-beta.0",
   "description": "A demonstration of using AIGNE Framework with memory.",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
-  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/memory",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework",
   "license": "ISC",
   "private": true,
   "repository": {

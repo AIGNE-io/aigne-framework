@@ -7,27 +7,23 @@ import { LoadJsAgentError } from "./error.js";
 const importFn = new Function("path", "return import(path)");
 
 export async function loadAgentFromJsFile(path: string) {
-  if (nodejs.path.isAbsolute(path)) path = nodejs.url.pathToFileURL(path).toString();
+  const url = nodejs.path.isAbsolute(path) ? nodejs.url.pathToFileURL(path).toString() : path;
 
   const { default: agent } = await tryOrThrow(
-    () => importFn(path),
+    () => importFn(url),
     (error) =>
-      new LoadJsAgentError(`Failed to load agent definition from ${path}: ${error.message}`),
+      new LoadJsAgentError(`Failed to load agent definition from ${url}: ${error.message}`),
   );
 
   if (agent instanceof Agent) return agent;
 
-  if (typeof agent !== "function") {
-    throw new Error(`Agent file ${path} must export a default function, but got ${typeof agent}`);
-  }
-
   return tryOrThrow(
     () =>
       parseAgentFile(path, {
-        ...agent,
         type: "function",
-        name: agent.agent_name || agent.agentName || agent.name,
         process: agent,
+        name: agent.agent_name || agent.agentName || agent.name,
+        ...agent,
       }),
     (error) => new Error(`Failed to parse agent from ${path}: ${error.message}`),
   );

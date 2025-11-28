@@ -19,7 +19,7 @@ interface RunStatsHeaderProps {
   totalCost: string | null;
   count: number;
   latency: string;
-  timestamp: string;
+  timestamp: number;
   onClose: () => void;
 }
 

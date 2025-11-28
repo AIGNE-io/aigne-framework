@@ -304,17 +304,18 @@ function extractInstructions(builder: PromptBuilder): string {
 }
 
 test("loadAgentFromYaml should load AIAgent with AFS correctly", async () => {
-  const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/test-afs.yaml"));
+  const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/test-afs.yaml"), {
+    afs: {
+      availableModules: [
+        { module: "history", create: (options) => ({ name: "AFSHistory", options }) },
+        { module: "local-fs", create: (options) => ({ name: "AFSLocalFS", options }) },
+      ],
+    },
+  });
 
   assert(agent instanceof AIAgent, "agent should be an instance of AIAgent");
 
   expect(agent.afs).toBeInstanceOf(AFS);
-  expect(agent.afsConfig).toMatchInlineSnapshot(`
-    {
-      "historyWindowSize": 5,
-      "injectHistory": true,
-    }
-  `);
 });
 
 test("loadAgentFromYaml should inline function correctly", async () => {

@@ -1,7 +1,7 @@
 {
   "name": "@aigne/afs",
-  "version": "1.1.1",
-  "description": "AIGNE File System (AFS) is a virtual file system that supports various storage backends and provides a unified API for file operations.",
+  "version": "1.2.1",
+  "description": "Agentic File System (AFS) is a virtual file system that supports various storage backends and provides a unified API for file operations.",
   "publishConfig": {
     "access": "public"
   },
@@ -56,8 +56,6 @@
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
-    "@aigne/sqlite": "workspace:^",
-    "@aigne/uuid": "^13.0.1",
     "strict-event-emitter": "^0.5.1",
     "ufo": "^1.6.1"
   },

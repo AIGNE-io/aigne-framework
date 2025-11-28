@@ -1,8 +1,8 @@
 import { initDatabase } from "@aigne/sqlite";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
-import type { TraceFormatSpans } from "../../core/type.js";
-import { insertTrace, isBlocklet } from "../../core/util.js";
+import type { AttributeParams, TraceFormatSpans } from "../../core/type.js";
+import { insertTrace, isBlocklet, updateTrace } from "../../core/util.js";
 import { migrate } from "../../server/migrate.js";
 import getAIGNEHomePath from "../../server/utils/image-home-path.js";
 import saveFiles from "../../server/utils/save-files.js";
@@ -21,6 +21,7 @@ class HttpExporter implements HttpExporterInterface {
   private dbPath?: string;
   public _db?: any;
   private upsert: (spans: TraceFormatSpans[]) => Promise<void>;
+  public update: (id: string, data: AttributeParams) => Promise<void>;
 
   async getDb() {
     if (isBlocklet) return;
@@ -33,10 +34,16 @@ class HttpExporter implements HttpExporterInterface {
   constructor({
     dbPath,
     exportFn,
-  }: { dbPath?: string; exportFn?: (spans: TraceFormatSpans[]) => Promise<void> }) {
+    updateFn,
+  }: {
+    dbPath?: string;
+    exportFn?: (spans: TraceFormatSpans[]) => Promise<void>;
+    updateFn?: (id: string, data: AttributeParams) => Promise<void>;
+  }) {
     this.dbPath = dbPath;
     this._db ??= this.getDb();
     this.upsert = exportFn ?? (isBlocklet ? async () => {} : this._upsertWithSQLite);
+    this.update = updateFn ?? (isBlocklet ? async () => {} : this._updateWithSQLite);
   }
 
   async _upsertWithSQLite(validatedData: TraceFormatSpans[]) {
@@ -57,6 +64,13 @@ class HttpExporter implements HttpExporterInterface {
     }
   }
 
+  async _updateWithSQLite(id: string, data: AttributeParams) {
+    const db = await this._db;
+    if (!db) throw new Error("Database not initialized");
+
+    await updateTrace(db, id, data);
+  }
+
   async export(
     spans: ReadableSpan[],
     resultCallback: (result: { code: ExportResultCode }) => void,
@@ -74,8 +88,12 @@ class HttpExporter implements HttpExporterInterface {
     }
   }
 
-  shutdown() {
-    return Promise.resolve();
+  async shutdown() {
+    if (this._db) {
+      const db = await this._db;
+      await db?.close?.();
+      this._db = undefined;
+    }
   }
 }
 

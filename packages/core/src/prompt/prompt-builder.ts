@@ -1,4 +1,5 @@
-import { type AFSEntry, AFSHistory } from "@aigne/afs";
+import type { AFSEntry, AFSEntryMetadata } from "@aigne/afs";
+import { AFSHistory } from "@aigne/afs-history";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { stringify } from "yaml";
@@ -19,7 +20,6 @@ import type {
 import type { ImageAgent } from "../agents/image-agent.js";
 import { type FileUnionContent, fileUnionContentsSchema } from "../agents/model.js";
 import { optionalize } from "../loader/schema.js";
-import type { Memory } from "../memory/memory.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
 import {
   checkArguments,
@@ -29,7 +29,10 @@ import {
   partition,
   unique,
 } from "../utils/type-utils.js";
-import { getAFSSystemPrompt } from "./prompts/afs-builtin-prompt.js";
+import {
+  AFS_EXECUTABLE_TOOLS_PROMPT_TEMPLATE,
+  getAFSSystemPrompt,
+} from "./prompts/afs-builtin-prompt.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
 import { getAFSSkills } from "./skills/afs.js";
@@ -182,7 +185,7 @@ export class PromptBuilder {
         : null,
     );
 
-    const memories: Pick<Memory, "content">[] = [];
+    const memories: { content: unknown; description?: unknown }[] = [];
 
     if (options.agent && options.context) {
       memories.push(
@@ -197,26 +200,62 @@ export class PromptBuilder {
       memories.push(...options.context.memories);
     }
 
-    if (options.agent?.afs) {
-      messages.push(
-        await SystemMessageTemplate.from(await getAFSSystemPrompt(options.agent.afs)).format({}),
-      );
+    const afs = options.agent?.afs;
 
-      if (options.agent.afsConfig?.injectHistory) {
-        const history = await options.agent.afs.list(AFSHistory.Path, {
-          limit: options.agent.afsConfig.historyWindowSize || 10,
+    if (afs) {
+      const historyModule = (await afs.listModules()).find((m) => m.module instanceof AFSHistory);
+
+      messages.push(await SystemMessageTemplate.from(await getAFSSystemPrompt(afs)).format({}));
+
+      if (historyModule) {
+        const history = await afs.list(historyModule.path, {
+          limit: options.agent?.maxRetrieveMemoryCount || 10,
           orderBy: [["createdAt", "desc"]],
         });
 
-        if (message) {
-          const result = await options.agent.afs.search("/", message);
-          const ms = result.list.map((entry) => ({ content: stringify(entry.content) }));
-          memories.push(...ms);
-        }
-
         memories.push(
-          ...history.list.filter((i): i is Required<AFSEntry> => isNonNullable(i.content)),
+          ...history.list
+            .reverse()
+            .filter((i): i is Required<AFSEntry> => isNonNullable(i.content)),
         );
+
+        if (message) {
+          const result = await afs.search("/", message);
+          const ms = result.list
+            .map((entry) => {
+              if (entry.metadata?.execute) return null;
+
+              const content = entry.content || entry.summary;
+              if (!content) return null;
+
+              return {
+                content,
+                description: entry.description,
+              };
+            })
+            .filter(isNonNullable);
+          memories.push(...ms);
+
+          const executable = result.list.filter(
+            (i): i is typeof i & { metadata: Required<Pick<AFSEntryMetadata, "execute">> } =>
+              !!i.metadata?.execute,
+          );
+
+          if (executable.length) {
+            messages.push({
+              role: "system",
+              content: await PromptTemplate.from(AFS_EXECUTABLE_TOOLS_PROMPT_TEMPLATE).format({
+                tools: executable.map((entry) => ({
+                  path: entry.path,
+                  name: entry.metadata.execute.name,
+                  description: entry.metadata.execute.description,
+                  inputSchema: entry.metadata.execute.inputSchema,
+                  outputSchema: entry.metadata.execute.outputSchema,
+                })),
+              }),
+            });
+          }
+        }
       }
     }
 
@@ -303,7 +342,7 @@ export class PromptBuilder {
   }
 
   private async convertMemoriesToMessages(
-    memories: Pick<Memory, "content">[],
+    memories: { content: unknown; description?: unknown }[],
     options: PromptBuildOptions,
   ): Promise<ChatModelInputMessage[]> {
     const messages: ChatModelInputMessage[] = [];
@@ -380,7 +419,9 @@ export class PromptBuilder {
       return result;
     };
 
-    for (const { content } of memories) {
+    for (const memory of memories) {
+      const { content } = memory;
+
       if (
         isRecord(content) &&
         "input" in content &&
@@ -390,7 +431,7 @@ export class PromptBuilder {
       ) {
         messages.push(...(await convertMemoryToMessage(content)));
       } else {
-        other.push(content);
+        other.push(memory);
       }
     }
 

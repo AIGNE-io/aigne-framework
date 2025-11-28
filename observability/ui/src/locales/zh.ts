@@ -69,6 +69,7 @@ export default flatten({
     button: "删除",
     restConfirmTitle: "删除 Trace",
     restConfirmDesc: "确定要删除所有 Trace 吗？",
+    deleting: "数据正在删除... 请稍候。",
   },
   dateRange: "日期范围",
   reset: "重置",
@@ -137,4 +138,5 @@ export default flatten({
     fullscreen: "全屏展示",
     exitFullscreen: "退出全屏",
   },
+  deleting: "删除中...",
 });

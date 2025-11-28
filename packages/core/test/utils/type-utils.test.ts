@@ -5,6 +5,7 @@ import {
   createAccessorArray,
   duplicates,
   flat,
+  get,
   isEmpty,
   isNil,
   isNonNullable,
@@ -128,6 +129,11 @@ test("type-utils.omitByDeep", async () => {
   ]);
 });
 
+test("type-utils.get", async () => {
+  expect(get({ foo: { bar: { baz: 1 } } }, ["foo", "bar", "baz"])).toBe(1);
+  expect(get({ foo: {} }, ["foo", "bar", "qux"])).toBeUndefined();
+});
+
 test("type-utils.flat", async () => {
   expect(flat(1)).toEqual([1]);
   expect(flat([1, 2, 3])).toEqual([1, 2, 3]);
@@ -148,7 +154,9 @@ test("type-utils.createAccessorArray", async () => {
 test("type-utils.checkArguments should throw an error if the arguments do not match the schema", async () => {
   expect(() => {
     checkArguments("test", z.object({ foo: z.string() }), { foo: 1 } as unknown);
-  }).toThrow("test check arguments error: foo: Expected string, received number");
+  }).toThrowErrorMatchingInlineSnapshot(
+    `"test check arguments error: foo: Expected string, received number"`,
+  );
 });
 
 test("type-utils.checkArguments should throw an error if the arguments do not match the union schema", async () => {
@@ -156,7 +164,9 @@ test("type-utils.checkArguments should throw an error if the arguments do not ma
     checkArguments("test", z.object({ foo: z.union([z.string(), z.boolean()]) }), {
       foo: 1,
     } as unknown);
-  }).toThrow("test check arguments error: foo: Expected string or boolean, received number");
+  }).toThrowErrorMatchingInlineSnapshot(
+    `"test check arguments error: foo: Invalid input expect string,boolean got 1"`,
+  );
 
   expect(() => {
     checkArguments(
@@ -164,7 +174,9 @@ test("type-utils.checkArguments should throw an error if the arguments do not ma
       z.object({ agent: z.union([z.function() as ZodType<FunctionAgentFn>, z.instanceof(Agent)]) }),
       { agent: 1 } as unknown,
     );
-  }).toThrow("test check arguments error: agent: Input not instance of Agent");
+  }).toThrowErrorMatchingInlineSnapshot(
+    `"test check arguments error: agent: Invalid input expect function got 1"`,
+  );
 });
 
 test("type-utils.tryOrThrow should return the value if the function succeeds", async () => {

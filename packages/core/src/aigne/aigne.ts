@@ -442,6 +442,9 @@ export class AIGNE<U extends UserContext = UserContext> {
    * {@includeCode ../../test/aigne/aigne.test.ts#example-shutdown}
    */
   async shutdown() {
+    // Close observer first to flush any pending traces
+    await this.observer?.close();
+
     for (const tool of this.skills) {
       await tool.shutdown();
     }
@@ -466,7 +469,7 @@ export class AIGNE<U extends UserContext = UserContext> {
    * This registers handlers for SIGINT and exit events to properly terminate all agents.
    */
   private initProcessExitHandler() {
-    const shutdownAndExit = () => this.shutdown().finally(() => process.exit(0));
+    const shutdownAndExit = () => this.shutdown();
     process.on("SIGINT", shutdownAndExit);
     process.on("exit", shutdownAndExit);
   }

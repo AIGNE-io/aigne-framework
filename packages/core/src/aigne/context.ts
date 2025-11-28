@@ -237,6 +237,8 @@ export interface Context<U extends UserContext = UserContext>
  * @hidden
  */
 export class AIGNEContext implements Context {
+  static exitCount = 0;
+
   constructor(
     parent?: ConstructorParameters<typeof AIGNEContextShared>[0],
     { reset }: { reset?: boolean } = {},
@@ -268,6 +270,8 @@ export class AIGNEContext implements Context {
     }
 
     this.id = this.span?.spanContext()?.spanId ?? v7();
+
+    this.initProcessExitHandler();
   }
 
   id: string;
@@ -477,6 +481,28 @@ export class AIGNEContext implements Context {
     return this.internal.events.emit(eventName, ...newArgs);
   }
 
+  initProcessExitHandler() {
+    if (this.parentId) return;
+
+    AIGNEContext.exitCount++;
+
+    process.once("SIGINT", async () => {
+      try {
+        if (process.env.AIGNE_OBSERVABILITY_DISABLED) return;
+
+        await this.observer?.update(this.id, {
+          status: { code: SpanStatusCode.ERROR, message: "SIGINT" },
+        });
+      } finally {
+        AIGNEContext.exitCount--;
+
+        if (AIGNEContext.exitCount === 0) {
+          process.exit(0);
+        }
+      }
+    });
+  }
+
   private async trace<K extends keyof ContextEmitEventMap>(
     eventName: K,
     args: Args<K, ContextEmitEventMap>,
@@ -502,40 +528,25 @@ export class AIGNEContext implements Context {
 
           span.setAttribute("metadata", JSON.stringify(this.internal.metadata ?? {}));
           span.setAttribute("custom.started_at", b.timestamp);
-          span.setAttribute("input", JSON.stringify(input));
           span.setAttribute("agentTag", agent.tag ?? "UnknownAgent");
 
           if (taskTitle) {
             span.setAttribute("taskTitle", taskTitle);
           }
 
-          try {
-            span.setAttribute("userContext", JSON.stringify(this.userContext));
-          } catch (_e) {
-            logger.error("parse userContext error", _e.message);
-            span.setAttribute("userContext", JSON.stringify({}));
-          }
-
-          try {
-            span.setAttribute("memories", JSON.stringify(this.memories));
-          } catch (_e) {
-            logger.error("parse memories error", _e.message);
-            span.setAttribute("memories", JSON.stringify([]));
-          }
-
           await this.observer?.flush(span);
+          await this.observer?.update(this.id, {
+            input,
+            memories: this.memories,
+            userContext: this.userContext,
+          });
 
           break;
         }
         case "agentSucceed": {
           const { output } = args[0] as ContextEventMap["agentSucceed"][0];
 
-          try {
-            span.setAttribute("output", JSON.stringify(output));
-          } catch (_e) {
-            logger.error("parse output error", _e.message);
-            span.setAttribute("output", JSON.stringify({}));
-          }
+          await this.observer?.update(this.id, { output });
 
           span.setStatus({ code: SpanStatusCode.OK });
           span.end();

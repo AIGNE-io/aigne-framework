@@ -16,7 +16,7 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: AIGNE-io/release-please-action@v4.3.0
+      - uses: AIGNE-io/release-please-action@v4.3.1
         id: release
         with:
           token: ${{ secrets.AIGNE_FRAMEWORK_RELEASE_PLEASE_TOKEN }}

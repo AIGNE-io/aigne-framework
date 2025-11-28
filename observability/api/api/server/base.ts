@@ -72,7 +72,7 @@ export async function startServer(
     (_req: Request, _res: Response, next: NextFunction) => next(),
   ];
 
-  const db = await initDatabase({ url: dbUrl });
+  const db = await initDatabase({ url: dbUrl, wal: true });
   await migrate(db);
 
   const app: express.Express = express();

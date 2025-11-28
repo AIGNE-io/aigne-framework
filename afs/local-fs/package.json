@@ -1,0 +1,71 @@
+{
+  "name": "@aigne/afs-local-fs",
+  "version": "1.2.1-beta",
+  "description": "AIGNE AFS module for local filesystem storage",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://www.aigne.io/framework",
+  "license": "Elastic-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "bugs": {
+    "url": "https://github.com/AIGNE-io/aigne-framework/issues"
+  },
+  "files": [
+    "lib/cjs",
+    "lib/dts",
+    "lib/esm",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "type": "module",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/dts/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/dts/index.d.ts"
+    },
+    "./*": {
+      "import": "./lib/esm/*",
+      "require": "./lib/cjs/*",
+      "types": "./lib/dts/*"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./lib/dts/index.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "build": "tsc --build scripts/tsconfig.build.json",
+    "clean": "rimraf lib test/coverage",
+    "prepublishOnly": "run-s clean build",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "postbuild": "node ../../scripts/post-build-lib.mjs"
+  },
+  "dependencies": {
+    "@aigne/afs": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "@vscode/ripgrep": "^1.15.14",
+    "glob": "^11.0.3",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.22",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.2"
+  }
+}

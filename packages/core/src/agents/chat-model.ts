@@ -1,6 +1,7 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { z } from "zod";
 import { convertJsonSchemaToZod, type JSONSchema } from "zod-from-json-schema";
+import { optionalize } from "../loader/schema.js";
 import { wrapAutoParseJsonSchema } from "../utils/json-schema.js";
 import { logger } from "../utils/logger.js";
 import { checkArguments, isNil, omitByDeep, type PromiseOrValue } from "../utils/type-utils.js";
@@ -485,6 +486,7 @@ export interface ChatModelInputMessage {
     id: string;
     type: "function";
     function: { name: string; arguments: Message };
+    metadata?: Record<string, any>;
   }[];
 
   /**
@@ -528,9 +530,9 @@ export const unionContentSchema = z.discriminatedUnion("type", [
 
 const chatModelInputMessageSchema = z.object({
   role: z.union([z.literal("system"), z.literal("user"), z.literal("agent"), z.literal("tool")]),
-  content: z.union([z.string(), z.array(unionContentSchema)]).optional(),
-  toolCalls: z
-    .array(
+  content: optionalize(z.union([z.string(), z.array(unionContentSchema)])),
+  toolCalls: optionalize(
+    z.array(
       z.object({
         id: z.string(),
         type: z.literal("function"),
@@ -538,11 +540,12 @@ const chatModelInputMessageSchema = z.object({
           name: z.string(),
           arguments: z.record(z.string(), z.unknown()),
         }),
+        metadata: optionalize(z.record(z.string(), z.unknown())),
       }),
-    )
-    .optional(),
-  toolCallId: z.string().optional(),
-  name: z.string().optional(),
+    ),
+  ),
+  toolCallId: optionalize(z.string()),
+  name: optionalize(z.string()),
 });
 
 /**
@@ -568,9 +571,9 @@ const chatModelInputResponseFormatSchema = z.discriminatedUnion("type", [
     type: z.literal("json_schema"),
     jsonSchema: z.object({
       name: z.string(),
-      description: z.string().optional(),
+      description: optionalize(z.string()),
       schema: z.record(z.string(), z.unknown()),
-      strict: z.boolean().optional(),
+      strict: optionalize(z.boolean()),
     }),
   }),
 ]);
@@ -609,15 +612,22 @@ export interface ChatModelInputTool {
      */
     parameters: object;
   };
+
+  /**
+   * Provider-specific metadata for the tool
+   * For example, Gemini's thought_signature
+   */
+  metadata?: Record<string, any>;
 }
 
 const chatModelInputToolSchema = z.object({
   type: z.literal("function"),
   function: z.object({
     name: z.string(),
-    description: z.string().optional(),
+    description: optionalize(z.string()),
     parameters: z.record(z.string(), z.unknown()),
   }),
+  metadata: optionalize(z.record(z.string(), z.unknown())),
 });
 
 /**
@@ -694,35 +704,37 @@ export interface ChatModelInputOptions extends Record<string, unknown> {
 export type ChatModelInputOptionsWithGetter = GetterSchema<ChatModelInputOptions>;
 
 const modelOptionsSchema = z.object({
-  model: getterSchema(z.string()).optional(),
-  temperature: getterSchema(z.number()).optional(),
-  topP: getterSchema(z.number()).optional(),
-  frequencyPenalty: getterSchema(z.number()).optional(),
-  presencePenalty: getterSchema(z.number()).optional(),
-  parallelToolCalls: getterSchema(z.boolean()).optional().default(true),
-  modalities: getterSchema(z.array(z.enum(["text", "image", "audio"]))).optional(),
-  reasoningEffort: getterSchema(
-    z.union([
-      z.number(),
-      z.literal("minimal"),
-      z.literal("low"),
-      z.literal("medium"),
-      z.literal("high"),
-    ]),
-  ).optional(),
+  model: optionalize(getterSchema(z.string())),
+  temperature: optionalize(getterSchema(z.number())),
+  topP: optionalize(getterSchema(z.number())),
+  frequencyPenalty: optionalize(getterSchema(z.number())),
+  presencePenalty: optionalize(getterSchema(z.number())),
+  parallelToolCalls: optionalize(getterSchema(z.boolean())).default(true),
+  modalities: optionalize(getterSchema(z.array(z.enum(["text", "image", "audio"])))),
+  reasoningEffort: optionalize(
+    getterSchema(
+      z.union([
+        z.number(),
+        z.literal("minimal"),
+        z.literal("low"),
+        z.literal("medium"),
+        z.literal("high"),
+      ]),
+    ),
+  ),
 });
 
 const chatModelOptionsSchema = agentOptionsSchema.extend({
-  model: z.string().optional(),
-  modelOptions: modelOptionsSchema.optional(),
+  model: optionalize(z.string()),
+  modelOptions: optionalize(modelOptionsSchema),
 });
 
 const chatModelInputSchema: z.ZodType<ChatModelInput> = z.object({
   messages: z.array(chatModelInputMessageSchema),
-  responseFormat: chatModelInputResponseFormatSchema.optional(),
-  tools: z.array(chatModelInputToolSchema).optional(),
-  toolChoice: chatModelInputToolChoiceSchema.optional(),
-  modelOptions: modelOptionsSchema.optional(),
+  responseFormat: optionalize(chatModelInputResponseFormatSchema),
+  tools: optionalize(z.array(chatModelInputToolSchema)),
+  toolChoice: optionalize(chatModelInputToolChoiceSchema),
+  modelOptions: optionalize(modelOptionsSchema),
 });
 
 /**
@@ -806,6 +818,12 @@ export interface ChatModelOutputToolCall {
      */
     arguments: Message;
   };
+
+  /**
+   * Provider-specific metadata for the tool call
+   * For example, Gemini's thought_signature
+   */
+  metadata?: Record<string, any>;
 }
 
 const chatModelOutputToolCallSchema = z.object({
@@ -815,6 +833,7 @@ const chatModelOutputToolCallSchema = z.object({
     name: z.string(),
     arguments: z.record(z.string(), z.unknown()),
   }),
+  metadata: optionalize(z.record(z.string(), z.unknown())),
 });
 
 /**
@@ -842,15 +861,15 @@ export interface ChatModelOutputUsage {
 export const chatModelOutputUsageSchema = z.object({
   inputTokens: z.number(),
   outputTokens: z.number(),
-  aigneHubCredits: z.number().optional(),
+  aigneHubCredits: optionalize(z.number()),
 });
 
 const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({
-  text: z.string().optional(),
-  thoughts: z.string().optional(),
-  json: z.record(z.string(), z.unknown()).optional(),
-  toolCalls: z.array(chatModelOutputToolCallSchema).optional(),
-  usage: chatModelOutputUsageSchema.optional(),
-  model: z.string().optional(),
-  files: z.array(fileUnionContentSchema).optional(),
+  text: optionalize(z.string()),
+  thoughts: optionalize(z.string()),
+  json: optionalize(z.record(z.string(), z.unknown())),
+  toolCalls: optionalize(z.array(chatModelOutputToolCallSchema)),
+  usage: optionalize(chatModelOutputUsageSchema),
+  model: optionalize(z.string()),
+  files: optionalize(z.array(fileUnionContentSchema)),
 });

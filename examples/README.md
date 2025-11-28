@@ -15,7 +15,6 @@ This directory contains typical application examples of the AIGNE Framework, cov
 
 - [@aigne/example-chat-bot: Basic chatbot](./chat-bot/README.md)
 - [@aigne/example-mcp-server: AIGNE CLI serve MCP service](./mcp-server/README.md)
-- [@aigne/example-memory: Chatbot with memory](./memory/README.md)
 - [@aigne/example-mcp-blocklet: Integration with Blocklet platform](./mcp-blocklet/README.md)
 - [@aigne/example-mcp-github: Integration with GitHub](./mcp-github/README.md)
 - [@aigne/example-mcp-puppeteer: Web content extraction](./mcp-puppeteer/README.md)
@@ -28,6 +27,9 @@ This directory contains typical application examples of the AIGNE Framework, cov
 - [@aigne/example-workflow-orchestrator: Smart orchestration](./workflow-orchestrator/README.md)
 - [@aigne/example-workflow-reflection: Reflection](./workflow-reflection/README.md)
 - [@aigne/example-workflow-router: Router](./workflow-router/README.md)
+- [@aigne/example-afs-memory: Chatbot with memory](./afs-memory/README.md)
+- [@aigne/example-afs-local-fs: File system access with AI agents](./afs-local-fs/README.md)
+- [@aigne/example-afs-mcp-server: Mount MCP servers as AFS modules](./afs-mcp-server/README.md)
 
 ## Quick Start (No Installation Required)
 

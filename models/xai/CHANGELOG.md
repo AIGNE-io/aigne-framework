@@ -1,5 +1,237 @@
 # Changelog
 
+## [0.7.57-beta](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.56...xai-v0.7.57-beta) (2025-11-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.11-beta
+  * devDependencies
+    * @aigne/core bumped to 1.69.1-beta
+    * @aigne/test-utils bumped to 0.5.64-beta
+
+## [0.7.56](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.56-beta.3...xai-v0.7.56) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10
+  * devDependencies
+    * @aigne/core bumped to 1.69.0
+    * @aigne/test-utils bumped to 0.5.63
+
+## [0.7.56-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.56-beta.2...xai-v0.7.56-beta.3) (2025-11-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta.3
+  * devDependencies
+    * @aigne/core bumped to 1.69.0-beta.2
+    * @aigne/test-utils bumped to 0.5.63-beta.3
+
+## [0.7.56-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.56-beta.1...xai-v0.7.56-beta.2) (2025-11-18)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+* **core:** make getCredential async for aigne-hub mount point retrieval ([#372](https://github.com/AIGNE-io/aigne-framework/issues/372)) ([34ce7a6](https://github.com/AIGNE-io/aigne-framework/commit/34ce7a645fa83994d3dfe0f29ca70098cfecac9c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta.2
+  * devDependencies
+    * @aigne/core bumped to 1.69.0-beta.1
+    * @aigne/test-utils bumped to 0.5.63-beta.2
+
+## [0.7.56-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.56-beta...xai-v0.7.56-beta.1) (2025-11-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta.1
+  * devDependencies
+    * @aigne/core bumped to 1.68.3-beta.1
+    * @aigne/test-utils bumped to 0.5.63-beta.1
+
+## [0.7.56-beta](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.55...xai-v0.7.56-beta) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta
+  * devDependencies
+    * @aigne/core bumped to 1.68.3-beta
+    * @aigne/test-utils bumped to 0.5.63-beta
+
+## [0.7.55](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.55-beta...xai-v0.7.55) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.9
+  * devDependencies
+    * @aigne/core bumped to 1.68.2
+    * @aigne/test-utils bumped to 0.5.62
+
+## [0.7.55-beta](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.54...xai-v0.7.55-beta) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.9-beta
+  * devDependencies
+    * @aigne/core bumped to 1.68.2-beta
+    * @aigne/test-utils bumped to 0.5.62-beta
+
+## [0.7.54](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.54-beta...xai-v0.7.54) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.8
+  * devDependencies
+    * @aigne/core bumped to 1.68.1
+    * @aigne/test-utils bumped to 0.5.61
+
+## [0.7.54-beta](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.53...xai-v0.7.54-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.8-beta
+  * devDependencies
+    * @aigne/core bumped to 1.68.1-beta
+    * @aigne/test-utils bumped to 0.5.61-beta
+
+## [0.7.53](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.53-beta...xai-v0.7.53) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.7
+  * devDependencies
+    * @aigne/core bumped to 1.68.0
+    * @aigne/test-utils bumped to 0.5.60
+
+## [0.7.53-beta](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.52...xai-v0.7.53-beta) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.7-beta
+  * devDependencies
+    * @aigne/core bumped to 1.68.0-beta
+    * @aigne/test-utils bumped to 0.5.60-beta
+
+## [0.7.52](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.52-beta.4...xai-v0.7.52) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.6
+  * devDependencies
+    * @aigne/core bumped to 1.67.0
+    * @aigne/test-utils bumped to 0.5.59
+
+## [0.7.52-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.52-beta.3...xai-v0.7.52-beta.4) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.6-beta.4
+  * devDependencies
+    * @aigne/core bumped to 1.67.0-beta.4
+    * @aigne/test-utils bumped to 0.5.59-beta.4
+
+## [0.7.52-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.52-beta.2...xai-v0.7.52-beta.3) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.6-beta.3
+  * devDependencies
+    * @aigne/core bumped to 1.67.0-beta.3
+    * @aigne/test-utils bumped to 0.5.59-beta.3
+
+## [0.7.52-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.52-beta.1...xai-v0.7.52-beta.2) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.6-beta.2
+  * devDependencies
+    * @aigne/core bumped to 1.67.0-beta.2
+    * @aigne/test-utils bumped to 0.5.59-beta.2
+
+## [0.7.52-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.52-beta...xai-v0.7.52-beta.1) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.6-beta.1
+  * devDependencies
+    * @aigne/core bumped to 1.67.0-beta.1
+    * @aigne/test-utils bumped to 0.5.59-beta.1
+
+## [0.7.52-beta](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.51...xai-v0.7.52-beta) (2025-11-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.6-beta
+  * devDependencies
+    * @aigne/core bumped to 1.67.0-beta
+    * @aigne/test-utils bumped to 0.5.59-beta
+
 ## [0.7.51](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.51-beta.6...xai-v0.7.51) (2025-11-07)
 
 

@@ -1,5 +1,222 @@
 # Changelog
 
+## [1.3.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.3.0...did-space-memory-v1.3.1-beta) (2025-11-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.1-beta
+    * @aigne/openai bumped to 0.16.11-beta
+
+## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.3.0-beta.2...did-space-memory-v1.3.0) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0
+    * @aigne/openai bumped to 0.16.10
+
+## [1.3.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.3.0-beta.1...did-space-memory-v1.3.0-beta.2) (2025-11-19)
+
+
+### Bug Fixes
+
+* upgrade dependencies and fix timestamp type ([#757](https://github.com/AIGNE-io/aigne-framework/issues/757)) ([652e8f4](https://github.com/AIGNE-io/aigne-framework/commit/652e8f4b6e9af1461b25336888d76fe1d731b9b5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0-beta.2
+    * @aigne/openai bumped to 0.16.10-beta.3
+
+## [1.3.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.2.3-beta.1...did-space-memory-v1.3.0-beta.1) (2025-11-18)
+
+
+### Features
+
+* **memory:** support did space memory adapter ([#229](https://github.com/AIGNE-io/aigne-framework/issues/229)) ([6f69b64](https://github.com/AIGNE-io/aigne-framework/commit/6f69b64e98b963db9d6ab5357306b445385eaa68))
+* support mount mcp agent into AFS ([#740](https://github.com/AIGNE-io/aigne-framework/issues/740)) ([6d474fc](https://github.com/AIGNE-io/aigne-framework/commit/6d474fc05845a15e2c3e8fa97727b409bdd70945))
+* use a more secure signature mechanism ([#655](https://github.com/AIGNE-io/aigne-framework/issues/655)) ([aa5dc0c](https://github.com/AIGNE-io/aigne-framework/commit/aa5dc0ccdff8245a629cb30e731081528a555134))
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+* **cli:** ensure aigne cli works in node.js v20+ ([#316](https://github.com/AIGNE-io/aigne-framework/issues/316)) ([9c9c3d2](https://github.com/AIGNE-io/aigne-framework/commit/9c9c3d2e57d6a8e1afb33ef903c3703283d73db7))
+* update package ([#677](https://github.com/AIGNE-io/aigne-framework/issues/677)) ([a4ad78a](https://github.com/AIGNE-io/aigne-framework/commit/a4ad78a79e4f34eb6c0b00909e7707cd5dd9dd97))
+* update package to latest ([#699](https://github.com/AIGNE-io/aigne-framework/issues/699)) ([9877f6d](https://github.com/AIGNE-io/aigne-framework/commit/9877f6d1975362338db4eb47a2bf3564114c3cf8))
+* update package to latest ([#709](https://github.com/AIGNE-io/aigne-framework/issues/709)) ([47661ab](https://github.com/AIGNE-io/aigne-framework/commit/47661ab78cd13ce039d6ebf596e4e603c0220139))
+* update package to latest ([#720](https://github.com/AIGNE-io/aigne-framework/issues/720)) ([4386549](https://github.com/AIGNE-io/aigne-framework/commit/43865497e71f86478bc75d7d6e181c4fac80eae5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0-beta.1
+    * @aigne/openai bumped to 0.16.10-beta.2
+
+## [1.2.3-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.2.3-beta...did-space-memory-v1.2.3-beta.1) (2025-11-18)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.3-beta.1
+    * @aigne/openai bumped to 0.16.10-beta.1
+
+## [1.2.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.2.2...did-space-memory-v1.2.3-beta) (2025-11-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.3-beta
+    * @aigne/openai bumped to 0.16.10-beta
+
+## [1.2.2](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.2.2-beta...did-space-memory-v1.2.2) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.2
+    * @aigne/openai bumped to 0.16.9
+
+## [1.2.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.2.1...did-space-memory-v1.2.2-beta) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.2-beta
+    * @aigne/openai bumped to 0.16.9-beta
+
+## [1.2.1](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.2.1-beta...did-space-memory-v1.2.1) (2025-11-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.1
+    * @aigne/openai bumped to 0.16.8
+
+## [1.2.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.2.0...did-space-memory-v1.2.1-beta) (2025-11-15)
+
+
+### Bug Fixes
+
+* bump version ([93a1c10](https://github.com/AIGNE-io/aigne-framework/commit/93a1c10cf35f88eaafe91092481f5d087bd5b3a9))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.1-beta
+    * @aigne/openai bumped to 0.16.8-beta
+
+## [1.2.0](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.2.0-beta...did-space-memory-v1.2.0) (2025-11-14)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.0
+    * @aigne/openai bumped to 0.16.7
+
+## [1.2.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.1.2...did-space-memory-v1.2.0-beta) (2025-11-14)
+
+
+### Features
+
+* support mount mcp agent into AFS ([#740](https://github.com/AIGNE-io/aigne-framework/issues/740)) ([6d474fc](https://github.com/AIGNE-io/aigne-framework/commit/6d474fc05845a15e2c3e8fa97727b409bdd70945))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.68.0-beta
+    * @aigne/openai bumped to 0.16.7-beta
+
+## [1.1.2](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.1.2-beta.4...did-space-memory-v1.1.2) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0
+    * @aigne/openai bumped to 0.16.6
+
+## [1.1.2-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.1.2-beta.3...did-space-memory-v1.1.2-beta.4) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta.4
+    * @aigne/openai bumped to 0.16.6-beta.4
+
+## [1.1.2-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.1.2-beta.2...did-space-memory-v1.1.2-beta.3) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta.3
+    * @aigne/openai bumped to 0.16.6-beta.3
+
+## [1.1.2-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.1.2-beta.1...did-space-memory-v1.1.2-beta.2) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta.2
+    * @aigne/openai bumped to 0.16.6-beta.2
+
+## [1.1.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.1.2-beta...did-space-memory-v1.1.2-beta.1) (2025-11-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta.1
+    * @aigne/openai bumped to 0.16.6-beta.1
+
+## [1.1.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.1.1...did-space-memory-v1.1.2-beta) (2025-11-11)
+
+
+### Bug Fixes
+
+* update package to latest ([#720](https://github.com/AIGNE-io/aigne-framework/issues/720)) ([4386549](https://github.com/AIGNE-io/aigne-framework/commit/43865497e71f86478bc75d7d6e181c4fac80eae5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.67.0-beta
+    * @aigne/openai bumped to 0.16.6-beta
+
 ## [1.1.1](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.1.1-beta.6...did-space-memory-v1.1.1) (2025-11-07)
 
 

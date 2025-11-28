@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-afs-mcp-server",
-  "version": "1.1.1-beta.6",
+  "version": "1.1.1",
   "description": "A demonstration of using AIGNE Framework with AFS mount a MCP server",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/afs-mcp-server",

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.11](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.11-beta...ideogram-v0.4.11) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.1
+
 ## [0.4.11-beta](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.10...ideogram-v0.4.11-beta) (2025-11-24)
 
 

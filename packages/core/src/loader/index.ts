@@ -3,6 +3,7 @@ import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
 import { Agent, type AgentHooks, type AgentOptions, FunctionAgent } from "../agents/agent.js";
+import { AgenticAgent } from "../agents/agentic-agent.js";
 import { AIAgent } from "../agents/ai-agent.js";
 import type { ChatModel } from "../agents/chat-model.js";
 import { ImageAgent } from "../agents/image-agent.js";
@@ -268,6 +269,12 @@ async function parseAgent(
   switch (agent.type) {
     case "ai": {
       return AIAgent.from({
+        ...baseOptions,
+        instructions,
+      });
+    }
+    case "agentic": {
+      return new AgenticAgent({
         ...baseOptions,
         instructions,
       });

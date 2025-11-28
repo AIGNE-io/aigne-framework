@@ -12,7 +12,7 @@ import { globStream } from "glob";
 import { z } from "zod";
 import { searchWithRipgrep } from "./utils/ripgrep.js";
 
-const LIST_MAX_LIMIT = 50;
+const LIST_MAX_LIMIT = 1000;
 
 export interface LocalFSOptions {
   name?: string;
@@ -48,7 +48,8 @@ export class LocalFS implements AFSModule {
     const limit = Math.min(options?.limit || LIST_MAX_LIMIT, LIST_MAX_LIMIT);
     const basePath = join(this.options.localPath, path);
 
-    const pattern = options?.recursive ? "**/*" : "*";
+    const pattern =
+      options?.recursive || (options?.maxDepth && options.maxDepth > 1) ? "**/*" : "*";
 
     const abortController = new AbortController();
 

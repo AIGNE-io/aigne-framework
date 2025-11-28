@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.88.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0-beta.3...aigne-framework-v1.88.0-beta.4) (2025-11-28)
+
+
+### Bug Fixes
+
+* **cli:** improve hub deletion with auto default switching ([#782](https://github.com/AIGNE-io/aigne-framework/issues/782)) ([f30b8c2](https://github.com/AIGNE-io/aigne-framework/commit/f30b8c2d0a8167c3678d500944c77ed257427564))
+
 ## [1.88.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0-beta.2...aigne-framework-v1.88.0-beta.3) (2025-11-27)
 
 

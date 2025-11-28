@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.57.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.0-beta.4...cli-v1.57.0-beta.5) (2025-11-28)
+
+
+### Bug Fixes
+
+* **cli:** improve hub status display for non-default hubs ([#784](https://github.com/AIGNE-io/aigne-framework/issues/784)) ([9e83e01](https://github.com/AIGNE-io/aigne-framework/commit/9e83e01385bdf8fe6d6801c3b49007cac31a6eb5))
+
 ## [1.57.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.0-beta.3...cli-v1.57.0-beta.4) (2025-11-28)
 
 

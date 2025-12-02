@@ -2,54 +2,54 @@
 labels: ["Reference"]
 ---
 
-# Agentとスキル
+# Agent とスキル
 
-AIGNEエコシステムにおいて、AgentとスキルはAIアプリケーションを具現化するための基本的な構成要素です。これらは連携して、洗練されたツール拡張型AIシステムを構築します。Agentを推論と会話を担当する「脳」と考えるなら、スキルはアクションを実行し、外部世界と対話するための「ツール」と考えることができます。
+AIGNE エコシステムにおいて、Agent とスキルは、AI アプリケーションに命を吹き込む基本的な構成要素です。これらは連携して、ツールで拡張された高度な AI システムを作成します。Agent は推論と会話を担当する脳、スキルはアクションを実行し、外部世界と対話するために使用するツールだと考えてください。
 
-このセクションでは、これらのコアコンポーネントの定義と構造について説明します。プロジェクトでこれらを連携させる方法の詳細については、[プロジェクト設定 (aigne.yaml)](./core-concepts-project-configuration.md) のドキュメントを参照してください。
+このセクションでは、これらの中核となるコンポーネントの定義と構造について説明します。プロジェクトでこれらを連携させる方法の詳細については、[プロジェクト設定 (aigne.yaml)](./core-concepts-project-configuration.md) のドキュメントを参照してください。
 
 ## Agent
 
-Agentは、ユーザー入力を処理し、コンテキストを維持し、実行するアクションを決定する中心的なコンポーネントです。その振る舞いは、一連の指示（コアプロンプト）と、アクセス可能なスキルの集合によって定義されます。
+Agent は、ユーザーの入力を処理し、コンテキストを維持し、どのアクションを実行するかを決定する中心的なコンポーネントです。その動作は、一連の指示（コアプロンプト）と、アクセスできるスキルのコレクションによって定義されます。
 
-Agentは通常、`.yaml`ファイルで定義されます。
+Agent は通常、`.yaml` ファイルで定義されます。
 
-### Agent定義の例
+### Agent の定義例
 
-これは、コード実行スキルを備えたチャットAgentの基本的な例です。
+以下は、コード実行スキルを備えたチャット Agent の基本的な例です。
 
 ```yaml chat.yaml icon=mdi:robot-outline
 name: chat
-description: チャットAgent
+description: チャット Agent
 instructions: |
-  あなたは、質問に答えたり、幅広いトピックに関する情報を提供したりできる、役立つアシスタントです。
-  あなたの目標は、ユーザーが必要な情報を見つけるのを助け、フレンドリーな会話をすることです。
+  あなたは、幅広いトピックに関する質問に答え、情報を提供できる役立つアシスタントです。
+  あなたの目標は、ユーザーが必要な情報を見つけるのを手助けし、フレンドリーな会話をすることです。
 input_key: message
 memory: true
 skills:
   - sandbox.js
 ```
 
-### Agentのプロパティ
+### Agent のプロパティ
 
-Agentの振る舞いは、そのYAML定義ファイル内のいくつかの主要なプロパティを通じて設定されます：
+Agent の動作は、その YAML 定義ファイル内のいくつかの主要なプロパティによって設定されます。
 
-| Property       | Type      | Description                                                                                             |
+| プロパティ | 型 | 説明 |
 |----------------|-----------|---------------------------------------------------------------------------------------------------------|
-| `name`         | `string`  | Agentの短く、説明的な名前。                                                                              |
-| `description`  | `string`  | Agentの目的についてのより詳細な説明。                                                                    |
-| `instructions` | `string`  | Agentの性格、目標、制約を定義するシステムプロンプト。これがそのコアロジックです。                      |
-| `input_key`    | `string`  | 入力オブジェクト内で、主要なユーザーメッセージを含むプロパティの名前（例：`message`）。                  |
-| `memory`       | `boolean` | `true`の場合、Agentは会話履歴を保持し、フォローアップの質問や文脈を維持できます。                        |
-| `skills`       | `array`   | Agentが使用を許可されているスキルファイルのリスト（例：`sandbox.js`）。                                  |
+| `name` | `string` | Agent の短く、説明的な名前。 |
+| `description` | `string` | Agent の目的についてのより詳細な説明。 |
+| `instructions` | `string` | Agent の個性、目標、制約を定義するシステムプロンプト。これがその中核ロジックです。 |
+| `input_key` | `string` | 主要なユーザーメッセージを含む入力オブジェクト内のプロパティ名（例：`message`）。 |
+| `memory` | `boolean` | `true` の場合、Agent は会話履歴を保持し、フォローアップの質問やコンテキストを可能にします。 |
+| `skills` | `array` | Agent が使用を許可されているスキルファイルのリスト（例：`sandbox.js`）。 |
 
 ## スキル
 
-スキルは、Agentに特定の能力を提供する実行可能な関数で、通常はJavaScriptで記述されます。これには、コードの実行、APIからのデータ取得、ファイルシステムとの対話など、あらゆるものが含まれます。スキルは、大規模言語モデルの推論と具体的なタスクの実行との間の架け橋となります。
+スキルは、通常 JavaScript で書かれた実行可能な関数で、Agent に特定の機能を提供します。これには、コードの実行、API からのデータ取得、ファイルシステムとの対話など、あらゆるものが含まれます。スキルは、大規模言語モデルの推論と具体的なタスクの実行との間の架け橋です。
 
-### スキル定義の例
+### スキルの定義例
 
-スキルは、デフォルトの非同期関数をエクスポートする標準的なNode.jsモジュールです。重要な点として、スキルはその目的を記述し、入出力構造を定義するメタデータもエクスポートします。これにより、Agentはスキルをいつ、どのように使用するかを理解できます。
+スキルは、デフォルトの非同期関数をエクスポートする標準的な Node.js モジュールです。重要なのは、その目的を説明し、入出力構造を定義するメタデータもエクスポートすることです。これにより、Agent はそれをいつ、どのように使用するかを理解できます。
 
 ```javascript sandbox.js icon=logos:javascript
 import vm from "node:vm";
@@ -61,12 +61,12 @@ export default async function evaluateJs({ code }) {
   return { result };
 }
 
-evaluateJs.description = "このスキルはJavaScriptコードを評価します。";
+evaluateJs.description = "この Agent は JavaScript コードを評価します。";
 
 evaluateJs.input_schema = {
   type: "object",
   properties: {
-    code: { type: "string", description: "評価するJavaScriptコード" },
+    code: { type: "string", description: "評価する JavaScript コード" },
   },
   required: ["code"],
 };
@@ -82,15 +82,15 @@ evaluateJs.output_schema = {
 
 ### スキルの構造
 
-スキルファイルは、主に3つの部分で構成されています：
+スキルファイルは、主に 3 つの部分で構成されます。
 
-1.  **デフォルトエクスポートされた関数**: スキルのコアロジック。引数のオブジェクトを受け取り、結果を返す`async`関数です。
-2.  **`description`**: 関数に付加される文字列プロパティで、スキルが何をするかを自然言語で説明します。Agentの基盤となるLLMは、この説明を使用して、このスキルを呼び出すのが適切かどうかを判断します。
-3.  **`input_schema` / `output_schema`**: 関数の入力と出力に期待される構造と型を定義するJSONスキーマオブジェクト。これにより、Agentが有効な引数を提供し、結果を正しく解釈できることが保証されます。
+1.  **デフォルトでエクスポートされる関数**: スキルの中核ロジックです。これは引数のオブジェクトを受け取り、結果を返す `async` 関数です。
+2.  **`description`**: 関数に添付された文字列プロパティで、スキルが何をするかを自然言語で説明します。Agent の基盤となる LLM は、この説明を使用して、このスキルを呼び出すのが適切かどうかを判断します。
+3.  **`input_schema` / `output_schema`**: 関数の入出力に期待される構造と型を定義する JSON スキーマオブジェクト。これにより、Agent が有効な引数を提供し、結果を正しく解釈できることが保証されます。
 
 ## 連携の仕組み
 
-ユーザー、Agent、スキルの間の相互作用は、明確なパターンに従います。Agentはインテリジェントなオーケストレーターとして機能し、ユーザーのリクエストを解釈して、それを実行するために適切なスキルを呼び出します。
+ユーザー、Agent、スキルの間の相互作用は、明確なパターンに従います。Agent は知的なオーケストレーターとして機能し、ユーザーの要求を解釈して、それを満たすために適切なスキルを呼び出します。
 
 ```d2
 direction: down
@@ -100,11 +100,11 @@ User: {
 }
 
 AIGNE-Runtime: {
-  label: "AIGNEランタイム"
+  label: "AIGNE ランタイム"
   shape: rectangle
 
   Chat-Agent: {
-    label: "チャットAgent"
+    label: "チャット Agent"
   }
 
   Sandbox-Skill: {
@@ -112,25 +112,25 @@ AIGNE-Runtime: {
   }
 }
 
-User -> AIGNE-Runtime.Chat-Agent: "1. 入力: '5 + 7は？'"
-AIGNE-Runtime.Chat-Agent -> AIGNE-Runtime.Chat-Agent: "2. LLMが計算が必要だと推論"
-AIGNE-Runtime.Chat-Agent -> AIGNE-Runtime.Sandbox-Skill: "3. { code: '5 + 7' } でスキルを呼び出し"
-AIGNE-Runtime.Sandbox-Skill -> AIGNE-Runtime.Sandbox-Skill: "4. サンドボックスでコードを実行"
+User -> AIGNE-Runtime.Chat-Agent: "1. 入力: '5 + 7 は？'"
+AIGNE-Runtime.Chat-Agent -> AIGNE-Runtime.Chat-Agent: "2. LLM が計算が必要だと判断"
+AIGNE-Runtime.Chat-Agent -> AIGNE-Runtime.Sandbox-Skill: "3. { code: '5 + 7' } でスキルを呼び出す"
+AIGNE-Runtime.Sandbox-Skill -> AIGNE-Runtime.Sandbox-Skill: "4. サンドボックス内でコードを実行"
 AIGNE-Runtime.Sandbox-Skill -> AIGNE-Runtime.Chat-Agent: "5. { result: 12 } を返す"
-AIGNE-Runtime.Chat-Agent -> User: "6. 応答を生成: '結果は12です。'"
+AIGNE-Runtime.Chat-Agent -> User: "6. 応答を生成: '結果は 12 です。'"
 ```
 
-推論（Agent）と実行（スキル）を分離することで、保守やアップグレードが容易で、強力かつ拡張可能なAIシステムを構築できます。
+推論（Agent）と実行（スキル）を分離することで、保守とアップグレードが容易な、強力で拡張性のある AI システムを構築できます。
 
 ### 次のステップ
 
-Agentとスキルのコアコンセプトを理解したところで、次のセクションに進むことができます：
+Agent とスキルのコアコンセプトを理解したところで、次のセクションに進むことができます。
 
 <x-cards>
   <x-card data-title="プロジェクト設定 (aigne.yaml)" data-icon="lucide:file-cog" data-href="/core-concepts/project-configuration">
-    メインのプロジェクト設定ファイルでAgent、スキル、モデルを設定する方法を学びます。
+    メインのプロジェクト設定ファイルで Agent、スキル、モデルを設定する方法を学びます。
   </x-card>
-  <x-card data-title="カスタムAgentの作成" data-icon="lucide:wand-sparkles" data-href="/guides/creating-a-custom-agent">
-    ステップバイステップのガイドに従って、独自のカスタムAgentを構築し、それをスキルとして統合します。
+  <x-card data-title="カスタム Agent の作成" data-icon="lucide:wand-sparkles" data-href="/guides/creating-a-custom-agent">
+    ステップバイステップのガイドに従って、独自のカスタム Agent を構築し、スキルとして統合します。
   </x-card>
 </x-cards>

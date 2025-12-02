@@ -1,5 +1,120 @@
 # Changelog
 
+## [1.16.84](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.84-beta.1...example-workflow-concurrency-v1.16.84) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.22.2
+    * @aigne/cli bumped to 1.57.1
+    * @aigne/core bumped to 1.69.2
+    * @aigne/openai bumped to 0.16.12
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.65
+
+## [1.16.84-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.84-beta...example-workflow-concurrency-v1.16.84-beta.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.22.2-beta.1
+    * @aigne/cli bumped to 1.57.1-beta.1
+    * @aigne/core bumped to 1.69.2-beta.1
+    * @aigne/openai bumped to 0.16.12-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.65-beta.1
+
+## [1.16.84-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.83...example-workflow-concurrency-v1.16.84-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.22.2-beta
+    * @aigne/cli bumped to 1.57.1-beta
+    * @aigne/core bumped to 1.69.2-beta
+    * @aigne/openai bumped to 0.16.12-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.65-beta
+
+## [1.16.83](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.83-beta.6...example-workflow-concurrency-v1.16.83) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.22.1
+    * @aigne/cli bumped to 1.57.0
+    * @aigne/core bumped to 1.69.1
+    * @aigne/openai bumped to 0.16.11
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.64
+
+## [1.16.83-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.83-beta.5...example-workflow-concurrency-v1.16.83-beta.6) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.57.0-beta.5
+
+## [1.16.83-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.83-beta.4...example-workflow-concurrency-v1.16.83-beta.5) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.57.0-beta.4
+
+## [1.16.83-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.83-beta.3...example-workflow-concurrency-v1.16.83-beta.4) (2025-11-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.57.0-beta.3
+
+## [1.16.83-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.83-beta.2...example-workflow-concurrency-v1.16.83-beta.3) (2025-11-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.57.0-beta.2
+
+## [1.16.83-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.83-beta.1...example-workflow-concurrency-v1.16.83-beta.2) (2025-11-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.57.0-beta.1
+
+## [1.16.83-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.83-beta...example-workflow-concurrency-v1.16.83-beta.1) (2025-11-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.57.0-beta
+
 ## [1.16.83-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-concurrency-v1.16.82...example-workflow-concurrency-v1.16.83-beta) (2025-11-24)
 
 

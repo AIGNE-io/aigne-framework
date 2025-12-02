@@ -1,4 +1,3 @@
-import { readFile, writeFile } from "node:fs/promises";
 import {
   AIGNE_HUB_DEFAULT_MODEL,
   AIGNE_HUB_URL,
@@ -17,9 +16,9 @@ import type {
 import { flat, omit } from "@aigne/core/utils/type-utils.js";
 import chalk from "chalk";
 import inquirer from "inquirer";
-import { parse, stringify } from "yaml";
-import { AIGNE_ENV_FILE, AIGNE_HUB_PROVIDER } from "./constants.js";
+import { AIGNE_HUB_PROVIDER } from "./constants.js";
 import { loadAIGNEHubCredential } from "./credential.js";
+import getSecretStore from "./store/index.js";
 import type { LoadCredentialOptions } from "./type.js";
 
 export function maskApiKey(apiKey?: string) {
@@ -76,10 +75,10 @@ export const formatModelName = async (
     return { provider, model: name };
   }
 
-  const envs: Record<string, { AIGNE_HUB_API_URL: string }> | null = parse(
-    await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})),
-  );
-  if (process.env.AIGNE_HUB_API_KEY || envs?.default?.AIGNE_HUB_API_URL) {
+  const secretStore = await getSecretStore();
+  const defaultHost = await secretStore.getDefault();
+
+  if (process.env.AIGNE_HUB_API_KEY || defaultHost?.AIGNE_HUB_API_URL) {
     return { provider: AIGNE_HUB_PROVIDER, model: `${provider}/${name}` };
   }
 
@@ -109,17 +108,15 @@ export const formatModelName = async (
     process.exit(0);
   }
 
-  if (envs && Object.keys(envs).length > 0 && !envs.default?.AIGNE_HUB_API_URL) {
+  const envs = await secretStore.listHostsMap();
+  if (envs && Object.keys(envs).length > 0 && !defaultHost?.AIGNE_HUB_API_URL) {
     const host = new URL(AIGNE_HUB_URL).host;
 
     const defaultEnv = envs[host]?.AIGNE_HUB_API_URL
       ? envs[host]
       : Object.values(envs)[0] || { AIGNE_HUB_API_URL: "" };
 
-    await writeFile(
-      AIGNE_ENV_FILE,
-      stringify({ ...envs, default: { AIGNE_HUB_API_URL: defaultEnv?.AIGNE_HUB_API_URL } }),
-    );
+    await secretStore.setDefault(defaultEnv?.AIGNE_HUB_API_URL);
   }
 
   return { provider: AIGNE_HUB_PROVIDER, model: `${provider}/${name}` };

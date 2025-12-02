@@ -38,11 +38,11 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       throw new Error(`Invalid mount path: ${path}. Must start with '/' and contain no other '/'`);
     }
 
+    path = joinURL(MODULES_ROOT_DIR, path);
+
     if (this.modules.has(path)) {
       throw new Error(`Module already mounted at path: ${path}`);
     }
-
-    path = joinURL(MODULES_ROOT_DIR, path);
 
     this.modules.set(path, module);
     module.onMount?.(this);

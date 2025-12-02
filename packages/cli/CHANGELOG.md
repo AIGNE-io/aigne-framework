@@ -1,5 +1,166 @@
 # Changelog
 
+## [1.57.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.1-beta.1...cli-v1.57.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.2
+    * @aigne/afs-history bumped to 1.1.1
+    * @aigne/afs-local-fs bumped to 1.2.2
+    * @aigne/agent-library bumped to 1.22.2
+    * @aigne/agentic-memory bumped to 1.1.2
+    * @aigne/aigne-hub bumped to 0.10.12
+    * @aigne/core bumped to 1.69.2
+    * @aigne/default-memory bumped to 1.3.2
+    * @aigne/observability-api bumped to 0.11.11
+    * @aigne/openai bumped to 0.16.12
+    * @aigne/secrets bumped to 0.1.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.65
+
+## [1.57.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.1-beta...cli-v1.57.1-beta.1) (2025-11-28)
+
+
+### Bug Fixes
+
+* update package to latest ([#790](https://github.com/AIGNE-io/aigne-framework/issues/790)) ([69c77b3](https://github.com/AIGNE-io/aigne-framework/commit/69c77b353667acc72a2f35eadca7892fb99838b6))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.2.2-beta.1
+    * @aigne/agent-library bumped to 1.22.2-beta.1
+    * @aigne/agentic-memory bumped to 1.1.2-beta.1
+    * @aigne/aigne-hub bumped to 0.10.12-beta.1
+    * @aigne/core bumped to 1.69.2-beta.1
+    * @aigne/default-memory bumped to 1.3.2-beta.1
+    * @aigne/observability-api bumped to 0.11.11-beta.1
+    * @aigne/openai bumped to 0.16.12-beta.1
+    * @aigne/secrets bumped to 0.1.2-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.65-beta.1
+
+## [1.57.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.0...cli-v1.57.1-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.2-beta
+    * @aigne/afs-history bumped to 1.1.1-beta
+    * @aigne/afs-local-fs bumped to 1.2.2-beta
+    * @aigne/agent-library bumped to 1.22.2-beta
+    * @aigne/agentic-memory bumped to 1.1.2-beta
+    * @aigne/secrets bumped to 0.1.2-beta
+    * @aigne/aigne-hub bumped to 0.10.12-beta
+    * @aigne/core bumped to 1.69.2-beta
+    * @aigne/default-memory bumped to 1.3.2-beta
+    * @aigne/observability-api bumped to 0.11.11-beta
+    * @aigne/openai bumped to 0.16.12-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.65-beta
+
+## [1.57.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.0-beta.5...cli-v1.57.0) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.2.1
+    * @aigne/agent-library bumped to 1.22.1
+    * @aigne/agentic-memory bumped to 1.1.1
+    * @aigne/secrets bumped to 0.1.1
+    * @aigne/aigne-hub bumped to 0.10.11
+    * @aigne/core bumped to 1.69.1
+    * @aigne/default-memory bumped to 1.3.1
+    * @aigne/observability-api bumped to 0.11.10
+    * @aigne/openai bumped to 0.16.11
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.64
+
+## [1.57.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.0-beta.4...cli-v1.57.0-beta.5) (2025-11-28)
+
+
+### Bug Fixes
+
+* **cli:** improve hub status display for non-default hubs ([#784](https://github.com/AIGNE-io/aigne-framework/issues/784)) ([9e83e01](https://github.com/AIGNE-io/aigne-framework/commit/9e83e01385bdf8fe6d6801c3b49007cac31a6eb5))
+
+## [1.57.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.0-beta.3...cli-v1.57.0-beta.4) (2025-11-28)
+
+
+### Bug Fixes
+
+* **cli:** improve hub deletion with auto default switching ([#782](https://github.com/AIGNE-io/aigne-framework/issues/782)) ([f30b8c2](https://github.com/AIGNE-io/aigne-framework/commit/f30b8c2d0a8167c3678d500944c77ed257427564))
+
+## [1.57.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.0-beta.2...cli-v1.57.0-beta.3) (2025-11-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/secrets bumped to 0.1.1-beta.3
+
+## [1.57.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.0-beta.1...cli-v1.57.0-beta.2) (2025-11-27)
+
+
+### Bug Fixes
+
+* **secrets:** improve keyring availability detection with environment checks ([#778](https://github.com/AIGNE-io/aigne-framework/issues/778)) ([75dceab](https://github.com/AIGNE-io/aigne-framework/commit/75dceabeb7d6fd8c057759f003e703a2ebb41afd))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/secrets bumped to 0.1.1-beta.2
+
+## [1.57.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.0-beta...cli-v1.57.0-beta.1) (2025-11-26)
+
+
+### Bug Fixes
+
+* **cli:** use sequential migration to handle keyring and callback file save ([#776](https://github.com/AIGNE-io/aigne-framework/issues/776)) ([da0db46](https://github.com/AIGNE-io/aigne-framework/commit/da0db46597b76cc0f41d604fd51bcd64931f0315))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/secrets bumped to 0.1.1-beta.1
+
+## [1.57.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.56.1-beta...cli-v1.57.0-beta) (2025-11-26)
+
+
+### Features
+
+* **secure:** secure credential storage with keyring support ([#771](https://github.com/AIGNE-io/aigne-framework/issues/771)) ([023c202](https://github.com/AIGNE-io/aigne-framework/commit/023c202f75eddb37d003b1fad447b491e8e1a8c2))
+
+
+### Bug Fixes
+
+* **secrets:** support system keyring for secure credential storage ([#773](https://github.com/AIGNE-io/aigne-framework/issues/773)) ([859ac2d](https://github.com/AIGNE-io/aigne-framework/commit/859ac2d9eb6019d7a68726076d65841cd96bc9a4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/secrets bumped to 0.1.1-beta
+    * @aigne/aigne-hub bumped to 0.10.11-beta.1
+
 ## [1.56.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.56.0...cli-v1.56.1-beta) (2025-11-24)
 
 

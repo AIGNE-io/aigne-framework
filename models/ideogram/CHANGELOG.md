@@ -1,5 +1,46 @@
 # Changelog
 
+## [0.4.12](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.12-beta.1...ideogram-v0.4.12) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.2
+
+## [0.4.12-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.12-beta...ideogram-v0.4.12-beta.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.2-beta.1
+
+## [0.4.12-beta](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.11...ideogram-v0.4.12-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.2-beta
+
+## [0.4.11](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.11-beta...ideogram-v0.4.11) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.1
+
 ## [0.4.11-beta](https://github.com/AIGNE-io/aigne-framework/compare/ideogram-v0.4.10...ideogram-v0.4.11-beta) (2025-11-24)
 
 

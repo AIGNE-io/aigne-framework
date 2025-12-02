@@ -14,6 +14,9 @@
     "packages/sqlite": {
       "prerelease-type": "beta"
     },
+    "packages/secrets": {
+      "prerelease-type": "beta"
+    },
     "packages/agent-library": {
       "prerelease-type": "beta"
     },

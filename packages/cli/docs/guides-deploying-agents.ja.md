@@ -2,15 +2,15 @@
 labels: ["Reference"]
 ---
 
-# Agentのデプロイ
+# Agent のデプロイ
 
-AIGNEプロジェクトをデプロイすると、ローカルの開発セットアップからBlockletとして知られる自己完結型の配布可能なアプリケーションに変換されます。これにより、Agentは本番環境で実行され、他のユーザーと共有され、より広範なBlockletエコシステムにシームレスに統合できます。`aigne deploy`コマンドは、このパッケージングとデプロイのプロセス全体を自動化します。
+AIGNE プロジェクトをデプロイすると、ローカルの開発セットアップから Blocklet として知られる自己完結型の配布可能なアプリケーションに変換されます。これにより、Agent は本番環境で実行され、他者と共有され、より広範な Blocklet エコシステムにシームレスに統合できます。`aigne deploy` コマンドは、このパッケージングとデプロイのプロセス全体を自動化します。
 
-このガイドでは、デプロイのワークフローについて説明します。利用可能なすべてのコマンドオプションの詳細については、[`aigne deploy`コマンドリファレンス](./command-reference-deploy.md)を参照してください。
+このガイドでは、デプロイのワークフローを説明します。利用可能なすべてのコマンドオプションの詳細については、[`aigne deploy` コマンドリファレンス](./command-reference-deploy.md) を参照してください。
 
 ## デプロイプロセス
 
-`aigne deploy`コマンドは、Agentを準備、設定、バンドル、デプロイするための一連のステップを調整します。内部では`@blocklet/cli`を利用して、Blocklet作成の複雑さを処理します。
+`aigne deploy` コマンドは、Agent の準備、設定、バンドル、デプロイの一連のステップを調整します。内部では `@blocklet/cli` を活用して、Blocklet 作成の複雑さを処理します。
 
 以下に、デプロイフローの概要を示します。
 
@@ -19,7 +19,6 @@ direction: down
 
 Developer: {
   shape: c4-person
-  label: "開発者"
 }
 
 AIGNE-CLI: {
@@ -36,7 +35,7 @@ Deployment-Endpoint: {
 }
 
 Local-Project: {
-  label: "あなたのAIGNEプロジェクト"
+  label: "あなたの AIGNE プロジェクト"
   shape: rectangle
   aigne-yaml: {
     label: "aigne.yaml"
@@ -49,12 +48,12 @@ Local-Project: {
 Developer -> AIGNE-CLI: "1. `aigne deploy` を実行"
 AIGNE-CLI -> Local-Project.aigne-yaml: "2. プロジェクト設定を読み込む"
 AIGNE-CLI -> AIGNE-CLI: "3. 一時的な .deploy ディレクトリを準備"
-AIGNE-CLI -> Blocklet-CLI: "4. CLIの確認 / インストールのプロンプト"
-AIGNE-CLI -> Developer: "5. Blocklet名の入力を求める"
-Developer -> AIGNE-CLI: "6. 名前を提供する"
-AIGNE-CLI -> Blocklet-CLI: "7. Blocklet DIDを作成"
-Blocklet-CLI -> AIGNE-CLI: "8. DIDを返す"
-AIGNE-CLI -> AIGNE-CLI: "9. blocklet.ymlを設定"
+AIGNE-CLI -> Blocklet-CLI: "4. CLIの確認 / インストールを促す"
+AIGNE-CLI -> Developer: "5. Blocklet 名の入力を促す"
+Developer -> AIGNE-CLI: "6. 名前を入力"
+AIGNE-CLI -> Blocklet-CLI: "7. Blocklet DID を作成"
+Blocklet-CLI -> AIGNE-CLI: "8. DID を返す"
+AIGNE-CLI -> AIGNE-CLI: "9. blocklet.yml を設定"
 AIGNE-CLI -> Blocklet-CLI: "10. プロジェクトをバンドル"
 Blocklet-CLI -> Deployment-Endpoint: "11. バンドルをデプロイ"
 AIGNE-CLI -> Developer: "12. 成功メッセージを表示"
@@ -65,15 +64,15 @@ AIGNE-CLI -> Developer: "12. 成功メッセージを表示"
 
 プロジェクトをデプロイするには、プロジェクトのルートディレクトリに移動し、プロジェクトへのパスとターゲットエンドポイントを指定してデプロイコマンドを実行します。
 
-```bash Command icon=lucide:terminal
+```bash コマンド icon=lucide:terminal
 aigne deploy --path . --endpoint <your-endpoint-url>
 ```
 
-このコマンドを実行したときに何が起こるかを詳しく見ていきましょう。
+このコマンドを実行すると何が起こるか、詳しく見ていきましょう。
 
-1.  **環境準備**: CLIはまず一時的な`.deploy`ディレクトリを作成します。そこへ標準のBlockletテンプレートと共にプロジェクトファイルをコピーします。次に、このディレクトリ内で`npm install`を実行し、必要な依存関係を取得します。
+1.  **環境準備**: CLI はまず一時的な `.deploy` ディレクトリを作成します。プロジェクトファイルを標準の Blocklet テンプレートとともにそこにコピーします。その後、このディレクトリ内で `npm install` を実行し、必要な依存関係を取得します。
 
-2.  **Blocklet CLIの確認**: プロセスは`@blocklet/cli`がシステムにインストールされているかを確認します。インストールされていない場合、グローバルにインストールする許可を求めるプロンプトが表示されます。これは一度限りのセットアップです。
+2.  **Blocklet CLI の確認**: このプロセスは、`@blocklet/cli` がシステムにインストールされているかを確認します。インストールされていない場合は、グローバルにインストールする許可を求められます。これは一度だけのセットアップです。
 
     ```
     ? Install Blocklet CLI? ›
@@ -81,17 +80,17 @@ aigne deploy --path . --endpoint <your-endpoint-url>
       no
     ```
 
-3.  **Blockletの設定（初回デプロイ時）**: このプロジェクトを初めてデプロイする場合、CLIはBlockletの名前を尋ねます。`aigne.yaml`内のAgent名またはプロジェクトのフォルダ名に基づいてデフォルト名を提案します。
+3.  **Blocklet の設定 (初回デプロイ時)**: このプロジェクトを初めてデプロイする場合、CLI は Blocklet の名前を尋ねます。`aigne.yaml` 内の Agent 名またはプロジェクトのフォルダ名に基づいてデフォルト名を提案します。
 
     ```
     ? Please input agent blocklet name: › my-awesome-agent
     ```
 
-    名前を提供すると、Blocklet用の新しい分散型識別子（DID）が自動的に生成されます。この名前とDIDはローカルの`~/.aigne/deployed.yaml`に保存されるため、同じプロジェクトの次回以降のデプロイでは尋ねられません。
+    名前を入力すると、Blocklet 用の新しい分散型識別子 (DID) が自動的に生成されます。この名前と DID はローカルの `~/.aigne/deployed.yaml` に保存されるため、同じプロジェクトの以降のデプロイでは再度尋ねられることはありません。
 
-4.  **バンドル**: 次にCLIは`blocklet bundle --create-release`を呼び出します。これにより、Agent、その依存関係、および必要なすべての設定が、単一のデプロイ可能な`.blocklet/bundle`ファイルにパッケージ化されます。
+4.  **バンドル**: 次に CLI は `blocklet bundle --create-release` を呼び出します。これにより、Agent、その依存関係、および必要なすべての設定が、単一のデプロイ可能な `.blocklet/bundle` ファイルにパッケージ化されます。
 
-5.  **デプロイ**: 最後に、バンドルされたアプリケーションが`blocklet deploy`コマンドを使用して、指定された`--endpoint`にプッシュされます。
+5.  **デプロイ**: 最後に、バンドルされたアプリケーションは `blocklet deploy` コマンドを使用して、指定された `--endpoint` にプッシュされます。
 
 プロセスが完了すると、ターミナルに確認メッセージが表示されます。
 
@@ -99,4 +98,4 @@ aigne deploy --path . --endpoint <your-endpoint-url>
 ✅ Deploy completed: /path/to/your/project -> <your-endpoint-url>
 ```
 
-これで、あなたのAIGNE AgentはBlockletとして稼働し、本番環境で実行できる状態になりました。
+これで、あなたの AIGNE Agent は Blocklet として稼働し、本番環境で実行できる状態になりました。

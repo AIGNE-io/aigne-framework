@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.10.18-beta](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.17...bedrock-v0.10.18-beta) (2025-12-02)
+
+
+### Features
+
+* **core:** add nested getter pattern support for model options ([#796](https://github.com/AIGNE-io/aigne-framework/issues/796)) ([824b2fe](https://github.com/AIGNE-io/aigne-framework/commit/824b2fe55cb2a24620e2bb73b470532918fa2996))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.0-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.66-beta
+
 ## [0.10.17](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.17-beta.1...bedrock-v0.10.17) (2025-11-28)
 
 

@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.15.22-beta](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.15.21...transport-v0.15.22-beta) (2025-12-02)
+
+
+### Features
+
+* **core:** add nested getter pattern support for model options ([#796](https://github.com/AIGNE-io/aigne-framework/issues/796)) ([824b2fe](https://github.com/AIGNE-io/aigne-framework/commit/824b2fe55cb2a24620e2bb73b470532918fa2996))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.13-beta
+  * devDependencies
+    * @aigne/agent-library bumped to 1.22.3-beta
+    * @aigne/core bumped to 1.70.0-beta
+    * @aigne/default-memory bumped to 1.3.3-beta
+    * @aigne/test-utils bumped to 0.5.66-beta
+
 ## [0.15.21](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.15.21-beta.1...transport-v0.15.21) (2025-11-28)
 
 

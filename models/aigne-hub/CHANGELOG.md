@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.10.13-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.12...aigne-hub-v0.10.13-beta) (2025-12-02)
+
+
+### Features
+
+* **core:** add nested getter pattern support for model options ([#796](https://github.com/AIGNE-io/aigne-framework/issues/796)) ([824b2fe](https://github.com/AIGNE-io/aigne-framework/commit/824b2fe55cb2a24620e2bb73b470532918fa2996))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.13-beta
+    * @aigne/bedrock bumped to 0.10.18-beta
+    * @aigne/core bumped to 1.70.0-beta
+    * @aigne/deepseek bumped to 0.7.59-beta
+    * @aigne/doubao bumped to 1.2.3-beta
+    * @aigne/gemini bumped to 0.14.13-beta
+    * @aigne/ideogram bumped to 0.4.13-beta
+    * @aigne/ollama bumped to 0.7.59-beta
+    * @aigne/open-router bumped to 0.7.59-beta
+    * @aigne/openai bumped to 0.16.13-beta
+    * @aigne/poe bumped to 1.1.3-beta
+    * @aigne/transport bumped to 0.15.22-beta
+    * @aigne/xai bumped to 0.7.59-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.66-beta
+
 ## [0.10.12](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.12-beta.1...aigne-hub-v0.10.12) (2025-11-28)
 
 

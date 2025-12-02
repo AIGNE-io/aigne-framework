@@ -200,7 +200,7 @@ export class GeminiChatModel extends ChatModel {
     input: ChatModelInput,
     options: AgentInvokeOptions,
   ): AgentProcessAsyncGenerator<ChatModelOutput> {
-    const modelOptions = await this.getModelOptions(input, options);
+    const { modelOptions = {} } = input;
 
     const model = modelOptions.model || this.credential.model;
     const { contents, config } = await this.buildContents(input, options);

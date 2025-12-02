@@ -160,7 +160,6 @@ describe("AIGNEHubChatModel", async () => {
         ],
         "modelOptions": {
           "model": "openai/gpt-4o-mini",
-          "parallelToolCalls": true,
         },
         "outputFileType": "url",
       }
@@ -216,7 +215,6 @@ describe("AIGNEHubChatModel", async () => {
         ],
         "modelOptions": {
           "model": "openai/gpt-4o-mini",
-          "parallelToolCalls": true,
           "reasoningEffort": "high",
         },
         "outputFileType": "url",

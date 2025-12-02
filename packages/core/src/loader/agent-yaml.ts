@@ -87,7 +87,6 @@ export interface ImageAgentSchema extends BaseAgentSchema {
   type: "image";
   instructions: Instructions;
   inputFileKey?: string;
-  modelOptions?: Record<string, any>;
 }
 
 export interface MCPAgentSchema extends BaseAgentSchema {
@@ -275,7 +274,6 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
             type: z.literal("image"),
             instructions: instructionsSchema,
             inputFileKey: optionalize(z.string()),
-            modelOptions: optionalize(camelizeSchema(z.record(z.any()))),
           })
           .extend(baseAgentSchema.shape),
         z

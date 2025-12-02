@@ -17,7 +17,7 @@ import {
   type Message,
   textDelta,
 } from "@aigne/core";
-import { guideRailAgentOptions } from "@aigne/core/agents/guide-rail-agent";
+import { guideRailAgentOptions } from "@aigne/core/agents/guide-rail-agent.js";
 import {
   readableStreamToArray,
   stringToAgentResponseStream,

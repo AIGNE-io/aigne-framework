@@ -133,9 +133,9 @@ or set the \`AWS_ACCESS_KEY_ID\` and \`AWS_SECRET_ACCESS_KEY\` environment varia
 
   private async _process(
     input: ChatModelInput,
-    options: AgentInvokeOptions,
+    _options: AgentInvokeOptions,
   ): Promise<AgentResponse<ChatModelOutput>> {
-    const modelOptions = await this.getModelOptions(input, options);
+    const { modelOptions = {} } = input;
 
     const modelId = modelOptions.model || this.credential.model;
 

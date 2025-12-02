@@ -4,10 +4,73 @@ import { parseURL } from "ufo";
 import { z } from "zod";
 import { optionalize } from "../loader/schema.js";
 import { fetch } from "../utils/fetch.js";
-import { pick } from "../utils/type-utils.js";
-import { Agent, type AgentInvokeOptions, type Message } from "./agent.js";
+import { isNil, pick } from "../utils/type-utils.js";
+import {
+  Agent,
+  type AgentInvokeOptions,
+  type AgentOptions,
+  DEFAULT_INPUT_ACTION_GET,
+  type Message,
+} from "./agent.js";
 
 export abstract class Model<I extends Message = any, O extends Message = any> extends Agent<I, O> {
+  constructor(
+    public options?: Omit<AgentOptions<I, O>, "model"> & { modelOptions?: Record<string, unknown> },
+  ) {
+    super(options);
+  }
+
+  /**
+   * Resolves model options by merging instance-level and input-level options,
+   * and recursively resolving getter patterns
+   *
+   * @param input - The input message containing potential modelOptions
+   * @param options - The agent invocation options containing context
+   * @returns Resolved model options with all getters replaced by actual values
+   */
+  async getModelOptions(
+    input: Message,
+    options: AgentInvokeOptions,
+  ): Promise<Record<string, unknown>> {
+    const resolveGetters = (obj: any): any => {
+      if (!obj || typeof obj !== "object") return obj;
+
+      // Check if this object itself is a getter pattern
+      if (DEFAULT_INPUT_ACTION_GET in obj && typeof obj[DEFAULT_INPUT_ACTION_GET] === "string") {
+        const getterPath = obj[DEFAULT_INPUT_ACTION_GET];
+        const value = input[getterPath] ?? options.context.userContext[getterPath];
+        return isNil(value) ? undefined : value;
+      }
+
+      // If it's an array, recursively resolve each element
+      if (Array.isArray(obj)) {
+        return obj.map((item) => resolveGetters(item));
+      }
+
+      // If it's a plain object, recursively resolve each property
+      return Object.entries(obj).reduce((resolved, [key, val]) => {
+        const resolvedValue = resolveGetters(val);
+        if (!isNil(resolvedValue)) {
+          resolved[key] = resolvedValue;
+        }
+        return resolved;
+      }, {} as any);
+    };
+
+    const mergedOptions = {
+      ...this.options?.modelOptions,
+      ...("modelOptions" in input ? (input.modelOptions as Record<string, unknown>) : {}),
+    };
+
+    return resolveGetters(mergedOptions);
+  }
+
+  protected override async preprocess(input: I, options: AgentInvokeOptions): Promise<void> {
+    Object.assign(input, { modelOptions: await this.getModelOptions(input, options) });
+
+    return super.preprocess(input, options);
+  }
+
   async transformFileType(
     fileType: "file",
     data: FileUnionContent,

@@ -32,9 +32,7 @@ exports[`AIGNE HTTP Client should work with client memory in browser 1`] = `
         "role": "user",
       },
     ],
-    "modelOptions": {
-      "parallelToolCalls": true,
-    },
+    "modelOptions": {},
     "responseFormat": undefined,
     "toolChoice": undefined,
     "tools": undefined,

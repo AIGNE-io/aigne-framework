@@ -1,12 +1,12 @@
 import { expect, test } from "bun:test";
+import type { AgentInvokeOptions, AgentProcessResult } from "../../src/agents/agent.js";
 import {
-  type AgentInvokeOptions,
-  type AgentProcessResult,
   ImageModel,
   type ImageModelInput,
   type ImageModelOutput,
-} from "@aigne/core";
-import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
+} from "../../src/agents/image-model.js";
+import { AIGNE } from "../../src/aigne/aigne.js";
+import type { PromiseOrValue } from "../../src/utils/type-utils.js";
 
 test("ImageModel should work correctly", async () => {
   class TestImageModel extends ImageModel {
@@ -45,4 +45,54 @@ test("ImageModel should work correctly", async () => {
       },
     }
   `);
+});
+
+test("ImageModel getModelOptions should support nested getter pattern", async () => {
+  class TestImageModel extends ImageModel {
+    override process(_input: ImageModelInput): ImageModelOutput {
+      return {
+        images: [{ type: "file", data: Buffer.from("test").toString("base64") }],
+      };
+    }
+  }
+
+  const model = new TestImageModel({
+    modelOptions: {
+      model: "dall-e-3",
+      customConfig: {
+        size: { $get: "imageSize" },
+        quality: "hd",
+        nested: {
+          level2: { $get: "nestedValue" },
+        },
+      },
+    },
+  });
+
+  const context = new AIGNE().newContext();
+  context.userContext.imageSize = "1024x1024";
+  context.userContext.nestedValue = 42;
+
+  const resolvedOptions = await model.getModelOptions(
+    {
+      prompt: "test",
+      modelOptions: {
+        preferInputFileType: { $get: "fileType" },
+      },
+      fileType: "url",
+    },
+    { context },
+  );
+
+  expect(resolvedOptions).toEqual({
+    model: "dall-e-3",
+    preferInputFileType: "url",
+    customConfig: {
+      size: "1024x1024",
+      quality: "hd",
+      nested: {
+        level2: 42,
+      },
+    },
+  });
 });

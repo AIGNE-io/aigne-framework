@@ -89,7 +89,6 @@ export class AIGNEHubImageModel extends ImageModel {
       {
         ...input,
         modelOptions: {
-          ...this.options.modelOptions,
           ...input.modelOptions,
           model: input.modelOptions?.model || (await this.credential).model,
         },

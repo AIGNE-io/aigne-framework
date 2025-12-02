@@ -614,3 +614,86 @@ test("ChatModel should validate and try to fix the arguments for tool use", asyn
     }
   `);
 });
+
+test("ChatModel getModelOptions should support nested getter pattern", async () => {
+  class TestChatModel extends ChatModel {
+    override process(_input: ChatModelInput): ChatModelOutput {
+      return { text: "test" };
+    }
+  }
+
+  const model = new TestChatModel({
+    modelOptions: {
+      temperature: 0.5,
+      customConfig: {
+        nestedValue: { $get: "userPreference" },
+        staticValue: "unchanged",
+        deepNested: {
+          level2: { $get: "deepValue" },
+          array: [{ $get: "arrayItem" }, "static"],
+        },
+      },
+    },
+  });
+
+  const context = new AIGNE().newContext();
+  context.userContext.userPreference = "resolved-from-context";
+  context.userContext.deepValue = 42;
+  context.userContext.arrayItem = "resolved-array-item";
+  context.userContext.topPValue = 0.9;
+
+  const resolvedOptions = await model.getModelOptions(
+    {
+      messages: [{ role: "user", content: "test" }],
+      modelOptions: {
+        topP: { $get: "topPValue" },
+      },
+    },
+    { context },
+  );
+
+  expect(resolvedOptions).toEqual({
+    temperature: 0.5,
+    topP: 0.9,
+    customConfig: {
+      nestedValue: "resolved-from-context",
+      staticValue: "unchanged",
+      deepNested: {
+        level2: 42,
+        array: ["resolved-array-item", "static"],
+      },
+    },
+  });
+});
+
+test("ChatModel getModelOptions should resolve nested getter from input properties", async () => {
+  class TestChatModel extends ChatModel {
+    override process(_input: ChatModelInput): ChatModelOutput {
+      return { text: "test" };
+    }
+  }
+
+  const model = new TestChatModel({
+    modelOptions: {
+      config: {
+        value: { $get: "customField" },
+      },
+    },
+  });
+
+  const context = new AIGNE().newContext();
+
+  const resolvedOptions = await model.getModelOptions(
+    {
+      messages: [{ role: "user", content: "test" }],
+      customField: "from-input-property",
+    },
+    { context },
+  );
+
+  expect(resolvedOptions).toEqual({
+    config: {
+      value: "from-input-property",
+    },
+  });
+});

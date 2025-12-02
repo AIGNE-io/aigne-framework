@@ -65,6 +65,12 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
     return resolveGetters(mergedOptions);
   }
 
+  protected override async preprocess(input: I, options: AgentInvokeOptions): Promise<void> {
+    Object.assign(input, { modelOptions: await this.getModelOptions(input, options) });
+
+    return super.preprocess(input, options);
+  }
+
   async transformFileType(
     fileType: "file",
     data: FileUnionContent,

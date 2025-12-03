@@ -4,31 +4,6 @@ import { type Agent, FunctionAgent } from "../../agents/agent.js";
 
 export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
   return [
-    // FunctionAgent.from({
-    //   name: "afs_list",
-    //   description:
-    //     "Browse directory contents in the AFS like filesystem ls/tree command - shows files and folders in the specified path",
-    //   inputSchema: z.object({
-    //     path: z.string().describe("The directory path to browse (e.g., '/', '/docs', '/src')"),
-    //     options: z
-    //       .object({
-    //         recursive: z.boolean().optional().describe("Whether to list files recursively"),
-    //         maxDepth: z.number().optional().describe("Maximum depth to list files"),
-    //         limit: z.number().optional().describe("Maximum number of entries to return"),
-    //       })
-    //       .optional(),
-    //   }),
-    //   process: async (input) => {
-    //     const result = await afs.list(input.path, input.options);
-
-    //     return {
-    //       status: "success",
-    //       tool: "afs_list",
-    //       options: input.options,
-    //       ...result,
-    //     };
-    //   },
-    // }),
     FunctionAgent.from({
       name: "afs_list",
       description:
@@ -48,7 +23,7 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
 
         return {
           status: "success",
-          tool: "afs_tree",
+          tool: "afs_list",
           options: input.options,
           message,
           result,

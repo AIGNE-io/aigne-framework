@@ -660,7 +660,7 @@ test("PromptBuilder should build with afs correctly", async () => {
       "tools": [
         {
           "function": {
-            "description": "Browse directory contents in the AFS like filesystem ls/tree command - shows files and folders in the specified path",
+            "description": "Get a tree view of directory contents in the AFS - shows hierarchical structure of files and folders",
             "name": "afs_list",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -669,17 +669,9 @@ test("PromptBuilder should build with afs correctly", async () => {
                 "options": {
                   "additionalProperties": false,
                   "properties": {
-                    "limit": {
-                      "description": "Maximum number of entries to return",
-                      "type": "number",
-                    },
                     "maxDepth": {
-                      "description": "Maximum depth to list files",
+                      "description": "Maximum depth to display in the tree view",
                       "type": "number",
-                    },
-                    "recursive": {
-                      "description": "Whether to list files recursively",
-                      "type": "boolean",
                     },
                   },
                   "required": [],

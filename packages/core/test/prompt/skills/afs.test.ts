@@ -17,7 +17,7 @@ test("getAFSSkills should return all AFS skills", async () => {
   ).toMatchInlineSnapshot(`
     [
       {
-        "description": "Browse directory contents in the AFS like filesystem ls/tree command - shows files and folders in the specified path",
+        "description": "Get a tree view of directory contents in the AFS - shows hierarchical structure of files and folders",
         "inputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
@@ -25,17 +25,9 @@ test("getAFSSkills should return all AFS skills", async () => {
             "options": {
               "additionalProperties": false,
               "properties": {
-                "limit": {
-                  "description": "Maximum number of entries to return",
-                  "type": "number",
-                },
                 "maxDepth": {
-                  "description": "Maximum depth to list files",
+                  "description": "Maximum depth to display in the tree view",
                   "type": "number",
-                },
-                "recursive": {
-                  "description": "Whether to list files recursively",
-                  "type": "boolean",
                 },
               },
               "type": "object",
@@ -193,10 +185,10 @@ test("AFS'skill list should invoke afs.list", async () => {
   assert(list);
   expect(await list.invoke({ path: "/foo/bar", options: { maxDepth: 2 } })).toMatchInlineSnapshot(`
     {
-      "list": [],
       "options": {
         "maxDepth": 2,
       },
+      "result": "",
       "status": "success",
       "tool": "afs_list",
     }

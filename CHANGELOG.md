@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.89.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.1...aigne-framework-v1.89.0-beta) (2025-12-02)
+
+
+### Features
+
+* **core:** add nested getter pattern support for model options ([#796](https://github.com/AIGNE-io/aigne-framework/issues/796)) ([824b2fe](https://github.com/AIGNE-io/aigne-framework/commit/824b2fe55cb2a24620e2bb73b470532918fa2996))
+
+
+### Bug Fixes
+
+* **afs:** check module existence on normalized path ([#793](https://github.com/AIGNE-io/aigne-framework/issues/793)) ([0c991bf](https://github.com/AIGNE-io/aigne-framework/commit/0c991bf0caa948ce62948986ce885b5a98437689))
+
 ## [1.88.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.1-beta.1...aigne-framework-v1.88.1) (2025-11-28)
 
 ## [1.88.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.1-beta...aigne-framework-v1.88.1-beta.1) (2025-11-28)

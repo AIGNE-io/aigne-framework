@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.2...afs-v1.2.3-beta) (2025-12-02)
+
+
+### Bug Fixes
+
+* **afs:** check module existence on normalized path ([#793](https://github.com/AIGNE-io/aigne-framework/issues/793)) ([0c991bf](https://github.com/AIGNE-io/aigne-framework/commit/0c991bf0caa948ce62948986ce885b5a98437689))
+
 ## [1.2.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.2-beta...afs-v1.2.2) (2025-11-28)
 
 ## [1.2.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.1...afs-v1.2.2-beta) (2025-11-28)

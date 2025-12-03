@@ -1,6 +1,6 @@
 {
   "name": "@aigne/agent-library",
-  "version": "1.22.2",
+  "version": "1.22.3-beta",
   "description": "Collection of agent libraries for AIGNE framework",
   "publishConfig": {
     "access": "public"

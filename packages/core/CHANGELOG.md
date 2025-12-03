@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.70.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.2...core-v1.70.0-beta) (2025-12-02)
+
+
+### Features
+
+* **core:** add nested getter pattern support for model options ([#796](https://github.com/AIGNE-io/aigne-framework/issues/796)) ([824b2fe](https://github.com/AIGNE-io/aigne-framework/commit/824b2fe55cb2a24620e2bb73b470532918fa2996))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.3-beta
+    * @aigne/afs-history bumped to 1.1.2-beta
+
 ## [1.69.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.2-beta.1...core-v1.69.2) (2025-11-28)
 
 

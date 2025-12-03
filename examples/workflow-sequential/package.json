@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-sequential",
-  "version": "1.17.84",
+  "version": "1.17.85-beta",
   "description": "A demonstration of using AIGNE Framework to build a sequential workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-sequential",

@@ -16,40 +16,9 @@ The workflow begins when a user submits a request. The manager agent, acting as 
 
 For example, if a user asks, "What's the status of my order?", the manager agent would route the query to the "Order Status" agent. If the user asks, "How do I reset my password?", it would be routed to the "Account Support" agent.
 
-```d2
-direction: down
-
-User: {
-  shape: c4-person
-}
-
-Manager-Agent: {
-  label: "Manager Agent\n(Router)"
-  shape: rectangle
-}
-
-Specialist-Agents: {
-  label: "Team of Specialist Agents"
-  shape: rectangle
-  style: {
-    stroke-dash: 4
-  }
-  grid-columns: 3
-
-  Order-Status: { label: "Order Status Agent" }
-  Account-Support: { label: "Account Support Agent" }
-  Technical-Support: { label: "Technical Support Agent" }
-}
-
-User -> Manager-Agent: "1. Submit Request"
-Manager-Agent -> Specialist-Agents.Order-Status: "2. Route based on intent\n(e.g., 'order status')"
-Manager-Agent -> Specialist-Agents.Account-Support: "2. Route based on intent\n(e.g., 'password reset')"
-Manager-Agent -> Specialist-Agents.Technical-Support: "2. Route based on intent\n(e.g., 'technical issue')"
-
-Specialist-Agents.Order-Status -> User: "3. Process and return Output"
-Specialist-Agents.Account-Support -> User: "3. Process and return Output"
-Specialist-Agents.Technical-Support -> User: "3. Process and return Output"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Decision-Making](assets/diagram/decision-making-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Use Cases
 

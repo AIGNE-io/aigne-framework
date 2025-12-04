@@ -9,58 +9,13 @@ Common use cases include:
 - Converting data formats, such as changing field names from `snake_case` to `camelCase`.
 - Performing simple aggregations, calculations, or filtering on data.
 
+The following diagram illustrates the workflow of the Transform Agent, showing how a developer defines a transformation, provides input data, and receives the transformed output.
+
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Transform Agent](assets/diagram/transform-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
+
 For transformations that require more complex, custom logic, consider using the [Function Agent](./developer-guide-agents-function-agent.md).
-
-```d2
-direction: down
-
-Developer: {
-  shape: c4-person
-}
-
-Transform-Agent-Workflow: {
-  label: "Transform Agent Workflow"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  Input-Data: {
-    label: "Input Data\n(e.g., snake_case)"
-    shape: rectangle
-  }
-
-  Agent-Core: {
-    label: "Transformation Logic"
-
-    Transform-Agent: {
-      label: "Transform Agent"
-      shape: rectangle
-    }
-
-    JSONata-Expression: {
-      label: "JSONata Expression"
-      shape: rectangle
-      style: {
-        fill: "#f0f0f0"
-      }
-    }
-  }
-
-  Output-Data: {
-    label: "Output Data\n(e.g., camelCase)"
-    shape: rectangle
-  }
-}
-
-Developer -> Transform-Agent-Workflow.Agent-Core.JSONata-Expression: "1. Defines transformation"
-Transform-Agent-Workflow.Agent-Core.JSONata-Expression -> Transform-Agent-Workflow.Agent-Core.Transform-Agent: "Configures"
-Developer -> Transform-Agent-Workflow.Input-Data: "2. Provides input"
-Transform-Agent-Workflow.Input-Data -> Transform-Agent-Workflow.Agent-Core.Transform-Agent: "3. Processes"
-Transform-Agent-Workflow.Agent-Core.Transform-Agent -> Transform-Agent-Workflow.Output-Data: "4. Produces"
-Transform-Agent-Workflow.Output-Data -> Developer: "5. Returns result"
-
-```
 
 ## Configuration
 

@@ -4,55 +4,9 @@ OpenRouter 作為一個統一的閘道，可以存取來自各種供應商（包
 
 本指南詳細介紹了安裝、設定和使用 `@aigne/open-router` 套件以利用多個 AI 模型的過程。
 
-```d2
-direction: down
-
-Application: {
-  label: "您的應用程式"
-  shape: rectangle
-}
-
-aigne-open-router: {
-  label: "@aigne/open-router"
-  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-}
-
-OpenRouter-Service: {
-  label: "OpenRouter 服務"
-  shape: rectangle
-}
-
-Providers: {
-  label: "模型供應商"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  OpenAI: {
-    shape: rectangle
-    "GPT-4": {}
-    "GPT-3.5": {}
-  }
-
-  Google: {
-    shape: rectangle
-    "Gemini Pro": {}
-  }
-
-  Anthropic: {
-    shape: rectangle
-    "Claude 3": {}
-  }
-}
-
-Application -> aigne-open-router: "1. 使用 API 金鑰設定"
-aigne-open-router -> OpenRouter-Service: "2. 使用模型 ID 發送 API 請求"
-OpenRouter-Service -> Providers: "3. 路由至供應商"
-Providers -> OpenRouter-Service: "4. 供應商回應"
-OpenRouter-Service -> aigne-open-router: "5. 統一回應"
-aigne-open-router -> Application: "6. 回傳結果"
-```
+<!-- DIAGRAM_IMAGE_START:guide:4:3 -->
+![OpenRouter](assets/diagram/open-router-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 安裝
 

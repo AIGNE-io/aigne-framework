@@ -4,64 +4,9 @@ The AIGNE Framework provides a suite of specialized agent types, each designed t
 
 This section provides a high-level overview of the available agent types. For detailed implementation, configuration options, and code examples, please refer to the specific sub-document for each agent.
 
-```d2
-direction: down
-style: {
-  font-size: 14
-  stroke-width: 2
-  fill: "#f8f9fa"
-  stroke: "#adb5bd"
-}
-
-Agent: {
-  label: "Base Agent"
-  shape: class
-  style: {
-    fill: "#e9ecef"
-    stroke: "#495057"
-  }
-}
-
-sub_agents: {
-  AIAgent: {
-    label: "AIAgent"
-    tooltip: "Interacts with language models"
-    style: { fill: "#dbe4ff" }
-  }
-  TeamAgent: {
-    label: "TeamAgent"
-    tooltip: "Orchestrates multiple agents"
-    style: { fill: "#d1e7dd" }
-  }
-  ImageAgent: {
-    label: "ImageAgent"
-    tooltip: "Generates images"
-    style: { fill: "#fff3cd" }
-  }
-  FunctionAgent: {
-    label: "FunctionAgent"
-    tooltip: "Wraps custom code"
-    style: { fill: "#f8d7da" }
-  }
-  TransformAgent: {
-    label: "TransformAgent"
-    tooltip: "Performs data mapping"
-    style: { fill: "#e2d9f3" }
-  }
-  MCPAgent: {
-    label: "MCPAgent"
-    tooltip: "Connects to external MCP systems"
-    style: { fill: "#cfe2ff" }
-  }
-}
-
-Agent -> sub_agents.AIAgent: Inherits
-Agent -> sub_agents.TeamAgent: Inherits
-Agent -> sub_agents.ImageAgent: Inherits
-Agent -> sub_agents.FunctionAgent: Inherits
-Agent -> sub_agents.TransformAgent: Inherits
-Agent -> sub_agents.MCPAgent: Inherits
-```
+<!-- DIAGRAM_IMAGE_START:architecture:1:1 -->
+![Agent Types](assets/diagram/agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Available Agent Types
 

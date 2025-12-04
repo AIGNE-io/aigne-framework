@@ -6,45 +6,9 @@
 
 下图说明了 AIGNE 框架如何与本地 Ollama 实例进行交互。
 
-```d2
-direction: right
-style: {
-  font-size: 14
-  fill: "#F6F8FA"
-  stroke: "#B4B4B4"
-  stroke-width: 1
-}
-
-AIGNE_Application: "AIGNE 应用" {
-  shape: rectangle
-  style.fill: "#E6F7FF"
-  style.stroke: "#91D5FF"
-}
-
-OllamaChatModel: "@aigne/ollama\nOllamaChatModel" {
-  shape: rectangle
-  style.fill: "#F9F0FF"
-  style.stroke: "#D3ADF7"
-}
-
-Ollama_Instance: "本地 Ollama 实例" {
-  shape: cylinder
-  style.fill: "#FFF7E6"
-  style.stroke: "#FFE7BA"
-  
-  LLM: "语言模型\n（例如 Llama 3）" {
-    shape: hexagon
-    style.fill: "#F6FFED"
-    style.stroke: "#B7EB8F"
-  }
-}
-
-AIGNE_Application -> OllamaChatModel: "1. 调用模型"
-OllamaChatModel -> Ollama_Instance: "2. 发送请求至\n   http://localhost:11434"
-Ollama_Instance.LLM -> Ollama_Instance: "3. 处理请求"
-Ollama_Instance -> OllamaChatModel: "4. 返回响应"
-OllamaChatModel -> AIGNE_Application: "5. 交付结果"
-```
+<!-- DIAGRAM_IMAGE_START:guide:4:3 -->
+![Ollama](assets/diagram/ollama-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 先决条件
 

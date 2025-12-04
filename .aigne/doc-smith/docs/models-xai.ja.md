@@ -4,38 +4,9 @@
 
 `@aigne/xai` パッケージは xAI API への直接的なインターフェースとして機能し、開発者は AIGNE フレームワークが提供する標準化された `ChatModel` インターフェースを通じて、Grok の機能をアプリケーションに統合できます。
 
-```d2
-direction: down
-
-Developer: {
-  shape: c4-person
-}
-
-aigne-xai: {
-  label: "@aigne/xai パッケージ"
-  shape: rectangle
-}
-
-xAI-Platform: {
-  label: "xAI プラットフォーム"
-  shape: rectangle
-
-  API-Key: {
-    label: "API キー"
-  }
-
-  Grok-Models: {
-    label: "Grok モデル"
-  }
-}
-
-Developer -> xAI-Platform.API-Key: "1. API キーを取得"
-Developer -> aigne-xai: "2. パッケージを設定\n(API キー、モデル選択)"
-aigne-xai -> xAI-Platform.Grok-Models: "3. API リクエストを送信"
-xAI-Platform.Grok-Models -> aigne-xai: "4. レスポンスを返す"
-aigne-xai -> Developer: "5. 結果を渡す"
-
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![xAI](assets/diagram/xai-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## インストール
 

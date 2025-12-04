@@ -4,79 +4,9 @@
 
 このガイドでは、`AIGNE` エンジンのインスタンス化と設定方法、`invoke` メソッドを使用した Agent の実行、およびアプリケーションのライフサイクル管理について説明します。
 
-```d2
-direction: down
-
-Developer: {
-  shape: c4-person
-}
-
-Instantiation: {
-  label: "インスタンス化メソッド"
-  shape: rectangle
-  style.stroke-dash: 2
-
-  Constructor: {
-    label: "`new AIGNE()`\n(プログラムによる)"
-  }
-
-  Load-Method: {
-    label: "`AIGNE.load()`\n(ディレクトリから)"
-  }
-}
-
-AIGNE-Engine: {
-  label: "AIGNE"
-  shape: rectangle
-
-  Core: {
-    label: "主要な責務"
-    shape: rectangle
-    style.stroke-dash: 4
-
-    Agent-Management: {
-      label: "Agent とスキルの\n管理"
-    }
-    Model-Configuration: {
-      label: "グローバルモデル\n設定"
-    }
-    Execution-Context: {
-      label: "実行コンテキスト"
-    }
-  }
-}
-
-Invocation-Results: {
-  label: "`invoke()` の結果"
-  shape: rectangle
-  style.stroke-dash: 2
-
-  Standard-Response: {
-    label: "標準レスポンス\n(Promise)"
-  }
-
-  Streaming-Response: {
-    label: "ストリーミングレスポンス\n(AgentResponseStream)"
-  }
-
-  User-Agent: {
-    label: "ステートフル UserAgent\n(コンテキストを維持)"
-  }
-}
-
-Developer -> Instantiation: "Initializes via"
-Instantiation.Constructor -> AIGNE-Engine
-Instantiation.Load-Method -> AIGNE-Engine
-
-Developer -> AIGNE-Engine: "Calls `invoke()`"
-
-AIGNE-Engine -> Invocation-Results.Standard-Response: "Returns"
-AIGNE-Engine -> Invocation-Results.Streaming-Response: "Returns"
-AIGNE-Engine -> Invocation-Results.User-Agent: "Returns"
-
-Invocation-Results -> Developer: "Receives result"
-
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![AIGNE](assets/diagram/aigne-engine-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 概要
 

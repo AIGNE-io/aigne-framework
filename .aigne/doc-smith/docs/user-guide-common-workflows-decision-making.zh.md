@@ -16,40 +16,9 @@
 
 例如，如果用户问：“我的订单状态是什么？”，管理者 Agent 会将查询路由到“订单状态”Agent。如果用户问：“我如何重置密码？”，查询将被路由到“账户支持”Agent。
 
-```d2
-direction: down
-
-User: {
-  shape: c4-person
-}
-
-Manager-Agent: {
-  label: "管理者 Agent\n（路由器）"
-  shape: rectangle
-}
-
-Specialist-Agents: {
-  label: "专业化 Agent 团队"
-  shape: rectangle
-  style: {
-    stroke-dash: 4
-  }
-  grid-columns: 3
-
-  Order-Status: { label: "订单状态 Agent" }
-  Account-Support: { label: "账户支持 Agent" }
-  Technical-Support: { label: "技术支持 Agent" }
-}
-
-User -> Manager-Agent: "1. 提交请求"
-Manager-Agent -> Specialist-Agents.Order-Status: "2. 根据意图路由\n（例如，'订单状态'）"
-Manager-Agent -> Specialist-Agents.Account-Support: "2. 根据意图路由\n（例如，'密码重置'）"
-Manager-Agent -> Specialist-Agents.Technical-Support: "2. 根据意图路由\n（例如，'技术问题'）"
-
-Specialist-Agents.Order-Status -> User: "3. 处理并返回输出"
-Specialist-Agents.Account-Support -> User: "3. 处理并返回输出"
-Specialist-Agents.Technical-Support -> User: "3. 处理并返回输出"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Decision-Making](assets/diagram/decision-making-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 使用场景
 

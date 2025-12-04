@@ -4,7 +4,12 @@
     "description": "An introduction to @aigne/cli, its main features, and the problems it solves for agent development.",
     "path": "/overview",
     "parentId": null,
-    "sourceIds": ["README.md", "package.json", "src/cli.ts"]
+    "sourceIds": [
+      "README.md",
+      "package.json",
+      "src/cli.ts"
+    ],
+    "icon": "lucide:book"
   },
   {
     "title": "Getting Started",
@@ -16,7 +21,8 @@
       "src/commands/create.ts",
       "src/commands/run.ts",
       "templates/default/README.md"
-    ]
+    ],
+    "icon": "lucide:rocket"
   },
   {
     "title": "Core Concepts",
@@ -29,7 +35,8 @@
       "templates/default/sandbox.js",
       "templates/default/filesystem.yaml",
       "test-agents/aigne.yaml"
-    ]
+    ],
+    "icon": "lucide:layers"
   },
   {
     "title": "Project Configuration (aigne.yaml)",
@@ -60,14 +67,22 @@
     "description": "A detailed reference for all available CLI commands and their options, organized for quick look-up.",
     "path": "/command-reference",
     "parentId": null,
-    "sourceIds": ["README.md", "src/commands/aigne.ts", "src/cli.ts"]
+    "sourceIds": [
+      "README.md",
+      "src/commands/aigne.ts",
+      "src/cli.ts"
+    ],
+    "icon": "lucide:terminal"
   },
   {
     "title": "aigne create",
     "description": "Scaffolds a new AIGNE project from a template.",
     "path": "/command-reference/create",
     "parentId": "/command-reference",
-    "sourceIds": ["src/commands/create.ts", "README.md"]
+    "sourceIds": [
+      "src/commands/create.ts",
+      "README.md"
+    ]
   },
   {
     "title": "aigne run",
@@ -89,7 +104,11 @@
     "description": "Serves agents as a Model Context Protocol (MCP) server for integration with external systems.",
     "path": "/command-reference/serve-mcp",
     "parentId": "/command-reference",
-    "sourceIds": ["src/commands/serve-mcp.ts", "README.md", "src/utils/serve-mcp.ts"]
+    "sourceIds": [
+      "src/commands/serve-mcp.ts",
+      "README.md",
+      "src/utils/serve-mcp.ts"
+    ]
   },
   {
     "title": "aigne hub",
@@ -110,14 +129,21 @@
     "description": "Starts a local server to view and analyze agent execution traces and observability data.",
     "path": "/command-reference/observe",
     "parentId": "/command-reference",
-    "sourceIds": ["src/commands/observe.ts", "README.md"]
+    "sourceIds": [
+      "src/commands/observe.ts",
+      "README.md"
+    ]
   },
   {
     "title": "aigne test",
     "description": "Runs automated tests for your agents and skills.",
     "path": "/command-reference/test",
     "parentId": "/command-reference",
-    "sourceIds": ["src/commands/test.ts", "README.md", "test-agents/README.md"]
+    "sourceIds": [
+      "src/commands/test.ts",
+      "README.md",
+      "test-agents/README.md"
+    ]
   },
   {
     "title": "aigne deploy",
@@ -135,7 +161,9 @@
     "description": "Execute pre-packaged applications like `doc-smith` for specialized, out-of-the-box agent functionality.",
     "path": "/command-reference/built-in-apps",
     "parentId": "/command-reference",
-    "sourceIds": ["src/commands/app.ts"]
+    "sourceIds": [
+      "src/commands/app.ts"
+    ]
   },
   {
     "title": "Guides",
@@ -147,7 +175,8 @@
       "src/commands/hub.ts",
       "src/commands/run.ts",
       "src/commands/deploy.ts"
-    ]
+    ],
+    "icon": "lucide:compass"
   },
   {
     "title": "Creating a Custom Agent",
@@ -165,7 +194,11 @@
     "description": "Learn how to run agents directly from a remote Git repository or tarball URL.",
     "path": "/guides/running-remote-agents",
     "parentId": "/guides",
-    "sourceIds": ["src/commands/run.ts", "README.md", "src/utils/download.ts"]
+    "sourceIds": [
+      "src/commands/run.ts",
+      "README.md",
+      "src/utils/download.ts"
+    ]
   },
   {
     "title": "Deploying Agents",
@@ -183,6 +216,12 @@
     "description": "Guidelines for contributing to the @aigne/cli project, including setup, build process, and code standards.",
     "path": "/contributing",
     "parentId": null,
-    "sourceIds": ["package.json", "tsconfig.json", "tsconfig.build.json", "src/cli.ts"]
+    "sourceIds": [
+      "package.json",
+      "tsconfig.json",
+      "tsconfig.build.json",
+      "src/cli.ts"
+    ],
+    "icon": "lucide:git-pull-request"
   }
 ]

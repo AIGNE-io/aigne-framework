@@ -16,40 +16,9 @@
 
 例えば、ユーザーが「注文の状況はどうなっていますか？」と尋ねた場合、「マネージャー」Agent はクエリを「注文状況」Agent にルーティングします。ユーザーが「パスワードをリセットするにはどうすればよいですか？」と尋ねた場合、それは「アカウントサポート」Agent にルーティングされます。
 
-```d2
-direction: down
-
-User: {
-  shape: c4-person
-}
-
-Manager-Agent: {
-  label: "マネージャー Agent\n（ルーター）"
-  shape: rectangle
-}
-
-Specialist-Agents: {
-  label: "専門家 Agent のチーム"
-  shape: rectangle
-  style: {
-    stroke-dash: 4
-  }
-  grid-columns: 3
-
-  Order-Status: { label: "注文状況 Agent" }
-  Account-Support: { label: "アカウントサポート Agent" }
-  Technical-Support: { label: "テクニカルサポート Agent" }
-}
-
-User -> Manager-Agent: "1. リクエストを送信"
-Manager-Agent -> Specialist-Agents.Order-Status: "2. 意図に基づいてルーティング\n（例：「注文状況」）"
-Manager-Agent -> Specialist-Agents.Account-Support: "2. 意図に基づいてルーティング\n（例：「パスワードリセット」）"
-Manager-Agent -> Specialist-Agents.Technical-Support: "2. 意図に基づいてルーティング\n（例：「技術的な問題」）"
-
-Specialist-Agents.Order-Status -> User: "3. 処理して出力を返す"
-Specialist-Agents.Account-Support -> User: "3. 処理して出力を返す"
-Specialist-Agents.Technical-Support -> User: "3. 処理して出力を返す"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Decision-Making](assets/diagram/decision-making-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## ユースケース
 

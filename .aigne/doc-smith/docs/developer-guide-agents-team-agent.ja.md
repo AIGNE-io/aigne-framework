@@ -10,81 +10,9 @@
 
 このコンポーネントは、モジュール式で強力な AI システムを構築するための基本です。チームの一部となる個々の Agent の詳細については、[AI Agent](./developer-guide-agents-ai-agent.md) および [Function Agent](./developer-guide-agents-function-agent.md) のドキュメントを参照してください。
 
-```d2
-direction: down
-
-Team-Agent-Orchestration: {
-  label: "Team Agent オーケストレーションワークフロー"
-  grid-columns: 2
-  grid-gap: 100
-
-  Sequential-Execution: {
-    label: "シーケンシャル実行（パイプライン）"
-    shape: rectangle
-    style.fill: "#f0f4f8"
-
-    Input: { shape: oval }
-    Skill-A: "スキル A"
-    Skill-B: "スキル B"
-    Output: { shape: oval }
-  }
-
-  Parallel-Execution: {
-    label: "パラレル実行"
-    shape: rectangle
-    style.fill: "#f0f4f8"
-
-    Input: { shape: oval }
-    Skill-A: "スキル A"
-    Skill-B: "スキル B"
-    Merge: "結果のマージ"
-    Output: { shape: oval }
-  }
-
-  Iterative-Processing: {
-    label: "反復処理（バッチ）"
-    shape: rectangle
-    style.fill: "#f0f4f8"
-
-    Input-List: { label: "入力リスト"; shape: oval }
-    Process-Item: { label: "アイテムの処理\n（スキル使用）" }
-    Output-List: { label: "出力リスト"; shape: oval }
-  }
-
-  Reflection: {
-    label: "リフレクション（改善ループ）"
-    shape: rectangle
-    style.fill: "#f0f4f8"
-
-    Generate-Draft: "ドラフトの生成"
-    Review: { label: "ドラフトのレビュー"; shape: diamond }
-    Refine-Draft: "ドラフトの改善"
-    Final-Output: { label: "最終出力"; shape: oval }
-  }
-}
-
-# Connections
-seq: Team-Agent-Orchestration.Sequential-Execution
-seq.Input -> seq.Skill-A -> seq.Skill-B -> seq.Output
-
-par: Team-Agent-Orchestration.Parallel-Execution
-par.Input -> par.Skill-A
-par.Input -> par.Skill-B
-par.Skill-A -> par.Merge
-par.Skill-B -> par.Merge
-par.Merge -> par.Output
-
-iter: Team-Agent-Orchestration.Iterative-Processing
-iter.Input-List -> iter.Process-Item: "各アイテムごと"
-iter.Process-Item -> iter.Process-Item: "次のアイテム"
-iter.Process-Item -> iter.Output-List: "完了"
-
-refl: Team-Agent-Orchestration.Reflection
-refl.Generate-Draft -> refl.Review
-refl.Review -> refl.Final-Output: "基準を満たす"
-refl.Review -> refl.Refine-Draft: "改善が必要"
-refl.Refine-Draft -> refl.Generate-Draft
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:1:1 -->
+![Team Agent](assets/diagram/team-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 設定
 

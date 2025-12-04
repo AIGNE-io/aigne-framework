@@ -11,56 +11,9 @@
 
 对于需要更复杂的自定义逻辑的转换，请考虑使用 [Function Agent](./developer-guide-agents-function-agent.md)。
 
-```d2
-direction: down
-
-Developer: {
-  shape: c4-person
-}
-
-Transform-Agent-Workflow: {
-  label: "Transform Agent 工作流"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  Input-Data: {
-    label: "输入数据\n(例如 snake_case)"
-    shape: rectangle
-  }
-
-  Agent-Core: {
-    label: "转换逻辑"
-
-    Transform-Agent: {
-      label: "Transform Agent"
-      shape: rectangle
-    }
-
-    JSONata-Expression: {
-      label: "JSONata 表达式"
-      shape: rectangle
-      style: {
-        fill: "#f0f0f0"
-      }
-    }
-  }
-
-  Output-Data: {
-    label: "输出数据\n(例如 camelCase)"
-    shape: rectangle
-  }
-}
-
-Developer -> Transform-Agent-Workflow.Agent-Core.JSONata-Expression: "1. 定义转换"
-Transform-Agent-Workflow.Agent-Core.JSONata-Expression -> Transform-Agent-Workflow.Agent-Core.Transform-Agent: "配置"
-Developer -> Transform-Agent-Workflow.Input-Data: "2. 提供输入"
-Transform-Agent-Workflow.Input-Data -> Transform-Agent-Workflow.Agent-Core.Transform-Agent: "3. 处理"
-Transform-Agent-Workflow.Agent-Core.Transform-Agent -> Transform-Agent-Workflow.Output-Data: "4. 生成"
-Transform-Agent-Workflow.Output-Data -> Developer: "5. 返回结果"
-
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Transform Agent](assets/diagram/transform-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 配置
 

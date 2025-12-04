@@ -8,48 +8,9 @@
 
 `AIAgent` は、ユーザーの入力を処理して応答を生成するために、体系的なプロセスに従います。このプロセスには、特にツールが使用される場合に、LLM との複数回の対話が含まれることがよくあります。
 
-```d2
-direction: right
-style {
-  stroke-width: 2
-}
-
-# ユーザー入力から開始
-input: ユーザー入力
-
-# Agent コンポーネント
-agent: AIAgent {
-  shape: package
-  style.fill: "#f0f4f8"
-
-  builder: PromptBuilder
-  model: ChatModel
-  tools: "ツール (スキル)"
-}
-
-# 最終出力で終了
-output: 最終応答
-
-# プロセスフロー
-input -> agent.builder: "1. プロンプトの構築"
-agent.builder -> agent.model: "2. モデルの呼び出し"
-agent.model -> agent: "3. 応答の受信"
-
-subgraph "ツール実行ループ" {
-  direction: down
-  style {
-    stroke-dash: 4
-  }
-
-  agent -> check_tool_call: "4. 応答の解析" {shape: diamond}
-  check_tool_call -> output: "いいえ"
-  check_tool_call -> agent.tools: "はい (ツール呼び出しを検出)"
-
-  agent.tools -> agent.builder: "5. ツールの実行と結果のフォーマット"
-}
-
-agent -> output: "6. 最終出力のフォーマット"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![AI Agent](assets/diagram/ai-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 上の図は、リクエストの典型的なライフサイクルを示しています。
 1.  **プロンプトの構築**: `AIAgent` は `PromptBuilder` を使用して、その `instructions`、ユーザー入力、および以前のツール呼び出しの履歴から最終的なプロンプトを組み立てます。

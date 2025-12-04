@@ -4,79 +4,9 @@ The `AIGNE` class is the central execution engine of the framework. It orchestra
 
 This guide covers how to instantiate and configure the `AIGNE` engine, execute agents using the `invoke` method, and manage the application lifecycle.
 
-```d2
-direction: down
-
-Developer: {
-  shape: c4-person
-}
-
-Instantiation: {
-  label: "Instantiation Methods"
-  shape: rectangle
-  style.stroke-dash: 2
-
-  Constructor: {
-    label: "`new AIGNE()`\n(Programmatic)"
-  }
-
-  Load-Method: {
-    label: "`AIGNE.load()`\n(From Directory)"
-  }
-}
-
-AIGNE-Engine: {
-  label: "AIGNE Engine"
-  shape: rectangle
-
-  Core: {
-    label: "Core Responsibilities"
-    shape: rectangle
-    style.stroke-dash: 4
-
-    Agent-Management: {
-      label: "Agent & Skill\nManagement"
-    }
-    Model-Configuration: {
-      label: "Global Model\nConfiguration"
-    }
-    Execution-Context: {
-      label: "Execution Context"
-    }
-  }
-}
-
-Invocation-Results: {
-  label: "`invoke()` Results"
-  shape: rectangle
-  style.stroke-dash: 2
-
-  Standard-Response: {
-    label: "Standard Response\n(Promise)"
-  }
-
-  Streaming-Response: {
-    label: "Streaming Response\n(AgentResponseStream)"
-  }
-
-  User-Agent: {
-    label: "Stateful UserAgent\n(Maintains Context)"
-  }
-}
-
-Developer -> Instantiation: "Initializes via"
-Instantiation.Constructor -> AIGNE-Engine
-Instantiation.Load-Method -> AIGNE-Engine
-
-Developer -> AIGNE-Engine: "Calls `invoke()`"
-
-AIGNE-Engine -> Invocation-Results.Standard-Response: "Returns"
-AIGNE-Engine -> Invocation-Results.Streaming-Response: "Returns"
-AIGNE-Engine -> Invocation-Results.User-Agent: "Returns"
-
-Invocation-Results -> Developer: "Receives result"
-
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![AIGNE](assets/diagram/aigne-engine-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Overview
 

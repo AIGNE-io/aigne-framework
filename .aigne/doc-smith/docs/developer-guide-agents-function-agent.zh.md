@@ -6,75 +6,9 @@
 
 此图展示了 `FunctionAgent` 的创建和调用流程，从提供源函数到接收最终输出。
 
-```d2
-direction: down
-
-Zod-Library: {
-  label: "Zod 库"
-  shape: rectangle
-  style.fill: "#f0f0f0"
-}
-
-External-API: {
-  label: "外部 API\n（例如 REST、GraphQL）"
-  shape: cylinder
-}
-
-Developers-Code: {
-  label: "开发者的代码"
-  shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-width: 2
-    stroke-dash: 4
-  }
-
-  Custom-Logic: {
-    label: "自定义逻辑\n（JS/TS 函数）"
-    shape: rectangle
-  }
-
-  Agent-Config: {
-    label: "Agent 配置对象"
-    shape: rectangle
-  }
-}
-
-AIGNE-Framework: {
-  label: "AIGNE 框架"
-  shape: rectangle
-
-  FunctionAgent: {
-    label: "FunctionAgent"
-    shape: rectangle
-
-    from-method: {
-      label: "from()"
-      shape: oval
-    }
-
-    invoke-method: {
-      label: "invoke()"
-      shape: oval
-    }
-  }
-}
-
-Developers-Code.Custom-Logic -> AIGNE-Framework.FunctionAgent.from-method: "1a. 提供函数"
-Developers-Code.Agent-Config -> AIGNE-Framework.FunctionAgent.from-method: "1b. 提供配置"
-Zod-Library -> Developers-Code.Agent-Config: {
-  label: "定义模式"
-  style.stroke-dash: 2
-}
-AIGNE-Framework.FunctionAgent.from-method -> AIGNE-Framework.FunctionAgent: "2. 创建实例"
-
-Developers-Code -> AIGNE-Framework.FunctionAgent.invoke-method: "3. 使用输入调用"
-AIGNE-Framework.FunctionAgent.invoke-method -> Developers-Code.Custom-Logic: "4. 执行 'process' 逻辑"
-Developers-Code.Custom-Logic -> External-API: "5. （可选）获取数据"
-External-API -> Developers-Code.Custom-Logic: "6. 返回数据"
-Developers-Code.Custom-Logic -> AIGNE-Framework.FunctionAgent.invoke-method: "7. 返回结果"
-AIGNE-Framework.FunctionAgent.invoke-method -> Developers-Code: "8. 返回最终输出"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![Function Agent](assets/diagram/function-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 关键概念
 

@@ -11,7 +11,8 @@
       "packages/core/src/agents/agent.ts",
       "packages/core/src/index.ts"
     ],
-    "parentId": ""
+    "parentId": "",
+    "icon": "lucide:book-open"
   },
   {
     "title": "Getting Started",
@@ -24,7 +25,8 @@
       "packages/core/src/agents/ai-agent.ts",
       "models/openai/src/openai-chat-model.ts"
     ],
-    "parentId": null
+    "parentId": null,
+    "icon": "lucide:rocket"
   },
   {
     "title": "Core Concepts",
@@ -35,7 +37,8 @@
       "packages/core/src/aigne/aigne.ts",
       "packages/core/src/agents/agent.ts"
     ],
-    "parentId": null
+    "parentId": null,
+    "icon": "lucide:puzzle"
   },
   {
     "title": "AIGNE",
@@ -94,7 +97,8 @@
       "packages/core/src/agents/transform-agent.ts",
       "packages/core/src/agents/mcp-agent.ts"
     ],
-    "parentId": null
+    "parentId": null,
+    "icon": "lucide:bot"
   },
   {
     "title": "AI Agent",
@@ -171,7 +175,8 @@
       "packages/core/src/prompt/prompt-builder.ts",
       "packages/core/src/agents/agent.ts"
     ],
-    "parentId": null
+    "parentId": null,
+    "icon": "lucide:graduation-cap"
   },
   {
     "title": "Defining Agents with YAML",
@@ -223,63 +228,90 @@
     "title": "User Guide",
     "description": "A non-technical guide designed for end-users, explaining the core concepts of AI agents and workflows in simple terms with a focus on potential applications and business outcomes.",
     "path": "/user-guide",
-    "sourceIds": ["./README.md", "packages/core/README.md"],
-    "parentId": ""
+    "sourceIds": [
+      "./README.md",
+      "packages/core/README.md"
+    ],
+    "parentId": "",
+    "icon": "lucide:users"
   },
   {
     "title": "What is AIGNE?",
     "description": "A plain-language introduction to the AIGNE Framework, explaining what AI agents are, what problems they solve, and how they can be used to automate complex tasks.",
     "path": "/user-guide/what-is-aigne",
-    "sourceIds": ["./README.md", "packages/core/README.md"],
+    "sourceIds": [
+      "./README.md",
+      "packages/core/README.md"
+    ],
     "parentId": "/user-guide"
   },
   {
     "title": "Understanding Agents",
     "description": "Conceptually explains the different roles agents can play within the system, using analogies to describe their functions without technical jargon.",
     "path": "/user-guide/understanding-agents",
-    "sourceIds": ["packages/core/test-agents/chat.yaml", "packages/core/test-agents/team.yaml"],
+    "sourceIds": [
+      "packages/core/test-agents/chat.yaml",
+      "packages/core/test-agents/team.yaml"
+    ],
     "parentId": "/user-guide"
   },
   {
     "title": "Basic Agents",
     "description": "Describes a single agent as a specialized digital assistant, like a helpful chatbot, capable of performing a specific task based on instructions.",
     "path": "/user-guide/understanding-agents/basic-agents",
-    "sourceIds": ["packages/core/test-agents/chat.yaml", "packages/core/src/agents/ai-agent.ts"],
+    "sourceIds": [
+      "packages/core/test-agents/chat.yaml",
+      "packages/core/src/agents/ai-agent.ts"
+    ],
     "parentId": "/user-guide/understanding-agents"
   },
   {
     "title": "Agent Teams",
     "description": "Explains how multiple agents can be organized into a team to collaborate on solving larger, more complex problems that a single agent cannot handle alone.",
     "path": "/user-guide/understanding-agents/agent-teams",
-    "sourceIds": ["packages/core/test-agents/team.yaml", "packages/core/src/agents/team-agent.ts"],
+    "sourceIds": [
+      "packages/core/test-agents/team.yaml",
+      "packages/core/src/agents/team-agent.ts"
+    ],
     "parentId": "/user-guide/understanding-agents"
   },
   {
     "title": "Common Workflows",
     "description": "Illustrates common patterns of agent collaboration using high-level diagrams to show how information and tasks flow through the system to achieve a goal.",
     "path": "/user-guide/common-workflows",
-    "sourceIds": ["./README.md"],
+    "sourceIds": [
+      "./README.md"
+    ],
     "parentId": "/user-guide"
   },
   {
     "title": "Sequential Tasks",
     "description": "Visualizes a workflow where tasks are completed in a specific order, with one agent passing its results to the next, similar to an assembly line.",
     "path": "/user-guide/common-workflows/sequential-tasks",
-    "sourceIds": ["./README.md", "packages/core/src/agents/team-agent.ts"],
+    "sourceIds": [
+      "./README.md",
+      "packages/core/src/agents/team-agent.ts"
+    ],
     "parentId": "/user-guide/common-workflows"
   },
   {
     "title": "Parallel Tasks",
     "description": "Shows how multiple agents can work on different parts of a problem simultaneously to speed up the overall process, with their results combined at the end.",
     "path": "/user-guide/common-workflows/parallel-tasks",
-    "sourceIds": ["./README.md", "packages/core/src/agents/team-agent.ts"],
+    "sourceIds": [
+      "./README.md",
+      "packages/core/src/agents/team-agent.ts"
+    ],
     "parentId": "/user-guide/common-workflows"
   },
   {
     "title": "Decision-Making",
     "description": "Illustrates a scenario where a 'manager' agent analyzes a request and decides which specialized agent is best suited to handle the task.",
     "path": "/user-guide/common-workflows/decision-making",
-    "sourceIds": ["./README.md", "packages/core/src/agents/ai-agent.ts"],
+    "sourceIds": [
+      "./README.md",
+      "packages/core/src/agents/ai-agent.ts"
+    ],
     "parentId": "/user-guide/common-workflows"
   },
   {
@@ -300,13 +332,17 @@
       "models/xai/README.md",
       "models/aigne-hub/README.md"
     ],
-    "parentId": ""
+    "parentId": "",
+    "icon": "lucide:brain-circuit"
   },
   {
     "title": "Overview",
     "description": "Explains the role of model adapters in the AIGNE Framework and provides a summary list of all officially supported AI model providers.",
     "path": "/models/overview",
-    "sourceIds": ["packages/core/src/agents/model.ts", "models/aigne-hub/src/utils/model.ts"],
+    "sourceIds": [
+      "packages/core/src/agents/model.ts",
+      "models/aigne-hub/src/utils/model.ts"
+    ],
     "parentId": "/models"
   },
   {
@@ -324,7 +360,10 @@
     "title": "Anthropic",
     "description": "A guide for configuring and using Anthropic's Claude models, covering API key setup, model selection, and specific features available through the `@aigne/anthropic` package.",
     "path": "/models/anthropic",
-    "sourceIds": ["models/anthropic/README.md", "models/anthropic/src/anthropic-chat-model.ts"],
+    "sourceIds": [
+      "models/anthropic/README.md",
+      "models/anthropic/src/anthropic-chat-model.ts"
+    ],
     "parentId": "/models"
   },
   {
@@ -342,14 +381,20 @@
     "title": "AWS Bedrock",
     "description": "A guide for configuring and using models via AWS Bedrock, covering AWS credentials setup, model selection, and specific features available through the `@aigne/bedrock` package.",
     "path": "/models/bedrock",
-    "sourceIds": ["models/bedrock/README.md", "models/bedrock/src/bedrock-chat-model.ts"],
+    "sourceIds": [
+      "models/bedrock/README.md",
+      "models/bedrock/src/bedrock-chat-model.ts"
+    ],
     "parentId": "/models"
   },
   {
     "title": "DeepSeek",
     "description": "A guide for configuring and using DeepSeek models, covering API key setup, model selection, and specific features available through the `@aigne/deepseek` package.",
     "path": "/models/deepseek",
-    "sourceIds": ["models/deepseek/README.md", "models/deepseek/src/deepseek-chat-model.ts"],
+    "sourceIds": [
+      "models/deepseek/README.md",
+      "models/deepseek/src/deepseek-chat-model.ts"
+    ],
     "parentId": "/models"
   },
   {
@@ -367,14 +412,20 @@
     "title": "Ideogram",
     "description": "A guide for configuring and using Ideogram's image generation models, covering API key setup and specific features available through the `@aigne/ideogram` package.",
     "path": "/models/ideogram",
-    "sourceIds": ["models/ideogram/README.md", "models/ideogram/src/ideogram-image-model.ts"],
+    "sourceIds": [
+      "models/ideogram/README.md",
+      "models/ideogram/src/ideogram-image-model.ts"
+    ],
     "parentId": "/models"
   },
   {
     "title": "Ollama",
     "description": "A guide for configuring and using locally hosted models via Ollama, covering setup, model selection, and specific features available through the `@aigne/ollama` package.",
     "path": "/models/ollama",
-    "sourceIds": ["models/ollama/README.md", "models/ollama/src/ollama-chat-model.ts"],
+    "sourceIds": [
+      "models/ollama/README.md",
+      "models/ollama/src/ollama-chat-model.ts"
+    ],
     "parentId": "/models"
   },
   {
@@ -391,21 +442,30 @@
     "title": "Poe",
     "description": "A guide for configuring and using models through the Poe service, covering API key setup and model selection from multiple providers via `@aigne/poe`.",
     "path": "/models/poe",
-    "sourceIds": ["models/poe/README.md", "models/poe/src/poe.ts"],
+    "sourceIds": [
+      "models/poe/README.md",
+      "models/poe/src/poe.ts"
+    ],
     "parentId": "/models"
   },
   {
     "title": "xAI",
     "description": "A guide for configuring and using xAI's Grok models, covering API key setup, model selection, and specific features available through the `@aigne/xai` package.",
     "path": "/models/xai",
-    "sourceIds": ["models/xai/README.md", "models/xai/src/xai-chat-model.ts"],
+    "sourceIds": [
+      "models/xai/README.md",
+      "models/xai/src/xai-chat-model.ts"
+    ],
     "parentId": "/models"
   },
   {
     "title": "LMStudio",
     "description": "A guide for configuring and using locally hosted models via LMStudio, covering setup and model selection through the `@aigne/lmstudio` package.",
     "path": "/models/lmstudio",
-    "sourceIds": ["models/lmstudio/README.md", "models/lmstudio/src/lmstudio-chat-model.ts"],
+    "sourceIds": [
+      "models/lmstudio/README.md",
+      "models/lmstudio/src/lmstudio-chat-model.ts"
+    ],
     "parentId": "/models"
   },
   {

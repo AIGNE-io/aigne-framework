@@ -25,35 +25,9 @@ my-agent-project/
 
 以下の図は、AIGNEプロジェクトのコアコンポーネント間の関係を示しています。中心となる `aigne.yaml` ファイルがすべてを統括し、どのAgentが存在し、どのスキルを使用できるか、そしてどのAIモデルがその知能を支えるかを定義します。
 
-```d2
-direction: down
-
-aigne-yaml: {
-  label: "aigne.yaml"
-  shape: rectangle
-}
-
-agent: {
-  label: "Agent\n(例: chat.yaml)"
-  shape: rectangle
-}
-
-skill: {
-  label: "スキル\n(例: sandbox.js)"
-  shape: rectangle
-}
-
-chat-model: {
-  label: "チャットモデル\n(例: gpt-4o-mini)"
-  shape: cylinder
-}
-
-aigne-yaml -> agent: "定義する"
-aigne-yaml -> skill: "登録する"
-aigne-yaml -> chat-model: "設定する"
-agent -> skill: "使用する"
-agent -> chat-model: "通信する"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![---](assets/diagram/core-concepts-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 AIGNEプロジェクトがどのように機能するかを理解するためには、その2つの主要コンポーネント、つまり中央のプロジェクト設定と実行可能なAgentおよびスキルを把握することが不可欠です。以下でそれらを詳しく見ていきましょう。
 

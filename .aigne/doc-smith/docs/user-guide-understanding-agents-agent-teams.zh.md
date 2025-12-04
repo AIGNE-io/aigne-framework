@@ -39,61 +39,9 @@ Agent 团队可以根据任务的性质配置成不同的协作方式。两种�
 
 下图说明了这三种主要的协作模式。
 
-```d2
-direction: down
-
-Sequential-Workflow: {
-  label: "顺序工作流：流水线"
-  style.stroke-dash: 2
-
-  Input: { shape: oval }
-  Researcher: "研究员 Agent"
-  Writer: "作家 Agent"
-  Editor: "编辑 Agent"
-  Output: { label: "最终版本"; shape: oval }
-
-  Input -> Researcher: "主题"
-  Researcher -> Writer: "研究成果"
-  Writer -> Editor: "草稿"
-  Editor -> Output: "批准的文章"
-}
-
-Parallel-Workflow: {
-  label: "并行工作流：头脑风暴会议"
-  style.stroke-dash: 2
-
-  Input: { label: "公司名称"; shape: oval }
-  Social-Media: "社交媒体 Agent"
-  News: "新闻 Agent"
-  Financial: "金融 Agent"
-  Output: { label: "综合市场分析"; shape: oval }
-
-  Input -> Social-Media
-  Input -> News
-  Input -> Financial
-  Social-Media -> Output: "提及"
-  News -> Output: "文章"
-  Financial -> Output: "股票数据"
-}
-
-Reflection-Workflow: {
-  label: "反思：质量保证循环"
-  style.stroke-dash: 2
-
-  Team: "Agent 团队"
-  Task-Output: "任务输出"
-  Reviewer: {
-    label: "审查员 Agent"
-    shape: diamond
-  }
-  Final-Output: { label: "最终批准的输出"; shape: oval }
-
-  Team -> Task-Output
-  Task-Output -> Reviewer
-  Reviewer -> Final-Output: "已批准"
-  Reviewer -> Team: "需要修订\n(反馈)"
-}
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Agent Teams](assets/diagram/agent-teams-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 总结
 

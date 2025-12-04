@@ -38,79 +38,9 @@ AIGNE 將 agents 組織成**工作流程**，這些是執行任務的結構化�
 
 下圖說明了 AIGNE 框架如何分解複雜任務並管理一個 agents 團隊以產生最終結果。
 
-```d2
-direction: down
-
-Complex-Task: {
-  label: "複雜、多步驟的任務"
-  shape: oval
-}
-
-AIGNE: {
-  label: "AIGNE 框架"
-  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-}
-
-Decomposition: {
-  label: "將任務分解為子任務"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-}
-
-Orchestration-Patterns: {
-  label: "使用協作模式來調度 Agents"
-  grid-columns: 3
-  grid-gap: 50
-
-  Sequential-Workflow: {
-    label: "循序式 (流水線)"
-    shape: rectangle
-    direction: down
-    Researcher: "Researcher Agent"
-    Summarizer: "Summarizer Agent"
-    Report-Writer: "Report Writer Agent"
-  }
-
-  Parallel-Workflow: {
-    label: "平行式 (團隊合作)"
-    shape: rectangle
-    Task: "分析回饋"
-    Agent-A: "處理正面回饋"
-    Agent-B: "處理負面回饋"
-  }
-
-  Routing-Workflow: {
-    label: "路由式 (管理者)"
-    shape: rectangle
-    Request: "傳入的請求"
-    Manager: {
-      label: "Manager Agent"
-      shape: diamond
-    }
-    Coder: "Coder Agent"
-    Writer: "Writer Agent"
-  }
-}
-
-Final-Goal: {
-  label: "連貫、完整的輸出"
-  shape: oval
-}
-
-Complex-Task -> AIGNE: "輸入"
-AIGNE -> Decomposition
-Decomposition -> Orchestration-Patterns
-Orchestration-Patterns -> Final-Goal: "輸出"
-Orchestration-Patterns.Sequential-Workflow.Researcher -> Orchestration-Patterns.Sequential-Workflow.Summarizer -> Orchestration-Patterns.Sequential-Workflow.Report-Writer
-Orchestration-Patterns.Parallel-Workflow.Task -> Orchestration-Patterns.Parallel-Workflow.Agent-A
-Orchestration-Patterns.Parallel-Workflow.Task -> Orchestration-Patterns.Parallel-Workflow.Agent-B
-Orchestration-Patterns.Routing-Workflow.Request -> Orchestration-Patterns.Routing-Workflow.Manager
-Orchestration-Patterns.Routing-Workflow.Manager -> Orchestration-Patterns.Routing-Workflow.Coder: "路由"
-Orchestration-Patterns.Routing-Workflow.Manager -> Orchestration-Patterns.Routing-Workflow.Writer: "路由"
-
-```
+<!-- DIAGRAM_IMAGE_START:intro:16:9 -->
+![What is AIGNE?](assets/diagram/what-is-aigne-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 常見的工作流程模式包括：
 

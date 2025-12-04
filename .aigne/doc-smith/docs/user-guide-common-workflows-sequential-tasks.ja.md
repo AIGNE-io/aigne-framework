@@ -4,48 +4,9 @@
 
 AIGNE フレームワークでは、これは `sequential` モードで実行されるように設定された `TeamAgent` によって管理されます。チーム内の各 Agent は、結果を次に渡す前に自身のタスクを完了させ、開始から終了まで論理的で秩序だった進行を保証します。
 
-```d2
-direction: down
-
-Initial-Request: {
-  label: "初期リクエスト"
-  shape: oval
-}
-
-TeamAgent: {
-  label: "TeamAgent (順次モード)"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  Agent-1: {
-    label: "Agent 1"
-    shape: rectangle
-  }
-
-  Agent-2: {
-    label: "Agent 2"
-    shape: rectangle
-  }
-
-  Final-Agent: {
-    label: "最終 Agent"
-    shape: rectangle
-  }
-}
-
-Final-Result: {
-  label: "最終結果"
-  shape: oval
-}
-
-Initial-Request -> TeamAgent.Agent-1: "1. 初期入力"
-TeamAgent.Agent-1 -> TeamAgent.Agent-2: "2. 出力1 + 初期入力"
-TeamAgent.Agent-2 -> TeamAgent.Final-Agent: "3. 出力2 + 前の入力"
-TeamAgent.Final-Agent -> Final-Result: "4. 最終出力"
-
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Sequential Tasks](assets/diagram/sequential-tasks-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 仕組み
 

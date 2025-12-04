@@ -10,55 +10,9 @@ The memory system is comprised of three main classes:
 2.  **`MemoryRecorder`**: An agent responsible for writing information to a persistent storage backend (e.g., a database, file system, or vector store). You must provide the implementation for how and where the data is stored.
 3.  **`MemoryRetriever`**: An agent responsible for fetching information from the storage backend based on specified criteria, such as a search query or a limit. You must provide the implementation for the retrieval logic.
 
-```d2
-direction: down
-
-AIGNE-Engine: {
-  label: "AIGNE Engine\n(Application Logic)"
-  shape: rectangle
-}
-
-Memory-Agent: {
-  label: "MemoryAgent (Orchestrator)"
-  shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-width: 2
-    stroke-dash: 4
-  }
-
-  MemoryRecorder: {
-    label: "MemoryRecorder"
-    shape: rectangle
-  }
-
-  MemoryRetriever: {
-    label: "MemoryRetriever"
-    shape: rectangle
-  }
-}
-
-Storage-Backend: {
-  label: "Storage Backend\n(Database, Vector Store, etc.)"
-  shape: cylinder
-}
-
-# Record Flow
-AIGNE-Engine -> Memory-Agent: "1. invoke(record)"
-Memory-Agent -> Memory-Agent.MemoryRecorder: "2. Delegate to Recorder"
-Memory-Agent.MemoryRecorder -> Storage-Backend: "3. Write Data"
-
-# Retrieve Flow
-AIGNE-Engine -> Memory-Agent: "4. invoke(retrieve)" {
-  style.stroke-dash: 2
-}
-Memory-Agent -> Memory-Agent.MemoryRetriever: "5. Delegate to Retriever" {
-  style.stroke-dash: 2
-}
-Storage-Backend -> Memory-Agent.MemoryRetriever: "6. Return Data" {
-  style.stroke-dash: 2
-}
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Memory](assets/diagram/memory-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## How It Works
 

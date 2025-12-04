@@ -13,34 +13,9 @@
 
 `MCPAgent` は、MCP サーバーへの接続と、その提供機能を AIGNE の構成要素に変換するロジックをカプセル化しています。`MCPAgent` が初期化されると、指定されたサーバーに接続し、利用可能なツール、プロンプト、リソースを問い合わせます。これらは、それぞれ `skills`、`prompts`、`resources` として Agent インスタンスに動的にアタッチされ、AIGNE ワークフロー内で直接アクセスできるようになります。
 
-```d2
-direction: right
-style: {
-  font-size: 14
-}
-
-"AIGNE アプリケーション" -> aigne.invoke
-
-subgraph "AIGNE フレームワーク" {
-  aigne.invoke -> mcp_agent: "MCPAgent" {
-    shape: hexagon
-    style.fill: "#D1E7DD"
-  }
-}
-
-subgraph "トランスポート層 (ネットワーク / Stdio)" {
-  mcp_agent -> transport: "MCP リクエスト"
-  transport -> mcp_agent: "MCP レスポンス"
-}
-
-transport -> "外部 MCP サーバー"
-
-subgraph "外部システム" {
- "外部 MCP サーバー" -> "ツール"
- "外部 MCP サーバー" -> "プロンプト"
- "外部 MCP サーバー" -> "リソース"
-}
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![MCP Agent](assets/diagram/mcp-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## MCPAgent の作成
 

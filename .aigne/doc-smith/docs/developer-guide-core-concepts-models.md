@@ -15,72 +15,9 @@ This design offers several key advantages:
 
 The following diagram illustrates the relationship between the base `Agent`, the `Model` abstractions, and the external AI services they connect to.
 
-```d2
-direction: down
-
-Application-Layer: {
-  label: "Application Layer (Your Code)"
-  shape: rectangle
-
-  AIAgent: {
-    label: "AIAgent"
-    shape: rectangle
-  }
-
-  ImageAgent: {
-    label: "ImageAgent"
-    shape: rectangle
-  }
-}
-
-AIGNE-Framework: {
-  label: "AIGNE Framework (Abstraction Layer)"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  Model-Abstractions: {
-    grid-columns: 2
-
-    ChatModel: {
-      label: "ChatModel"
-      shape: rectangle
-    }
-  
-    ImageModel: {
-      label: "ImageModel"
-      shape: rectangle
-    }
-  }
-}
-
-External-AI-Services: {
-  label: "External AI Services"
-  shape: rectangle
-  grid-columns: 3
-
-  OpenAI: {
-    label: "OpenAI\n(GPT-4, etc.)"
-    shape: cylinder
-  }
-
-  Anthropic: {
-    label: "Anthropic\n(Claude 3, etc.)"
-    shape: cylinder
-  }
-
-  Google: {
-    label: "Google\n(Gemini, etc.)"
-    shape: cylinder
-  }
-}
-
-Application-Layer.AIAgent -> AIGNE-Framework.Model-Abstractions.ChatModel: "Uses (ChatModelInput/Output)"
-Application-Layer.ImageAgent -> AIGNE-Framework.Model-Abstractions.ImageModel: "Uses (ImageModelInput/Output)"
-AIGNE-Framework.Model-Abstractions.ChatModel -> External-AI-Services: "Connects to LLM Provider"
-AIGNE-Framework.Model-Abstractions.ImageModel -> External-AI-Services: "Connects to Image Provider"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Models](assets/diagram/models-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## ChatModel Abstraction
 

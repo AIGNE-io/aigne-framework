@@ -6,45 +6,9 @@
 
 次の図は、AIGNE フレームワークがローカルのOllamaインスタンスとどのように対話するかを示しています。
 
-```d2
-direction: right
-style: {
-  font-size: 14
-  fill: "#F6F8FA"
-  stroke: "#B4B4B4"
-  stroke-width: 1
-}
-
-AIGNE_Application: "AIGNE アプリケーション" {
-  shape: rectangle
-  style.fill: "#E6F7FF"
-  style.stroke: "#91D5FF"
-}
-
-OllamaChatModel: "@aigne/ollama\nOllamaChatModel" {
-  shape: rectangle
-  style.fill: "#F9F0FF"
-  style.stroke: "#D3ADF7"
-}
-
-Ollama_Instance: "ローカルOllamaインスタンス" {
-  shape: cylinder
-  style.fill: "#FFF7E6"
-  style.stroke: "#FFE7BA"
-  
-  LLM: "言語モデル\n(例: Llama 3)" {
-    shape: hexagon
-    style.fill: "#F6FFED"
-    style.stroke: "#B7EB8F"
-  }
-}
-
-AIGNE_Application -> OllamaChatModel: "1. モデルを呼び出す"
-OllamaChatModel -> Ollama_Instance: "2. リクエストを\n   http://localhost:11434 へ送信"
-Ollama_Instance.LLM -> Ollama_Instance: "3. リクエストを処理"
-Ollama_Instance -> OllamaChatModel: "4. 応答を返す"
-OllamaChatModel -> AIGNE_Application: "5. 結果を渡す"
-```
+<!-- DIAGRAM_IMAGE_START:guide:4:3 -->
+![Ollama](assets/diagram/ollama-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 前提条件
 

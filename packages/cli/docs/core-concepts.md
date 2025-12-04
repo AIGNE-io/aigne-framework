@@ -2,6 +2,10 @@
 labels: ["Reference"]
 ---
 
+---
+labels: ["Reference"]
+---
+
 # Core Concepts
 
 An AIGNE project provides a structured environment for developing, testing, and deploying AI agents. At its heart, a project is a directory containing configuration files that define your agents, the skills they can use, and the language models they connect to. This section breaks down these fundamental building blocks.
@@ -25,35 +29,9 @@ This structure separates configuration (`aigne.yaml`, `agents/`) from implementa
 
 The following diagram illustrates the relationship between the core components of an AIGNE project. The central `aigne.yaml` file orchestrates everything, defining which agents exist, what skills they can use, and which AI model powers their intelligence.
 
-```d2
-direction: down
-
-aigne-yaml: {
-  label: "aigne.yaml"
-  shape: rectangle
-}
-
-agent: {
-  label: "Agent\n(e.g., chat.yaml)"
-  shape: rectangle
-}
-
-skill: {
-  label: "Skill\n(e.g., sandbox.js)"
-  shape: rectangle
-}
-
-chat-model: {
-  label: "Chat Model\n(e.g., gpt-4o-mini)"
-  shape: cylinder
-}
-
-aigne-yaml -> agent: "Defines"
-aigne-yaml -> skill: "Registers"
-aigne-yaml -> chat-model: "Configures"
-agent -> skill: "Uses"
-agent -> chat-model: "Communicates with"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![---](assets/diagram/core-concepts-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 To understand how an AIGNE project works, it's essential to grasp its two primary components: the central project configuration and the executable agents and skills. Explore them in more detail below.
 

@@ -33,48 +33,9 @@
 
 本指南提供安裝、設定和使用 `PoeChatModel` 的逐步流程。有關模型整合的更多一般資訊，請參閱[模型總覽](./models-overview.md)文件。
 
-```d2
-direction: down
-
-Developer-App: {
-  label: "開發者的\n應用程式"
-  shape: c4-person
-}
-
-AIGNE-Framework: {
-  label: "AIGNE 框架"
-  shape: rectangle
-
-  aigne-poe: {
-    label: "@aigne/poe\nPoeChatModel"
-    shape: rectangle
-  }
-}
-
-Poe-Service: {
-  label: "Poe 服務"
-  shape: rectangle
-
-  Poe-API: {
-    label: "與 OpenAI 相容的 API"
-  }
-
-  Third-Party-Models: {
-    label: "第三方語言模型"
-    grid-columns: 3
-    OpenAI: {}
-    Anthropic: {}
-    Google: {}
-  }
-}
-
-Developer-App -> AIGNE-Framework.aigne-poe: "1. 使用 PoeChatModel"
-AIGNE-Framework.aigne-poe -> Poe-Service.Poe-API: "2. 傳送 API 請求"
-Poe-Service.Poe-API -> Poe-Service.Third-Party-Models: "3. 路由至選定模型"
-Poe-Service.Third-Party-Models -> Poe-Service.Poe-API: "4. 產生回應"
-Poe-Service.Poe-API -> AIGNE-Framework.aigne-poe: "5. 回傳回應串流"
-AIGNE-Framework.aigne-poe -> Developer-App: "6. 交付結果"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Poe](assets/diagram/poe-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 安裝
 

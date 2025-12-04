@@ -6,75 +6,9 @@
 
 この図は、ソース関数の提供から最終的な出力の受信まで、`FunctionAgent` の作成と呼び出しのフローを示しています。
 
-```d2
-direction: down
-
-Zod-Library: {
-  label: "Zod ライブラリ"
-  shape: rectangle
-  style.fill: "#f0f0f0"
-}
-
-External-API: {
-  label: "外部 API\n(例: REST, GraphQL)"
-  shape: cylinder
-}
-
-Developers-Code: {
-  label: "開発者のコード"
-  shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-width: 2
-    stroke-dash: 4
-  }
-
-  Custom-Logic: {
-    label: "カスタムロジック\n(JS/TS 関数)"
-    shape: rectangle
-  }
-
-  Agent-Config: {
-    label: "Agent 設定オブジェクト"
-    shape: rectangle
-  }
-}
-
-AIGNE-Framework: {
-  label: "AIGNE フレームワーク"
-  shape: rectangle
-
-  FunctionAgent: {
-    label: "FunctionAgent"
-    shape: rectangle
-
-    from-method: {
-      label: "from()"
-      shape: oval
-    }
-
-    invoke-method: {
-      label: "invoke()"
-      shape: oval
-    }
-  }
-}
-
-Developers-Code.Custom-Logic -> AIGNE-Framework.FunctionAgent.from-method: "1a. 関数を提供する"
-Developers-Code.Agent-Config -> AIGNE-Framework.FunctionAgent.from-method: "1b. 設定を提供する"
-Zod-Library -> Developers-Code.Agent-Config: {
-  label: "スキーマを定義"
-  style.stroke-dash: 2
-}
-AIGNE-Framework.FunctionAgent.from-method -> AIGNE-Framework.FunctionAgent: "2. インスタンスを作成"
-
-Developers-Code -> AIGNE-Framework.FunctionAgent.invoke-method: "3. 入力で呼び出し"
-AIGNE-Framework.FunctionAgent.invoke-method -> Developers-Code.Custom-Logic: "4. 'process' ロジックを実行"
-Developers-Code.Custom-Logic -> External-API: "5. (任意) データを取得"
-External-API -> Developers-Code.Custom-Logic: "6. データを返す"
-Developers-Code.Custom-Logic -> AIGNE-Framework.FunctionAgent.invoke-method: "7. 結果を返す"
-AIGNE-Framework.FunctionAgent.invoke-method -> Developers-Code: "8. 最終出力を返す"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![Function Agent](assets/diagram/function-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 主な概念
 

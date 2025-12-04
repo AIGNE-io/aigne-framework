@@ -6,44 +6,9 @@ The framework is designed around a few key abstractions that work together to or
 
 The following diagram illustrates the relationship between these core components.
 
-```d2
-direction: down
-
-AIGNE-Orchestrator: {
-  label: "AIGNE Orchestrator"
-  shape: rectangle
-
-  Agent: {
-    label: "Agent\n(Unit of Work)"
-    shape: rectangle
-  }
-
-  Models: {
-    label: "Models\n(AI Service Interface)"
-    shape: rectangle
-  }
-
-  Memory: {
-    label: "Memory\n(State Persistence)"
-    shape: rectangle
-  }
-}
-
-AI-Services: {
-  label: "External AI Services"
-  shape: cylinder
-}
-
-State-Store: {
-  label: "State Store"
-  shape: cylinder
-}
-
-AIGNE-Orchestrator.Agent <-> AIGNE-Orchestrator.Models: "Uses"
-AIGNE-Orchestrator.Agent <-> AIGNE-Orchestrator.Memory: "Uses"
-AIGNE-Orchestrator.Models -> AI-Services: "API Calls"
-AIGNE-Orchestrator.Memory -> State-Store: "Read/Write State"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Core Concepts](assets/diagram/core-concepts-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Architectural Building Blocks
 

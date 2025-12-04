@@ -4,64 +4,9 @@ AIGNE フレームワークは、それぞれが特定の機能を実行する�
 
 このセクションでは、利用可能な Agent タイプの概要を説明します。詳細な実装、設定オプション、およびコード例については、各 Agent の特定のサブドキュメントを参照してください。
 
-```d2
-direction: down
-style: {
-  font-size: 14
-  stroke-width: 2
-  fill: "#f8f9fa"
-  stroke: "#adb5bd"
-}
-
-Agent: {
-  label: "ベース Agent"
-  shape: class
-  style: {
-    fill: "#e9ecef"
-    stroke: "#495057"
-  }
-}
-
-sub_agents: {
-  AIAgent: {
-    label: "AIAgent"
-    tooltip: "言語モデルと対話します"
-    style: { fill: "#dbe4ff" }
-  }
-  TeamAgent: {
-    label: "TeamAgent"
-    tooltip: "複数の Agent をオーケストレートします"
-    style: { fill: "#d1e7dd" }
-  }
-  ImageAgent: {
-    label: "ImageAgent"
-    tooltip: "画像を生成します"
-    style: { fill: "#fff3cd" }
-  }
-  FunctionAgent: {
-    label: "FunctionAgent"
-    tooltip: "カスタムコードをラップします"
-    style: { fill: "#f8d7da" }
-  }
-  TransformAgent: {
-    label: "TransformAgent"
-    tooltip: "データマッピングを実行します"
-    style: { fill: "#e2d9f3" }
-  }
-  MCPAgent: {
-    label: "MCPAgent"
-    tooltip: "外部の MCP システムに接続します"
-    style: { fill: "#cfe2ff" }
-  }
-}
-
-Agent -> sub_agents.AIAgent: Inherits
-Agent -> sub_agents.TeamAgent: Inherits
-Agent -> sub_agents.ImageAgent: Inherits
-Agent -> sub_agents.FunctionAgent: Inherits
-Agent -> sub_agents.TransformAgent: Inherits
-Agent -> sub_agents.MCPAgent: Inherits
-```
+<!-- DIAGRAM_IMAGE_START:architecture:1:1 -->
+![Agent Types](assets/diagram/agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 利用可能な Agent タイプ
 

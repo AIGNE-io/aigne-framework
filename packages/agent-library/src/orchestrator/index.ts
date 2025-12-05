@@ -2,17 +2,14 @@ import {
   type AgentInvokeOptions,
   AIAgent,
   type AIAgentOptions,
-  type ChatModelInputMessage,
-  type ChatModelOutput,
-  isAgentResponseDelta,
+  type ChatModelInputTool,
   type Message,
-  mergeAgentResponseChunk,
   PromptBuilder,
 } from "@aigne/core";
-import { stringify } from "yaml";
-import { DefaultPlanner } from "./planner/default/index.js";
-import { ORCHESTRATOR_SYSTEM_PROMPT } from "./prompt.js";
-import type { PlannerInput, PlannerOutput } from "./type.js";
+import { omit } from "@aigne/core/utils/type-utils.js";
+import { ORCHESTRATOR_COMPLETE_PROMPT } from "./prompt.js";
+import { TodoPlanner, TodoWorker } from "./todo/index.js";
+import type { OrchestratorState, PlannerInput, PlannerOutput } from "./type.js";
 
 /**
  * Configuration options for the Orchestrator Agent
@@ -64,10 +61,22 @@ export class OrchestratorAgent<
         ? PromptBuilder.from(options.instructions)
         : (options.instructions ?? new PromptBuilder());
 
-    this.planner = new DefaultPlanner({});
+    this.planner = new TodoPlanner({}) as unknown as AIAgent<PlannerInput, PlannerOutput>;
+    this.worker = new TodoWorker({
+      ...omit(options, "instructions", "outputSchema", "inputSchema"),
+    } as AIAgentOptions);
+    this.completer = new AIAgent({
+      instructions: ORCHESTRATOR_COMPLETE_PROMPT,
+      outputKey: options.outputKey,
+      outputSchema: options.outputSchema,
+    });
   }
 
   private planner: AIAgent<PlannerInput, PlannerOutput>;
+
+  private worker: AIAgent;
+
+  private completer: AIAgent<{ objective: string; currentState: OrchestratorState }, O>;
 
   override async *process(input: I, options: AgentInvokeOptions) {
     const model = this.model || options.model || options.context.model;
@@ -80,120 +89,65 @@ export class OrchestratorAgent<
       agent: this,
     });
 
+    if (!availableSkills?.length) {
+      throw new Error("No available skills found for orchestration.");
+    }
+
     const { prompt: objective } = await this.instructions.buildPrompt({
       input,
       context: options.context,
     });
 
-    const planRes = availableSkills?.length
-      ? await this.invokeChildAgent(
-          this.planner,
-          {
-            objective,
-            skills: availableSkills?.map((i) => ({
-              name: i.function.name,
-              description: i.function.description,
-            })),
-          },
-          { ...options, streaming: false },
-        )
-      : undefined;
-
-    const builder = new PromptBuilder({
-      instructions: ORCHESTRATOR_SYSTEM_PROMPT,
-    });
-
-    const { messages, tools, toolChoice, toolAgents } = await builder.build({
-      ...options,
-      input: {
-        instructions: objective,
-        plan: planRes?.plan.steps.length ? planRes.plan : undefined,
-      },
-      model,
-      agent: this,
-    });
-
-    if (planRes?.plan.steps.length) {
-      yield { delta: { text: { [this.outputKey]: `\n\nPlan:\n${stringify(planRes.plan)}` } } };
-    }
-
-    const toolMessages: ChatModelInputMessage[] = [];
-
-    const modelOptions = await model.getModelOptions(input, options);
+    const currentState: {
+      taskHistories: { task: string; result: string }[];
+    } = { taskHistories: [] };
 
     while (true) {
-      const stream = await this.invokeChildAgent(
-        model,
-        { messages: messages.concat(toolMessages), tools, toolChoice, modelOptions },
-        { ...options, streaming: true },
+      const plan = await this.getPlan(
+        { objective, currentState, skills: availableSkills },
+        options,
       );
 
-      const modelOutput: ChatModelOutput = {};
-
-      for await (const chunk of stream) {
-        if (isAgentResponseDelta(chunk)) {
-          if (chunk.delta.text?.text) {
-            yield { delta: { text: { [this.outputKey]: chunk.delta.text.text } } };
-          }
-
-          if (chunk.delta.json) {
-            Object.assign(modelOutput, chunk.delta.json);
-          }
-        }
+      if (plan.finished || !plan.nextTask) {
+        break;
       }
 
-      if (!modelOutput.toolCalls?.length) {
-        return;
-      }
+      const taskResult = await this.invokeChildAgent(
+        this.worker,
+        { currentState, objective, task: plan.nextTask },
+        { ...options, streaming: false },
+      );
 
-      toolMessages.push({
-        role: "agent",
-        toolCalls: modelOutput.toolCalls,
-      });
-
-      for (const call of modelOutput.toolCalls) {
-        const tool = toolAgents?.find((i) => i.name === call.function.name);
-        if (!tool) {
-          throw new Error(`Tool agent not found: ${call.function.name}`);
-        }
-
-        yield {
-          delta: {
-            text: {
-              [this.outputKey]:
-                `\n\nInvoking tool: ${tool.name} ${JSON.stringify(call.function.arguments)}`,
-            },
-          },
-        };
-
-        try {
-          const toolStream = await this.invokeChildAgent(tool, call.function.arguments, {
-            ...options,
-            streaming: true,
-          });
-
-          const toolResult: Message = {};
-
-          for await (const toolChunk of toolStream) {
-            mergeAgentResponseChunk(toolResult, toolChunk);
-          }
-
-          toolMessages.push({
-            role: "tool",
-            name: tool.name,
-            toolCallId: call.id,
-            content: JSON.stringify(toolResult),
-          });
-        } catch (error) {
-          toolMessages.push({
-            role: "tool",
-            name: tool.name,
-            toolCallId: call.id,
-            content: JSON.stringify({ error: { message: error.message } }),
-          });
-        }
-      }
+      currentState.taskHistories.push({ task: plan.nextTask, result: JSON.stringify(taskResult) });
     }
+
+    yield* await this.invokeChildAgent(
+      this.completer,
+      { objective, currentState },
+      { ...options, streaming: true },
+    );
+  }
+
+  async getPlan(
+    {
+      skills,
+      ...input
+    }: { objective: string; skills: ChatModelInputTool[]; [key: string]: unknown },
+    options: AgentInvokeOptions,
+  ) {
+    const plan = await this.invokeChildAgent(
+      this.planner,
+      {
+        ...input,
+        skills: skills.map((i) => ({
+          name: i.function.name,
+          description: i.function.description,
+        })),
+      },
+      { ...options, streaming: false },
+    );
+
+    return plan;
   }
 }
 

@@ -54,61 +54,9 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
 Agent の実行は構造化されたライフサイクルに従い、フックを介した拡張のための明確なポイントを提供します。
 
-```d2
-direction: down
-
-Agent-Lifecycle: {
-  label: "Agent 実行ライフサイクル"
-  style: {
-    stroke-dash: 4
-  }
-
-  invoke: {
-    label: "1. invoke(input)"
-    shape: oval
-  }
-
-  on-start: {
-    label: "2. onStart フック"
-    shape: rectangle
-  }
-
-  input-validation: {
-    label: "3. 入力は有効か？"
-    shape: diamond
-  }
-
-  process: {
-    label: "4. process(input)"
-    shape: rectangle
-    style.fill: "#e6f7ff"
-  }
-
-  output-validation: {
-    label: "5. 出力は有効か？"
-    shape: diamond
-  }
-
-  on-end: {
-    label: "6. onEnd フック\n(成功またはエラーを処理)"
-    shape: rectangle
-  }
-
-  return-value: {
-    label: "7. 出力を返すかエラーをスロー"
-    shape: oval
-  }
-}
-
-Agent-Lifecycle.invoke -> Agent-Lifecycle.on-start
-Agent-Lifecycle.on-start -> Agent-Lifecycle.input-validation
-Agent-Lifecycle.input-validation -> Agent-Lifecycle.process: "はい"
-Agent-Lifecycle.process -> Agent-Lifecycle.output-validation
-Agent-Lifecycle.output-validation -> Agent-Lifecycle.on-end: "はい"
-Agent-Lifecycle.on-end -> Agent-Lifecycle.return-value
-Agent-Lifecycle.input-validation -> Agent-Lifecycle.on-end: "いいえ"
-Agent-Lifecycle.output-validation -> Agent-Lifecycle.on-end: "いいえ"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![Agents](assets/diagram/agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 1.  **呼び出し**: Agent の実行は、その `invoke()` メソッドを入力ペイロードで呼び出すことによって開始されます。
 2.  **`onStart` フック**: `onStart` フックがトリガーされ、ロギングや入力変換などの前処理ロジックの機会が提供されます。

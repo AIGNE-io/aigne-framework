@@ -2,6 +2,14 @@
 labels: ["Reference"]
 ---
 
+---
+labels: ["Reference"]
+---
+
+---
+labels: ["Reference"]
+---
+
 # Running Remote Agents
 
 The AIGNE CLI is not limited to running projects from your local filesystem. It also provides a powerful feature to execute agents directly from a remote URL. This is incredibly useful for testing, sharing, and running agents without needing to clone a repository or manually download files.
@@ -19,39 +27,9 @@ When you provide a URL to the `aigne run` command, the CLI performs the followin
 
 The entire process is streamlined to provide a seamless experience, making a remote agent feel as accessible as a local one.
 
-```d2
-direction: down
-
-developer: {
-  shape: c4-person
-  label: "Developer"
-}
-
-cli: {
-  label: "AIGNE CLI"
-}
-
-remote-server: {
-  label: "Remote Server\n(e.g., GitHub)"
-  shape: cylinder
-}
-
-local-cache: {
-  label: "Local Cache\n(~/.aigne/)"
-  shape: cylinder
-}
-
-agent-runtime: {
-  label: "Agent Runtime"
-}
-
-developer -> cli: "1. aigne run <URL>"
-cli -> remote-server: "2. Download package"
-remote-server -> cli: "3. Return tarball"
-cli -> local-cache: "4. Extract & cache"
-cli -> agent-runtime: "5. Execute agent from cache"
-agent-runtime -> developer: "6. Output"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![---](assets/diagram/running-remote-agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Usage
 

@@ -11,7 +11,8 @@
       "packages/core/src/agents/agent.ts",
       "packages/core/src/index.ts"
     ],
-    "parentId": ""
+    "parentId": "",
+    "icon": "lucide:book-open"
   },
   {
     "title": "Getting Started",
@@ -24,7 +25,8 @@
       "packages/core/src/agents/ai-agent.ts",
       "models/openai/src/openai-chat-model.ts"
     ],
-    "parentId": null
+    "parentId": null,
+    "icon": "lucide:rocket"
   },
   {
     "title": "Core Concepts",
@@ -35,7 +37,8 @@
       "packages/core/src/aigne/aigne.ts",
       "packages/core/src/agents/agent.ts"
     ],
-    "parentId": null
+    "parentId": null,
+    "icon": "lucide:puzzle"
   },
   {
     "title": "AIGNE",
@@ -94,7 +97,8 @@
       "packages/core/src/agents/transform-agent.ts",
       "packages/core/src/agents/mcp-agent.ts"
     ],
-    "parentId": null
+    "parentId": null,
+    "icon": "lucide:bot"
   },
   {
     "title": "AI Agent",
@@ -171,7 +175,8 @@
       "packages/core/src/prompt/prompt-builder.ts",
       "packages/core/src/agents/agent.ts"
     ],
-    "parentId": null
+    "parentId": null,
+    "icon": "lucide:graduation-cap"
   },
   {
     "title": "Defining Agents with YAML",
@@ -224,7 +229,8 @@
     "description": "A non-technical guide designed for end-users, explaining the core concepts of AI agents and workflows in simple terms with a focus on potential applications and business outcomes.",
     "path": "/user-guide",
     "sourceIds": ["./README.md", "packages/core/README.md"],
-    "parentId": ""
+    "parentId": "",
+    "icon": "lucide:users"
   },
   {
     "title": "What is AIGNE?",
@@ -300,7 +306,8 @@
       "models/xai/README.md",
       "models/aigne-hub/README.md"
     ],
-    "parentId": ""
+    "parentId": "",
+    "icon": "lucide:brain-circuit"
   },
   {
     "title": "Overview",

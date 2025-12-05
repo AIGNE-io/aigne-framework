@@ -13,34 +13,9 @@
 
 `MCPAgent` 封装了连接到 MCP 服务器并将其提供的功能转换为 AIGNE 构造的逻辑。当 `MCPAgent` 初始化时，它会连接到指定的服务器，并查询其可用的工具、提示和资源。然后，这些功能会分别作为 `skills`、`prompts` 和 `resources` 动态附加到 Agent 实例上，使其在您的 AIGNE 工作流中可以直接访问。
 
-```d2
-direction: right
-style: {
-  font-size: 14
-}
-
-"AIGNE 应用程序" -> aigne.invoke
-
-subgraph "AIGNE 框架" {
-  aigne.invoke -> mcp_agent: "MCPAgent" {
-    shape: hexagon
-    style.fill: "#D1E7DD"
-  }
-}
-
-subgraph "传输层 (网络 / Stdio)" {
-  mcp_agent -> transport: "MCP 请求"
-  transport -> mcp_agent: "MCP 响应"
-}
-
-transport -> "外部 MCP 服务器"
-
-subgraph "外部系统" {
- "外部 MCP 服务器" -> "工具"
- "外部 MCP 服务器" -> "提示"
- "外部 MCP 服务器" -> "资源"
-}
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![MCP Agent](assets/diagram/mcp-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 创建 MCPAgent
 

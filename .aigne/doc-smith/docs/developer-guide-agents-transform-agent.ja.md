@@ -11,56 +11,9 @@
 
 より複雑なカスタムロジックを必要とする変換については、[Function Agent](./developer-guide-agents-function-agent.md) の使用を検討してください。
 
-```d2
-direction: down
-
-Developer: {
-  shape: c4-person
-}
-
-Transform-Agent-Workflow: {
-  label: "Transform Agent ワークフロー"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  Input-Data: {
-    label: "入力データ\n(例: snake_case)"
-    shape: rectangle
-  }
-
-  Agent-Core: {
-    label: "変換ロジック"
-
-    Transform-Agent: {
-      label: "Transform Agent"
-      shape: rectangle
-    }
-
-    JSONata-Expression: {
-      label: "JSONata 式"
-      shape: rectangle
-      style: {
-        fill: "#f0f0f0"
-      }
-    }
-  }
-
-  Output-Data: {
-    label: "出力データ\n(例: camelCase)"
-    shape: rectangle
-  }
-}
-
-Developer -> Transform-Agent-Workflow.Agent-Core.JSONata-Expression: "1. 変換を定義"
-Transform-Agent-Workflow.Agent-Core.JSONata-Expression -> Transform-Agent-Workflow.Agent-Core.Transform-Agent: "構成"
-Developer -> Transform-Agent-Workflow.Input-Data: "2. 入力を提供"
-Transform-Agent-Workflow.Input-Data -> Transform-Agent-Workflow.Agent-Core.Transform-Agent: "3. 処理"
-Transform-Agent-Workflow.Agent-Core.Transform-Agent -> Transform-Agent-Workflow.Output-Data: "4. 生成"
-Transform-Agent-Workflow.Output-Data -> Developer: "5. 結果を返す"
-
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Transform Agent](assets/diagram/transform-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 構成
 

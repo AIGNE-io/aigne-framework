@@ -10,55 +10,9 @@
 2.  **`MemoryRecorder`**: 永続的なストレージバックエンド（例：データベース、ファイルシステム、ベクトルストア）に情報を書き込む役割を担う Agent。データの保存方法と場所に関する実装を提供する必要があります。
 3.  **`MemoryRetriever`**: 検索クエリや制限などの指定された基準に基づいてストレージバックエンドから情報を取得する役割を担う Agent。取得ロジックの実装を提供する必要があります。
 
-```d2
-direction: down
-
-AIGNE-Engine: {
-  label: "AIGNE\n(アプリケーションロジック)"
-  shape: rectangle
-}
-
-Memory-Agent: {
-  label: "MemoryAgent (オーケストレーター)"
-  shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-width: 2
-    stroke-dash: 4
-  }
-
-  MemoryRecorder: {
-    label: "MemoryRecorder"
-    shape: rectangle
-  }
-
-  MemoryRetriever: {
-    label: "MemoryRetriever"
-    shape: rectangle
-  }
-}
-
-Storage-Backend: {
-  label: "ストレージバックエンド\n(データベース、ベクトルストアなど)"
-  shape: cylinder
-}
-
-# 記録フロー
-AIGNE-Engine -> Memory-Agent: "1. invoke(record)"
-Memory-Agent -> Memory-Agent.MemoryRecorder: "2. Recorder に委任"
-Memory-Agent.MemoryRecorder -> Storage-Backend: "3. データを書き込み"
-
-# 取得フロー
-AIGNE-Engine -> Memory-Agent: "4. invoke(retrieve)" {
-  style.stroke-dash: 2
-}
-Memory-Agent -> Memory-Agent.MemoryRetriever: "5. Retriever に委任" {
-  style.stroke-dash: 2
-}
-Storage-Backend -> Memory-Agent.MemoryRetriever: "6. データを返す" {
-  style.stroke-dash: 2
-}
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Memory](assets/diagram/memory-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 仕組み
 

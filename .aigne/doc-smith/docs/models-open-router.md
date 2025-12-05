@@ -4,55 +4,9 @@ OpenRouter serves as a unified gateway to a diverse range of AI models from vari
 
 This guide details the process of installing, configuring, and utilizing the `@aigne/open-router` package to leverage multiple AI models.
 
-```d2
-direction: down
-
-Application: {
-  label: "Your Application"
-  shape: rectangle
-}
-
-aigne-open-router: {
-  label: "@aigne/open-router"
-  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-}
-
-OpenRouter-Service: {
-  label: "OpenRouter Service"
-  shape: rectangle
-}
-
-Providers: {
-  label: "Model Providers"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  OpenAI: {
-    shape: rectangle
-    "GPT-4": {}
-    "GPT-3.5": {}
-  }
-
-  Google: {
-    shape: rectangle
-    "Gemini Pro": {}
-  }
-
-  Anthropic: {
-    shape: rectangle
-    "Claude 3": {}
-  }
-}
-
-Application -> aigne-open-router: "1. Configure with API Key"
-aigne-open-router -> OpenRouter-Service: "2. API request with model ID"
-OpenRouter-Service -> Providers: "3. Route to provider"
-Providers -> OpenRouter-Service: "4. Provider Response"
-OpenRouter-Service -> aigne-open-router: "5. Unified Response"
-aigne-open-router -> Application: "6. Return result"
-```
+<!-- DIAGRAM_IMAGE_START:guide:4:3 -->
+![OpenRouter](assets/diagram/open-router-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Installation
 

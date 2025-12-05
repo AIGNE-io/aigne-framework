@@ -6,75 +6,9 @@ By wrapping a function, the `FunctionAgent` allows it to participate fully in th
 
 This diagram illustrates the creation and invocation flow of a `FunctionAgent`, from providing the source function to receiving the final output.
 
-```d2
-direction: down
-
-Zod-Library: {
-  label: "Zod Library"
-  shape: rectangle
-  style.fill: "#f0f0f0"
-}
-
-External-API: {
-  label: "External API\n(e.g., REST, GraphQL)"
-  shape: cylinder
-}
-
-Developers-Code: {
-  label: "Developer's Code"
-  shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-width: 2
-    stroke-dash: 4
-  }
-
-  Custom-Logic: {
-    label: "Custom Logic\n(JS/TS Function)"
-    shape: rectangle
-  }
-
-  Agent-Config: {
-    label: "Agent Configuration Object"
-    shape: rectangle
-  }
-}
-
-AIGNE-Framework: {
-  label: "AIGNE Framework"
-  shape: rectangle
-
-  FunctionAgent: {
-    label: "FunctionAgent"
-    shape: rectangle
-
-    from-method: {
-      label: "from()"
-      shape: oval
-    }
-
-    invoke-method: {
-      label: "invoke()"
-      shape: oval
-    }
-  }
-}
-
-Developers-Code.Custom-Logic -> AIGNE-Framework.FunctionAgent.from-method: "1a. Provide Function"
-Developers-Code.Agent-Config -> AIGNE-Framework.FunctionAgent.from-method: "1b. Provide Config"
-Zod-Library -> Developers-Code.Agent-Config: {
-  label: "Defines Schemas"
-  style.stroke-dash: 2
-}
-AIGNE-Framework.FunctionAgent.from-method -> AIGNE-Framework.FunctionAgent: "2. Creates Instance"
-
-Developers-Code -> AIGNE-Framework.FunctionAgent.invoke-method: "3. Call with input"
-AIGNE-Framework.FunctionAgent.invoke-method -> Developers-Code.Custom-Logic: "4. Execute 'process' logic"
-Developers-Code.Custom-Logic -> External-API: "5. (Optional) Fetch data"
-External-API -> Developers-Code.Custom-Logic: "6. Return data"
-Developers-Code.Custom-Logic -> AIGNE-Framework.FunctionAgent.invoke-method: "7. Return result"
-AIGNE-Framework.FunctionAgent.invoke-method -> Developers-Code: "8. Return final output"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![Function Agent](assets/diagram/function-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Key Concepts
 

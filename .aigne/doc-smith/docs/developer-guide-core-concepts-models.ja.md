@@ -15,72 +15,9 @@ AIGNE フレームワークは、ベースとなる `Model` クラスを定義�
 
 以下の図は、ベースの `Agent`、`Model` の抽象化、そしてそれらが接続する外部 AI サービスとの関係を示しています。
 
-```d2
-direction: down
-
-Application-Layer: {
-  label: "アプリケーション層 (あなたのコード)"
-  shape: rectangle
-
-  AIAgent: {
-    label: "AIAgent"
-    shape: rectangle
-  }
-
-  ImageAgent: {
-    label: "ImageAgent"
-    shape: rectangle
-  }
-}
-
-AIGNE-Framework: {
-  label: "AIGNE フレームワーク (抽象化層)"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  Model-Abstractions: {
-    grid-columns: 2
-
-    ChatModel: {
-      label: "ChatModel"
-      shape: rectangle
-    }
-  
-    ImageModel: {
-      label: "ImageModel"
-      shape: rectangle
-    }
-  }
-}
-
-External-AI-Services: {
-  label: "外部 AI サービス"
-  shape: rectangle
-  grid-columns: 3
-
-  OpenAI: {
-    label: "OpenAI\n(GPT-4 など)"
-    shape: cylinder
-  }
-
-  Anthropic: {
-    label: "Anthropic\n(Claude 3 など)"
-    shape: cylinder
-  }
-
-  Google: {
-    label: "Google\n(Gemini など)"
-    shape: cylinder
-  }
-}
-
-Application-Layer.AIAgent -> AIGNE-Framework.Model-Abstractions.ChatModel: "利用 (ChatModelInput/Output)"
-Application-Layer.ImageAgent -> AIGNE-Framework.Model-Abstractions.ImageModel: "利用 (ImageModelInput/Output)"
-AIGNE-Framework.Model-Abstractions.ChatModel -> External-AI-Services: "LLM プロバイダーに接続"
-AIGNE-Framework.Model-Abstractions.ImageModel -> External-AI-Services: "画像プロバイダーに接続"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Models](assets/diagram/models-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## ChatModel 抽象化
 

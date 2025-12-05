@@ -39,61 +39,9 @@ This loop continues until the output is approved or a maximum number of attempts
 
 The diagram below illustrates these three primary collaboration patterns.
 
-```d2
-direction: down
-
-Sequential-Workflow: {
-  label: "Sequential Workflow: The Assembly Line"
-  style.stroke-dash: 2
-
-  Input: { shape: oval }
-  Researcher: "Researcher Agent"
-  Writer: "Writer Agent"
-  Editor: "Editor Agent"
-  Output: { label: "Final Version"; shape: oval }
-
-  Input -> Researcher: "Topic"
-  Researcher -> Writer: "Research"
-  Writer -> Editor: "Draft"
-  Editor -> Output: "Approved Post"
-}
-
-Parallel-Workflow: {
-  label: "Parallel Workflow: The Brainstorming Session"
-  style.stroke-dash: 2
-
-  Input: { label: "Company Name"; shape: oval }
-  Social-Media: "Social Media Agent"
-  News: "News Agent"
-  Financial: "Financial Agent"
-  Output: { label: "Combined Market Analysis"; shape: oval }
-
-  Input -> Social-Media
-  Input -> News
-  Input -> Financial
-  Social-Media -> Output: "Mentions"
-  News -> Output: "Articles"
-  Financial -> Output: "Stock Data"
-}
-
-Reflection-Workflow: {
-  label: "Reflection: The Quality Assurance Loop"
-  style.stroke-dash: 2
-
-  Team: "Agent Team"
-  Task-Output: "Task Output"
-  Reviewer: {
-    label: "Reviewer Agent"
-    shape: diamond
-  }
-  Final-Output: { label: "Final Approved Output"; shape: oval }
-
-  Team -> Task-Output
-  Task-Output -> Reviewer
-  Reviewer -> Final-Output: "Approved"
-  Reviewer -> Team: "Needs Revision\n(Feedback)"
-}
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Agent Teams](assets/diagram/agent-teams-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Summary
 

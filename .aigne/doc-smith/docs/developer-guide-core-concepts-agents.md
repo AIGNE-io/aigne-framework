@@ -54,61 +54,9 @@ The return value, `AgentProcessResult`, can be a direct object, a streaming resp
 
 The execution of an agent adheres to a structured lifecycle, which provides clear points for extension via hooks.
 
-```d2
-direction: down
-
-Agent-Lifecycle: {
-  label: "Agent Execution Lifecycle"
-  style: {
-    stroke-dash: 4
-  }
-
-  invoke: {
-    label: "1. invoke(input)"
-    shape: oval
-  }
-
-  on-start: {
-    label: "2. onStart Hook"
-    shape: rectangle
-  }
-
-  input-validation: {
-    label: "3. Input Valid?"
-    shape: diamond
-  }
-
-  process: {
-    label: "4. process(input)"
-    shape: rectangle
-    style.fill: "#e6f7ff"
-  }
-
-  output-validation: {
-    label: "5. Output Valid?"
-    shape: diamond
-  }
-
-  on-end: {
-    label: "6. onEnd Hook\n(handles success or error)"
-    shape: rectangle
-  }
-
-  return-value: {
-    label: "7. Return Output or Throw Error"
-    shape: oval
-  }
-}
-
-Agent-Lifecycle.invoke -> Agent-Lifecycle.on-start
-Agent-Lifecycle.on-start -> Agent-Lifecycle.input-validation
-Agent-Lifecycle.input-validation -> Agent-Lifecycle.process: "Yes"
-Agent-Lifecycle.process -> Agent-Lifecycle.output-validation
-Agent-Lifecycle.output-validation -> Agent-Lifecycle.on-end: "Yes"
-Agent-Lifecycle.on-end -> Agent-Lifecycle.return-value
-Agent-Lifecycle.input-validation -> Agent-Lifecycle.on-end: "No"
-Agent-Lifecycle.output-validation -> Agent-Lifecycle.on-end: "No"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![Agents](assets/diagram/agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 1.  **Invocation**: An agent's execution is initiated by calling its `invoke()` method with an input payload.
 2.  **`onStart` Hook**: The `onStart` hooks are triggered, providing an opportunity for pre-processing logic, such as logging or input transformation.

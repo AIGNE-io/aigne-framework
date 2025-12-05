@@ -19,39 +19,9 @@ AIGNE CLI 不僅限於執行本地檔案系統中的專案。它還提供了一�
 
 整個過程都經過簡化，以提供無縫的體驗，讓遠端 Agent 感覺就像本地 Agent 一樣容易存取。
 
-```d2
-direction: down
-
-developer: {
-  shape: c4-person
-  label: "開發者"
-}
-
-cli: {
-  label: "AIGNE CLI"
-}
-
-remote-server: {
-  label: "遠端伺服器\n(例如 GitHub)"
-  shape: cylinder
-}
-
-local-cache: {
-  label: "本地快取\n(~/.aigne/)"
-  shape: cylinder
-}
-
-agent-runtime: {
-  label: "Agent 執行環境"
-}
-
-developer -> cli: "1. aigne run <URL>"
-cli -> remote-server: "2. 下載套件"
-remote-server -> cli: "3. 回傳 tarball"
-cli -> local-cache: "4. 解壓縮並快取"
-cli -> agent-runtime: "5. 從快取執行 Agent"
-agent-runtime -> developer: "6. 輸出"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![---](assets/diagram/running-remote-agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 使用方法
 

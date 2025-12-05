@@ -22,6 +22,9 @@ c2fcfd4a32e7039f27815d3143daeb0c426819dc68f0de1559d085e1ad567a64:
     https://www.arcblock.io:
       url: https://www.arcblock.io/image-bin/uploads/06e97c00fd2a53ff.png
       upload_time: 2025-09-24T09:37:13.402Z
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/06e97c00fd2a53ff.png
+      upload_time: 2025-12-04T10:57:09.023Z
 dacdbcdeba96a78e1c39f57c37c5a88c1a42f7d7a423b558270850938fa9ed0d:
   local_path: assets/create/create-project-using-default-template-success-message.png
   sites:
@@ -34,6 +37,9 @@ dacdbcdeba96a78e1c39f57c37c5a88c1a42f7d7a423b558270850938fa9ed0d:
     https://www.arcblock.io:
       url: https://www.arcblock.io/image-bin/uploads/dacdbcdeba96a78e.png
       upload_time: 2025-09-24T09:37:13.519Z
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/dacdbcdeba96a78e.png
+      upload_time: 2025-12-04T10:57:09.400Z
 c48e4ceaa98674a806d9315ec531ed14881d370b1e1e7df1a5968873b59da325:
   local_path: assets/run-mcp-service.png
   sites:
@@ -46,6 +52,9 @@ c48e4ceaa98674a806d9315ec531ed14881d370b1e1e7df1a5968873b59da325:
     https://www.arcblock.io:
       url: https://www.arcblock.io/image-bin/uploads/c48e4ceaa98674a8.png
       upload_time: 2025-09-24T09:37:19.561Z
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/c48e4ceaa98674a8.png
+      upload_time: 2025-12-04T10:57:15.511Z
 7259ac6078e7393b41080a0b0e47f2c9c45847404c534a8bdc822f96e2d5d346:
   local_path: assets/run/run-default-template-project-in-chat-mode.png
   sites:
@@ -58,6 +67,9 @@ c48e4ceaa98674a806d9315ec531ed14881d370b1e1e7df1a5968873b59da325:
     https://www.arcblock.io:
       url: https://www.arcblock.io/image-bin/uploads/7259ac6078e7393b.png
       upload_time: 2025-09-24T09:37:13.770Z
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/7259ac6078e7393b.png
+      upload_time: 2025-12-04T10:57:09.585Z
 eb45cd17811ac2c51879194821356603ba97fe502d042afc395a0fac6bd60373:
   local_path: assets/observe/observe-view-call-details.png
   sites:
@@ -70,6 +82,9 @@ eb45cd17811ac2c51879194821356603ba97fe502d042afc395a0fac6bd60373:
     https://www.arcblock.io:
       url: https://www.arcblock.io/image-bin/uploads/eb45cd17811ac2c5.png
       upload_time: 2025-09-24T09:37:19.860Z
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/eb45cd17811ac2c5.png
+      upload_time: 2025-12-04T10:57:16.760Z
 79831bfc8e6c44bc0b6911d8f167e68fbced32b852e04741c7e7defa6cd05dee:
   local_path: .aigne/doc-smith/.tmp/assets/d2/582a6ee4d23abd78c66e59d8e86fe049fdadfa702408374f22a1a86bbec02b8b.svg
   sites:
@@ -88,6 +103,9 @@ eb45cd17811ac2c51879194821356603ba97fe502d042afc395a0fac6bd60373:
     https://www.arcblock.io:
       url: https://www.arcblock.io/image-bin/uploads/6cd148bb88444bcb.png
       upload_time: 2025-09-24T09:37:20.195Z
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/6cd148bb88444bcb.png
+      upload_time: 2025-12-04T10:57:15.727Z
 bfcf3b730f1c76e446012060c6a85c6c12f11f49e6f3fffc353db4b56e50c3ca:
   local_path: .aigne/doc-smith/.tmp/assets/d2/1addc2c5724d54bf509f21f265ac78ddac56106491e6a02940302e4e07e0b5fb.svg
   sites:
@@ -823,6 +841,9 @@ bd385ebcb39afefa62638506a9f991a17ab718334e6d2ae0f363fb69b3e917e3:
     https://www.arcblock.io:
       url: https://www.arcblock.io/image-bin/uploads/580b6888d6e6d590.svg
       upload_time: 2025-09-24T09:37:13.492Z
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/580b6888d6e6d590.svg
+      upload_time: 2025-12-04T10:57:09.364Z
 1fa8163a5e345c7f9d150c4b445d8f0faba433f8ea69374a01d71297ff5edf72:
   local_path: .aigne/doc-smith/.tmp/assets/d2/282e7d5a428467625b5a6b676831b2183c3eeadabfe9c2e59aa02368b7209006.svg
   sites:
@@ -1060,3 +1081,27 @@ f51547ee1a65408c1d4778303633db88258073e8051a8f972831efc0d816e462:
     https://docsmith.aigne.io:
       url: https://docsmith.aigne.io/image-bin/uploads/f51547ee1a65408c.svg
       upload_time: 2025-09-24T09:37:41.323Z
+ec34344a1f7784b953ef748539bebc31223ed1f3364b18a8c242a6e10f919c9d:
+  local_path: docs/assets/diagram/core-concepts-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/ec34344a1f7784b9.jpg
+      upload_time: 2025-12-04T10:57:09.336Z
+a9c71bead07cd4b13d5ae40ca61119c9419223c69f93c54da03c1a1dc755b96e:
+  local_path: docs/assets/diagram/agents-and-skills-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/a9c71bead07cd4b1.jpg
+      upload_time: 2025-12-04T10:57:13.539Z
+b2bfd40289e38e74edf5ceb9d81f96d8c6c2d4e6e3d99b9f2f7bbb9595e3e4cd:
+  local_path: docs/assets/diagram/deploying-agents-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/b2bfd40289e38e74.jpg
+      upload_time: 2025-12-04T10:57:16.473Z
+76a4277d8816a313dc4e4bef3b4e9386f8269fb9f12a52d008c9a1a8ac0cdb15:
+  local_path: docs/assets/diagram/running-remote-agents-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/76a4277d8816a313.jpg
+      upload_time: 2025-12-04T10:57:18.012Z

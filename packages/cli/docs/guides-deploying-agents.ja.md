@@ -14,51 +14,9 @@ AIGNE プロジェクトをデプロイすると、ローカルの開発セッ�
 
 以下に、デプロイフローの概要を示します。
 
-```d2
-direction: down
-
-Developer: {
-  shape: c4-person
-}
-
-AIGNE-CLI: {
-  label: "AIGNE CLI"
-}
-
-Blocklet-CLI: {
-  label: "Blocklet CLI"
-}
-
-Deployment-Endpoint: {
-  label: "デプロイエンドポイント"
-  shape: cylinder
-}
-
-Local-Project: {
-  label: "あなたの AIGNE プロジェクト"
-  shape: rectangle
-  aigne-yaml: {
-    label: "aigne.yaml"
-  }
-  source-code: {
-    label: "ソースコード"
-  }
-}
-
-Developer -> AIGNE-CLI: "1. `aigne deploy` を実行"
-AIGNE-CLI -> Local-Project.aigne-yaml: "2. プロジェクト設定を読み込む"
-AIGNE-CLI -> AIGNE-CLI: "3. 一時的な .deploy ディレクトリを準備"
-AIGNE-CLI -> Blocklet-CLI: "4. CLIの確認 / インストールを促す"
-AIGNE-CLI -> Developer: "5. Blocklet 名の入力を促す"
-Developer -> AIGNE-CLI: "6. 名前を入力"
-AIGNE-CLI -> Blocklet-CLI: "7. Blocklet DID を作成"
-Blocklet-CLI -> AIGNE-CLI: "8. DID を返す"
-AIGNE-CLI -> AIGNE-CLI: "9. blocklet.yml を設定"
-AIGNE-CLI -> Blocklet-CLI: "10. プロジェクトをバンドル"
-Blocklet-CLI -> Deployment-Endpoint: "11. バンドルをデプロイ"
-AIGNE-CLI -> Developer: "12. 成功メッセージを表示"
-
-```
+<!-- DIAGRAM_IMAGE_START:guide:4:3 -->
+![---](assets/diagram/deploying-agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ### ステップバイステップのウォークスルー
 

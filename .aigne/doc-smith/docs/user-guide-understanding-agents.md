@@ -4,94 +4,14 @@ In the AIGNE framework, an "agent" is the fundamental building block for getting
 
 The core principle is to break down a large problem into smaller, manageable tasks and assign each task to an agent best suited for the job. This approach allows for clarity, efficiency, and the ability to build sophisticated automated workflows.
 
-This section provides a conceptual overview of the different roles agents can play. For more detailed explanations, please refer to the following pages:
+This section provides a conceptual overview of the different roles agents can play. The following diagram illustrates a common workflow where a manager agent coordinates several specialist agents to fulfill a user's request.
+<!-- DIAGRAM_IMAGE_START:intro:16:9 -->
+![Understanding Agents](assets/diagram/understanding-agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
+For more detailed explanations, please refer to the following pages:
 
 -   **[Basic Agents](./user-guide-understanding-agents-basic-agents.md):** Learn about individual agents as standalone workers.
 -   **[Agent Teams](./user-guide-understanding-agents-agent-teams.md):** Discover how multiple agents can collaborate to solve complex problems.
-
-```d2
-direction: down
-style: {
-  font-size: 14
-  stroke: "#262626"
-  fill: "#FAFAFA"
-  stroke-width: 2
-  border-radius: 8
-}
-
-Your_Request -> Manager_Agent
-
-subgraph "Specialist Agents" {
-    direction: right
-    Researcher
-    Artist
-    Calculator
-}
-
-Manager_Agent -> Researcher: "Assigns research task"
-Manager_Agent -> Artist: "Assigns image creation"
-Manager_Agent -> Calculator: "Assigns calculation"
-
-Researcher -> Manager_Agent: "Returns findings"
-Artist -> Manager_Agent: "Returns image"
-Calculator -> Manager_Agent: "Returns result"
-
-Manager_Agent -> Completed_Task
-
-Your_Request: {
-  label: "Your Request\n(e.g., 'Create a report on sales trends with a chart')"
-  shape: document
-  style: {
-    fill: "#E0F2FE"
-    stroke: "#0EA5E9"
-  }
-}
-
-Manager_Agent: {
-  label: "Manager Agent\n(Team Agent)"
-  tooltip: "Coordinates the workflow and delegates tasks"
-  style: {
-    fill: "#FEF3C7"
-    stroke: "#FBBF24"
-  }
-}
-
-Researcher: {
-  label: "Researcher\n(AI Agent)"
-  tooltip: "Analyzes data and summarizes trends"
-  style: {
-    fill: "#D1FAE5"
-    stroke: "#10B981"
-  }
-}
-
-Artist: {
-  label: "Artist\n(Image Agent)"
-  tooltip: "Generates a chart based on the data"
-  style: {
-    fill: "#D1FAE5"
-    stroke: "#10B981"
-  }
-}
-
-Calculator: {
-  label: "Calculator\n(Function Agent)"
-  tooltip: "Performs specific calculations"
-  style: {
-    fill: "#D1FAE5"
-    stroke: "#10B981"
-  }
-}
-
-Completed_Task: {
-  label: "Completed Task\n(Final Report)"
-  shape: document
-  style: {
-    fill: "#E0F2FE"
-    stroke: "#0EA5E9"
-  }
-}
-```
 
 ### Roles Agents Can Play
 

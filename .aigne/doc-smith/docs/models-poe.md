@@ -1,81 +1,14 @@
-
-The user wants to fix a D2 diagram syntax error.
-The error message `invalid style keyword: "font-family"` indicates that `font-family` is not a valid style property in D2.
-I need to remove or correct this line in the D2 code.
-
-Based on the ISTJ personality, I will perform the following steps:
-1.  **Analyze the request:** The user has provided feedback about a D2 syntax error. The goal is to correct the diagram and regenerate the document.
-2.  **Identify the error:** The error is `invalid style keyword: "font-family"`. This is a factual error in the D2 code.
-3.  **Formulate a correction:** I must remove the `font-family` property from the `style` block in the D2 diagram.
-4.  **Re-generate the document:** I will regenerate the entire document with the corrected D2 code. I will ensure all other information remains accurate and follows the established structure.
-5.  **Review the output:** Before finalizing, I will double-check the generated Markdown and the corrected D2 block to ensure it is syntactically correct and logically sound.
-
-Let's break down the generation process for the document content.
-
-**Plan:**
-
-1.  **Introduction:** Start with an overview of the `@aigne/poe` package, explaining its purpose: to connect the AIGNE Framework with the Poe API, which provides access to various third-party models. Mention that it uses an OpenAI-compatible API. Link to the main Models Overview page.
-2.  **Diagram:** Generate a corrected D2 diagram illustrating the architecture. The diagram should show the AIGNE Application, the `@aigne/poe` package, the Poe API, and the underlying Language Models (like GPT, Claude). The incorrect `font-family` style will be removed.
-3.  **Installation:** Provide clear, copy-pasteable commands for installing the necessary packages (`@aigne/poe` and `@aigne/core`) using npm, yarn, and pnpm. This is a standard, practical step.
-4.  **Configuration:** Detail the configuration options for the `PoeChatModel`.
-    *   Explain the two ways to provide the API key (`apiKey` property vs. `POE_API_KEY` environment variable). This is critical for setup.
-    *   Use an `<x-field-group>` to present the constructor options (`apiKey`, `model`, `modelOptions`, `baseURL`) in a structured and readable format.
-    *   Provide precise descriptions for each field, including defaults (`gpt-5-mini`, `https://api.poe.com/v1`). The information is available in the source code (`models/poe/src/poe.ts`).
-5.  **Usage Section:**
-    *   **Standard Invocation:** Provide a complete, working TypeScript example of instantiating `PoeChatModel` and calling the `invoke` method. Use a clear, practical example (e.g., asking the model what it is). The example is available in the README.
-    *   Show the expected JSON output. This helps the user verify their implementation.
-    *   **Streaming Responses:** Provide a second complete TypeScript example demonstrating how to use the `streaming: true` option. Show the loop for processing chunks (`isAgentResponseDelta`). This is a key feature mentioned in the README.
-    *   Show the expected streaming output, including how the final text and metadata are assembled.
-6.  **Further Reading / Summary:** Conclude with links to relevant external documentation (the official Poe docs) and internal documentation (Core Concepts: Models). This provides a clear next step for the user.
-
-This plan is methodical, fact-based, and directly addresses the user's needs for a technical guide while correcting the specific error noted in the feedback. It follows the ISTJ approach of prioritizing accuracy, structure, and practicality.# Poe
+# Poe
 
 The `@aigne/poe` package provides a standardized interface for integrating with [Poe](https://poe.com/), a service that offers access to a wide range of third-party language models, including those from OpenAI, Anthropic, and Google. By leveraging an OpenAI-compatible API endpoint, this package allows you to seamlessly use various models within the AIGNE Framework.
 
 This guide provides a step-by-step process for installing, configuring, and utilizing the `PoeChatModel`. For more general information on model integration, refer to the [Models Overview](./models-overview.md) documentation.
 
-```d2
-direction: down
+The following diagram illustrates the data flow from a developer's application through the AIGNE Framework to the Poe service and the underlying language models.
 
-Developer-App: {
-  label: "Developer's\nApplication"
-  shape: c4-person
-}
-
-AIGNE-Framework: {
-  label: "AIGNE Framework"
-  shape: rectangle
-
-  aigne-poe: {
-    label: "@aigne/poe\nPoeChatModel"
-    shape: rectangle
-  }
-}
-
-Poe-Service: {
-  label: "Poe Service"
-  shape: rectangle
-
-  Poe-API: {
-    label: "OpenAI-Compatible API"
-  }
-
-  Third-Party-Models: {
-    label: "Third-Party Language Models"
-    grid-columns: 3
-    OpenAI: {}
-    Anthropic: {}
-    Google: {}
-  }
-}
-
-Developer-App -> AIGNE-Framework.aigne-poe: "1. Uses PoeChatModel"
-AIGNE-Framework.aigne-poe -> Poe-Service.Poe-API: "2. Sends API Request"
-Poe-Service.Poe-API -> Poe-Service.Third-Party-Models: "3. Routes to selected model"
-Poe-Service.Third-Party-Models -> Poe-Service.Poe-API: "4. Generates response"
-Poe-Service.Poe-API -> AIGNE-Framework.aigne-poe: "5. Returns response stream"
-AIGNE-Framework.aigne-poe -> Developer-App: "6. Delivers result"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Poe](assets/diagram/poe-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Installation
 

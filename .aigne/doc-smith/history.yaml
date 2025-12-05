@@ -1,4 +1,9 @@
 entries:
+  - timestamp: 2025-12-04T11:08:25.330Z
+    operation: document_update
+    feedback: update image
+    docPaths:
+      - /developer-guide/agents/function-agent
   - timestamp: 2025-11-04T01:09:17.587Z
     operation: document_update
     feedback: Re-read the model. Currently, openai gemini aignehub model supports video generation.

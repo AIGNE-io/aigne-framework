@@ -8,48 +8,9 @@ This guide provides a comprehensive overview of the `AIAgent`, its configuration
 
 The `AIAgent` follows a systematic process to handle user input and generate a response. This process often involves multiple interactions with an LLM, especially when tools are used.
 
-```d2
-direction: right
-style {
-  stroke-width: 2
-}
-
-# Start with user input
-input: User Input
-
-# Agent components
-agent: AIAgent {
-  shape: package
-  style.fill: "#f0f4f8"
-
-  builder: PromptBuilder
-  model: ChatModel
-  tools: "Tools (Skills)"
-}
-
-# End with final output
-output: Final Response
-
-# Process Flow
-input -> agent.builder: "1. Build Prompt"
-agent.builder -> agent.model: "2. Invoke Model"
-agent.model -> agent: "3. Receive Response"
-
-subgraph "Tool Execution Loop" {
-  direction: down
-  style {
-    stroke-dash: 4
-  }
-
-  agent -> check_tool_call: "4. Parse Response" {shape: diamond}
-  check_tool_call -> output: "No"
-  check_tool_call -> agent.tools: "Yes (Tool Call Detected)"
-
-  agent.tools -> agent.builder: "5. Execute Tool & Format Result"
-}
-
-agent -> output: "6. Format Final Output"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![AI Agent](assets/diagram/ai-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 The diagram above illustrates the typical lifecycle of a request:
 1.  **Prompt Construction**: The `AIAgent` uses a `PromptBuilder` to assemble the final prompt from its `instructions`, the user input, and the history of any previous tool calls.

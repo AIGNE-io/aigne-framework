@@ -6,91 +6,9 @@ AIGNE 框架的設計與模型無關，讓開發者可以整合來自不同供�
 
 本節概述了所有官方支援的模型供應商。關於如何安裝、設定和使用特定供應商的詳細說明，請參閱其專屬的文件頁面。
 
-```d2
-direction: down
-style: {
-  stroke-width: 2
-  font-size: 14
-}
-
-AIGNE_Framework_Core: {
-  label: "AIGNE 框架核心"
-  shape: rectangle
-  style: {
-    fill: "#D1E7DD"
-    stroke: "#198754"
-  }
-}
-
-Model_Abstraction_Layer: {
-  label: "模型抽象層"
-  shape: rectangle
-  style: {
-    fill: "#cfe2ff"
-    stroke: "#0d6efd"
-  }
-}
-
-ChatModel: {
-  label: "ChatModel 介面"
-  shape: rectangle
-  style: {
-    fill: "#f8d7da"
-    stroke: "#dc3545"
-  }
-}
-
-ImageModel: {
-  label: "ImageModel 介面"
-  shape: rectangle
-  style: {
-    fill: "#f8d7da"
-    stroke: "#dc3545"
-  }
-}
-
-Model_Providers: {
-  label: "模型供應商適配器"
-  shape: cloud
-  style: {
-    fill: "#fff3cd"
-    stroke: "#ffc107"
-  }
-}
-
-OpenAI: "OpenAI 適配器\n(@aigne/openai)"
-Anthropic: "Anthropic 適配器\n(@aigne/anthropic)"
-Google: "Google Gemini 適配器\n(@aigne/gemini)"
-Bedrock: "AWS Bedrock 適配器\n(@aigne/bedrock)"
-Ollama: "Ollama 適配器\n(@aigne/ollama)"
-Other_Providers: {
-    label: "..."
-    shape: circle
-}
-
-
-AIGNE_Framework_Core -> Model_Abstraction_Layer: 互動
-
-Model_Abstraction_Layer.ChatModel
-Model_Abstraction_Layer.ImageModel
-
-Model_Abstraction_Layer -> Model_Providers: 接入
-
-Model_Providers.OpenAI
-Model_Providers.Anthropic
-Model_Providers.Google
-Model_Providers.Bedrock
-Model_Providers.Ollama
-Model_Providers.Other_Providers
-
-ChatModel -> OpenAI
-ChatModel -> Anthropic
-ChatModel -> Google
-ChatModel -> Bedrock
-ChatModel -> Ollama
-ImageModel -> OpenAI
-ImageModel -> Google
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Overview](assets/diagram/overview-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 支援的聊天模型
 

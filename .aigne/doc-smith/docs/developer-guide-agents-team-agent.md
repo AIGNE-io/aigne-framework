@@ -10,81 +10,9 @@ The `TeamAgent` supports several key patterns of agent orchestration:
 
 This component is fundamental for building modular and powerful AI systems. For details on the individual agents that can be part of a team, refer to the documentation for [AI Agent](./developer-guide-agents-ai-agent.md) and [Function Agent](./developer-guide-agents-function-agent.md).
 
-```d2
-direction: down
-
-Team-Agent-Orchestration: {
-  label: "Team Agent Orchestration Workflows"
-  grid-columns: 2
-  grid-gap: 100
-
-  Sequential-Execution: {
-    label: "Sequential Execution (Pipeline)"
-    shape: rectangle
-    style.fill: "#f0f4f8"
-
-    Input: { shape: oval }
-    Skill-A: "Skill A"
-    Skill-B: "Skill B"
-    Output: { shape: oval }
-  }
-
-  Parallel-Execution: {
-    label: "Parallel Execution"
-    shape: rectangle
-    style.fill: "#f0f4f8"
-
-    Input: { shape: oval }
-    Skill-A: "Skill A"
-    Skill-B: "Skill B"
-    Merge: "Merge Results"
-    Output: { shape: oval }
-  }
-
-  Iterative-Processing: {
-    label: "Iterative Processing (Batch)"
-    shape: rectangle
-    style.fill: "#f0f4f8"
-
-    Input-List: { label: "Input List"; shape: oval }
-    Process-Item: { label: "Process Item\n(with skills)" }
-    Output-List: { label: "Output List"; shape: oval }
-  }
-
-  Reflection: {
-    label: "Reflection (Refinement Loop)"
-    shape: rectangle
-    style.fill: "#f0f4f8"
-
-    Generate-Draft: "Generate Draft"
-    Review: { label: "Review Draft"; shape: diamond }
-    Refine-Draft: "Refine Draft"
-    Final-Output: { label: "Final Output"; shape: oval }
-  }
-}
-
-# Connections
-seq: Team-Agent-Orchestration.Sequential-Execution
-seq.Input -> seq.Skill-A -> seq.Skill-B -> seq.Output
-
-par: Team-Agent-Orchestration.Parallel-Execution
-par.Input -> par.Skill-A
-par.Input -> par.Skill-B
-par.Skill-A -> par.Merge
-par.Skill-B -> par.Merge
-par.Merge -> par.Output
-
-iter: Team-Agent-Orchestration.Iterative-Processing
-iter.Input-List -> iter.Process-Item: "For each item"
-iter.Process-Item -> iter.Process-Item: "Next item"
-iter.Process-Item -> iter.Output-List: "Done"
-
-refl: Team-Agent-Orchestration.Reflection
-refl.Generate-Draft -> refl.Review
-refl.Review -> refl.Final-Output: "Meets criteria"
-refl.Review -> refl.Refine-Draft: "Needs refinement"
-refl.Refine-Draft -> refl.Generate-Draft
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:1:1 -->
+![Team Agent](assets/diagram/team-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Configuration
 

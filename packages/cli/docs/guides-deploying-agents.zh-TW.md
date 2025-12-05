@@ -14,51 +14,9 @@ labels: ["Reference"]
 
 以下是部署流程的高階概覽：
 
-```d2
-direction: down
-
-Developer: {
-  shape: c4-person
-}
-
-AIGNE-CLI: {
-  label: "AIGNE CLI"
-}
-
-Blocklet-CLI: {
-  label: "Blocklet CLI"
-}
-
-Deployment-Endpoint: {
-  label: "部署端點"
-  shape: cylinder
-}
-
-Local-Project: {
-  label: "您的 AIGNE 專案"
-  shape: rectangle
-  aigne-yaml: {
-    label: "aigne.yaml"
-  }
-  source-code: {
-    label: "原始碼"
-  }
-}
-
-Developer -> AIGNE-CLI: "1. 執行 `aigne deploy`"
-AIGNE-CLI -> Local-Project.aigne-yaml: "2. 讀取專案設定"
-AIGNE-CLI -> AIGNE-CLI: "3. 準備暫存的 .deploy 目錄"
-AIGNE-CLI -> Blocklet-CLI: "4. 檢查 CLI / 提示安裝"
-AIGNE-CLI -> Developer: "5. 提示輸入 Blocklet 名稱"
-Developer -> AIGNE-CLI: "6. 提供名稱"
-AIGNE-CLI -> Blocklet-CLI: "7. 創建 Blocklet DID"
-Blocklet-CLI -> AIGNE-CLI: "8. 返回 DID"
-AIGNE-CLI -> AIGNE-CLI: "9. 設定 blocklet.yml"
-AIGNE-CLI -> Blocklet-CLI: "10. 打包專案"
-Blocklet-CLI -> Deployment-Endpoint: "11. 部署打包檔"
-AIGNE-CLI -> Developer: "12. 顯示成功訊息"
-
-```
+<!-- DIAGRAM_IMAGE_START:guide:4:3 -->
+![---](assets/diagram/deploying-agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ### 逐步解說
 

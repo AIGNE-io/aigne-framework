@@ -53,4 +53,42 @@ descriptions:
       and end, illustrating comprehensive monitoring of agent interactions and
       performance.
     generatedAt: 2025-10-17T12:44:01.712Z
-lastUpdated: 2025-10-17T12:44:01.712Z
+  b2bfd40289e38e74edf5ceb9d81f96d8c6c2d4e6e3d99b9f2f7bbb9595e3e4cd:
+    path: assets/diagram/deploying-agents-diagram-0.jpg
+    description: This image is a clear, step-by-step flowchart illustrating the
+      "AIGNE Deployment Process." It details the sequence of actions from
+      initiating a deploy command and preparing the environment, including a
+      conditional check for '@blocklet/cli' installation, through to
+      configuration, bundling, and final deployment to an endpoint. The diagram
+      effectively uses icons and distinct colors for the start and end states to
+      visually guide the user through the technical workflow.
+    generatedAt: 2025-12-04T10:53:53.076Z
+  ec34344a1f7784b953ef748539bebc31223ed1f3364b18a8c242a6e10f919c9d:
+    path: assets/diagram/core-concepts-diagram-0.jpg
+    description: This diagram illustrates the core architectural components of an AI
+      agent system, detailing the relationships between Project Configuration,
+      an Agents Directory, and a Skills Directory. It shows how a Chat Agent,
+      defined within the Agents Directory, interacts with both a Sandbox Skill
+      from the Skills Directory and an external AI Model Service. The visual
+      uses distinct color-coded sections and clear arrows to represent
+      dependencies and data flow.
+    generatedAt: 2025-12-04T10:53:53.076Z
+  a9c71bead07cd4b13d5ae40ca61119c9419223c69f93c54da03c1a1dc755b96e:
+    path: assets/diagram/agents-and-skills-diagram-0.jpg
+    description: This diagram illustrates the architectural process flow between an
+      "Agent (Reasoning & Orchestration)" and "Skills (Execution & Tools)". It
+      details how an Agent receives user input, maintains context, reasons to
+      select a skill, and then uses the skill's execution result to generate a
+      user response. The flow highlights the involvement of Agent Definitions,
+      Skill Metadata, and the specific steps for skill execution.
+    generatedAt: 2025-12-04T10:53:53.076Z
+  76a4277d8816a313dc4e4bef3b4e9386f8269fb9f12a52d008c9a1a8ac0cdb15:
+    path: assets/diagram/running-remote-agents-diagram-0.jpg
+    description: This flowchart illustrates the complete workflow for running an
+      AIGNE agent, starting with a CLI command and progressing through package
+      caching, downloading, and local storage. It details the agent execution
+      phase, including loading the application and running either a specific or
+      default agent based on provided inputs and configuration, culminating in
+      successful remote execution.
+    generatedAt: 2025-12-04T10:56:30.185Z
+lastUpdated: 2025-12-04T10:56:30.188Z

@@ -17,63 +17,9 @@
 
 この構造により、すべてのタスクを完了するために必要な合計時間は、全Agentの時間の合計ではなく、最も長く実行されているAgentによって決定されます。
 
-```d2
-direction: down
-
-Input: {
-  label: "1. 単一の入力"
-  shape: rectangle
-}
-
-Agent-Team: {
-  label: "Agentチーム (並列モード)"
-  style.stroke-dash: 4
-
-  Distribution: {
-    label: "2. タスクの配信"
-    shape: diamond
-  }
-
-  Agents: {
-    label: "3. 独立した処理"
-    style.stroke-width: 0
-    grid-columns: 3
-
-    Agent-1: { 
-      label: "Agent 1"
-      shape: rectangle 
-    }
-    Agent-2: { 
-      label: "Agent 2"
-      shape: rectangle 
-    }
-    Agent-N: {
-      label: "Agent N..."
-      shape: rectangle
-    }
-  }
-
-  Aggregation: {
-    label: "4. 結果の集約"
-    shape: diamond
-  }
-}
-
-Output: {
-  label: "5. 結合された結果"
-  shape: rectangle
-}
-
-Input -> Agent-Team.Distribution
-Agent-Team.Distribution -> Agent-Team.Agents.Agent-1
-Agent-Team.Distribution -> Agent-Team.Agents.Agent-2
-Agent-Team.Distribution -> Agent-Team.Agents.Agent-N
-Agent-Team.Agents.Agent-1 -> Agent-Team.Aggregation
-Agent-Team.Agents.Agent-2 -> Agent-Team.Aggregation
-Agent-Team.Agents.Agent-N -> Agent-Team.Aggregation
-Agent-Team.Aggregation -> Output
-
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Parallel Tasks](assets/diagram/parallel-tasks-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 一般的なユースケース
 

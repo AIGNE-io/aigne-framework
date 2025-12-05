@@ -4,48 +4,9 @@
 
 在 AIGNE 框架中，这由配置为以 `sequential` 模式运行的 `TeamAgent` 管理。团队中的每个 Agent 完成其任务后，会将结果传递下去，从而确保从开始到结束的逻辑性和有序性。
 
-```d2
-direction: down
-
-Initial-Request: {
-  label: "初始请求"
-  shape: oval
-}
-
-TeamAgent: {
-  label: "TeamAgent (顺序模式)"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  Agent-1: {
-    label: "Agent 1"
-    shape: rectangle
-  }
-
-  Agent-2: {
-    label: "Agent 2"
-    shape: rectangle
-  }
-
-  Final-Agent: {
-    label: "Final Agent"
-    shape: rectangle
-  }
-}
-
-Final-Result: {
-  label: "最终结果"
-  shape: oval
-}
-
-Initial-Request -> TeamAgent.Agent-1: "1. 初始输入"
-TeamAgent.Agent-1 -> TeamAgent.Agent-2: "2. 输出 1 + 初始输入"
-TeamAgent.Agent-2 -> TeamAgent.Final-Agent: "3. 输出 2 + 前序输入"
-TeamAgent.Final-Agent -> Final-Result: "4. 最终输出"
-
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Sequential Tasks](assets/diagram/sequential-tasks-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 工作原理
 

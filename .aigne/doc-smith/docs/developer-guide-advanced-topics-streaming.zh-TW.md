@@ -155,65 +155,9 @@ getFinalObject();
 
 下圖說明了使用 SSE 時，從後端 AIGNE 到前端應用程式的資料流。
 
-```d2
-direction: down
-
-Frontend: {
-  label: "前端應用程式"
-  shape: rectangle
-
-  EventSource-Client: {
-    label: "EventSource 用戶端"
-    shape: rectangle
-  }
-
-  UI-Component: {
-    label: "UI 元件"
-    shape: rectangle
-  }
-}
-
-Backend: {
-  label: "後端伺服器"
-  shape: rectangle
-
-  SSE-Endpoint: {
-    label: "SSE 端點"
-  }
-
-  AIGNE-Core: {
-    label: "AIGNE 框架"
-
-    invoke: {
-        label: "aigne.invoke(..., { stream: true })"
-    }
-
-    AgentResponseStream: {
-        label: "AgentResponseStream\n(ReadableStream)"
-    }
-
-    AgentResponseStreamSSE: {
-        label: "AgentResponseStreamSSE\n(Utility)"
-    }
-  }
-}
-
-LLM: {
-  label: "LLM 服務"
-  shape: cylinder
-}
-
-Frontend.EventSource-Client -> Backend.SSE-Endpoint: "1. POST /api/chat-stream"
-Backend.SSE-Endpoint -> Backend.AIGNE-Core.invoke: "2. 呼叫 Agent"
-Backend.AIGNE-Core.invoke -> LLM: "3. 向 LLM API 發出請求"
-LLM -> Backend.AIGNE-Core.invoke: "4. 串流回應"
-Backend.AIGNE-Core.invoke -> Backend.AIGNE-Core.AgentResponseStream: "5. 回傳串流"
-Backend.AIGNE-Core.AgentResponseStream -> Backend.AIGNE-Core.AgentResponseStreamSSE: "6. 管道傳輸至 SSE 工具程式"
-Backend.AIGNE-Core.AgentResponseStreamSSE -> Backend.SSE-Endpoint: "7. 產生 SSE 格式的區塊"
-Backend.SSE-Endpoint -> Frontend.EventSource-Client: "8. 透過 HTTP 串流回應"
-Frontend.EventSource-Client -> Frontend.UI-Component: "9. 'onmessage' 事件觸發 UI 更新"
-Frontend.UI-Component -> Frontend.UI-Component: "10. 漸進式渲染文字"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Streaming](assets/diagram/streaming-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ### 後端實作
 

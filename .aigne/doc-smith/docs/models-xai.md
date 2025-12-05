@@ -4,38 +4,11 @@ This guide provides instructions for configuring and using xAI's language models
 
 The `@aigne/xai` package serves as a direct interface to the xAI API, allowing developers to integrate Grok's capabilities into their applications through the standardized `ChatModel` interface provided by the AIGNE Framework.
 
-```d2
-direction: down
+The following diagram illustrates the interaction between the developer, the `@aigne/xai` package, and the xAI Platform.
 
-Developer: {
-  shape: c4-person
-}
-
-aigne-xai: {
-  label: "@aigne/xai Package"
-  shape: rectangle
-}
-
-xAI-Platform: {
-  label: "xAI Platform"
-  shape: rectangle
-
-  API-Key: {
-    label: "API Key"
-  }
-
-  Grok-Models: {
-    label: "Grok Models"
-  }
-}
-
-Developer -> xAI-Platform.API-Key: "1. Obtains API Key"
-Developer -> aigne-xai: "2. Configure Package\n(API Key, Model Selection)"
-aigne-xai -> xAI-Platform.Grok-Models: "3. Sends API Request"
-xAI-Platform.Grok-Models -> aigne-xai: "4. Returns Response"
-aigne-xai -> Developer: "5. Delivers Result"
-
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![xAI](assets/diagram/xai-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Installation
 

@@ -1,95 +1,24 @@
 import {
-  Agent,
   type AgentInvokeOptions,
-  type AgentOptions,
   AIAgent,
-  type Context,
+  type AIAgentOptions,
+  type ChatModelInputMessage,
+  type ChatModelOutput,
+  isAgentResponseDelta,
   type Message,
-  PromptTemplate,
+  mergeAgentResponseChunk,
+  PromptBuilder,
 } from "@aigne/core";
-import { checkArguments } from "@aigne/core/utils/type-utils.js";
-import fastq from "fastq";
-import { z } from "zod";
-import {
-  FULL_PLAN_PROMPT_TEMPLATE,
-  type FullPlanInput,
-  type FullPlanOutput,
-  getFullPlanSchema,
-  type Step,
-  type StepWithResult,
-  SYNTHESIZE_PLAN_USER_PROMPT_TEMPLATE,
-  SYNTHESIZE_STEP_PROMPT_TEMPLATE,
-  type SynthesizeStepPromptInput,
-  TASK_PROMPT_TEMPLATE,
-  type Task,
-  type TaskPromptInput,
-} from "./orchestrator-prompts.js";
-
-/**
- * Default maximum number of iterations to prevent infinite loops
- */
-const DEFAULT_MAX_ITERATIONS = 30;
-
-/**
- * Default number of concurrent tasks
- */
-const DEFAULT_TASK_CONCURRENCY = 5;
-
-/**
- * Re-export orchestrator prompt templates and related types
- */
-export * from "./orchestrator-prompts.js";
-
-/**
- * Represents a complete plan with execution results
- * @hidden
- */
-export interface FullPlanWithResult {
-  /**
-   * The overall objective
-   */
-  objective: string;
-
-  /**
-   * The generated complete plan
-   */
-  plan?: FullPlanOutput;
-
-  /**
-   * List of executed steps with their results
-   */
-  steps: StepWithResult[];
-
-  /**
-   * Final result
-   */
-  result?: string;
-
-  /**
-   * Plan completion status
-   */
-  status?: boolean;
-}
+import { stringify } from "yaml";
+import { DefaultPlanner } from "./planner/default/index.js";
+import { ORCHESTRATOR_SYSTEM_PROMPT } from "./prompt.js";
+import type { PlannerInput, PlannerOutput } from "./type.js";
 
 /**
  * Configuration options for the Orchestrator Agent
  */
 export interface OrchestratorAgentOptions<I extends Message = Message, O extends Message = Message>
-  extends AgentOptions<I, O> {
-  /**
-   * Maximum number of iterations to prevent infinite loops
-   * Default: 30
-   */
-  maxIterations?: number;
-
-  /**
-   * Number of concurrent tasks
-   * Default: 5
-   */
-  tasksConcurrency?: number;
-
-  inputKey: string;
-}
+  extends AIAgentOptions<I, O> {}
 
 /**
  * Orchestrator Agent Class
@@ -109,7 +38,7 @@ export interface OrchestratorAgentOptions<I extends Message = Message, O extends
 export class OrchestratorAgent<
   I extends Message = Message,
   O extends Message = Message,
-> extends Agent<I, O> {
+> extends AIAgent<I, O> {
   override tag = "OrchestratorAgent";
 
   /**
@@ -117,7 +46,7 @@ export class OrchestratorAgent<
    * @param options - Configuration options for the Orchestrator Agent
    * @returns A new OrchestratorAgent instance
    */
-  static from<I extends Message, O extends Message>(
+  static override from<I extends Message, O extends Message>(
     options: OrchestratorAgentOptions<I, O>,
   ): OrchestratorAgent<I, O> {
     return new OrchestratorAgent(options);
@@ -128,198 +57,144 @@ export class OrchestratorAgent<
    * @param options - Configuration options for the Orchestrator Agent
    */
   constructor(options: OrchestratorAgentOptions<I, O>) {
-    checkArguments("OrchestratorAgent", orchestratorAgentOptionsSchema, options);
-
     super({ ...options });
-    this.maxIterations = options.maxIterations;
-    this.tasksConcurrency = options.tasksConcurrency;
-    this.inputKey = options.inputKey;
 
-    this.planner = new AIAgent<FullPlanInput, FullPlanOutput>({
-      name: "llm_orchestration_planner",
-      instructions: FULL_PLAN_PROMPT_TEMPLATE,
-      outputSchema: () => getFullPlanSchema(this.skills),
-    });
+    this.instructions =
+      typeof options.instructions === "string"
+        ? PromptBuilder.from(options.instructions)
+        : (options.instructions ?? new PromptBuilder());
 
-    this.completer = new AIAgent({
-      name: "llm_orchestration_completer",
-      instructions: FULL_PLAN_PROMPT_TEMPLATE,
-      outputSchema: this.outputSchema,
-    });
+    this.planner = new DefaultPlanner({});
   }
 
-  private planner: AIAgent<FullPlanInput, FullPlanOutput>;
+  private planner: AIAgent<PlannerInput, PlannerOutput>;
 
-  private completer: AIAgent<FullPlanInput, O>;
-
-  inputKey: string;
-
-  /**
-   * Maximum number of iterations
-   * Prevents infinite execution loops
-   */
-  maxIterations?: number;
-
-  /**
-   * Number of concurrent tasks
-   * Controls how many tasks can be executed simultaneously
-   */
-  tasksConcurrency?: number;
-
-  /**
-   * Process input and execute the orchestrator workflow
-   *
-   * Workflow:
-   * 1. Extract the objective
-   * 2. Loop until plan completion or maximum iterations:
-   *    a. Generate/update execution plan
-   *    b. If plan is complete, synthesize result
-   *    c. Otherwise, execute steps in the plan
-   *
-   * @param input - Input message containing the objective
-   * @param options - Agent invocation options
-   * @returns Processing result
-   */
-  override async process(input: I, options: AgentInvokeOptions) {
-    const { model } = options.context;
+  override async *process(input: I, options: AgentInvokeOptions) {
+    const model = this.model || options.model || options.context.model;
     if (!model) throw new Error("model is required to run OrchestratorAgent");
 
-    const objective = input[this.inputKey];
-    if (typeof objective !== "string")
-      throw new Error("Objective is required to run OrchestratorAgent");
+    const { tools: availableSkills } = await this.instructions.build({
+      ...options,
+      input,
+      model,
+      agent: this,
+    });
 
-    const result: FullPlanWithResult = {
-      objective,
-      steps: [],
-    };
+    const { prompt: objective } = await this.instructions.buildPrompt({
+      input,
+      context: options.context,
+    });
 
-    let iterations = 0;
-    const maxIterations = this.maxIterations ?? DEFAULT_MAX_ITERATIONS;
+    const planRes = availableSkills?.length
+      ? await this.invokeChildAgent(
+          this.planner,
+          {
+            objective,
+            skills: availableSkills?.map((i) => ({
+              name: i.function.name,
+              description: i.function.description,
+            })),
+          },
+          { ...options, streaming: false },
+        )
+      : undefined;
 
-    while (iterations++ < maxIterations) {
-      const plan = await this.getFullPlan(result, options.context);
+    const builder = new PromptBuilder({
+      instructions: ORCHESTRATOR_SYSTEM_PROMPT,
+    });
 
-      result.plan = plan;
+    const { messages, tools, toolChoice, toolAgents } = await builder.build({
+      ...options,
+      input: {
+        instructions: objective,
+        plan: planRes?.plan.steps.length ? planRes.plan : undefined,
+      },
+      model,
+      agent: this,
+    });
 
-      if (plan.isComplete) {
-        return this.synthesizePlanResult(result, options.context);
-      }
-
-      for (const step of plan.steps) {
-        const stepResult = await this.executeStep(result, step, options.context);
-
-        result.steps.push(stepResult);
-      }
+    if (planRes?.plan.steps.length) {
+      yield { delta: { text: { [this.outputKey]: `\n\nPlan:\n${stringify(planRes.plan)}` } } };
     }
 
-    throw new Error(`Max iterations reached: ${maxIterations}`);
-  }
+    const toolMessages: ChatModelInputMessage[] = [];
 
-  private getFullPlanInput(planResult: FullPlanWithResult): FullPlanInput {
-    return {
-      objective: planResult.objective,
-      steps: planResult.steps,
-      plan: {
-        status: planResult.status ? "Complete" : "In Progress",
-        result: planResult.result || "No results yet",
-      },
-      agents: this.skills.map((i) => ({
-        name: i.name,
-        description: i.description,
-        tools: i.skills.map((i) => ({ name: i.name, description: i.description })),
-      })),
-    };
-  }
+    const modelOptions = await model.getModelOptions(input, options);
 
-  private async getFullPlan(
-    planResult: FullPlanWithResult,
-    context: Context,
-  ): Promise<FullPlanOutput> {
-    return context.invoke(this.planner, this.getFullPlanInput(planResult));
-  }
+    while (true) {
+      const stream = await this.invokeChildAgent(
+        model,
+        { messages: messages.concat(toolMessages), tools, toolChoice, modelOptions },
+        { ...options, streaming: true },
+      );
 
-  private async synthesizePlanResult(planResult: FullPlanWithResult, context: Context): Promise<O> {
-    return context.invoke(this.completer, {
-      ...this.getFullPlanInput(planResult),
-      message: SYNTHESIZE_PLAN_USER_PROMPT_TEMPLATE,
-    });
-  }
+      const modelOutput: ChatModelOutput = {};
 
-  private async executeStep(
-    planResult: FullPlanWithResult,
-    step: Step,
-    context: Context,
-  ): Promise<StepWithResult> {
-    const concurrency = this.tasksConcurrency ?? DEFAULT_TASK_CONCURRENCY;
+      for await (const chunk of stream) {
+        if (isAgentResponseDelta(chunk)) {
+          if (chunk.delta.text?.text) {
+            yield { delta: { text: { [this.outputKey]: chunk.delta.text.text } } };
+          }
 
-    const { model } = context;
-    if (!model) throw new Error("model is required to run OrchestratorAgent");
+          if (chunk.delta.json) {
+            Object.assign(modelOutput, chunk.delta.json);
+          }
+        }
+      }
 
-    const queue = fastq.promise(async (task: Task) => {
-      const agent = this.skills.find((skill) => skill.name === task.agent);
-      if (!agent) throw new Error(`Agent ${task.agent} not found`);
+      if (!modelOutput.toolCalls?.length) {
+        return;
+      }
 
-      const prompt = await PromptTemplate.from(TASK_PROMPT_TEMPLATE).format(<TaskPromptInput>{
-        objective: planResult.objective,
-        step,
-        task,
-        steps: planResult.steps,
+      toolMessages.push({
+        role: "agent",
+        toolCalls: modelOutput.toolCalls,
       });
 
-      let result: string;
+      for (const call of modelOutput.toolCalls) {
+        const tool = toolAgents?.find((i) => i.name === call.function.name);
+        if (!tool) {
+          throw new Error(`Tool agent not found: ${call.function.name}`);
+        }
 
-      if (agent.isInvokable) {
-        result = getMessageOrJsonString(await context.invoke(agent, { message: prompt }));
-      } else {
-        const executor = AIAgent.from({
-          name: "llm_orchestration_task_executor",
-          instructions: prompt,
-          skills: agent.skills,
-        });
-        result = getMessageOrJsonString(await context.invoke(executor, {}));
+        yield {
+          delta: {
+            text: {
+              [this.outputKey]:
+                `\n\nInvoking tool: ${tool.name} ${JSON.stringify(call.function.arguments)}`,
+            },
+          },
+        };
+
+        try {
+          const toolStream = await this.invokeChildAgent(tool, call.function.arguments, {
+            ...options,
+            streaming: true,
+          });
+
+          const toolResult: Message = {};
+
+          for await (const toolChunk of toolStream) {
+            mergeAgentResponseChunk(toolResult, toolChunk);
+          }
+
+          toolMessages.push({
+            role: "tool",
+            name: tool.name,
+            toolCallId: call.id,
+            content: JSON.stringify(toolResult),
+          });
+        } catch (error) {
+          toolMessages.push({
+            role: "tool",
+            name: tool.name,
+            toolCallId: call.id,
+            content: JSON.stringify({ error: { message: error.message } }),
+          });
+        }
       }
-
-      return { task, result };
-    }, concurrency);
-
-    let results: StepWithResult["tasks"] | undefined;
-
-    try {
-      results = await Promise.all(step.tasks.map((task) => queue.push(task)));
-    } catch (error) {
-      queue.kill();
-      throw error;
     }
-
-    const result = getMessageOrJsonString(
-      await context.invoke(
-        AIAgent.from<SynthesizeStepPromptInput, Message>({
-          name: "llm_orchestration_step_synthesizer",
-          instructions: SYNTHESIZE_STEP_PROMPT_TEMPLATE,
-        }),
-        { objective: planResult.objective, step, tasks: results },
-      ),
-    );
-    if (!result) throw new Error("unexpected empty result from synthesize step's tasks results");
-
-    return {
-      step,
-      tasks: results,
-      result,
-    };
   }
 }
 
-function getMessageOrJsonString(output: Message): string {
-  const entries = Object.entries(output);
-  const firstValue = entries[0]?.[1];
-  if (entries.length === 1 && typeof firstValue === "string") {
-    return firstValue;
-  }
-  return JSON.stringify(output);
-}
-
-const orchestratorAgentOptionsSchema = z.object({
-  maxIterations: z.number().optional(),
-  tasksConcurrency: z.number().optional(),
-});
+export default OrchestratorAgent;

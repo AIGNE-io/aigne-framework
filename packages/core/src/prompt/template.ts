@@ -213,6 +213,10 @@ export class ChatMessagesTemplate {
 
   constructor(public messages: ChatMessageTemplate[]) {}
 
+  copy(): ChatMessagesTemplate {
+    return new ChatMessagesTemplate(this.messages.map((m) => m));
+  }
+
   async format(
     variables?: Record<string, unknown>,
     options?: FormatOptions,

@@ -8,7 +8,6 @@ import {
   AIGNE,
   ChatMessagesTemplate,
   FunctionAgent,
-  ImageAgent,
   MCPAgent,
   PromptBuilder,
   SystemMessageTemplate,
@@ -430,9 +429,8 @@ test("PromptBuilder should build image prompt correctly", async () => {
   const builder = PromptBuilder.from("Draw an image about {{topic}}");
 
   expect(
-    await builder.buildImagePrompt({
+    await builder.buildPrompt({
       input: { topic: "a cat" },
-      agent: ImageAgent.from({ instructions: builder }),
     }),
   ).toEqual({
     prompt: "Draw an image about a cat",

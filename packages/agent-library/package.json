@@ -29,9 +29,14 @@
   "types": "./lib/dts/index.d.ts",
   "exports": {
     "./*": {
-      "import": "./lib/esm/*",
-      "require": "./lib/cjs/*",
+      "import": "./lib/esm/*/index.js",
+      "require": "./lib/cjs/*/index.js",
       "types": "./lib/dts/*"
+    },
+    "./utils/*": {
+      "import": "./lib/esm/utils/*",
+      "require": "./lib/cjs/utils/*",
+      "types": "./lib/dts/utils/*"
     }
   },
   "typesVersions": {

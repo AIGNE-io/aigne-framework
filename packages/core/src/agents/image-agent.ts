@@ -63,10 +63,10 @@ export class ImageAgent<I extends Message = any, O extends ImageModelOutput = an
 
     const modelOptions = await imageModel.getModelOptions(input, options);
 
-    const { prompt, image } = await this.instructions.buildImagePrompt({
+    const { prompt, image } = await this.instructions.buildPrompt({
       ...options,
       input,
-      agent: this,
+      inputFileKey: this.inputFileKey,
     });
 
     const n = input.n || modelOptions?.n;

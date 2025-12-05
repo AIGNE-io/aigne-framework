@@ -15,6 +15,7 @@ import type { AIGNECLIAgent } from "../aigne/type.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { ChatMessagesTemplate, parseChatMessages } from "../prompt/template.js";
+import { isAgent } from "../utils/agent-utils.js";
 import {
   flat,
   isNil,
@@ -40,6 +41,7 @@ export interface LoadOptions {
         model?: z.infer<typeof aigneFileSchema>["imageModel"],
       ) => PromiseOrValue<ImageModel | undefined>);
   afs?: {
+    sharedAFS?: AFS;
     availableModules?: {
       module: string;
       alias?: string[];
@@ -47,6 +49,7 @@ export interface LoadOptions {
     }[];
   };
   aigne?: z.infer<typeof aigneFileSchema>;
+  require?: (modulePath: string, options: { parent?: string }) => Promise<any>;
 }
 
 export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
@@ -122,7 +125,7 @@ export async function loadAgent(
   }
 
   if ([".yml", ".yaml"].includes(nodejs.path.extname(path))) {
-    const agent = await loadAgentFromYamlFile(path);
+    const agent = await loadAgentFromYamlFile(path, options);
 
     return parseAgent(path, agent, options, agentOptions);
   }
@@ -193,8 +196,7 @@ async function parseAgent(
   options?: LoadOptions,
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
-  const skills =
-    "skills" in agent && agent.skills ? await loadSkills(path, agent.skills, options) : undefined;
+  if (isAgent(agent)) return agent;
 
   const memory =
     "memory" in agent && options?.memories?.length
@@ -206,8 +208,10 @@ async function parseAgent(
       : undefined;
 
   let afs: AFS | undefined;
-  if (typeof agent.afs === "boolean") {
-    if (agent.afs) afs = new AFS();
+  if (agent.afs !== false && (!agent.afs || agent.afs === true) && options?.afs?.sharedAFS) {
+    afs = options.afs.sharedAFS;
+  } else if (agent.afs === true) {
+    afs = new AFS();
   } else if (agent.afs) {
     afs = new AFS();
 
@@ -224,6 +228,14 @@ async function parseAgent(
       afs.mount(module);
     }
   }
+
+  const skills =
+    "skills" in agent && agent.skills
+      ? await loadSkills(path, agent.skills, {
+          ...options,
+          afs: { ...options?.afs, sharedAFS: (agent.shareAFS && afs) || options?.afs?.sharedAFS },
+        })
+      : undefined;
 
   const model =
     agent.model && typeof options?.model === "function"
@@ -321,6 +333,17 @@ async function parseAgent(
       });
     }
   }
+
+  if ("agentClass" in agent && agent.agentClass) {
+    return new agent.agentClass({
+      ...baseOptions,
+      instructions,
+    });
+  }
+
+  throw new Error(
+    `Unsupported agent type: ${"type" in agent ? agent.type : "unknown"} at path: ${path}`,
+  );
 }
 
 async function loadMemory(

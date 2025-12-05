@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import fsSync from "node:fs";
 import fs from "node:fs/promises";
+import module from "node:module";
 import os from "node:os";
 import path from "node:path";
 import url from "node:url";
@@ -43,5 +44,9 @@ export const nodejs = {
 
   get url(): typeof import("node:url") {
     return url;
+  },
+
+  get module(): typeof import("node:module") {
+    return module;
   },
 };

@@ -27,35 +27,9 @@
 
 這個過程很直接。使用者向 Agent 提供一個輸入。Agent 接著會查閱其核心指令以了解情境和規則，在必要時使用它可能具備的任何技能，並產生一個輸出。
 
-```d2 icon=material-symbols:robot-2-outline
-direction: right
-
-User: {
-  label: "使用者"
-  shape: person
-}
-
-Agent: {
-  label: "基礎 Agent"
-  shape: hexagon
-  style.fill: "#f0f4f8"
-}
-
-Instructions: {
-  label: "核心指令\n（規則手冊）"
-  shape: document
-}
-
-Output: {
-  label: "結果"
-  shape: document
-}
-
-User -> Agent: "輸入（例如，一個具體問題）"
-Agent -> Instructions: "查閱"
-Instructions -> Agent: "提供指導"
-Agent -> Output: "產生輸出（例如，一個答案）"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Basic Agents](assets/diagram/user-guide-understanding-agents-basic-agents-01.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 範例：一個簡單的聊天 Agent
 

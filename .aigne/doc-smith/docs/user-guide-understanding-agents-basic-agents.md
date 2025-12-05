@@ -27,35 +27,9 @@ Every basic agent, regardless of its function, is defined by a few core componen
 
 The process is straightforward. A user provides an input to an agent. The agent then consults its core instructions to understand the context and rules, uses any skills it might have if necessary, and generates an output.
 
-```d2 icon=material-symbols:robot-2-outline
-direction: right
-
-User: {
-  label: "User"
-  shape: person
-}
-
-Agent: {
-  label: "Basic Agent"
-  shape: hexagon
-  style.fill: "#f0f4f8"
-}
-
-Instructions: {
-  label: "Core Instructions\n(Rulebook)"
-  shape: document
-}
-
-Output: {
-  label: "Result"
-  shape: document
-}
-
-User -> Agent: "Input (e.g., a specific question)"
-Agent -> Instructions: "Consults"
-Instructions -> Agent: "Provides guidance"
-Agent -> Output: "Produces Output (e.g., an answer)"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Basic Agents](assets/diagram/user-guide-understanding-agents-basic-agents-01.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Example: A Simple Chat Agent
 

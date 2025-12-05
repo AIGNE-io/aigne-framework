@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.16.13](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.13-beta.1...openai-v0.16.13) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.66
+
 ## [0.16.13-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.13-beta...openai-v0.16.13-beta.1) (2025-12-05)
 
 

@@ -71,10 +71,7 @@
     "description": "Scaffolds a new AIGNE project from a template.",
     "path": "/command-reference/create",
     "parentId": "/command-reference",
-    "sourceIds": [
-      "src/commands/create.ts",
-      "README.md"
-    ]
+    "sourceIds": ["src/commands/create.ts", "README.md"]
   },
   {
     "title": "aigne run",
@@ -96,11 +93,7 @@
     "description": "Serves agents as a Model Context Protocol (MCP) server for integration with external systems.",
     "path": "/command-reference/serve-mcp",
     "parentId": "/command-reference",
-    "sourceIds": [
-      "src/commands/serve-mcp.ts",
-      "README.md",
-      "src/utils/serve-mcp.ts"
-    ]
+    "sourceIds": ["src/commands/serve-mcp.ts", "README.md", "src/utils/serve-mcp.ts"]
   },
   {
     "title": "aigne hub",
@@ -121,21 +114,14 @@
     "description": "Starts a local server to view and analyze agent execution traces and observability data.",
     "path": "/command-reference/observe",
     "parentId": "/command-reference",
-    "sourceIds": [
-      "src/commands/observe.ts",
-      "README.md"
-    ]
+    "sourceIds": ["src/commands/observe.ts", "README.md"]
   },
   {
     "title": "aigne test",
     "description": "Runs automated tests for your agents and skills.",
     "path": "/command-reference/test",
     "parentId": "/command-reference",
-    "sourceIds": [
-      "src/commands/test.ts",
-      "README.md",
-      "test-agents/README.md"
-    ]
+    "sourceIds": ["src/commands/test.ts", "README.md", "test-agents/README.md"]
   },
   {
     "title": "aigne deploy",
@@ -153,9 +139,7 @@
     "description": "Execute pre-packaged applications like `doc-smith` for specialized, out-of-the-box agent functionality.",
     "path": "/command-reference/built-in-apps",
     "parentId": "/command-reference",
-    "sourceIds": [
-      "src/commands/app.ts"
-    ]
+    "sourceIds": ["src/commands/app.ts"]
   },
   {
     "title": "Guides",
@@ -186,11 +170,7 @@
     "description": "Learn how to run agents directly from a remote Git repository or tarball URL.",
     "path": "/guides/running-remote-agents",
     "parentId": "/guides",
-    "sourceIds": [
-      "src/commands/run.ts",
-      "README.md",
-      "src/utils/download.ts"
-    ]
+    "sourceIds": ["src/commands/run.ts", "README.md", "src/utils/download.ts"]
   },
   {
     "title": "Deploying Agents",

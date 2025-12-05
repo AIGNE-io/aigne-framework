@@ -25,7 +25,12 @@ import {
   tryOrThrow,
 } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
-import { type HooksSchema, loadAgentFromYamlFile, type NestAgentSchema } from "./agent-yaml.js";
+import {
+  type HooksSchema,
+  type Instructions,
+  loadAgentFromYamlFile,
+  type NestAgentSchema,
+} from "./agent-yaml.js";
 import { camelizeSchema, chatModelSchema, imageModelSchema, optionalize } from "./schema.js";
 
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
@@ -133,7 +138,7 @@ export async function loadAgent(
   throw new Error(`Unsupported agent file type: ${path}`);
 }
 
-async function loadNestAgent(
+export async function loadNestAgent(
   path: string,
   agent: NestAgentSchema,
   options?: LoadOptions,
@@ -190,7 +195,7 @@ async function loadSkills(
   return loadedSkills;
 }
 
-async function parseAgent(
+export async function parseAgent(
   path: string,
   agent: Awaited<ReturnType<typeof loadAgentFromYamlFile>>,
   options?: LoadOptions,
@@ -264,17 +269,8 @@ async function parseAgent(
   };
 
   let instructions: PromptBuilder | undefined;
-  if ("instructions" in agent && agent.instructions) {
-    instructions = new PromptBuilder({
-      instructions: ChatMessagesTemplate.from(
-        parseChatMessages(
-          agent.instructions.map((i) => ({
-            ...i,
-            options: { workingDir: nodejs.path.dirname(i.path) },
-          })),
-        ),
-      ),
-    });
+  if ("instructions" in agent && agent.instructions && ["ai", "image"].includes(agent.type)) {
+    instructions = instructionsToPromptBuilder(agent.instructions);
   }
 
   switch (agent.type) {
@@ -335,9 +331,10 @@ async function parseAgent(
   }
 
   if ("agentClass" in agent && agent.agentClass) {
-    return new agent.agentClass({
-      ...baseOptions,
-      instructions,
+    return await agent.agentClass.load({
+      filepath: path,
+      parsed: baseOptions,
+      options,
     });
   }
 
@@ -443,4 +440,17 @@ async function findAIGNEFile(path: string): Promise<string> {
   throw new Error(
     `aigne.yaml not found in ${path}. Please ensure you are in the correct directory or provide a valid path.`,
   );
+}
+
+export function instructionsToPromptBuilder(instructions: Instructions) {
+  return new PromptBuilder({
+    instructions: ChatMessagesTemplate.from(
+      parseChatMessages(
+        instructions.map((i) => ({
+          ...i,
+          options: { workingDir: nodejs.path.dirname(i.path) },
+        })),
+      ),
+    ),
+  });
 }

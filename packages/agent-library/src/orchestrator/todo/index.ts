@@ -9,29 +9,24 @@ import {
 } from "./type.js";
 
 export class TodoPlanner extends AIAgent<TodoPlannerInput, TodoPlannerOutput> {
-  constructor(
-    public options: Omit<
-      AIAgentOptions<TodoPlannerInput, TodoPlannerOutput>,
-      "inputSchema" | "outputSchema"
-    >,
-  ) {
+  constructor(options: AIAgentOptions<TodoPlannerInput, TodoPlannerOutput>) {
     super({
       name: "TodoPlanner",
       ...options,
-      inputSchema: todoPlannerInputSchema,
-      outputSchema: todoPlannerOutputSchema,
       instructions: options.instructions || TODO_PLANNER_PROMPT_TEMPLATE,
+      inputSchema: options.inputSchema || todoPlannerInputSchema,
+      outputSchema: options.outputSchema || todoPlannerOutputSchema,
     });
   }
 }
 
 export class TodoWorker extends AIAgent {
-  constructor(public options: Omit<AIAgentOptions, "inputSchema">) {
+  constructor(options: AIAgentOptions) {
     super({
       name: "TodoWorker",
       ...options,
       instructions: options.instructions || TODO_WORKER_PROMPT_TEMPLATE,
-      inputSchema: todoWorkerInputSchema,
+      inputSchema: options.inputSchema || todoWorkerInputSchema,
     });
   }
 }

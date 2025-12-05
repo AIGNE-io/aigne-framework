@@ -64,7 +64,7 @@ function findCliAgentRecursive(agents: AIGNECLIAgents, name: string) {
   return undefined;
 }
 
-export function isAgent(obj: any): obj is Agent {
+export function isAgent<A extends Agent>(obj: any): obj is A {
   return (
     obj &&
     typeof obj.name === "string" &&

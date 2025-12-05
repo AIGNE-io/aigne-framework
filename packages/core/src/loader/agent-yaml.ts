@@ -3,7 +3,7 @@ import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
-import type { Agent, AgentHooks, FunctionAgentFn, TaskRenderMode } from "../agents/agent.js";
+import type { AgentClass, AgentHooks, FunctionAgentFn, TaskRenderMode } from "../agents/agent.js";
 import { AIAgentToolChoice } from "../agents/ai-agent.js";
 import { type Role, roleSchema } from "../agents/chat-model.js";
 import { ProcessMode, type ReflectionMode } from "../agents/team-agent.js";
@@ -34,6 +34,13 @@ export type NestAgentSchema =
   | string
   | { url: string; defaultInput?: Record<string, any>; hooks?: HooksSchema | HooksSchema[] }
   | AgentSchema;
+
+export function isNestAgentSchema(obj: any): obj is NestAgentSchema {
+  return (
+    typeof obj === "string" ||
+    (typeof obj === "object" && (typeof obj.url === "string" || typeof obj.type === "string"))
+  );
+}
 
 export type AFSModuleSchema =
   | string
@@ -119,9 +126,8 @@ export interface FunctionAgentSchema extends BaseAgentSchema {
 }
 
 export interface ThirdAgentSchema extends BaseAgentSchema {
-  agentClass?: new (...args: any[]) => Agent<any, any>;
+  agentClass?: AgentClass;
   type: string;
-  instructions?: Instructions;
   [key: string]: any;
 }
 
@@ -135,6 +141,99 @@ export type AgentSchema =
   | ThirdAgentSchema;
 
 export async function parseAgentFile(path: string, data: any): Promise<AgentSchema> {
+  const agentSchema = getAgentSchema({ filepath: path });
+
+  return agentSchema.parseAsync({
+    ...data,
+    model: data.model || data.chatModel || data.chat_model,
+  });
+}
+
+export async function loadAgentFromYamlFile(path: string, options?: LoadOptions) {
+  const raw = await tryOrThrow(
+    () => nodejs.fs.readFile(path, "utf8"),
+    (error) => new Error(`Failed to load agent definition from ${path}: ${error.message}`),
+  );
+
+  const json = tryOrThrow(
+    () => parse(raw),
+    (error) => new Error(`Failed to parse agent definition from ${path}: ${error.message}`),
+  );
+
+  if (!["ai", "image", "mcp", "team", "transform", "function"].includes(json?.type)) {
+    if (typeof json?.type === "string") {
+      if (!options?.require)
+        throw new Error(
+          `Module loader is not provided to load agent type module ${json.type} from ${path}`,
+        );
+      const Mod = await options.require(json.type, { parent: path });
+      if (typeof Mod?.default?.prototype?.constructor !== "function") {
+        throw new Error(`The agent type module ${json.type} does not export a default Agent class`);
+      }
+
+      json.agentClass = Mod.default;
+    }
+  }
+
+  const agent = await tryOrThrow(
+    async () =>
+      await parseAgentFile(path, {
+        ...json,
+        type: json.type ?? "ai",
+        skills: json.skills ?? json.tools,
+      }),
+
+    (error) => new Error(`Failed to validate agent definition from ${path}: ${error.message}`),
+  );
+
+  return agent;
+}
+
+const instructionItemSchema = z.union([
+  z.object({
+    role: roleSchema.default("system"),
+    url: z.string(),
+  }),
+  z.object({
+    role: roleSchema.default("system"),
+    content: z.string(),
+  }),
+]);
+
+const parseInstructionItem =
+  ({ filepath }: { filepath: string }) =>
+  async ({ role, ...v }: z.infer<typeof instructionItemSchema>): Promise<Instructions[number]> => {
+    if (role === "tool")
+      throw new Error(`'tool' role is not allowed in instruction item in agent file ${filepath}`);
+
+    if ("content" in v && typeof v.content === "string") {
+      return { role, content: v.content, path: filepath };
+    }
+    if ("url" in v && typeof v.url === "string") {
+      const url = nodejs.path.isAbsolute(v.url)
+        ? v.url
+        : nodejs.path.join(nodejs.path.dirname(filepath), v.url);
+      return nodejs.fs.readFile(url, "utf8").then((content) => ({ role, content, path: url }));
+    }
+    throw new Error(
+      `Invalid instruction item in agent file ${filepath}. Expected 'content' or 'url' property`,
+    );
+  };
+
+export const getInstructionsSchema = ({ filepath }: { filepath: string }) =>
+  z
+    .union([z.string(), instructionItemSchema, z.array(instructionItemSchema)])
+    .transform(async (v): Promise<Instructions> => {
+      if (typeof v === "string") return [{ role: "system", content: v, path: filepath }];
+
+      if (Array.isArray(v)) {
+        return Promise.all(v.map((item) => parseInstructionItem({ filepath })(item)));
+      }
+
+      return [await parseInstructionItem({ filepath })(v)];
+    }) as unknown as ZodType<Instructions>;
+
+export const getAgentSchema = ({ filepath }: { filepath: string }) => {
   const agentSchema: ZodType<AgentSchema> = z.lazy(() => {
     const nestAgentSchema: ZodType<NestAgentSchema> = z.lazy(() =>
       z.union([
@@ -171,11 +270,11 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
       imageModel: optionalize(imageModelSchema),
       taskTitle: optionalize(z.string()),
       taskRenderMode: optionalize(z.union([z.literal("hide"), z.literal("collapse")])),
-      inputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
+      inputSchema: optionalize(inputOutputSchema({ path: filepath })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
       ) as unknown as ZodType<BaseAgentSchema["inputSchema"]>,
       defaultInput: optionalize(defaultInputSchema),
-      outputSchema: optionalize(inputOutputSchema({ path })).transform((v) =>
+      outputSchema: optionalize(inputOutputSchema({ path: filepath })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
       ) as unknown as ZodType<BaseAgentSchema["outputSchema"]>,
       includeInputInOutput: optionalize(z.boolean()),
@@ -217,61 +316,19 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
       shareAFS: optionalize(z.boolean()),
     });
 
-    const instructionItemSchema = z.union([
-      z.object({
-        role: roleSchema.default("system"),
-        url: z.string(),
-      }),
-      z.object({
-        role: roleSchema.default("system"),
-        content: z.string(),
-      }),
-    ]);
-
-    const parseInstructionItem = async ({
-      role,
-      ...v
-    }: z.infer<typeof instructionItemSchema>): Promise<Instructions[number]> => {
-      if (role === "tool")
-        throw new Error(`'tool' role is not allowed in instruction item in agent file ${path}`);
-
-      if ("content" in v && typeof v.content === "string") {
-        return { role, content: v.content, path };
-      }
-      if ("url" in v && typeof v.url === "string") {
-        const url = nodejs.path.isAbsolute(v.url)
-          ? v.url
-          : nodejs.path.join(nodejs.path.dirname(path), v.url);
-        return nodejs.fs.readFile(url, "utf8").then((content) => ({ role, content, path: url }));
-      }
-      throw new Error(
-        `Invalid instruction item in agent file ${path}. Expected 'content' or 'url' property`,
-      );
-    };
-
-    const instructionsSchema = z
-      .union([z.string(), instructionItemSchema, z.array(instructionItemSchema)])
-      .transform(async (v): Promise<Instructions> => {
-        if (typeof v === "string") return [{ role: "system", content: v, path }];
-
-        if (Array.isArray(v)) {
-          return Promise.all(v.map((item) => parseInstructionItem(item)));
-        }
-
-        return [await parseInstructionItem(v)];
-      }) as unknown as ZodType<Instructions>;
+    const instructionsSchema = getInstructionsSchema({ filepath: filepath });
 
     return camelizeSchema(
       z.union([
         z
           .object({
             type: z.string(),
-            agentClass: z.custom<new () => Agent>(
+            agentClass: z.custom<AgentClass>(
               (v) => typeof v?.prototype?.constructor === "function",
             ),
-            instructions: optionalize(instructionsSchema),
           })
-          .extend(baseAgentSchema.shape),
+          .extend(baseAgentSchema.shape)
+          .passthrough(),
         z.discriminatedUnion("type", [
           z
             .object({
@@ -346,48 +403,26 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
     );
   });
 
-  return agentSchema.parseAsync({
-    ...data,
-    model: data.model || data.chatModel || data.chat_model,
-  });
-}
+  return agentSchema;
+};
 
-export async function loadAgentFromYamlFile(path: string, options?: LoadOptions) {
-  const raw = await tryOrThrow(
-    () => nodejs.fs.readFile(path, "utf8"),
-    (error) => new Error(`Failed to load agent definition from ${path}: ${error.message}`),
+export const getNestAgentSchema = ({
+  filepath,
+}: {
+  filepath: string;
+}): ZodType<NestAgentSchema> => {
+  const agentSchema = getAgentSchema({ filepath });
+
+  return z.lazy(() =>
+    z.union([
+      agentSchema,
+      z.string(),
+      camelizeSchema(
+        z.object({
+          url: z.string(),
+          defaultInput: optionalize(defaultInputSchema),
+        }),
+      ),
+    ]),
   );
-
-  const json = tryOrThrow(
-    () => parse(raw),
-    (error) => new Error(`Failed to parse agent definition from ${path}: ${error.message}`),
-  );
-
-  if (!["ai", "image", "mcp", "team", "transform", "function"].includes(json?.type)) {
-    if (typeof json?.type === "string") {
-      if (!options?.require)
-        throw new Error(
-          `Module loader is not provided to load agent type module ${json.type} from ${path}`,
-        );
-      const Mod = await options.require(json.type, { parent: path });
-      if (typeof Mod?.default?.prototype?.constructor !== "function") {
-        throw new Error(`The agent type module ${json.type} does not export a default Agent class`);
-      }
-
-      json.agentClass = Mod.default;
-    }
-  }
-
-  const agent = await tryOrThrow(
-    async () =>
-      await parseAgentFile(path, {
-        ...json,
-        type: json.type ?? "ai",
-        skills: json.skills ?? json.tools,
-      }),
-
-    (error) => new Error(`Failed to validate agent definition from ${path}: ${error.message}`),
-  );
-
-  return agent;
-}
+};

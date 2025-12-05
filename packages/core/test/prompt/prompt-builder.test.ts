@@ -727,7 +727,13 @@ test("PromptBuilder should build with afs correctly", async () => {
         },
         {
           "function": {
-            "description": "Read file contents from the AFS - path must be an exact file path from list or search results",
+            "description": 
+    "Read file contents from the AFS - path must be an exact file path from list or search results
+
+    Usage:
+    - Use withLineNumbers=true to get line numbers for code reviews or edits
+    "
+    ,
             "name": "afs_read",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -736,6 +742,10 @@ test("PromptBuilder should build with afs correctly", async () => {
                 "path": {
                   "description": "Exact file path from list or search results (e.g., '/docs/api.md', '/src/utils/helper.js')",
                   "type": "string",
+                },
+                "withLineNumbers": {
+                  "description": "Whether to include line numbers in the returned content, default is false",
+                  "type": "boolean",
                 },
               },
               "required": [

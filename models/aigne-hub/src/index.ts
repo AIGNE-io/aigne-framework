@@ -26,10 +26,6 @@ export * from "./utils/find-provider.js";
 export * from "./utils/model.js";
 
 export class AIGNEHubChatModel extends ChatModel {
-  static async load(options: AIGNEHubChatModelOptions) {
-    return new AIGNEHubChatModel(options);
-  }
-
   static async models() {
     return getModels({ type: "chat" });
   }
@@ -82,10 +78,6 @@ export class AIGNEHubChatModel extends ChatModel {
 }
 
 export class AIGNEHubImageModel extends ImageModel {
-  static async load(options: AIGNEHubImageModelOptions) {
-    return new AIGNEHubImageModel(options);
-  }
-
   static async models() {
     return getModels({ type: "image" });
   }
@@ -138,10 +130,6 @@ export class AIGNEHubImageModel extends ImageModel {
 }
 
 export class AIGNEHubVideoModel extends VideoModel {
-  static async load(options: AIGNEHubVideoModelOptions) {
-    return new AIGNEHubVideoModel(options);
-  }
-
   static async models() {
     return getModels({ type: "video" });
   }

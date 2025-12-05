@@ -127,7 +127,7 @@ export interface FunctionAgentSchema extends BaseAgentSchema {
 
 export interface ThirdAgentSchema extends BaseAgentSchema {
   agentClass?: AgentClass;
-  type: string;
+  type: ""; // type is a non-empty string, here set to empty string to avoid type conflict
   [key: string]: any;
 }
 
@@ -322,7 +322,7 @@ export const getAgentSchema = ({ filepath }: { filepath: string }) => {
       z.union([
         z
           .object({
-            type: z.string(),
+            type: z.string() as z.ZodType<"">,
             agentClass: z.custom<AgentClass>(
               (v) => typeof v?.prototype?.constructor === "function",
             ),

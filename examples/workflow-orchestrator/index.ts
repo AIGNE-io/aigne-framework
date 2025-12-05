@@ -1,8 +1,8 @@
 #!/usr/bin/env bunwrapper
 
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
+import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
 import { runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
-import { AIAgent, MCPAgent } from "@aigne/core";
+import { AIAgent, MCPAgent, PromptBuilder } from "@aigne/core";
 
 const puppeteer = await MCPAgent.from({
   command: "npx",
@@ -42,10 +42,8 @@ const writer = AIAgent.from({
 });
 
 const agent = OrchestratorAgent.from({
+  objective: PromptBuilder.from("{{message}}"),
   skills: [finder, writer],
-  maxIterations: 3,
-  tasksConcurrency: 1, // puppeteer can only run one task at a time
-  inputKey: "message",
 });
 
 await runWithAIGNE(agent, {

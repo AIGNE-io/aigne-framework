@@ -3016,3 +3016,15 @@ d429b7c7edff24dc0039252bceefee6003ab9e86f471c0e6f6ae79a1917765b7:
     https://staging.docsmith.aigne.io:
       url: https://staging.docsmith.aigne.io/image-bin/uploads/d429b7c7edff24dc.jpg
       upload_time: 2025-12-04T11:08:51.530Z
+27bf289dc972d118628dc6d41fe0bea1ae74d9cff78c4662b062c7fdc9708503:
+  local_path: .aigne/doc-smith/docs/assets/diagram/developer-guide-advanced-topics-hooks-01.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/27bf289dc972d118.jpg
+      upload_time: 2025-12-05T12:13:22.618Z
+dff4279eef7546f8f0b8fbb08155aa35be5794bb22542b4c6950f85f059d4ec5:
+  local_path: .aigne/doc-smith/docs/assets/diagram/user-guide-understanding-agents-basic-agents-01.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/dff4279eef7546f8.jpg
+      upload_time: 2025-12-05T12:13:30.658Z

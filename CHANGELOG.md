@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.89.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.89.0-beta...aigne-framework-v1.89.0-beta.1) (2025-12-05)
+
+
+### Bug Fixes
+
+* return tree view instead of list for afs_list ([#774](https://github.com/AIGNE-io/aigne-framework/issues/774)) ([8ec2f93](https://github.com/AIGNE-io/aigne-framework/commit/8ec2f93fb5870f6404d886ad0197cc21c61dfd74))
+
 ## [1.89.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.1...aigne-framework-v1.89.0-beta) (2025-12-02)
 
 

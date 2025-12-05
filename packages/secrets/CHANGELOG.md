@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.3-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/secrets-v0.1.3-beta...secrets-v0.1.3-beta.1) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.0-beta.1
+
 ## [0.1.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/secrets-v0.1.2...secrets-v0.1.3-beta) (2025-12-02)
 
 

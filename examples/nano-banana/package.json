@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-nano-banana",
-  "version": "1.2.3-beta",
+  "version": "1.2.3-beta.1",
   "description": "A demonstration of using AIGNE Framework for image generating or editing.",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/nano-banana",

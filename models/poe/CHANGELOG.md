@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.3](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.1.3-beta.1...poe-v1.1.3) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.13
+  * devDependencies
+    * @aigne/core bumped to 1.70.0
+    * @aigne/test-utils bumped to 0.5.66
+
 ## [1.1.3-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/poe-v1.1.3-beta...poe-v1.1.3-beta.1) (2025-12-05)
 
 

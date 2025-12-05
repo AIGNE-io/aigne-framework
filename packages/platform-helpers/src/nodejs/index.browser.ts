@@ -32,8 +32,4 @@ export const nodejs = {
   get url(): typeof import("node:url") {
     throw new Error("This code must run in a Node.js environment.");
   },
-
-  get module(): typeof import("node:module") {
-    throw new Error("This code must run in a Node.js environment.");
-  },
 };

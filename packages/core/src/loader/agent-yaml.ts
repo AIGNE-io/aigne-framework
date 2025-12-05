@@ -371,9 +371,7 @@ export async function loadAgentFromYamlFile(path: string, options?: LoadOptions)
         );
       const Mod = await options.require(json.type, { parent: path });
       if (typeof Mod?.default?.prototype?.constructor !== "function") {
-        throw new Error(
-          `The agent type module ${json.type} does not export a default from function`,
-        );
+        throw new Error(`The agent type module ${json.type} does not export a default Agent class`);
       }
 
       json.agentClass = Mod.default;

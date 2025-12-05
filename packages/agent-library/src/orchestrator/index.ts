@@ -2,14 +2,21 @@ import {
   type AgentInvokeOptions,
   AIAgent,
   type AIAgentOptions,
-  type ChatModelInputTool,
   type Message,
   PromptBuilder,
 } from "@aigne/core";
 import { omit } from "@aigne/core/utils/type-utils.js";
 import { ORCHESTRATOR_COMPLETE_PROMPT } from "./prompt.js";
 import { TodoPlanner, TodoWorker } from "./todo/index.js";
-import type { OrchestratorState, PlannerInput, PlannerOutput } from "./type.js";
+import {
+  type CompleterInput,
+  type ExecutionState,
+  type PlannerInput,
+  type PlannerOutput,
+  type WorkerInput,
+  type WorkerOutput,
+  workerInputSchema,
+} from "./type.js";
 
 /**
  * Configuration options for the Orchestrator Agent
@@ -61,9 +68,10 @@ export class OrchestratorAgent<
         ? PromptBuilder.from(options.instructions)
         : (options.instructions ?? new PromptBuilder());
 
-    this.planner = new TodoPlanner({}) as unknown as AIAgent<PlannerInput, PlannerOutput>;
+    this.planner = new TodoPlanner({});
     this.worker = new TodoWorker({
-      ...omit(options, "instructions", "outputSchema", "inputSchema"),
+      ...omit(options, "instructions", "outputSchema"),
+      inputSchema: workerInputSchema,
     } as AIAgentOptions);
     this.completer = new AIAgent({
       instructions: ORCHESTRATOR_COMPLETE_PROMPT,
@@ -74,38 +82,38 @@ export class OrchestratorAgent<
 
   private planner: AIAgent<PlannerInput, PlannerOutput>;
 
-  private worker: AIAgent;
+  private worker: AIAgent<WorkerInput, WorkerOutput>;
 
-  private completer: AIAgent<{ objective: string; currentState: OrchestratorState }, O>;
+  private completer: AIAgent<CompleterInput, O>;
 
   override async *process(input: I, options: AgentInvokeOptions) {
     const model = this.model || options.model || options.context.model;
     if (!model) throw new Error("model is required to run OrchestratorAgent");
 
-    const { tools: availableSkills } = await this.instructions.build({
+    const { tools: availableSkills = [] } = await this.instructions.build({
       ...options,
       input,
       model,
       agent: this,
     });
 
-    if (!availableSkills?.length) {
-      throw new Error("No available skills found for orchestration.");
-    }
+    const skills = availableSkills.map((i) => ({
+      name: i.function.name,
+      description: i.function.description,
+    }));
 
     const { prompt: objective } = await this.instructions.buildPrompt({
       input,
       context: options.context,
     });
 
-    const currentState: {
-      taskHistories: { task: string; result: string }[];
-    } = { taskHistories: [] };
+    const executionState: ExecutionState = { tasks: [] };
 
     while (true) {
-      const plan = await this.getPlan(
-        { objective, currentState, skills: availableSkills },
-        options,
+      const plan = await this.invokeChildAgent(
+        this.planner,
+        { objective, skills, executionState },
+        { ...options, model, streaming: false },
       );
 
       if (plan.finished || !plan.nextTask) {
@@ -114,40 +122,18 @@ export class OrchestratorAgent<
 
       const taskResult = await this.invokeChildAgent(
         this.worker,
-        { currentState, objective, task: plan.nextTask },
-        { ...options, streaming: false },
+        { objective, executionState, task: plan.nextTask },
+        { ...options, model, streaming: false },
       );
 
-      currentState.taskHistories.push({ task: plan.nextTask, result: JSON.stringify(taskResult) });
+      executionState.tasks.push({ task: plan.nextTask, result: JSON.stringify(taskResult) });
     }
 
     yield* await this.invokeChildAgent(
       this.completer,
-      { objective, currentState },
-      { ...options, streaming: true },
+      { objective, executionState },
+      { ...options, model, streaming: true },
     );
-  }
-
-  async getPlan(
-    {
-      skills,
-      ...input
-    }: { objective: string; skills: ChatModelInputTool[]; [key: string]: unknown },
-    options: AgentInvokeOptions,
-  ) {
-    const plan = await this.invokeChildAgent(
-      this.planner,
-      {
-        ...input,
-        skills: skills.map((i) => ({
-          name: i.function.name,
-          description: i.function.description,
-        })),
-      },
-      { ...options, streaming: false },
-    );
-
-    return plan;
   }
 }
 

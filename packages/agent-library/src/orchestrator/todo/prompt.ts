@@ -11,12 +11,7 @@ Continuously evaluate progress and decide the next task to execute. You work ite
 {{ objective }}
 
 ## Current State
-{{ currentState | yaml.stringify }}
-
-{% if previousTaskResult %}
-## Previous Task Result
-{{ previousTaskResult | yaml.stringify }}
-{% endif %}
+{{ executionState | yaml.stringify }}
 
 ## Your Task
 Based on the objective, current state, and any previous results, determine what should happen next:
@@ -34,8 +29,8 @@ Based on the objective, current state, and any previous results, determine what 
 export const TODO_WORKER_PROMPT_TEMPLATE = `\
 You are a task execution agent. Your job is to execute the specific task assigned to you - nothing more, nothing less.
 
-## Context (for reference only)
-Current State: {{ currentState | yaml.stringify }}
+## Current Execution State
+{{ executionState | yaml.stringify }}
 
 ## Your Current Task
 {{ task }}

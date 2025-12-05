@@ -5,25 +5,33 @@ import {
   type TodoPlannerOutput,
   todoPlannerInputSchema,
   todoPlannerOutputSchema,
+  todoWorkerInputSchema,
 } from "./type.js";
 
 export class TodoPlanner extends AIAgent<TodoPlannerInput, TodoPlannerOutput> {
-  constructor(public options: AIAgentOptions<TodoPlannerInput, TodoPlannerOutput>) {
+  constructor(
+    public options: Omit<
+      AIAgentOptions<TodoPlannerInput, TodoPlannerOutput>,
+      "inputSchema" | "outputSchema"
+    >,
+  ) {
     super({
       name: "TodoPlanner",
-      instructions: options.instructions || TODO_PLANNER_PROMPT_TEMPLATE,
+      ...options,
       inputSchema: todoPlannerInputSchema,
       outputSchema: todoPlannerOutputSchema,
+      instructions: options.instructions || TODO_PLANNER_PROMPT_TEMPLATE,
     });
   }
 }
 
 export class TodoWorker extends AIAgent {
-  constructor(public options: AIAgentOptions) {
+  constructor(public options: Omit<AIAgentOptions, "inputSchema">) {
     super({
-      ...options,
       name: "TodoWorker",
+      ...options,
       instructions: options.instructions || TODO_WORKER_PROMPT_TEMPLATE,
+      inputSchema: todoWorkerInputSchema,
     });
   }
 }

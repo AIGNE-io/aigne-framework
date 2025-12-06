@@ -83,6 +83,10 @@ export interface AIAgentSchema extends BaseAgentSchema {
   keepTextInToolUses?: boolean;
 }
 
+export interface AgenticAgentSchema extends Omit<AIAgentSchema, "type"> {
+  type: "agentic";
+}
+
 export interface ImageAgentSchema extends BaseAgentSchema {
   type: "image";
   instructions: Instructions;
@@ -118,6 +122,7 @@ export interface FunctionAgentSchema extends BaseAgentSchema {
 
 export type AgentSchema =
   | AIAgentSchema
+  | AgenticAgentSchema
   | ImageAgentSchema
   | MCPAgentSchema
   | TeamAgentSchema
@@ -255,6 +260,23 @@ export async function parseAgentFile(path: string, data: any): Promise<AgentSche
         z
           .object({
             type: z.literal("ai"),
+            instructions: optionalize(instructionsSchema),
+            autoReorderSystemMessages: optionalize(z.boolean()),
+            autoMergeSystemMessages: optionalize(z.boolean()),
+            inputKey: optionalize(z.string()),
+            outputKey: optionalize(z.string()),
+            inputFileKey: optionalize(z.string()),
+            outputFileKey: optionalize(z.string()),
+            toolChoice: optionalize(z.nativeEnum(AIAgentToolChoice)),
+            toolCallsConcurrency: optionalize(z.number().int().min(0)),
+            keepTextInToolUses: optionalize(z.boolean()),
+            catchToolsError: optionalize(z.boolean()),
+            structuredStreamMode: optionalize(z.boolean()),
+          })
+          .extend(baseAgentSchema.shape),
+        z
+          .object({
+            type: z.literal("agentic"),
             instructions: optionalize(instructionsSchema),
             autoReorderSystemMessages: optionalize(z.boolean()),
             autoMergeSystemMessages: optionalize(z.boolean()),

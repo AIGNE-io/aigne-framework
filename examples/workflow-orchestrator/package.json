@@ -16,8 +16,7 @@
     "README.md"
   ],
   "scripts": {
-    "start": "bun run index.ts",
-    "lint": "tsc --noEmit"
+    "start": "aigne run ."
   },
   "dependencies": {
     "@aigne/agent-library": "workspace:^",

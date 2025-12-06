@@ -151,8 +151,9 @@ export class OrchestratorAgent<
     this.planner = isAgent<Agent<PlannerInput, PlannerOutput>>(options.planner)
       ? options.planner
       : new TodoPlanner({
+          ...omit(options, "name", "inputSchema", "outputKey", "outputSchema"),
           instructions: options.planner?.instructions,
-        });
+        } as AIAgentOptions<PlannerInput, PlannerOutput>);
     this.worker = isAgent<Agent<WorkerInput, WorkerOutput>>(options.worker)
       ? options.worker
       : new TodoWorker({

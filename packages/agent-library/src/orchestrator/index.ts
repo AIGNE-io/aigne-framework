@@ -11,7 +11,6 @@ import {
   getInstructionsSchema,
   getNestAgentSchema,
   type Instructions,
-  isNestAgentSchema,
   type NestAgentSchema,
 } from "@aigne/core/loader/agent-yaml.js";
 import {
@@ -24,18 +23,25 @@ import { isAgent } from "@aigne/core/utils/agent-utils.js";
 import { estimateTokens } from "@aigne/core/utils/token-estimator.js";
 import { omit } from "@aigne/core/utils/type-utils.js";
 import { z } from "zod";
-import { ORCHESTRATOR_COMPLETE_PROMPT } from "./prompt.js";
-import { TodoPlanner, TodoWorker } from "./todo/index.js";
+import {
+  ORCHESTRATOR_COMPLETE_PROMPT,
+  TODO_PLANNER_PROMPT_TEMPLATE,
+  TODO_WORKER_PROMPT_TEMPLATE,
+} from "./prompt.js";
 import {
   type CompleterInput,
+  completerInputSchema,
   type ExecutionState,
   type PlannerInput,
   type PlannerOutput,
+  plannerInputSchema,
+  plannerOutputSchema,
   type StateManagementOptions,
   stateManagementOptionsSchema,
   type WorkerInput,
   type WorkerOutput,
   workerInputSchema,
+  workerOutputSchema,
 } from "./type.js";
 
 /**
@@ -45,11 +51,11 @@ export interface OrchestratorAgentOptions<I extends Message = Message, O extends
   extends Omit<AIAgentOptions<I, O>, "instructions"> {
   objective: PromptBuilder;
 
-  planner?: OrchestratorAgent<I, O>["planner"] | { instructions?: string | PromptBuilder };
+  planner?: OrchestratorAgent<I, O>["planner"];
 
-  worker?: OrchestratorAgent<I, O>["worker"] | { instructions?: string | PromptBuilder };
+  worker?: OrchestratorAgent<I, O>["worker"];
 
-  completer?: OrchestratorAgent<I, O>["completer"] | { instructions?: string | PromptBuilder };
+  completer?: OrchestratorAgent<I, O>["completer"];
 
   /**
    * Configuration for managing execution state
@@ -109,21 +115,35 @@ export class OrchestratorAgent<
     return new OrchestratorAgent({
       ...parsed,
       objective: instructionsToPromptBuilder(valid.objective),
-      planner: (await loadSubAgentConfig(
-        filepath,
-        valid.planner,
-        options,
-      )) as OrchestratorAgent["planner"],
-      worker: (await loadSubAgentConfig(
-        filepath,
-        valid.worker,
-        options,
-      )) as OrchestratorAgent["worker"],
-      completer: (await loadSubAgentConfig(
-        filepath,
-        valid.completer,
-        options,
-      )) as OrchestratorAgent<I, O>["completer"],
+      planner: valid.planner
+        ? ((await loadNestAgent(filepath, valid.planner, options, {
+            name: "Planner",
+            instructions: TODO_PLANNER_PROMPT_TEMPLATE,
+            inputSchema: plannerInputSchema,
+            outputSchema: plannerOutputSchema,
+            afs: parsed.afs,
+            skills: parsed.skills,
+          })) as OrchestratorAgent["planner"])
+        : undefined,
+      worker: valid.worker
+        ? ((await loadNestAgent(filepath, valid.worker, options, {
+            name: "Worker",
+            instructions: TODO_WORKER_PROMPT_TEMPLATE,
+            inputSchema: workerInputSchema,
+            outputSchema: workerOutputSchema,
+            afs: parsed.afs,
+            skills: parsed.skills,
+          })) as OrchestratorAgent["worker"])
+        : undefined,
+      completer: valid.completer
+        ? ((await loadNestAgent(filepath, valid.completer, options, {
+            instructions: ORCHESTRATOR_COMPLETE_PROMPT,
+            inputSchema: completerInputSchema,
+            outputSchema: parsed.outputSchema,
+            afs: parsed.afs,
+            skills: parsed.skills,
+          })) as OrchestratorAgent<I, O>["completer"])
+        : undefined,
       stateManagement: valid.stateManagement,
     });
   }
@@ -150,22 +170,30 @@ export class OrchestratorAgent<
 
     this.planner = isAgent<Agent<PlannerInput, PlannerOutput>>(options.planner)
       ? options.planner
-      : new TodoPlanner({
-          ...omit(options, "name", "inputSchema", "outputKey", "outputSchema"),
-          instructions: options.planner?.instructions,
-        } as AIAgentOptions<PlannerInput, PlannerOutput>);
+      : new AIAgent({
+          ...(options as object),
+          name: "Planner",
+          instructions: TODO_PLANNER_PROMPT_TEMPLATE,
+          inputSchema: plannerInputSchema,
+          outputSchema: plannerOutputSchema,
+        });
     this.worker = isAgent<Agent<WorkerInput, WorkerOutput>>(options.worker)
       ? options.worker
-      : new TodoWorker({
-          ...omit(options, "name", "inputSchema", "outputKey", "outputSchema"),
-          instructions: options.worker?.instructions,
+      : new AIAgent({
+          ...(options as object),
+          name: "Worker",
+          instructions: TODO_WORKER_PROMPT_TEMPLATE,
           inputSchema: workerInputSchema,
-        } as AIAgentOptions);
+          outputSchema: workerOutputSchema,
+        });
     this.completer = isAgent<Agent<CompleterInput, O>>(options.completer)
       ? options.completer
       : new AIAgent({
-          instructions: options.completer?.instructions || ORCHESTRATOR_COMPLETE_PROMPT,
+          ...(omit(options, "inputSchema") as object),
+          name: "Completer",
+          instructions: ORCHESTRATOR_COMPLETE_PROMPT,
           outputKey: options.outputKey,
+          inputSchema: completerInputSchema,
           outputSchema: options.outputSchema,
         });
 
@@ -311,44 +339,13 @@ function getOrchestratorAgentSchema({ filepath }: { filepath: string }) {
   const nestAgentSchema = getNestAgentSchema({ filepath });
   const instructionsSchema = getInstructionsSchema({ filepath });
 
-  const subAgentConfigSchema = z.union([
-    nestAgentSchema,
-    camelizeSchema(
-      z.object({
-        instructions: optionalize(instructionsSchema),
-      }),
-    ),
-  ]);
-
   return camelizeSchema(
     z.object({
       objective: instructionsSchema,
-      planner: optionalize(subAgentConfigSchema),
-      worker: optionalize(subAgentConfigSchema),
-      completer: optionalize(subAgentConfigSchema),
+      planner: optionalize(nestAgentSchema),
+      worker: optionalize(nestAgentSchema),
+      completer: optionalize(nestAgentSchema),
       stateManagement: optionalize(camelizeSchema(stateManagementOptionsSchema)),
     }),
   );
-}
-
-async function loadSubAgentConfig(
-  filepath: string,
-  config: NestAgentSchema | { instructions?: Instructions } | undefined,
-  options?: LoadOptions,
-) {
-  if (!config) return undefined;
-
-  if (isNestAgentSchema(config)) {
-    return loadNestAgent(
-      filepath,
-      await getNestAgentSchema({ filepath }).parseAsync(config),
-      options,
-    );
-  }
-
-  if ("instructions" in config && config.instructions) {
-    return {
-      instructions: instructionsToPromptBuilder(config.instructions),
-    };
-  }
 }

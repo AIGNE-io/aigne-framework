@@ -142,12 +142,14 @@ export async function loadNestAgent(
   path: string,
   agent: NestAgentSchema,
   options?: LoadOptions,
+  agentOptions?: AgentOptions & Record<string, unknown>,
 ): Promise<Agent> {
   return typeof agent === "object" && "type" in agent
-    ? parseAgent(path, agent, options)
+    ? parseAgent(path, agent, options, agentOptions)
     : typeof agent === "string"
-      ? loadAgent(nodejs.path.join(nodejs.path.dirname(path), agent), options)
+      ? loadAgent(nodejs.path.join(nodejs.path.dirname(path), agent), options, agentOptions)
       : loadAgent(nodejs.path.join(nodejs.path.dirname(path), agent.url), options, {
+          ...agentOptions,
           defaultInput: agent.defaultInput,
           hooks: await parseHooks(path, agent.hooks, options),
         });
@@ -240,7 +242,7 @@ export async function parseAgent(
           ...options,
           afs: { ...options?.afs, sharedAFS: (agent.shareAFS && afs) || options?.afs?.sharedAFS },
         })
-      : undefined;
+      : [];
 
   const model =
     agent.model && typeof options?.model === "function"
@@ -259,13 +261,13 @@ export async function parseAgent(
     ...agent,
     model,
     imageModel,
-    skills,
     memory,
     hooks: [
       ...((await parseHooks(path, agent.hooks, options)) ?? []),
       ...[agentOptions?.hooks].flat().filter(isNonNullable),
     ],
-    afs,
+    skills: [...(agentOptions?.skills || []), ...skills],
+    afs: afs || agentOptions?.afs,
   };
 
   let instructions: PromptBuilder | undefined;

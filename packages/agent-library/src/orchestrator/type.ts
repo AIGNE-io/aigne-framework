@@ -117,7 +117,7 @@ export interface WorkerOutput extends Message {
   /** Task execution result */
   result?: string;
   /** Whether the task was completed successfully */
-  success?: boolean;
+  success: boolean;
   /** Error information if task failed */
   error?: {
     message: string;

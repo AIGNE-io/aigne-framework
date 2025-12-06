@@ -35,13 +35,6 @@ export type NestAgentSchema =
   | { url: string; defaultInput?: Record<string, any>; hooks?: HooksSchema | HooksSchema[] }
   | AgentSchema;
 
-export function isNestAgentSchema(obj: any): obj is NestAgentSchema {
-  return (
-    typeof obj === "string" ||
-    (typeof obj === "object" && (typeof obj.url === "string" || typeof obj.type === "string"))
-  );
-}
-
 export type AFSModuleSchema =
   | string
   | {

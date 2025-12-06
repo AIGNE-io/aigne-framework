@@ -787,12 +787,6 @@ importers:
       '@aigne/cli':
         specifier: workspace:^
         version: link:../../packages/cli
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../../packages/core
-      '@aigne/openai':
-        specifier: workspace:^
-        version: link:../../models/openai
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^

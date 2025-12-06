@@ -9,7 +9,7 @@
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
   },
-  "bin": "index.ts",
+  "bin": "aigne.yaml",
   "files": [
     ".env.local.example",
     "*.ts",
@@ -21,9 +21,7 @@
   },
   "dependencies": {
     "@aigne/agent-library": "workspace:^",
-    "@aigne/cli": "workspace:^",
-    "@aigne/core": "workspace:^",
-    "@aigne/openai": "workspace:^"
+    "@aigne/cli": "workspace:^"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",

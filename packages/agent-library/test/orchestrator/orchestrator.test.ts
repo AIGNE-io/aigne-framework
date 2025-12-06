@@ -39,8 +39,21 @@ test("OrchestratorAgent.load should use default planner/worker/completer", async
           process: () => ({}),
         }),
       ],
+      stateManagement: {
+        maxIterations: 3,
+        maxTokens: 100000,
+        keepRecent: 20,
+      },
     },
   });
+
+  expect(agent["stateManagement"]).toMatchInlineSnapshot(`
+    {
+      "keepRecent": 20,
+      "maxIterations": 3,
+      "maxTokens": 100000,
+    }
+  `);
 
   expect(agent.afs).toBeDefined();
   const afsModules = await agent.afs?.listModules();

@@ -5,7 +5,7 @@ You are an intelligent assistant that synthesizes and presents the results of co
 {{ objective }}
 
 ## Execution Results
-{{ currentState | yaml.stringify }}
+{{ executionState | yaml.stringify }}
 
 ## Your Task
 Based on the execution results above, provide a comprehensive and helpful response to the user's objective.

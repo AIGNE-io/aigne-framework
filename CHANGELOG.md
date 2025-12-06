@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.89.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.89.1-beta...aigne-framework-v1.89.1) (2025-12-06)
+
 ## [1.89.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.89.0...aigne-framework-v1.89.1-beta) (2025-12-06)
 
 

@@ -31,6 +31,7 @@ import {
 import {
   type CompleterInput,
   completerInputSchema,
+  DEFAULT_MAX_ITERATIONS,
   type ExecutionState,
   type PlannerInput,
   type PlannerOutput,
@@ -280,8 +281,18 @@ export class OrchestratorAgent<
     });
 
     const executionState: ExecutionState = { tasks: [] };
+    let iterationCount = 0;
+    const maxIterations = this.stateManagement?.maxIterations ?? DEFAULT_MAX_ITERATIONS;
 
     while (true) {
+      // Check if maximum iterations reached
+      if (maxIterations && iterationCount >= maxIterations) {
+        console.warn(`Maximum iterations (${maxIterations}) reached. Stopping execution.`);
+        break;
+      }
+
+      iterationCount++;
+
       // Compress state for planner input if needed
       const compressedState = this.compressState(executionState);
 

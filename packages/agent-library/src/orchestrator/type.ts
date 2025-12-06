@@ -159,6 +159,11 @@ export const completerInputSchema = z.object({
 });
 
 /**
+ * Default maximum number of task execution iterations
+ */
+export const DEFAULT_MAX_ITERATIONS = 20;
+
+/**
  * Options for managing execution state to prevent context overflow
  */
 export interface StateManagementOptions {
@@ -172,9 +177,17 @@ export interface StateManagementOptions {
    * Number of recent tasks to keep when compression is triggered
    */
   keepRecent?: number;
+
+  /**
+   * Maximum number of task execution iterations
+   * When reached, orchestrator will stop and synthesize final result
+   * @default 20
+   */
+  maxIterations?: number;
 }
 
 export const stateManagementOptionsSchema = z.object({
   maxTokens: optionalize(z.number().int().positive()),
   keepRecent: optionalize(z.number().int().positive()),
+  maxIterations: optionalize(z.number().int().positive()),
 });

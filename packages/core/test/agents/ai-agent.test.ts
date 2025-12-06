@@ -17,6 +17,7 @@ import {
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
+import { stringify } from "yaml";
 import { z } from "zod";
 import { ClaudeChatModel, OpenAIChatModel } from "../_mocks/mock-models.js";
 import { createToolCallResponse } from "../_utils/openai-like-utils.js";
@@ -349,7 +350,7 @@ test("AIAgent with catchToolErrors enabled", async () => {
       messages: expect.arrayContaining([
         expect.objectContaining({
           role: "tool",
-          content: JSON.stringify({
+          content: stringify({
             isError: true,
             error: { message: "Invalid input: a or b is zero" },
           }),

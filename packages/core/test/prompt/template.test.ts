@@ -93,7 +93,11 @@ test("ToolMessageTemplate", async () => {
   ).format();
   expect(objectPrompt).toMatchInlineSnapshot(`
     {
-      "content": "{"result":{"content":"call tool success"}}",
+      "content": 
+    "result:
+      content: call tool success
+    "
+    ,
       "name": "AgentA",
       "role": "tool",
       "toolCallId": "tool1",
@@ -107,7 +111,11 @@ test("ToolMessageTemplate", async () => {
   ).format();
   expect(bigintPrompt).toMatchInlineSnapshot(`
     {
-      "content": "{"result":{"content":"1234567890"}}",
+      "content": 
+    "result:
+      content: 1234567890
+    "
+    ,
       "name": "AgentA",
       "role": "tool",
       "toolCallId": "tool1",

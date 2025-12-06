@@ -33,6 +33,7 @@ import {
   ThinkingLevel,
   type ToolListUnion,
 } from "@google/genai";
+import { parse } from "yaml";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
@@ -561,7 +562,7 @@ export class GeminiChatModel extends ChatModel {
               .find((c) => c?.id === msg.toolCallId);
             if (!call) throw new Error(`Tool call not found: ${msg.toolCallId}`);
 
-            const output = JSON.parse(msg.content as string);
+            const output = parse(msg.content as string);
 
             const isError = "error" in output && Boolean(input.error);
 

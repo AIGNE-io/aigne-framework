@@ -48,6 +48,7 @@
     "@aigne/platform-helpers": "workspace:^",
     "@aigne/uuid": "^13.0.1",
     "@google/genai": "^1.30.0",
+    "yaml": "^2.8.1",
     "zod": "^3.25.67",
     "zod-to-json-schema": "^3.24.6"
   },

@@ -1,5 +1,6 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import nunjucks, { type Callback, type LoaderSource } from "nunjucks";
+import { stringify } from "yaml";
 import { z } from "zod";
 import type {
   ChatModelInputMessage,
@@ -181,16 +182,7 @@ export class ToolMessageTemplate extends ChatMessageTemplate {
     name?: string,
     options?: FormatOptions,
   ) {
-    super(
-      "tool",
-      typeof content === "string"
-        ? content
-        : JSON.stringify(content, (_, value) =>
-            typeof value === "bigint" ? value.toString() : value,
-          ),
-      name,
-      options,
-    );
+    super("tool", typeof content === "string" ? content : stringify(content), name, options);
   }
 
   override async format(_variables?: Record<string, unknown>, _options?: FormatOptions) {

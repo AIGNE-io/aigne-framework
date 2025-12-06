@@ -1,4 +1,5 @@
 import { AIAgent, type AIAgentOptions } from "@aigne/core";
+import { workerOutputSchema } from "../type.js";
 import { TODO_PLANNER_PROMPT_TEMPLATE, TODO_WORKER_PROMPT_TEMPLATE } from "./prompt.js";
 import {
   type TodoPlannerInput,
@@ -27,6 +28,7 @@ export class TodoWorker extends AIAgent {
       ...options,
       instructions: options.instructions || TODO_WORKER_PROMPT_TEMPLATE,
       inputSchema: options.inputSchema || todoWorkerInputSchema,
+      outputSchema: options.outputSchema || workerOutputSchema,
     });
   }
 }

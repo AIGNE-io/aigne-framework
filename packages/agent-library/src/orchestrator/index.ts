@@ -5,7 +5,7 @@ import {
   AIAgent,
   type AIAgentOptions,
   type Message,
-  PromptBuilder,
+  type PromptBuilder,
 } from "@aigne/core";
 import {
   getInstructionsSchema,
@@ -19,8 +19,11 @@ import {
   type LoadOptions,
   loadNestAgent,
 } from "@aigne/core/loader/index.js";
+import { camelizeSchema, optionalize } from "@aigne/core/loader/schema.js";
 import { isAgent } from "@aigne/core/utils/agent-utils.js";
+import { estimateTokens } from "@aigne/core/utils/token-estimator.js";
 import { omit } from "@aigne/core/utils/type-utils.js";
+import { z } from "zod";
 import { ORCHESTRATOR_COMPLETE_PROMPT } from "./prompt.js";
 import { TodoPlanner, TodoWorker } from "./todo/index.js";
 import {
@@ -28,6 +31,8 @@ import {
   type ExecutionState,
   type PlannerInput,
   type PlannerOutput,
+  type StateManagementOptions,
+  stateManagementOptionsSchema,
   type WorkerInput,
   type WorkerOutput,
   workerInputSchema,
@@ -45,6 +50,12 @@ export interface OrchestratorAgentOptions<I extends Message = Message, O extends
   worker?: OrchestratorAgent<I, O>["worker"] | { instructions?: string | PromptBuilder };
 
   completer?: OrchestratorAgent<I, O>["completer"] | { instructions?: string | PromptBuilder };
+
+  /**
+   * Configuration for managing execution state
+   * Prevents context overflow during long-running executions
+   */
+  stateManagement?: StateManagementOptions;
 }
 
 export interface LoadOrchestratorAgentOptions<
@@ -58,6 +69,8 @@ export interface LoadOrchestratorAgentOptions<
   worker?: NestAgentSchema | { instructions?: string | PromptBuilder | Instructions };
 
   completer?: NestAgentSchema | { instructions?: string | PromptBuilder | Instructions };
+
+  stateManagement?: StateManagementOptions;
 }
 
 /**
@@ -90,44 +103,28 @@ export class OrchestratorAgent<
     parsed: AgentOptions<I, O> & LoadOrchestratorAgentOptions<I, O>;
     options?: LoadOptions;
   }): Promise<OrchestratorAgent<I, O>> {
-    const nestAgentSchema = getNestAgentSchema({ filepath });
+    const schema = getOrchestratorAgentSchema({ filepath });
+    const valid = await schema.parseAsync(parsed);
 
     return new OrchestratorAgent({
       ...parsed,
-      objective: await parseInstructions(filepath, parsed.objective),
-      planner: isNestAgentSchema(parsed.planner)
-        ? ((await loadNestAgent(
-            filepath,
-            await nestAgentSchema.parseAsync(parsed.planner),
-            options,
-          )) as OrchestratorAgent["planner"])
-        : {
-            instructions:
-              parsed.planner?.instructions &&
-              (await parseInstructions(filepath, parsed.planner.instructions)),
-          },
-      worker: isNestAgentSchema(parsed.worker)
-        ? ((await loadNestAgent(
-            filepath,
-            await nestAgentSchema.parseAsync(parsed.worker),
-            options,
-          )) as OrchestratorAgent["worker"])
-        : {
-            instructions:
-              parsed.worker?.instructions &&
-              (await parseInstructions(filepath, parsed.worker.instructions)),
-          },
-      completer: isNestAgentSchema(parsed.completer)
-        ? ((await loadNestAgent(
-            filepath,
-            await nestAgentSchema.parseAsync(parsed.completer),
-            options,
-          )) as OrchestratorAgent<I, O>["completer"])
-        : {
-            instructions:
-              parsed.completer?.instructions &&
-              (await parseInstructions(filepath, parsed.completer.instructions)),
-          },
+      objective: instructionsToPromptBuilder(valid.objective),
+      planner: (await loadSubAgentConfig(
+        filepath,
+        valid.planner,
+        options,
+      )) as OrchestratorAgent["planner"],
+      worker: (await loadSubAgentConfig(
+        filepath,
+        valid.worker,
+        options,
+      )) as OrchestratorAgent["worker"],
+      completer: (await loadSubAgentConfig(
+        filepath,
+        valid.completer,
+        options,
+      )) as OrchestratorAgent<I, O>["completer"],
+      stateManagement: valid.stateManagement,
     });
   }
 
@@ -170,6 +167,9 @@ export class OrchestratorAgent<
           outputKey: options.outputKey,
           outputSchema: options.outputSchema,
         });
+
+    // Initialize state management config
+    this.stateManagement = options.stateManagement;
   }
 
   private objective: PromptBuilder;
@@ -179,6 +179,55 @@ export class OrchestratorAgent<
   private worker: Agent<WorkerInput, WorkerOutput>;
 
   private completer: Agent<CompleterInput, O>;
+
+  private stateManagement?: StateManagementOptions;
+
+  /**
+   * Compress execution state to prevent context overflow
+   * Uses reverse accumulation to efficiently find optimal task count
+   */
+  private compressState(state: ExecutionState): ExecutionState {
+    const { maxTokens, keepRecent } = this.stateManagement ?? {};
+
+    if (!maxTokens && !keepRecent) {
+      return state;
+    }
+
+    const tasks = state.tasks;
+    let selectedTasks = tasks;
+
+    // Step 1: Apply keepRecent limit if configured
+    if (keepRecent && tasks.length > keepRecent) {
+      selectedTasks = tasks.slice(-keepRecent);
+    }
+
+    // Step 2: Apply maxTokens limit if configured
+    if (maxTokens && selectedTasks.length > 0) {
+      // Start from the most recent task and accumulate backwards
+      let accumulatedTokens = 0;
+      let taskCount = 0;
+
+      for (let i = selectedTasks.length - 1; i >= 0; i--) {
+        const taskJson = JSON.stringify(selectedTasks[i]);
+        const taskTokens = estimateTokens(taskJson);
+
+        if (accumulatedTokens + taskTokens > maxTokens && taskCount > 0) {
+          // Stop if adding this task would exceed limit
+          break;
+        }
+
+        accumulatedTokens += taskTokens;
+        taskCount++;
+      }
+
+      // Keep the most recent N tasks that fit within token limit
+      if (taskCount < selectedTasks.length) {
+        selectedTasks = selectedTasks.slice(-taskCount);
+      }
+    }
+
+    return { tasks: selectedTasks };
+  }
 
   override async *process(input: I, options: AgentInvokeOptions) {
     const model = this.model || options.model || options.context.model;
@@ -204,9 +253,12 @@ export class OrchestratorAgent<
     const executionState: ExecutionState = { tasks: [] };
 
     while (true) {
+      // Compress state for planner input if needed
+      const compressedState = this.compressState(executionState);
+
       const plan = await this.invokeChildAgent(
         this.planner,
-        { objective, skills, executionState },
+        { objective, skills, executionState: compressedState },
         { ...options, model, streaming: false },
       );
 
@@ -214,18 +266,39 @@ export class OrchestratorAgent<
         break;
       }
 
+      const task = plan.nextTask;
+      const createdAt = Date.now();
+
       const taskResult = await this.invokeChildAgent(
         this.worker,
-        { objective, executionState, task: plan.nextTask },
+        { objective, executionState: compressedState, task },
         { ...options, model, streaming: false },
-      );
+      )
+        .then((res) => {
+          if (res.error || res.success === false) {
+            return { status: "failed" as const, result: res.result, error: res.error };
+          }
+          return { status: "completed" as const, result: res.result };
+        })
+        .catch((error) => ({
+          status: "failed" as const,
+          error: { message: error instanceof Error ? error.message : String(error) },
+        }));
 
-      executionState.tasks.push({ task: plan.nextTask, result: JSON.stringify(taskResult) });
+      executionState.tasks.push({
+        ...taskResult,
+        task: task,
+        createdAt,
+        completedAt: Date.now(),
+      });
     }
+
+    // Compress state for completer input if needed
+    const compressedState = this.compressState(executionState);
 
     yield* await this.invokeChildAgent(
       this.completer,
-      { objective, executionState },
+      { objective, executionState: compressedState },
       { ...options, model, streaming: true },
     );
   }
@@ -233,15 +306,48 @@ export class OrchestratorAgent<
 
 export default OrchestratorAgent;
 
-async function parseInstructions(
+function getOrchestratorAgentSchema({ filepath }: { filepath: string }) {
+  const nestAgentSchema = getNestAgentSchema({ filepath });
+  const instructionsSchema = getInstructionsSchema({ filepath });
+
+  const subAgentConfigSchema = z.union([
+    nestAgentSchema,
+    camelizeSchema(
+      z.object({
+        instructions: optionalize(instructionsSchema),
+      }),
+    ),
+  ]);
+
+  return camelizeSchema(
+    z.object({
+      objective: instructionsSchema,
+      planner: optionalize(subAgentConfigSchema),
+      worker: optionalize(subAgentConfigSchema),
+      completer: optionalize(subAgentConfigSchema),
+      stateManagement: optionalize(camelizeSchema(stateManagementOptionsSchema)),
+    }),
+  );
+}
+
+async function loadSubAgentConfig(
   filepath: string,
-  instructions: string | PromptBuilder | Instructions,
-): Promise<PromptBuilder> {
-  if (instructions instanceof PromptBuilder) return instructions;
+  config: NestAgentSchema | { instructions?: Instructions } | undefined,
+  options?: LoadOptions,
+) {
+  if (!config) return undefined;
 
-  const schema = getInstructionsSchema({ filepath });
+  if (isNestAgentSchema(config)) {
+    return loadNestAgent(
+      filepath,
+      await getNestAgentSchema({ filepath }).parseAsync(config),
+      options,
+    );
+  }
 
-  const s = await schema.parseAsync(instructions);
-
-  return instructionsToPromptBuilder(s);
+  if ("instructions" in config && config.instructions) {
+    return {
+      instructions: instructionsToPromptBuilder(config.instructions),
+    };
+  }
 }

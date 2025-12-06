@@ -22,7 +22,9 @@ test("AIAgent.invoke", async () => {
         },
       }),
     )
-    .mockReturnValueOnce(Promise.resolve({ text: "ArcBlock is a blockchain platform" }))
+    .mockReturnValueOnce(
+      Promise.resolve({ json: { result: "ArcBlock is a blockchain platform", success: true } }),
+    )
     .mockReturnValueOnce(Promise.resolve<{ json: PlannerOutput }>({ json: { finished: true } }))
     .mockReturnValueOnce(Promise.resolve({ text: "Task finished" }));
 

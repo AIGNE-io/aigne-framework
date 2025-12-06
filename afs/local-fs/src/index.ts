@@ -1,4 +1,4 @@
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import type {
   AFSEntry,
@@ -76,6 +76,7 @@ export class LocalFS implements AFSModule {
         createdAt: stats.birthtime,
         updatedAt: stats.mtime,
         metadata: {
+          childrenCount: stats.isDirectory() ? (await readdir(itemFullPath)).length : undefined,
           type: stats.isDirectory() ? "directory" : "file",
           size: stats.size,
           mode: stats.mode,

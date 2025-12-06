@@ -1,94 +1,83 @@
 import {
-  Agent,
+  type Agent,
   type AgentInvokeOptions,
   type AgentOptions,
   AIAgent,
-  type Context,
+  type AIAgentOptions,
   type Message,
-  PromptTemplate,
+  type PromptBuilder,
 } from "@aigne/core";
-import { checkArguments } from "@aigne/core/utils/type-utils.js";
-import fastq from "fastq";
+import {
+  getInstructionsSchema,
+  getNestAgentSchema,
+  type Instructions,
+  type NestAgentSchema,
+} from "@aigne/core/loader/agent-yaml.js";
+import {
+  instructionsToPromptBuilder,
+  type LoadOptions,
+  loadNestAgent,
+} from "@aigne/core/loader/index.js";
+import { camelizeSchema, optionalize } from "@aigne/core/loader/schema.js";
+import { isAgent } from "@aigne/core/utils/agent-utils.js";
+import { estimateTokens } from "@aigne/core/utils/token-estimator.js";
+import { omit } from "@aigne/core/utils/type-utils.js";
 import { z } from "zod";
 import {
-  FULL_PLAN_PROMPT_TEMPLATE,
-  type FullPlanInput,
-  type FullPlanOutput,
-  getFullPlanSchema,
-  type Step,
-  type StepWithResult,
-  SYNTHESIZE_PLAN_USER_PROMPT_TEMPLATE,
-  SYNTHESIZE_STEP_PROMPT_TEMPLATE,
-  type SynthesizeStepPromptInput,
-  TASK_PROMPT_TEMPLATE,
-  type Task,
-  type TaskPromptInput,
-} from "./orchestrator-prompts.js";
-
-/**
- * Default maximum number of iterations to prevent infinite loops
- */
-const DEFAULT_MAX_ITERATIONS = 30;
-
-/**
- * Default number of concurrent tasks
- */
-const DEFAULT_TASK_CONCURRENCY = 5;
-
-/**
- * Re-export orchestrator prompt templates and related types
- */
-export * from "./orchestrator-prompts.js";
-
-/**
- * Represents a complete plan with execution results
- * @hidden
- */
-export interface FullPlanWithResult {
-  /**
-   * The overall objective
-   */
-  objective: string;
-
-  /**
-   * The generated complete plan
-   */
-  plan?: FullPlanOutput;
-
-  /**
-   * List of executed steps with their results
-   */
-  steps: StepWithResult[];
-
-  /**
-   * Final result
-   */
-  result?: string;
-
-  /**
-   * Plan completion status
-   */
-  status?: boolean;
-}
+  ORCHESTRATOR_COMPLETE_PROMPT,
+  TODO_PLANNER_PROMPT_TEMPLATE,
+  TODO_WORKER_PROMPT_TEMPLATE,
+} from "./prompt.js";
+import {
+  type CompleterInput,
+  completerInputSchema,
+  DEFAULT_MAX_ITERATIONS,
+  type ExecutionState,
+  type PlannerInput,
+  type PlannerOutput,
+  plannerInputSchema,
+  plannerOutputSchema,
+  type StateManagementOptions,
+  stateManagementOptionsSchema,
+  type WorkerInput,
+  type WorkerOutput,
+  workerInputSchema,
+  workerOutputSchema,
+} from "./type.js";
 
 /**
  * Configuration options for the Orchestrator Agent
  */
 export interface OrchestratorAgentOptions<I extends Message = Message, O extends Message = Message>
-  extends AgentOptions<I, O> {
-  /**
-   * Maximum number of iterations to prevent infinite loops
-   * Default: 30
-   */
-  maxIterations?: number;
+  extends Omit<AIAgentOptions<I, O>, "instructions"> {
+  objective: PromptBuilder;
+
+  planner?: OrchestratorAgent<I, O>["planner"];
+
+  worker?: OrchestratorAgent<I, O>["worker"];
+
+  completer?: OrchestratorAgent<I, O>["completer"];
 
   /**
-   * Number of concurrent tasks
-   * Default: 5
+   * Configuration for managing execution state
+   * Prevents context overflow during long-running executions
    */
-  tasksConcurrency?: number;
+  stateManagement?: StateManagementOptions;
+}
 
-  inputKey: string;
+export interface LoadOrchestratorAgentOptions<
+  I extends Message = Message,
+  O extends Message = Message,
+> extends Omit<AIAgentOptions<I, O>, "instructions"> {
+  objective: string | PromptBuilder | Instructions;
+
+  planner?: NestAgentSchema | { instructions?: string | PromptBuilder | Instructions };
+
+  worker?: NestAgentSchema | { instructions?: string | PromptBuilder | Instructions };
+
+  completer?: NestAgentSchema | { instructions?: string | PromptBuilder | Instructions };
+
+  stateManagement?: StateManagementOptions;
 }
 
 /**
@@ -109,15 +98,63 @@ export interface OrchestratorAgentOptions<I extends Message = Message, O extends
 export class OrchestratorAgent<
   I extends Message = Message,
   O extends Message = Message,
-> extends Agent<I, O> {
+> extends AIAgent<I, O> {
   override tag = "OrchestratorAgent";
+
+  static override async load<I extends Message = Message, O extends Message = Message>({
+    filepath,
+    parsed,
+    options,
+  }: {
+    filepath: string;
+    parsed: AgentOptions<I, O> & LoadOrchestratorAgentOptions<I, O>;
+    options?: LoadOptions;
+  }): Promise<OrchestratorAgent<I, O>> {
+    const schema = getOrchestratorAgentSchema({ filepath });
+    const valid = await schema.parseAsync(parsed);
+
+    return new OrchestratorAgent({
+      ...parsed,
+      objective: instructionsToPromptBuilder(valid.objective),
+      planner: valid.planner
+        ? ((await loadNestAgent(filepath, valid.planner, options, {
+            name: "Planner",
+            instructions: TODO_PLANNER_PROMPT_TEMPLATE,
+            inputSchema: plannerInputSchema,
+            outputSchema: plannerOutputSchema,
+            afs: parsed.afs,
+            skills: parsed.skills,
+          })) as OrchestratorAgent["planner"])
+        : undefined,
+      worker: valid.worker
+        ? ((await loadNestAgent(filepath, valid.worker, options, {
+            name: "Worker",
+            instructions: TODO_WORKER_PROMPT_TEMPLATE,
+            inputSchema: workerInputSchema,
+            outputSchema: workerOutputSchema,
+            afs: parsed.afs,
+            skills: parsed.skills,
+          })) as OrchestratorAgent["worker"])
+        : undefined,
+      completer: valid.completer
+        ? ((await loadNestAgent(filepath, valid.completer, options, {
+            instructions: ORCHESTRATOR_COMPLETE_PROMPT,
+            inputSchema: completerInputSchema,
+            outputSchema: parsed.outputSchema,
+            afs: parsed.afs,
+            skills: parsed.skills,
+          })) as OrchestratorAgent<I, O>["completer"])
+        : undefined,
+      stateManagement: valid.stateManagement,
+    });
+  }
 
   /**
    * Factory method to create an OrchestratorAgent instance
    * @param options - Configuration options for the Orchestrator Agent
    * @returns A new OrchestratorAgent instance
    */
-  static from<I extends Message, O extends Message>(
+  static override from<I extends Message, O extends Message>(
     options: OrchestratorAgentOptions<I, O>,
   ): OrchestratorAgent<I, O> {
     return new OrchestratorAgent(options);
@@ -128,198 +165,198 @@ export class OrchestratorAgent<
    * @param options - Configuration options for the Orchestrator Agent
    */
   constructor(options: OrchestratorAgentOptions<I, O>) {
-    checkArguments("OrchestratorAgent", orchestratorAgentOptionsSchema, options);
-
     super({ ...options });
-    this.maxIterations = options.maxIterations;
-    this.tasksConcurrency = options.tasksConcurrency;
-    this.inputKey = options.inputKey;
 
-    this.planner = new AIAgent<FullPlanInput, FullPlanOutput>({
-      name: "llm_orchestration_planner",
-      instructions: FULL_PLAN_PROMPT_TEMPLATE,
-      outputSchema: () => getFullPlanSchema(this.skills),
-    });
+    this.objective = options.objective;
 
-    this.completer = new AIAgent({
-      name: "llm_orchestration_completer",
-      instructions: FULL_PLAN_PROMPT_TEMPLATE,
-      outputSchema: this.outputSchema,
-    });
-  }
-
-  private planner: AIAgent<FullPlanInput, FullPlanOutput>;
-
-  private completer: AIAgent<FullPlanInput, O>;
-
-  inputKey: string;
-
-  /**
-   * Maximum number of iterations
-   * Prevents infinite execution loops
-   */
-  maxIterations?: number;
-
-  /**
-   * Number of concurrent tasks
-   * Controls how many tasks can be executed simultaneously
-   */
-  tasksConcurrency?: number;
-
-  /**
-   * Process input and execute the orchestrator workflow
-   *
-   * Workflow:
-   * 1. Extract the objective
-   * 2. Loop until plan completion or maximum iterations:
-   *    a. Generate/update execution plan
-   *    b. If plan is complete, synthesize result
-   *    c. Otherwise, execute steps in the plan
-   *
-   * @param input - Input message containing the objective
-   * @param options - Agent invocation options
-   * @returns Processing result
-   */
-  override async process(input: I, options: AgentInvokeOptions) {
-    const { model } = options.context;
-    if (!model) throw new Error("model is required to run OrchestratorAgent");
-
-    const objective = input[this.inputKey];
-    if (typeof objective !== "string")
-      throw new Error("Objective is required to run OrchestratorAgent");
-
-    const result: FullPlanWithResult = {
-      objective,
-      steps: [],
-    };
-
-    let iterations = 0;
-    const maxIterations = this.maxIterations ?? DEFAULT_MAX_ITERATIONS;
-
-    while (iterations++ < maxIterations) {
-      const plan = await this.getFullPlan(result, options.context);
-
-      result.plan = plan;
-
-      if (plan.isComplete) {
-        return this.synthesizePlanResult(result, options.context);
-      }
-
-      for (const step of plan.steps) {
-        const stepResult = await this.executeStep(result, step, options.context);
-
-        result.steps.push(stepResult);
-      }
-    }
-
-    throw new Error(`Max iterations reached: ${maxIterations}`);
-  }
-
-  private getFullPlanInput(planResult: FullPlanWithResult): FullPlanInput {
-    return {
-      objective: planResult.objective,
-      steps: planResult.steps,
-      plan: {
-        status: planResult.status ? "Complete" : "In Progress",
-        result: planResult.result || "No results yet",
-      },
-      agents: this.skills.map((i) => ({
-        name: i.name,
-        description: i.description,
-        tools: i.skills.map((i) => ({ name: i.name, description: i.description })),
-      })),
-    };
-  }
-
-  private async getFullPlan(
-    planResult: FullPlanWithResult,
-    context: Context,
-  ): Promise<FullPlanOutput> {
-    return context.invoke(this.planner, this.getFullPlanInput(planResult));
-  }
-
-  private async synthesizePlanResult(planResult: FullPlanWithResult, context: Context): Promise<O> {
-    return context.invoke(this.completer, {
-      ...this.getFullPlanInput(planResult),
-      message: SYNTHESIZE_PLAN_USER_PROMPT_TEMPLATE,
-    });
-  }
-
-  private async executeStep(
-    planResult: FullPlanWithResult,
-    step: Step,
-    context: Context,
-  ): Promise<StepWithResult> {
-    const concurrency = this.tasksConcurrency ?? DEFAULT_TASK_CONCURRENCY;
-
-    const { model } = context;
-    if (!model) throw new Error("model is required to run OrchestratorAgent");
-
-    const queue = fastq.promise(async (task: Task) => {
-      const agent = this.skills.find((skill) => skill.name === task.agent);
-      if (!agent) throw new Error(`Agent ${task.agent} not found`);
-
-      const prompt = await PromptTemplate.from(TASK_PROMPT_TEMPLATE).format(<TaskPromptInput>{
-        objective: planResult.objective,
-        step,
-        task,
-        steps: planResult.steps,
-      });
-
-      let result: string;
-
-      if (agent.isInvokable) {
-        result = getMessageOrJsonString(await context.invoke(agent, { message: prompt }));
-      } else {
-        const executor = AIAgent.from({
-          name: "llm_orchestration_task_executor",
-          instructions: prompt,
-          skills: agent.skills,
+    this.planner = isAgent<Agent<PlannerInput, PlannerOutput>>(options.planner)
+      ? options.planner
+      : new AIAgent({
+          ...(options as object),
+          name: "Planner",
+          instructions: TODO_PLANNER_PROMPT_TEMPLATE,
+          inputSchema: plannerInputSchema,
+          outputSchema: plannerOutputSchema,
         });
-        result = getMessageOrJsonString(await context.invoke(executor, {}));
-      }
+    this.worker = isAgent<Agent<WorkerInput, WorkerOutput>>(options.worker)
+      ? options.worker
+      : new AIAgent({
+          ...(options as object),
+          name: "Worker",
+          instructions: TODO_WORKER_PROMPT_TEMPLATE,
+          inputSchema: workerInputSchema,
+          outputSchema: workerOutputSchema,
+        });
+    this.completer = isAgent<Agent<CompleterInput, O>>(options.completer)
+      ? options.completer
+      : new AIAgent({
+          ...(omit(options, "inputSchema") as object),
+          name: "Completer",
+          instructions: ORCHESTRATOR_COMPLETE_PROMPT,
+          outputKey: options.outputKey,
+          inputSchema: completerInputSchema,
+          outputSchema: options.outputSchema,
+        });
 
-      return { task, result };
-    }, concurrency);
+    // Initialize state management config
+    this.stateManagement = options.stateManagement;
+  }
 
-    let results: StepWithResult["tasks"] | undefined;
+  private objective: PromptBuilder;
 
-    try {
-      results = await Promise.all(step.tasks.map((task) => queue.push(task)));
-    } catch (error) {
-      queue.kill();
-      throw error;
+  private planner: Agent<PlannerInput, PlannerOutput>;
+
+  private worker: Agent<WorkerInput, WorkerOutput>;
+
+  private completer: Agent<CompleterInput, O>;
+
+  private stateManagement?: StateManagementOptions;
+
+  /**
+   * Compress execution state to prevent context overflow
+   * Uses reverse accumulation to efficiently find optimal task count
+   */
+  private compressState(state: ExecutionState): ExecutionState {
+    const { maxTokens, keepRecent } = this.stateManagement ?? {};
+
+    if (!maxTokens && !keepRecent) {
+      return state;
     }
 
-    const result = getMessageOrJsonString(
-      await context.invoke(
-        AIAgent.from<SynthesizeStepPromptInput, Message>({
-          name: "llm_orchestration_step_synthesizer",
-          instructions: SYNTHESIZE_STEP_PROMPT_TEMPLATE,
-        }),
-        { objective: planResult.objective, step, tasks: results },
-      ),
+    const tasks = state.tasks;
+    let selectedTasks = tasks;
+
+    // Step 1: Apply keepRecent limit if configured
+    if (keepRecent && tasks.length > keepRecent) {
+      selectedTasks = tasks.slice(-keepRecent);
+    }
+
+    // Step 2: Apply maxTokens limit if configured
+    if (maxTokens && selectedTasks.length > 0) {
+      // Start from the most recent task and accumulate backwards
+      let accumulatedTokens = 0;
+      let taskCount = 0;
+
+      for (let i = selectedTasks.length - 1; i >= 0; i--) {
+        const taskJson = JSON.stringify(selectedTasks[i]);
+        const taskTokens = estimateTokens(taskJson);
+
+        if (accumulatedTokens + taskTokens > maxTokens && taskCount > 0) {
+          // Stop if adding this task would exceed limit
+          break;
+        }
+
+        accumulatedTokens += taskTokens;
+        taskCount++;
+      }
+
+      // Keep the most recent N tasks that fit within token limit
+      if (taskCount < selectedTasks.length) {
+        selectedTasks = selectedTasks.slice(-taskCount);
+      }
+    }
+
+    return { tasks: selectedTasks };
+  }
+
+  override async *process(input: I, options: AgentInvokeOptions) {
+    const model = this.model || options.model || options.context.model;
+    if (!model) throw new Error("model is required to run OrchestratorAgent");
+
+    const { tools: availableSkills = [] } = await this.objective.build({
+      ...options,
+      input,
+      model,
+      agent: this,
+    });
+
+    const skills = availableSkills.map((i) => ({
+      name: i.function.name,
+      description: i.function.description,
+    }));
+
+    const { prompt: objective } = await this.objective.buildPrompt({
+      input,
+      context: options.context,
+    });
+
+    const executionState: ExecutionState = { tasks: [] };
+    let iterationCount = 0;
+    const maxIterations = this.stateManagement?.maxIterations ?? DEFAULT_MAX_ITERATIONS;
+
+    while (true) {
+      // Check if maximum iterations reached
+      if (maxIterations && iterationCount >= maxIterations) {
+        console.warn(`Maximum iterations (${maxIterations}) reached. Stopping execution.`);
+        break;
+      }
+
+      iterationCount++;
+
+      // Compress state for planner input if needed
+      const compressedState = this.compressState(executionState);
+
+      const plan = await this.invokeChildAgent(
+        this.planner,
+        { objective, skills, executionState: compressedState },
+        { ...options, model, streaming: false },
+      );
+
+      if (plan.finished || !plan.nextTask) {
+        break;
+      }
+
+      const task = plan.nextTask;
+      const createdAt = Date.now();
+
+      const taskResult = await this.invokeChildAgent(
+        this.worker,
+        { objective, executionState: compressedState, task },
+        { ...options, model, streaming: false },
+      )
+        .then((res) => {
+          if (res.error || res.success === false) {
+            return { status: "failed" as const, result: res.result, error: res.error };
+          }
+          return { status: "completed" as const, result: res.result };
+        })
+        .catch((error) => ({
+          status: "failed" as const,
+          error: { message: error instanceof Error ? error.message : String(error) },
+        }));
+
+      executionState.tasks.push({
+        ...taskResult,
+        task: task,
+        createdAt,
+        completedAt: Date.now(),
+      });
+    }
+
+    // Compress state for completer input if needed
+    const compressedState = this.compressState(executionState);
+
+    yield* await this.invokeChildAgent(
+      this.completer,
+      { objective, executionState: compressedState },
+      { ...options, model, streaming: true },
     );
-    if (!result) throw new Error("unexpected empty result from synthesize step's tasks results");
-
-    return {
-      step,
-      tasks: results,
-      result,
-    };
   }
 }
 
-function getMessageOrJsonString(output: Message): string {
-  const entries = Object.entries(output);
-  const firstValue = entries[0]?.[1];
-  if (entries.length === 1 && typeof firstValue === "string") {
-    return firstValue;
-  }
-  return JSON.stringify(output);
-}
+export default OrchestratorAgent;
 
-const orchestratorAgentOptionsSchema = z.object({
-  maxIterations: z.number().optional(),
-  tasksConcurrency: z.number().optional(),
-});
+function getOrchestratorAgentSchema({ filepath }: { filepath: string }) {
+  const nestAgentSchema = getNestAgentSchema({ filepath });
+  const instructionsSchema = getInstructionsSchema({ filepath });
+
+  return camelizeSchema(
+    z.object({
+      objective: instructionsSchema,
+      planner: optionalize(nestAgentSchema),
+      worker: optionalize(nestAgentSchema),
+      completer: optionalize(nestAgentSchema),
+      stateManagement: optionalize(camelizeSchema(stateManagementOptionsSchema)),
+    }),
+  );
+}

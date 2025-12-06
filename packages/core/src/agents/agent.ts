@@ -315,6 +315,13 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
  * {@includeCode ../../test/agents/agent.test.ts#example-custom-agent}
  */
 export abstract class Agent<I extends Message = any, O extends Message = any> implements AFSModule {
+  static async load<I extends Message = any, O extends Message = any>(_options: {
+    filepath: string;
+    parsed: object;
+  }): Promise<Agent<I, O>> {
+    throw new Error("Not implemented");
+  }
+
   constructor(options: AgentOptions<I, O> = {}) {
     checkArguments("Agent options", agentOptionsSchema, options);
 

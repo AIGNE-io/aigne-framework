@@ -1,0 +1,5 @@
+#!/usr/bin/env aigne
+
+model: aignehub/google/gemini-2.5-pro
+agents:
+  - agents/orchestrator.yaml

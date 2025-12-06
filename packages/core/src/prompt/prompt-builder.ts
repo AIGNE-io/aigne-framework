@@ -17,7 +17,6 @@ import type {
   ChatModelInputTool,
   ChatModelInputToolChoice,
 } from "../agents/chat-model.js";
-import type { ImageAgent } from "../agents/image-agent.js";
 import { type FileUnionContent, fileUnionContentsSchema } from "../agents/model.js";
 import { optionalize } from "../loader/schema.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
@@ -115,6 +114,14 @@ export class PromptBuilder {
 
   workingDir?: string;
 
+  copy(): PromptBuilder {
+    return new PromptBuilder({
+      instructions:
+        typeof this.instructions === "string" ? this.instructions : this.instructions?.copy(),
+      workingDir: this.workingDir,
+    });
+  }
+
   async build(options: PromptBuildOptions): Promise<ChatModelInput & { toolAgents?: Agent[] }> {
     return {
       messages: await this.buildMessages(options),
@@ -126,8 +133,8 @@ export class PromptBuilder {
     };
   }
 
-  async buildImagePrompt(
-    options: Pick<PromptBuildOptions, "input" | "context"> & { agent: ImageAgent },
+  async buildPrompt(
+    options: Pick<PromptBuildOptions, "input" | "context"> & { inputFileKey?: string },
   ): Promise<{ prompt: string; image?: FileUnionContent[] }> {
     const messages =
       (await (typeof this.instructions === "string"
@@ -135,7 +142,7 @@ export class PromptBuilder {
         : this.instructions
       )?.format(this.getTemplateVariables(options), { workingDir: this.workingDir })) ?? [];
 
-    const inputFileKey = options.agent?.inputFileKey;
+    const inputFileKey = options.inputFileKey;
     const files = flat(
       inputFileKey
         ? checkArguments(

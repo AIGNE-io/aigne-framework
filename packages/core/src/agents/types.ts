@@ -1,5 +1,5 @@
 import z, { type ZodType } from "zod";
-import { type Agent, DEFAULT_INPUT_ACTION_GET, type Message } from "./agent.js";
+import { type Agent, type AgentOptions, DEFAULT_INPUT_ACTION_GET, type Message } from "./agent.js";
 
 export const transferAgentOutputKey = "$transferAgentTo";
 
@@ -43,4 +43,13 @@ export function getterSchema<T extends ZodType>(schema: T) {
       [DEFAULT_INPUT_ACTION_GET]: z.string(),
     }),
   ]);
+}
+
+export interface AgentClass {
+  new (...args: any[]): Agent<any, any>;
+  load<I extends Message = any, O extends Message = any>(options: {
+    filepath: string;
+    parsed: AgentOptions;
+    [key: string]: any;
+  }): Promise<Agent<I, O>>;
 }

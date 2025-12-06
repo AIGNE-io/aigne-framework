@@ -61,6 +61,7 @@ export interface AFSEntryMetadata extends Record<string, any> {
     inputSchema?: Record<string, any>;
     outputSchema?: Record<string, any>;
   };
+  childrenCount?: number;
 }
 
 export interface AFSEntry<T = any> {

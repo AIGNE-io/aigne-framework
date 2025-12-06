@@ -787,12 +787,6 @@ importers:
       '@aigne/cli':
         specifier: workspace:^
         version: link:../../packages/cli
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../../packages/core
-      '@aigne/openai':
-        specifier: workspace:^
-        version: link:../../models/openai
     devDependencies:
       '@aigne/test-utils':
         specifier: workspace:^
@@ -1229,6 +1223,9 @@ importers:
       '@google/genai':
         specifier: ^1.30.0
         version: 1.30.0
+      yaml:
+        specifier: ^2.8.1
+        version: 2.8.1
       zod:
         specifier: ^3.25.67
         version: 3.25.67
@@ -1861,6 +1858,9 @@ importers:
       zod:
         specifier: ^3.25.67
         version: 3.25.67
+      zod-to-json-schema:
+        specifier: ^3.24.6
+        version: 3.24.6(zod@3.25.67)
     devDependencies:
       '@types/bun':
         specifier: ^1.2.22

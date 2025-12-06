@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.70.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.70.0...core-v1.70.1-beta) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.12-beta
+
 ## [1.70.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.70.0-beta.1...core-v1.70.0) (2025-12-05)
 
 

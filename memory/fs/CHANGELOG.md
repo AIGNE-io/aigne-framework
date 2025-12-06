@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/fs-memory-v1.1.3...fs-memory-v1.1.4-beta) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.1-beta
+    * @aigne/openai bumped to 0.16.14-beta
+
 ## [1.1.3](https://github.com/AIGNE-io/aigne-framework/compare/fs-memory-v1.1.3-beta.1...fs-memory-v1.1.3) (2025-12-05)
 
 

@@ -44,6 +44,7 @@
     "@aigne/core": "workspace:^",
     "@aigne/uuid": "^13.0.1",
     "@aws-sdk/client-bedrock-runtime": "^3.890.0",
+    "yaml": "^2.8.1",
     "zod": "^3.25.67"
   },
   "devDependencies": {

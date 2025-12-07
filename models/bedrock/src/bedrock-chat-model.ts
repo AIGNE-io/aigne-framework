@@ -35,6 +35,7 @@ import {
   type ToolConfiguration,
   type ToolInputSchema,
 } from "@aws-sdk/client-bedrock-runtime";
+import { parse } from "yaml";
 import { z } from "zod";
 
 /**
@@ -320,7 +321,7 @@ const getRunMessages = ({
       if (typeof msg.content !== "string") throw new Error("Tool message must have string content");
       if (messages.at(-1)?.role === "user") {
         messages.at(-1)?.content?.push({
-          toolResult: { toolUseId: msg.toolCallId, content: [{ json: parseJSON(msg.content) }] },
+          toolResult: { toolUseId: msg.toolCallId, content: [{ json: parse(msg.content) }] },
         });
       } else {
         messages.push({
@@ -329,7 +330,7 @@ const getRunMessages = ({
             {
               toolResult: {
                 toolUseId: msg.toolCallId,
-                content: [{ json: parseJSON(msg.content) }],
+                content: [{ json: parse(msg.content) }],
               },
             },
           ],

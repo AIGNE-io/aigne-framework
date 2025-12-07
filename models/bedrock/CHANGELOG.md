@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.10.20-beta](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.19...bedrock-v0.10.20-beta) (2025-12-07)
+
+
+### Features
+
+* support define agent by third library & orchestrator agent refactor ([#799](https://github.com/AIGNE-io/aigne-framework/issues/799)) ([7264b11](https://github.com/AIGNE-io/aigne-framework/commit/7264b11ab6eed787e928367f09aa08d254968d40))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.71.0-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.68-beta
+
 ## [0.10.19](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.19-beta...bedrock-v0.10.19) (2025-12-06)
 
 

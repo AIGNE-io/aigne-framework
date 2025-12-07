@@ -1,6 +1,6 @@
 {
   "name": "@aigne/afs",
-  "version": "1.2.3",
+  "version": "1.3.0-beta",
   "description": "Agentic File System (AFS) is a virtual file system that supports various storage backends and provides a unified API for file operations.",
   "publishConfig": {
     "access": "public"

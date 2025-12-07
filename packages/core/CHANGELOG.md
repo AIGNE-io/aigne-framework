@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.71.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.70.1...core-v1.71.0-beta) (2025-12-07)
+
+
+### Features
+
+* support define agent by third library & orchestrator agent refactor ([#799](https://github.com/AIGNE-io/aigne-framework/issues/799)) ([7264b11](https://github.com/AIGNE-io/aigne-framework/commit/7264b11ab6eed787e928367f09aa08d254968d40))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta
+    * @aigne/afs-history bumped to 1.1.3-beta
+
 ## [1.70.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.70.1-beta...core-v1.70.1) (2025-12-06)
 
 

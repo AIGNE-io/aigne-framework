@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.10.15-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.14...aigne-hub-v0.10.15-beta) (2025-12-07)
+
+
+### Features
+
+* support define agent by third library & orchestrator agent refactor ([#799](https://github.com/AIGNE-io/aigne-framework/issues/799)) ([7264b11](https://github.com/AIGNE-io/aigne-framework/commit/7264b11ab6eed787e928367f09aa08d254968d40))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.15-beta
+    * @aigne/bedrock bumped to 0.10.20-beta
+    * @aigne/core bumped to 1.71.0-beta
+    * @aigne/deepseek bumped to 0.7.61-beta
+    * @aigne/doubao bumped to 1.2.5-beta
+    * @aigne/gemini bumped to 0.14.15-beta
+    * @aigne/ideogram bumped to 0.4.15-beta
+    * @aigne/ollama bumped to 0.7.61-beta
+    * @aigne/open-router bumped to 0.7.61-beta
+    * @aigne/openai bumped to 0.16.15-beta
+    * @aigne/poe bumped to 1.1.5-beta
+    * @aigne/transport bumped to 0.15.24-beta
+    * @aigne/xai bumped to 0.7.61-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.68-beta
+
 ## [0.10.14](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.14-beta...aigne-hub-v0.10.14) (2025-12-06)
 
 

@@ -7,6 +7,21 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.23.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.4...agent-library-v1.23.0-beta) (2025-12-07)
+
+
+### Features
+
+* support define agent by third library & orchestrator agent refactor ([#799](https://github.com/AIGNE-io/aigne-framework/issues/799)) ([7264b11](https://github.com/AIGNE-io/aigne-framework/commit/7264b11ab6eed787e928367f09aa08d254968d40))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.71.0-beta
+    * @aigne/openai bumped to 0.16.15-beta
+
 ## [1.22.4](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.4-beta...agent-library-v1.22.4) (2025-12-06)
 
 

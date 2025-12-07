@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.58.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.3...cli-v1.58.0-beta) (2025-12-07)
+
+
+### Features
+
+* support define agent by third library & orchestrator agent refactor ([#799](https://github.com/AIGNE-io/aigne-framework/issues/799)) ([7264b11](https://github.com/AIGNE-io/aigne-framework/commit/7264b11ab6eed787e928367f09aa08d254968d40))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta
+    * @aigne/afs-history bumped to 1.1.3-beta
+    * @aigne/afs-local-fs bumped to 1.3.0-beta
+    * @aigne/agent-library bumped to 1.23.0-beta
+    * @aigne/agentic-memory bumped to 1.1.5-beta
+    * @aigne/aigne-hub bumped to 0.10.15-beta
+    * @aigne/core bumped to 1.71.0-beta
+    * @aigne/default-memory bumped to 1.3.5-beta
+    * @aigne/openai bumped to 0.16.15-beta
+    * @aigne/secrets bumped to 0.1.5-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.68-beta
+
 ## [1.57.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.57.3-beta...cli-v1.57.3) (2025-12-06)
 
 

@@ -129,6 +129,7 @@ export class OrchestratorAgent<
       worker: valid.worker
         ? ((await loadNestAgent(filepath, valid.worker, options, {
             name: "Worker",
+            taskTitle: "Execute Task: {{task}}",
             instructions: TODO_WORKER_PROMPT_TEMPLATE,
             inputSchema: workerInputSchema,
             outputSchema: workerOutputSchema,
@@ -182,6 +183,7 @@ export class OrchestratorAgent<
       ? options.worker
       : new AIAgent({
           ...(options as object),
+          taskTitle: "Execute Task: {{task}}",
           name: "Worker",
           instructions: TODO_WORKER_PROMPT_TEMPLATE,
           inputSchema: workerInputSchema,

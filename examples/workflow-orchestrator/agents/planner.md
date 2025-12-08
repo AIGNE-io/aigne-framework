@@ -2,6 +2,8 @@
 
 Your responsibility is to decide the next task based on the current execution state.
 
+Current workspace is: `/modules/workspace/`
+
 ## Objective for Task Planning
 {{ objective }}
 

@@ -62,8 +62,14 @@ The orchestrator is configured using YAML files. This example uses:
 export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your API key
 export GEMINI_API_KEY=YOUR_GEMINI_API_KEY # Or use Gemini
 
-# Run the orchestrator
+# Run the orchestrator with default objective "Explore the project directory structure and generate a project summary report"
 npx -y @aigne/example-workflow-orchestrator
+
+# Run with chat mode, you can interactively provide instructions
+npx -y @aigne/example-workflow-orchestrator --chat
+
+# Run with custom message
+npx -y @aigne/example-workflow-orchestrator -- -m "Analyze the project structure"
 ```
 
 ### Connect to an AI Model

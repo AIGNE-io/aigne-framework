@@ -1,5 +1,5 @@
 {
-  ".": "1.90.0-beta.1",
+  ".": "1.90.0-beta.2",
   "packages/platform-helpers": "0.6.5",
   "packages/sqlite": "0.4.7",
   "packages/secrets": "0.1.5-beta.1",
@@ -29,7 +29,7 @@
   "examples/workflow-concurrency": "1.16.87-beta.1",
   "examples/workflow-group-chat": "1.18.5-beta.1",
   "examples/workflow-handoff": "1.17.5-beta.1",
-  "examples/workflow-orchestrator": "1.14.0-beta.1",
+  "examples/workflow-orchestrator": "1.14.0-beta.2",
   "examples/workflow-reflection": "1.15.88-beta.1",
   "examples/workflow-router": "1.19.5-beta.1",
   "examples/workflow-sequential": "1.17.87-beta.1",

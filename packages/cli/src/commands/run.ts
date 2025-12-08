@@ -2,11 +2,12 @@ import { cp, mkdir, rm } from "node:fs/promises";
 import { homedir } from "node:os";
 import { isAbsolute, join, resolve } from "node:path";
 import { exists } from "@aigne/agent-library/utils/fs.js";
+import { findAIGNEFile } from "@aigne/core/loader/index.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { flat, isNonNullable, pick } from "@aigne/core/utils/type-utils.js";
 import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { config } from "dotenv-flow";
-import type { CommandModule } from "yargs";
+import type { Argv, CommandModule } from "yargs";
 import yargs from "yargs";
 import { AIGNE_CLI_VERSION, CHAT_MODEL_OPTIONS } from "../constants.js";
 import { isV1Package, toAIGNEPackage } from "../utils/agent-v1.js";
@@ -15,6 +16,8 @@ import { loadAIGNE } from "../utils/load-aigne.js";
 import { isUrl } from "../utils/url.js";
 import { withRunAgentCommonOptions } from "../utils/yargs.js";
 import { agentCommandModule, cliAgentCommandModule } from "./app/agent.js";
+
+let yargsInstance: Argv | null = null;
 
 export function createRunCommand({
   aigneFilePath,
@@ -26,6 +29,8 @@ export function createRunCommand({
     command: ["run [path] [entry-agent]", "$0"],
     describe: "Run AIGNE for the specified path",
     builder: async (yargs) => {
+      yargsInstance = yargs;
+
       return yargs
         .positional("path", {
           type: "string",
@@ -49,6 +54,7 @@ export function createRunCommand({
       if (options.version) {
         console.log(AIGNE_CLI_VERSION);
         process.exit(0);
+        return;
       }
 
       if (!options.entryAgent && options.path) {
@@ -58,13 +64,27 @@ export function createRunCommand({
         }
       }
 
+      const path = aigneFilePath || options.path || ".";
+      if (
+        !(await findAIGNEFile(path).catch((error) => {
+          if (options._[0] !== "run") {
+            yargsInstance?.showHelp();
+          } else {
+            throw error;
+          }
+          return false;
+        }))
+      ) {
+        return;
+      }
+
       // Parse model options for loading application
       const opts = withRunAgentCommonOptions(
         yargs(process.argv).help(false).version(false).strict(false),
       ).parseSync();
       logger.level = opts.logLevel;
 
-      const { aigne } = await loadApplication(aigneFilePath || options.path || ".", {
+      const { aigne } = await loadApplication(path, {
         modelOptions: pick(opts, CHAT_MODEL_OPTIONS),
         imageModelOptions: { model: opts.imageModel },
       });

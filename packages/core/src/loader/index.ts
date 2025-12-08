@@ -426,7 +426,7 @@ export async function loadAIGNEFile(path: string): Promise<{
   return { aigne, rootDir: nodejs.path.dirname(file) };
 }
 
-async function findAIGNEFile(path: string): Promise<string> {
+export async function findAIGNEFile(path: string): Promise<string> {
   const possibleFiles = AIGNE_FILE_NAME.includes(nodejs.path.basename(path))
     ? [path]
     : AIGNE_FILE_NAME.map((name) => nodejs.path.join(path, name));

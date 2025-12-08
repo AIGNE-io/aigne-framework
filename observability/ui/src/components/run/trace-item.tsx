@@ -7,6 +7,7 @@ import UnfoldLessIcon from "@mui/icons-material/UnfoldLess";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import { type ReactElement, useState } from "react";
+import Status from "../../components/status.tsx";
 import { parseDurationMs, parseDurationTime } from "../../utils/latency.ts";
 import { AgentTag } from "./agent-tag.tsx";
 import type { TraceData } from "./types.ts";
@@ -48,6 +49,7 @@ function TraceItem({
   start = 0,
 }: TraceItemProps) {
   const hasError = status?.code === 2;
+  const isPending = status?.code === 0;
 
   const widthPercent = totalDuration
     ? Math.min(Math.max((duration / totalDuration) * 100 || 0, 0.5), 100)
@@ -132,27 +134,30 @@ function TraceItem({
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
-            color: hasError ? "error.light" : "inherit",
+            color: hasError ? "error.light" : isPending ? "warning.light" : "inherit",
           }}
         >
           {name}
         </Typography>
 
-        <Typography
-          sx={{
-            fontSize: 12,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            color: hasError ? "error.light" : "action.active",
-          }}
-        >
-          {`${taskTitle ? `(${taskTitle})` : ""}`}
-        </Typography>
+        {taskTitle && (
+          <Typography
+            sx={{
+              fontSize: 12,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              color: hasError ? "error.light" : isPending ? "warning.light" : "action.active",
+            }}
+          >
+            {`(${taskTitle})`}
+          </Typography>
+        )}
 
         {hasError && (
           <ErrorIcon sx={{ fontSize: 16, color: "error.light", opacity: 0.8, flexShrink: 0 }} />
         )}
+        {isPending && <Status />}
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 2, position: "relative", zIndex: 1 }}>

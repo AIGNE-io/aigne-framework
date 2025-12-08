@@ -5,7 +5,7 @@ import type {
   ChatModel,
   ChatModelInputOptionsWithGetter,
   ImageModel,
-  ImageModelInputOptions,
+  ImageModelInputOptionsWithGetter,
   VideoModel,
 } from "@aigne/core";
 import { DeepSeekChatModel } from "@aigne/deepseek";
@@ -27,6 +27,7 @@ import { HttpsProxyAgent } from "https-proxy-agent";
 import { AIGNEHubImageModel } from "../aigne-hub-image-model.js";
 import { AIGNEHubChatModel } from "../aigne-hub-model.js";
 import { AIGNEHubVideoModel } from "../aigne-hub-video-model.js";
+import { AIGNE_HUB_PROVIDER } from "./constants.js";
 
 const getClientOptions = () => {
   const proxy = ["HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy", "ALL_PROXY", "all_proxy"]
@@ -143,7 +144,7 @@ export interface LoadableImageModel {
     apiKey?: string;
     baseURL?: string;
     model?: string;
-    modelOptions?: ImageModelInputOptions;
+    modelOptions?: ImageModelInputOptionsWithGetter;
   }) => ImageModel;
 }
 
@@ -280,5 +281,5 @@ export const parseModel = (model: string) => {
     return { provider, model: name };
   }
 
-  return { provider: "aignehub", model };
+  return { provider: AIGNE_HUB_PROVIDER, model };
 };

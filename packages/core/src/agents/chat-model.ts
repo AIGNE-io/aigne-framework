@@ -1,5 +1,5 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
-import { z } from "zod";
+import { type ZodType, z } from "zod";
 import { convertJsonSchemaToZod, type JSONSchema } from "zod-from-json-schema";
 import { optionalize } from "../loader/schema.js";
 import { wrapAutoParseJsonSchema } from "../utils/json-schema.js";
@@ -13,7 +13,6 @@ import {
   type AgentResponse,
   type AgentResponseStream,
   agentOptionsSchema,
-  DEFAULT_INPUT_ACTION_GET,
   type GetterSchema,
   getterSchema,
   type Message,
@@ -72,7 +71,7 @@ export interface ChatModelOptions
 export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
   override tag = "ChatModelAgent";
 
-  constructor(public options?: ChatModelOptions) {
+  constructor(public override options?: ChatModelOptions) {
     if (options) checkArguments("ChatModel", chatModelOptionsSchema, options);
 
     const retryOnError =
@@ -90,7 +89,6 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
       inputSchema: chatModelInputSchema,
       outputSchema: chatModelOutputSchema,
       retryOnError,
-      model: undefined,
     });
   }
 
@@ -100,33 +98,6 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
     model?: string;
   }> {
     return {};
-  }
-
-  async getModelOptions(
-    input: Message,
-    options: AgentInvokeOptions,
-  ): Promise<ChatModelInputOptions> {
-    const result: ChatModelInputOptions = {};
-
-    for (const [key, val] of Object.entries({
-      ...this.options?.modelOptions,
-      ...("modelOptions" in input ? (input.modelOptions as ChatModelInputOptionsWithGetter) : {}),
-    })) {
-      if (
-        val &&
-        typeof val === "object" &&
-        DEFAULT_INPUT_ACTION_GET in val &&
-        typeof val[DEFAULT_INPUT_ACTION_GET] === "string"
-      ) {
-        const getterPath = val[DEFAULT_INPUT_ACTION_GET];
-        const value = input[getterPath] ?? options.context.userContext[getterPath];
-        if (!isNil(value)) Object.assign(result, { [key]: value });
-      } else {
-        Object.assign(result, { [key]: val });
-      }
-    }
-
-    return result;
   }
 
   /**
@@ -442,7 +413,7 @@ export interface ChatModelInput extends Message {
   /**
    * Model-specific configuration options
    */
-  modelOptions?: ChatModelInputOptionsWithGetter;
+  modelOptions?: ChatModelInputOptions;
 }
 
 /**
@@ -486,6 +457,7 @@ export interface ChatModelInputMessage {
     id: string;
     type: "function";
     function: { name: string; arguments: Message };
+    metadata?: Record<string, any>;
   }[];
 
   /**
@@ -539,6 +511,7 @@ const chatModelInputMessageSchema = z.object({
           name: z.string(),
           arguments: z.record(z.string(), z.unknown()),
         }),
+        metadata: optionalize(z.record(z.string(), z.unknown())),
       }),
     ),
   ),
@@ -610,6 +583,12 @@ export interface ChatModelInputTool {
      */
     parameters: object;
   };
+
+  /**
+   * Provider-specific metadata for the tool
+   * For example, Gemini's thought_signature
+   */
+  metadata?: Record<string, any>;
 }
 
 const chatModelInputToolSchema = z.object({
@@ -619,6 +598,7 @@ const chatModelInputToolSchema = z.object({
     description: optionalize(z.string()),
     parameters: z.record(z.string(), z.unknown()),
   }),
+  metadata: optionalize(z.record(z.string(), z.unknown())),
 });
 
 /**
@@ -694,30 +674,44 @@ export interface ChatModelInputOptions extends Record<string, unknown> {
 
 export type ChatModelInputOptionsWithGetter = GetterSchema<ChatModelInputOptions>;
 
-const modelOptionsSchema = z.object({
-  model: optionalize(getterSchema(z.string())),
-  temperature: optionalize(getterSchema(z.number())),
-  topP: optionalize(getterSchema(z.number())),
-  frequencyPenalty: optionalize(getterSchema(z.number())),
-  presencePenalty: optionalize(getterSchema(z.number())),
-  parallelToolCalls: optionalize(getterSchema(z.boolean())).default(true),
-  modalities: optionalize(getterSchema(z.array(z.enum(["text", "image", "audio"])))),
-  reasoningEffort: optionalize(
-    getterSchema(
-      z.union([
-        z.number(),
-        z.literal("minimal"),
-        z.literal("low"),
-        z.literal("medium"),
-        z.literal("high"),
-      ]),
-    ),
+const modelOptionsSchemaProperties = {
+  model: z.string(),
+  temperature: z.number(),
+  topP: z.number(),
+  frequencyPenalty: z.number(),
+  presencePenalty: z.number(),
+  parallelToolCalls: z.boolean().default(true),
+  modalities: z.array(z.enum(["text", "image", "audio"])),
+  reasoningEffort: z.union([
+    z.number(),
+    z.literal("minimal"),
+    z.literal("low"),
+    z.literal("medium"),
+    z.literal("high"),
+  ]),
+};
+
+const modelOptionsSchema = z.object(
+  Object.fromEntries(
+    Object.entries(modelOptionsSchemaProperties).map(([key, schema]) => [
+      key,
+      optionalize(schema as ZodType),
+    ]),
   ),
-});
+);
+
+const modelOptionsWithGetterSchema = z.object(
+  Object.fromEntries(
+    Object.entries(modelOptionsSchemaProperties).map(([key, schema]) => [
+      key,
+      optionalize(getterSchema(schema)),
+    ]),
+  ),
+);
 
 const chatModelOptionsSchema = agentOptionsSchema.extend({
   model: optionalize(z.string()),
-  modelOptions: optionalize(modelOptionsSchema),
+  modelOptions: optionalize(modelOptionsWithGetterSchema),
 });
 
 const chatModelInputSchema: z.ZodType<ChatModelInput> = z.object({
@@ -809,6 +803,12 @@ export interface ChatModelOutputToolCall {
      */
     arguments: Message;
   };
+
+  /**
+   * Provider-specific metadata for the tool call
+   * For example, Gemini's thought_signature
+   */
+  metadata?: Record<string, any>;
 }
 
 const chatModelOutputToolCallSchema = z.object({
@@ -818,6 +818,7 @@ const chatModelOutputToolCallSchema = z.object({
     name: z.string(),
     arguments: z.record(z.string(), z.unknown()),
   }),
+  metadata: optionalize(z.record(z.string(), z.unknown())),
 });
 
 /**

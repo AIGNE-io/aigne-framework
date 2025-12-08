@@ -19,39 +19,9 @@ AIGNE CLI は、ローカルファイルシステムからプロジェクトを�
 
 プロセス全体が効率化されており、リモート Agent がローカルの Agent と同じようにアクセスしやすく感じられる、シームレスな体験を提供します。
 
-```d2
-direction: down
-
-developer: {
-  shape: c4-person
-  label: "開発者"
-}
-
-cli: {
-  label: "AIGNE CLI"
-}
-
-remote-server: {
-  label: "リモートサーバー\n(例: GitHub)"
-  shape: cylinder
-}
-
-local-cache: {
-  label: "ローカルキャッシュ\n(~/.aigne/)"
-  shape: cylinder
-}
-
-agent-runtime: {
-  label: "Agent ランタイム"
-}
-
-developer -> cli: "1. aigne run <URL>"
-cli -> remote-server: "2. パッケージをダウンロード"
-remote-server -> cli: "3. tarballを返す"
-cli -> local-cache: "4. 展開とキャッシュ"
-cli -> agent-runtime: "5. キャッシュから Agent を実行"
-agent-runtime -> developer: "6. 出力"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![---](assets/diagram/running-remote-agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 使用方法
 

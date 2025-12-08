@@ -163,9 +163,9 @@ export class AnthropicChatModel extends ChatModel {
 
   private async _process(
     input: ChatModelInput,
-    options: AgentInvokeOptions,
+    _options: AgentInvokeOptions,
   ): Promise<AgentResponse<ChatModelOutput>> {
-    const modelOptions = await this.getModelOptions(input, options);
+    const { modelOptions = {} } = input;
 
     const model = modelOptions.model || this.credential.model;
 

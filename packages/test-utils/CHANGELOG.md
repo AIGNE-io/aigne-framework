@@ -1,5 +1,127 @@
 # Changelog
 
+## [0.5.68-beta](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.67...test-utils-v0.5.68-beta) (2025-12-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.71.0-beta
+
+## [0.5.67](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.67-beta...test-utils-v0.5.67) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.1
+
+## [0.5.67-beta](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.66...test-utils-v0.5.67-beta) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.1-beta
+
+## [0.5.66](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.66-beta.1...test-utils-v0.5.66) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.0
+
+## [0.5.66-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.66-beta...test-utils-v0.5.66-beta.1) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.0-beta.1
+
+## [0.5.66-beta](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.65...test-utils-v0.5.66-beta) (2025-12-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.0-beta
+
+## [0.5.65](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.65-beta.1...test-utils-v0.5.65) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.2
+
+## [0.5.65-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.65-beta...test-utils-v0.5.65-beta.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.2-beta.1
+
+## [0.5.65-beta](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.64...test-utils-v0.5.65-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.2-beta
+
+## [0.5.64](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.64-beta...test-utils-v0.5.64) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.1
+
+## [0.5.64-beta](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.63...test-utils-v0.5.64-beta) (2025-11-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.1-beta
+
+## [0.5.63](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.63-beta.3...test-utils-v0.5.63) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0
+
+## [0.5.63-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.63-beta.2...test-utils-v0.5.63-beta.3) (2025-11-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0-beta.2
+
 ## [0.5.63-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.63-beta.1...test-utils-v0.5.63-beta.2) (2025-11-18)
 
 

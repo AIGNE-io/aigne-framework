@@ -1,5 +1,262 @@
 # Changelog
 
+## [0.10.78-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.77...example-afs-memory-v0.10.78-beta) (2025-12-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta
+    * @aigne/afs-history bumped to 1.1.3-beta
+    * @aigne/afs-user-profile-memory bumped to 1.2.5-beta
+    * @aigne/cli bumped to 1.58.0-beta
+    * @aigne/core bumped to 1.71.0-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.68-beta
+
+## [0.10.77](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.77-beta...example-afs-memory-v0.10.77) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-user-profile-memory bumped to 1.2.4
+    * @aigne/cli bumped to 1.57.3
+    * @aigne/core bumped to 1.70.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.67
+
+## [0.10.77-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.76...example-afs-memory-v0.10.77-beta) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-user-profile-memory bumped to 1.2.4-beta
+    * @aigne/cli bumped to 1.57.3-beta
+    * @aigne/core bumped to 1.70.1-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.67-beta
+
+## [0.10.76](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.76-beta.1...example-afs-memory-v0.10.76) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.3
+    * @aigne/afs-history bumped to 1.1.2
+    * @aigne/afs-user-profile-memory bumped to 1.2.3
+    * @aigne/cli bumped to 1.57.2
+    * @aigne/core bumped to 1.70.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.66
+
+## [0.10.76-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.76-beta...example-afs-memory-v0.10.76-beta.1) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-user-profile-memory bumped to 1.2.3-beta.1
+    * @aigne/cli bumped to 1.57.2-beta.1
+    * @aigne/core bumped to 1.70.0-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.66-beta.1
+
+## [0.10.76-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.75...example-afs-memory-v0.10.76-beta) (2025-12-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.3-beta
+    * @aigne/afs-history bumped to 1.1.2-beta
+    * @aigne/afs-user-profile-memory bumped to 1.2.3-beta
+    * @aigne/cli bumped to 1.57.2-beta
+    * @aigne/core bumped to 1.70.0-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.66-beta
+
+## [0.10.75](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.75-beta.1...example-afs-memory-v0.10.75) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.2
+    * @aigne/afs-history bumped to 1.1.1
+    * @aigne/afs-user-profile-memory bumped to 1.2.2
+    * @aigne/cli bumped to 1.57.1
+    * @aigne/core bumped to 1.69.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.65
+
+## [0.10.75-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.75-beta...example-afs-memory-v0.10.75-beta.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-user-profile-memory bumped to 1.2.2-beta.1
+    * @aigne/cli bumped to 1.57.1-beta.1
+    * @aigne/core bumped to 1.69.2-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.65-beta.1
+
+## [0.10.75-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.74...example-afs-memory-v0.10.75-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.2-beta
+    * @aigne/afs-history bumped to 1.1.1-beta
+    * @aigne/afs-user-profile-memory bumped to 1.2.2-beta
+    * @aigne/cli bumped to 1.57.1-beta
+    * @aigne/core bumped to 1.69.2-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.65-beta
+
+## [0.10.74](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.74-beta.6...example-afs-memory-v0.10.74) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-user-profile-memory bumped to 1.2.1
+    * @aigne/cli bumped to 1.57.0
+    * @aigne/core bumped to 1.69.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.64
+
+## [0.10.74-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.74-beta.5...example-afs-memory-v0.10.74-beta.6) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.57.0-beta.5
+
+## [0.10.74-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.74-beta.4...example-afs-memory-v0.10.74-beta.5) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.57.0-beta.4
+
+## [0.10.74-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.74-beta.3...example-afs-memory-v0.10.74-beta.4) (2025-11-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.57.0-beta.3
+
+## [0.10.74-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.74-beta.2...example-afs-memory-v0.10.74-beta.3) (2025-11-27)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.57.0-beta.2
+
+## [0.10.74-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.74-beta.1...example-afs-memory-v0.10.74-beta.2) (2025-11-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.57.0-beta.1
+
+## [0.10.74-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.74-beta...example-afs-memory-v0.10.74-beta.1) (2025-11-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.57.0-beta
+
+## [0.10.74-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.73...example-afs-memory-v0.10.74-beta) (2025-11-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-user-profile-memory bumped to 1.2.1-beta
+    * @aigne/cli bumped to 1.56.1-beta
+    * @aigne/core bumped to 1.69.1-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.64-beta
+
+## [0.10.73](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.73-beta.5...example-afs-memory-v0.10.73) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-history bumped to 1.1.0
+    * @aigne/afs-user-profile-memory bumped to 1.2.0
+    * @aigne/cli bumped to 1.56.0
+    * @aigne/core bumped to 1.69.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63
+
+## [0.10.73-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.73-beta.4...example-afs-memory-v0.10.73-beta.5) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.56.0-beta.4
+
+## [0.10.73-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.73-beta.3...example-afs-memory-v0.10.73-beta.4) (2025-11-20)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.56.0-beta.3
+
+## [0.10.73-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.73-beta.2...example-afs-memory-v0.10.73-beta.3) (2025-11-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-user-profile-memory bumped to 1.2.0-beta.2
+    * @aigne/cli bumped to 1.56.0-beta.2
+    * @aigne/core bumped to 1.69.0-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.63-beta.3
+
 ## [0.10.73-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-memory-v0.10.73-beta.1...example-afs-memory-v0.10.73-beta.2) (2025-11-18)
 
 

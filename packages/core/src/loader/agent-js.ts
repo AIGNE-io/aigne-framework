@@ -1,5 +1,5 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
-import { Agent } from "../agents/agent.js";
+import { isAgent } from "../utils/agent-utils.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { parseAgentFile } from "./agent-yaml.js";
 import { LoadJsAgentError } from "./error.js";
@@ -15,7 +15,7 @@ export async function loadAgentFromJsFile(path: string) {
       new LoadJsAgentError(`Failed to load agent definition from ${url}: ${error.message}`),
   );
 
-  if (agent instanceof Agent) return agent;
+  if (isAgent(agent)) return agent;
 
   return tryOrThrow(
     () =>

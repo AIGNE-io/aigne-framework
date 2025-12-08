@@ -6,44 +6,9 @@ AIGNE フレームワークで効果的にアプリケーションを構築す�
 
 以下の図は、これらのコアコンポーネント間の関係を示しています。
 
-```d2
-direction: down
-
-AIGNE-Orchestrator: {
-  label: "AIGNE オーケストレーター"
-  shape: rectangle
-
-  Agent: {
-    label: "Agent\n(作業単位)"
-    shape: rectangle
-  }
-
-  Models: {
-    label: "モデル\n(AI サービスインターフェース)"
-    shape: rectangle
-  }
-
-  Memory: {
-    label: "メモリ\n(状態の永続化)"
-    shape: rectangle
-  }
-}
-
-AI-Services: {
-  label: "外部 AI サービス"
-  shape: cylinder
-}
-
-State-Store: {
-  label: "ステートストア"
-  shape: cylinder
-}
-
-AIGNE-Orchestrator.Agent <-> AIGNE-Orchestrator.Models: "使用"
-AIGNE-Orchestrator.Agent <-> AIGNE-Orchestrator.Memory: "使用"
-AIGNE-Orchestrator.Models -> AI-Services: "API 呼び出し"
-AIGNE-Orchestrator.Memory -> State-Store: "状態の読み書き"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Core Concepts](assets/diagram/core-concepts-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## アーキテクチャの構成要素
 

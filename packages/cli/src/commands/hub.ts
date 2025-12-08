@@ -1,13 +1,11 @@
-import { existsSync } from "node:fs";
-import { readFile, writeFile } from "node:fs/promises";
 import { AIGNE_HUB_URL } from "@aigne/aigne-hub";
 import chalk from "chalk";
 import Table from "cli-table3";
 import inquirer from "inquirer";
-import { parse, stringify } from "yaml";
 import type { CommandModule } from "yargs";
-import { AIGNE_ENV_FILE, isTest } from "../utils/aigne-hub/constants.js";
+import { isTest } from "../utils/aigne-hub/constants.js";
 import { connectToAIGNEHub } from "../utils/aigne-hub/credential.js";
+import getSecretStore from "../utils/aigne-hub/store/index.js";
 import { getUserInfo } from "../utils/aigne-hub-user.js";
 import { getUrlOrigin } from "../utils/get-url-origin.js";
 
@@ -15,13 +13,6 @@ interface StatusInfo {
   host: string;
   apiUrl: string;
   apiKey: string;
-}
-
-interface AIGNEEnv {
-  [host: string]: {
-    AIGNE_HUB_API_KEY: string;
-    AIGNE_HUB_API_URL: string;
-  };
 }
 
 export const formatNumber = (balance: string) => {
@@ -70,9 +61,7 @@ function printHubStatus(data: {
   console.log(`${chalk.bold("Hub:".padEnd(10))} ${data.hub}`);
   console.log(
     `${chalk.bold("Status:".padEnd(10))} ${
-      data.status === "Connected"
-        ? chalk.green(`${data.status} ✅`)
-        : chalk.red(`${data.status} ❌`)
+      data.status === "Connected" ? chalk.green(`${data.status} ✅`) : `${data.status}`
     }`,
   );
   console.log("");
@@ -103,24 +92,17 @@ function printHubStatus(data: {
 }
 
 async function getHubs(): Promise<StatusInfo[]> {
-  if (!existsSync(AIGNE_ENV_FILE)) {
-    return [];
-  }
-
   try {
-    const data = await readFile(AIGNE_ENV_FILE, "utf8");
-    const envs = parse(data) as AIGNEEnv;
+    const secretStore = await getSecretStore();
+    const hosts = await secretStore.listHosts();
 
     const statusList: StatusInfo[] = [];
-
-    for (const [host, config] of Object.entries(envs)) {
-      if (host !== "default") {
-        statusList.push({
-          host,
-          apiUrl: config.AIGNE_HUB_API_URL,
-          apiKey: config.AIGNE_HUB_API_KEY,
-        });
-      }
+    for (const host of hosts) {
+      statusList.push({
+        host: new URL(host.AIGNE_HUB_API_URL).host,
+        apiUrl: host.AIGNE_HUB_API_URL,
+        apiKey: host.AIGNE_HUB_API_KEY || "",
+      });
     }
 
     return statusList;
@@ -130,8 +112,13 @@ async function getHubs(): Promise<StatusInfo[]> {
 }
 
 const getDefaultHub = async () => {
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({}))) as AIGNEEnv;
-  return envs?.default?.AIGNE_HUB_API_URL || AIGNE_HUB_URL;
+  try {
+    const secretStore = await getSecretStore();
+    const defaultHost = await secretStore.getDefault();
+    return defaultHost?.AIGNE_HUB_API_URL || AIGNE_HUB_URL;
+  } catch {
+    return AIGNE_HUB_URL;
+  }
 };
 
 async function formatHubsList(statusList: StatusInfo[]) {
@@ -290,7 +277,11 @@ async function showInfo() {
     })),
   });
 
-  await printHubDetails(hubApiKey);
+  try {
+    await printHubDetails(hubApiKey);
+  } catch (error: any) {
+    console.error(chalk.red("✗ Failed to print hub details:"), error.message);
+  }
 }
 
 function validateUrl(input: string) {
@@ -303,32 +294,22 @@ function validateUrl(input: string) {
 }
 
 async function saveAndConnect(url: string) {
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({}))) as AIGNEEnv;
-  const host = new URL(url).host;
+  const secretStore = await getSecretStore();
+  const currentKey = await secretStore.getKey(url);
 
-  if (envs[host]) {
-    const currentUrl = envs[host]?.AIGNE_HUB_API_URL;
-    if (currentUrl) {
-      await setDefaultHub(currentUrl);
-      console.log(chalk.green(`✓ Hub ${getUrlOrigin(currentUrl)} connected successfully.`));
-      return;
-    }
+  if (currentKey?.AIGNE_HUB_API_URL) {
+    await setDefaultHub(currentKey.AIGNE_HUB_API_URL);
+    console.log(
+      chalk.green(`✓ Hub ${getUrlOrigin(currentKey.AIGNE_HUB_API_URL)} connected successfully.`),
+    );
+    return;
   }
 
   try {
     if (isTest) {
-      writeFile(
-        AIGNE_ENV_FILE,
-        stringify({
-          "hub.aigne.io": {
-            AIGNE_HUB_API_KEY: "test-key",
-            AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit",
-          },
-          default: {
-            AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit",
-          },
-        }),
-      );
+      await secretStore.setKey("https://hub.aigne.io/ai-kit", "test-key");
+      await secretStore.setDefault("https://hub.aigne.io/ai-kit");
+      console.log(chalk.green(`✓ Hub https://hub.aigne.io/ai-kit connected successfully.`));
       return;
     }
 
@@ -340,46 +321,78 @@ async function saveAndConnect(url: string) {
 }
 
 async function setDefaultHub(url: string) {
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({}))) as AIGNEEnv;
-  const host = new URL(url).host;
+  try {
+    const secretStore = await getSecretStore();
+    const key = await secretStore.getKey(url);
 
-  if (!envs[host]) {
-    console.error(chalk.red("✗ Hub not found"));
-    return;
+    if (!key) {
+      console.error(chalk.red("✗ Hub not found"));
+      return;
+    }
+
+    await secretStore.setDefault(key.AIGNE_HUB_API_URL);
+    console.log(chalk.green(`✓ Switched active hub to ${getUrlOrigin(url)}`));
+  } catch {
+    console.error(chalk.red("✗ Failed to set default hub"));
   }
-
-  await writeFile(
-    AIGNE_ENV_FILE,
-    stringify({ ...envs, default: { AIGNE_HUB_API_URL: envs[host]?.AIGNE_HUB_API_URL } }),
-  );
-  console.log(chalk.green(`✓ Switched active hub to ${getUrlOrigin(url)}`));
 }
 
 async function deleteHub(url: string) {
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({}))) as AIGNEEnv;
-  const host = new URL(url).host;
-  delete envs[host];
+  try {
+    const secretStore = await getSecretStore();
+    const key = await secretStore.getKey(url);
 
-  if (envs.default?.AIGNE_HUB_API_URL && new URL(envs.default?.AIGNE_HUB_API_URL).host === host) {
-    delete envs.default;
+    if (!key) {
+      console.error(chalk.red("✗ Hub not found"));
+      return;
+    }
+
+    const defaultHub = await getDefaultHub();
+
+    await secretStore.deleteKey(url);
+
+    if (!defaultHub) {
+      return;
+    }
+
+    const isDefaultHub = getUrlOrigin(url) === getUrlOrigin(defaultHub);
+    if (isDefaultHub) {
+      await secretStore.deleteDefault();
+      const remainingHubs = await getHubs();
+
+      const nextHub = remainingHubs[0];
+      if (nextHub) {
+        await secretStore.setDefault(nextHub?.apiUrl);
+
+        console.log(
+          chalk.green(
+            `✓ Hub ${getUrlOrigin(url)} removed, switched to ${getUrlOrigin(nextHub?.apiUrl)}`,
+          ),
+        );
+        return;
+      }
+    }
+
+    console.log(chalk.green(`✓ Hub ${getUrlOrigin(url)} removed`));
+  } catch {
+    console.error(chalk.red("✗ Failed to delete hub"));
   }
-
-  await writeFile(AIGNE_ENV_FILE, stringify(envs));
-  console.log(chalk.green(`✓ Hub ${getUrlOrigin(url)} removed`));
 }
 
 async function printHubDetails(url: string) {
-  const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({}))) as AIGNEEnv;
-  const host = new URL(url).host;
+  const secretStore = await getSecretStore();
+  const key = await secretStore.getKey(url);
+  const defaultHub = await getDefaultHub();
+  const isDefault = getUrlOrigin(url) === getUrlOrigin(defaultHub);
 
   const userInfo = await getUserInfo({
-    baseUrl: envs[host]?.AIGNE_HUB_API_URL || "",
-    apiKey: envs[host]?.AIGNE_HUB_API_KEY || "",
+    baseUrl: key?.AIGNE_HUB_API_URL || "",
+    apiKey: key?.AIGNE_HUB_API_KEY || "",
   }).catch(() => null);
 
   printHubStatus({
     hub: getUrlOrigin(url),
-    status: userInfo ? "Connected" : "Not connected",
+    status: isDefault ? "Connected" : "Not Used",
     user: {
       name: userInfo?.user.fullName || "",
       did: userInfo?.user.did || "",

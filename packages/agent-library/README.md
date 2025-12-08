@@ -54,101 +54,13 @@ yarn add @aigne/agent-library @aigne/core
 pnpm add @aigne/agent-library @aigne/core
 ```
 
-## Basic Usage
+## Components
 
-```typescript
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
-import { AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
+The library provides the following components:
 
-// Create AI model instance
-const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: "gpt-4-turbo",
-});
+### Agent Types
 
-// Create AIGNE
-const aigne = new AIGNE({ model });
-
-// Create orchestrator agent
-const orchestrator = new OrchestratorAgent({
-  name: "MainOrchestrator",
-  instructions:
-    "You are a task orchestrator responsible for coordinating multiple specialized agents to complete complex tasks.",
-  // Configure sub-agents and tools...
-});
-
-// Execute orchestration task
-const result = await aigne.invoke(
-  orchestrator,
-  "Analyze this article and generate a summary and keywords",
-);
-console.log(result);
-```
-
-## Provided Agent Types
-
-The library currently provides one specialized agent implementation:
-
-* **Orchestrator Agent (OrchestratorAgent)**: Responsible for coordinating work between multiple agents and managing complex workflows. It can automatically plan task steps, distribute and execute tasks across multiple agents, and finally synthesize the results.
-
-## Advanced Usage
-
-### Creating an Orchestration Workflow
-
-```typescript
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator";
-import { AIAgent, AIGNE } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-
-const model = new OpenAIChatModel({
-  apiKey: process.env.OPENAI_API_KEY,
-  model: "gpt-4-turbo",
-});
-
-// Create specialized sub-agents
-const researchAgent = AIAgent.from({
-  name: "Researcher",
-  instructions:
-    "You are a professional researcher responsible for collecting and analyzing information.",
-  outputKey: "research",
-});
-
-const writerAgent = AIAgent.from({
-  name: "Writer",
-  instructions:
-    "You are a professional writer responsible for creating high-quality content.",
-  outputKey: "content",
-});
-
-const editorAgent = AIAgent.from({
-  name: "Editor",
-  instructions:
-    "You are a strict editor responsible for checking content quality and formatting.",
-  outputKey: "edited",
-});
-
-// Create orchestrator agent
-const orchestrator = new OrchestratorAgent({
-  name: "WorkflowOrchestrator",
-  instructions:
-    "You are responsible for coordinating research, writing, and editing processes.",
-  skills: [researchAgent, writerAgent, editorAgent],
-  // Optional configuration
-  maxIterations: 30, // Maximum number of iterations
-  tasksConcurrency: 5, // Task concurrency
-});
-
-// Use the orchestrator agent
-const aigne = new AIGNE({ model });
-
-const result = await aigne.invoke(
-  orchestrator,
-  "Applications of artificial intelligence in healthcare",
-);
-
-console.log(result);
-```
+* **[Orchestrator Agent](src/orchestrator/README.md)**: A sophisticated agent pattern that enables autonomous task planning and execution through a three-phase architecture: Planner → Worker → Completer. It breaks down complex objectives into manageable tasks, executes them iteratively, and synthesizes the final results. Perfect for coordinating complex workflows and multi-step tasks.
 
 ## License
 

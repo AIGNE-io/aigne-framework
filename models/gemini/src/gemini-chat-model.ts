@@ -17,9 +17,12 @@ import {
 import { logger } from "@aigne/core/utils/logger.js";
 import { mergeUsage } from "@aigne/core/utils/model-utils.js";
 import { isNonNullable, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { v7 } from "@aigne/uuid";
 import {
   type Content,
+  createPartFromUri,
+  createUserContent,
   type FunctionCallingConfig,
   FunctionCallingConfigMode,
   type GenerateContentConfig,
@@ -27,14 +30,17 @@ import {
   GoogleGenAI,
   type GoogleGenAIOptions,
   type Part,
+  ThinkingLevel,
   type ToolListUnion,
 } from "@google/genai";
+import { parse } from "yaml";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
 const GEMINI_DEFAULT_CHAT_MODEL = "gemini-2.0-flash";
 
 const OUTPUT_FUNCTION_NAME = "output";
+const NEED_UPLOAD_MAX_FILE_SIZE_MB = 20;
 
 export interface GeminiChatModelOptions extends ChatModelOptions {
   /**
@@ -123,6 +129,11 @@ export class GeminiChatModel extends ChatModel {
       support: false,
     },
     {
+      pattern: /gemini-3(?!.*-image-)/,
+      support: true,
+      type: "level",
+    },
+    {
       pattern: /gemini-2.5-pro/,
       support: true,
       min: 128,
@@ -153,12 +164,33 @@ export class GeminiChatModel extends ChatModel {
     minimal: 200,
   };
 
+  protected thinkingLevelMap = {
+    high: ThinkingLevel.HIGH,
+    medium: ThinkingLevel.HIGH,
+    low: ThinkingLevel.LOW,
+    minimal: ThinkingLevel.LOW,
+  };
+
   protected getThinkingBudget(
     model: string,
     effort: ChatModelInputOptions["reasoningEffort"],
-  ): { support: boolean; budget?: number } {
+  ): { support: boolean; budget?: number; level?: ThinkingLevel } {
     const m = this.thinkingBudgetModelMap.find((i) => i.pattern.test(model));
+
     if (!m?.support) return { support: false };
+
+    if (m.type === "level") {
+      let level = ThinkingLevel.THINKING_LEVEL_UNSPECIFIED;
+
+      if (typeof effort === "string") {
+        level = this.thinkingLevelMap[effort];
+      } else if (typeof effort === "number") {
+        level =
+          effort >= this.thinkingBudgetLevelMap["medium"] ? ThinkingLevel.HIGH : ThinkingLevel.LOW;
+      }
+
+      return { support: true, level };
+    }
 
     let budget =
       typeof effort === "string" ? this.thinkingBudgetLevelMap[effort] || undefined : effort;
@@ -174,10 +206,10 @@ export class GeminiChatModel extends ChatModel {
     input: ChatModelInput,
     options: AgentInvokeOptions,
   ): AgentProcessAsyncGenerator<ChatModelOutput> {
-    const modelOptions = await this.getModelOptions(input, options);
+    const { modelOptions = {} } = input;
 
     const model = modelOptions.model || this.credential.model;
-    const { contents, config } = await this.buildContents(input);
+    const { contents, config } = await this.buildContents(input, options);
 
     const thinkingBudget = this.getThinkingBudget(model, modelOptions.reasoningEffort);
 
@@ -189,6 +221,7 @@ export class GeminiChatModel extends ChatModel {
           ? {
               includeThoughts: true,
               thinkingBudget: thinkingBudget.budget,
+              thinkingLevel: thinkingBudget.level,
             }
           : undefined,
         responseModalities: modelOptions.modalities,
@@ -246,14 +279,23 @@ export class GeminiChatModel extends ChatModel {
               if (part.functionCall.name === OUTPUT_FUNCTION_NAME) {
                 json = part.functionCall.args;
               } else {
-                toolCalls.push({
+                const toolCall: ChatModelOutputToolCall = {
                   id: part.functionCall.id || v7(),
                   type: "function",
                   function: {
                     name: part.functionCall.name,
                     arguments: part.functionCall.args || {},
                   },
-                });
+                };
+
+                // Preserve thought_signature for 3.x models
+                if (part.thoughtSignature && model.includes("gemini-3")) {
+                  toolCall.metadata = {
+                    thoughtSignature: part.thoughtSignature,
+                  };
+                }
+
+                toolCalls.push(toolCall);
 
                 yield { delta: { json: { toolCalls } } };
               }
@@ -348,7 +390,9 @@ export class GeminiChatModel extends ChatModel {
           usage,
           files: files.length ? files : undefined,
           modelOptions: {
-            reasoningEffort: parameters.config?.thinkingConfig?.thinkingBudget,
+            reasoningEffort:
+              parameters.config?.thinkingConfig?.thinkingLevel ||
+              parameters.config?.thinkingConfig?.thinkingBudget,
           },
         },
       },
@@ -421,8 +465,56 @@ export class GeminiChatModel extends ChatModel {
     return { tools, toolConfig: { functionCallingConfig } };
   }
 
+  private async buildVideoContentParts(
+    media: FileUnionContent,
+    options: AgentInvokeOptions,
+  ): Promise<Part | undefined> {
+    const { path: filePath, mimeType: fileMimeType } = await this.transformFileType(
+      "local",
+      media,
+      options,
+    );
+
+    if (filePath) {
+      const stats = await nodejs.fs.stat(filePath);
+      const fileSizeInBytes = stats.size;
+      const fileSizeMB = fileSizeInBytes / (1024 * 1024);
+
+      if (fileSizeMB > NEED_UPLOAD_MAX_FILE_SIZE_MB) {
+        const uploadedFile = await this.googleClient.files.upload({
+          file: filePath,
+          config: { mimeType: fileMimeType },
+        });
+
+        let file = uploadedFile;
+        while (file.state === "PROCESSING") {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          if (file.name) {
+            file = await this.googleClient.files.get({ name: file.name });
+          }
+        }
+
+        if (file.state !== "ACTIVE") {
+          throw new Error(`File ${file.name} failed to process: ${file.state}`);
+        }
+
+        if (file.uri && file.mimeType) {
+          const result = createUserContent([createPartFromUri(file.uri, file.mimeType), ""]);
+          const part = result.parts?.find((x) => x.fileData);
+
+          if (part) {
+            await nodejs.fs.rm(filePath);
+            return part;
+          }
+        }
+      }
+    }
+  }
+
   private async buildContents(
     input: ChatModelInput,
+    options: AgentInvokeOptions,
   ): Promise<Omit<GenerateContentParameters, "model">> {
     const result: Omit<GenerateContentParameters, "model"> = {
       contents: [],
@@ -453,20 +545,29 @@ export class GeminiChatModel extends ChatModel {
           };
 
           if (msg.toolCalls) {
-            content.parts = msg.toolCalls.map((call) => ({
-              functionCall: {
-                id: call.id,
-                name: call.function.name,
-                args: call.function.arguments,
-              },
-            }));
+            content.parts = msg.toolCalls.map((call) => {
+              const part: Part = {
+                functionCall: {
+                  id: call.id,
+                  name: call.function.name,
+                  args: call.function.arguments,
+                },
+              };
+
+              // Restore thought_signature for 3.x models
+              if (call.metadata?.thoughtSignature) {
+                part.thoughtSignature = call.metadata.thoughtSignature;
+              }
+
+              return part;
+            });
           } else if (msg.toolCallId) {
             const call = input.messages
               .flatMap((i) => i.toolCalls)
               .find((c) => c?.id === msg.toolCallId);
             if (!call) throw new Error(`Tool call not found: ${msg.toolCallId}`);
 
-            const output = JSON.parse(msg.content as string);
+            const output = parse(msg.content as string);
 
             const isError = "error" in output && Boolean(input.error);
 
@@ -506,8 +607,12 @@ export class GeminiChatModel extends ChatModel {
                     return { text: item.text };
                   case "url":
                     return { fileData: { fileUri: item.url, mimeType: item.mimeType } };
-                  case "file":
+                  case "file": {
+                    const part = await this.buildVideoContentParts(item, options);
+                    if (part) return part;
+
                     return { inlineData: { data: item.data, mimeType: item.mimeType } };
+                  }
                   case "local":
                     throw new Error(
                       `Unsupported local file: ${item.path}, it should be converted to base64 at ChatModel`,

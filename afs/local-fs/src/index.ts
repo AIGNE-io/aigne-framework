@@ -1,4 +1,4 @@
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import type {
   AFSEntry,
@@ -12,7 +12,7 @@ import { globStream } from "glob";
 import { z } from "zod";
 import { searchWithRipgrep } from "./utils/ripgrep.js";
 
-const LIST_MAX_LIMIT = 50;
+const LIST_MAX_LIMIT = 1000;
 
 export interface LocalFSOptions {
   name?: string;
@@ -48,7 +48,8 @@ export class LocalFS implements AFSModule {
     const limit = Math.min(options?.limit || LIST_MAX_LIMIT, LIST_MAX_LIMIT);
     const basePath = join(this.options.localPath, path);
 
-    const pattern = options?.recursive ? "**/*" : "*";
+    const pattern =
+      options?.recursive || (options?.maxDepth && options.maxDepth > 1) ? "**/*" : "*";
 
     const abortController = new AbortController();
 
@@ -75,6 +76,7 @@ export class LocalFS implements AFSModule {
         createdAt: stats.birthtime,
         updatedAt: stats.mtime,
         metadata: {
+          childrenCount: stats.isDirectory() ? (await readdir(itemFullPath)).length : undefined,
           type: stats.isDirectory() ? "directory" : "file",
           size: stats.size,
           mode: stats.mode,

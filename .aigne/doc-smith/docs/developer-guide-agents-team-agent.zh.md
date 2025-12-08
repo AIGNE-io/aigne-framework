@@ -10,81 +10,9 @@
 
 该组件是构建模块化、功能强大的人工智能系统的基础。有关可作为团队一部分的单个 Agent 的详细信息，请参阅 [AI Agent](./developer-guide-agents-ai-agent.md) 和 [Function Agent](./developer-guide-agents-function-agent.md) 的文档。
 
-```d2
-direction: down
-
-Team-Agent-Orchestration: {
-  label: "Team Agent 编排工作流"
-  grid-columns: 2
-  grid-gap: 100
-
-  Sequential-Execution: {
-    label: "顺序执行（流水线）"
-    shape: rectangle
-    style.fill: "#f0f4f8"
-
-    Input: { shape: oval }
-    Skill-A: "技能 A"
-    Skill-B: "技能 B"
-    Output: { shape: oval }
-  }
-
-  Parallel-Execution: {
-    label: "并行执行"
-    shape: rectangle
-    style.fill: "#f0f4f8"
-
-    Input: { shape: oval }
-    Skill-A: "技能 A"
-    Skill-B: "技能 B"
-    Merge: "合并结果"
-    Output: { shape: oval }
-  }
-
-  Iterative-Processing: {
-    label: "迭代处理（批量）"
-    shape: rectangle
-    style.fill: "#f0f4f8"
-
-    Input-List: { label: "输入列表"; shape: oval }
-    Process-Item: { label: "处理项\n（使用技能）" }
-    Output-List: { label: "输出列表"; shape: oval }
-  }
-
-  Reflection: {
-    label: "反思（优化循环）"
-    shape: rectangle
-    style.fill: "#f0f4f8"
-
-    Generate-Draft: "生成草稿"
-    Review: { label: "审查草稿"; shape: diamond }
-    Refine-Draft: "优化草稿"
-    Final-Output: { label: "最终输出"; shape: oval }
-  }
-}
-
-# Connections
-seq: Team-Agent-Orchestration.Sequential-Execution
-seq.Input -> seq.Skill-A -> seq.Skill-B -> seq.Output
-
-par: Team-Agent-Orchestration.Parallel-Execution
-par.Input -> par.Skill-A
-par.Input -> par.Skill-B
-par.Skill-A -> par.Merge
-par.Skill-B -> par.Merge
-par.Merge -> par.Output
-
-iter: Team-Agent-Orchestration.Iterative-Processing
-iter.Input-List -> iter.Process-Item: "对于每个项"
-iter.Process-Item -> iter.Process-Item: "下一个项"
-iter.Process-Item -> iter.Output-List: "完成"
-
-refl: Team-Agent-Orchestration.Reflection
-refl.Generate-Draft -> refl.Review
-refl.Review -> refl.Final-Output: "符合标准"
-refl.Review -> refl.Refine-Draft: "需要优化"
-refl.Refine-Draft -> refl.Generate-Draft
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:1:1 -->
+![Team Agent](assets/diagram/team-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 配置
 

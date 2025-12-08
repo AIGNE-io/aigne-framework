@@ -4,48 +4,11 @@ A sequential task workflow processes a series of tasks in a specific, predetermi
 
 In the AIGNE Framework, this is managed by a `TeamAgent` configured to run in `sequential` mode. Each agent in the team completes its task before passing the result along, ensuring a logical and orderly progression from start to finish.
 
-```d2
-direction: down
+The following diagram illustrates this sequential workflow:
 
-Initial-Request: {
-  label: "Initial Request"
-  shape: oval
-}
-
-TeamAgent: {
-  label: "TeamAgent (sequential mode)"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  Agent-1: {
-    label: "Agent 1"
-    shape: rectangle
-  }
-
-  Agent-2: {
-    label: "Agent 2"
-    shape: rectangle
-  }
-
-  Final-Agent: {
-    label: "Final Agent"
-    shape: rectangle
-  }
-}
-
-Final-Result: {
-  label: "Final Result"
-  shape: oval
-}
-
-Initial-Request -> TeamAgent.Agent-1: "1. Initial Input"
-TeamAgent.Agent-1 -> TeamAgent.Agent-2: "2. Output 1 + Initial Input"
-TeamAgent.Agent-2 -> TeamAgent.Final-Agent: "3. Output 2 + Previous Input"
-TeamAgent.Final-Agent -> Final-Result: "4. Final Output"
-
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Sequential Tasks](assets/diagram/sequential-tasks-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## How It Works
 

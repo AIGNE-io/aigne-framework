@@ -2,6 +2,10 @@
 labels: ["Reference"]
 ---
 
+---
+labels: ["Reference"]
+---
+
 # Deploying Agents
 
 Deploying your AIGNE project transforms it from a local development setup into a self-contained, distributable application known as a Blocklet. This allows your agent to run in a production environment, be shared with others, and integrate seamlessly into the broader Blocklet ecosystem. The `aigne deploy` command automates this entire packaging and deployment process.
@@ -14,51 +18,9 @@ The `aigne deploy` command orchestrates a series of steps to prepare, configure,
 
 Here is a high-level overview of the deployment flow:
 
-```d2
-direction: down
-
-Developer: {
-  shape: c4-person
-}
-
-AIGNE-CLI: {
-  label: "AIGNE CLI"
-}
-
-Blocklet-CLI: {
-  label: "Blocklet CLI"
-}
-
-Deployment-Endpoint: {
-  label: "Deployment Endpoint"
-  shape: cylinder
-}
-
-Local-Project: {
-  label: "Your AIGNE Project"
-  shape: rectangle
-  aigne-yaml: {
-    label: "aigne.yaml"
-  }
-  source-code: {
-    label: "Source Code"
-  }
-}
-
-Developer -> AIGNE-CLI: "1. Run `aigne deploy`"
-AIGNE-CLI -> Local-Project.aigne-yaml: "2. Read project config"
-AIGNE-CLI -> AIGNE-CLI: "3. Prepare temp .deploy dir"
-AIGNE-CLI -> Blocklet-CLI: "4. Check for CLI / Prompt install"
-AIGNE-CLI -> Developer: "5. Prompt for Blocklet name"
-Developer -> AIGNE-CLI: "6. Provide name"
-AIGNE-CLI -> Blocklet-CLI: "7. Create Blocklet DID"
-Blocklet-CLI -> AIGNE-CLI: "8. Return DID"
-AIGNE-CLI -> AIGNE-CLI: "9. Configure blocklet.yml"
-AIGNE-CLI -> Blocklet-CLI: "10. Bundle project"
-Blocklet-CLI -> Deployment-Endpoint: "11. Deploy bundle"
-AIGNE-CLI -> Developer: "12. Show success message"
-
-```
+<!-- DIAGRAM_IMAGE_START:guide:4:3 -->
+![---](assets/diagram/deploying-agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ### Step-by-Step Walkthrough
 
@@ -99,3 +61,4 @@ Once the process is complete, you'll see a confirmation message in your terminal
 ```
 
 Your AIGNE agent is now live as a Blocklet, ready to be run in a production environment.
+

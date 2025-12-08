@@ -10,7 +10,10 @@ if (!DID_SPACES_URL || !DID_SPACES_AUTHORIZATION) {
 }
 
 console.log("DID_SPACES_URL:", DID_SPACES_URL);
-console.log("DID_SPACES_AUTHORIZATION:", DID_SPACES_AUTHORIZATION.slice(0, 20) + "***" + DID_SPACES_AUTHORIZATION.slice(-10));
+console.log(
+  "DID_SPACES_AUTHORIZATION:",
+  `${DID_SPACES_AUTHORIZATION.slice(0, 20)}***${DID_SPACES_AUTHORIZATION.slice(-10)}`,
+);
 
 // Create MCP agent for DID Spaces
 const mcpAgent = await MCPAgent.from({

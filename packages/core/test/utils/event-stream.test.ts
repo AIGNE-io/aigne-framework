@@ -5,7 +5,7 @@ import {
   AgentResponseStreamSSE,
   EventStreamParser,
 } from "@aigne/core/utils/event-stream.js";
-import { arrayToReadableStream, readableStreamToArray } from "@aigne/core/utils/stream-utils";
+import { arrayToReadableStream, readableStreamToArray } from "@aigne/core/utils/stream-utils.js";
 
 test("EventStreamParser should enqueue an error for invalid json", async () => {
   const stream = arrayToReadableStream([

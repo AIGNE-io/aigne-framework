@@ -6,6 +6,67 @@
   * dependencies
     * @aigne/afs bumped to 1.2.0
 
+## [1.1.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.1.2...afs-history-v1.1.3-beta) (2025-12-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta
+
+## [1.1.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.1.2-beta...afs-history-v1.1.2) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.3
+
+## [1.1.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.1.1...afs-history-v1.1.2-beta) (2025-12-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.3-beta
+
+## [1.1.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.1.1-beta...afs-history-v1.1.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.2
+    * @aigne/sqlite bumped to 0.4.7
+
+## [1.1.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.1.0...afs-history-v1.1.1-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.2-beta
+    * @aigne/sqlite bumped to 0.4.7-beta
+
+## [1.1.0](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.1.0-beta.1...afs-history-v1.1.0) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.6
+
 ## [1.1.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.0.3-beta.1...afs-history-v1.1.0-beta.1) (2025-11-18)
 
 

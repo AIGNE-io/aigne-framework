@@ -8,7 +8,7 @@ import type SSE from "express-sse";
 import unzipper from "unzipper";
 import { parse, stringify } from "yaml";
 import { z } from "zod";
-import { insertTrace } from "../../core/util.js";
+import { insertTrace, updateTrace } from "../../core/util.js";
 import type { FileData, ImageData } from "../base.js";
 import { Trace } from "../models/trace.js";
 import { getGlobalSettingPath } from "../utils/index.js";
@@ -140,6 +140,7 @@ export default ({
 
     const processedRootCalls = rootCalls.map((call) => {
       const { inputPreview, inputLength, outputPreview, outputLength, metadata, ...rest } = call;
+
       return {
         ...rest,
         attributes: {
@@ -449,6 +450,20 @@ export default ({
       sse.send({ type: "event", data: {} });
     }
 
+    res.json({ code: 0, message: "ok" });
+  });
+
+  router.patch("/tree/:id", async (req: Request, res: Response) => {
+    const db = req.app.locals.db as LibSQLDatabase;
+    const { id } = req.params;
+    const { input, output } = req.body;
+
+    if (!id) {
+      res.status(400).json({ error: "id is required" });
+      return;
+    }
+
+    await updateTrace(db, id, { input, output });
     res.json({ code: 0, message: "ok" });
   });
 

@@ -4,47 +4,9 @@ The `@aigne/ollama` package provides a seamless integration between the AIGNE Fr
 
 This guide covers the necessary steps to configure and use the `OllamaChatModel` in your AIGNE applications. For information on other model providers, please see the [Models Overview](./models-overview.md).
 
-The following diagram illustrates how the AIGNE Framework interacts with a local Ollama instance.
-
-```d2
-direction: right
-style: {
-  font-size: 14
-  fill: "#F6F8FA"
-  stroke: "#B4B4B4"
-  stroke-width: 1
-}
-
-AIGNE_Application: "AIGNE Application" {
-  shape: rectangle
-  style.fill: "#E6F7FF"
-  style.stroke: "#91D5FF"
-}
-
-OllamaChatModel: "@aigne/ollama\nOllamaChatModel" {
-  shape: rectangle
-  style.fill: "#F9F0FF"
-  style.stroke: "#D3ADF7"
-}
-
-Ollama_Instance: "Local Ollama Instance" {
-  shape: cylinder
-  style.fill: "#FFF7E6"
-  style.stroke: "#FFE7BA"
-  
-  LLM: "Language Model\n(e.g., Llama 3)" {
-    shape: hexagon
-    style.fill: "#F6FFED"
-    style.stroke: "#B7EB8F"
-  }
-}
-
-AIGNE_Application -> OllamaChatModel: "1. Invokes model"
-OllamaChatModel -> Ollama_Instance: "2. Sends request to\n   http://localhost:11434"
-Ollama_Instance.LLM -> Ollama_Instance: "3. Processes request"
-Ollama_Instance -> OllamaChatModel: "4. Returns response"
-OllamaChatModel -> AIGNE_Application: "5. Delivers result"
-```
+<!-- DIAGRAM_IMAGE_START:guide:4:3 -->
+![Ollama](assets/diagram/ollama-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Prerequisites
 

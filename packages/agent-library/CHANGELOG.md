@@ -7,6 +7,149 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.23.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.4...agent-library-v1.23.0-beta) (2025-12-07)
+
+
+### Features
+
+* support define agent by third library & orchestrator agent refactor ([#799](https://github.com/AIGNE-io/aigne-framework/issues/799)) ([7264b11](https://github.com/AIGNE-io/aigne-framework/commit/7264b11ab6eed787e928367f09aa08d254968d40))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.71.0-beta
+    * @aigne/openai bumped to 0.16.15-beta
+
+## [1.22.4](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.4-beta...agent-library-v1.22.4) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.1
+    * @aigne/openai bumped to 0.16.14
+
+## [1.22.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.3...agent-library-v1.22.4-beta) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.1-beta
+    * @aigne/openai bumped to 0.16.14-beta
+
+## [1.22.3](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.3-beta.1...agent-library-v1.22.3) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.0
+    * @aigne/openai bumped to 0.16.13
+
+## [1.22.3-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.3-beta...agent-library-v1.22.3-beta.1) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.0-beta.1
+    * @aigne/openai bumped to 0.16.13-beta.1
+
+## [1.22.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.2...agent-library-v1.22.3-beta) (2025-12-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.0-beta
+    * @aigne/openai bumped to 0.16.13-beta
+
+## [1.22.2](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.2-beta.1...agent-library-v1.22.2) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.2
+    * @aigne/openai bumped to 0.16.12
+    * @aigne/sqlite bumped to 0.4.7
+
+## [1.22.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.2-beta...agent-library-v1.22.2-beta.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.2-beta.1
+    * @aigne/openai bumped to 0.16.12-beta.1
+
+## [1.22.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.1...agent-library-v1.22.2-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.2-beta
+    * @aigne/openai bumped to 0.16.12-beta
+    * @aigne/sqlite bumped to 0.4.7-beta
+
+## [1.22.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.1-beta...agent-library-v1.22.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.1
+    * @aigne/openai bumped to 0.16.11
+
+## [1.22.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.0...agent-library-v1.22.1-beta) (2025-11-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.1-beta
+    * @aigne/openai bumped to 0.16.11-beta
+
+## [1.22.0](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.0-beta.2...agent-library-v1.22.0) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0
+    * @aigne/openai bumped to 0.16.10
+    * @aigne/sqlite bumped to 0.4.6
+
+## [1.22.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.22.0-beta.1...agent-library-v1.22.0-beta.2) (2025-11-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.0-beta.2
+    * @aigne/openai bumped to 0.16.10-beta.3
+
 ## [1.22.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.21.56-beta.1...agent-library-v1.22.0-beta.1) (2025-11-18)
 
 

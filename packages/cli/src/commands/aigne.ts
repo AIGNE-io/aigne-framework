@@ -12,23 +12,25 @@ import { createServeMCPCommand } from "./serve-mcp.js";
 import { createTestCommand } from "./test.js";
 
 export function createAIGNECommand(options?: { argv?: string[]; aigneFilePath?: string }) {
-  return yargs()
-    .scriptName("aigne")
-    .usage(`${asciiLogo}\n$0 <command> [options]`)
-    .version(AIGNE_CLI_VERSION)
-    // default command: when user runs `aigne` without subcommand, behave like `aigne run`
-    .command(createRunCommand(options))
-    .command(createEvalCommand(options))
-    .command(createTestCommand(options))
-    .command(createCreateCommand())
-    .command(createServeMCPCommand(options))
-    .command(createObservabilityCommand())
-    .command(createAppCommands(options))
-    .command(createHubCommand())
-    .command(createDeployCommands())
-    .demandCommand()
-    .alias("help", "h")
-    .alias("version", "v")
-    .wrap(null)
-    .strict();
+  return (
+    yargs()
+      .scriptName("aigne")
+      .usage(`${asciiLogo}\n$0 <command> [options]`)
+      .version(AIGNE_CLI_VERSION)
+      // default command: when user runs `aigne` without subcommand, behave like `aigne run`
+      .command(createRunCommand(options))
+      .command(createEvalCommand(options))
+      .command(createTestCommand(options))
+      .command(createCreateCommand())
+      .command(createServeMCPCommand(options))
+      .command(createObservabilityCommand())
+      .command(createAppCommands(options))
+      .command(createHubCommand())
+      .command(createDeployCommands())
+      .demandCommand()
+      .alias("help", "h")
+      .alias("version", "v")
+      .wrap(null)
+      .strict()
+  );
 }

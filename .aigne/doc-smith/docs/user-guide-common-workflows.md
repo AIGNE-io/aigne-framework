@@ -6,62 +6,9 @@ Workflows define how tasks and information flow between different agents to achi
 
 The diagram below illustrates three fundamental workflow patterns.
 
-```d2
-direction: down
-
-Sequential-Tasks: {
-  label: "Sequential Tasks"
-  shape: rectangle
-  Agent-A: { label: "Agent A" }
-  Agent-B: { label: "Agent B" }
-  Agent-C: { label: "Agent C" }
-}
-
-Parallel-Tasks: {
-  label: "Parallel Tasks"
-  shape: rectangle
-  Initial-Task: { label: "Initial Task" }
-  Parallel-Agents: {
-    shape: rectangle
-    grid-columns: 3
-    Agent-A: { label: "Agent A" }
-    Agent-B: { label: "Agent B" }
-    Agent-C: { label: "Agent C" }
-  }
-  Combined-Result: { label: "Combined Result" }
-}
-
-Decision-Making: {
-  label: "Decision-Making"
-  shape: rectangle
-  Request: { label: "Request" }
-  Manager-Agent: {
-    label: "Manager Agent"
-    shape: diamond
-  }
-  Specialized-Agents: {
-    shape: rectangle
-    grid-columns: 2
-    Agent-A: { label: "Specialized Agent A" }
-    Agent-B: { label: "Specialized Agent B" }
-  }
-}
-
-Sequential-Tasks.Agent-A -> Sequential-Tasks.Agent-B: "Result"
-Sequential-Tasks.Agent-B -> Sequential-Tasks.Agent-C: "Result"
-
-Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-A
-Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-B
-Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-C
-
-Parallel-Tasks.Parallel-Agents.Agent-A -> Parallel-Tasks.Combined-Result
-Parallel-Tasks.Parallel-Agents.Agent-B -> Parallel-Tasks.Combined-Result
-Parallel-Tasks.Parallel-Agents.Agent-C -> Parallel-Tasks.Combined-Result
-
-Decision-Making.Request -> Decision-Making.Manager-Agent
-Decision-Making.Manager-Agent -> Decision-Making.Specialized-Agents.Agent-A: "Task A"
-Decision-Making.Manager-Agent -> Decision-Making.Specialized-Agents.Agent-B: "Task B"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Common Workflows](assets/diagram/common-workflows-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 This guide introduces the most common workflows you'll encounter. Understanding these patterns will help you visualize how agents can automate complex, multi-step processes for you.
 

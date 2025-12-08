@@ -4126,3 +4126,165 @@ ef8bb9e0ab45856ae714b11aefb3b76d76e0713320aad369451f88b0b0288e80:
     https://docsmith.aigne.io:
       url: https://docsmith.aigne.io/image-bin/uploads/2a3adc5aef6ab4a1.svg
       upload_time: 2025-11-14T13:37:35.602Z
+25e13feac1772cc5902cdd75ead485d975f81705c416ec45f742b37ca5cd7c61:
+  local_path: .aigne/doc-smith/docs/assets/diagram/overview-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/25e13feac1772cc5.jpg
+      upload_time: 2025-12-04T10:50:08.226Z
+3555c9a4ae094393bfb1cf94aca488a867193c3a3e5da5c953c7c014d0a2cc67:
+  local_path: .aigne/doc-smith/docs/assets/diagram/core-concepts-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/3555c9a4ae094393.jpg
+      upload_time: 2025-12-04T10:50:08.725Z
+7dab44a0402c2fe2e47d97f2903a0000bf25717a708de316d848bbcebc0b33ce:
+  local_path: .aigne/doc-smith/docs/assets/diagram/agents-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/7dab44a0402c2fe2.jpg
+      upload_time: 2025-12-04T10:50:10.283Z
+133f4d00259fd636965f8dcc4bd5cae2756e71b07a211d2e17059e151b77a331:
+  local_path: .aigne/doc-smith/docs/assets/diagram/aigne-engine-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/133f4d00259fd636.jpg
+      upload_time: 2025-12-04T10:50:12.998Z
+9a0388c78736bd3f3c583caf850845210c991a222585e4d9d08293207d60ca41:
+  local_path: .aigne/doc-smith/docs/assets/diagram/memory-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/9a0388c78736bd3f.jpg
+      upload_time: 2025-12-04T10:50:13.714Z
+c32d0965b2db89258cbeadf773d5ed4e4f4afec4baa7ad429b0531d5cbe75294:
+  local_path: .aigne/doc-smith/docs/assets/diagram/models-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/c32d0965b2db8925.jpg
+      upload_time: 2025-12-04T10:50:13.966Z
+0b20a799ad9d47837e5834ae26d264c4e30251a6d7854586bb22663293b25d7c:
+  local_path: .aigne/doc-smith/docs/assets/diagram/image-agent-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/0b20a799ad9d4783.jpg
+      upload_time: 2025-12-04T10:50:14.580Z
+38e4538ab9fc40689b7cb57e16cc28420c00829706dd6e159653bdce7ae1d61d:
+  local_path: .aigne/doc-smith/docs/assets/diagram/streaming-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/38e4538ab9fc4068.jpg
+      upload_time: 2025-12-04T10:50:14.609Z
+88a479edb2df72c0b81b3698d99f627ee3ba10cf45cc1ded35dacb8ad6167c9a:
+  local_path: .aigne/doc-smith/docs/assets/diagram/mcp-agent-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/88a479edb2df72c0.jpg
+      upload_time: 2025-12-04T10:50:15.314Z
+06f2d2b47dee4a665dc4b932b3ff65ddc16a3b2d306302dd4acfb32242bc050b:
+  local_path: .aigne/doc-smith/docs/assets/diagram/transform-agent-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/06f2d2b47dee4a66.jpg
+      upload_time: 2025-12-04T10:50:15.505Z
+f2f932af73db4d9c3df3677eb6ea62701256628a414318a4bf505515fc8fcea1:
+  local_path: .aigne/doc-smith/docs/assets/diagram/ai-agent-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/f2f932af73db4d9c.jpg
+      upload_time: 2025-12-04T10:50:15.558Z
+8571815215c04fac3f514fb096ea363247f674400f800cf448e6bb6f268f1173:
+  local_path: .aigne/doc-smith/docs/assets/diagram/team-agent-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/8571815215c04fac.jpg
+      upload_time: 2025-12-04T10:50:15.589Z
+4fd67f215d15853dfce370677a2497006dad43154d288dbb7135951fb36e34dc:
+  local_path: .aigne/doc-smith/docs/assets/diagram/function-agent-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/4fd67f215d15853d.jpg
+      upload_time: 2025-12-04T10:50:17.180Z
+a040fd84b475bf191e183fe6047f1535d4ac1ae24fb461e79433e01930bad7f3:
+  local_path: .aigne/doc-smith/docs/assets/diagram/common-workflows-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/a040fd84b475bf19.jpg
+      upload_time: 2025-12-04T10:50:19.993Z
+20f440d04e947520f10ae9c72de989bce70b8f4a4f420e260a4af561d20d71d9:
+  local_path: .aigne/doc-smith/docs/assets/diagram/what-is-aigne-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/20f440d04e947520.jpg
+      upload_time: 2025-12-04T10:50:20.077Z
+b43e96b12ad1c80aac86ad49efe277d8790f7d0b565469c412f0f9e86e10d08d:
+  local_path: .aigne/doc-smith/docs/assets/diagram/understanding-agents-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/b43e96b12ad1c80a.jpg
+      upload_time: 2025-12-04T10:50:20.138Z
+c9fa8a1f15d4066ee7bf3badbd74e8df736e7af0f8bd94ab4d2fe88e2e308609:
+  local_path: .aigne/doc-smith/docs/assets/diagram/xai-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/c9fa8a1f15d4066e.jpg
+      upload_time: 2025-12-04T10:50:20.833Z
+522f20e263f0943fcf2a7bcb3a9991664e057c99d2c897557c4a6129e74ee2d3:
+  local_path: .aigne/doc-smith/docs/assets/diagram/open-router-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/522f20e263f0943f.jpg
+      upload_time: 2025-12-04T10:50:21.163Z
+85c0c0191cee3a201d41d35459338b86256b42d8e8d768ae04048c6aecefebca:
+  local_path: .aigne/doc-smith/docs/assets/diagram/poe-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/85c0c0191cee3a20.jpg
+      upload_time: 2025-12-04T10:50:21.196Z
+be93853037935e0cc8241bcb3cd5e1180e55ae1e6cc3dba1ea18094dce4aaefb:
+  local_path: .aigne/doc-smith/docs/assets/diagram/ollama-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/be93853037935e0c.jpg
+      upload_time: 2025-12-04T10:50:21.402Z
+571920bc1cdd7e227a1908bc583686d444cc8a14c95ab989a07746fbb118fa44:
+  local_path: .aigne/doc-smith/docs/assets/diagram/decision-making-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/571920bc1cdd7e22.jpg
+      upload_time: 2025-12-04T10:50:24.257Z
+6de04053f30946b17fbec3abcefce8ed137d274d7294e41165580829890b3a27:
+  local_path: .aigne/doc-smith/docs/assets/diagram/parallel-tasks-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/6de04053f30946b1.jpg
+      upload_time: 2025-12-04T10:50:24.491Z
+8f8e851e70ebba562ab99618a7435c51a4444301848019bc2fec1a2332fd9b30:
+  local_path: .aigne/doc-smith/docs/assets/diagram/sequential-tasks-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/8f8e851e70ebba56.jpg
+      upload_time: 2025-12-04T10:50:24.521Z
+09c46e20ffc6024e2f1e319e09076f6f3abf84d1caf3e24000af3eb0eb29bab8:
+  local_path: .aigne/doc-smith/docs/assets/diagram/agent-teams-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/09c46e20ffc6024e.jpg
+      upload_time: 2025-12-04T10:50:24.732Z
+d429b7c7edff24dc0039252bceefee6003ab9e86f471c0e6f6ae79a1917765b7:
+  local_path: .aigne/doc-smith/docs/assets/diagram/function-agent-diagram-0.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/d429b7c7edff24dc.jpg
+      upload_time: 2025-12-04T11:08:51.530Z
+27bf289dc972d118628dc6d41fe0bea1ae74d9cff78c4662b062c7fdc9708503:
+  local_path: .aigne/doc-smith/docs/assets/diagram/developer-guide-advanced-topics-hooks-01.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/27bf289dc972d118.jpg
+      upload_time: 2025-12-05T12:13:22.618Z
+dff4279eef7546f8f0b8fbb08155aa35be5794bb22542b4c6950f85f059d4ec5:
+  local_path: .aigne/doc-smith/docs/assets/diagram/user-guide-understanding-agents-basic-agents-01.jpg
+  sites:
+    https://staging.docsmith.aigne.io:
+      url: https://staging.docsmith.aigne.io/image-bin/uploads/dff4279eef7546f8.jpg
+      upload_time: 2025-12-05T12:13:30.658Z

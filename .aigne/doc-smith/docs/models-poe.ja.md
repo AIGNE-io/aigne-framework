@@ -33,48 +33,9 @@ ISTJ の性格に基づき、以下の手順を実行します：
 
 このガイドでは、`PoeChatModel` のインストール、設定、利用方法をステップバイステップで説明します。モデル統合に関するより一般的な情報については、[モデルの概要](./models-overview.md) ドキュメントを参照してください。
 
-```d2
-direction: down
-
-Developer-App: {
-  label: "開発者の\nアプリケーション"
-  shape: c4-person
-}
-
-AIGNE-Framework: {
-  label: "AIGNE フレームワーク"
-  shape: rectangle
-
-  aigne-poe: {
-    label: "@aigne/poe\nPoeChatModel"
-    shape: rectangle
-  }
-}
-
-Poe-Service: {
-  label: "Poe サービス"
-  shape: rectangle
-
-  Poe-API: {
-    label: "OpenAI 互換 API"
-  }
-
-  Third-Party-Models: {
-    label: "サードパーティ製言語モデル"
-    grid-columns: 3
-    OpenAI: {}
-    Anthropic: {}
-    Google: {}
-  }
-}
-
-Developer-App -> AIGNE-Framework.aigne-poe: "1. PoeChatModel を使用"
-AIGNE-Framework.aigne-poe -> Poe-Service.Poe-API: "2. API リクエストを送信"
-Poe-Service.Poe-API -> Poe-Service.Third-Party-Models: "3. 選択されたモデルにルーティング"
-Poe-Service.Third-Party-Models -> Poe-Service.Poe-API: "4. レスポンスを生成"
-Poe-Service.Poe-API -> AIGNE-Framework.aigne-poe: "5. レスポンスストリームを返す"
-AIGNE-Framework.aigne-poe -> Developer-App: "6. 結果を配信"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Poe](assets/diagram/poe-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## インストール
 

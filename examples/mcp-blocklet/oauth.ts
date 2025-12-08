@@ -82,7 +82,10 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
   }
 
   async redirectToAuthorization(authorizationUrl: URL): Promise<void> {
-     console.log("🚀 redirectToAuthorization called, authorizationUrl:", authorizationUrl.toString());
+    console.log(
+      "🚀 redirectToAuthorization called, authorizationUrl:",
+      authorizationUrl.toString(),
+    );
     // Create a local server to handle the callback
     return new Promise((resolve, reject) => {
       const server = createServer(async (req, res) => {

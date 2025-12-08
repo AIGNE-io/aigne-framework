@@ -17,7 +17,7 @@ test("getAFSSkills should return all AFS skills", async () => {
   ).toMatchInlineSnapshot(`
     [
       {
-        "description": "Browse directory contents in the AFS like filesystem ls/tree command - shows files and folders in the specified path",
+        "description": "Get a tree view of directory contents in the AFS - shows hierarchical structure of files and folders",
         "inputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
@@ -25,17 +25,9 @@ test("getAFSSkills should return all AFS skills", async () => {
             "options": {
               "additionalProperties": false,
               "properties": {
-                "limit": {
-                  "description": "Maximum number of entries to return",
-                  "type": "number",
-                },
                 "maxDepth": {
-                  "description": "Maximum depth to list files",
+                  "description": "Maximum depth to display in the tree view",
                   "type": "number",
-                },
-                "recursive": {
-                  "description": "Whether to list files recursively",
-                  "type": "boolean",
                 },
               },
               "type": "object",
@@ -98,7 +90,13 @@ test("getAFSSkills should return all AFS skills", async () => {
         },
       },
       {
-        "description": "Read file contents from the AFS - path must be an exact file path from list or search results",
+        "description": 
+    "Read file contents from the AFS - path must be an exact file path from list or search results
+
+    Usage:
+    - Use withLineNumbers=true to get line numbers for code reviews or edits
+    "
+    ,
         "inputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
@@ -106,6 +104,10 @@ test("getAFSSkills should return all AFS skills", async () => {
             "path": {
               "description": "Exact file path from list or search results (e.g., '/docs/api.md', '/src/utils/helper.js')",
               "type": "string",
+            },
+            "withLineNumbers": {
+              "description": "Whether to include line numbers in the returned content, default is false",
+              "type": "boolean",
             },
           },
           "required": [
@@ -193,10 +195,10 @@ test("AFS'skill list should invoke afs.list", async () => {
   assert(list);
   expect(await list.invoke({ path: "/foo/bar", options: { maxDepth: 2 } })).toMatchInlineSnapshot(`
     {
-      "list": [],
       "options": {
         "maxDepth": 2,
       },
+      "result": "",
       "status": "success",
       "tool": "afs_list",
     }

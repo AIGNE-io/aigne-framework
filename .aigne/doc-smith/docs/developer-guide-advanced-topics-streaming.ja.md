@@ -155,65 +155,9 @@ getFinalObject();
 
 以下の図は、SSE を使用する際のバックエンドの AIGNE からフロントエンドアプリケーションへのデータフローを示しています。
 
-```d2
-direction: down
-
-Frontend: {
-  label: "フロントエンドアプリケーション"
-  shape: rectangle
-
-  EventSource-Client: {
-    label: "EventSource クライアント"
-    shape: rectangle
-  }
-
-  UI-Component: {
-    label: "UI コンポーネント"
-    shape: rectangle
-  }
-}
-
-Backend: {
-  label: "バックエンドサーバー"
-  shape: rectangle
-
-  SSE-Endpoint: {
-    label: "SSE エンドポイント"
-  }
-
-  AIGNE-Core: {
-    label: "AIGNE フレームワーク"
-
-    invoke: {
-        label: "aigne.invoke(..., { stream: true })"
-    }
-
-    AgentResponseStream: {
-        label: "AgentResponseStream\n(ReadableStream)"
-    }
-
-    AgentResponseStreamSSE: {
-        label: "AgentResponseStreamSSE\n(ユーティリティ)"
-    }
-  }
-}
-
-LLM: {
-  label: "LLM サービス"
-  shape: cylinder
-}
-
-Frontend.EventSource-Client -> Backend.SSE-Endpoint: "1. POST /api/chat-stream"
-Backend.SSE-Endpoint -> Backend.AIGNE-Core.invoke: "2. Agent を呼び出し"
-Backend.AIGNE-Core.invoke -> LLM: "3. LLM API へリクエスト"
-LLM -> Backend.AIGNE-Core.invoke: "4. レスポンスをストリーミング"
-Backend.AIGNE-Core.invoke -> Backend.AIGNE-Core.AgentResponseStream: "5. ストリームを返す"
-Backend.AIGNE-Core.AgentResponseStream -> Backend.AIGNE-Core.AgentResponseStreamSSE: "6. SSE ユーティリティへパイプ"
-Backend.AIGNE-Core.AgentResponseStreamSSE -> Backend.SSE-Endpoint: "7. SSE 形式のチャンクを生成"
-Backend.SSE-Endpoint -> Frontend.EventSource-Client: "8. HTTP 経由でレスポンスをストリーミング"
-Frontend.EventSource-Client -> Frontend.UI-Component: "9. 'onmessage' イベントが UI 更新をトリガー"
-Frontend.UI-Component -> Frontend.UI-Component: "10. テキストを段階的にレンダリング"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Streaming](assets/diagram/streaming-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ### バックエンドの実装
 

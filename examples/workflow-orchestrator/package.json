@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-orchestrator",
-  "version": "1.13.83-beta.2",
+  "version": "1.14.0-beta",
   "description": "A demonstration of using AIGNE Framework to build a orchestrator workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-orchestrator",
@@ -9,21 +9,18 @@
     "type": "git",
     "url": "git+https://github.com/AIGNE-io/aigne-framework"
   },
-  "bin": "index.ts",
+  "bin": "aigne.yaml",
   "files": [
     ".env.local.example",
     "*.ts",
     "README.md"
   ],
   "scripts": {
-    "start": "bun run index.ts",
-    "lint": "tsc --noEmit"
+    "start": "aigne run ."
   },
   "dependencies": {
     "@aigne/agent-library": "workspace:^",
-    "@aigne/cli": "workspace:^",
-    "@aigne/core": "workspace:^",
-    "@aigne/openai": "workspace:^"
+    "@aigne/cli": "workspace:^"
   },
   "devDependencies": {
     "@aigne/test-utils": "workspace:^",

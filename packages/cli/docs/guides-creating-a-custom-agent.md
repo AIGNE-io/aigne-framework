@@ -44,7 +44,7 @@ greet.output_schema = {
 
 Let's break down this file:
 
-- **`export default async function greet({ name })`**: This is the main function of your agent. It takes a single object as an argument, which contains the inputs defined in `input_schema`. It returns an object that should conform to the `output_schema`.
+- **`export default async function greet({ name })`**: This is the main function of your agent. It takes a single object as an argument, which contains the inputs defined in `input_schema`. It returns an object that must conform to the constraints defined by the `output_schema`.
 - **`greet.description`**: A plain-text description of what the agent does. This is crucial, as the main language model uses this description to understand when and how to use your tool.
 - **`greet.input_schema`**: A JSON Schema object that defines the expected input for your agent. This ensures that data passed to your function is valid.
 - **`greet.output_schema`**: A JSON Schema object that defines the expected output from your agent.

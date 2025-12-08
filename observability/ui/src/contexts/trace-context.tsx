@@ -117,7 +117,7 @@ export function TraceProvider({ children }: { children: React.ReactNode }) {
       setTotal,
       fetchTraces,
     }),
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    // biome-ignore lint/correctness/useExhaustiveDependencies: exhaustive deps are not needed here
     [traces, total, loading, page, search, setPage, fetchTraces],
   );
 

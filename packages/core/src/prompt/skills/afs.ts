@@ -1,4 +1,4 @@
-import type { AFS } from "@aigne/afs";
+import type { AFS, AFSEntry } from "@aigne/afs";
 import { z } from "zod";
 import { type Agent, FunctionAgent } from "../../agents/agent.js";
 
@@ -7,25 +7,26 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
     FunctionAgent.from({
       name: "afs_list",
       description:
-        "Browse directory contents in the AFS like filesystem ls/tree command - shows files and folders in the specified path",
+        "Get a tree view of directory contents in the AFS - shows hierarchical structure of files and folders",
       inputSchema: z.object({
         path: z.string().describe("The directory path to browse (e.g., '/', '/docs', '/src')"),
         options: z
           .object({
-            recursive: z.boolean().optional().describe("Whether to list files recursively"),
-            maxDepth: z.number().optional().describe("Maximum depth to list files"),
-            limit: z.number().optional().describe("Maximum number of entries to return"),
+            maxDepth: z.number().optional().describe("Maximum depth to display in the tree view"),
           })
           .optional(),
       }),
       process: async (input) => {
-        const result = await afs.list(input.path, input.options);
+        const { list, message } = await afs.list(input.path, input.options);
+
+        const result = buildTreeView(list);
 
         return {
           status: "success",
           tool: "afs_list",
           options: input.options,
-          ...result,
+          message,
+          result,
         };
       },
     }),
@@ -60,23 +61,44 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
     }),
     FunctionAgent.from({
       name: "afs_read",
-      description:
-        "Read file contents from the AFS - path must be an exact file path from list or search results",
+      description: `\
+Read file contents from the AFS - path must be an exact file path from list or search results
+
+Usage:
+- Use withLineNumbers=true to get line numbers for code reviews or edits
+`,
       inputSchema: z.object({
         path: z
           .string()
           .describe(
             "Exact file path from list or search results (e.g., '/docs/api.md', '/src/utils/helper.js')",
           ),
+        withLineNumbers: z
+          .boolean()
+          .optional()
+          .describe(`Whether to include line numbers in the returned content, default is false`),
       }),
       process: async (input) => {
         const result = await afs.read(input.path);
+
+        let content = result.result?.content;
+
+        if (input.withLineNumbers && typeof content === "string") {
+          content = content
+            .split("\n")
+            .map((line, idx) => `${idx + 1}| ${line}`)
+            .join("\n");
+        }
 
         return {
           status: "success",
           tool: "afs_read",
           path: input.path,
           ...result,
+          result: {
+            ...result.result,
+            content,
+          },
         };
       },
     }),
@@ -121,4 +143,55 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
       },
     }),
   ];
+}
+
+function buildTreeView(entries: AFSEntry[]): string {
+  const tree: Record<string, any> = {};
+  const entryMap = new Map<string, AFSEntry>();
+
+  for (const entry of entries) {
+    entryMap.set(entry.path, entry);
+    const parts = entry.path.split("/").filter(Boolean);
+    let current = tree;
+
+    for (const part of parts) {
+      if (!current[part]) {
+        current[part] = {};
+      }
+      current = current[part];
+    }
+  }
+
+  function renderTree(node: Record<string, any>, prefix = "", currentPath = ""): string {
+    let result = "";
+    const keys = Object.keys(node);
+    keys.forEach((key, index) => {
+      const isLast = index === keys.length - 1;
+      const fullPath = currentPath ? `${currentPath}/${key}` : `/${key}`;
+      const entry = entryMap.get(fullPath);
+
+      // Build metadata suffix
+      const metadataParts: string[] = [];
+
+      // Children count
+      const childrenCount = entry?.metadata?.childrenCount;
+      if (childrenCount !== undefined && childrenCount > 0) {
+        metadataParts.push(`${childrenCount} items`);
+      }
+
+      // Executable
+      if (entry?.metadata?.execute) {
+        metadataParts.push("executable");
+      }
+
+      const metadataSuffix = metadataParts.length > 0 ? ` [${metadataParts.join(", ")}]` : "";
+
+      result += `${prefix}${isLast ? "└── " : "├── "}${key}${metadataSuffix}`;
+      result += `\n`;
+      result += renderTree(node[key], `${prefix}${isLast ? "    " : "│   "}`, fullPath);
+    });
+    return result;
+  }
+
+  return renderTree(tree);
 }

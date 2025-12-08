@@ -10,55 +10,9 @@
 2.  **`MemoryRecorder`**：一個負責將資訊寫入持久性儲存後端（例如，資料庫、檔案系統或向量儲存）的 Agent。您必須提供資料儲存方式和位置的實作。
 3.  **`MemoryRetriever`**：一個負責根據指定條件（例如搜尋查詢或限制數量）從儲存後端擷取資訊的 Agent。您必須提供擷取邏輯的實作。
 
-```d2
-direction: down
-
-AIGNE-Engine: {
-  label: "AIGNE\n（應用程式邏輯）"
-  shape: rectangle
-}
-
-Memory-Agent: {
-  label: "MemoryAgent（協調器）"
-  shape: rectangle
-  style: {
-    stroke: "#888"
-    stroke-width: 2
-    stroke-dash: 4
-  }
-
-  MemoryRecorder: {
-    label: "MemoryRecorder"
-    shape: rectangle
-  }
-
-  MemoryRetriever: {
-    label: "MemoryRetriever"
-    shape: rectangle
-  }
-}
-
-Storage-Backend: {
-  label: "儲存後端\n（資料庫、向量儲存等）"
-  shape: cylinder
-}
-
-# 記錄流程
-AIGNE-Engine -> Memory-Agent: "1. invoke(record)"
-Memory-Agent -> Memory-Agent.MemoryRecorder: "2. 委派給 Recorder"
-Memory-Agent.MemoryRecorder -> Storage-Backend: "3. 寫入資料"
-
-# 擷取流程
-AIGNE-Engine -> Memory-Agent: "4. invoke(retrieve)" {
-  style.stroke-dash: 2
-}
-Memory-Agent -> Memory-Agent.MemoryRetriever: "5. 委派給 Retriever" {
-  style.stroke-dash: 2
-}
-Storage-Backend -> Memory-Agent.MemoryRetriever: "6. 回傳資料" {
-  style.stroke-dash: 2
-}
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Memory](assets/diagram/memory-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 運作方式
 

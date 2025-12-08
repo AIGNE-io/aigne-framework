@@ -1,5 +1,173 @@
 # Changelog
 
+## [1.2.5-beta](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.4...doubao-v1.2.5-beta) (2025-12-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.15-beta
+  * devDependencies
+    * @aigne/core bumped to 1.71.0-beta
+    * @aigne/test-utils bumped to 0.5.68-beta
+
+## [1.2.4](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.4-beta...doubao-v1.2.4) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.14
+  * devDependencies
+    * @aigne/core bumped to 1.70.1
+    * @aigne/test-utils bumped to 0.5.67
+
+## [1.2.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.3...doubao-v1.2.4-beta) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.14-beta
+  * devDependencies
+    * @aigne/core bumped to 1.70.1-beta
+    * @aigne/test-utils bumped to 0.5.67-beta
+
+## [1.2.3](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.3-beta.1...doubao-v1.2.3) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.13
+  * devDependencies
+    * @aigne/core bumped to 1.70.0
+    * @aigne/test-utils bumped to 0.5.66
+
+## [1.2.3-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.3-beta...doubao-v1.2.3-beta.1) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.13-beta.1
+  * devDependencies
+    * @aigne/core bumped to 1.70.0-beta.1
+    * @aigne/test-utils bumped to 0.5.66-beta.1
+
+## [1.2.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.2...doubao-v1.2.3-beta) (2025-12-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.13-beta
+  * devDependencies
+    * @aigne/core bumped to 1.70.0-beta
+    * @aigne/test-utils bumped to 0.5.66-beta
+
+## [1.2.2](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.2-beta.1...doubao-v1.2.2) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.12
+  * devDependencies
+    * @aigne/core bumped to 1.69.2
+    * @aigne/test-utils bumped to 0.5.65
+
+## [1.2.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.2-beta...doubao-v1.2.2-beta.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.12-beta.1
+  * devDependencies
+    * @aigne/core bumped to 1.69.2-beta.1
+    * @aigne/test-utils bumped to 0.5.65-beta.1
+
+## [1.2.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.1...doubao-v1.2.2-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.12-beta
+  * devDependencies
+    * @aigne/core bumped to 1.69.2-beta
+    * @aigne/test-utils bumped to 0.5.65-beta
+
+## [1.2.1](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.1-beta...doubao-v1.2.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.11
+  * devDependencies
+    * @aigne/core bumped to 1.69.1
+    * @aigne/test-utils bumped to 0.5.64
+
+## [1.2.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.0...doubao-v1.2.1-beta) (2025-11-24)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.11-beta
+  * devDependencies
+    * @aigne/core bumped to 1.69.1-beta
+    * @aigne/test-utils bumped to 0.5.64-beta
+
+## [1.2.0](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.0-beta.3...doubao-v1.2.0) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10
+  * devDependencies
+    * @aigne/core bumped to 1.69.0
+    * @aigne/test-utils bumped to 0.5.63
+
+## [1.2.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.0-beta.2...doubao-v1.2.0-beta.3) (2025-11-20)
+
+
+### Bug Fixes
+
+* add timeout to doubao and ideogram image models ([#761](https://github.com/AIGNE-io/aigne-framework/issues/761)) ([c232483](https://github.com/AIGNE-io/aigne-framework/commit/c232483c6024426524c3310e64b22d9f63206227))
+
+## [1.2.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.2.0-beta.1...doubao-v1.2.0-beta.2) (2025-11-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.10-beta.3
+  * devDependencies
+    * @aigne/core bumped to 1.69.0-beta.2
+    * @aigne/test-utils bumped to 0.5.63-beta.3
+
 ## [1.2.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/doubao-v1.1.10-beta.1...doubao-v1.2.0-beta.1) (2025-11-18)
 
 

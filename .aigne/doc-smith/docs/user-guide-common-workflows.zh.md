@@ -6,62 +6,9 @@
 
 下图展示了三种基本的工作流模式。
 
-```d2
-direction: down
-
-Sequential-Tasks: {
-  label: "顺序任务"
-  shape: rectangle
-  Agent-A: { label: "Agent A" }
-  Agent-B: { label: "Agent B" }
-  Agent-C: { label: "Agent C" }
-}
-
-Parallel-Tasks: {
-  label: "并行任务"
-  shape: rectangle
-  Initial-Task: { label: "初始任务" }
-  Parallel-Agents: {
-    shape: rectangle
-    grid-columns: 3
-    Agent-A: { label: "Agent A" }
-    Agent-B: { label: "Agent B" }
-    Agent-C: { label: "Agent C" }
-  }
-  Combined-Result: { label: "合并结果" }
-}
-
-Decision-Making: {
-  label: "决策"
-  shape: rectangle
-  Request: { label: "请求" }
-  Manager-Agent: {
-    label: "管理者 Agent"
-    shape: diamond
-  }
-  Specialized-Agents: {
-    shape: rectangle
-    grid-columns: 2
-    Agent-A: { label: "专门 Agent A" }
-    Agent-B: { label: "专门 Agent B" }
-  }
-}
-
-Sequential-Tasks.Agent-A -> Sequential-Tasks.Agent-B: "结果"
-Sequential-Tasks.Agent-B -> Sequential-Tasks.Agent-C: "结果"
-
-Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-A
-Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-B
-Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-C
-
-Parallel-Tasks.Parallel-Agents.Agent-A -> Parallel-Tasks.Combined-Result
-Parallel-Tasks.Parallel-Agents.Agent-B -> Parallel-Tasks.Combined-Result
-Parallel-Tasks.Parallel-Agents.Agent-C -> Parallel-Tasks.Combined-Result
-
-Decision-Making.Request -> Decision-Making.Manager-Agent
-Decision-Making.Manager-Agent -> Decision-Making.Specialized-Agents.Agent-A: "任务 A"
-Decision-Making.Manager-Agent -> Decision-Making.Specialized-Agents.Agent-B: "任务 B"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Common Workflows](assets/diagram/common-workflows-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 本指南介绍了您将遇到的最常见的工作流。理解这些模式将帮助您设想 Agent 如何为您自动化复杂的多步骤流程。
 

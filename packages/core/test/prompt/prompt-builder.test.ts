@@ -8,7 +8,6 @@ import {
   AIGNE,
   ChatMessagesTemplate,
   FunctionAgent,
-  ImageAgent,
   MCPAgent,
   PromptBuilder,
   SystemMessageTemplate,
@@ -430,9 +429,8 @@ test("PromptBuilder should build image prompt correctly", async () => {
   const builder = PromptBuilder.from("Draw an image about {{topic}}");
 
   expect(
-    await builder.buildImagePrompt({
+    await builder.buildPrompt({
       input: { topic: "a cat" },
-      agent: ImageAgent.from({ instructions: builder }),
     }),
   ).toEqual({
     prompt: "Draw an image about a cat",
@@ -660,7 +658,7 @@ test("PromptBuilder should build with afs correctly", async () => {
       "tools": [
         {
           "function": {
-            "description": "Browse directory contents in the AFS like filesystem ls/tree command - shows files and folders in the specified path",
+            "description": "Get a tree view of directory contents in the AFS - shows hierarchical structure of files and folders",
             "name": "afs_list",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -669,17 +667,9 @@ test("PromptBuilder should build with afs correctly", async () => {
                 "options": {
                   "additionalProperties": false,
                   "properties": {
-                    "limit": {
-                      "description": "Maximum number of entries to return",
-                      "type": "number",
-                    },
                     "maxDepth": {
-                      "description": "Maximum depth to list files",
+                      "description": "Maximum depth to display in the tree view",
                       "type": "number",
-                    },
-                    "recursive": {
-                      "description": "Whether to list files recursively",
-                      "type": "boolean",
                     },
                   },
                   "required": [],
@@ -737,7 +727,13 @@ test("PromptBuilder should build with afs correctly", async () => {
         },
         {
           "function": {
-            "description": "Read file contents from the AFS - path must be an exact file path from list or search results",
+            "description": 
+    "Read file contents from the AFS - path must be an exact file path from list or search results
+
+    Usage:
+    - Use withLineNumbers=true to get line numbers for code reviews or edits
+    "
+    ,
             "name": "afs_read",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -746,6 +742,10 @@ test("PromptBuilder should build with afs correctly", async () => {
                 "path": {
                   "description": "Exact file path from list or search results (e.g., '/docs/api.md', '/src/utils/helper.js')",
                   "type": "string",
+                },
+                "withLineNumbers": {
+                  "description": "Whether to include line numbers in the returned content, default is false",
+                  "type": "boolean",
                 },
               },
               "required": [

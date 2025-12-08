@@ -4,77 +4,11 @@ The `ImageAgent` is a specialized agent responsible for generating images. It ac
 
 This agent is essential for any workflow that requires the dynamic creation of visual content based on textual descriptions. It leverages a `PromptBuilder` to construct its prompts, enabling the use of templates to generate images from variable inputs.
 
-```d2
-direction: down
+The following diagram illustrates the invocation flow of the `ImageAgent`, from user request to final output:
 
-# External Actor
-User: {
-  label: "User / Application"
-  shape: c4-person
-}
-
-# Configuration Sources
-Configuration: {
-  label: "Configuration Methods"
-  shape: rectangle
-  style.stroke-dash: 2
-
-  TS-Config: {
-    label: "TypeScript\n`ImageAgent.from()`"
-  }
-
-  YAML-Config: {
-    label: "YAML\n`.yaml` file"
-  }
-}
-
-# AIGNE Framework
-AIGNE-Framework: {
-  label: "AIGNE Framework"
-  shape: rectangle
-
-  AIGNE: {
-    label: "AIGNE Instance"
-  }
-
-  Agent-Subsystem: {
-    label: "Agent Subsystem"
-    shape: rectangle
-    style.stroke-dash: 2
-
-    ImageAgent: {
-      label: "ImageAgent"
-    }
-
-    PromptBuilder: {
-      label: "PromptBuilder"
-    }
-  }
-
-  ImageModel: {
-    label: "ImageModel\n(e.g., dall-e-3)"
-  }
-}
-
-# Configuration Flow (defines relationships)
-Configuration.TS-Config -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "Defines"
-Configuration.YAML-Config -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "Defines"
-AIGNE-Framework.AIGNE -> AIGNE-Framework.ImageModel: {
-  label: "Is configured with"
-  style.stroke-dash: 2
-}
-
-# Invocation Flow (runtime)
-User -> AIGNE-Framework.AIGNE: "1. aigne.invoke(agent, input)"
-AIGNE-Framework.AIGNE -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "2. Pass request"
-AIGNE-Framework.Agent-Subsystem.ImageAgent -> AIGNE-Framework.Agent-Subsystem.PromptBuilder: "3. Build prompt from\ninstructions & input"
-AIGNE-Framework.Agent-Subsystem.PromptBuilder -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "4. Return final prompt"
-AIGNE-Framework.Agent-Subsystem.ImageAgent -> AIGNE-Framework.ImageModel: "5. Call model with\nprompt & modelOptions"
-AIGNE-Framework.ImageModel -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "6. Return ImageModelOutput"
-AIGNE-Framework.Agent-Subsystem.ImageAgent -> AIGNE-Framework.AIGNE: "7. Forward result"
-AIGNE-Framework.AIGNE -> User: "8. Return final output\n(url/base64)"
-
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![Image Agent](assets/diagram/image-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Configuration
 

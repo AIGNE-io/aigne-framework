@@ -13,34 +13,9 @@ Key functionalities include:
 
 The `MCPAgent` encapsulates the logic for connecting to an MCP server and translating its offerings into AIGNE constructs. When an `MCPAgent` is initialized, it connects to the specified server and queries for its available tools, prompts, and resources. These are then dynamically attached to the agent instance as `skills`, `prompts`, and `resources`, respectively, making them directly accessible within your AIGNE workflows.
 
-```d2
-direction: right
-style: {
-  font-size: 14
-}
-
-"AIGNE Application" -> aigne.invoke
-
-subgraph "AIGNE Framework" {
-  aigne.invoke -> mcp_agent: "MCPAgent" {
-    shape: hexagon
-    style.fill: "#D1E7DD"
-  }
-}
-
-subgraph "Transport Layer (Network / Stdio)" {
-  mcp_agent -> transport: "MCP Request"
-  transport -> mcp_agent: "MCP Response"
-}
-
-transport -> "External MCP Server"
-
-subgraph "External System" {
- "External MCP Server" -> "Tools"
- "External MCP Server" -> "Prompts"
- "External MCP Server" -> "Resources"
-}
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![MCP Agent](assets/diagram/mcp-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## Creating an MCPAgent
 

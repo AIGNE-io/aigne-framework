@@ -1,6 +1,6 @@
 {
   "name": "@aigne/test-nodejs-cjs",
-  "version": "0.0.2-beta.0",
+  "version": "0.0.2-beta.1",
   "description": "A demonstration of using AIGNE Framework with memory.",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework",

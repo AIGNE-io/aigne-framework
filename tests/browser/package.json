@@ -1,6 +1,6 @@
 {
   "name": "@aigne/test-browser",
-  "version": "0.0.2-beta.0",
+  "version": "0.0.2-beta.1",
   "description": "A demonstration of using AIGNE Framework in the browser",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/brwoser",

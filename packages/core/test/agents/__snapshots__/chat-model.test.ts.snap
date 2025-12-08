@@ -19,6 +19,7 @@ exports[`ChatModel should auto convert image url to base64 image data {} 1`] = `
       "role": "user",
     },
   ],
+  "modelOptions": {},
 }
 `;
 
@@ -43,6 +44,9 @@ exports[`ChatModel should auto convert image url to base64 image data {
       "role": "user",
     },
   ],
+  "modelOptions": {
+    "preferInputFileType": "file",
+  },
 }
 `;
 
@@ -65,5 +69,8 @@ exports[`ChatModel should auto convert image url to base64 image data {
       "role": "user",
     },
   ],
+  "modelOptions": {
+    "preferInputFileType": "url",
+  },
 }
 `;

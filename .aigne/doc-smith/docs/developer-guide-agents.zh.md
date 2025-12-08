@@ -4,64 +4,9 @@ AIGNE 框架提供了一套专门的 Agent 类型，每种类型都设计用于�
 
 本节对可用的 Agent 类型进行了高层次的概述。有关详细的实现、配置选项和代码示例，请参阅每种 Agent 的具体子文档。
 
-```d2
-direction: down
-style: {
-  font-size: 14
-  stroke-width: 2
-  fill: "#f8f9fa"
-  stroke: "#adb5bd"
-}
-
-Agent: {
-  label: "基础 Agent"
-  shape: class
-  style: {
-    fill: "#e9ecef"
-    stroke: "#495057"
-  }
-}
-
-sub_agents: {
-  AIAgent: {
-    label: "AIAgent"
-    tooltip: "与语言模型交互"
-    style: { fill: "#dbe4ff" }
-  }
-  TeamAgent: {
-    label: "TeamAgent"
-    tooltip: "编排多个 Agent"
-    style: { fill: "#d1e7dd" }
-  }
-  ImageAgent: {
-    label: "ImageAgent"
-    tooltip: "生成图像"
-    style: { fill: "#fff3cd" }
-  }
-  FunctionAgent: {
-    label: "FunctionAgent"
-    tooltip: "包装自定义代码"
-    style: { fill: "#f8d7da" }
-  }
-  TransformAgent: {
-    label: "TransformAgent"
-    tooltip: "执行数据映射"
-    style: { fill: "#e2d9f3" }
-  }
-  MCPAgent: {
-    label: "MCPAgent"
-    tooltip: "连接到外部 MCP 系统"
-    style: { fill: "#cfe2ff" }
-  }
-}
-
-Agent -> sub_agents.AIAgent: Inherits
-Agent -> sub_agents.TeamAgent: Inherits
-Agent -> sub_agents.ImageAgent: Inherits
-Agent -> sub_agents.FunctionAgent: Inherits
-Agent -> sub_agents.TransformAgent: Inherits
-Agent -> sub_agents.MCPAgent: Inherits
-```
+<!-- DIAGRAM_IMAGE_START:architecture:1:1 -->
+![Agent Types](assets/diagram/agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 可用的 Agent 类型
 

@@ -7,10 +7,12 @@ import { DefaultMemory } from "@aigne/default-memory";
 import { refreshAuthorization, UnauthorizedError } from "@modelcontextprotocol/sdk/client/auth.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import JWT from "jsonwebtoken";
+import { joinURL } from "ufo";
 import { TerminalOAuthProvider } from "./oauth.js";
-import { joinURL } from 'ufo';
 
-const rawUrl = process.argv.find((arg) => arg.startsWith("https://") || arg.startsWith("http://")) || process.env.BLOCKLET_APP_URL;
+const rawUrl =
+  process.argv.find((arg) => arg.startsWith("https://") || arg.startsWith("http://")) ||
+  process.env.BLOCKLET_APP_URL;
 assert(
   rawUrl,
   "Please provide a blocklet url as an argument or set the BLOCKLET_APP_URL environment variable",
@@ -110,8 +112,7 @@ try {
 
 await runWithAIGNE(
   async () => {
-
-    const url = joinURL(appUrl.origin, '/.well-known/service/mcp');
+    const url = joinURL(appUrl.origin, "/.well-known/service/mcp");
     const blocklet = await MCPAgent.from({
       url,
       transport: "streamableHttp",

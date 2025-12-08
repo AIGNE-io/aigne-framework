@@ -1,0 +1,44 @@
+type: "@aigne/agent-library/orchestrator"
+name: orchestrator
+input_schema:
+  type: object
+  properties:
+    message:
+      type: string
+      description: (Optional) User's instruction
+  required: []
+
+# Specify the objective for the orchestrator agent.
+objective:
+  url: objective.md
+
+# Custom planner agent can be defined here.
+planner:
+  type: ai
+  instructions:
+    url: planner.md
+
+# Custom worker agent can be defined here.
+# worker:
+#   type: ai
+#   instructions:
+#     url: path/to/worker_instructions.md
+
+# Custom completer agent can be defined here.
+# completer:
+#   type: ai
+#   instructions:
+#     url: path/to/completer_instructions.md
+
+state_management:
+  max_iterations: 5
+  max_tokens: 100000 # Optional: limit the total tokens used for state management
+  keep_recent: 20 # Optional: keep only the most recent N states in memory
+
+afs:
+  modules:
+    - module: local-fs
+      options:
+        name: workspace
+        localPath: .
+        description: Workspace directory for the orchestrator agent.

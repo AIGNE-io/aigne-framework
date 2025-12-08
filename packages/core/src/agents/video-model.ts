@@ -24,7 +24,7 @@ export interface VideoModelOptions<
 > extends Omit<AgentOptions<I, O>, "model"> {
   model?: string;
 
-  modelOptions?: Omit<VideoModelInputOptions, "model">;
+  modelOptions?: VideoModelInputOptionsWithGetter;
 }
 
 export abstract class VideoModel<
@@ -33,12 +33,11 @@ export abstract class VideoModel<
 > extends Model<I, O> {
   override tag = "VideoModelAgent";
 
-  constructor(public options?: VideoModelOptions<I, O>) {
+  constructor(public override options?: VideoModelOptions<I, O>) {
     super({
       inputSchema: videoModelInputSchema as ZodType<I>,
       outputSchema: videoModelOutputSchema as ZodType<O>,
       ...options,
-      model: undefined,
     });
   }
 

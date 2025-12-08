@@ -1,4 +1,4 @@
-import type { AgentHooks } from "../agents/agent.js";
+import type { Agent, AgentHooks } from "../agents/agent.js";
 import type { AIGNECLIAgent, AIGNECLIAgents } from "../aigne/type.js";
 
 const priorities: NonNullable<AgentHooks["priority"]>[] = ["high", "medium", "low"];
@@ -62,4 +62,13 @@ function findCliAgentRecursive(agents: AIGNECLIAgents, name: string) {
     }
   }
   return undefined;
+}
+
+export function isAgent<A extends Agent>(obj: any): obj is A {
+  return (
+    obj &&
+    typeof obj.name === "string" &&
+    typeof obj.invoke === "function" &&
+    typeof obj.process === "function"
+  );
 }

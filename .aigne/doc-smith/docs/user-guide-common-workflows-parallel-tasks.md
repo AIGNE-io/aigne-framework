@@ -10,70 +10,18 @@ This workflow is managed by an [Agent Team](./user-guide-understanding-agents-ag
 
 The parallel workflow follows a clear, efficient process for handling tasks that don't depend on each other. The flow is designed to maximize speed by running all agents at once.
 
+The following diagram illustrates this process:
+
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Parallel Tasks](assets/diagram/parallel-tasks-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
+
 1.  **Single Input**: The process begins with a single piece of information, like a document, a user query, or a set of data.
 2.  **Simultaneous Distribution**: The Agent Team takes this input and distributes the *exact same information* to every agent in the team.
 3.  **Independent Processing**: All agents start working at the same time. Each agent performs its specialized task based on its unique instructions, without waiting for or interacting with the other agents.
 4.  **Result Aggregation**: As each agent finishes its work, its output is collected. The Agent Team then aggregates these individual outputs into a single, combined result. If multiple agents produce an output for the same field, the system typically accepts the result from whichever agent finishes first.
 
 This structure ensures that the total time required to complete all tasks is determined by the longest-running agent, rather than the sum of all their times.
-
-```d2
-direction: down
-
-Input: {
-  label: "1. Single Input"
-  shape: rectangle
-}
-
-Agent-Team: {
-  label: "Agent Team (Parallel Mode)"
-  style.stroke-dash: 4
-
-  Distribution: {
-    label: "2. Distribute Task"
-    shape: diamond
-  }
-
-  Agents: {
-    label: "3. Independent Processing"
-    style.stroke-width: 0
-    grid-columns: 3
-
-    Agent-1: { 
-      label: "Agent 1"
-      shape: rectangle 
-    }
-    Agent-2: { 
-      label: "Agent 2"
-      shape: rectangle 
-    }
-    Agent-N: {
-      label: "Agent N..."
-      shape: rectangle
-    }
-  }
-
-  Aggregation: {
-    label: "4. Aggregate Results"
-    shape: diamond
-  }
-}
-
-Output: {
-  label: "5. Combined Result"
-  shape: rectangle
-}
-
-Input -> Agent-Team.Distribution
-Agent-Team.Distribution -> Agent-Team.Agents.Agent-1
-Agent-Team.Distribution -> Agent-Team.Agents.Agent-2
-Agent-Team.Distribution -> Agent-Team.Agents.Agent-N
-Agent-Team.Agents.Agent-1 -> Agent-Team.Aggregation
-Agent-Team.Agents.Agent-2 -> Agent-Team.Aggregation
-Agent-Team.Agents.Agent-N -> Agent-Team.Aggregation
-Agent-Team.Aggregation -> Output
-
-```
 
 ## Common Use Cases
 

@@ -1,5 +1,155 @@
 # Changelog
 
+## [1.71.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.70.1...core-v1.71.0-beta) (2025-12-07)
+
+
+### Features
+
+* support define agent by third library & orchestrator agent refactor ([#799](https://github.com/AIGNE-io/aigne-framework/issues/799)) ([7264b11](https://github.com/AIGNE-io/aigne-framework/commit/7264b11ab6eed787e928367f09aa08d254968d40))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta
+    * @aigne/afs-history bumped to 1.1.3-beta
+
+## [1.70.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.70.1-beta...core-v1.70.1) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.12
+
+## [1.70.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.70.0...core-v1.70.1-beta) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.12-beta
+
+## [1.70.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.70.0-beta.1...core-v1.70.0) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.3
+    * @aigne/afs-history bumped to 1.1.2
+
+## [1.70.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.70.0-beta...core-v1.70.0-beta.1) (2025-12-05)
+
+
+### Bug Fixes
+
+* return tree view instead of list for afs_list ([#774](https://github.com/AIGNE-io/aigne-framework/issues/774)) ([8ec2f93](https://github.com/AIGNE-io/aigne-framework/commit/8ec2f93fb5870f6404d886ad0197cc21c61dfd74))
+
+## [1.70.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.2...core-v1.70.0-beta) (2025-12-02)
+
+
+### Features
+
+* **core:** add nested getter pattern support for model options ([#796](https://github.com/AIGNE-io/aigne-framework/issues/796)) ([824b2fe](https://github.com/AIGNE-io/aigne-framework/commit/824b2fe55cb2a24620e2bb73b470532918fa2996))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.3-beta
+    * @aigne/afs-history bumped to 1.1.2-beta
+
+## [1.69.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.2-beta.1...core-v1.69.2) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.2
+    * @aigne/afs-history bumped to 1.1.1
+    * @aigne/observability-api bumped to 0.11.11
+    * @aigne/platform-helpers bumped to 0.6.5
+
+## [1.69.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.2-beta...core-v1.69.2-beta.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.11-beta.1
+
+## [1.69.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.1...core-v1.69.2-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.2-beta
+    * @aigne/afs-history bumped to 1.1.1-beta
+    * @aigne/observability-api bumped to 0.11.11-beta
+    * @aigne/platform-helpers bumped to 0.6.5-beta
+
+## [1.69.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.1-beta...core-v1.69.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.10
+
+## [1.69.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.0...core-v1.69.1-beta) (2025-11-24)
+
+
+### Bug Fixes
+
+* **observability:** prevent OOM by optimizing trace data storage strategy ([#767](https://github.com/AIGNE-io/aigne-framework/issues/767)) ([acd6476](https://github.com/AIGNE-io/aigne-framework/commit/acd6476936423c2186cb633086177541b0c0b558))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.10-beta
+
+## [1.69.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.0-beta.2...core-v1.69.0) (2025-11-21)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-history bumped to 1.1.0
+    * @aigne/observability-api bumped to 0.11.9
+
+## [1.69.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.69.0-beta.1...core-v1.69.0-beta.2) (2025-11-19)
+
+
+### Features
+
+* **models:** support gemini 3.x thinking level and thoughtSignature ([#760](https://github.com/AIGNE-io/aigne-framework/issues/760)) ([243f2d4](https://github.com/AIGNE-io/aigne-framework/commit/243f2d457792a20ba2b87378576092e6f88e319c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.9-beta.3
+
 ## [1.69.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.68.3-beta.1...core-v1.69.0-beta.1) (2025-11-18)
 
 

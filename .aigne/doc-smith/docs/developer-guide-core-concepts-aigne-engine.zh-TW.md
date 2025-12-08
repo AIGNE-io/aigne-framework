@@ -4,80 +4,9 @@
 
 本指南涵蓋如何實例化和組態 AIGNE、使用 `invoke` 方法執行 Agent，以及管理應用程式生命週期。
 
-```d2
-direction: down
-
-Developer: {
-  shape: c4-person
-  label: "開發者"
-}
-
-Instantiation: {
-  label: "實例化方法"
-  shape: rectangle
-  style.stroke-dash: 2
-
-  Constructor: {
-    label: "`new AIGNE()`\n(程式化)"
-  }
-
-  Load-Method: {
-    label: "`AIGNE.load()`\n(從目錄載入)"
-  }
-}
-
-AIGNE-Engine: {
-  label: "AIGNE"
-  shape: rectangle
-
-  Core: {
-    label: "核心職責"
-    shape: rectangle
-    style.stroke-dash: 4
-
-    Agent-Management: {
-      label: "Agent 與技能\n管理"
-    }
-    Model-Configuration: {
-      label: "全域模型\n組態"
-    }
-    Execution-Context: {
-      label: "執行上下文"
-    }
-  }
-}
-
-Invocation-Results: {
-  label: "`invoke()` 結果"
-  shape: rectangle
-  style.stroke-dash: 2
-
-  Standard-Response: {
-    label: "標準回應\n(Promise)"
-  }
-
-  Streaming-Response: {
-    label: "串流回應\n(AgentResponseStream)"
-  }
-
-  User-Agent: {
-    label: "有狀態的 UserAgent\n(維持上下文)"
-  }
-}
-
-Developer -> Instantiation: "透過...初始化"
-Instantiation.Constructor -> AIGNE-Engine
-Instantiation.Load-Method -> AIGNE-Engine
-
-Developer -> AIGNE-Engine: "呼叫 `invoke()`"
-
-AIGNE-Engine -> Invocation-Results.Standard-Response: "回傳"
-AIGNE-Engine -> Invocation-Results.Streaming-Response: "回傳"
-AIGNE-Engine -> Invocation-Results.User-Agent: "回傳"
-
-Invocation-Results -> Developer: "接收結果"
-
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![AIGNE](assets/diagram/aigne-engine-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 總覽
 

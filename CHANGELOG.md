@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.90.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta...aigne-framework-v1.90.0-beta.1) (2025-12-08)
+
+
+### Bug Fixes
+
+* correct run example & doc improvements ([#707](https://github.com/AIGNE-io/aigne-framework/issues/707)) ([f98fc5d](https://github.com/AIGNE-io/aigne-framework/commit/f98fc5df28fd6ce6134128c2f0e5395c1554b740))
+
 ## [1.90.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.89.1...aigne-framework-v1.90.0-beta) (2025-12-07)
 
 

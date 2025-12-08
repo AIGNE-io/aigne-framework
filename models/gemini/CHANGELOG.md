@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.15-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.15-beta...gemini-v0.14.15-beta.1) (2025-12-08)
+
+
+### Bug Fixes
+
+* correct run example & doc improvements ([#707](https://github.com/AIGNE-io/aigne-framework/issues/707)) ([f98fc5d](https://github.com/AIGNE-io/aigne-framework/commit/f98fc5df28fd6ce6134128c2f0e5395c1554b740))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.71.0-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.68-beta.1
+
 ## [0.14.15-beta](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.14...gemini-v0.14.15-beta) (2025-12-07)
 
 

@@ -326,11 +326,7 @@ test("GeminiChatModel should support image mode", async () => {
             "image",
           ],
           "temperature": undefined,
-          "thinkingConfig": {
-            "includeThoughts": true,
-            "thinkingBudget": undefined,
-            "thinkingLevel": undefined,
-          },
+          "thinkingConfig": undefined,
           "toolConfig": {
             "functionCallingConfig": undefined,
           },

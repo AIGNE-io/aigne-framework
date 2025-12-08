@@ -289,6 +289,24 @@
     "parentId": "/user-guide/common-workflows"
   },
   {
+    "title": "Agent Library",
+    "description": "A collection of pre-built, reusable agents that can be easily integrated into your applications to perform complex tasks.",
+    "path": "/agent-library",
+    "parentId": null,
+    "sourceIds": ["packages/agent-library/README.md"],
+    "icon": "lucide:library"
+  },
+  {
+    "title": "Orchestrator",
+    "description": "Explains the Orchestrator agent, a powerful agent designed to manage and coordinate complex workflows involving multiple specialized agents. Learn how to use it to break down high-level objectives into executable steps.",
+    "path": "/agent-library/orchestrator",
+    "parentId": "/agent-library",
+    "sourceIds": [
+      "packages/agent-library/src/orchestrator/README.md",
+      "examples/workflow-orchestrator/README.md"
+    ]
+  },
+  {
     "title": "Models",
     "description": "Provides an overview and specific guides for integrating various third-party AI model providers, such as OpenAI, Anthropic, and Google, into the AIGNE Framework.",
     "path": "/models",
@@ -465,11 +483,11 @@
     "sourceIds": ["examples/chat-bot/README.md"]
   },
   {
-    "title": "AFS System FS",
+    "title": "AFS Local FS",
     "description": "Shows how to build a chatbot that can interact with the local file system using the AIGNE File System (AFS).",
-    "path": "/examples/afs-system-fs",
+    "path": "/examples/afs-local-fs",
     "parentId": "/examples",
-    "sourceIds": ["examples/afs-system-fs/README.md"]
+    "sourceIds": ["examples/afs-local-fs/README.md"]
   },
   {
     "title": "Memory",

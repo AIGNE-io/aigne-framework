@@ -1,4 +1,7 @@
 entries:
+  - timestamp: 2025-12-08T02:29:29.786Z
+    operation: structure_update
+    feedback: 添加一个 agent-library 模块，并加入 orchestrator 子文档，agent-library 放到顶层目录中，置于 Models 之前
   - timestamp: 2025-11-16T11:16:30.889Z
     operation: document_update
     feedback: 连接到 AI 模型的时候，应该尽可能详细描述，添加已有的配图。可以参考 examples/chat-bot/README.md

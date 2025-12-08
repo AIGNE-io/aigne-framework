@@ -183,4 +183,12 @@ descriptions:
       buttons. The bottom of the dialog indicates it is "Secured by
       DID:Connect."
     generatedAt: 2025-11-14T08:40:02.011Z
-lastUpdated: 2025-11-14T08:40:02.012Z
+  387cd4ef36681ee2df9a3d7719b11117a46d49e7c329f83350cf7a2f9ab4c79d:
+    path: ../../../examples/afs-memory/run-example.png
+    description: A screenshot of a command-line interface shows the execution of an
+      `npx` command for an AIGNE example. After several `npm warn` messages, the
+      program prompts the user with options to configure API keys or connect to
+      an AIGNE Hub because no existing connections were found. The recommended
+      option, "Connect to the Arcblock official AIGNE Hub," is highlighted.
+    generatedAt: 2025-12-08T02:30:10.678Z
+lastUpdated: 2025-12-08T02:30:10.683Z

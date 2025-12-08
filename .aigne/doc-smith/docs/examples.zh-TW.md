@@ -1,197 +1,158 @@
 # 範例
 
-準備好看看 AIGNE 框架的實際應用了嗎？本節提供了一系列全面的實用範例，展示了各種功能和工作流程模式。您可以跳過複雜的設定，直接透過一鍵式指令來執行功能齊全的 Agent。
+探索一系列實用的範例，展示 AIGNE 框架的各種功能和工作流程模式。本節提供可動手執行的演示，幫助您理解智慧對話、MCP 協議整合、記憶體機制以及複雜的 Agentic 工作流程。
 
-## 總覽
+## 快速入門
 
-AIGNE 框架範例為從智慧聊天機器人到複雜的多 Agent 工作流程等一系列應用提供了實作示範。每個範例都是一個獨立、可執行的演示，旨在說明框架的特定功能。您可以探索模型情境協議（MCP）整合、記憶體持久化、並行和順序任務處理以及動態程式碼執行等主題。
-
-有關特定功能或工作流程的詳細資訊，請參閱相應的範例文件：
-
-<x-cards data-columns="3">
-  <x-card data-title="聊天機器人" data-icon="lucide:bot" data-href="/examples/chat-bot">示範如何建立並執行一個基於 Agent 的聊天機器人。</x-card>
-  <x-card data-title="AFS 系統檔案系統" data-icon="lucide:folder-git-2" data-href="/examples/afs-system-fs">展示如何建構一個可以與本機檔案系統互動的聊天機器人。</x-card>
-  <x-card data-title="記憶體" data-icon="lucide:database" data-href="/examples/memory">說明如何建立一個具有持久性記憶體的聊天機器人。</x-card>
-  <x-card data-title="MCP 伺服器" data-icon="lucide:server" data-href="/examples/mcp-server">展示如何將 AIGNE Agent 作為 MCP 伺服器執行。</x-card>
-  <x-card data-title="MCP 整合" data-icon="lucide:plug" data-href="/examples/mcp-blocklet">探索與 Blocklet、GitHub、Puppeteer 和 SQLite 的整合。</x-card>
-  <x-card data-title="程式碼執行" data-icon="lucide:terminal" data-href="/examples/workflow-code-execution">學習如何在工作流程中安全地執行動態產生的程式碼。</x-card>
-  <x-card data-title="並行" data-icon="lucide:git-compare-arrows" data-href="/examples/workflow-concurrency">透過平行處理多個任務來最佳化效能。</x-card>
-  <x-card data-title="群組聊天" data-icon="lucide:messages-square" data-href="/examples/workflow-group-chat">建構多個 Agent 可以互動和分享訊息的環境。</x-card>
-  <x-card data-title="順序" data-icon="lucide:arrow-right" data-href="/examples/workflow-sequential">建構具有保證執行順序的逐步處理管線。</x-card>
-</x-cards>
-
-## 快速入門（無需安裝）
-
-您可以使用 `npx` 直接從終端機執行任何範例，無需複製儲存庫或進行本機安裝。
+您可以使用 `npx` 直接執行任何範例，無需在本機安裝。這是體驗 AIGNE 框架最快的方法。
 
 ### 先決條件
 
-請確保您的系統上已安裝 Node.js（版本 20.0 或更高）和 npm。
+- 已安裝 Node.js (版本 20.0 或更高) 和 npm。
+- 您所選的大型語言模型 (LLM) 供應商的 API 金鑰 (例如 OpenAI)。
 
 ### 執行範例
 
-以下指令以單次模式執行基本的聊天機器人範例，它會接收一個預設提示，提供回應，然後退出。
+在您的終端機中執行以下指令來執行一個基本的聊天機器人。
 
-```bash 以單次模式執行 icon=lucide:terminal
-npx -y @aigne/example-chat-bot
-```
+1.  **設定您的 API 金鑰：**
+    將 `YOUR_OPENAI_API_KEY` 替換為您實際的 OpenAI API 金鑰。
 
-若要與 Agent 進行互動式對話，請加上 `--chat` 旗標。
+    ```sh icon=lucide:terminal
+    export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
+    ```
 
-```bash 以互動模式執行 icon=lucide:terminal
-npx -y @aigne/example-chat-bot --chat
-```
+2.  **以單次模式執行：**
+    Agent 將處理一個預設提示後退出。
 
-您也可以將輸入直接透過管道傳送給 Agent。
+    ```sh icon=lucide:terminal
+    npx -y @aigne/example-chat-bot
+    ```
 
-```bash 使用管道輸入 icon=lucide:terminal
-echo "Tell me about AIGNE Framework" | npx -y @aigne/example-chat-bot
-```
+3.  **以互動模式執行：**
+    使用 `--chat` 旗標來啟動一個互動式會話，您可以在其中與 Agent 進行對話。
 
-## 連接到 AI 模型
+    ```sh icon=lucide:terminal
+    npx -y @aigne/example-chat-bot --chat
+    ```
 
-執行範例需要連接到 AI 模型。如果您在沒有任何先前設定的情況下執行指令，系統將提示您進行連接。
+### 使用不同的 LLM
 
-![未設定模型時的初始連接提示](../../../examples/chat-bot/run-example.png)
+您可以透過設定 `MODEL` 環境變數以及相應的 API 金鑰來指定不同的模型。以下是幾個熱門供應商的設定。
 
-您有三種選項可以建立連接：
+| 供應商 | 環境變數 |
+| :--- | :--- |
+| **OpenAI** | `export MODEL=openai:gpt-4o`<br/>`export OPENAI_API_KEY=...` |
+| **Anthropic** | `export MODEL=anthropic:claude-3-opus-20240229`<br/>`export ANTHROPIC_API_KEY=...` |
+| **Google Gemini** | `export MODEL=gemini:gemini-1.5-flash`<br/>`export GEMINI_API_KEY=...` |
+| **DeepSeek** | `export MODEL=deepseek/deepseek-chat`<br/>`export DEEPSEEK_API_KEY=...` |
+| **AWS Bedrock** | `export MODEL=bedrock:anthropic.claude-3-sonnet-20240229-v1:0`<br/>`export AWS_ACCESS_KEY_ID=...`<br/>`export AWS_SECRET_ACCESS_KEY=...`<br/>`export AWS_REGION=...` |
+| **Ollama** | `export MODEL=llama3`<br/>`export OLLAMA_DEFAULT_BASE_URL="http://localhost:11434/v1"` |
 
-### 1. 連接到官方 AIGNE Hub
+## 範例庫
 
-這是推薦給新使用者的選項。AIGNE Hub 提供了無縫的連接體驗，並為新使用者提供免費的權杖，讓他們可以立即開始使用。
+本節提供了一系列精選範例，每個範例都展示了 AIGNE 框架中的特定功能或工作流程模式。點擊任何卡片即可導覽至該範例的詳細指南。
 
--   在提示中選擇第一個選項。
--   您的瀏覽器將打開官方的 AIGNE Hub 頁面。
--   按照螢幕上的說明授權 AIGNE CLI。
+### 核心功能
 
-![授權 AIGNE CLI 連接到 AIGNE Hub](../../../examples/images/connect-to-aigne-hub.png)
+<x-cards data-columns="2">
+  <x-card data-title="聊天機器人" data-icon="lucide:bot" data-href="/examples/chat-bot">
+    建立一個支援單次和互動模式的基本對話 Agent。
+  </x-card>
+  <x-card data-title="AFS 本機檔案系統" data-icon="lucide:folder-git-2" data-href="/examples/afs-local-fs">
+    建立一個可以在本機檔案系統上讀取、寫入和列出檔案的聊天機器人。
+  </x-card>
+  <x-card data-title="記憶體" data-icon="lucide:brain-circuit" data-href="/examples/memory">
+    使用 FSMemory 外掛程式實作一個具有持久性記憶體的 Agent。
+  </x-card>
+  <x-card data-title="Nano Banana" data-icon="lucide:image" data-href="/examples/nano-banana">
+    展示如何建立一個具有圖像生成功能的聊天機器人。
+  </x-card>
+</x-cards>
 
-### 2. 連接到自行託管的 AIGNE Hub
+### 工作流程模式
 
-如果您的組織執行 AIGNE Hub 的私有實例，您可以直接連接到它。
+<x-cards data-columns="3">
+  <x-card data-title="循序" data-icon="lucide:arrow-right-circle" data-href="/examples/workflow-sequential">
+    以特定的、有序的順序執行一系列 Agent，就像一條裝配線。
+  </x-card>
+  <x-card data-title="並行" data-icon="lucide:git-fork" data-href="/examples/workflow-concurrency">
+    同時執行多個 Agent 以平行執行任務並提高效率。
+  </x-card>
+  <x-card data-title="路由器" data-icon="lucide:route" data-href="/examples/workflow-router">
+    建立一個管理員 Agent，智慧地將任務導向至適當的專業 Agent。
+  </x-card>
+  <x-card data-title="交接" data-icon="lucide:arrow-right-left" data-href="/examples/workflow-handoff">
+    實現無縫過渡，讓一個 Agent 將其輸出傳遞給另一個 Agent 進行進一步處理。
+  </x-card>
+  <x-card data-title="反思" data-icon="lucide:refresh-ccw" data-href="/examples/workflow-reflection">
+    建立能夠審查和改進自身輸出以進行自我修正和提升的 Agent。
+  </x-card>
+  <x-card data-title="協同運作" data-icon="lucide:users" data-href="/examples/workflow-orchestration">
+    協調多個 Agent 來解決需要協作的複雜問題。
+  </x-card>
+  <x-card data-title="群組聊天" data-icon="lucide:messages-square" data-href="/examples/workflow-group-chat">
+    模擬一個多 Agent 討論，其中 Agent 可以互動並在彼此的訊息基礎上進行建構。
+  </x-card>
+  <x-card data-title="程式碼執行" data-icon="lucide:code-2" data-href="/examples/workflow-code-execution">
+    在 AI 驅動的工作流程中安全地執行動態生成的程式碼。
+  </x-card>
+</x-cards>
 
--   在提示中選擇第二個選項。
--   輸入您自行託管的 AIGNE Hub 的 URL，並按照提示完成連接。
+### MCP 與整合
 
-![輸入自行託管的 AIGNE Hub 的 URL](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
+<x-cards data-columns="3">
+  <x-card data-title="MCP 伺服器" data-icon="lucide:server" data-href="/examples/mcp-server">
+    將 AIGNE Agent 作為模型情境協議 (MCP) 伺服器執行，以公開其技能。
+  </x-card>
+  <x-card data-title="MCP Blocklet" data-icon="lucide:box" data-href="/examples/mcp-blocklet">
+    與 Blocklet 整合，並將其功能公開為 MCP 技能。
+  </x-card>
+  <x-card data-title="MCP GitHub" data-icon="lucide:github" data-href="/examples/mcp-github">
+    使用連接到 GitHub MCP 伺服器的 Agent 與 GitHub 儲存庫互動。
+  </x-card>
+  <x-card data-title="MCP Puppeteer" data-icon="lucide:mouse-pointer-2" data-href="/examples/mcp-puppeteer">
+    利用 Puppeteer 進行自動化的網頁抓取和瀏覽器互動。
+  </x-card>
+  <x-card data-title="MCP SQLite" data-icon="lucide:database" data-href="/examples/mcp-sqlite">
+    連接到 SQLite 資料庫以執行智慧型資料庫操作。
+  </x-card>
+  <x-card data-title="DID Spaces 記憶體" data-icon="lucide:key-round" data-href="/examples/memory-did-spaces">
+    使用去中心化身份和儲存技術 DID Spaces 來持久化 Agent 記憶體。
+  </x-card>
+</x-cards>
 
-如果您需要部署自己的 AIGNE Hub，可以從 [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ) 進行部署。
+## 偵錯
 
-### 3. 透過第三方模型提供商連接
+要深入了解 Agent 的執行情況，您可以啟用偵錯日誌或使用 AIGNE 觀察伺服器。
 
-您可以透過設定適當的環境變數，直接連接到第三方 AI 模型提供商。退出互動式提示，並為您選擇的提供商設定 API 金鑰。
+### 查看偵錯日誌
 
-例如，若要使用 OpenAI，請設定 `OPENAI_API_KEY` 環境變數：
+將 `DEBUG` 環境變數設定為 `*` 以輸出詳細日誌，其中包含模型呼叫和回應。
 
-```bash 設定您的 OpenAI API 金鑰 icon=lucide:key-round
-export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
-```
-
-設定金鑰後，再次執行範例指令。
-
-## 設定語言模型
-
-可以透過設定 `MODEL` 環境變數以及相應的 API 金鑰，將範例設定為使用各種大型語言模型。`MODEL` 變數遵循 `provider:model-name` 的格式。
-
-### OpenAI
-
-```bash OpenAI 設定 icon=lucide:terminal
-export MODEL=openai:gpt-4o
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
-```
-
-### Anthropic
-
-```bash Anthropic 設定 icon=lucide:terminal
-export MODEL=anthropic:claude-3-5-sonnet-20240620
-export ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY
-```
-
-### Google Gemini
-
-```bash Google Gemini 設定 icon=lucide:terminal
-export MODEL=gemini:gemini-1.5-flash
-export GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-```
-
-### AWS Bedrock
-
-```bash AWS Bedrock 設定 icon=lucide:terminal
-export MODEL=bedrock:anthropic.claude-3-sonnet-20240229-v1:0
-export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY_ID"
-export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_ACCESS_KEY"
-export AWS_REGION="us-east-1"
-```
-
-### DeepSeek
-
-```bash DeepSeek 設定 icon=lucide:terminal
-export MODEL=deepseek:deepseek-chat
-export DEEPSEEK_API_KEY=YOUR_DEEPSEEK_API_KEY
-```
-
-### Doubao
-
-```bash Doubao 設定 icon=lucide:terminal
-export MODEL=doubao:Doubao-pro-128k
-export DOUBAO_API_KEY=YOUR_DOUBAO_API_KEY
-```
-
-### xAI (Grok)
-
-```bash xAI 設定 icon=lucide:terminal
-export MODEL=xai:grok-1.5-flash
-export XAI_API_KEY=YOUR_XAI_API_KEY
-```
-
-### Ollama (本機模型)
-
-```bash Ollama 設定 icon=lucide:terminal
-export MODEL=ollama:llama3
-export OLLAMA_DEFAULT_BASE_URL="http://localhost:11434"
-```
-
-### LMStudio (本機模型)
-
-```bash LMStudio 設定 icon=lucide:terminal
-export MODEL=lmstudio:local-model/llama-3.1-8b-instruct-gguf
-export LM_STUDIO_DEFAULT_BASE_URL="http://localhost:1234/v1"
-```
-
-有關支援模型的完整列表及其設定詳細資訊，請參閱 [模型總覽](./models-overview.md) 部分。
-
-## 偵錯與觀測
-
-若要深入了解 Agent 的執行流程，您可以使用兩種主要方法：用於即時終端機輸出的偵錯日誌，以及用於更詳細、基於 Web 分析的 AIGNE 可觀測性伺服器。
-
-### 偵錯日誌
-
-透過設定 `DEBUG` 環境變數來啟用偵錯日誌記錄。這會將有關模型呼叫、回應和其他內部操作的詳細資訊直接列印到您的終端機。
-
-```bash 啟用偵錯日誌 icon=lucide:terminal
+```sh icon=lucide:terminal
 DEBUG=* npx -y @aigne/example-chat-bot --chat
 ```
 
-### AIGNE Observe
+### 使用觀察伺服器
 
-`aigne observe` 指令會啟動一個本機 Web 伺服器，用於監控和分析 Agent 的執行資料。這個工具對於偵錯、效能調整以及了解您的 Agent 如何處理資訊至關重要。
+`aigne observe` 指令會啟動一個本機 Web 伺服器，提供一個使用者友善的介面來檢查執行追蹤、查看詳細的呼叫資訊，並了解您的 Agent 的行為。這是用於偵錯和效能調整的強大工具。
 
 1.  **安裝 AIGNE CLI：**
 
-    ```bash 安裝 AIGNE CLI icon=lucide:terminal
+    ```sh icon=lucide:terminal
     npm install -g @aigne/cli
     ```
 
-2.  **啟動觀測伺服器：**
+2.  **啟動觀察伺服器：**
 
-    ```bash 啟動觀測伺服器 icon=lucide:terminal
+    ```sh icon=lucide:terminal
     aigne observe
     ```
 
-    ![AIGNE 可觀測性伺服器在終端機中啟動](../../../examples/images/aigne-observe-execute.png)
+    ![一個顯示 aigne observe 指令啟動伺服器的終端機。](../../../examples/images/aigne-observe-execute.png)
 
-3.  **檢視追蹤：**
+3.  **查看追蹤：**
+    執行 Agent 後，在瀏覽器中開啟 `http://localhost:7893`，即可查看最近執行的列表並檢查每次執行的詳細資訊。
 
-    執行範例後，在瀏覽器中開啟 `http://localhost:7893` 以檢查追蹤、檢視詳細的呼叫資訊，並了解您的 Agent 的執行期行為。
-
-    ![AIGNE Observe UI 中最近的 Agent 執行列表](../../../examples/images/aigne-observe-list.png)
+    ![顯示追蹤列表的 AIGNE 可觀察性介面。](../../../examples/images/aigne-observe-list.png)

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.14.0-beta.1...example-workflow-orchestrator-v1.14.0-beta.2) (2025-12-08)
+
+
+### Bug Fixes
+
+* remove files entry from package.json include all files ([02a0a1b](https://github.com/AIGNE-io/aigne-framework/commit/02a0a1bebb249a525bcda4d443b4d080b1d3db2d))
+
 ## [1.14.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.14.0-beta...example-workflow-orchestrator-v1.14.0-beta.1) (2025-12-08)
 
 

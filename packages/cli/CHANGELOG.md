@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.58.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.58.0-beta.1...cli-v1.58.0-beta.2) (2025-12-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.23.0-beta.2
+    * @aigne/aigne-hub bumped to 0.10.15-beta.2
+
 ## [1.58.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.58.0-beta...cli-v1.58.0-beta.1) (2025-12-08)
 
 

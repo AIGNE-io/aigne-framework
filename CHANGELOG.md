@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.90.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.2...aigne-framework-v1.90.0-beta.3) (2025-12-08)
+
+
+### Bug Fixes
+
+* **orchestrator:** add default task title for worker agent ([#809](https://github.com/AIGNE-io/aigne-framework/issues/809)) ([3524c3c](https://github.com/AIGNE-io/aigne-framework/commit/3524c3c03c6a6822656c8b1684660677af49d508))
+
 ## [1.90.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.1...aigne-framework-v1.90.0-beta.2) (2025-12-08)
 
 

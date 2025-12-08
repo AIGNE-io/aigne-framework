@@ -7,6 +7,13 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.23.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.23.0-beta.1...agent-library-v1.23.0-beta.2) (2025-12-08)
+
+
+### Bug Fixes
+
+* **orchestrator:** add default task title for worker agent ([#809](https://github.com/AIGNE-io/aigne-framework/issues/809)) ([3524c3c](https://github.com/AIGNE-io/aigne-framework/commit/3524c3c03c6a6822656c8b1684660677af49d508))
+
 ## [1.23.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.23.0-beta...agent-library-v1.23.0-beta.1) (2025-12-08)
 
 

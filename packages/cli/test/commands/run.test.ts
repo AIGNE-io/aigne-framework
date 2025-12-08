@@ -34,7 +34,7 @@ test("run command should call run chat loop correctly", async () => {
     undefined as any,
   );
 
-  const command = yargs().command(createRunCommand());
+  const command = yargs().version(false).command(createRunCommand());
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
 
@@ -81,7 +81,7 @@ test("run command should download package and run correctly", async () => {
     Promise.resolve(new Response(await mockAIGNEPackage())),
   );
 
-  const command = yargs().command(createRunCommand());
+  const command = yargs().version(false).command(createRunCommand());
 
   const url = new URL(`https://www.aigne.io/${randomUUID()}/test-agents.tgz`);
 
@@ -113,7 +113,7 @@ test("run command should convert package from v1 and run correctly", async () =>
     undefined as any,
   );
 
-  const command = yargs().command(createRunCommand());
+  const command = yargs().version(false).command(createRunCommand());
 
   const url = new URL(`https://www.aigne.io/${randomUUID()}/test-agents.tgz`);
 
@@ -141,7 +141,7 @@ test("run command should parse model options correctly", async () => {
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
 
-  const command = yargs().scriptName("aigne").command(createRunCommand());
+  const command = yargs().version(false).scriptName("aigne").command(createRunCommand());
 
   process.argv = ["run", testAgentsPath, "--model", "xai:test-model"];
   await command.parseAsync(process.argv);
@@ -162,7 +162,7 @@ test("run command should register commands correctly", async () => {
   );
   const log = spyOn(console, "log").mockImplementation(() => {});
 
-  const command = yargs().command(createRunCommand());
+  const command = yargs().version(false).command(createRunCommand());
 
   const testAgentsPath = join(import.meta.dirname, "../../test-agents");
 

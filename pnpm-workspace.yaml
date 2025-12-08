@@ -12,6 +12,7 @@ packages:
 onlyBuiltDependencies:
   - '@biomejs/biome'
   - '@vscode/ripgrep'
+  - '@zowe/secrets-for-zowe-sdk'
   - core-js
   - core-js-pure
   - esbuild

@@ -45,7 +45,6 @@
     }
   },
   "scripts": {
-    "debug": "bun run src/cli.ts",
     "lint": "tsc --noEmit",
     "build": "tsc --build tsconfig.build.json",
     "clean": "rimraf dist test/coverage templates/coverage",

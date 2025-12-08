@@ -28,8 +28,8 @@ export function createAIGNECommand(options?: { argv?: string[]; aigneFilePath?: 
       .command(createHubCommand())
       .command(createDeployCommands())
       .demandCommand()
+      .version(false)
       .alias("help", "h")
-      .alias("version", "v")
       .wrap(null)
       .strict()
   );

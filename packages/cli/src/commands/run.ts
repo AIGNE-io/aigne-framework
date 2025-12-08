@@ -8,7 +8,7 @@ import { Listr, PRESET_TIMER } from "@aigne/listr2";
 import { config } from "dotenv-flow";
 import type { CommandModule } from "yargs";
 import yargs from "yargs";
-import { CHAT_MODEL_OPTIONS } from "../constants.js";
+import { AIGNE_CLI_VERSION, CHAT_MODEL_OPTIONS } from "../constants.js";
 import { isV1Package, toAIGNEPackage } from "../utils/agent-v1.js";
 import { downloadAndExtract } from "../utils/download.js";
 import { loadAIGNE } from "../utils/load-aigne.js";
@@ -20,7 +20,7 @@ export function createRunCommand({
   aigneFilePath,
 }: {
   aigneFilePath?: string;
-} = {}): CommandModule<unknown, { path?: string; entryAgent?: string }> {
+} = {}): CommandModule<unknown, { version?: boolean; path?: string; entryAgent?: string }> {
   return {
     command: ["$0", "run [path] [entry-agent]"],
     describe: "Run AIGNE for the specified path",
@@ -35,11 +35,21 @@ export function createRunCommand({
           type: "string",
           describe: "Name of the agent to run (defaults to the entry agent if not specified)",
         })
+        .option("version", {
+          type: "boolean",
+          alias: "v",
+          describe: "Show version number",
+        })
         .help(false)
         .version(false)
         .strict(false);
     },
     handler: async (options) => {
+      if (options.version) {
+        console.log(AIGNE_CLI_VERSION);
+        process.exit(0);
+      }
+
       if (!options.entryAgent && options.path) {
         if (!(await exists(options.path)) && !isUrl(options.path)) {
           options.entryAgent = options.path;

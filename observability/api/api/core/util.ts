@@ -294,8 +294,6 @@ export const updateTrace = async (db: LibSQLDatabase, id: string, data: Attribut
     params.sessionId = data.userContext?.sessionId;
   }
 
-  console.log("==========", "updateTrace", id, JSON.stringify(params, null, 2));
-
   await db.update(Trace).set(params).where(eq(Trace.id, id)).execute();
 
   if (data.status) {

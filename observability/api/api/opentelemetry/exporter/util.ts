@@ -41,8 +41,6 @@ export const validateTraceSpans = (spans: ReadableSpan[]) => {
         endTime: Math.floor(hrTimeToMilliseconds(span.endTime)),
         status: span.status,
         attributes: parsedAttributes,
-        userId: parsedAttributes?.userContext?.userId,
-        sessionId: parsedAttributes?.userContext?.sessionId,
       };
 
       return trace;

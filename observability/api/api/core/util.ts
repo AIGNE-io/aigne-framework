@@ -282,14 +282,19 @@ export const updateTrace = async (db: LibSQLDatabase, id: string, data: Attribut
     attributes: updatedAttributes,
     token: token || 0,
     cost: cost || 0,
-    ...(hasUserContext && { userId: data.userContext?.userId }),
-    ...(hasUserContext && { sessionId: data.userContext?.sessionId }),
   };
 
   if (data.status) {
     params.status = data.status;
     params.endTime = Date.now();
   }
+
+  if (hasUserContext) {
+    params.userId = data.userContext?.userId;
+    params.sessionId = data.userContext?.sessionId;
+  }
+
+  console.log("==========", "updateTrace", id, JSON.stringify(params, null, 2));
 
   await db.update(Trace).set(params).where(eq(Trace.id, id)).execute();
 

@@ -262,6 +262,8 @@ export const updateTrace = async (db: LibSQLDatabase, id: string, data: Attribut
     ...(hasOutput && { output: data.output }),
     ...(hasUserContext && { userContext: data.userContext }),
     ...(hasMemories && { memories: data.memories }),
+    ...(hasUserContext && { userId: data.userContext?.userId }),
+    ...(hasUserContext && { sessionId: data.userContext?.sessionId }),
   };
 
   // calculate token and cost

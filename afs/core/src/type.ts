@@ -13,6 +13,7 @@ export interface AFSListOptions {
 
 export interface AFSSearchOptions {
   limit?: number;
+  caseSensitive?: boolean;
 }
 
 export interface AFSWriteEntryPayload extends Omit<AFSEntry, "id" | "path"> {}

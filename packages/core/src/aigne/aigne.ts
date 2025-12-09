@@ -483,9 +483,9 @@ export class AIGNE<U extends UserContext = UserContext> {
     };
 
     const shutdownAndExit = () => this.shutdown().finally(() => originalExit(0));
-
     process.on("SIGINT", shutdownAndExit);
     process.on("SIGTERM", shutdownAndExit);
+    process.on("exit", this.shutdown);
   }
 }
 

@@ -215,8 +215,6 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
       startTime = excluded.startTime,
       endTime = excluded.endTime,
       status = excluded.status,
-      userId = excluded.userId,
-      sessionId = excluded.sessionId,
       componentId = excluded.componentId,
       action = excluded.action,
       isImport = excluded.isImport;

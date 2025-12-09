@@ -60,6 +60,8 @@
     "@aigne/openai": "workspace:^",
     "@aigne/sqlite": "workspace:^",
     "@aigne/uuid": "^13.0.1",
+    "@anthropic-ai/sandbox-runtime": "^0.0.19",
+    "@vscode/ripgrep": "^1.15.14",
     "drizzle-orm": "^0.44.5",
     "fastq": "^1.19.1",
     "jsonata": "^2.1.0",

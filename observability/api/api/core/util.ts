@@ -160,15 +160,14 @@ export const updateStatusByIds = async (
   ids: string[],
   status: { code: number; message?: string },
 ) => {
-  const uniqueIds = [...new Set(ids)];
-  if (!uniqueIds.length) return;
+  if (!ids.length) return;
 
   await db
     .update(Trace)
     .set({ status, endTime: Date.now() })
     .where(
       and(
-        inArray(Trace.id, uniqueIds),
+        inArray(Trace.id, ids),
         sql`json_extract(${Trace.status}, '$.code') = ${SpanStatusCode.UNSET}`,
       ),
     )

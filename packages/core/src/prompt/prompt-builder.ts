@@ -26,9 +26,11 @@ import {
   isNonNullable,
   isRecord,
   partition,
+  pick,
   unique,
 } from "../utils/type-utils.js";
 import {
+  AFS_DESCRIPTION_PROMPT_TEMPLATE,
   AFS_EXECUTABLE_TOOLS_PROMPT_TEMPLATE,
   getAFSSystemPrompt,
 } from "./prompts/afs-builtin-prompt.js";
@@ -167,8 +169,21 @@ export class PromptBuilder {
       ...options.context?.userContext,
       ...options.input,
       $afs: {
+        description: AFS_DESCRIPTION_PROMPT_TEMPLATE,
+        get modules() {
+          return options.agent?.afs
+            ?.listModules()
+            .then((list) => list.map((i) => pick(i, ["name", "path", "description"])));
+        },
         get histories() {
           return self.getHistories(options);
+        },
+        get skills() {
+          const afs = options.agent?.afs;
+          if (!afs) return [];
+          return getAFSSkills(afs).then((skills) =>
+            skills.map((s) => pick(s, ["name", "description"])),
+          );
         },
       },
     };
@@ -322,7 +337,7 @@ export class PromptBuilder {
 
   async getHistories(
     options: PromptBuildOptions,
-  ): Promise<{ role: "user" | "agent"; content: ChatModelInputMessageContent }[]> {
+  ): Promise<{ role: "user" | "agent"; content: unknown }[]> {
     const { agent } = options;
     const afs = agent?.afs;
     if (!afs) return [];
@@ -334,8 +349,6 @@ export class PromptBuilder {
       limit: agent.historyConfig?.maxItems || 10,
       orderBy: [["createdAt", "desc"]],
     });
-
-    console.log(history);
 
     return history
       .reverse()

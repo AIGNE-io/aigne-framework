@@ -492,7 +492,8 @@ test("PromptBuilder should build with afs correctly", async () => {
     <afs_usage>
     AFS (Agentic File System) provides tools to interact with a virtual file system,
     allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
-    Use these tools to manage and retrieve files as needed.
+    You can use these tools to manage and retrieve files as needed.
+
 
     Provided modules:
     - path: /modules/history
@@ -590,7 +591,8 @@ test("PromptBuilder should build with afs correctly", async () => {
     <afs_usage>
     AFS (Agentic File System) provides tools to interact with a virtual file system,
     allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
-    Use these tools to manage and retrieve files as needed.
+    You can use these tools to manage and retrieve files as needed.
+
 
     Provided modules:
     - path: /modules/history

@@ -159,11 +159,18 @@ export class PromptBuilder {
     };
   }
 
-  private getTemplateVariables(options: Pick<PromptBuildOptions, "input" | "context">) {
+  private getTemplateVariables(options: PromptBuildOptions) {
+    const self = this;
+
     return {
       userContext: options.context?.userContext,
       ...options.context?.userContext,
       ...options.input,
+      $afs: {
+        get histories() {
+          return self.getHistories(options);
+        },
+      },
     };
   }
 
@@ -209,7 +216,7 @@ export class PromptBuilder {
 
     const afs = options.agent?.afs;
 
-    if (afs) {
+    if (afs && options.agent?.historyConfig?.disabled !== true) {
       const historyModule = (await afs.listModules()).find((m) => m.module instanceof AFSHistory);
 
       messages.push(await SystemMessageTemplate.from(await getAFSSystemPrompt(afs)).format({}));
@@ -311,6 +318,40 @@ export class PromptBuilder {
     messages.push(...otherCustomMessages);
 
     return this.refineMessages(options, messages);
+  }
+
+  async getHistories(
+    options: PromptBuildOptions,
+  ): Promise<{ role: "user" | "agent"; content: ChatModelInputMessageContent }[]> {
+    const { agent } = options;
+    const afs = agent?.afs;
+    if (!afs) return [];
+
+    const historyModule = (await afs.listModules()).find((m) => m.module instanceof AFSHistory);
+    if (!historyModule) return [];
+
+    const { list: history } = await afs.list(historyModule.path, {
+      limit: agent.historyConfig?.maxItems || 10,
+      orderBy: [["createdAt", "desc"]],
+    });
+
+    console.log(history);
+
+    return history
+      .reverse()
+      .map((i) => {
+        if (!i.content) return;
+
+        const { input, output } = i.content;
+        if (!input || !output) return;
+
+        return [
+          { role: "user" as const, content: input },
+          { role: "agent" as const, content: output },
+        ];
+      })
+      .filter(isNonNullable)
+      .flat();
   }
 
   private refineMessages(

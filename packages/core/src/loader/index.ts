@@ -142,7 +142,7 @@ export async function loadNestAgent(
   path: string,
   agent: NestAgentSchema,
   options?: LoadOptions,
-  agentOptions?: AgentOptions & Record<string, unknown>,
+  agentOptions?: AgentOptions<any, any> & Record<string, unknown>,
 ): Promise<Agent> {
   return typeof agent === "object" && "type" in agent
     ? parseAgent(path, agent, options, agentOptions)

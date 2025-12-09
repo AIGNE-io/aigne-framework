@@ -80,6 +80,36 @@ export interface LoadOrchestratorAgentOptions<
   stateManagement?: StateManagementOptions;
 }
 
+const defaultPlannerOptions: AIAgentOptions<PlannerInput, PlannerOutput> = {
+  name: "Planner",
+  instructions: TODO_PLANNER_PROMPT_TEMPLATE,
+  inputSchema: plannerInputSchema,
+  outputSchema: plannerOutputSchema,
+  historyConfig: {
+    disabled: true,
+  },
+};
+
+const defaultWorkerOptions: AIAgentOptions<WorkerInput, WorkerOutput> = {
+  name: "Worker",
+  taskTitle: "Execute Task: {{task}}",
+  instructions: TODO_WORKER_PROMPT_TEMPLATE,
+  inputSchema: workerInputSchema,
+  outputSchema: workerOutputSchema,
+  historyConfig: {
+    disabled: true,
+  },
+};
+
+const defaultCompleterOptions: AIAgentOptions<CompleterInput, any> = {
+  name: "Completer",
+  instructions: ORCHESTRATOR_COMPLETE_PROMPT,
+  inputSchema: completerInputSchema,
+  historyConfig: {
+    disabled: true,
+  },
+};
+
 /**
  * Orchestrator Agent Class
  *
@@ -118,29 +148,21 @@ export class OrchestratorAgent<
       objective: instructionsToPromptBuilder(valid.objective),
       planner: valid.planner
         ? ((await loadNestAgent(filepath, valid.planner, options, {
-            name: "Planner",
-            instructions: TODO_PLANNER_PROMPT_TEMPLATE,
-            inputSchema: plannerInputSchema,
-            outputSchema: plannerOutputSchema,
+            ...defaultPlannerOptions,
             afs: parsed.afs,
             skills: parsed.skills,
           })) as OrchestratorAgent["planner"])
         : undefined,
       worker: valid.worker
         ? ((await loadNestAgent(filepath, valid.worker, options, {
-            name: "Worker",
-            taskTitle: "Execute Task: {{task}}",
-            instructions: TODO_WORKER_PROMPT_TEMPLATE,
-            inputSchema: workerInputSchema,
-            outputSchema: workerOutputSchema,
+            ...defaultWorkerOptions,
             afs: parsed.afs,
             skills: parsed.skills,
           })) as OrchestratorAgent["worker"])
         : undefined,
       completer: valid.completer
         ? ((await loadNestAgent(filepath, valid.completer, options, {
-            instructions: ORCHESTRATOR_COMPLETE_PROMPT,
-            inputSchema: completerInputSchema,
+            ...defaultCompleterOptions,
             outputSchema: parsed.outputSchema,
             afs: parsed.afs,
             skills: parsed.skills,
@@ -174,29 +196,20 @@ export class OrchestratorAgent<
       ? options.planner
       : new AIAgent({
           ...(options as object),
-          name: "Planner",
-          instructions: TODO_PLANNER_PROMPT_TEMPLATE,
-          inputSchema: plannerInputSchema,
-          outputSchema: plannerOutputSchema,
+          ...defaultPlannerOptions,
         });
     this.worker = isAgent<Agent<WorkerInput, WorkerOutput>>(options.worker)
       ? options.worker
       : new AIAgent({
           ...(options as object),
-          taskTitle: "Execute Task: {{task}}",
-          name: "Worker",
-          instructions: TODO_WORKER_PROMPT_TEMPLATE,
-          inputSchema: workerInputSchema,
-          outputSchema: workerOutputSchema,
+          ...defaultWorkerOptions,
         });
     this.completer = isAgent<Agent<CompleterInput, O>>(options.completer)
       ? options.completer
       : new AIAgent({
           ...(omit(options, "inputSchema") as object),
-          name: "Completer",
-          instructions: ORCHESTRATOR_COMPLETE_PROMPT,
+          ...defaultCompleterOptions,
           outputKey: options.outputKey,
-          inputSchema: completerInputSchema,
           outputSchema: options.outputSchema,
         });
 
@@ -290,6 +303,13 @@ export class OrchestratorAgent<
       // Check if maximum iterations reached
       if (maxIterations && iterationCount >= maxIterations) {
         console.warn(`Maximum iterations (${maxIterations}) reached. Stopping execution.`);
+        executionState.tasks.push({
+          status: "failed",
+          error: { message: `ERROR: Maximum iterations (${maxIterations}) reached` },
+          task: `ERROR: Objective not completed within iteration limit of ${maxIterations}`,
+          createdAt: Date.now(),
+          completedAt: Date.now(),
+        });
         break;
       }
 

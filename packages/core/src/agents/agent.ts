@@ -186,6 +186,8 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    */
   disableEvents?: boolean;
 
+  historyConfig?: Agent["historyConfig"];
+
   /**
    * One or more memory agents this agent can use
    */
@@ -345,6 +347,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     this.publishTopic = options.publishTopic as PublishTopic<Message>;
     if (options.skills?.length) this.skills.push(...options.skills.map(functionToAgent));
     this.disableEvents = options.disableEvents;
+    this.historyConfig = options.historyConfig;
 
     if (Array.isArray(options.memory)) {
       this.memories.push(...options.memory);
@@ -553,6 +556,12 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
    * agentSucceed, or agentFailed
    */
   private disableEvents?: boolean;
+
+  historyConfig?: {
+    disabled?: boolean;
+    maxTokens?: number;
+    maxItems?: number;
+  };
 
   private subscriptions: Unsubscribe[] = [];
 
@@ -955,7 +964,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     const o = await this.callHooks(["onSuccess", "onEnd"], { input, output: finalOutput }, options);
     if (o?.output) finalOutput = o.output as O;
 
-    this.afs?.emit("agentSucceed", { input, output: finalOutput });
+    if (this.historyConfig?.disabled !== true)
+      this.afs?.emit("agentSucceed", { input, output: finalOutput });
 
     if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 

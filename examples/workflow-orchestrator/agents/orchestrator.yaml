@@ -31,12 +31,13 @@ planner:
 #     url: path/to/completer_instructions.md
 
 state_management:
-  max_iterations: 5
+  max_iterations: 30
   max_tokens: 100000 # Optional: limit the total tokens used for state management
   keep_recent: 20 # Optional: keep only the most recent N states in memory
 
 afs:
   modules:
+    - module: history
     - module: local-fs
       options:
         name: workspace

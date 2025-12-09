@@ -88,13 +88,22 @@ export const plannerOutputSchema = z.object({
     .string()
     .optional()
     .describe(
-      "The next task to be executed by the worker. Should contain a clear, actionable description of what needs to be done.",
+      `\
+The next task to be executed by the worker.
+Provide a clear, actionable task description that specifies what needs to be done.
+Include relevant context from previous task results if needed for execution.
+Omit this field when all necessary work has been completed.
+`,
     ),
   finished: z
     .boolean()
     .optional()
     .describe(
-      "Indicates if all tasks are completed and the objective has been achieved. Set to true when no more work is needed.",
+      `\
+Indicates whether the objective has been fully achieved.
+Set to true when: all required tasks are completed and the objective is satisfied.
+When finished is true, nextTask should be omitted.
+`,
     ),
 });
 

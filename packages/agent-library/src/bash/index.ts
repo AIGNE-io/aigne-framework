@@ -12,6 +12,8 @@ import z from "zod";
 import { Mutex } from "../utils/mutex.js";
 
 export interface BashAgentOptions extends AgentOptions<BashAgentInput, BashAgentOutput> {
+  // Optional sandbox configuration for executing scripts in a controlled environment
+  // See https://github.com/anthropic-experimental/sandbox-runtime?tab=readme-ov-file#complete-configuration-example for details
   sandbox?:
     | Partial<{ [K in keyof SandboxRuntimeConfig]: Partial<SandboxRuntimeConfig[K]> }>
     | boolean;

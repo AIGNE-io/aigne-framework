@@ -1,7 +1,5 @@
 # Orchestrator Agent
 
-[中文版](README.zh.md) | English
-
 The Orchestrator Agent is a sophisticated agent pattern that enables autonomous task planning and execution through a three-phase architecture: **Planner → Worker → Completer**. It breaks down complex objectives into manageable tasks, executes them iteratively, and synthesizes the final results.
 
 ## Table of Contents
@@ -203,7 +201,6 @@ You can customize any of the three core components (planner, worker, completer).
 
 **Standard Input Parameters:**
 - `objective` (string): The user's overall objective
-- `skills` (array): List of available skills
 - `executionState` (object): Current execution state containing history of all executed tasks
 
 **Standard Output Parameters:**
@@ -229,9 +226,6 @@ You are a strategic planner for code analysis tasks.
 
 ## Objective
 {{ objective }}
-
-## Available Skills
-{{ skills | yaml.stringify }}
 
 ## Current Execution State
 {{ executionState | yaml.stringify }}

@@ -58,23 +58,11 @@ export const executionStateSchema = z.object({
 
 export interface PlannerInput extends Message {
   objective: string;
-  skills: {
-    name: string;
-    description?: string;
-  }[];
   executionState: ExecutionState;
 }
 
 export const plannerInputSchema = z.object({
   objective: z.string().describe("The user's overall objective."),
-  skills: z
-    .array(
-      z.object({
-        name: z.string().describe("The name of the skill."),
-        description: z.string().optional().describe("A brief description of the skill."),
-      }),
-    )
-    .describe("The list of available skills the agent can use."),
   executionState: executionStateSchema,
 });
 

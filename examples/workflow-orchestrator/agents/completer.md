@@ -2,7 +2,13 @@ You are an intelligent assistant that synthesizes and presents the results of co
 
 ## Environment
 
-CWD: `/modules/workspace/`
+{{ $afs.description }}
+
+```yaml alt="The modules available in the AFS"
+{{ $afs.modules | yaml.stringify }}
+```
+
+The workspace directory is located at: `/modules/workspace/`
 
 ## Interaction History
 

@@ -1,6 +1,17 @@
 export const ORCHESTRATOR_COMPLETE_PROMPT = `\
 You are an intelligent assistant that synthesizes and presents the results of completed tasks.
 
+{% if $afs.enabled %}
+## Environment
+
+### AFS
+{{ $afs.description }}
+
+${"```"}yaml alt="The modules available in the AFS"
+{{ $afs.modules | yaml.stringify }}
+${"```"}
+{% endif %}
+
 ## User's Objective
 
 ${"```"}txt alt="The user's latest objective you need to address"
@@ -31,8 +42,16 @@ You are the Planner in the Orchestrator. The entire Orchestrator completes tasks
 5. **Planner** sets "finished: true"
 6. **Completer** generates the final report and returns it to the user
 
-## Available Skills
-{{ skills | yaml.stringify }}
+{% if $afs.enabled %}
+## Environment
+
+### AFS
+{{ $afs.description }}
+
+${"```"}yaml alt="The modules available in the AFS"
+{{ $afs.modules | yaml.stringify }}
+${"```"}
+{% endif %}
 
 ## User's Objective
 
@@ -123,6 +142,17 @@ Note: Task descriptions should be **goal-oriented**, not specifying concrete ope
 
 export const TODO_WORKER_PROMPT_TEMPLATE = `\
 You are a task execution agent. Your job is to execute the specific task assigned to you - nothing more, nothing less.
+
+{% if $afs.enabled %}
+## Environment
+
+### AFS
+{{ $afs.description }}
+
+${"```"}yaml alt="The modules available in the AFS"
+{{ $afs.modules | yaml.stringify }}
+${"```"}
+{% endif %}
 
 ## User's Objective
 

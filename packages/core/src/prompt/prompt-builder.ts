@@ -169,6 +169,9 @@ export class PromptBuilder {
       ...options.context?.userContext,
       ...options.input,
       $afs: {
+        get enabled() {
+          return !!options.agent?.afs;
+        },
         description: AFS_DESCRIPTION_PROMPT_TEMPLATE,
         get modules() {
           return options.agent?.afs
@@ -184,6 +187,11 @@ export class PromptBuilder {
           return getAFSSkills(afs).then((skills) =>
             skills.map((s) => pick(s, ["name", "description"])),
           );
+        },
+      },
+      $agent: {
+        get skills() {
+          return options.agent?.skills.map((s) => pick(s, ["name", "description"]));
         },
       },
     };

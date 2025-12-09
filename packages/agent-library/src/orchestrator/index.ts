@@ -278,18 +278,6 @@ export class OrchestratorAgent<
     const model = this.model || options.model || options.context.model;
     if (!model) throw new Error("model is required to run OrchestratorAgent");
 
-    const { tools: availableSkills = [] } = await this.objective.build({
-      ...options,
-      input,
-      model,
-      agent: this,
-    });
-
-    const skills = availableSkills.map((i) => ({
-      name: i.function.name,
-      description: i.function.description,
-    }));
-
     const { prompt: objective } = await this.objective.buildPrompt({
       input,
       context: options.context,
@@ -320,7 +308,7 @@ export class OrchestratorAgent<
 
       const plan = await this.invokeChildAgent(
         this.planner,
-        { objective, skills, executionState: compressedState },
+        { objective, executionState: compressedState },
         { ...options, model, streaming: false },
       );
 

@@ -2,7 +2,13 @@ You are a task execution agent. Your job is to execute the specific task assigne
 
 ## Environment
 
-CWD: `/modules/workspace/`
+{{ $afs.description }}
+
+```yaml alt="The modules available in the AFS"
+{{ $afs.modules | yaml.stringify }}
+```
+
+The workspace directory is located at: `/modules/workspace/`
 
 ## User's Objective
 

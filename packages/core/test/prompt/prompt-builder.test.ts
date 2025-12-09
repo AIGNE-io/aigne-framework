@@ -889,3 +889,134 @@ test("PromptBuilder should refine system messages by config", async () => {
     ]
   `);
 });
+
+test("PromptBuilder should support all builtin variables", async () => {
+  const builder = new PromptBuilder({
+    instructions: `\
+{% if $afs.enabled %}
+## AFS
+
+{{ $afs.description }}
+
+${"```"}yaml alt="$afs.histories"
+{{ $afs.histories | yaml.stringify }}
+${"```"}
+
+${"```"}yaml alt="$afs.modules"
+{{ $afs.modules | yaml.stringify }}
+${"```"}
+
+${"```"}yaml alt="$afs.skills"
+{{ $afs.skills | yaml.stringify }}
+${"```"}
+{% endif %}
+
+## Agent Skills
+${"```"}yaml alt="$agent.skills"
+{{ $agent.skills | yaml.stringify }}
+${"```"}
+`,
+  });
+
+  const afs = new AFS().mount(new AFSHistory());
+
+  const agent = AIAgent.from({
+    afs,
+    historyConfig: {
+      disabled: true,
+    },
+    skills: [
+      FunctionAgent.from({
+        name: "TestSkill1",
+        description: "Test skill 1 description",
+        process: () => ({}),
+      }),
+      FunctionAgent.from({
+        name: "TestSkill2",
+        description: "Test skill 2 description",
+        process: () => ({}),
+      }),
+    ],
+  });
+
+  spyOn(afs, "list").mockResolvedValue({
+    list: [
+      {
+        id: "1",
+        path: "/modules/history/1",
+        content: {
+          input: { message: "hello" },
+          output: { message: "Hello, How can I assist you today?" },
+        },
+      },
+    ],
+  });
+
+  expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": 
+    "
+    ## AFS
+
+    AFS (Agentic File System) provides tools to interact with a virtual file system,
+    allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
+    You can use these tools to manage and retrieve files as needed.
+
+
+    \`\`\`yaml alt="$afs.histories"
+    - role: user
+      content:
+        message: hello
+    - role: agent
+      content:
+        message: Hello, How can I assist you today?
+
+    \`\`\`
+
+    \`\`\`yaml alt="$afs.modules"
+    - path: /modules/history
+      name: history
+
+    \`\`\`
+
+    \`\`\`yaml alt="$afs.skills"
+    - name: afs_list
+      description: Get a tree view of directory contents in the AFS - shows
+        hierarchical structure of files and folders
+    - name: afs_search
+      description: Find files by searching content using keywords - returns matching
+        files with their paths
+    - name: afs_read
+      description: >
+        Read file contents from the AFS - path must be an exact file path from list
+        or search results
+
+
+        Usage:
+
+        - Use withLineNumbers=true to get line numbers for code reviews or edits
+    - name: afs_write
+      description: Create or update a file in the AFS with new content - overwrites
+        existing files
+    - name: afs_exec
+      description: Execute a function or command available in the AFS modules
+
+    \`\`\`
+
+
+    ## Agent Skills
+    \`\`\`yaml alt="$agent.skills"
+    - name: TestSkill1
+      description: Test skill 1 description
+    - name: TestSkill2
+      description: Test skill 2 description
+
+    \`\`\`
+    "
+    ,
+        "role": "system",
+      },
+    ]
+  `);
+});

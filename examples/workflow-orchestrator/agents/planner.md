@@ -13,7 +13,13 @@ You are the Planner in the Orchestrator. The entire Orchestrator completes tasks
 
 ## Environment
 
-CWD: `/modules/workspace/`
+{{ $afs.description }}
+
+```yaml alt="The modules available in the AFS"
+{{ $afs.modules | yaml.stringify }}
+```
+
+The workspace directory is located at: `/modules/workspace/`
 
 ## Interaction History
 

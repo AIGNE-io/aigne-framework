@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.90.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.3...aigne-framework-v1.90.0-beta.4) (2025-12-09)
+
+
+### Bug Fixes
+
+* **orchestrator:** enhance prompts with detailed guidance ([#811](https://github.com/AIGNE-io/aigne-framework/issues/811)) ([5656f38](https://github.com/AIGNE-io/aigne-framework/commit/5656f38c09e458e18b90e962a5e85c96755be2e4))
+
 ## [1.90.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.2...aigne-framework-v1.90.0-beta.3) (2025-12-08)
 
 

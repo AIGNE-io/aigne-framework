@@ -7,6 +7,21 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.23.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.23.0-beta.2...agent-library-v1.23.0-beta.3) (2025-12-09)
+
+
+### Bug Fixes
+
+* **orchestrator:** enhance prompts with detailed guidance ([#811](https://github.com/AIGNE-io/aigne-framework/issues/811)) ([5656f38](https://github.com/AIGNE-io/aigne-framework/commit/5656f38c09e458e18b90e962a5e85c96755be2e4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.71.0-beta.2
+    * @aigne/openai bumped to 0.16.15-beta.2
+
 ## [1.23.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.23.0-beta.1...agent-library-v1.23.0-beta.2) (2025-12-08)
 
 

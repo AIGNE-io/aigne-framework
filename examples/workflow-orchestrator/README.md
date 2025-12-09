@@ -105,10 +105,63 @@ npx -y @aigne/example-workflow-orchestrator
 npx -y @aigne/example-workflow-orchestrator --chat
 
 # Run with custom message
-npx -y @aigne/example-workflow-orchestrator -- -m "Analyze the project dependencies and security issues"
+npx -y @aigne/example-workflow-orchestrator --message "Analyze the project dependencies and security issues"
 ```
 
 **What happens**: The orchestrator mounts your current directory as `/modules/workspace/` and can read, analyze, and work with all files in that location.
+
+### Test Cases
+
+#### 1. Basic Analysis (2-3 steps)
+Run the orchestrator in a simple project directory to generate a summary report.
+
+```bash
+cd /path/to/simple-project
+npx -y @aigne/example-workflow-orchestrator --message "Generate a project summary report"
+```
+
+**What this tests**: Basic file exploration and information extraction
+
+---
+
+#### 2. Security Audit (5-8 steps)
+Run the orchestrator in a codebase to identify potential security issues.
+
+```bash
+cd /path/to/codebase
+npx -y @aigne/example-workflow-orchestrator --message "Perform a security audit: check for outdated dependencies, exposed secrets, insecure configurations, missing security headers, and vulnerable code patterns. Provide a risk-rated report"
+```
+
+**What this tests**: Multi-dimensional analysis and risk assessment
+
+---
+
+#### 3. Code Review (4-6 steps)
+Run the orchestrator to review code quality and suggest improvements.
+
+```bash
+cd /path/to/codebase
+npx -y @aigne/example-workflow-orchestrator --message "Review the code quality: identify code smells, adherence to best practices, and suggest improvements. Provide a summary report"
+```
+
+**What this tests**: Code quality analysis and pattern recognition
+
+---
+
+#### 4. Documentation Suite Generation ⭐ (12-15 steps)
+**Advanced test case**: Analyze repository and create comprehensive, well-organized documentation.
+
+```bash
+cd /path/to/any/project
+npx -y @aigne/example-workflow-orchestrator --message "Analyze this repository and create a comprehensive documentation suite in the docs/ directory. Include: 1) Architecture overview, 2) Getting started guide, 3) API reference, 4) Contributing guidelines, 5) Component/module documentation. Organize the docs logically with a clear navigation structure."
+```
+
+**What this tests**:
+- Multi-file creation workflow
+- Comprehensive analysis and synthesis
+- Structured output generation
+- File system write operations
+- Logical organization and planning
 
 ### Connect to an AI Model
 
@@ -209,10 +262,10 @@ You can pass custom messages to the orchestrator:
 
 ```bash
 # Pass message via command line
-pnpm start -- -m "Analyze the project structure"
+pnpm start --message "Analyze the project structure"
 
 # Or use YAML input
-pnpm start -- --input-yaml '{ message: "Generate a README for this project" }'
+pnpm start --input-yaml '{ message: "Generate a README for this project" }'
 ```
 
 ## Configuration

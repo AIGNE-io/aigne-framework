@@ -1,7 +1,7 @@
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
-import type { AgentOptions } from "node:http";
 import {
   Agent,
+  type AgentOptions,
   type AgentResponseChunk,
   type AgentResponseStream,
   type Message,
@@ -11,7 +11,7 @@ import { rgPath } from "@vscode/ripgrep";
 import z from "zod";
 import { Mutex } from "../utils/mutex.js";
 
-export interface BashAgentOptions extends AgentOptions {
+export interface BashAgentOptions extends AgentOptions<BashAgentInput, BashAgentOutput> {
   sandbox?:
     | Partial<{ [K in keyof SandboxRuntimeConfig]: Partial<SandboxRuntimeConfig[K]> }>
     | boolean;

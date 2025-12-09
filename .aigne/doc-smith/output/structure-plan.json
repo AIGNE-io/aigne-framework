@@ -307,6 +307,16 @@
     ]
   },
   {
+    "title": "Bash",
+    "description": "Details the Bash agent, which allows execution of bash scripts and command-line tools within an agentic workflow. This agent is ideal for tasks that require system-level operations, such as file manipulation, process management, and automation of shell commands.",
+    "path": "/agent-library/bash",
+    "parentId": "/agent-library",
+    "sourceIds": [
+      "packages/agent-library/src/bash/index.ts",
+      "packages/agent-library/test/bash/bash.test.ts"
+    ]
+  },
+  {
     "title": "Models",
     "description": "Provides an overview and specific guides for integrating various third-party AI model providers, such as OpenAI, Anthropic, and Google, into the AIGNE Framework.",
     "path": "/models",

@@ -28,6 +28,7 @@
     * [Decision-Making](/user-guide-common-workflows-decision-making.md)
 * [Agent Library](/agent-library.md)
   * [Orchestrator](/agent-library-orchestrator.md)
+  * [Bash](/agent-library-bash.md)
 * [Models](/models.md)
   * [Overview](/models-overview.md)
   * [OpenAI](/models-openai.md)

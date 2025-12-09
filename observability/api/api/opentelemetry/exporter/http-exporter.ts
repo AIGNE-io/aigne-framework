@@ -108,6 +108,10 @@ class HttpExporter implements HttpExporterInterface {
 
   async shutdown(contextIds: string[] = []) {
     await new Promise<void>((resolve) => {
+      this.updateQueue.drain = resolve;
+    });
+
+    await new Promise<void>((resolve) => {
       const check = () => {
         if (this.updateQueue.idle()) {
           resolve(undefined);

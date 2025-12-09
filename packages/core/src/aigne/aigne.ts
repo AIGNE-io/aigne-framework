@@ -16,6 +16,8 @@ import {
 import type { AIGNECLIAgents, AIGNEMetadata } from "./type.js";
 import type { ContextLimits } from "./usage.js";
 
+const originalExit = process.exit;
+
 /**
  * Options for the AIGNE class.
  */
@@ -176,6 +178,11 @@ export class AIGNE<U extends UserContext = UserContext> {
    * @hidden
    */
   readonly messageQueue = new MessageQueue();
+
+  /**
+   * Collection of all context IDs created by this AIGNE instance.
+   */
+  readonly contextIds = new Set<string>();
 
   /**
    * Collection of skill agents available to this AIGNE instance.
@@ -443,7 +450,7 @@ export class AIGNE<U extends UserContext = UserContext> {
    */
   async shutdown() {
     // Close observer first to flush any pending traces
-    await this.observer?.close();
+    await this.observer?.close(Array.from(this.contextIds));
 
     for (const tool of this.skills) {
       await tool.shutdown();
@@ -466,12 +473,19 @@ export class AIGNE<U extends UserContext = UserContext> {
 
   /**
    * Initializes handlers for process exit events to ensure clean shutdown.
-   * This registers handlers for SIGINT and exit events to properly terminate all agents.
+   * This registers handlers for SIGINT/SIGTERM to properly terminate all agents.
+   * Note: 'exit' event cannot run async code, so we handle cleanup in signal handlers.
    */
   private initProcessExitHandler() {
-    const shutdownAndExit = () => this.shutdown();
+    // @ts-ignore
+    process.exit = async (code?: string | number | null | undefined) => {
+      await this.shutdown().finally(() => originalExit(code));
+    };
+
+    const shutdownAndExit = () => this.shutdown().finally(() => originalExit(0));
+
     process.on("SIGINT", shutdownAndExit);
-    process.on("exit", shutdownAndExit);
+    process.on("SIGTERM", shutdownAndExit);
   }
 }
 

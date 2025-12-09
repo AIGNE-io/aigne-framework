@@ -134,6 +134,7 @@
     "drizzle-orm": "^0.44.5",
     "express": "^5.1.0",
     "express-sse": "^1.0.0",
+    "fastq": "^1.19.1",
     "mime": "^4.1.0",
     "terminal-link": "^5.0.0",
     "ufo": "^1.6.1",

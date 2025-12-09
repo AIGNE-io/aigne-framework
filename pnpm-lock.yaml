@@ -206,7 +206,7 @@ importers:
         version: 13.0.1
       '@arcblock/did-connect-react':
         specifier: ^3.2.11
-        version: 3.2.11(f02f5a02171cf12c3910ae36cc41250f)
+        version: 3.2.11(@arcblock/ux@3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.17.4-beta-20251206-111557-41b8d449)(@blocklet/theme@3.2.11)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@arcblock/ux':
         specifier: ^3.2.11
         version: 3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1)
@@ -1513,6 +1513,9 @@ importers:
       express-sse:
         specifier: ^1.0.0
         version: 1.0.0
+      fastq:
+        specifier: ^1.19.1
+        version: 1.19.1
       mime:
         specifier: ^4.1.0
         version: 4.1.0
@@ -1606,7 +1609,7 @@ importers:
         version: 13.0.1
       '@arcblock/did-connect-react':
         specifier: ^3.2.11
-        version: 3.2.11(f02f5a02171cf12c3910ae36cc41250f)
+        version: 3.2.11(@arcblock/ux@3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.17.4-beta-20251206-111557-41b8d449)(@blocklet/theme@3.2.11)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@arcblock/ux':
         specifier: ^3.2.11
         version: 3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1)
@@ -13140,7 +13143,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@arcblock/did-connect-react@3.2.11(f02f5a02171cf12c3910ae36cc41250f)':
+  '@arcblock/did-connect-react@3.2.11(@arcblock/ux@3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.17.4-beta-20251206-111557-41b8d449)(@blocklet/theme@3.2.11)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@arcblock/bridge': 3.2.11
       '@arcblock/did': 1.27.14
@@ -14633,10 +14636,10 @@ snapshots:
       - tedious
       - utf-8-validate
 
-  '@blocklet/did-space-react@1.2.3(17fc31b88bb3a5d6f638e9d08cbe5820)':
+  '@blocklet/did-space-react@1.2.3(6d4834af71c5d2b5f9227fe9faff3667)':
     dependencies:
       '@arcblock/did': 1.27.14
-      '@arcblock/did-connect-react': 3.2.11(f02f5a02171cf12c3910ae36cc41250f)
+      '@arcblock/did-connect-react': 3.2.11(@arcblock/ux@3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.17.4-beta-20251206-111557-41b8d449)(@blocklet/theme@3.2.11)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@arcblock/ux': 3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1)
       '@blocklet/js-sdk': 1.17.4-beta-20251206-111557-41b8d449
       '@blocklet/sdk': 1.17.4-beta-20251206-111557-41b8d449
@@ -15077,13 +15080,13 @@ snapshots:
       '@abtnode/constant': 1.17.2
       '@abtnode/util': 1.17.2
       '@arcblock/bridge': 3.2.11
-      '@arcblock/did-connect-react': 3.2.11(f02f5a02171cf12c3910ae36cc41250f)
+      '@arcblock/did-connect-react': 3.2.11(@arcblock/ux@3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.17.4-beta-20251206-111557-41b8d449)(@blocklet/theme@3.2.11)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@arcblock/icons': 3.2.11(react@19.1.1)
       '@arcblock/react-hooks': 3.2.11
       '@arcblock/ux': 3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1)
       '@arcblock/ws': 1.27.12
       '@blocklet/constant': 1.17.2
-      '@blocklet/did-space-react': 1.2.3(17fc31b88bb3a5d6f638e9d08cbe5820)
+      '@blocklet/did-space-react': 1.2.3(6d4834af71c5d2b5f9227fe9faff3667)
       '@blocklet/js-sdk': 1.17.4-beta-20251206-111557-41b8d449
       '@emotion/react': 11.14.0(@types/react@19.1.13)(react@19.1.1)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1)

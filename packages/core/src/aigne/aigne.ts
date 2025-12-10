@@ -478,13 +478,12 @@ export class AIGNE<U extends UserContext = UserContext> {
     const originalExit = process.exit;
 
     // @ts-ignore
-    process.exit = async (code?: string | number | null | undefined) => {
-      await this.shutdown().finally(() => originalExit(code));
+    process.exit = (...args) => {
+      this.shutdown().finally(() => originalExit(...args));
     };
 
     const shutdownAndExit = () => this.shutdown().finally(() => originalExit(0));
     process.on("SIGINT", shutdownAndExit);
-    process.on("SIGTERM", shutdownAndExit);
   }
 }
 

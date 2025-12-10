@@ -16,8 +16,6 @@ import {
 import type { AIGNECLIAgents, AIGNEMetadata } from "./type.js";
 import type { ContextLimits } from "./usage.js";
 
-const originalExit = process.exit;
-
 /**
  * Options for the AIGNE class.
  */
@@ -477,6 +475,8 @@ export class AIGNE<U extends UserContext = UserContext> {
    * Note: 'exit' event cannot run async code, so we handle cleanup in signal handlers.
    */
   private initProcessExitHandler() {
+    const originalExit = process.exit;
+
     // @ts-ignore
     process.exit = async (code?: string | number | null | undefined) => {
       await this.shutdown().finally(() => originalExit(code));

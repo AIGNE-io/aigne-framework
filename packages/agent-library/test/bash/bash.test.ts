@@ -1,5 +1,24 @@
-import { expect, spyOn, test } from "bun:test";
+import { afterEach, beforeEach, expect, type Mock, spyOn, test } from "bun:test";
 import { BashAgent } from "@aigne/agent-library/bash/index.js";
+import { SandboxManager } from "@anthropic-ai/sandbox-runtime";
+
+let initialize: Mock<typeof SandboxManager.initialize>;
+let updateConfig: Mock<typeof SandboxManager.updateConfig>;
+let wrapWithSandbox: Mock<typeof SandboxManager.wrapWithSandbox>;
+
+beforeEach(() => {
+  initialize = spyOn(SandboxManager, "initialize").mockResolvedValueOnce();
+  updateConfig = spyOn(SandboxManager, "updateConfig").mockReturnValue();
+  wrapWithSandbox = spyOn(SandboxManager, "wrapWithSandbox").mockResolvedValue(
+    'sandbox-exec -p /path/to/profile bash -c "SCRIPT"',
+  );
+});
+
+afterEach(() => {
+  initialize.mockRestore();
+  updateConfig.mockRestore();
+  wrapWithSandbox.mockRestore();
+});
 
 test("BashAgent should support disable sandbox", async () => {
   const bashAgent = new BashAgent({
@@ -37,6 +56,9 @@ test("BashAgent should support disable sandbox", async () => {
         ],
       ]
     `);
+  expect(initialize).not.toHaveBeenCalled();
+  expect(updateConfig).not.toHaveBeenCalled();
+  expect(wrapWithSandbox).not.toHaveBeenCalled();
 });
 
 test("BashAgent should run bash scripts in sandbox", async () => {
@@ -83,6 +105,38 @@ exit 0`;
     ]
   `,
   );
+
+  expect(initialize).toHaveBeenCalled();
+  expect(updateConfig.mock.lastCall?.[0]).toMatchInlineSnapshot(
+    {
+      ripgrep: { command: expect.any(String) },
+    },
+    `
+    {
+      "filesystem": {
+        "allowWrite": [],
+        "denyRead": [],
+        "denyWrite": [],
+      },
+      "network": {
+        "allowedDomains": [],
+        "deniedDomains": [],
+      },
+      "ripgrep": {
+        "command": Any<String>,
+      },
+    }
+  `,
+  );
+  expect(wrapWithSandbox.mock.lastCall).toMatchInlineSnapshot(`
+    [
+      
+    "echo "Hello, World!"
+    echo "This is an error message" >&2
+    exit 0"
+    ,
+    ]
+  `);
 });
 
 test("BashAgent should resolve curl with authorized domains", async () => {
@@ -125,6 +179,35 @@ test("BashAgent should resolve curl with authorized domains", async () => {
     ]
   `,
   );
+
+  expect(updateConfig.mock.lastCall?.[0]).toMatchInlineSnapshot(
+    {
+      ripgrep: { command: expect.any(String) },
+    },
+    `
+    {
+      "filesystem": {
+        "allowWrite": [],
+        "denyRead": [],
+        "denyWrite": [],
+      },
+      "network": {
+        "allowedDomains": [
+          "bing.com",
+        ],
+        "deniedDomains": [],
+      },
+      "ripgrep": {
+        "command": Any<String>,
+      },
+    }
+  `,
+  );
+  expect(wrapWithSandbox.mock.lastCall).toMatchInlineSnapshot(`
+    [
+      "curl -I https://bing.com",
+    ]
+  `);
 });
 
 test("BashAgent should reject curl with unauthorized domains", async () => {
@@ -173,4 +256,33 @@ test("BashAgent should reject curl with unauthorized domains", async () => {
       ]
     `,
   );
+
+  expect(updateConfig.mock.lastCall?.[0]).toMatchInlineSnapshot(
+    {
+      ripgrep: { command: expect.any(String) },
+    },
+    `
+    {
+      "filesystem": {
+        "allowWrite": [],
+        "denyRead": [],
+        "denyWrite": [],
+      },
+      "network": {
+        "allowedDomains": [
+          "google.com",
+        ],
+        "deniedDomains": [],
+      },
+      "ripgrep": {
+        "command": Any<String>,
+      },
+    }
+  `,
+  );
+  expect(wrapWithSandbox.mock.lastCall).toMatchInlineSnapshot(`
+    [
+      "curl -I https://bing.com",
+    ]
+  `);
 });

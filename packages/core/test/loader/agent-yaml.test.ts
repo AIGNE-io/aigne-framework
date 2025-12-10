@@ -67,15 +67,15 @@ test("loadAgentFromYaml should error if agent.yaml file is invalid", async () =>
     .mockReturnValueOnce(Promise.resolve("[this is not a valid yaml}"))
     .mockReturnValueOnce(Promise.resolve("name: 123"));
 
-  expect(loadAgentFromYamlFile("./not-exist-aigne.yaml")).rejects.toThrow(
+  expect(loadAgentFromYamlFile("./not-exist-aigne.yaml", {})).rejects.toThrow(
     "no such file or directory",
   );
 
-  expect(loadAgentFromYamlFile("./invalid-aigne.yaml")).rejects.toThrow(
+  expect(loadAgentFromYamlFile("./invalid-aigne.yaml", {})).rejects.toThrow(
     "Failed to parse agent definition",
   );
 
-  expect(loadAgentFromYamlFile("./invalid-content-aigne.yaml")).rejects.toThrow(
+  expect(loadAgentFromYamlFile("./invalid-content-aigne.yaml", {})).rejects.toThrow(
     "Failed to validate agent definition",
   );
 });
@@ -96,12 +96,12 @@ args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
 `),
     );
 
-  expect(await loadAgentFromYamlFile("./remote-mcp.yaml")).toEqual({
+  expect(await loadAgentFromYamlFile("./remote-mcp.yaml", {})).toEqual({
     type: "mcp",
     url: "http://localhost:3000/sse",
   });
 
-  expect(await loadAgentFromYamlFile("./local-mcp.yaml")).toEqual({
+  expect(await loadAgentFromYamlFile("./local-mcp.yaml", {})).toEqual({
     type: "mcp",
     command: "npx",
     args: ["-y", "@modelcontextprotocol/server-filesystem", "."],
@@ -109,7 +109,7 @@ args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
 });
 
 test("loadAgentFromYaml should load TeamAgent correctly", async () => {
-  const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/team.yaml"));
+  const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/team.yaml"), {});
 
   expect(agent).toBeInstanceOf(TeamAgent);
   assert(agent instanceof TeamAgent, "agent should be an instance of AIAgent");
@@ -133,6 +133,7 @@ test("loadAgentFromYaml should load AIAgent with prompt file correctly", async (
 
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/chat-with-prompt.yaml"),
+    {},
   );
 
   expect(agent).toBeInstanceOf(AIAgent);
@@ -150,7 +151,10 @@ test("loadAgentFromYaml should load AIAgent with prompt file correctly", async (
 });
 
 test("loadAgentFromYaml should load nested agent correctly", async () => {
-  const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/nested-agent.yaml"));
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/nested-agent.yaml"),
+    {},
+  );
 
   expect(agent).toBeInstanceOf(TeamAgent);
   expect(agent.name).toMatchInlineSnapshot(`"test-nested-agent"`);
@@ -176,7 +180,7 @@ test("loadAgentFromYaml should load nested agent correctly", async () => {
 });
 
 test("loadAgentFromYaml should load transform agent correctly", async () => {
-  const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/transform.yaml"));
+  const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/transform.yaml"), {});
 
   expect(agent).toBeInstanceOf(TransformAgent);
   assert(agent instanceof TransformAgent);
@@ -198,6 +202,7 @@ test("loadAgentFromYaml should load transform agent correctly", async () => {
 test("loadAgentFromYaml should load external schema agent correctly", async () => {
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/external-schema-agent.yaml"),
+    {},
   );
 
   expect(zodToJsonSchema(agent.inputSchema)).toMatchSnapshot();
@@ -207,6 +212,7 @@ test("loadAgentFromYaml should load external schema agent correctly", async () =
 test("loadAgentFromYaml should load nested external schema agent correctly", async () => {
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/external-schema-agent-nested.yaml"),
+    {},
   );
 
   expect(zodToJsonSchema(agent.inputSchema)).toMatchSnapshot();
@@ -216,6 +222,7 @@ test("loadAgentFromYaml should load nested external schema agent correctly", asy
 test("loadAgentFromYaml should support various styles of naming", async () => {
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/test-agent-input-naming.yaml"),
+    {},
   );
 
   expect(zodToJsonSchema(agent.inputSchema)).toMatchSnapshot();
@@ -225,6 +232,7 @@ test("loadAgentFromYaml should support various styles of naming", async () => {
 test("loadAgentFromYaml should support default input", async () => {
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/test-agent-with-default-input.yaml"),
+    {},
   );
 
   expect({
@@ -240,6 +248,7 @@ test("loadAgentFromYaml should support default input", async () => {
 test("loadAgentFromYaml should support hooks", async () => {
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/test-agent-with-hooks.yaml"),
+    {},
   );
 
   expect({
@@ -259,6 +268,7 @@ test("loadAgentFromYaml should support hooks", async () => {
 test("loadAgentFromYaml should support reflection for TeamAgent", async () => {
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/team-agent-with-reflection.yaml"),
+    {},
   );
 
   assert(agent instanceof TeamAgent, "agent should be an instance of TeamAgent");
@@ -280,6 +290,7 @@ test("loadAgentFromYaml should support reflection for TeamAgent", async () => {
 test("loadAgentFromYaml should support reflection for TeamAgent with inline reviewer", async () => {
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/team-agent-with-reflection-inline.yaml"),
+    {},
   );
 
   assert(agent instanceof TeamAgent, "agent should be an instance of TeamAgent");
@@ -321,6 +332,7 @@ test("loadAgentFromYaml should load AIAgent with AFS correctly", async () => {
 test("loadAgentFromYaml should inline function correctly", async () => {
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/test-inline-function.yaml"),
+    {},
   );
 
   expect(agent.invoke({ num: 2 })).resolves.toMatchInlineSnapshot(`

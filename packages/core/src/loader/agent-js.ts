@@ -3,10 +3,11 @@ import { isAgent } from "../utils/agent-utils.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import { parseAgentFile } from "./agent-yaml.js";
 import { LoadJsAgentError } from "./error.js";
+import type { LoadOptions } from "./index.js";
 
 const importFn = new Function("path", "return import(path)");
 
-export async function loadAgentFromJsFile(path: string) {
+export async function loadAgentFromJsFile(path: string, options: LoadOptions) {
   const url = nodejs.path.isAbsolute(path) ? nodejs.url.pathToFileURL(path).toString() : path;
 
   const { default: agent } = await tryOrThrow(
@@ -19,12 +20,16 @@ export async function loadAgentFromJsFile(path: string) {
 
   return tryOrThrow(
     () =>
-      parseAgentFile(path, {
-        type: "function",
-        process: agent,
-        name: agent.agent_name || agent.agentName || agent.name,
-        ...agent,
-      }),
+      parseAgentFile(
+        path,
+        {
+          type: "function",
+          process: agent,
+          name: agent.agent_name || agent.agentName || agent.name,
+          ...agent,
+        },
+        options,
+      ),
     (error) => new Error(`Failed to parse agent from ${path}: ${error.message}`),
   );
 }

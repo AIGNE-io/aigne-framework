@@ -134,7 +134,7 @@ export class OrchestratorAgent<
   static override async load<I extends Message = Message, O extends Message = Message>({
     filepath,
     parsed,
-    options,
+    options = {},
   }: {
     filepath: string;
     parsed: AgentOptions<I, O> & LoadOrchestratorAgentOptions<I, O>;

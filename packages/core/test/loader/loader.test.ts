@@ -122,7 +122,7 @@ test("loader should use override options", async () => {
 });
 
 test("loader should error if agent file is not supported", async () => {
-  const aigne = loadAgent(join(import.meta.dirname, "./not-exist-agent-library/test.txt"));
+  const aigne = loadAgent(join(import.meta.dirname, "./not-exist-agent-library/test.txt"), {});
   expect(aigne).rejects.toThrow("Unsupported agent file type");
 });
 
@@ -205,7 +205,7 @@ url: http://localhost:3000/sse
 `),
   );
 
-  expect(await loadAgent("./remote-mcp.yaml")).toBe(testMcp);
+  expect(await loadAgent("./remote-mcp.yaml", {})).toBe(testMcp);
   expect(from).toHaveBeenLastCalledWith(
     expect.objectContaining({
       url: "http://localhost:3000/sse",
@@ -230,7 +230,7 @@ args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
 `),
   );
 
-  expect(await loadAgent("./local-mcp.yaml")).toBe(fsMcp);
+  expect(await loadAgent("./local-mcp.yaml", {})).toBe(fsMcp);
   expect(from).toHaveBeenLastCalledWith(
     expect.objectContaining({
       command: "npx",
@@ -248,7 +248,7 @@ type: mcp
 `),
   );
 
-  expect(loadAgent("./local-mcp.yaml")).rejects.toThrow("Missing url or command in mcp agent");
+  expect(loadAgent("./local-mcp.yaml", {})).rejects.toThrow("Missing url or command in mcp agent");
 });
 
 test("loadAgent should support nested relative prompt paths", async () => {
@@ -291,6 +291,7 @@ test("loadAgent should support nested relative prompt paths", async () => {
 test("loadAgent should load agent with multi roles instructions", async () => {
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/test-agent-with-multi-roles-instructions.yaml"),
+    {},
   );
 
   assert(agent instanceof AIAgent);

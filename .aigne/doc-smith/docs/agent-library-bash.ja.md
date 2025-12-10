@@ -1,167 +1,185 @@
 # Bash
 
-`BashAgent` を使用すると、AIGNE ワークフロー内でシェルコマンドとスクリプトを実行できます。このガイドでは、その設定と使用方法について詳しく説明し、ファイル操作、プロセス管理、コマンドラインツールの自動化などのタスクのために、基盤となるオペレーティングシステムと直接対話できるようにします。
+Bash Agent は、Agent ワークフロー内でシェルスクリプトやコマンドラインツールを実行するための安全で制御されたメソッドを提供します。このドキュメントでは、その機能、構成、およびシステムレベルの操作に関するベストプラクティスについて詳しく説明します。このガイドに従うことで、ファイル操作、プロセス管理、自動化などのタスクに Bash Agent を統合して利用する方法を学びます。
 
 ## 概要
 
-`BashAgent` は AIGNE フレームワークと標準の Bash シェルとの間のブリッジとして機能します。シェルスクリプトを実行し、その標準出力 (`stdout`)、標準エラー (`stderr`)、および終了コードをキャプチャし、この情報を構造化された出力として返すように設計されています。
+Bash Agent は、セキュリティを強化するために [Anthropic の Sandbox Runtime](https://github.com/anthropic-experimental/sandbox-runtime) を活用し、制御された環境で bash スクリプトを実行するように設計されています。標準出力 (`stdout`)、標準エラー (`stderr`)、および最終的な終了コードをキャプチャしてストリーミングし、スクリプトの実行に関する包括的なフィードバックを提供します。
 
-セキュリティのため、Agent はデフォルトで隔離されたサンドボックス環境内でコマンドを実行します。これにより、スクリプトが不正なネットワークリソースにアクセスしたり、予期せずファイルシステムを変更したりすることを防ぎます。サンドボックスの動作は設定可能で、安全な隔離実行と、必要に応じた無制限の実行の両方が可能です。
+以下の図は、Bash Agent が安全なサンドボックス内でスクリプトを実行し、ファイルシステムとネットワークアクセスを制御しながら、出力をユーザーにストリーミングする方法を示しています。
 
-以下の図は、`BashAgent` のワークフローを示しています。スクリプトの受信から出力の返却まで、オプションのサンドボックスレイヤーを含みます。
-
-<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
 ![Bash](assets/diagram/agent-library-bash-01.jpg)
 <!-- DIAGRAM_IMAGE_END -->
 
+主な機能は次のとおりです。
+- **サンドボックス実行**: スクリプトは、構成可能なセキュリティポリシーを持つ分離された環境で実行されます。
+- **ネットワーク制御**: ドメインをホワイトリストまたはブラックリストに登録して、ネットワークアクセスを管理します。
+- **ファイルシステム制御**: ファイルとディレクトリに対する特定の読み取りおよび書き込み権限を定義します。
+- **リアルタイム出力**: スクリプトの実行中に `stdout` と `stderr` をストリーミングします。
+- **終了コードの追跡**: スクリプトの終了コードをキャプチャして、成功を確認したり、エラーを処理したりします。
+
 ## 入力
 
-Agent は、実行する Bash コマンドを含む単一の `script` プロパティを受け入れます。
+Agent は、入力オブジェクトで必須の単一パラメータを受け入れます。
 
 <x-field-group>
-  <x-field data-name="script" data-type="string" data-required="true" data-desc="実行する Bash スクリプトまたはコマンド。"></x-field>
+  <x-field data-name="script" data-type="string" data-required="true" data-desc="実行される bash スクリプト。"></x-field>
 </x-field-group>
 
 ## 出力
 
-完了すると、Agent は出力ストリームとスクリプトの最終終了コードを含むオブジェクトを返します。
+Agent は、スクリプト実行の結果を含むオブジェクトを返します。
 
 <x-field-group>
-  <x-field data-name="stdout" data-type="string" data-required="false" data-desc="スクリプトによって生成された標準出力。"></x-field>
-  <x-field data-name="stderr" data-type="string" data-required="false" data-desc="スクリプトによって生成された標準エラー出力。"></x-field>
-  <x-field data-name="exitCode" data-type="number" data-required="false" data-desc="完了時にスクリプトによって返された終了コード。"></x-field>
+  <x-field data-name="stdout" data-type="string" data-required="false" data-desc="スクリプトによって生成された標準出力ストリーム。"></x-field>
+  <x-field data-name="stderr" data-type="string" data-required="false" data-desc="スクリプトによって生成された標準エラーストリーム。"></x-field>
+  <x-field data-name="exitCode" data-type="number" data-required="false" data-desc="スクリプト完了後に返される終了コード。通常、値 0 は成功を示します。"></x-field>
 </x-field-group>
 
-## 設定
+## 基本的な使用方法
 
-`BashAgent` は、その実行環境を制御するために、オプションの `options` オブジェクトでインスタンス化されます。
+Bash Agent を使用する最も直接的な方法は、YAML 構成ファイルを使用することです。これにより、Agent の動作とセキュリティ制約を宣言的に定義できます。
 
-```typescript agent.ts
-import { BashAgent } from "@aigne/agent-library/bash";
-
-// デフォルトの動作：安全なサンドボックスで実行
-const secureAgent = new BashAgent({});
-
-// 無制限の実行のためにサンドボックスを無効化
-const insecureAgent = new BashAgent({
-  sandbox: false,
-});
-
-// 特定のネットワークアクセスを許可するようにサンドボックスを設定
-const configuredAgent = new BashAgent({
-  sandbox: {
-    network: {
-      allowedDomains: ["api.example.com"],
-    },
-  },
-});
+```yaml bash-agent.yaml icon=lucide:file-code
+type: "@aigne/agent-library/bash"
+name: Bash
+# サンドボックスは、制限の厳しい設定でデフォルトで有効になっています。
+# 詳細なオプションについては、「サンドボックス構成」セクションを参照してください。
 ```
 
-### オプション
+この Agent を実行するには、AIGNE CLI を使用して、スクリプトを引数として渡します。
+
+```bash icon=lucide:terminal
+aigne run . Bash --script 'echo "Hello from the Bash Agent!"'
+```
+
+## 構成
+
+Bash Agent は、特に実行環境に関して、その動作を調整するためにいくつかのオプションを使用して構成できます。
+
+### Agent オプション
+
+これらのオプションは、Agent の YAML 定義のトップレベルで指定されます。
 
 <x-field-group>
-  <x-field data-name="sandbox" data-type="boolean | object" data-required="false">
-    <x-field-desc markdown>サンドボックス化された実行環境を制御します。`false` の場合、サンドボックスは無効になります。`object` の場合、サンドボックスのルールを設定します。デフォルトでは、サンドボックスは制限的な設定で有効になっています。</x-field-desc>
-    <x-field data-name="network" data-type="object" data-required="false" data-desc="ネットワークアクセスルールを設定します。">
-      <x-field data-name="allowedDomains" data-type="string[]" data-required="false" data-desc="スクリプトがアクセスを許可されているドメインのリスト。"></x-field>
-      <x-field data-name="deniedDomains" data-type="string[]" data-required="false" data-desc="スクリプトが明示的にアクセスを禁止されているドメインのリスト。"></x-field>
-    </x-field>
-    <x-field data-name="filesystem" data-type="object" data-required="false" data-desc="ファイルシステムアクセスルールを設定します。">
-      <x-field data-name="allowWrite" data-type="string[]" data-required="false" data-desc="スクリプトが書き込みを許可されているファイルパスまたはディレクトリのリスト。"></x-field>
-      <x-field data-name="denyRead" data-type="string[]" data-required="false" data-desc="スクリプトが読み取りを禁止されているファイルパスまたはディレクトリのリスト。"></x-field>
-      <x-field data-name="denyWrite" data-type="string[]" data-required="false" data-desc="スクリプトが書き込みを禁止されているファイルパスまたはディレクトリのリスト。"></x-field>
-    </x-field>
+  <x-field data-name="sandbox" data-type="object | boolean" data-required="false" data-default="true">
+    <x-field-desc markdown>サンドボックス化された実行環境を制御します。サンドボックスを完全に無効にするには `false` に設定するか、構成オブジェクトを提供してその制限をカスタマイズします。デフォルトでは、サンドボックスは有効になっています。</x-field-desc>
   </x-field>
 </x-field-group>
 
-:::warning
-`sandbox: false` を設定してサンドボックスを無効にすると、スクリプトは親の Node.js プロセスと同じ権限で実行されます。これはセキュリティリスクを引き起こす可能性があるため、信頼できる環境でのみ行うべきです。
-:::
-
-## 例
-
-### 基本的なスクリプトの実行
-
-この例では、`stdout` と `stderr` の両方に出力して終了する単純なスクリプトの実行を示します。
-
-```typescript example.ts
-import { BashAgent } from "@aigne/agent-library/bash";
-
-const bashAgent = new BashAgent({});
-
-const script = `
-  echo "Hello, World!"
-  echo "This is an error message" >&2
-  exit 0
-`;
-
-const result = await bashAgent.invoke({ script });
-console.log(result);
-```
-
-この実行により、以下の出力が生成され、ストリームと成功した終了コードがキャプチャされます。
-
-```json
-{
-  "stdout": "Hello, World!\n",
-  "stderr": "This is an error message\n",
-  "exitCode": 0
-}
-```
-
 ### サンドボックスの無効化
 
-この例では、無制限のネットワークアクセスを必要とする `curl` などのコマンドを実行するために、サンドボックスを無効にする方法を示します。
+信頼できる環境や、サンドボックスがサポートされていないプラットフォーム (Windows など) では、無効にすることができます。
 
-```typescript example-no-sandbox.ts
-import { BashAgent } from "@aigne/agent-library/bash";
+:::warning
+サンドボックスを無効にすると、Agent が提供するすべてのセキュリティ保護が解除されます。これは、実行されるスクリプトが安全であることがわかっている、完全に信頼された環境でのみ行うべきです。
+:::
 
-const bashAgent = new BashAgent({
-  sandbox: false,
-});
-
-const script = `curl https://bing.com`;
-const result = await bashAgent.invoke({ script });
-
-console.log(result.stdout);
-console.log(result.exitCode);
+```yaml bash-agent.yaml icon=lucide:file-code
+type: "@aigne/agent-library/bash"
+name: Bash
+sandbox: false # サンドボックスを無効にします
 ```
 
-出力には、ウェブページの HTML コンテンツと終了コード `0` が含まれます。
+## サンドボックス構成
 
-```html
-<html><head><title>Object moved</title></head><body>
-<h2>Object moved to <a href="https://www.bing.com:443/?toWww=1&amp;redig=D26DC3A15DA244F9AB9D1A420426F9E5">here</a>.</h2>
-</body></html>
+`sandbox` オプションが有効になっている場合、構成オブジェクトを提供して、ネットワークおよびファイルシステムアクセスに対する詳細なセキュリティポリシーを定義できます。
+
+### ネットワーク構成
+
+許可および拒否されたドメインを指定して、Agent のネットワークアクセスを制御します。
+
+```yaml bash-agent.yaml icon=lucide:file-code
+type: "@aigne/agent-library/bash"
+name: Bash
+sandbox:
+  network:
+    # スクリプトが接続を許可されているドメインのリスト。ワイルドカード (*) がサポートされています。
+    allowedDomains:
+      - "*.example.com"
+      - "api.github.com"
+    # スクリプトが接続を禁止されているドメインのリスト。これは allowedDomains よりも優先されます。
+    deniedDomains:
+      - "*.ads.com"
 ```
 
-```
-0
-```
+### ファイルシステム構成
 
-### サンドボックスでのネットワークアクセスの設定
+スクリプトがファイルシステムのどの部分から読み取り、書き込みできるかを定義します。
 
-この例では、サンドボックス化されたスクリプトに特定のドメインへのアクセスを許可する方法を示します。許可されていないドメインへのアクセス試行は失敗します。
-
-```typescript example-sandbox-network.ts
-import { BashAgent } from "@aigne/agent-library/bash";
-
-const bashAgent = new BashAgent({
-  sandbox: {
-    network: {
-      allowedDomains: ["bing.com"],
-    },
-  },
-});
-
-// bing.com は許可されたドメインのため、このコマンドは成功します。
-const resultAuthorized = await bashAgent.invoke({ script: "curl https://bing.com" });
-console.log("Authorized request exit code:", resultAuthorized.exitCode); // 0
-
-// google.com は許可リストにないため、このコマンドは失敗します。
-const resultUnauthorized = await bashAgent.invoke({ script: "curl https://google.com" });
-console.log("Unauthorized request exit code:", resultUnauthorized.exitCode); // 56
-console.error(resultUnauthorized.stderr); // curl: (56) CONNECT tunnel failed, response 403
+```yaml bash-agent.yaml icon=lucide:file-code
+type: "@aigne/agent-library/bash"
+name: Bash
+sandbox:
+  filesystem:
+    # スクリプトが書き込みを許可されているファイルパスまたはパターンのリスト。
+    allowWrite:
+      - "./output"
+      - "/tmp"
+    # スクリプトが読み取りを禁止されているファイルパスまたはパターンのリスト。
+    denyRead:
+      - "~/.ssh"
+      - "*.key"
+    # スクリプトが書き込みを禁止されているファイルパスまたはパターンのリスト。
+    denyWrite:
+      - "/etc"
+      - "/usr"
 ```
 
-最初のコマンドは成功し、終了コード `0` を返します。2番目のコマンドは、サンドボックスがネットワークリクエストをブロックするため失敗し、ゼロ以外の終了コードと `curl` からのエラーメッセージが返されます。
+### 完全な例
+
+これは、開発ツールを実行するための完全なサンドボックス構成を示す包括的な例です。
+
+```yaml bash-agent.yaml icon=lucide:file-code
+type: "@aigne/agent-library/bash"
+name: Bash
+sandbox:
+  network:
+    allowedDomains:
+      - "*.npmjs.org"
+      - "registry.npmjs.org"
+      - "github.com"
+      - "api.github.com"
+    deniedDomains:
+      - "*.ads.com"
+  filesystem:
+    allowWrite:
+      - "./output"
+      - "./logs"
+      - "/tmp"
+    denyRead:
+      - "~/.ssh"
+      - "~/.aws"
+      - "*.pem"
+      - "*.key"
+    denyWrite:
+      - "/etc"
+      - "/usr"
+      - "/bin"
+      - "/sbin"
+```
+
+## プラットフォームのサポート
+
+Bash Agent の機能は、主にサンドボックスの可用性に関して、オペレーティングシステムによって異なります。
+
+| プラットフォーム | サンドボックスのサポート | 直接実行 |
+| :--- | :--- | :--- |
+| **Linux** | ✅ フルサポート | ✅ サポート |
+| **macOS** | ✅ フルサポート | ✅ サポート |
+| **Windows** | ❌ サポートされていません | ✅ サポート |
+
+:::info
+Windows では、サンドボックスモードはサポートされていません。Bash Agent を使用するには、構成で `sandbox: false` を設定する必要があります。Windows での直接実行には、Windows Subsystem for Linux (WSL) や Git Bash などの環境がインストールされている必要がある場合があります。
+:::
+
+## ベストプラクティス
+
+Bash Agent を安全かつ効果的に使用するために、以下のプラクティスに従ってください。
+
+- **最小権限の原則を適用する**: スクリプトが機能するために必要な最小限の権限のみを付与します。 `/` への書き込み許可や `*` へのネットワークアクセス許可など、過度に寛容なルールは避けてください。
+- **終了コードを処理する**: Agent の出力で常に `exitCode` を確認してください。ゼロ以外の値はエラーを示し、詳細については `stderr` ストリームを検査する必要があります。
+- **機密ファイルを保護する**: `~/.ssh`、`.env` ファイル、または秘密鍵などの機密情報を含むディレクトリやファイルへの読み取りアクセスを明示的に拒否します。
+- **具体的なワイルドカードを使用する**: ネットワークまたはファイルシステムのルールにワイルドカードを使用する場合は、できるだけ具体的にします (例: `*.com` の代わりに `api.example.com`)。
+- **ログと監査**: セキュリティが重要なアプリケーションでは、監査証跡を維持するために、入力スクリプトと結果の出力を含むすべてのスクリプト実行をログに記録します。

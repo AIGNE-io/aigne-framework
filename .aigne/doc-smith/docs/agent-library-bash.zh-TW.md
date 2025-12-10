@@ -1,167 +1,185 @@
 # Bash
 
-`BashAgent` 可以在 AIGNE 工作流程中執行 shell 指令及腳本。本指南詳細介紹其設定與用法，讓您可以直接與底層作業系統互動，執行檔案操作、程序管理、自動化命令列工具等任務。
+Bash Agent 提供了一種安全且受控的方法，用於在代理工作流程中執行 shell 指令碼和命令列工具。本文件詳細介紹其功能、設定以及系統級操作的最佳實踐。透過本指南，您將學習如何整合和利用 Bash Agent 來執行檔案操作、程序管理和自動化等任務。
 
-## 概覽
+## 概述
 
-`BashAgent` 扮演著 AIGNE 框架與標準 Bash shell 之間的橋樑。其設計旨在執行 shell 腳本，擷取其標準輸出（`stdout`）、標準錯誤（`stderr`）和退出碼，並將這些資訊作為結構化輸出回傳。
+Bash Agent 旨在受控環境中執行 bash 指令碼，利用 [Anthropic's Sandbox Runtime](https://github.com/anthropic-experimental/sandbox-runtime) 來增強安全性。它會擷取並串流標準輸出（`stdout`）、標準錯誤（`stderr`）以及最終的退出碼，從而提供關於指令碼執行的全面回饋。
 
-為確保安全，此 agent 預設在隔離的沙箱環境中執行指令。這可以防止腳本存取未經授權的網路資源或意外修改檔案系統。沙箱行為是可設定的，既可以進行安全的隔離執行，也可以在必要時進行無限制的執行。
+下圖說明了 Bash Agent 如何在安全的沙箱內執行指令碼，控制檔案系統和網路存取，同時將輸出串流回傳給使用者。
 
-下圖說明了 `BashAgent` 的工作流程，從接收腳本到回傳輸出，其中包含可選的沙箱層。
-
-<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
 ![Bash](assets/diagram/agent-library-bash-01.jpg)
 <!-- DIAGRAM_IMAGE_END -->
 
+主要功能包括：
+- **沙箱化執行**：指令碼在具有可設定安全策略的隔離環境中執行。
+- **網路控制**：透過白名單或黑名單管理網路存取。
+- **檔案系統控制**：為檔案和目錄定義特定的讀取和寫入權限。
+- **即時輸出**：在指令碼執行時串流 `stdout` 和 `stderr`。
+- **退出碼追蹤**：擷取指令碼的退出碼，以驗證成功或處理錯誤。
+
 ## 輸入
 
-此 agent 接受一個 `script` 屬性，其中包含要執行的 Bash 指令。
+此 Agent 的輸入物件接受一個必要的參數。
 
 <x-field-group>
-  <x-field data-name="script" data-type="string" data-required="true" data-desc="要執行的 bash 腳本或指令。"></x-field>
+  <x-field data-name="script" data-type="string" data-required="true" data-desc="要執行的 bash 指令碼。"></x-field>
 </x-field-group>
 
 ## 輸出
 
-完成後，此 agent 會回傳一個物件，其中包含輸出流和腳本的最終退出碼。
+此 Agent 回傳一個包含指令碼執行結果的物件。
 
 <x-field-group>
-  <x-field data-name="stdout" data-type="string" data-required="false" data-desc="腳本產生的標準輸出。"></x-field>
-  <x-field data-name="stderr" data-type="string" data-required="false" data-desc="腳本產生的標準錯誤輸出。"></x-field>
-  <x-field data-name="exitCode" data-type="number" data-required="false" data-desc="腳本完成時回傳的退出碼。"></x-field>
+  <x-field data-name="stdout" data-type="string" data-required="false" data-desc="指令碼產生的標準輸出串流。"></x-field>
+  <x-field data-name="stderr" data-type="string" data-required="false" data-desc="指令碼產生的標準錯誤串流。"></x-field>
+  <x-field data-name="exitCode" data-type="number" data-required="false" data-desc="指令碼完成後回傳的退出碼。值為 0 通常表示成功。"></x-field>
 </x-field-group>
+
+## 基本用法
+
+使用 Bash Agent 最直接的方式是透過 YAML 設定檔。這種方式允許以宣告式的方法來定義 Agent 的行為和安全限制。
+
+```yaml bash-agent.yaml icon=lucide:file-code
+type: "@aigne/agent-library/bash"
+name: Bash
+# 沙箱預設啟用，並採用嚴格設定。
+# 詳細選項請參閱「沙箱設定」部分。
+```
+
+若要執行此 Agent，您可以使用 AIGNE CLI，並將指令碼作為參數傳入。
+
+```bash icon=lucide:terminal
+aigne run . Bash --script 'echo "Hello from the Bash Agent!"'
+```
 
 ## 設定
 
-`BashAgent` 在實例化時可傳入一個可選的 `options` 物件，以控制其執行環境。
+Bash Agent 可以使用多個選項進行設定，以調整其行為，特別是在執行環境方面。
 
-```typescript agent.ts
-import { BashAgent } from "@aigne/agent-library/bash";
+### Agent 選項
 
-// 預設行為：在安全的沙箱中執行
-const secureAgent = new BashAgent({});
-
-// 停用沙箱以進行無限制的執行
-const insecureAgent = new BashAgent({
-  sandbox: false,
-});
-
-// 設定沙箱以允許特定的網路存取
-const configuredAgent = new BashAgent({
-  sandbox: {
-    network: {
-      allowedDomains: ["api.example.com"],
-    },
-  },
-});
-```
-
-### 選項
+這些選項在 Agent 的 YAML 定義的頂層指定。
 
 <x-field-group>
-  <x-field data-name="sandbox" data-type="boolean | object" data-required="false">
-    <x-field-desc markdown>控制沙箱執行環境。若為 `false`，則停用沙箱。若為 `object`，則設定沙箱規則。預設啟用沙箱並採用限制性設定。</x-field-desc>
-    <x-field data-name="network" data-type="object" data-required="false" data-desc="設定網路存取規則。">
-      <x-field data-name="allowedDomains" data-type="string[]" data-required="false" data-desc="允許腳本存取的網域清單。"></x-field>
-      <x-field data-name="deniedDomains" data-type="string[]" data-required="false" data-desc="明確禁止腳本存取的網域清單。"></x-field>
-    </x-field>
-    <x-field data-name="filesystem" data-type="object" data-required="false" data-desc="設定檔案系統存取規則。">
-      <x-field data-name="allowWrite" data-type="string[]" data-required="false" data-desc="允許腳本寫入的檔案路徑或目錄清單。"></x-field>
-      <x-field data-name="denyRead" data-type="string[]" data-required="false" data-desc="禁止腳本讀取的檔案路徑或目錄清單。"></x-field>
-      <x-field data-name="denyWrite" data-type="string[]" data-required="false" data-desc="禁止腳本寫入的檔案路徑或目錄清單。"></x-field>
-    </x-field>
+  <x-field data-name="sandbox" data-type="object | boolean" data-required="false" data-default="true">
+    <x-field-desc markdown>控制沙箱化的執行環境。設定為 `false` 可完全停用沙箱，或提供一個設定物件來自訂其限制。預設情況下，沙箱是啟用的。</x-field-desc>
   </x-field>
 </x-field-group>
 
-:::warning
-透過設定 `sandbox: false` 來停用沙箱，會讓腳本以與父 Node.js 程序相同的權限執行。這只應在受信任的環境中進行，因為它可能帶來安全風險。
-:::
-
-## 範例
-
-### 基本腳本執行
-
-此範例展示如何執行一個簡單的腳本，該腳本會同時輸出到 `stdout` 和 `stderr`，然後退出。
-
-```typescript example.ts
-import { BashAgent } from "@aigne/agent-library/bash";
-
-const bashAgent = new BashAgent({});
-
-const script = `
-  echo "Hello, World!"
-  echo "This is an error message" >&2
-  exit 0
-`;
-
-const result = await bashAgent.invoke({ script });
-console.log(result);
-```
-
-執行將產生以下輸出，擷取了輸出流和成功的退出碼。
-
-```json
-{
-  "stdout": "Hello, World!\n",
-  "stderr": "This is an error message\n",
-  "exitCode": 0
-}
-```
-
 ### 停用沙箱
 
-此範例展示如何停用沙箱以執行需要無限制網路存取的指令，例如 `curl`。
+對於受信任的環境或不支援沙箱的平台（例如 Windows），您可以停用它。
 
-```typescript example-no-sandbox.ts
-import { BashAgent } from "@aigne/agent-library/bash";
+:::warning
+停用沙箱會移除 Agent 提供的所有安全保護。只有在完全受信任且已知所執行的指令碼是安全的環境中，才應這樣做。
+:::
 
-const bashAgent = new BashAgent({
-  sandbox: false,
-});
-
-const script = `curl https://bing.com`;
-const result = await bashAgent.invoke({ script });
-
-console.log(result.stdout);
-console.log(result.exitCode);
+```yaml bash-agent.yaml icon=lucide:file-code
+type: "@aigne/agent-library/bash"
+name: Bash
+sandbox: false # 停用沙箱
 ```
 
-輸出將包含網頁的 HTML 內容和退出碼 `0`。
+## 沙箱設定
 
-```html
-<html><head><title>Object moved</title></head><body>
-<h2>Object moved to <a href="https://www.bing.com:443/?toWww=1&amp;redig=D26DC3A15DA244F9AB9D1A420426F9E5">here</a>.</h2>
-</body></html>
+當 `sandbox` 選項啟用時，您可以提供一個設定物件，為網路和檔案系統存取定義精細的安全策略。
+
+### 網路設定
+
+透過指定允許和拒絕的網域來控制 Agent 的網路存取。
+
+```yaml bash-agent.yaml icon=lucide:file-code
+type: "@aigne/agent-library/bash"
+name: Bash
+sandbox:
+  network:
+    # 指令碼被允許連線的網域清單。支援萬用字元 (*)。
+    allowedDomains:
+      - "*.example.com"
+      - "api.github.com"
+    # 指令碼被禁止連線的網域清單。此項目的優先級高於 allowedDomains。
+    deniedDomains:
+      - "*.ads.com"
 ```
 
-```
-0
-```
+### 檔案系統設定
 
-### 在沙箱中設定網路存取
+定義指令碼可以讀取和寫入檔案系統的哪些部分。
 
-此範例展示如何授權沙箱中的腳本存取特定網域。嘗試存取未經授權的網域將會失敗。
-
-```typescript example-sandbox-network.ts
-import { BashAgent } from "@aigne/agent-library/bash";
-
-const bashAgent = new BashAgent({
-  sandbox: {
-    network: {
-      allowedDomains: ["bing.com"],
-    },
-  },
-});
-
-// 此指令將成功，因為 bing.com 是允許的網域。
-const resultAuthorized = await bashAgent.invoke({ script: "curl https://bing.com" });
-console.log("Authorized request exit code:", resultAuthorized.exitCode); // 0
-
-// 此指令將失敗，因為 google.com 不在允許清單中。
-const resultUnauthorized = await bashAgent.invoke({ script: "curl https://google.com" });
-console.log("Unauthorized request exit code:", resultUnauthorized.exitCode); // 56
-console.error(resultUnauthorized.stderr); // curl: (56) CONNECT tunnel failed, response 403
+```yaml bash-agent.yaml icon=lucide:file-code
+type: "@aigne/agent-library/bash"
+name: Bash
+sandbox:
+  filesystem:
+    # 允許指令碼寫入的檔案路徑或模式清單。
+    allowWrite:
+      - "./output"
+      - "/tmp"
+    # 禁止指令碼讀取的檔案路徑或模式清單。
+    denyRead:
+      - "~/.ssh"
+      - "*.key"
+    # 禁止指令碼寫入的檔案路徑或模式清單。
+    denyWrite:
+      - "/etc"
+      - "/usr"
 ```
 
-第一個指令成功，回傳退出碼 `0`。第二個指令失敗，因為沙箱封鎖了網路請求，導致非零的退出碼和來自 `curl` 的錯誤訊息。
+### 完整範例
+
+以下是一個完整的範例，展示了用於執行開發工具的完整沙箱設定。
+
+```yaml bash-agent.yaml icon=lucide:file-code
+type: "@aigne/agent-library/bash"
+name: Bash
+sandbox:
+  network:
+    allowedDomains:
+      - "*.npmjs.org"
+      - "registry.npmjs.org"
+      - "github.com"
+      - "api.github.com"
+    deniedDomains:
+      - "*.ads.com"
+  filesystem:
+    allowWrite:
+      - "./output"
+      - "./logs"
+      - "/tmp"
+    denyRead:
+      - "~/.ssh"
+      - "~/.aws"
+      - "*.pem"
+      - "*.key"
+    denyWrite:
+      - "/etc"
+      - "/usr"
+      - "/bin"
+      - "/sbin"
+```
+
+## 平台支援
+
+Bash Agent 的功能因作業系統而異，主要在於沙箱的可用性。
+
+| 平台 | 沙箱支援 | 直接執行 |
+| :--- | :--- | :--- |
+| **Linux** | ✅ 完整支援 | ✅ 支援 |
+| **macOS** | ✅ 完整支援 | ✅ 支援 |
+| **Windows** | ❌ 不支援 | ✅ 支援 |
+
+:::info
+在 Windows 上，不支援沙箱模式。您必須在設定中設定 `sandbox: false` 才能使用 Bash Agent。在 Windows 上直接執行可能需要安裝 Windows Subsystem for Linux (WSL) 或 Git Bash 等環境。
+:::
+
+## 最佳實踐
+
+為確保安全有效地使用 Bash Agent，請遵循以下實踐。
+
+- **應用最小權限原則**：僅授予指令碼運作所需的最低權限。避免過於寬鬆的規則，例如允許寫入 `/` 或對 `*` 的網路存取。
+- **處理退出碼**：務必檢查 Agent 輸出中的 `exitCode`。非零值表示發生錯誤，應檢查 `stderr` 串流以了解詳細資訊。
+- **保護敏感檔案**：明確拒絕對包含敏感資訊的目錄和檔案的讀取權限，例如 `~/.ssh`、`.env` 檔案或私鑰。
+- **使用特定的萬用字元**：在為網路或檔案系統規則使用萬用字元時，使其盡可能具體（例如，使用 `api.example.com` 而不是 `*.com`）。
+- **記錄與稽核**：對於安全性至關重要的應用程式，記錄所有指令碼的執行，包括輸入的指令碼和產生的輸出，以保留稽核軌跡。

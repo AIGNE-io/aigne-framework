@@ -313,7 +313,7 @@
     "parentId": "/agent-library",
     "sourceIds": [
       "packages/agent-library/src/bash/index.ts",
-      "packages/agent-library/test/bash/bash.test.ts"
+      "packages/agent-library/src/bash/README.md"
     ]
   },
   {

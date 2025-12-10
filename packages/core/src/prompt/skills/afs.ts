@@ -24,6 +24,7 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
         return {
           status: "success",
           tool: "afs_list",
+          path: input.path,
           options: input.options,
           message,
           result,
@@ -44,6 +45,10 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
         options: z
           .object({
             limit: z.number().optional().describe("Maximum number of entries to return"),
+            caseSensitive: z
+              .boolean()
+              .optional()
+              .describe("Whether the search is case sensitive, default is false"),
           })
           .optional(),
       }),
@@ -53,6 +58,7 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
         return {
           status: "success",
           tool: "afs_search",
+          path: input.path,
           query: input.query,
           options: input.options,
           ...result,
@@ -94,6 +100,7 @@ Usage:
           status: "success",
           tool: "afs_read",
           path: input.path,
+          withLineNumbers: input.withLineNumbers,
           ...result,
           result: {
             ...result.result,

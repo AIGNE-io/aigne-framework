@@ -701,6 +701,10 @@ test("PromptBuilder should build with afs correctly", async () => {
                 "options": {
                   "additionalProperties": false,
                   "properties": {
+                    "caseSensitive": {
+                      "description": "Whether the search is case sensitive, default is false",
+                      "type": "boolean",
+                    },
                     "limit": {
                       "description": "Maximum number of entries to return",
                       "type": "number",

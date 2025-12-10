@@ -59,6 +59,10 @@ test("getAFSSkills should return all AFS skills", async () => {
             "options": {
               "additionalProperties": false,
               "properties": {
+                "caseSensitive": {
+                  "description": "Whether the search is case sensitive, default is false",
+                  "type": "boolean",
+                },
                 "limit": {
                   "description": "Maximum number of entries to return",
                   "type": "number",
@@ -198,6 +202,7 @@ test("AFS'skill list should invoke afs.list", async () => {
       "options": {
         "maxDepth": 2,
       },
+      "path": "/foo/bar",
       "result": "",
       "status": "success",
       "tool": "afs_list",

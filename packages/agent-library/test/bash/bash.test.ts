@@ -20,6 +20,21 @@ afterEach(() => {
   wrapWithSandbox.mockRestore();
 });
 
+test("BashAgent should load correctly", async () => {
+  const bashAgent = await BashAgent.load({
+    filepath: "/path/to/agent.yaml",
+    parsed: {
+      sandbox: false,
+    },
+  });
+
+  expect((bashAgent as BashAgent).options).toMatchInlineSnapshot(`
+    {
+      "sandbox": false,
+    }
+  `);
+});
+
 test("BashAgent should support disable sandbox", async () => {
   const bashAgent = new BashAgent({
     sandbox: false,
@@ -27,25 +42,14 @@ test("BashAgent should support disable sandbox", async () => {
 
   const script = `curl -I https://bing.com`;
 
-  const spawnSpy = spyOn(bashAgent, "spawn").mockResolvedValueOnce(
-    new ReadableStream({
-      start(controller) {
-        controller.enqueue({ delta: { text: { stdout: "HTTP/1.1 301 Moved Permanently\r\n" } } });
-        controller.enqueue({ delta: { json: { exitCode: 0 } } });
-        controller.close();
-      },
+  const spawnSpy = spyOn(bashAgent, "spawn");
+
+  expect(await bashAgent.invoke({ script })).toEqual(
+    expect.objectContaining({
+      exitCode: 0,
+      stdout: expect.stringMatching(/HTTP.*301/),
     }),
   );
-
-  expect(await bashAgent.invoke({ script })).toMatchInlineSnapshot(`
-      {
-        "exitCode": 0,
-        "stdout": 
-      "HTTP/1.1 301 Moved Permanently
-      "
-      ,
-      }
-    `);
 
   expect(spawnSpy.mock.lastCall).toMatchInlineSnapshot(`
       [

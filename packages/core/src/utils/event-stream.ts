@@ -1,5 +1,5 @@
 import { createParser } from "eventsource-parser";
-import { produce } from "immer";
+import { produce, setAutoFreeze } from "immer";
 import {
   type AgentResponseChunk,
   type AgentResponseProgress,
@@ -11,6 +11,8 @@ import {
 import type { Context, ContextEventMap } from "../aigne/context.js";
 import { tryOrThrow } from "./type-utils.js";
 import type { Listener } from "./typed-event-emitter.js";
+
+setAutoFreeze(false);
 
 export class EventStreamParser<T> extends TransformStream<string, T | Error> {
   constructor() {

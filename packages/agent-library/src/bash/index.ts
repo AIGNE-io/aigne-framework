@@ -1,11 +1,5 @@
-import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
-import {
-  Agent,
-  type AgentOptions,
-  type AgentResponseChunk,
-  type AgentResponseStream,
-  type Message,
-} from "@aigne/core";
+import { type SpawnOptions, spawn } from "node:child_process";
+import { Agent, type AgentOptions, type AgentResponseStream, type Message } from "@aigne/core";
 import { SandboxManager, type SandboxRuntimeConfig } from "@anthropic-ai/sandbox-runtime";
 import { rgPath } from "@vscode/ripgrep";
 import z from "zod";
@@ -70,50 +64,48 @@ When to use:
       throw new Error(`Sandboxed execution is not supported on this platform ${platform}`);
     }
 
-    return new ReadableStream<AgentResponseChunk<BashAgentOutput>>({
-      start: async (controller) => {
-        const extractResult = async (child: ChildProcessWithoutNullStreams) =>
-          new Promise<void>((resolve) => {
-            child.stdout.on("data", (chunk) => {
-              controller.enqueue({ delta: { text: { stdout: chunk.toString() } } });
-            });
+    if (this.options.sandbox === false) {
+      return this.spawn("bash", ["-c", input.script]);
+    } else {
+      return await this.runInSandbox(
+        typeof this.options.sandbox === "boolean" ? {} : this.options.sandbox,
+        input.script,
+        async (sandboxedCommand) => {
+          return this.spawn(sandboxedCommand, undefined, {
+            shell: true,
+          });
+        },
+      );
+    }
+  }
 
-            child.stderr.on("data", (chunk) => {
-              controller.enqueue({ delta: { text: { stderr: chunk.toString() } } });
-            });
+  async spawn(
+    command: string,
+    args?: string[],
+    options?: SpawnOptions,
+  ): Promise<AgentResponseStream<BashAgentOutput>> {
+    return new ReadableStream({
+      start(controller) {
+        try {
+          const child = spawn(command, args, { ...options, stdio: "pipe" });
 
-            child.on("error", (error) => {
-              controller.enqueue({ delta: { text: { stderr: error.message } } });
-              resolve();
-            });
-
-            child.on("close", (code) => {
-              if (typeof code === "number")
-                controller.enqueue({ delta: { json: { exitCode: code } } });
-              controller.close();
-              resolve();
-            });
+          child.stdout.on("data", (chunk) => {
+            controller.enqueue({ delta: { text: { stdout: chunk.toString() } } });
           });
 
-        try {
-          if (this.options.sandbox === false) {
-            const child = spawn("bash", ["-c", input.script], {
-              stdio: "pipe",
-            });
-            await extractResult(child);
-          } else {
-            await this.runInSandbox(
-              typeof this.options.sandbox === "boolean" ? {} : this.options.sandbox,
-              input.script,
-              async (sandboxedCommand) => {
-                const child = spawn(sandboxedCommand, {
-                  stdio: "pipe",
-                  shell: true,
-                });
-                await extractResult(child);
-              },
-            );
-          }
+          child.stderr.on("data", (chunk) => {
+            controller.enqueue({ delta: { text: { stderr: chunk.toString() } } });
+          });
+
+          child.on("error", (error) => {
+            controller.enqueue({ delta: { text: { stderr: error.message } } });
+          });
+
+          child.on("close", (code) => {
+            if (typeof code === "number")
+              controller.enqueue({ delta: { json: { exitCode: code } } });
+            controller.close();
+          });
         } catch (error) {
           controller.enqueue({ delta: { text: { stderr: `Error: ${error.message}` } } });
         }
@@ -121,12 +113,12 @@ When to use:
     });
   }
 
-  async runInSandbox(
+  async runInSandbox<T>(
     config: Exclude<BashAgentOptions["sandbox"], boolean>,
     script: string,
-    task: (script: string) => Promise<void>,
-  ) {
-    await mutex.runExclusive(async () => {
+    task: (script: string) => Promise<T>,
+  ): Promise<T> {
+    return await mutex.runExclusive(async () => {
       sandboxInitialization ??= SandboxManager.initialize({
         network: {
           allowedDomains: [],
@@ -164,7 +156,7 @@ When to use:
 
       const sandboxedCommand = await SandboxManager.wrapWithSandbox(script);
 
-      await task(sandboxedCommand);
+      return await task(sandboxedCommand);
     });
   }
 }

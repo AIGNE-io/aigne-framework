@@ -36,7 +36,7 @@ import {
 } from "./prompts/afs-builtin-prompt.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
-import { getAFSSkills } from "./skills/afs.js";
+import { getAFSSkills } from "./skills/afs/index.js";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,

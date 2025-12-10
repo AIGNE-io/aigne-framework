@@ -120,11 +120,11 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
 
 export async function loadAgent(
   path: string,
-  options?: LoadOptions,
+  options: LoadOptions,
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
-    const agent = await loadAgentFromJsFile(path);
+    const agent = await loadAgentFromJsFile(path, options);
     if (agent instanceof Agent) return agent;
     return parseAgent(path, agent, options, agentOptions);
   }
@@ -141,7 +141,7 @@ export async function loadAgent(
 export async function loadNestAgent(
   path: string,
   agent: NestAgentSchema,
-  options?: LoadOptions,
+  options: LoadOptions,
   agentOptions?: AgentOptions<any, any> & Record<string, unknown>,
 ): Promise<Agent> {
   return typeof agent === "object" && "type" in agent
@@ -157,8 +157,8 @@ export async function loadNestAgent(
 
 async function parseHooks(
   path: string,
-  hooks?: HooksSchema | HooksSchema[],
-  options?: LoadOptions,
+  hooks: HooksSchema | HooksSchema[] | undefined,
+  options: LoadOptions,
 ): Promise<AgentHooks[] | undefined> {
   hooks = [hooks].flat().filter(isNonNullable);
   if (!hooks.length) return undefined;
@@ -188,7 +188,7 @@ async function parseHooks(
 async function loadSkills(
   path: string,
   skills: NestAgentSchema[],
-  options?: LoadOptions,
+  options: LoadOptions,
 ): Promise<Agent[]> {
   const loadedSkills: Agent[] = [];
   for (const skill of skills) {
@@ -200,7 +200,7 @@ async function loadSkills(
 export async function parseAgent(
   path: string,
   agent: Awaited<ReturnType<typeof loadAgentFromYamlFile>>,
-  options?: LoadOptions,
+  options: LoadOptions,
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   if (isAgent(agent)) return agent;

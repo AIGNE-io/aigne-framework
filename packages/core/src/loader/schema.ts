@@ -131,3 +131,7 @@ export function camelizeSchema<T extends ZodType>(
 ): T {
   return z.preprocess((v) => (isRecord(v) ? camelize(v, shallow) : v), schema) as unknown as T;
 }
+
+export function preprocessSchema<T extends ZodType>(fn: (data: unknown) => unknown, schema: T): T {
+  return z.preprocess(fn, schema) as unknown as T;
+}

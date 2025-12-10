@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.90.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.5...aigne-framework-v1.90.0-beta.6) (2025-12-10)
+
+
+### Bug Fixes
+
+* bump version ([af04b69](https://github.com/AIGNE-io/aigne-framework/commit/af04b6931951afa35d52065430acc7fef4b10087))
+* **core:** support load third agent in skills ([#819](https://github.com/AIGNE-io/aigne-framework/issues/819)) ([bcbb140](https://github.com/AIGNE-io/aigne-framework/commit/bcbb1404d2fe9c709d99a8c28883b21dd107a844))
+
+## [1.90.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.4...aigne-framework-v1.90.0-beta.5) (2025-12-10)
+
+
+### Bug Fixes
+
+* **afs:** add case-sensitive option for search with case-insensitive default ([#814](https://github.com/AIGNE-io/aigne-framework/issues/814)) ([9dc9446](https://github.com/AIGNE-io/aigne-framework/commit/9dc944635104fc311e7756b4bde0a20275cfe8ec))
+* **core:** disable Immer autofreeze to return mutable response objects ([#817](https://github.com/AIGNE-io/aigne-framework/issues/817)) ([a3d0651](https://github.com/AIGNE-io/aigne-framework/commit/a3d06512cdadb9d85f92b7e8d2fd85b4f35a804b))
+* **observability:** improve trace shutdown handling and exit status  ([#813](https://github.com/AIGNE-io/aigne-framework/issues/813)) ([6215f13](https://github.com/AIGNE-io/aigne-framework/commit/6215f13243b23103c1793a4559798f0e90722384))
+
 ## [1.90.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.3...aigne-framework-v1.90.0-beta.4) (2025-12-09)
 
 

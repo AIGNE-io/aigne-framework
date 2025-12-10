@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-mcp-did-spaces",
-  "version": "0.9.2-beta.1",
+  "version": "0.9.2-beta.2",
   "description": "A demonstration of using AIGNE Framework with MCP DID Spaces integration.",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/mcp-did-spaces",

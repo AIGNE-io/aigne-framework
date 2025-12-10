@@ -1,5 +1,57 @@
 # Changelog
 
+## [0.10.15-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.15-beta.4...aigne-hub-v0.10.15-beta.5) (2025-12-10)
+
+
+### Bug Fixes
+
+* bump version ([af04b69](https://github.com/AIGNE-io/aigne-framework/commit/af04b6931951afa35d52065430acc7fef4b10087))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.15-beta.4
+    * @aigne/bedrock bumped to 0.10.20-beta.4
+    * @aigne/core bumped to 1.71.0-beta.4
+    * @aigne/deepseek bumped to 0.7.61-beta.4
+    * @aigne/doubao bumped to 1.2.5-beta.4
+    * @aigne/gemini bumped to 0.14.15-beta.4
+    * @aigne/ideogram bumped to 0.4.15-beta.4
+    * @aigne/ollama bumped to 0.7.61-beta.4
+    * @aigne/open-router bumped to 0.7.61-beta.4
+    * @aigne/openai bumped to 0.16.15-beta.4
+    * @aigne/platform-helpers bumped to 0.6.6-beta
+    * @aigne/poe bumped to 1.1.5-beta.4
+    * @aigne/transport bumped to 0.15.24-beta.5
+    * @aigne/xai bumped to 0.7.61-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.68-beta.4
+
+## [0.10.15-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.15-beta.3...aigne-hub-v0.10.15-beta.4) (2025-12-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.15-beta.3
+    * @aigne/bedrock bumped to 0.10.20-beta.3
+    * @aigne/core bumped to 1.71.0-beta.3
+    * @aigne/deepseek bumped to 0.7.61-beta.3
+    * @aigne/doubao bumped to 1.2.5-beta.3
+    * @aigne/gemini bumped to 0.14.15-beta.3
+    * @aigne/ideogram bumped to 0.4.15-beta.3
+    * @aigne/ollama bumped to 0.7.61-beta.3
+    * @aigne/open-router bumped to 0.7.61-beta.3
+    * @aigne/openai bumped to 0.16.15-beta.3
+    * @aigne/poe bumped to 1.1.5-beta.3
+    * @aigne/transport bumped to 0.15.24-beta.4
+    * @aigne/xai bumped to 0.7.61-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.68-beta.3
+
 ## [0.10.15-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.15-beta.2...aigne-hub-v0.10.15-beta.3) (2025-12-09)
 
 

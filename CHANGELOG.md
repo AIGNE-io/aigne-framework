@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.90.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.5...aigne-framework-v1.90.0-beta.6) (2025-12-10)
+
+
+### Bug Fixes
+
+* bump version ([af04b69](https://github.com/AIGNE-io/aigne-framework/commit/af04b6931951afa35d52065430acc7fef4b10087))
+* **core:** support load third agent in skills ([#819](https://github.com/AIGNE-io/aigne-framework/issues/819)) ([bcbb140](https://github.com/AIGNE-io/aigne-framework/commit/bcbb1404d2fe9c709d99a8c28883b21dd107a844))
+
 ## [1.90.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.4...aigne-framework-v1.90.0-beta.5) (2025-12-10)
 
 

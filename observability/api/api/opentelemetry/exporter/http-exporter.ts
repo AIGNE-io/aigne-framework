@@ -111,18 +111,6 @@ class HttpExporter implements HttpExporterInterface {
       await this.updateQueue.drained();
     }
 
-    await new Promise<void>((resolve) => {
-      const check = () => {
-        if (this.updateQueue.idle()) {
-          resolve(undefined);
-        } else {
-          setTimeout(check, 300);
-        }
-      };
-
-      check();
-    });
-
     if (this._db) {
       const db = await this._db;
       await updateStatusByIds(db, contextIds, { code: SpanStatusCode.ERROR, message: "Exited" });

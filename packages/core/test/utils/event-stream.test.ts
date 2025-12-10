@@ -5,7 +5,11 @@ import {
   AgentResponseStreamSSE,
   EventStreamParser,
 } from "@aigne/core/utils/event-stream.js";
-import { arrayToReadableStream, readableStreamToArray } from "@aigne/core/utils/stream-utils.js";
+import {
+  agentResponseStreamToObject,
+  arrayToReadableStream,
+  readableStreamToArray,
+} from "@aigne/core/utils/stream-utils.js";
 
 test("EventStreamParser should enqueue an error for invalid json", async () => {
   const stream = arrayToReadableStream([
@@ -36,6 +40,31 @@ test("AgentResponseStreamParser should raise error from upstream", async () => {
   ]).pipeThrough(new AgentResponseStreamParser());
 
   expect(readableStreamToArray(stream)).rejects.toThrow("should raise error");
+});
+
+test("AgentResponseStreamParser should return mutable result", async () => {
+  const stream = arrayToReadableStream<AgentResponseChunk<{ profile: { name: string } }>>([
+    { delta: { json: { profile: { name: "Bob" } } } },
+  ]).pipeThrough(new AgentResponseStreamParser());
+
+  const result = await agentResponseStreamToObject(stream);
+  expect(result).toMatchInlineSnapshot(`
+    {
+      "profile": {
+        "name": "Bob",
+      },
+    }
+  `);
+
+  result.profile.name = "Alice";
+
+  expect(result).toMatchInlineSnapshot(`
+    {
+      "profile": {
+        "name": "Alice",
+      },
+    }
+  `);
 });
 
 test("AgentResponseStreamSSE should convert AgentResponseStream to SSE format", async () => {

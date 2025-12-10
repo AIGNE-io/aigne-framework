@@ -1,12 +1,19 @@
 import { initDatabase } from "@aigne/sqlite";
+import { SpanStatusCode } from "@opentelemetry/api";
 import { ExportResultCode } from "@opentelemetry/core";
 import type { ReadableSpan, SpanExporter } from "@opentelemetry/sdk-trace-base";
+import fastq, { type queueAsPromised } from "fastq";
 import type { AttributeParams, TraceFormatSpans } from "../../core/type.js";
-import { insertTrace, isBlocklet, updateTrace } from "../../core/util.js";
+import { insertTrace, isBlocklet, updateStatusByIds, updateTrace } from "../../core/util.js";
 import { migrate } from "../../server/migrate.js";
 import getAIGNEHomePath from "../../server/utils/image-home-path.js";
 import saveFiles from "../../server/utils/save-files.js";
 import { validateTraceSpans } from "./util.js";
+
+interface UpdateTask {
+  id: string;
+  data: AttributeParams;
+}
 
 export interface HttpExporterInterface extends SpanExporter {
   export(
@@ -21,7 +28,8 @@ class HttpExporter implements HttpExporterInterface {
   private dbPath?: string;
   public _db?: any;
   private upsert: (spans: TraceFormatSpans[]) => Promise<void>;
-  public update: (id: string, data: AttributeParams) => Promise<void>;
+  private _update: (id: string, data: AttributeParams) => Promise<void>;
+  private updateQueue: queueAsPromised<UpdateTask>;
 
   async getDb() {
     if (isBlocklet) return;
@@ -43,8 +51,17 @@ class HttpExporter implements HttpExporterInterface {
     this.dbPath = dbPath;
     this._db ??= this.getDb();
     this.upsert = exportFn ?? (isBlocklet ? async () => {} : this._upsertWithSQLite);
-    this.update = updateFn ?? (isBlocklet ? async () => {} : this._updateWithSQLite);
+    this._update = updateFn ?? (isBlocklet ? async () => {} : this._updateWithSQLite);
+    this.updateQueue = fastq.promise(this.updateWorker.bind(this), 1);
   }
+
+  private async updateWorker(task: UpdateTask): Promise<void> {
+    await this._update(task.id, task.data);
+  }
+
+  public update = (id: string, data: AttributeParams): Promise<void> => {
+    return this.updateQueue.push({ id, data });
+  };
 
   async _upsertWithSQLite(validatedData: TraceFormatSpans[]) {
     const db = await this._db;
@@ -76,7 +93,8 @@ class HttpExporter implements HttpExporterInterface {
     resultCallback: (result: { code: ExportResultCode }) => void,
   ) {
     try {
-      await this.upsert(validateTraceSpans(spans));
+      const data = validateTraceSpans(spans);
+      await this.upsert(data);
 
       resultCallback({ code: ExportResultCode.SUCCESS });
     } catch (error) {
@@ -88,11 +106,12 @@ class HttpExporter implements HttpExporterInterface {
     }
   }
 
-  async shutdown() {
+  async shutdown(contextIds: string[] = []) {
+    await this.updateQueue.drained();
+
     if (this._db) {
       const db = await this._db;
-      await db?.close?.();
-      this._db = undefined;
+      await updateStatusByIds(db, contextIds, { code: SpanStatusCode.ERROR, message: "Exited" });
     }
   }
 }

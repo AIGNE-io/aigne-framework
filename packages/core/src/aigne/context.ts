@@ -237,8 +237,6 @@ export interface Context<U extends UserContext = UserContext>
  * @hidden
  */
 export class AIGNEContext implements Context {
-  static exitCount = 0;
-
   constructor(
     parent?: ConstructorParameters<typeof AIGNEContextShared>[0],
     { reset }: { reset?: boolean } = {},
@@ -270,8 +268,7 @@ export class AIGNEContext implements Context {
     }
 
     this.id = this.span?.spanContext()?.spanId ?? v7();
-
-    this.initProcessExitHandler();
+    this.internal.contextIds.add(this.id);
   }
 
   id: string;
@@ -481,28 +478,6 @@ export class AIGNEContext implements Context {
     return this.internal.events.emit(eventName, ...newArgs);
   }
 
-  initProcessExitHandler() {
-    if (this.parentId) return;
-
-    AIGNEContext.exitCount++;
-
-    process.once("SIGINT", async () => {
-      try {
-        if (process.env.AIGNE_OBSERVABILITY_DISABLED) return;
-
-        await this.observer?.update(this.id, {
-          status: { code: SpanStatusCode.ERROR, message: "SIGINT" },
-        });
-      } finally {
-        AIGNEContext.exitCount--;
-
-        if (AIGNEContext.exitCount === 0) {
-          process.exit(0);
-        }
-      }
-    });
-  }
-
   private async trace<K extends keyof ContextEmitEventMap>(
     eventName: K,
     args: Args<K, ContextEmitEventMap>,
@@ -551,6 +526,7 @@ export class AIGNEContext implements Context {
           span.setStatus({ code: SpanStatusCode.OK });
           span.end();
 
+          this.internal.contextIds.delete(this.id);
           break;
         }
         case "agentFailed": {
@@ -558,6 +534,7 @@ export class AIGNEContext implements Context {
           span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
           span.end();
 
+          this.internal.contextIds.delete(this.id);
           break;
         }
       }
@@ -593,10 +570,12 @@ class AIGNEContextShared {
     > & {
       messageQueue?: MessageQueue;
       events?: Emitter<any>;
+      contextIds?: Set<string>;
     },
   ) {
     this.messageQueue = this.parent?.messageQueue ?? new MessageQueue();
     this.events = this.parent?.events ?? new Emitter<any>();
+    this.contextIds = this.parent?.contextIds ?? new Set<string>();
   }
 
   readonly messageQueue: MessageQueue;
@@ -632,6 +611,8 @@ class AIGNEContextShared {
   }
 
   usage: ContextUsage = newEmptyContextUsage();
+
+  contextIds: Set<string>;
 
   userContext: Context["userContext"] = {};
 

@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { SpanStatusCode } from "@opentelemetry/api";
 import Decimal from "decimal.js";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import { Trace } from "../server/models/trace.js";
 import type { AttributeParams, TraceFormatSpans } from "./type.ts";
@@ -155,6 +155,25 @@ const propagateErrorStatusToChildren = async (
   }
 };
 
+export const updateStatusByIds = async (
+  db: LibSQLDatabase,
+  ids: string[],
+  status: { code: number; message?: string },
+) => {
+  if (!ids.length) return;
+
+  await db
+    .update(Trace)
+    .set({ status, endTime: Date.now() })
+    .where(
+      and(
+        inArray(Trace.id, ids),
+        sql`json_extract(${Trace.status}, '$.code') = ${SpanStatusCode.UNSET}`,
+      ),
+    )
+    .execute();
+};
+
 export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) => {
   const insertSql = sql`
     INSERT INTO Trace (
@@ -196,8 +215,6 @@ export const insertTrace = async (db: LibSQLDatabase, trace: TraceFormatSpans) =
       startTime = excluded.startTime,
       endTime = excluded.endTime,
       status = excluded.status,
-      userId = excluded.userId,
-      sessionId = excluded.sessionId,
       componentId = excluded.componentId,
       action = excluded.action,
       isImport = excluded.isImport;
@@ -257,6 +274,8 @@ export const updateTrace = async (db: LibSQLDatabase, id: string, data: Attribut
     cost: number;
     status?: { [key: string]: any };
     endTime?: number;
+    userId?: string;
+    sessionId?: string;
   } = {
     attributes: updatedAttributes,
     token: token || 0,
@@ -266,6 +285,11 @@ export const updateTrace = async (db: LibSQLDatabase, id: string, data: Attribut
   if (data.status) {
     params.status = data.status;
     params.endTime = Date.now();
+  }
+
+  if (hasUserContext) {
+    params.userId = data.userContext?.userId;
+    params.sessionId = data.userContext?.sessionId;
   }
 
   await db.update(Trace).set(params).where(eq(Trace.id, id)).execute();

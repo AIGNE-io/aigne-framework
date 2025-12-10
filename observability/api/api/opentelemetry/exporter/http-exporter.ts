@@ -107,9 +107,7 @@ class HttpExporter implements HttpExporterInterface {
   }
 
   async shutdown(contextIds: string[] = []) {
-    if (!this.updateQueue.idle()) {
-      await this.updateQueue.drained();
-    }
+    await this.updateQueue.drained();
 
     if (this._db) {
       const db = await this._db;

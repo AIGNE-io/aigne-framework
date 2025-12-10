@@ -32,22 +32,18 @@ export class AFSSearchAgent extends Agent<AFSSearchInput, AFSSearchOutput> {
     super({
       name: "afs_search",
       description:
-        "Find files by searching content using keywords - returns matching files with their paths",
+        "Search file contents by keywords. Use when finding files containing specific text or code patterns.",
       ...options,
       inputSchema: z.object({
-        path: z.string().describe("The directory path to search in (e.g., '/', '/docs')"),
-        query: z
-          .string()
-          .describe(
-            "Keywords to search for in file contents (e.g., 'function authentication', 'database config')",
-          ),
+        path: z.string().describe("Absolute directory path to search in"),
+        query: z.string().describe("Search keywords or patterns"),
         options: z
           .object({
-            limit: z.number().optional().describe("Maximum number of entries to return"),
+            limit: z.number().optional().describe("Max results to return"),
             caseSensitive: z
               .boolean()
               .optional()
-              .describe("Whether the search is case sensitive, default is false"),
+              .describe("Case-sensitive search (default: false)"),
           })
           .optional(),
       }),

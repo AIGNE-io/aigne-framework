@@ -35,44 +35,21 @@ export class AFSEditAgent extends Agent<AFSEditInput, AFSEditOutput> {
     super({
       name: "afs_edit",
       description:
-        "Edit an existing file in the AFS by applying a series of custom patches to its content - preserves unchanged parts",
+        "Apply precise line-based patches to modify file content. Use when making targeted changes without rewriting the entire file.",
       ...options,
       inputSchema: z.object({
-        path: z
-          .string()
-          .describe("The file path to the target file to be edited (e.g., '/docs/api.md')"),
+        path: z.string().describe("Absolute file path to edit"),
         patches: z
           .array(
             z.object({
-              start_line: z
-                .number()
-                .int()
-                .describe(
-                  "The starting line number (0-based) in the original target file where the patch should be applied",
-                ),
-              end_line: z
-                .number()
-                .int()
-                .describe(
-                  "The ending line number (0-based, exclusive) in the original target file. The range is [start_line, end_line). To insert at line N without deleting, use start_line=N, end_line=N.",
-                ),
-              replace: z
-                .string()
-                .optional()
-                .describe(
-                  "The new content that will replace the lines from start_line to end_line in the original target file",
-                ),
-              delete: z
-                .boolean()
-                .describe(
-                  "Indicates whether the specified lines should be deleted (true) or replaced (false)",
-                ),
+              start_line: z.number().int().describe("Start line number (0-based, inclusive)"),
+              end_line: z.number().int().describe("End line number (0-based, exclusive)"),
+              replace: z.string().optional().describe("New content to replace the line range"),
+              delete: z.boolean().describe("Delete mode: true to delete lines, false to replace"),
             }),
           )
           .min(1)
-          .describe(
-            "A list of patches to update the target file, each patch specifies a line range and replacement content",
-          ),
+          .describe("List of patches to apply sequentially"),
       }),
       outputSchema: z.object({
         status: z.string(),

@@ -29,23 +29,15 @@ export class AFSReadAgent extends Agent<AFSReadInput, AFSReadOutput> {
   constructor(options: AFSReadAgentOptions) {
     super({
       name: "afs_read",
-      description: `\
-Read file contents from the AFS - path must be an exact file path from list or search results
-
-Usage:
-- Use withLineNumbers=true to get line numbers for code reviews or edits
-`,
+      description:
+        "Read complete file contents. Use when you need to review, analyze, or understand file content before making changes.",
       ...options,
       inputSchema: z.object({
-        path: z
-          .string()
-          .describe(
-            "Exact file path from list or search results (e.g., '/docs/api.md', '/src/utils/helper.js')",
-          ),
+        path: z.string().describe("Absolute file path to read"),
         withLineNumbers: z
           .boolean()
           .optional()
-          .describe(`Whether to include line numbers in the returned content, default is false`),
+          .describe("Include line numbers in output (required when planning to edit the file)"),
       }),
       outputSchema: z.object({
         status: z.string(),

@@ -24,6 +24,10 @@ export interface AFSRenameOptions {
   overwrite?: boolean;
 }
 
+export interface AFSWriteOptions {
+  append?: boolean;
+}
+
 export interface AFSWriteEntryPayload extends Omit<AFSEntry, "id" | "path"> {}
 
 export interface AFSModule {
@@ -40,6 +44,7 @@ export interface AFSModule {
   write?(
     path: string,
     content: AFSWriteEntryPayload,
+    options?: AFSWriteOptions,
   ): Promise<{ result: AFSEntry; message?: string }>;
 
   delete?(path: string, options?: AFSDeleteOptions): Promise<{ message?: string }>;

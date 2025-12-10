@@ -30,13 +30,13 @@ export class AFSListAgent extends Agent<AFSListInput, AFSListOutput> {
     super({
       name: "afs_list",
       description:
-        "Get a tree view of directory contents in the AFS - shows hierarchical structure of files and folders",
+        "Browse directory structure as a tree view. Use when exploring directory contents or understanding file organization.",
       ...options,
       inputSchema: z.object({
-        path: z.string().describe("The directory path to browse (e.g., '/', '/docs', '/src')"),
+        path: z.string().describe("Absolute directory path to browse"),
         options: z
           .object({
-            maxDepth: z.number().optional().describe("Maximum depth to display in the tree view"),
+            maxDepth: z.number().optional().describe("Tree depth limit (default: 1)"),
           })
           .optional(),
       }),

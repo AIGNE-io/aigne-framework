@@ -23,15 +23,12 @@ export class AFSExecAgent extends Agent<AFSExecInput, AFSExecOutput> {
   constructor(options: AFSExecAgentOptions) {
     super({
       name: "afs_exec",
-      description: "Execute a function or command available in the AFS modules",
+      description:
+        "Execute functions or commands from AFS modules. Use when running operations provided by mounted modules.",
       ...options,
       inputSchema: z.object({
-        path: z.string().describe("The exact path to the executable entry in AFS"),
-        args: z
-          .string()
-          .describe(
-            "JSON stringified arguments to pass to the executable, must be an object matching the input schema of the executable",
-          ),
+        path: z.string().describe("Absolute path to the executable function in AFS"),
+        args: z.string().describe("JSON string of arguments matching the function's input schema"),
       }),
       outputSchema: z.object({
         result: z.record(z.any()),

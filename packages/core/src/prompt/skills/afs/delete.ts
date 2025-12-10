@@ -27,21 +27,15 @@ export class AFSDeleteAgent extends Agent<AFSDeleteInput, AFSDeleteOutput> {
     super({
       name: "afs_delete",
       description:
-        "Delete a file or directory from the AFS - use with caution as this is irreversible",
+        "Permanently delete files or directories. Use when removing unwanted files or cleaning up temporary data.",
       ...options,
       inputSchema: z.object({
-        path: z
-          .string()
-          .describe(
-            "The file or directory path to delete (e.g., '/docs/old-file.md', '/temp/backup')",
-          ),
+        path: z.string().describe("Absolute file or directory path to delete"),
         recursive: z
           .boolean()
           .optional()
           .default(false)
-          .describe(
-            "Whether to recursively delete directories. Default is false. Must be true to delete directories.",
-          ),
+          .describe("Allow directory deletion (default: false, required for directories)"),
       }),
       outputSchema: z.object({
         status: z.string(),

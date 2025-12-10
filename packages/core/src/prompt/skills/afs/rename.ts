@@ -29,22 +29,16 @@ export class AFSRenameAgent extends Agent<AFSRenameInput, AFSRenameOutput> {
     super({
       name: "afs_rename",
       description:
-        "Rename or move a file or directory in the AFS - can move files across directories",
+        "Rename or move files and directories. Use when reorganizing files, changing names, or moving to different locations.",
       ...options,
       inputSchema: z.object({
-        oldPath: z
-          .string()
-          .describe("The current path of the file or directory (e.g., '/docs/old-name.md')"),
-        newPath: z
-          .string()
-          .describe(
-            "The new path for the file or directory (e.g., '/docs/new-name.md' or '/archive/doc.md')",
-          ),
+        oldPath: z.string().describe("Absolute current file or directory path"),
+        newPath: z.string().describe("Absolute new file or directory path"),
         overwrite: z
           .boolean()
           .optional()
           .default(false)
-          .describe("Whether to overwrite the destination if it already exists. Default is false."),
+          .describe("Overwrite if destination exists (default: false)"),
       }),
       outputSchema: z.object({
         status: z.string(),

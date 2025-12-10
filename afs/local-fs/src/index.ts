@@ -8,6 +8,7 @@ import type {
   AFSRenameOptions,
   AFSSearchOptions,
   AFSWriteEntryPayload,
+  AFSWriteOptions,
 } from "@aigne/afs";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import { globStream } from "glob";
@@ -130,8 +131,10 @@ export class LocalFS implements AFSModule {
   async write(
     path: string,
     entry: AFSWriteEntryPayload,
+    options?: AFSWriteOptions,
   ): Promise<{ result: AFSEntry; message?: string }> {
     const fullPath = join(this.options.localPath, path);
+    const append = options?.append ?? false;
 
     // Ensure parent directory exists
     const parentDir = dirname(fullPath);
@@ -145,7 +148,7 @@ export class LocalFS implements AFSModule {
       } else {
         contentToWrite = JSON.stringify(entry.content, null, 2);
       }
-      await writeFile(fullPath, contentToWrite, "utf8");
+      await writeFile(fullPath, contentToWrite, { encoding: "utf8", flag: append ? "a" : "w" });
     }
 
     // Get file stats after writing

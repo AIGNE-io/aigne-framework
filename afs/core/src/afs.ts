@@ -10,6 +10,7 @@ import type {
   AFSRootEvents,
   AFSSearchOptions,
   AFSWriteEntryPayload,
+  AFSWriteOptions,
 } from "./type.js";
 
 const DEFAULT_MAX_DEPTH = 1;
@@ -137,11 +138,12 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
   async write(
     path: string,
     content: AFSWriteEntryPayload,
+    options?: AFSWriteOptions,
   ): Promise<{ result: AFSEntry; message?: string }> {
     const module = this.findModules(path, { exactMatch: true })[0];
     if (!module?.module.write) throw new Error(`No module found for path: ${path}`);
 
-    const res = await module.module.write(module.subpath, content);
+    const res = await module.module.write(module.subpath, content, options);
 
     return {
       ...res,

@@ -1513,6 +1513,9 @@ importers:
       express-sse:
         specifier: ^1.0.0
         version: 1.0.0
+      fastq:
+        specifier: ^1.19.1
+        version: 1.19.1
       mime:
         specifier: ^4.1.0
         version: 4.1.0

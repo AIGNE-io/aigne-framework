@@ -62,13 +62,13 @@ export class AIGNEObserver {
     await this.exporter?.update(id, data);
   }
 
-  async close(): Promise<void> {
+  async close(contextIds: string[] = []): Promise<void> {
     try {
+      // Shutdown exporter
+      await this.exporter?.shutdown(contextIds);
+
       // Shutdown processor
       await this.processor?.shutdown();
-
-      // Shutdown exporter
-      await this.exporter?.shutdown();
 
       // Shutdown SDK
       await this.sdk?.shutdown();

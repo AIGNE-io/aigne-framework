@@ -6,6 +6,15 @@
   * dependencies
     * @aigne/afs bumped to 1.2.0
 
+## [1.1.3-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.1.3-beta...afs-history-v1.1.3-beta.1) (2025-12-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta.1
+
 ## [1.1.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.1.2...afs-history-v1.1.3-beta) (2025-12-07)
 
 

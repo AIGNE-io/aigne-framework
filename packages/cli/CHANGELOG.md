@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.58.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.58.0-beta.3...cli-v1.58.0-beta.4) (2025-12-10)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta.1
+    * @aigne/afs-history bumped to 1.1.3-beta.1
+    * @aigne/afs-local-fs bumped to 1.3.0-beta.3
+    * @aigne/agent-library bumped to 1.23.0-beta.4
+    * @aigne/agentic-memory bumped to 1.1.5-beta.3
+    * @aigne/aigne-hub bumped to 0.10.15-beta.4
+    * @aigne/core bumped to 1.71.0-beta.3
+    * @aigne/default-memory bumped to 1.3.5-beta.3
+    * @aigne/observability-api bumped to 0.11.13-beta
+    * @aigne/openai bumped to 0.16.15-beta.3
+    * @aigne/secrets bumped to 0.1.5-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.68-beta.3
+
 ## [1.58.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.58.0-beta.2...cli-v1.58.0-beta.3) (2025-12-09)
 
 

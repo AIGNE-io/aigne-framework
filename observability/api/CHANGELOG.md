@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.13-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.12...observability-api-v0.11.13-beta) (2025-12-10)
+
+
+### Bug Fixes
+
+* **observability:** improve trace shutdown handling and exit status  ([#813](https://github.com/AIGNE-io/aigne-framework/issues/813)) ([6215f13](https://github.com/AIGNE-io/aigne-framework/commit/6215f13243b23103c1793a4559798f0e90722384))
+
 ## [0.11.12](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.12-beta...observability-api-v0.11.12) (2025-12-06)
 
 

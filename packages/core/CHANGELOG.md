@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.71.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.71.0-beta.2...core-v1.71.0-beta.3) (2025-12-10)
+
+
+### Bug Fixes
+
+* **afs:** add case-sensitive option for search with case-insensitive default ([#814](https://github.com/AIGNE-io/aigne-framework/issues/814)) ([9dc9446](https://github.com/AIGNE-io/aigne-framework/commit/9dc944635104fc311e7756b4bde0a20275cfe8ec))
+* **core:** disable Immer autofreeze to return mutable response objects ([#817](https://github.com/AIGNE-io/aigne-framework/issues/817)) ([a3d0651](https://github.com/AIGNE-io/aigne-framework/commit/a3d06512cdadb9d85f92b7e8d2fd85b4f35a804b))
+* **observability:** improve trace shutdown handling and exit status  ([#813](https://github.com/AIGNE-io/aigne-framework/issues/813)) ([6215f13](https://github.com/AIGNE-io/aigne-framework/commit/6215f13243b23103c1793a4559798f0e90722384))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta.1
+    * @aigne/afs-history bumped to 1.1.3-beta.1
+    * @aigne/observability-api bumped to 0.11.13-beta
+
 ## [1.71.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.71.0-beta.1...core-v1.71.0-beta.2) (2025-12-09)
 
 

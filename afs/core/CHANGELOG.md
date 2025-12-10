@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.3.0-beta...afs-v1.3.0-beta.1) (2025-12-10)
+
+
+### Bug Fixes
+
+* **afs:** add case-sensitive option for search with case-insensitive default ([#814](https://github.com/AIGNE-io/aigne-framework/issues/814)) ([9dc9446](https://github.com/AIGNE-io/aigne-framework/commit/9dc944635104fc311e7756b4bde0a20275cfe8ec))
+
 ## [1.3.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.3...afs-v1.3.0-beta) (2025-12-07)
 
 

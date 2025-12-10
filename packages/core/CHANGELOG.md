@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.71.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.71.0-beta.3...core-v1.71.0-beta.4) (2025-12-10)
+
+
+### Bug Fixes
+
+* bump version ([af04b69](https://github.com/AIGNE-io/aigne-framework/commit/af04b6931951afa35d52065430acc7fef4b10087))
+* **core:** support load third agent in skills ([#819](https://github.com/AIGNE-io/aigne-framework/issues/819)) ([bcbb140](https://github.com/AIGNE-io/aigne-framework/commit/bcbb1404d2fe9c709d99a8c28883b21dd107a844))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta.2
+    * @aigne/afs-history bumped to 1.1.3-beta.2
+    * @aigne/observability-api bumped to 0.11.13-beta.1
+    * @aigne/platform-helpers bumped to 0.6.6-beta
+
 ## [1.71.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.71.0-beta.2...core-v1.71.0-beta.3) (2025-12-10)
 
 

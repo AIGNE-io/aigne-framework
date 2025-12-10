@@ -292,3 +292,28 @@ test("LocalFS should search in written files", async () => {
   expect(foundFile).toBeDefined();
   expect(foundFile?.summary).toContain("unique keyword");
 });
+
+test("LocalFS should handle search with case sensitive option (default false)", async () => {
+  // First write a file with mixed case content
+  await localFS.write("caseTest.txt", {
+    content: "Case Sensitive Content",
+  });
+
+  // Search with caseSensitive: false (default)
+  let result = await localFS.search("", "case sensitive");
+  expect(result.list).toBeDefined();
+  let foundFile = result.list.find((entry) => entry.path === "caseTest.txt");
+  expect(foundFile).toBeDefined();
+
+  // Search with caseSensitive: true
+  result = await localFS.search("", "case sensitive", { caseSensitive: true });
+  expect(result.list).toBeDefined();
+  foundFile = result.list.find((entry) => entry.path === "caseTest.txt");
+  expect(foundFile).toBeUndefined();
+
+  // Search with exact case
+  result = await localFS.search("", "Case Sensitive", { caseSensitive: true });
+  expect(result.list).toBeDefined();
+  foundFile = result.list.find((entry) => entry.path === "caseTest.txt");
+  expect(foundFile).toBeDefined();
+});

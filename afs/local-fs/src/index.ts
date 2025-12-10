@@ -177,7 +177,7 @@ export class LocalFS implements AFSModule {
   ): Promise<{ list: AFSEntry[]; message?: string }> {
     const limit = Math.min(options?.limit || LIST_MAX_LIMIT, LIST_MAX_LIMIT);
     const basePath = join(this.options.localPath, path);
-    const matches = await searchWithRipgrep(basePath, query);
+    const matches = await searchWithRipgrep(basePath, query, options);
 
     const entries: AFSEntry[] = [];
     const processedFiles = new Set<string>();

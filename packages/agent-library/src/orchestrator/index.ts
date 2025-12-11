@@ -21,7 +21,7 @@ import {
 import { camelizeSchema, optionalize } from "@aigne/core/loader/schema.js";
 import { isAgent } from "@aigne/core/utils/agent-utils.js";
 import { estimateTokens } from "@aigne/core/utils/token-estimator.js";
-import { omit } from "@aigne/core/utils/type-utils.js";
+import { omit, pick } from "@aigne/core/utils/type-utils.js";
 import { z } from "zod";
 import {
   ORCHESTRATOR_COMPLETE_PROMPT,
@@ -50,7 +50,7 @@ import {
  */
 export interface OrchestratorAgentOptions<I extends Message = Message, O extends Message = Message>
   extends Omit<AIAgentOptions<I, O>, "instructions"> {
-  objective: PromptBuilder;
+  objective?: PromptBuilder;
 
   planner?: OrchestratorAgent<I, O>["planner"];
 
@@ -69,7 +69,7 @@ export interface LoadOrchestratorAgentOptions<
   I extends Message = Message,
   O extends Message = Message,
 > extends Omit<AIAgentOptions<I, O>, "instructions"> {
-  objective: string | PromptBuilder | Instructions;
+  objective?: string | PromptBuilder | Instructions;
 
   planner?: NestAgentSchema | { instructions?: string | PromptBuilder | Instructions };
 
@@ -145,7 +145,7 @@ export class OrchestratorAgent<
 
     return new OrchestratorAgent({
       ...parsed,
-      objective: instructionsToPromptBuilder(valid.objective),
+      objective: valid.objective && instructionsToPromptBuilder(valid.objective),
       planner: valid.planner
         ? ((await loadNestAgent(filepath, valid.planner, options, {
             ...defaultPlannerOptions,
@@ -217,7 +217,7 @@ export class OrchestratorAgent<
     this.stateManagement = options.stateManagement;
   }
 
-  private objective: PromptBuilder;
+  private objective?: PromptBuilder;
 
   private planner: Agent<PlannerInput, PlannerOutput>;
 
@@ -278,10 +278,12 @@ export class OrchestratorAgent<
     const model = this.model || options.model || options.context.model;
     if (!model) throw new Error("model is required to run OrchestratorAgent");
 
-    const { prompt: objective } = await this.objective.buildPrompt({
-      input,
-      context: options.context,
-    });
+    const objective = (
+      await this.objective?.buildPrompt({
+        input,
+        context: options.context,
+      })
+    )?.prompt;
 
     const executionState: ExecutionState = { tasks: [] };
     let iterationCount = 0;
@@ -308,7 +310,11 @@ export class OrchestratorAgent<
 
       const plan = await this.invokeChildAgent(
         this.planner,
-        { objective, executionState: compressedState },
+        {
+          objective,
+          executionState: compressedState,
+          ...pick(input, this.planner.inputKeys),
+        },
         { ...options, model, streaming: false },
       );
 
@@ -321,7 +327,12 @@ export class OrchestratorAgent<
 
       const taskResult = await this.invokeChildAgent(
         this.worker,
-        { objective, executionState: compressedState, task },
+        {
+          objective,
+          executionState: compressedState,
+          task,
+          ...pick(input, this.worker.inputKeys),
+        },
         { ...options, model, streaming: false },
       )
         .then((res) => {
@@ -348,7 +359,11 @@ export class OrchestratorAgent<
 
     yield* await this.invokeChildAgent(
       this.completer,
-      { objective, executionState: compressedState },
+      {
+        objective,
+        executionState: compressedState,
+        ...pick(input, this.completer.inputKeys),
+      },
       { ...options, model, streaming: true },
     );
   }
@@ -362,7 +377,7 @@ function getOrchestratorAgentSchema({ filepath }: { filepath: string }) {
 
   return camelizeSchema(
     z.object({
-      objective: instructionsSchema,
+      objective: optionalize(instructionsSchema),
       planner: optionalize(nestAgentSchema),
       worker: optionalize(nestAgentSchema),
       completer: optionalize(nestAgentSchema),

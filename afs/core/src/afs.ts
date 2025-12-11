@@ -1,13 +1,16 @@
 import { Emitter } from "strict-event-emitter";
 import { joinURL } from "ufo";
 import type {
+  AFSDeleteOptions,
   AFSEntry,
   AFSListOptions,
   AFSModule,
+  AFSRenameOptions,
   AFSRoot,
   AFSRootEvents,
   AFSSearchOptions,
   AFSWriteEntryPayload,
+  AFSWriteOptions,
 } from "./type.js";
 
 const DEFAULT_MAX_DEPTH = 1;
@@ -135,11 +138,12 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
   async write(
     path: string,
     content: AFSWriteEntryPayload,
+    options?: AFSWriteOptions,
   ): Promise<{ result: AFSEntry; message?: string }> {
     const module = this.findModules(path, { exactMatch: true })[0];
     if (!module?.module.write) throw new Error(`No module found for path: ${path}`);
 
-    const res = await module.module.write(module.subpath, content);
+    const res = await module.module.write(module.subpath, content, options);
 
     return {
       ...res,
@@ -148,6 +152,35 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
         path: joinURL(module.modulePath, res.result.path),
       },
     };
+  }
+
+  async delete(path: string, options?: AFSDeleteOptions): Promise<{ message?: string }> {
+    const module = this.findModules(path, { exactMatch: true })[0];
+    if (!module?.module.delete) throw new Error(`No module found for path: ${path}`);
+
+    return await module.module.delete(module.subpath, options);
+  }
+
+  async rename(
+    oldPath: string,
+    newPath: string,
+    options?: AFSRenameOptions,
+  ): Promise<{ message?: string }> {
+    const oldModule = this.findModules(oldPath, { exactMatch: true })[0];
+    const newModule = this.findModules(newPath, { exactMatch: true })[0];
+
+    // Both paths must be in the same module
+    if (!oldModule || !newModule || oldModule.modulePath !== newModule.modulePath) {
+      throw new Error(
+        `Cannot rename across different modules. Both paths must be in the same module.`,
+      );
+    }
+
+    if (!oldModule.module.rename) {
+      throw new Error(`Module does not support rename operation: ${oldModule.modulePath}`);
+    }
+
+    return await oldModule.module.rename(oldModule.subpath, newModule.subpath, options);
   }
 
   async search(

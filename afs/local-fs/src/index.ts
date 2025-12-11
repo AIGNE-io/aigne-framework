@@ -1,11 +1,14 @@
-import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import type {
+  AFSDeleteOptions,
   AFSEntry,
   AFSListOptions,
   AFSModule,
+  AFSRenameOptions,
   AFSSearchOptions,
   AFSWriteEntryPayload,
+  AFSWriteOptions,
 } from "@aigne/afs";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import { globStream } from "glob";
@@ -128,8 +131,10 @@ export class LocalFS implements AFSModule {
   async write(
     path: string,
     entry: AFSWriteEntryPayload,
+    options?: AFSWriteOptions,
   ): Promise<{ result: AFSEntry; message?: string }> {
     const fullPath = join(this.options.localPath, path);
+    const append = options?.append ?? false;
 
     // Ensure parent directory exists
     const parentDir = dirname(fullPath);
@@ -143,7 +148,7 @@ export class LocalFS implements AFSModule {
       } else {
         contentToWrite = JSON.stringify(entry.content, null, 2);
       }
-      await writeFile(fullPath, contentToWrite, "utf8");
+      await writeFile(fullPath, contentToWrite, { encoding: "utf8", flag: append ? "a" : "w" });
     }
 
     // Get file stats after writing
@@ -168,6 +173,60 @@ export class LocalFS implements AFSModule {
     };
 
     return { result: writtenEntry };
+  }
+
+  async delete(path: string, options?: AFSDeleteOptions): Promise<{ message?: string }> {
+    const fullPath = join(this.options.localPath, path);
+    const recursive = options?.recursive ?? false;
+
+    const stats = await stat(fullPath);
+
+    // If it's a directory and recursive is false, throw an error
+    if (stats.isDirectory() && !recursive) {
+      throw new Error(
+        `Cannot delete directory '${path}' without recursive option. Set recursive: true to delete directories.`,
+      );
+    }
+
+    await rm(fullPath, { recursive, force: true });
+    return { message: `Successfully deleted: ${path}` };
+  }
+
+  async rename(
+    oldPath: string,
+    newPath: string,
+    options?: AFSRenameOptions,
+  ): Promise<{ message?: string }> {
+    const oldFullPath = join(this.options.localPath, oldPath);
+    const newFullPath = join(this.options.localPath, newPath);
+    const overwrite = options?.overwrite ?? false;
+
+    // Check if source exists
+    await stat(oldFullPath);
+
+    // Check if destination exists
+    try {
+      await stat(newFullPath);
+      if (!overwrite) {
+        throw new Error(
+          `Destination '${newPath}' already exists. Set overwrite: true to replace it.`,
+        );
+      }
+    } catch (error) {
+      // Destination doesn't exist, which is fine
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+        throw error;
+      }
+    }
+
+    // Ensure parent directory of new path exists
+    const newParentDir = dirname(newFullPath);
+    await mkdir(newParentDir, { recursive: true });
+
+    // Perform the rename/move
+    await rename(oldFullPath, newFullPath);
+
+    return { message: `Successfully renamed '${oldPath}' to '${newPath}'` };
   }
 
   async search(

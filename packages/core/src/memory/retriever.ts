@@ -114,6 +114,6 @@ export class MemoryRetriever extends Agent<MemoryRetrieverInput, MemoryRetriever
       throw new Error("MemoryRetriever process function is not implemented.");
     }
 
-    return this._process(input, options);
+    return this._process.apply(this as any, [input, options]);
   }
 }

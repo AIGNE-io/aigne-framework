@@ -16,6 +16,18 @@ export interface AFSSearchOptions {
   caseSensitive?: boolean;
 }
 
+export interface AFSDeleteOptions {
+  recursive?: boolean;
+}
+
+export interface AFSRenameOptions {
+  overwrite?: boolean;
+}
+
+export interface AFSWriteOptions {
+  append?: boolean;
+}
+
 export interface AFSWriteEntryPayload extends Omit<AFSEntry, "id" | "path"> {}
 
 export interface AFSModule {
@@ -32,7 +44,16 @@ export interface AFSModule {
   write?(
     path: string,
     content: AFSWriteEntryPayload,
+    options?: AFSWriteOptions,
   ): Promise<{ result: AFSEntry; message?: string }>;
+
+  delete?(path: string, options?: AFSDeleteOptions): Promise<{ message?: string }>;
+
+  rename?(
+    oldPath: string,
+    newPath: string,
+    options?: AFSRenameOptions,
+  ): Promise<{ message?: string }>;
 
   search?(
     path: string,

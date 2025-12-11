@@ -317,3 +317,185 @@ test("LocalFS should handle search with case sensitive option (default false)", 
   foundFile = result.list.find((entry) => entry.path === "caseTest.txt");
   expect(foundFile).toBeDefined();
 });
+
+// Delete method tests
+test("LocalFS should delete a file successfully", async () => {
+  // Create a test file first
+  await localFS.write("toDelete.txt", { content: "This file will be deleted" });
+
+  // Delete the file
+  const result = await localFS.delete("toDelete.txt");
+  expect(result.message).toBe("Successfully deleted: toDelete.txt");
+
+  // Verify file no longer exists
+  const listResult = await localFS.list("");
+  const deletedFile = listResult.list.find((entry) => entry.path === "toDelete.txt");
+  expect(deletedFile).toBeUndefined();
+});
+
+test("LocalFS should delete a directory with recursive option", async () => {
+  // Create a test directory with files
+  await localFS.write("deleteDir/file1.txt", { content: "File 1" });
+  await localFS.write("deleteDir/file2.txt", { content: "File 2" });
+
+  // Delete the directory recursively
+  const result = await localFS.delete("deleteDir", { recursive: true });
+  expect(result.message).toBe("Successfully deleted: deleteDir");
+
+  // Verify directory no longer exists
+  const listResult = await localFS.list("");
+  const deletedDir = listResult.list.find((entry) => entry.path === "deleteDir");
+  expect(deletedDir).toBeUndefined();
+});
+
+test("LocalFS should throw error when deleting directory without recursive option", async () => {
+  // Create a test directory
+  await localFS.write("nonRecursiveDir/file.txt", { content: "Test" });
+
+  // Try to delete without recursive option
+  expect(localFS.delete("nonRecursiveDir")).rejects.toThrow(
+    "Cannot delete directory 'nonRecursiveDir' without recursive option",
+  );
+
+  // Verify directory still exists
+  const listResult = await localFS.list("");
+  const existingDir = listResult.list.find((entry) => entry.path === "nonRecursiveDir");
+  expect(existingDir).toBeDefined();
+
+  // Cleanup
+  await localFS.delete("nonRecursiveDir", { recursive: true });
+});
+
+test("LocalFS should delete nested files", async () => {
+  // Create nested file structure
+  await localFS.write("nested/deep/file.txt", { content: "Deep file" });
+
+  // Delete the nested file
+  const result = await localFS.delete("nested/deep/file.txt");
+  expect(result.message).toBe("Successfully deleted: nested/deep/file.txt");
+
+  // Verify file no longer exists
+  const listResult = await localFS.list("nested/deep");
+  expect(listResult.list.length).toBe(0);
+
+  // Cleanup
+  await localFS.delete("nested", { recursive: true });
+});
+
+// Rename method tests
+test("LocalFS should rename a file successfully", async () => {
+  // Create a test file
+  await localFS.write("oldName.txt", { content: "Original content" });
+
+  // Rename the file
+  const result = await localFS.rename("oldName.txt", "newName.txt");
+  expect(result.message).toBe("Successfully renamed 'oldName.txt' to 'newName.txt'");
+
+  // Verify old file no longer exists
+  const listResult = await localFS.list("");
+  const oldFile = listResult.list.find((entry) => entry.path === "oldName.txt");
+  expect(oldFile).toBeUndefined();
+
+  // Verify new file exists with correct content
+  const { result: readResult } = await localFS.read("newName.txt");
+  expect(readResult?.path).toBe("newName.txt");
+  expect(readResult?.content).toBe("Original content");
+
+  // Cleanup
+  await localFS.delete("newName.txt");
+});
+
+test("LocalFS should rename a directory", async () => {
+  // Create a test directory with files
+  await localFS.write("oldDir/file1.txt", { content: "File 1" });
+  await localFS.write("oldDir/file2.txt", { content: "File 2" });
+
+  // Rename the directory
+  const result = await localFS.rename("oldDir", "newDir");
+  expect(result.message).toBe("Successfully renamed 'oldDir' to 'newDir'");
+
+  // Verify old directory no longer exists
+  const listResult = await localFS.list("");
+  const oldDir = listResult.list.find((entry) => entry.path === "oldDir");
+  expect(oldDir).toBeUndefined();
+
+  // Verify new directory exists with files
+  const newDirList = await localFS.list("newDir");
+  expect(newDirList.list.length).toBe(2);
+  const filePaths = newDirList.list.map((entry) => entry.path).sort();
+  expect(filePaths).toEqual(["newDir/file1.txt", "newDir/file2.txt"]);
+
+  // Cleanup
+  await localFS.delete("newDir", { recursive: true });
+});
+
+test("LocalFS should throw error when renaming to existing path without overwrite", async () => {
+  // Create two test files
+  await localFS.write("source.txt", { content: "Source content" });
+  await localFS.write("target.txt", { content: "Target content" });
+
+  // Try to rename without overwrite option
+  expect(localFS.rename("source.txt", "target.txt")).rejects.toThrow(
+    "Destination 'target.txt' already exists. Set overwrite: true to replace it.",
+  );
+
+  // Verify both files still exist with original content
+  const { result: sourceResult } = await localFS.read("source.txt");
+  expect(sourceResult?.content).toBe("Source content");
+
+  const { result: targetResult } = await localFS.read("target.txt");
+  expect(targetResult?.content).toBe("Target content");
+
+  // Cleanup
+  await localFS.delete("source.txt");
+  await localFS.delete("target.txt");
+});
+
+test("LocalFS should rename with overwrite option", async () => {
+  // Create two test files
+  await localFS.write("source2.txt", { content: "Source content 2" });
+  await localFS.write("target2.txt", { content: "Target content 2" });
+
+  // Rename with overwrite option
+  const result = await localFS.rename("source2.txt", "target2.txt", { overwrite: true });
+  expect(result.message).toBe("Successfully renamed 'source2.txt' to 'target2.txt'");
+
+  // Verify source no longer exists
+  const listResult = await localFS.list("");
+  const sourceFile = listResult.list.find((entry) => entry.path === "source2.txt");
+  expect(sourceFile).toBeUndefined();
+
+  // Verify target has source content
+  const { result: targetResult } = await localFS.read("target2.txt");
+  expect(targetResult?.content).toBe("Source content 2");
+
+  // Cleanup
+  await localFS.delete("target2.txt");
+});
+
+test("LocalFS should rename to nested path", async () => {
+  // Create a test file
+  await localFS.write("flatFile.txt", { content: "Flat content" });
+
+  // Rename to nested path
+  const result = await localFS.rename("flatFile.txt", "nested/path/movedFile.txt");
+  expect(result.message).toBe("Successfully renamed 'flatFile.txt' to 'nested/path/movedFile.txt'");
+
+  // Verify old path no longer exists
+  const listResult = await localFS.list("");
+  const oldFile = listResult.list.find((entry) => entry.path === "flatFile.txt");
+  expect(oldFile).toBeUndefined();
+
+  // Verify file exists at new nested path
+  const { result: readResult } = await localFS.read("nested/path/movedFile.txt");
+  expect(readResult?.path).toBe("nested/path/movedFile.txt");
+  expect(readResult?.content).toBe("Flat content");
+
+  // Cleanup
+  await localFS.delete("nested", { recursive: true });
+});
+
+test("LocalFS should throw error when renaming non-existent file", async () => {
+  // Try to rename a file that doesn't exist
+  expect(localFS.rename("nonExistent.txt", "newName.txt")).rejects.toThrow();
+});

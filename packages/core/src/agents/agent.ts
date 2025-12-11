@@ -20,7 +20,7 @@ import type { Memory, MemoryAgent } from "../memory/memory.js";
 import type { MemoryRecorderInput } from "../memory/recorder.js";
 import type { MemoryRetrieverInput } from "../memory/retriever.js";
 import { sortHooks } from "../utils/agent-utils.js";
-import { isZodSchema } from "../utils/json-schema.js";
+import { getZodObjectKeys, isZodSchema } from "../utils/json-schema.js";
 import { logger } from "../utils/logger.js";
 import {
   agentResponseStreamToObject,
@@ -504,6 +504,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     return schema.passthrough() as unknown as ZodType<I>;
   }
 
+  get inputKeys(): string[] {
+    return getZodObjectKeys(this.inputSchema);
+  }
+
   /**
    * Get the output data schema for this agent
    *
@@ -517,6 +521,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     const schema = typeof s === "function" ? s(this) : s || z.object({});
     checkAgentInputOutputSchema(schema);
     return schema.passthrough() as unknown as ZodType<O>;
+  }
+
+  get outputKeys(): string[] {
+    return getZodObjectKeys(this.outputSchema);
   }
 
   /**
@@ -1721,7 +1729,7 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
    * @returns Processing result
    */
   process(input: I, options: AgentInvokeOptions) {
-    return this._process(input, options);
+    return this._process.apply(this, [input, options]);
   }
 }
 
@@ -1736,10 +1744,11 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
  * @param context Execution context
  * @returns Processing result, can be synchronous or asynchronous
  */
-export type FunctionAgentFn<I extends Message = any, O extends Message = any> = (
-  input: I,
-  options: AgentInvokeOptions,
-) => PromiseOrValue<AgentProcessResult<O>>;
+export type FunctionAgentFn<
+  I extends Message = any,
+  O extends Message = any,
+  A extends FunctionAgent<I, O> = FunctionAgent<I, O>,
+> = (this: A, input: I, options: AgentInvokeOptions) => PromiseOrValue<AgentProcessResult<O>>;
 
 function functionToAgent<I extends Message, O extends Message>(
   agent: FunctionAgentFn<I, O>,

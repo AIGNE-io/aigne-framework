@@ -25,12 +25,14 @@ test("BashAgent should load correctly", async () => {
     filepath: "/path/to/agent.yaml",
     parsed: {
       sandbox: false,
+      timeout: 30e3,
     },
   });
 
   expect((bashAgent as BashAgent).options).toMatchInlineSnapshot(`
     {
       "sandbox": false,
+      "timeout": 30000,
     }
   `);
 });
@@ -63,6 +65,39 @@ test("BashAgent should support disable sandbox", async () => {
   expect(initialize).not.toHaveBeenCalled();
   expect(updateConfig).not.toHaveBeenCalled();
   expect(wrapWithSandbox).not.toHaveBeenCalled();
+});
+
+test("BashAgent should run bash scripts without sandbox", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+  });
+
+  const script = `echo "Hello, World!"
+echo "This is an error message" >&2
+exit 0`;
+
+  expect(await bashAgent.invoke({ script })).toMatchInlineSnapshot(`
+    {
+      "exitCode": 0,
+      "stderr": 
+    "This is an error message
+    "
+    ,
+      "stdout": 
+    "Hello, World!
+    "
+    ,
+    }
+  `);
+
+  const errorScript = `echo "Hello, World!"
+echo "This is an error message" >&2
+exit 1`;
+
+  expect(bashAgent.invoke({ script: errorScript })).rejects.toThrowErrorMatchingInlineSnapshot(`
+    "Bash script exited with code 1: This is an error message
+    "
+  `);
 });
 
 test("BashAgent should run bash scripts in sandbox", async () => {

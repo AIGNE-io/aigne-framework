@@ -5,12 +5,20 @@ import { rgPath } from "@vscode/ripgrep";
 import z from "zod";
 import { Mutex } from "../utils/mutex.js";
 
+const DEFAULT_TIMEOUT = 60e3; // 60 seconds
+
 export interface BashAgentOptions extends AgentOptions<BashAgentInput, BashAgentOutput> {
   // Optional sandbox configuration for executing scripts in a controlled environment
   // See https://github.com/anthropic-experimental/sandbox-runtime?tab=readme-ov-file#complete-configuration-example for details
   sandbox?:
     | Partial<{ [K in keyof SandboxRuntimeConfig]: Partial<SandboxRuntimeConfig[K]> }>
     | boolean;
+
+  /**
+   * Optional timeout for script execution in milliseconds
+   * @default 60000 (60 seconds)
+   */
+  timeout?: number; // Optional timeout for script execution in milliseconds
 }
 
 export interface BashAgentInput extends Message {
@@ -60,13 +68,14 @@ When to use:
         darwin: "macos",
         linux: "linux",
       })[globalThis.process.platform] || "unknown";
-    if (!SandboxManager.isSupportedPlatform(platform)) {
-      throw new Error(`Sandboxed execution is not supported on this platform ${platform}`);
-    }
 
     if (this.options.sandbox === false) {
       return this.spawn("bash", ["-c", input.script]);
     } else {
+      if (!SandboxManager.isSupportedPlatform(platform)) {
+        throw new Error(`Sandboxed execution is not supported on this platform ${platform}`);
+      }
+
       return await this.runInSandbox(
         typeof this.options.sandbox === "boolean" ? {} : this.options.sandbox,
         input.script,
@@ -85,9 +94,15 @@ When to use:
     options?: SpawnOptions,
   ): Promise<AgentResponseStream<BashAgentOutput>> {
     return new ReadableStream({
-      start(controller) {
+      start: (controller) => {
         try {
-          const child = spawn(command, args, { ...options, stdio: "pipe" });
+          const child = spawn(command, args, {
+            ...options,
+            stdio: "pipe",
+            timeout: this.options.timeout ?? DEFAULT_TIMEOUT,
+          });
+
+          let stderr = "";
 
           child.stdout.on("data", (chunk) => {
             controller.enqueue({ delta: { text: { stdout: chunk.toString() } } });
@@ -95,19 +110,25 @@ When to use:
 
           child.stderr.on("data", (chunk) => {
             controller.enqueue({ delta: { text: { stderr: chunk.toString() } } });
+            stderr += chunk.toString();
           });
 
           child.on("error", (error) => {
-            controller.enqueue({ delta: { text: { stderr: error.message } } });
+            controller.error(error);
           });
 
           child.on("close", (code) => {
-            if (typeof code === "number")
-              controller.enqueue({ delta: { json: { exitCode: code } } });
-            controller.close();
+            if (typeof code === "number") {
+              if (code === 0) {
+                controller.enqueue({ delta: { json: { exitCode: code } } });
+                controller.close();
+              } else {
+                controller.error(new Error(`Bash script exited with code ${code}: ${stderr}`));
+              }
+            }
           });
         } catch (error) {
-          controller.enqueue({ delta: { text: { stderr: `Error: ${error.message}` } } });
+          controller.error(error);
         }
       },
     });

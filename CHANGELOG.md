@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.90.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.7...aigne-framework-v1.90.0-beta.8) (2025-12-11)
+
+
+### Bug Fixes
+
+* **orchestrator:** support custom input schema for planner/worker/completer ([#823](https://github.com/AIGNE-io/aigne-framework/issues/823)) ([3d26f8b](https://github.com/AIGNE-io/aigne-framework/commit/3d26f8bac8b679010f25d9e4eb59fc6e80afda4c))
+
 ## [1.90.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.6...aigne-framework-v1.90.0-beta.7) (2025-12-11)
 
 

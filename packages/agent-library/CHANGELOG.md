@@ -7,6 +7,21 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.23.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.23.0-beta.6...agent-library-v1.23.0-beta.7) (2025-12-11)
+
+
+### Bug Fixes
+
+* **orchestrator:** support custom input schema for planner/worker/completer ([#823](https://github.com/AIGNE-io/aigne-framework/issues/823)) ([3d26f8b](https://github.com/AIGNE-io/aigne-framework/commit/3d26f8bac8b679010f25d9e4eb59fc6e80afda4c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.71.0-beta.6
+    * @aigne/openai bumped to 0.16.15-beta.6
+
 ## [1.23.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.23.0-beta.5...agent-library-v1.23.0-beta.6) (2025-12-11)
 
 

@@ -92,7 +92,7 @@ export class AFSEditAgent extends Agent<AFSEditInput, AFSEditOutput> {
   }
 
   applyCustomPatches(text: string, patches: Patch[]): string {
-    // 按 start_line 升序是链式 patch 通用方式
+    // Sort by start_line to ensure sequential application
     const sorted = [...patches].sort((a, b) => a.start_line - b.start_line);
     const lines = text.split("\n");
 
@@ -117,7 +117,7 @@ export class AFSEditAgent extends Agent<AFSEditInput, AFSEditOutput> {
         delta = replaceLines.length - deleteCount;
       }
 
-      // 更新后续 patch 行号偏移
+      // Update subsequent patches' line numbers
       // For exclusive-end semantics [start, end), we adjust patches that start >= current patch's start_line
       // after the current patch has been applied
       if (delta !== 0) {

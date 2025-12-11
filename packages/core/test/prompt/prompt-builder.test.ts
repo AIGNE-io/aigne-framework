@@ -660,7 +660,7 @@ test("PromptBuilder should build with afs correctly", async () => {
       "tools": [
         {
           "function": {
-            "description": "Get a tree view of directory contents in the AFS - shows hierarchical structure of files and folders",
+            "description": "Browse directory structure as a tree view. Use when exploring directory contents or understanding file organization.",
             "name": "afs_list",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -670,7 +670,7 @@ test("PromptBuilder should build with afs correctly", async () => {
                   "additionalProperties": false,
                   "properties": {
                     "maxDepth": {
-                      "description": "Maximum depth to display in the tree view",
+                      "description": "Tree depth limit (default: 1)",
                       "type": "number",
                     },
                   },
@@ -678,7 +678,7 @@ test("PromptBuilder should build with afs correctly", async () => {
                   "type": "object",
                 },
                 "path": {
-                  "description": "The directory path to browse (e.g., '/', '/docs', '/src')",
+                  "description": "Absolute directory path to browse",
                   "type": "string",
                 },
               },
@@ -692,7 +692,7 @@ test("PromptBuilder should build with afs correctly", async () => {
         },
         {
           "function": {
-            "description": "Find files by searching content using keywords - returns matching files with their paths",
+            "description": "Search file contents by keywords. Use when finding files containing specific text or code patterns.",
             "name": "afs_search",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -702,11 +702,11 @@ test("PromptBuilder should build with afs correctly", async () => {
                   "additionalProperties": false,
                   "properties": {
                     "caseSensitive": {
-                      "description": "Whether the search is case sensitive, default is false",
+                      "description": "Case-sensitive search (default: false)",
                       "type": "boolean",
                     },
                     "limit": {
-                      "description": "Maximum number of entries to return",
+                      "description": "Max results to return",
                       "type": "number",
                     },
                   },
@@ -714,11 +714,11 @@ test("PromptBuilder should build with afs correctly", async () => {
                   "type": "object",
                 },
                 "path": {
-                  "description": "The directory path to search in (e.g., '/', '/docs')",
+                  "description": "Absolute directory path to search in",
                   "type": "string",
                 },
                 "query": {
-                  "description": "Keywords to search for in file contents (e.g., 'function authentication', 'database config')",
+                  "description": "Search keywords or patterns",
                   "type": "string",
                 },
               },
@@ -733,24 +733,18 @@ test("PromptBuilder should build with afs correctly", async () => {
         },
         {
           "function": {
-            "description": 
-    "Read file contents from the AFS - path must be an exact file path from list or search results
-
-    Usage:
-    - Use withLineNumbers=true to get line numbers for code reviews or edits
-    "
-    ,
+            "description": "Read complete file contents. Use when you need to review, analyze, or understand file content before making changes.",
             "name": "afs_read",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
               "additionalProperties": false,
               "properties": {
                 "path": {
-                  "description": "Exact file path from list or search results (e.g., '/docs/api.md', '/src/utils/helper.js')",
+                  "description": "Absolute file path to read",
                   "type": "string",
                 },
                 "withLineNumbers": {
-                  "description": "Whether to include line numbers in the returned content, default is false",
+                  "description": "Include line numbers in output (required when planning to edit the file)",
                   "type": "boolean",
                 },
               },
@@ -764,18 +758,23 @@ test("PromptBuilder should build with afs correctly", async () => {
         },
         {
           "function": {
-            "description": "Create or update a file in the AFS with new content - overwrites existing files",
+            "description": "Create new file or append content to existing file. Use when creating files, rewriting entire files, or appending to files.",
             "name": "afs_write",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
               "additionalProperties": false,
               "properties": {
+                "append": {
+                  "default": false,
+                  "description": "Append mode: add content to end of file (default: false, overwrites file)",
+                  "type": "boolean",
+                },
                 "content": {
-                  "description": "The text content to write to the file",
+                  "description": "Complete file content or content to append",
                   "type": "string",
                 },
                 "path": {
-                  "description": "Full file path where to write content (e.g., '/docs/new-file.md', '/src/component.js')",
+                  "description": "Absolute file path to write",
                   "type": "string",
                 },
               },
@@ -790,18 +789,129 @@ test("PromptBuilder should build with afs correctly", async () => {
         },
         {
           "function": {
-            "description": "Execute a function or command available in the AFS modules",
+            "description": "Apply precise line-based patches to modify file content. Use when making targeted changes without rewriting the entire file.",
+            "name": "afs_edit",
+            "parameters": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false,
+              "properties": {
+                "patches": {
+                  "description": "List of patches to apply sequentially",
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "delete": {
+                        "description": "Delete mode: true to delete lines, false to replace",
+                        "type": "boolean",
+                      },
+                      "end_line": {
+                        "description": "End line number (0-based, exclusive)",
+                        "type": "integer",
+                      },
+                      "replace": {
+                        "description": "New content to replace the line range",
+                        "type": "string",
+                      },
+                      "start_line": {
+                        "description": "Start line number (0-based, inclusive)",
+                        "type": "integer",
+                      },
+                    },
+                    "required": [
+                      "start_line",
+                      "end_line",
+                      "delete",
+                    ],
+                    "type": "object",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+                "path": {
+                  "description": "Absolute file path to edit",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "path",
+                "patches",
+              ],
+              "type": "object",
+            },
+          },
+          "type": "function",
+        },
+        {
+          "function": {
+            "description": "Permanently delete files or directories. Use when removing unwanted files or cleaning up temporary data.",
+            "name": "afs_delete",
+            "parameters": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "description": "Absolute file or directory path to delete",
+                  "type": "string",
+                },
+                "recursive": {
+                  "default": false,
+                  "description": "Allow directory deletion (default: false, required for directories)",
+                  "type": "boolean",
+                },
+              },
+              "required": [
+                "path",
+              ],
+              "type": "object",
+            },
+          },
+          "type": "function",
+        },
+        {
+          "function": {
+            "description": "Rename or move files and directories. Use when reorganizing files, changing names, or moving to different locations.",
+            "name": "afs_rename",
+            "parameters": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false,
+              "properties": {
+                "newPath": {
+                  "description": "Absolute new file or directory path",
+                  "type": "string",
+                },
+                "oldPath": {
+                  "description": "Absolute current file or directory path",
+                  "type": "string",
+                },
+                "overwrite": {
+                  "default": false,
+                  "description": "Overwrite if destination exists (default: false)",
+                  "type": "boolean",
+                },
+              },
+              "required": [
+                "oldPath",
+                "newPath",
+              ],
+              "type": "object",
+            },
+          },
+          "type": "function",
+        },
+        {
+          "function": {
+            "description": "Execute functions or commands from AFS modules. Use when running operations provided by mounted modules.",
             "name": "afs_exec",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
               "additionalProperties": false,
               "properties": {
                 "args": {
-                  "description": "JSON stringified arguments to pass to the executable, must be an object matching the input schema of the executable",
+                  "description": "JSON string of arguments matching the function's input schema",
                   "type": "string",
                 },
                 "path": {
-                  "description": "The exact path to the executable entry in AFS",
+                  "description": "Absolute path to the executable function in AFS",
                   "type": "string",
                 },
               },
@@ -986,25 +1096,29 @@ ${"```"}
 
     \`\`\`yaml alt="$afs.skills"
     - name: afs_list
-      description: Get a tree view of directory contents in the AFS - shows
-        hierarchical structure of files and folders
+      description: Browse directory structure as a tree view. Use when exploring
+        directory contents or understanding file organization.
     - name: afs_search
-      description: Find files by searching content using keywords - returns matching
-        files with their paths
+      description: Search file contents by keywords. Use when finding files containing
+        specific text or code patterns.
     - name: afs_read
-      description: >
-        Read file contents from the AFS - path must be an exact file path from list
-        or search results
-
-
-        Usage:
-
-        - Use withLineNumbers=true to get line numbers for code reviews or edits
+      description: Read complete file contents. Use when you need to review, analyze,
+        or understand file content before making changes.
     - name: afs_write
-      description: Create or update a file in the AFS with new content - overwrites
-        existing files
+      description: Create new file or append content to existing file. Use when
+        creating files, rewriting entire files, or appending to files.
+    - name: afs_edit
+      description: Apply precise line-based patches to modify file content. Use when
+        making targeted changes without rewriting the entire file.
+    - name: afs_delete
+      description: Permanently delete files or directories. Use when removing unwanted
+        files or cleaning up temporary data.
+    - name: afs_rename
+      description: Rename or move files and directories. Use when reorganizing files,
+        changing names, or moving to different locations.
     - name: afs_exec
-      description: Execute a function or command available in the AFS modules
+      description: Execute functions or commands from AFS modules. Use when running
+        operations provided by mounted modules.
 
     \`\`\`
 

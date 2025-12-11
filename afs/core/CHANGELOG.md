@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.3.0-beta.2...afs-v1.3.0-beta.3) (2025-12-11)
+
+
+### Features
+
+* **afs:** add edit/delete/rename methods for AFS ([#820](https://github.com/AIGNE-io/aigne-framework/issues/820)) ([68cb508](https://github.com/AIGNE-io/aigne-framework/commit/68cb508d1cfc9c516d56303018139f1e567f897e))
+
 ## [1.3.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.3.0-beta.1...afs-v1.3.0-beta.2) (2025-12-10)
 
 

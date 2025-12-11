@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.3.0-beta.4...afs-local-fs-v1.3.0-beta.5) (2025-12-11)
+
+
+### Features
+
+* **afs:** add edit/delete/rename methods for AFS ([#820](https://github.com/AIGNE-io/aigne-framework/issues/820)) ([68cb508](https://github.com/AIGNE-io/aigne-framework/commit/68cb508d1cfc9c516d56303018139f1e567f897e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta.3
+    * @aigne/core bumped to 1.71.0-beta.5
+
 ## [1.3.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.3.0-beta.3...afs-local-fs-v1.3.0-beta.4) (2025-12-10)
 
 

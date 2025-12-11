@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.71.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.71.0-beta.4...core-v1.71.0-beta.5) (2025-12-11)
+
+
+### Features
+
+* **afs:** add edit/delete/rename methods for AFS ([#820](https://github.com/AIGNE-io/aigne-framework/issues/820)) ([68cb508](https://github.com/AIGNE-io/aigne-framework/commit/68cb508d1cfc9c516d56303018139f1e567f897e))
+
+
+### Bug Fixes
+
+* **core:** support access agent instance by `this` in function agent ([#822](https://github.com/AIGNE-io/aigne-framework/issues/822)) ([68103bc](https://github.com/AIGNE-io/aigne-framework/commit/68103bc8d6d553e1c1374595db98ff61f3046842))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta.3
+    * @aigne/afs-history bumped to 1.1.3-beta.3
+
 ## [1.71.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.71.0-beta.3...core-v1.71.0-beta.4) (2025-12-10)
 
 

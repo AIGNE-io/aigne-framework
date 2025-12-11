@@ -20,7 +20,7 @@ import type { Memory, MemoryAgent } from "../memory/memory.js";
 import type { MemoryRecorderInput } from "../memory/recorder.js";
 import type { MemoryRetrieverInput } from "../memory/retriever.js";
 import { sortHooks } from "../utils/agent-utils.js";
-import { isZodSchema } from "../utils/json-schema.js";
+import { getZodObjectKeys, isZodSchema } from "../utils/json-schema.js";
 import { logger } from "../utils/logger.js";
 import {
   agentResponseStreamToObject,
@@ -504,6 +504,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     return schema.passthrough() as unknown as ZodType<I>;
   }
 
+  get inputKeys(): string[] {
+    return getZodObjectKeys(this.inputSchema);
+  }
+
   /**
    * Get the output data schema for this agent
    *
@@ -517,6 +521,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     const schema = typeof s === "function" ? s(this) : s || z.object({});
     checkAgentInputOutputSchema(schema);
     return schema.passthrough() as unknown as ZodType<O>;
+  }
+
+  get outputKeys(): string[] {
+    return getZodObjectKeys(this.outputSchema);
   }
 
   /**

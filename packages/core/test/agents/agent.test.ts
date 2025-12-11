@@ -1100,3 +1100,20 @@ test("Agent should correct handle list/read/search/exec methods for AFS", async 
     }
   `);
 });
+
+test("Agent.inputKeys should return correct input keys", async () => {
+  const agent = FunctionAgent.from({
+    name: "test-agent-list",
+    inputSchema: z.object({
+      a: z.string(),
+      b: z.number(),
+    }),
+    outputSchema: z.object({
+      result: z.string(),
+    }),
+    process: () => ({}),
+  });
+
+  expect(agent.inputKeys).toEqual(["a", "b"]);
+  expect(agent.outputKeys).toEqual(["result"]);
+});

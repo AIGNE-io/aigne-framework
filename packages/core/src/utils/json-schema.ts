@@ -137,3 +137,8 @@ export const wrapAutoParseJsonSchema = <T extends ZodType>(schema: T): T => {
   }
   return schema;
 };
+
+export function getZodObjectKeys(schema: ZodType): string[] {
+  if ("shape" in schema && schema.shape) return Object.keys(schema.shape);
+  return [];
+}

@@ -11,6 +11,7 @@ import {
   type PlannerOutput,
   plannerInputSchema,
   plannerOutputSchema,
+  type WorkerOutput,
   workerInputSchema,
   workerOutputSchema,
 } from "@aigne/agent-library/orchestrator/type.js";
@@ -299,4 +300,128 @@ test("OrchestratorAgent.invoke", async () => {
   });
 
   expect(result).toEqual({ message: "Task finished" });
+});
+
+test("OrchestratorAgent should pass declared input fields to the planner/worker/completer", async () => {
+  const model = new OpenAIChatModel();
+  const aigne = new AIGNE({ model });
+
+  const agent = await OrchestratorAgent.load({
+    filepath: "test.yaml",
+    parsed: {
+      objective: "Research ArcBlock and write a professional report",
+      planner: {
+        type: "ai",
+        inputSchema: zodToJsonSchema(
+          z.object({
+            customField: z.string().optional(),
+          }),
+        ) as any,
+        instructions:
+          "Test planner\ncustomField: {{customField}}\nobjective: {{objective}}\nexecutionState: {{executionState}}",
+      },
+      worker: {
+        type: "ai",
+        inputSchema: zodToJsonSchema(
+          z.object({
+            customField: z.string().optional(),
+          }),
+        ) as any,
+        instructions:
+          "Test worker\ncustomField: {{customField}}\nobjective: {{objective}}\nexecutionState: {{executionState}}\ntask: {{task}}",
+      },
+      completer: {
+        type: "ai",
+        inputSchema: zodToJsonSchema(
+          z.object({
+            customField: z.string().optional(),
+          }),
+        ) as any,
+        instructions:
+          "Test completer\ncustomField: {{customField}}\nobjective: {{objective}}\nexecutionState: {{executionState}}",
+      },
+    },
+  });
+
+  const modelProcess = spyOn(model, "process")
+    .mockReturnValueOnce(
+      Promise.resolve<{ json: PlannerOutput }>({
+        json: {
+          nextTask: 'Use the "finder" skill to research ArcBlock blockchain platform',
+          finished: false,
+        },
+      }),
+    )
+    .mockReturnValueOnce(
+      Promise.resolve<{ json: WorkerOutput }>({
+        json: { result: "ArcBlock is a blockchain platform", success: true },
+      }),
+    )
+    .mockReturnValueOnce(Promise.resolve<{ json: PlannerOutput }>({ json: { finished: true } }))
+    .mockReturnValueOnce(Promise.resolve({ text: "Task finished" }));
+
+  const dateNowSpy = spyOn(Date, "now").mockReturnValue(1765461004718);
+
+  const result = await aigne.invoke(agent, {
+    customField: "HERE IS CUSTOM VALUE",
+    message: "Deep research ArcBlock and write a professional report",
+  });
+
+  expect(modelProcess.mock.calls.map((i) => i[0].messages)).toMatchInlineSnapshot(`
+    [
+      [
+        {
+          "content": 
+    "Test planner
+    customField: HERE IS CUSTOM VALUE
+    objective: Research ArcBlock and write a professional report
+    executionState: {"tasks":[]}"
+    ,
+          "role": "system",
+        },
+      ],
+      [
+        {
+          "content": 
+    "Test worker
+    customField: HERE IS CUSTOM VALUE
+    objective: Research ArcBlock and write a professional report
+    executionState: {"tasks":[]}
+    task: Use the "finder" skill to research ArcBlock blockchain platform"
+    ,
+          "role": "system",
+        },
+      ],
+      [
+        {
+          "content": 
+    "Test planner
+    customField: HERE IS CUSTOM VALUE
+    objective: Research ArcBlock and write a professional report
+    executionState: {"tasks":[{"status":"completed","result":"ArcBlock is a blockchain platform","task":"Use the \\"finder\\" skill to research ArcBlock blockchain platform","createdAt":1765461004718,"completedAt":1765461004718}]}"
+    ,
+          "role": "system",
+        },
+      ],
+      [
+        {
+          "content": 
+    "Test completer
+    customField: HERE IS CUSTOM VALUE
+    objective: Research ArcBlock and write a professional report
+    executionState: {"tasks":[{"status":"completed","result":"ArcBlock is a blockchain platform","task":"Use the \\"finder\\" skill to research ArcBlock blockchain platform","createdAt":1765461004718,"completedAt":1765461004718}]}"
+    ,
+          "role": "system",
+        },
+      ],
+    ]
+  `);
+
+  expect(result).toMatchInlineSnapshot(`
+    {
+      "message": "Task finished",
+    }
+  `);
+
+  dateNowSpy.mockRestore();
 });

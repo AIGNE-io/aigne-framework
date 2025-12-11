@@ -57,13 +57,13 @@ export const executionStateSchema = z.object({
 });
 
 export interface PlannerInput extends Message {
-  objective: string;
-  executionState: ExecutionState;
+  objective?: string;
+  executionState?: ExecutionState;
 }
 
 export const plannerInputSchema = z.object({
-  objective: z.string().describe("The user's overall objective."),
-  executionState: executionStateSchema,
+  objective: optionalize(z.string().describe("The user's overall objective.")),
+  executionState: optionalize(executionStateSchema),
 });
 
 export interface PlannerOutput extends Message {
@@ -96,15 +96,15 @@ When finished is true, nextTask should be omitted.
 });
 
 export interface WorkerInput extends Message {
-  objective: string;
-  executionState: ExecutionState;
-  task: string;
+  objective?: string;
+  executionState?: ExecutionState;
+  task?: string;
 }
 
 export const workerInputSchema = z.object({
-  objective: z.string().describe("The user's overall objective."),
-  task: z.string().describe("The specific task assigned to the worker for execution."),
-  executionState: executionStateSchema,
+  objective: optionalize(z.string().describe("The user's overall objective.")),
+  task: optionalize(z.string().describe("The specific task assigned to the worker for execution.")),
+  executionState: optionalize(executionStateSchema),
 });
 
 /**
@@ -146,13 +146,13 @@ export const workerOutputSchema = z.object({
 });
 
 export interface CompleterInput extends Message {
-  objective: string;
-  executionState: ExecutionState;
+  objective?: string;
+  executionState?: ExecutionState;
 }
 
 export const completerInputSchema = z.object({
-  objective: z.string().describe("The user's overall objective."),
-  executionState: executionStateSchema,
+  objective: optionalize(z.string().describe("The user's overall objective.")),
+  executionState: optionalize(executionStateSchema),
 });
 
 /**

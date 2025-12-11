@@ -1,185 +1,244 @@
 # Bash
 
-Bash Agent は、Agent ワークフロー内でシェルスクリプトやコマンドラインツールを実行するための安全で制御されたメソッドを提供します。このドキュメントでは、その機能、構成、およびシステムレベルの操作に関するベストプラクティスについて詳しく説明します。このガイドに従うことで、ファイル操作、プロセス管理、自動化などのタスクに Bash Agent を統合して利用する方法を学びます。
+このドキュメントでは、Bash Agentについて詳しく説明します。Bash Agentは、Agentワークフロー内でシェルスクリプトやコマンドラインツールを安全に実行できるようにするものです。サンドボックス環境の設定方法、コマンド権限の管理方法、そしてシステムレベルの操作のためにアプリケーションに統合する方法を学びます。
 
 ## 概要
 
-Bash Agent は、セキュリティを強化するために [Anthropic の Sandbox Runtime](https://github.com/anthropic-experimental/sandbox-runtime) を活用し、制御された環境で bash スクリプトを実行するように設計されています。標準出力 (`stdout`)、標準エラー (`stderr`)、および最終的な終了コードをキャプチャしてストリーミングし、スクリプトの実行に関する包括的なフィードバックを提供します。
-
-以下の図は、Bash Agent が安全なサンドボックス内でスクリプトを実行し、ファイルシステムとネットワークアクセスを制御しながら、出力をユーザーにストリーミングする方法を示しています。
-
-<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
-![Bash](assets/diagram/agent-library-bash-01.jpg)
-<!-- DIAGRAM_IMAGE_END -->
+Bash Agentは、制御された安全な環境内でbashスクリプトを実行するように設計されています。AnthropicのSandbox Runtimeを活用して分離された実行空間を提供し、ネットワークやファイルシステム操作を含むシステムアクセスに対してきめ細かな制御を実現します。これにより、システムのセキュリティを損なうことなく、ファイル操作、プロセス管理、シェルコマンドの自動化を必要とするタスクに最適なツールとなります。
 
 主な機能は次のとおりです。
-- **サンドボックス実行**: スクリプトは、構成可能なセキュリティポリシーを持つ分離された環境で実行されます。
-- **ネットワーク制御**: ドメインをホワイトリストまたはブラックリストに登録して、ネットワークアクセスを管理します。
-- **ファイルシステム制御**: ファイルとディレクトリに対する特定の読み取りおよび書き込み権限を定義します。
-- **リアルタイム出力**: スクリプトの実行中に `stdout` と `stderr` をストリーミングします。
-- **終了コードの追跡**: スクリプトの終了コードをキャプチャして、成功を確認したり、エラーを処理したりします。
 
-## 入力
+*   **サンドボックス実行**: スクリプトは、ネットワークおよびファイルシステムリソースに対する設定可能なアクセス制御を備えた、分離された環境で実行されます。
+*   **コマンド権限**: 堅牢な権限システムにより、特定のコマンドをホワイトリスト、ブラックリスト、または承認要求に設定でき、不正な操作を防ぎます。
+*   **リアルタイム出力**: 標準出力 (`stdout`) と標準エラー (`stderr`) は、スクリプトの実行中にリアルタイムでストリーミングされます。
+*   **Guard Agent**: 承認が必要なコマンドに対して、別のAgent（「AIガード」）を指定して、カスタムロジックに基づいて実行を動的に承認または拒否させることができます。
 
-Agent は、入力オブジェクトで必須の単一パラメータを受け入れます。
+:::warning
+サンドボックスモードはWindowsではサポートされていません。Windowsユーザーは、Bash Agentを使用するために設定で明示的に`sandbox: false`を設定する必要があります。サンドボックスを無効にすると、すべてのセキュリティ保護が解除されるため、信頼できる環境でのみ実行してください。
+:::
 
-<x-field-group>
-  <x-field data-name="script" data-type="string" data-required="true" data-desc="実行される bash スクリプト。"></x-field>
-</x-field-group>
+### アーキテクチャ
 
-## 出力
+Agentはスクリプトを処理し、サンドボックスが有効かどうかに応じて、直接実行するか、サンドボックス環境内で実行します。`stdout`、`stderr`、および最終的な`exitCode`を含む出力は、呼び出し元にストリーミングで返されます。
 
-Agent は、スクリプト実行の結果を含むオブジェクトを返します。
+```mermaid
+flowchart TB
+    Input([スクリプト入力]) --> BashAgent[Bash Agent]
+    BashAgent --> SandboxCheck{サンドボックス<br/>有効?}
 
-<x-field-group>
-  <x-field data-name="stdout" data-type="string" data-required="false" data-desc="スクリプトによって生成された標準出力ストリーム。"></x-field>
-  <x-field data-name="stderr" data-type="string" data-required="false" data-desc="スクリプトによって生成された標準エラーストリーム。"></x-field>
-  <x-field data-name="exitCode" data-type="number" data-required="false" data-desc="スクリプト完了後に返される終了コード。通常、値 0 は成功を示します。"></x-field>
-</x-field-group>
+    SandboxCheck -->|はい| Sandbox[サンドボックス実行]
+    SandboxCheck -->|いいえ| Direct[直接実行]
 
-## 基本的な使用方法
+    Sandbox --> ShellProcess[シェルプロセス]
+    Direct --> ShellProcess
 
-Bash Agent を使用する最も直接的な方法は、YAML 構成ファイルを使用することです。これにより、Agent の動作とセキュリティ制約を宣言的に定義できます。
+    ShellProcess --> StreamOutput[ストリーム出力]
+    StreamOutput --> Output([stdout, stderr, exitCode])
+
+    classDef inputOutput fill:#f9f0ed,stroke:#debbae,stroke-width:2px
+    classDef process fill:#F0F4EB,stroke:#C2D7A7,stroke-width:2px
+    classDef decision fill:#E8F4F8,stroke:#4A9EBF,stroke-width:2px
+
+    class Input,Output inputOutput
+    class BashAgent,ShellProcess,StreamOutput process
+    class SandboxCheck decision
+    class Sandbox,Direct process
+```
+
+## 基本的な使い方
+
+Bash Agentを使用する最も簡単な方法は、YAMLファイルで定義することです。これにより、その動作を宣言的に設定できます。
+
+### 標準サンドボックスモード
+
+デフォルトでは、Bash Agentは安全なサンドボックス環境で実行されます。
 
 ```yaml bash-agent.yaml icon=lucide:file-code
 type: "@aigne/agent-library/bash"
 name: Bash
-# サンドボックスは、制限の厳しい設定でデフォルトで有効になっています。
-# 詳細なオプションについては、「サンドボックス構成」セクションを参照してください。
+
+# 入力スキーマは 'script' パラメータを定義します
+input_schema:
+  type: object
+  properties:
+    script:
+      type: string
+      description: 実行するbashスクリプト。
+  required:
+    - script
 ```
 
-この Agent を実行するには、AIGNE CLI を使用して、スクリプトを引数として渡します。
+その後、AIGNE CLIを使用してスクリプトを実行できます。
 
 ```bash icon=lucide:terminal
 aigne run . Bash --script 'echo "Hello from the Bash Agent!"'
 ```
 
-## 構成
+### サンドボックスの無効化
 
-Bash Agent は、特に実行環境に関して、その動作を調整するためにいくつかのオプションを使用して構成できます。
+開発時、信頼できる環境、またはWindowsでは、サンドボックスを無効にすることができます。
 
-### Agent オプション
+```yaml bash-agent-no-sandbox.yaml icon=lucide:file-code
+type: "@aigne/agent-library/bash"
+name: Bash
+sandbox: false # サンドボックスを無効にする
 
-これらのオプションは、Agent の YAML 定義のトップレベルで指定されます。
+input_schema:
+  type: object
+  properties:
+    script:
+      type: string
+      description: 実行するbashスクリプト。
+  required:
+    - script
+```
+
+:::error
+サンドボックスを無効にすると、すべてのセキュリティ保護が解除されます。これは、実行されるスクリプトを完全に信頼できる環境でのみ行ってください。
+:::
+
+## 設定
+
+Bash Agentは、実行環境とセキュリティ設定を制御するために、いくつかのオプションで設定できます。
 
 <x-field-group>
   <x-field data-name="sandbox" data-type="object | boolean" data-required="false" data-default="true">
-    <x-field-desc markdown>サンドボックス化された実行環境を制御します。サンドボックスを完全に無効にするには `false` に設定するか、構成オブジェクトを提供してその制限をカスタマイズします。デフォルトでは、サンドボックスは有効になっています。</x-field-desc>
+    <x-field-desc markdown>[AnthropicのSandbox Runtime](https://github.com/anthropic-experimental/sandbox-runtime)に基づいたサンドボックス環境の設定。サンドボックスを無効にするには`false`に設定します。デフォルトは`true`で、デフォルトの制限が適用されます。</x-field-desc>
+  </x-field>
+  <x-field data-name="timeout" data-type="number" data-required="false" data-default="60000">
+    <x-field-desc markdown>実行タイムアウト（ミリ秒）。スクリプトがこの制限を超えると終了します。</x-field-desc>
+  </x-field>
+  <x-field data-name="permissions" data-type="object" data-required="false">
+    <x-field-desc markdown>コマンド実行権限の設定。`allow`、`deny`、`defaultMode`、および`guard` Agentを含みます。</x-field-desc>
   </x-field>
 </x-field-group>
 
-### サンドボックスの無効化
+### 入力と出力
 
-信頼できる環境や、サンドボックスがサポートされていないプラットフォーム (Windows など) では、無効にすることができます。
+Agentは単純な入力オブジェクトを受け取り、詳細な出力オブジェクトを生成します。
 
-:::warning
-サンドボックスを無効にすると、Agent が提供するすべてのセキュリティ保護が解除されます。これは、実行されるスクリプトが安全であることがわかっている、完全に信頼された環境でのみ行うべきです。
-:::
+#### InputSchema
 
-```yaml bash-agent.yaml icon=lucide:file-code
-type: "@aigne/agent-library/bash"
-name: Bash
-sandbox: false # サンドボックスを無効にします
-```
+<x-field-group>
+  <x-field data-name="script" data-type="string" data-required="true" data-desc="実行されるbashスクリプト。"></x-field>
+</x-field-group>
 
-## サンドボックス構成
+#### OutputSchema
 
-`sandbox` オプションが有効になっている場合、構成オブジェクトを提供して、ネットワークおよびファイルシステムアクセスに対する詳細なセキュリティポリシーを定義できます。
+<x-field-group>
+  <x-field data-name="stdout" data-type="string" data-required="false" data-desc="スクリプトによって生成された標準出力。"></x-field>
+  <x-field data-name="stderr" data-type="string" data-required="false" data-desc="スクリプトによって生成された標準エラー出力。"></x-field>
+  <x-field data-name="exitCode" data-type="number" data-required="false" data-desc="スクリプトの終了コード。通常、`0`の値は成功を示します。"></x-field>
+</x-field-group>
 
-### ネットワーク構成
+## サンドボックスの設定
 
-許可および拒否されたドメインを指定して、Agent のネットワークアクセスを制御します。
+サンドボックスは、ネットワークおよびファイルシステムリソースへのアクセスを制限することにより、スクリプト実行のための安全なレイヤーを提供します。
 
-```yaml bash-agent.yaml icon=lucide:file-code
-type: "@aigne/agent-library/bash"
-name: Bash
+### ネットワーク制御
+
+スクリプトがアクセスを許可または禁止されているドメインを指定できます。
+
+```yaml network-config.yaml icon=lucide:file-code
 sandbox:
   network:
-    # スクリプトが接続を許可されているドメインのリスト。ワイルドカード (*) がサポートされています。
+    # 許可されたドメインのリスト。ワイルドカードがサポートされています。
     allowedDomains:
+      - "api.github.com"
       - "*.example.com"
-      - "api.github.com"
-    # スクリプトが接続を禁止されているドメインのリスト。これは allowedDomains よりも優先されます。
+    # 拒否されたドメインのリスト。許可リストよりも優先されます。
     deniedDomains:
       - "*.ads.com"
 ```
 
-### ファイルシステム構成
+### ファイルシステム制御
 
-スクリプトがファイルシステムのどの部分から読み取り、書き込みできるかを定義します。
+特定のパスまたはパターンに対する読み取りおよび書き込み権限を定義します。
 
-```yaml bash-agent.yaml icon=lucide:file-code
-type: "@aigne/agent-library/bash"
-name: Bash
+```yaml filesystem-config.yaml icon=lucide:file-code
 sandbox:
   filesystem:
-    # スクリプトが書き込みを許可されているファイルパスまたはパターンのリスト。
+    # 書き込みが許可されているパスのリスト。
     allowWrite:
       - "./output"
       - "/tmp"
-    # スクリプトが読み取りを禁止されているファイルパスまたはパターンのリスト。
-    denyRead:
-      - "~/.ssh"
-      - "*.key"
-    # スクリプトが書き込みを禁止されているファイルパスまたはパターンのリスト。
+    # 書き込みが禁止されているパスのリスト。
     denyWrite:
       - "/etc"
       - "/usr"
+    # 読み取りが禁止されているパスのリスト。
+    denyRead:
+      - "~/.ssh"
+      - "*.key"
 ```
 
-### 完全な例
+## 権限の設定
 
-これは、開発ツールを実行するための完全なサンドボックス構成を示す包括的な例です。
+権限システムは、どのコマンドが実行できるかを制御します。明確な優先順位で動作します：`deny`ルールは`allow`ルールを上書きし、`allow`ルールは`defaultMode`を上書きします。
 
-```yaml bash-agent.yaml icon=lucide:file-code
+### 権限プロパティ
+
+<x-field-group>
+  <x-field data-name="allow" data-type="string[]" data-required="false">
+    <x-field-desc markdown>承認なしで実行が許可されるコマンドのホワイトリスト。完全一致（`git status`）およびワイルドカード付きのプレフィックスマッチング（`ls:*`）をサポートします。</x-field-desc>
+  </x-field>
+  <x-field data-name="deny" data-type="string[]" data-required="false">
+    <x-field-desc markdown>厳密に禁止されるコマンドのブラックリスト。このリストが最も高い優先度を持ちます。</x-field-desc>
+  </x-field>
+  <x-field data-name="defaultMode" data-type="string" data-required="false" data-default="allow">
+    <x-field-desc markdown>`allow`または`deny`リストに一致しないコマンドのデフォルトの動作。指定可能な値は`allow`、`ask`、または`deny`です。</x-field-desc>
+  </x-field>
+  <x-field data-name="guard" data-type="Agent" data-required="false">
+    <x-field-desc markdown>`defaultMode`が`ask`の場合に呼び出されるAgent。スクリプトを受け取り、ブール値の`approved`ステータスを返す必要があります。</x-field-desc>
+  </x-field>
+</x-field-group>
+
+### Guard Agentを使用した例
+
+`defaultMode`が`ask`に設定されている場合、コマンドを承認または拒否するために`guard` Agentを提供する必要があります。Guard Agentは入力としてスクリプトを受け取り、`approved`ブール値とオプションの`reason`文字列を含むオブジェクトを返す必要があります。
+
+```yaml guard-config.yaml icon=lucide:file-code
 type: "@aigne/agent-library/bash"
 name: Bash
-sandbox:
-  network:
-    allowedDomains:
-      - "*.npmjs.org"
-      - "registry.npmjs.org"
-      - "github.com"
-      - "api.github.com"
-    deniedDomains:
-      - "*.ads.com"
-  filesystem:
-    allowWrite:
-      - "./output"
-      - "./logs"
-      - "/tmp"
-    denyRead:
-      - "~/.ssh"
-      - "~/.aws"
-      - "*.pem"
-      - "*.key"
-    denyWrite:
-      - "/etc"
-      - "/usr"
-      - "/bin"
-      - "/sbin"
+permissions:
+  allow:
+    - "echo:*"
+    - "ls:*"
+  deny:
+    - "rm:*"
+    - "sudo:*"
+  defaultMode: "ask"
+  guard:
+    type: "ai"
+    model: "anthropic/claude-3-5-sonnet-20241022"
+    instructions: |
+      You are a security guard for bash command execution.
+      Analyze the requested script and decide whether to approve it.
+
+      Script to evaluate:
+      ```bash
+      {{script}}
+      ```
+
+      Approve safe, read-only operations. Deny any command that
+      could modify or delete files, or alter system state.
+    output_schema:
+      type: object
+      properties:
+        approved:
+          type: boolean
+          description: Whether to approve the script execution.
+        reason:
+          type: string
+          description: An explanation for the decision.
+      required:
+        - approved
 ```
-
-## プラットフォームのサポート
-
-Bash Agent の機能は、主にサンドボックスの可用性に関して、オペレーティングシステムによって異なります。
-
-| プラットフォーム | サンドボックスのサポート | 直接実行 |
-| :--- | :--- | :--- |
-| **Linux** | ✅ フルサポート | ✅ サポート |
-| **macOS** | ✅ フルサポート | ✅ サポート |
-| **Windows** | ❌ サポートされていません | ✅ サポート |
-
-:::info
-Windows では、サンドボックスモードはサポートされていません。Bash Agent を使用するには、構成で `sandbox: false` を設定する必要があります。Windows での直接実行には、Windows Subsystem for Linux (WSL) や Git Bash などの環境がインストールされている必要がある場合があります。
-:::
 
 ## ベストプラクティス
 
-Bash Agent を安全かつ効果的に使用するために、以下のプラクティスに従ってください。
-
-- **最小権限の原則を適用する**: スクリプトが機能するために必要な最小限の権限のみを付与します。 `/` への書き込み許可や `*` へのネットワークアクセス許可など、過度に寛容なルールは避けてください。
-- **終了コードを処理する**: Agent の出力で常に `exitCode` を確認してください。ゼロ以外の値はエラーを示し、詳細については `stderr` ストリームを検査する必要があります。
-- **機密ファイルを保護する**: `~/.ssh`、`.env` ファイル、または秘密鍵などの機密情報を含むディレクトリやファイルへの読み取りアクセスを明示的に拒否します。
-- **具体的なワイルドカードを使用する**: ネットワークまたはファイルシステムのルールにワイルドカードを使用する場合は、できるだけ具体的にします (例: `*.com` の代わりに `api.example.com`)。
-- **ログと監査**: セキュリティが重要なアプリケーションでは、監査証跡を維持するために、入力スクリプトと結果の出力を含むすべてのスクリプト実行をログに記録します。
+*   **サンドボックスを使用する**: 本番環境では常にサンドボックスを有効にして、セキュリティリスクを軽減してください。
+*   **最小権限の原則**: サンドボックスと権限ルールを設定して、タスクに必要な最小限のアクセスのみを許可するようにします。
+*   **危険なコマンドを拒否する**: `rm`、`sudo`、`dd`などの破壊的なコマンドを明示的に`deny`リストに追加します。
+*   **終了コードを処理する**: Agentの出力にある`exitCode`をチェックして、スクリプトの失敗を検出し、処理します。`0`以外の終了コードは通常エラーを示し、詳細は`stderr`で確認できます。
+*   **機密ファイルを保護する**: `denyRead`を使用して、`~/.ssh`、`.env`ファイル、秘密鍵などの機密ファイルやディレクトリへのアクセスを防ぎます。

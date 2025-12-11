@@ -1,185 +1,244 @@
 # Bash
 
-The Bash agent provides a secure and controlled method for executing shell scripts and command-line tools within an agentic workflow. This document details its functionality, configuration, and best practices for system-level operations. By following this guide, you will learn how to integrate and utilize the Bash agent for tasks like file manipulation, process management, and automation.
+This document details the Bash agent, which allows for the secure execution of shell scripts and command-line tools within an agentic workflow. You will learn how to configure its sandboxed environment, manage command permissions, and integrate it into your applications for system-level operations.
 
 ## Overview
 
-The Bash agent is designed to run bash scripts in a controlled environment, leveraging [Anthropic's Sandbox Runtime](https://github.com/anthropic-experimental/sandbox-runtime) for enhanced security. It captures and streams standard output (`stdout`), standard error (`stderr`), and the final exit code, providing comprehensive feedback on the script's execution.
-
-The following diagram illustrates how the Bash agent executes a script within the secure sandbox, controlling filesystem and network access while streaming output back to the user.
-
-<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
-![Bash](assets/diagram/agent-library-bash-01.jpg)
-<!-- DIAGRAM_IMAGE_END -->
+The Bash agent is designed to execute bash scripts within a controlled and secure environment. It leverages Anthropic's Sandbox Runtime to provide an isolated execution space, offering fine-grained control over system access, including network and filesystem operations. This makes it an ideal tool for tasks requiring file manipulation, process management, and automation of shell commands without compromising system security.
 
 Key features include:
-- **Sandboxed Execution**: Scripts are executed in an isolated environment with configurable security policies.
-- **Network Control**: Whitelist or blacklist domains to manage network access.
-- **Filesystem Control**: Define specific read and write permissions for files and directories.
-- **Real-time Output**: Stream `stdout` and `stderr` as the script runs.
-- **Exit Code Tracking**: Capture the script's exit code to verify success or handle errors.
 
-## Input
+*   **Sandboxed Execution**: Scripts are run in an isolated environment with configurable access controls for network and filesystem resources.
+*   **Command Permissions**: A robust permission system allows you to whitelist, blacklist, or require approval for specific commands, preventing unauthorized operations.
+*   **Real-time Output**: Standard output (`stdout`) and standard error (`stderr`) are streamed in real-time as the script executes.
+*   **Guard Agents**: For commands requiring approval, you can designate another agent (an "AI guard") to dynamically approve or deny execution based on custom logic.
 
-The agent accepts a single required parameter in its input object.
+:::warning
+Sandbox mode is not supported on Windows. Windows users must explicitly set `sandbox: false` in their configuration to use the Bash agent. Disabling the sandbox removes all security protections and should only be done in trusted environments.
+:::
 
-<x-field-group>
-  <x-field data-name="script" data-type="string" data-required="true" data-desc="The bash script to be executed."></x-field>
-</x-field-group>
+### Architecture
 
-## Output
+The agent processes a script and, depending on whether the sandbox is enabled, either runs it directly or within the sandboxed environment. The output, including `stdout`, `stderr`, and the final `exitCode`, is streamed back to the caller.
 
-The agent returns an object containing the results of the script execution.
+```mermaid
+flowchart TB
+    Input([Script Input]) --> BashAgent[Bash Agent]
+    BashAgent --> SandboxCheck{Sandbox<br/>Enabled?}
 
-<x-field-group>
-  <x-field data-name="stdout" data-type="string" data-required="false" data-desc="The standard output stream produced by the script."></x-field>
-  <x-field data-name="stderr" data-type="string" data-required="false" data-desc="The standard error stream produced by the script."></x-field>
-  <x-field data-name="exitCode" data-type="number" data-required="false" data-desc="The exit code returned after the script completes. A value of 0 typically indicates success."></x-field>
-</x-field-group>
+    SandboxCheck -->|Yes| Sandbox[Sandbox Execution]
+    SandboxCheck -->|No| Direct[Direct Execution]
+
+    Sandbox --> ShellProcess[Shell Process]
+    Direct --> ShellProcess
+
+    ShellProcess --> StreamOutput[Stream Output]
+    StreamOutput --> Output([stdout, stderr, exitCode])
+
+    classDef inputOutput fill:#f9f0ed,stroke:#debbae,stroke-width:2px
+    classDef process fill:#F0F4EB,stroke:#C2D7A7,stroke-width:2px
+    classDef decision fill:#E8F4F8,stroke:#4A9EBF,stroke-width:2px
+
+    class Input,Output inputOutput
+    class BashAgent,ShellProcess,StreamOutput process
+    class SandboxCheck decision
+    class Sandbox,Direct process
+```
 
 ## Basic Usage
 
-The most direct way to use the Bash agent is through a YAML configuration file. This allows for a declarative approach to defining the agent's behavior and security constraints.
+The most straightforward way to use the Bash Agent is by defining it in a YAML file. This allows you to configure its behavior declaratively.
+
+### Standard Sandboxed Mode
+
+By default, the Bash agent runs in a secure, sandboxed environment.
 
 ```yaml bash-agent.yaml icon=lucide:file-code
 type: "@aigne/agent-library/bash"
 name: Bash
-# The sandbox is enabled by default with restrictive settings.
-# See the Sandbox Configuration section for detailed options.
+
+# The input schema defines the 'script' parameter
+input_schema:
+  type: object
+  properties:
+    script:
+      type: string
+      description: The bash script to execute.
+  required:
+    - script
 ```
 
-To execute this agent, you can use the AIGNE CLI, passing the script as an argument.
+You can then execute a script using the AIGNE CLI:
 
 ```bash icon=lucide:terminal
 aigne run . Bash --script 'echo "Hello from the Bash Agent!"'
 ```
 
+### Disabling the Sandbox
+
+For development, trusted environments, or on Windows, you can disable the sandbox.
+
+```yaml bash-agent-no-sandbox.yaml icon=lucide:file-code
+type: "@aigne/agent-library/bash"
+name: Bash
+sandbox: false # Disable the sandbox
+
+input_schema:
+  type: object
+  properties:
+    script:
+      type: string
+      description: The bash script to execute.
+  required:
+    - script
+```
+
+:::error
+Disabling the sandbox removes all security protections. This should only be done in environments where you fully trust the scripts being executed.
+:::
+
 ## Configuration
 
-The Bash agent can be configured using several options to tailor its behavior, particularly concerning the execution environment.
-
-### Agent Options
-
-These options are specified at the top level of the agent's YAML definition.
+The Bash agent can be configured with several options to control its execution environment and security settings.
 
 <x-field-group>
   <x-field data-name="sandbox" data-type="object | boolean" data-required="false" data-default="true">
-    <x-field-desc markdown>Controls the sandboxed execution environment. Set to `false` to disable the sandbox entirely, or provide a configuration object to customize its restrictions. By default, the sandbox is enabled.</x-field-desc>
+    <x-field-desc markdown>Configuration for the sandboxed environment based on [Anthropic's Sandbox Runtime](https://github.com/anthropic-experimental/sandbox-runtime). Set to `false` to disable sandboxing. Defaults to `true` with default restrictions.</x-field-desc>
+  </x-field>
+  <x-field data-name="timeout" data-type="number" data-required="false" data-default="60000">
+    <x-field-desc markdown>Execution timeout in milliseconds. The script will be terminated if it exceeds this limit.</x-field-desc>
+  </x-field>
+  <x-field data-name="permissions" data-type="object" data-required="false">
+    <x-field-desc markdown>Configuration for command execution permissions, including `allow`, `deny`, `defaultMode`, and a `guard` agent.</x-field-desc>
   </x-field>
 </x-field-group>
 
-### Disabling the Sandbox
+### Input and Output
 
-For trusted environments or on platforms where the sandbox is not supported (such as Windows), you can disable it.
+The agent accepts a simple input object and produces a detailed output object.
 
-:::warning
-Disabling the sandbox removes all security protections provided by the agent. This should only be done in a fully trusted environment where the executed scripts are known to be safe.
-:::
+#### Input Schema
 
-```yaml bash-agent.yaml icon=lucide:file-code
-type: "@aigne/agent-library/bash"
-name: Bash
-sandbox: false # Disables the sandbox
-```
+<x-field-group>
+  <x-field data-name="script" data-type="string" data-required="true" data-desc="The bash script to be executed."></x-field>
+</x-field-group>
+
+#### Output Schema
+
+<x-field-group>
+  <x-field data-name="stdout" data-type="string" data-required="false" data-desc="The standard output produced by the script."></x-field>
+  <x-field data-name="stderr" data-type="string" data-required="false" data-desc="The standard error output produced by the script."></x-field>
+  <x-field data-name="exitCode" data-type="number" data-required="false" data-desc="The exit code of the script. A value of `0` typically indicates success."></x-field>
+</x-field-group>
 
 ## Sandbox Configuration
 
-When the `sandbox` option is enabled, you can provide a configuration object to define granular security policies for network and filesystem access.
+The sandbox provides a secure layer for script execution by restricting access to network and filesystem resources.
 
-### Network Configuration
+### Network Control
 
-Control the agent's network access by specifying allowed and denied domains.
+You can specify which domains a script is allowed or forbidden to access.
 
-```yaml bash-agent.yaml icon=lucide:file-code
-type: "@aigne/agent-library/bash"
-name: Bash
+```yaml network-config.yaml icon=lucide:file-code
 sandbox:
   network:
-    # A list of domains the script is allowed to contact. Wildcards (*) are supported.
+    # A list of allowed domains. Wildcards are supported.
     allowedDomains:
+      - "api.github.com"
       - "*.example.com"
-      - "api.github.com"
-    # A list of domains the script is forbidden from contacting. This takes precedence over allowedDomains.
+    # A list of denied domains, which takes precedence over the allow list.
     deniedDomains:
       - "*.ads.com"
 ```
 
-### Filesystem Configuration
+### Filesystem Control
 
-Define which parts of the filesystem the script can read from and write to.
+Define read and write permissions for specific paths or patterns.
 
-```yaml bash-agent.yaml icon=lucide:file-code
-type: "@aigne/agent-library/bash"
-name: Bash
+```yaml filesystem-config.yaml icon=lucide:file-code
 sandbox:
   filesystem:
-    # A list of file paths or patterns that the script is permitted to write to.
+    # A list of paths where writing is permitted.
     allowWrite:
       - "./output"
       - "/tmp"
-    # A list of file paths or patterns that the script is forbidden from reading.
-    denyRead:
-      - "~/.ssh"
-      - "*.key"
-    # A list of file paths or patterns that the script is forbidden from writing to.
+    # A list of paths where writing is forbidden.
     denyWrite:
       - "/etc"
       - "/usr"
+    # A list of paths where reading is forbidden.
+    denyRead:
+      - "~/.ssh"
+      - "*.key"
 ```
 
-### Complete Example
+## Permissions Configuration
 
-Here is a comprehensive example demonstrating a complete sandbox configuration for running development tools.
+The permissions system controls which commands can be executed. It operates with a clear priority: `deny` rules override `allow` rules, and `allow` rules override the `defaultMode`.
 
-```yaml bash-agent.yaml icon=lucide:file-code
+### Permission Properties
+
+<x-field-group>
+  <x-field data-name="allow" data-type="string[]" data-required="false">
+    <x-field-desc markdown>A whitelist of commands that are permitted to execute without approval. Supports exact match (`git status`) and prefix matching with a wildcard (`ls:*`).</x-field-desc>
+  </x-field>
+  <x-field data-name="deny" data-type="string[]" data-required="false">
+    <x-field-desc markdown>A blacklist of commands that are strictly forbidden. This list has the highest priority.</x-field-desc>
+  </x-field>
+  <x-field data-name="defaultMode" data-type="string" data-required="false" data-default="allow">
+    <x-field-desc markdown>The default behavior for commands not matching `allow` or `deny` lists. Possible values are `allow`, `ask`, or `deny`.</x-field-desc>
+  </x-field>
+  <x-field data-name="guard" data-type="Agent" data-required="false">
+    <x-field-desc markdown>An agent invoked when `defaultMode` is `ask`. It receives the script and must return a boolean `approved` status.</x-field-desc>
+  </x-field>
+</x-field-group>
+
+### Example with a Guard Agent
+
+When `defaultMode` is set to `ask`, you must provide a `guard` agent to approve or reject commands. The guard agent receives the script as input and must return an object containing an `approved` boolean and an optional `reason` string.
+
+```yaml guard-config.yaml icon=lucide:file-code
 type: "@aigne/agent-library/bash"
 name: Bash
-sandbox:
-  network:
-    allowedDomains:
-      - "*.npmjs.org"
-      - "registry.npmjs.org"
-      - "github.com"
-      - "api.github.com"
-    deniedDomains:
-      - "*.ads.com"
-  filesystem:
-    allowWrite:
-      - "./output"
-      - "./logs"
-      - "/tmp"
-    denyRead:
-      - "~/.ssh"
-      - "~/.aws"
-      - "*.pem"
-      - "*.key"
-    denyWrite:
-      - "/etc"
-      - "/usr"
-      - "/bin"
-      - "/sbin"
+permissions:
+  allow:
+    - "echo:*"
+    - "ls:*"
+  deny:
+    - "rm:*"
+    - "sudo:*"
+  defaultMode: "ask"
+  guard:
+    type: "ai"
+    model: "anthropic/claude-3-5-sonnet-20241022"
+    instructions: |
+      You are a security guard for bash command execution.
+      Analyze the requested script and decide whether to approve it.
+
+      Script to evaluate:
+      ```bash
+      {{script}}
+      ```
+
+      Approve safe, read-only operations. Deny any command that
+      could modify or delete files, or alter system state.
+    output_schema:
+      type: object
+      properties:
+        approved:
+          type: boolean
+          description: Whether to approve the script execution.
+        reason:
+          type: string
+          description: An explanation for the decision.
+      required:
+        - approved
 ```
-
-## Platform Support
-
-The Bash agent's capabilities vary depending on the operating system, primarily concerning sandbox availability.
-
-| Platform | Sandbox Support | Direct Execution |
-| :--- | :--- | :--- |
-| **Linux** | ✅ Full support | ✅ Supported |
-| **macOS** | ✅ Full support | ✅ Supported |
-| **Windows** | ❌ Not supported | ✅ Supported |
-
-:::info
-On Windows, sandbox mode is not supported. You must set `sandbox: false` in your configuration to use the Bash agent. Direct execution on Windows may require an environment like Windows Subsystem for Linux (WSL) or Git Bash to be installed.
-:::
 
 ## Best Practices
 
-To ensure secure and effective use of the Bash agent, adhere to the following practices.
-
-- **Apply the Principle of Least Privilege**: Grant only the minimum permissions required for a script to function. Avoid overly permissive rules like allowing writes to `/` or network access to `*`.
-- **Handle Exit Codes**: Always check the `exitCode` in the agent's output. A non-zero value indicates an error, and the `stderr` stream should be inspected for details.
-- **Protect Sensitive Files**: Explicitly deny read access to directories and files containing sensitive information, such as `~/.ssh`, `.env` files, or private keys.
-- **Use Specific Wildcards**: When using wildcards for network or filesystem rules, make them as specific as possible (e.g., `api.example.com` instead of `*.com`).
-- **Log and Audit**: For security-critical applications, log all script executions, including the input script and the resulting output, to maintain an audit trail.
+*   **Use the Sandbox**: Always enable the sandbox in production environments to mitigate security risks.
+*   **Principle of Least Privilege**: Configure sandbox and permission rules to grant only the minimum access necessary for the task.
+*   **Deny Dangerous Commands**: Explicitly add destructive commands like `rm`, `sudo`, and `dd` to the `deny` list.
+*   **Handle Exit Codes**: Check the `exitCode` in the agent's output to detect and handle script failures. An exit code other than `0` usually indicates an error, and details can be found in `stderr`.
+*   **Protect Sensitive Files**: Use `denyRead` to prevent access to sensitive files and directories such as `~/.ssh`, `.env` files, and private keys.

@@ -70,7 +70,7 @@ sourcesPath:  # Source code paths to analyze
   - ./README.md
   - ./examples/**/*.md
   - ./examples/**/*.png
-lastGitHead: 8dc958d6ef8ace7f2bb0c8a007fc43485cc6271d
+lastGitHead: 6be1274db344b0ebcb5f3fb465df70fcfd0f5f84
 appUrl: https://docsmith.aigne.io
 boardId: aigne-framework
 # Checkout ID for document deployment service

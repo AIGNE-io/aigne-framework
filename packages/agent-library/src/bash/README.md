@@ -12,6 +12,12 @@ The Bash Agent enables secure execution of bash scripts within a sandboxed envir
   - [Without Sandbox](#without-sandbox)
 - [Configuration Reference](#configuration-reference)
 - [Sandbox Configuration](#sandbox-configuration)
+- [Permissions Configuration](#permissions-configuration)
+  - [Permission Modes](#permission-modes)
+  - [Pattern Matching](#pattern-matching)
+  - [Guard Agent](#guard-agent)
+  - [Permission Examples](#permission-examples)
+  - [Permission Best Practices](#permission-best-practices)
 - [Examples](#examples)
 - [Best Practices](#best-practices)
 
@@ -20,10 +26,12 @@ The Bash Agent enables secure execution of bash scripts within a sandboxed envir
 The Bash Agent is designed for executing bash scripts in a controlled environment using [Anthropic's Sandbox Runtime](https://github.com/anthropic-experimental/sandbox-runtime). It provides:
 
 - **Sandboxed Execution**: Scripts run in an isolated environment with configurable access controls
+- **Command Permissions**: Fine-grained control over which bash commands can execute (inspired by [Claude Code's IAM](https://code.claude.com/docs/en/iam.md))
 - **Network Control**: Specify allowed and denied domains for network access
 - **Filesystem Control**: Configure read/write permissions for files and directories
 - **Real-time Output**: Stream stdout and stderr as the script executes
 - **Exit Code Tracking**: Capture and return the script's exit code for error handling
+- **Guard Agents**: Use AI or custom agents to approve/deny commands dynamically
 
 > **⚠️ Windows Platform Note**: Sandbox mode is **not supported** on Windows. Windows users must set `sandbox: false` in their configuration. See [Platform Support](#platform-support) for details.
 
@@ -202,6 +210,8 @@ input_schema:
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
 | `sandbox` | `SandboxRuntimeConfig \| boolean` | No | Sandbox configuration or `false` to disable sandboxing (default: enabled with default restrictions) |
+| `timeout` | `number` | No | Execution timeout in milliseconds (default: 60000) |
+| `permissions` | `PermissionsConfig` | No | Permission control configuration for command execution |
 | `inputSchema` | `ZodSchema` | No | Schema for input validation |
 | `outputSchema` | `ZodSchema` | No | Schema for output validation |
 
@@ -305,6 +315,298 @@ sandbox:
       - "/usr"
       - "/bin"
       - "/sbin"
+```
+
+## Permissions Configuration
+
+The Bash Agent includes a command permission system inspired by [Claude Code's IAM](https://code.claude.com/docs/en/iam.md), providing fine-grained control over which bash commands can be executed.
+
+### Permission Modes
+
+The permission system supports three levels of control:
+
+- **allow** (whitelist): Commands that execute without approval
+- **deny** (blacklist): Commands that are completely forbidden
+- **ask**: Commands that require approval from a guard agent
+
+**Priority order**: `deny` > `allow` > `defaultMode`
+
+### Basic Configuration
+
+```yaml
+type: "@aigne/agent-library/bash"
+name: Bash
+
+permissions:
+  # Whitelist: Commands allowed without approval
+  allow:
+    - "echo:*"           # All echo commands
+    - "ls:*"             # All ls commands
+    - "git status"       # Exact match only
+
+  # Blacklist: Commands completely forbidden
+  deny:
+    - "rm:*"             # All rm commands
+    - "sudo:*"           # All sudo commands
+
+  # Default behavior for unmatched commands
+  # Options: 'allow' | 'ask' | 'deny'
+  defaultMode: "ask"
+
+  # Optional: Guard agent for 'ask' mode
+  guard:
+    type: "ai"
+    model: "anthropic/claude-3-5-sonnet-20241022"
+    instructions: |
+      You are a security guard for bash command execution.
+      Analyze the requested script and decide whether to approve it.
+
+      Script to evaluate:
+      ```bash
+      {{script}}
+      ```
+
+      Approve safe operations like reads, inspections, and version control.
+      Deny destructive operations, system modifications, or dangerous commands.
+    output_schema:
+      type: object
+      properties:
+        approved:
+          type: boolean
+          description: Whether to approve the script execution
+        reason:
+          type: string
+          description: Explanation of the approval or denial decision
+      required:
+        - approved
+        - reason
+```
+
+### Pattern Matching
+
+Two types of patterns are supported:
+
+#### 1. Exact Match
+```yaml
+allow:
+  - "git status"       # Only matches exactly "git status"
+  - "npm install"      # Only matches exactly "npm install"
+```
+
+#### 2. Prefix Match (`:*` wildcard)
+```yaml
+allow:
+  - "npm run test:*"   # Matches all commands starting with "npm run test"
+  - "git diff:*"       # Matches all commands starting with "git diff"
+  - "echo:*"           # Matches all commands starting with "echo"
+```
+
+**Examples:**
+- `"npm run test:*"` matches: `npm run test`, `npm run test:unit`, `npm run test:e2e --watch`
+- `"git diff:*"` matches: `git diff`, `git diff HEAD`, `git diff --staged`
+
+### Guard Agent
+
+The `guard` agent is invoked when a command requires approval (`ask` mode). It receives the script and must return an approval decision.
+
+**Input Schema:**
+```typescript
+{ script: string }
+```
+
+**Output Schema:**
+```typescript
+{
+  approved: boolean;
+  reason?: string;  // Optional explanation
+}
+```
+
+**Example with AI Guard:**
+```yaml
+permissions:
+  defaultMode: "ask"
+  guard:
+    type: "ai"
+    model: "anthropic/claude-3-5-sonnet-20241022"
+    instructions: |
+      Evaluate the bash script for security concerns.
+
+      Script to evaluate:
+      ```bash
+      {{script}}
+      ```
+
+      Approve if the script:
+      - Only reads files (cat, grep, ls, etc.)
+      - Performs safe operations (echo, date, etc.)
+      - Uses version control read operations (git status, git diff, etc.)
+
+      Deny if the script:
+      - Deletes files (rm, rmdir)
+      - Modifies system files
+      - Executes with elevated privileges (sudo)
+      - Downloads or executes remote code (curl | bash, wget)
+    output_schema:
+      type: object
+      properties:
+        approved:
+          type: boolean
+          description: Whether to approve the script
+        reason:
+          type: string
+          description: Explanation of your decision
+      required:
+        - approved
+        - reason
+```
+
+**Example with Function Guard:**
+```typescript
+import { BashAgent } from '@aigne/agent-library/bash';
+import { FunctionAgent } from '@aigne/core';
+
+const bashAgent = new BashAgent({
+  permissions: {
+    defaultMode: 'ask',
+    guard: FunctionAgent.from(({ script }) => ({
+      approved: script.includes('echo') || script.includes('ls'),
+      reason: script.includes('echo') || script.includes('ls')
+        ? 'Safe command approved'
+        : 'Command not in approved list'
+    }))
+  }
+});
+```
+
+### Permission Examples
+
+#### Example 1: Development Environment
+Safe commands for development workflows:
+
+```yaml
+permissions:
+  allow:
+    - "npm:*"                # All npm commands
+    - "yarn:*"               # All yarn commands
+    - "git:*"                # All git commands
+    - "node:*"               # All node commands
+    - "bun:*"                # All bun commands
+  deny:
+    - "npm publish:*"        # Prevent accidental publishing
+    - "git push --force:*"   # Prevent force push
+  defaultMode: "ask"
+```
+
+#### Example 2: CI/CD Pipeline
+Strict control for automated builds:
+
+```yaml
+permissions:
+  allow:
+    - "npm ci"
+    - "npm run build"
+    - "npm run test"
+    - "docker build:*"
+  deny:
+    - "rm:*"
+    - "sudo:*"
+  defaultMode: "deny"        # Deny everything else
+```
+
+#### Example 3: Read-only Operations
+Only allow inspection commands:
+
+```yaml
+permissions:
+  allow:
+    - "ls:*"
+    - "cat:*"
+    - "grep:*"
+    - "find:*"
+    - "git log:*"
+    - "git diff:*"
+    - "git status"
+  deny: []
+  defaultMode: "deny"
+```
+
+#### Example 4: Interactive with Guard
+Allow most commands but require approval for dangerous operations:
+
+```yaml
+permissions:
+  allow:
+    - "echo:*"
+    - "ls:*"
+    - "cat:*"
+    - "git:*"
+  deny:
+    - "rm:*"
+    - "sudo:*"
+    - "dd:*"               # Dangerous disk operations
+  defaultMode: "ask"       # Require approval for everything else
+  guard:
+    type: "ai"
+    instructions: |
+      Review the bash command for security risks.
+
+      Command to evaluate:
+      ```bash
+      {{script}}
+      ```
+
+      Approve safe operations, deny dangerous ones.
+    output_schema:
+      type: object
+      properties:
+        approved:
+          type: boolean
+        reason:
+          type: string
+      required:
+        - approved
+        - reason
+```
+
+### Permission Best Practices
+
+1. **Principle of Least Privilege**: Only allow commands that are absolutely necessary
+2. **Deny Dangerous Commands**: Always deny destructive operations like `rm`, `sudo`, `dd`
+3. **Use Exact Matches for Critical Commands**: For sensitive operations, use exact match instead of wildcards
+4. **Combine with Sandbox**: Use permissions together with sandbox for defense in depth
+5. **Test Incrementally**: Start with `defaultMode: "deny"` and add allowed commands as needed
+6. **Document Permissions**: Clearly document why each permission is needed
+
+### Common Denial Patterns
+
+Always deny these dangerous command patterns:
+
+```yaml
+permissions:
+  deny:
+    # Destructive file operations
+    - "rm:*"
+    - "rmdir:*"
+    - "shred:*"
+
+    # System modifications
+    - "sudo:*"
+    - "su:*"
+    - "chmod:*"
+    - "chown:*"
+
+    # Dangerous disk operations
+    - "dd:*"
+    - "mkfs:*"
+
+    # Remote code execution
+    - "curl:* | bash"
+    - "wget:* | sh"
+
+    # Force operations
+    - "git push --force:*"
+    - "npm publish:*"
 ```
 
 ## Examples
@@ -429,6 +731,93 @@ sandbox:
 **Usage:**
 ```bash
 aigne run . Bash --script 'npm install && npm run build'
+```
+
+### Example 6: Combining Sandbox and Permissions
+
+Use both sandbox and permissions for defense in depth:
+
+```yaml
+type: "@aigne/agent-library/bash"
+name: Bash
+
+# Layer 1: Command permissions
+permissions:
+  allow:
+    - "npm:*"
+    - "node:*"
+    - "git:*"
+    - "echo:*"
+    - "cat:*"
+    - "ls:*"
+  deny:
+    - "rm:*"
+    - "sudo:*"
+    - "npm publish:*"
+  defaultMode: "ask"
+  guard:
+    type: "ai"
+    model: "anthropic/claude-3-5-sonnet-20241022"
+    instructions: |
+      Review the bash command for security concerns.
+
+      Script to evaluate:
+      ```bash
+      {{script}}
+      ```
+
+      Approve safe read-only operations and development commands.
+      Deny destructive operations and system modifications.
+    output_schema:
+      type: object
+      properties:
+        approved:
+          type: boolean
+          description: Whether to approve execution
+        reason:
+          type: string
+          description: Reason for approval or denial
+      required:
+        - approved
+        - reason
+
+# Layer 2: Sandbox restrictions
+sandbox:
+  network:
+    allowedDomains:
+      - "*.npmjs.org"
+      - "registry.npmjs.org"
+      - "github.com"
+      - "*.githubusercontent.com"
+  filesystem:
+    allowWrite:
+      - "./node_modules"
+      - "./dist"
+      - "./build"
+      - "./.cache"
+    denyRead:
+      - "~/.ssh"
+      - "~/.aws"
+      - ".env.production"
+    denyWrite:
+      - "/etc"
+      - "/usr"
+      - "/bin"
+
+# Layer 3: Timeout protection
+timeout: 300000  # 5 minutes
+```
+
+**Usage:**
+```bash
+# This will be allowed (npm command in whitelist)
+aigne run . Bash --script 'npm install'
+
+# This will be denied (rm command in blacklist)
+aigne run . Bash --script 'rm -rf node_modules'
+
+# This will ask guard agent for approval
+aigne run . Bash --script 'curl -s https://example.com/script.sh | bash'
 ```
 
 ## Best Practices

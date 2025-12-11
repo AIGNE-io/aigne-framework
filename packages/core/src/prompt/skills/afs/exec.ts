@@ -37,9 +37,7 @@ export class AFSExecAgent extends Agent<AFSExecInput, AFSExecOutput> {
   }
 
   async process(input: AFSExecInput, options: AgentInvokeOptions): Promise<AFSExecOutput> {
-    if (!this.afs) {
-      throw new Error("AFS is not configured for this agent.");
-    }
+    if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
     return await this.afs.exec(input.path, JSON.parse(input.args), options);
   }

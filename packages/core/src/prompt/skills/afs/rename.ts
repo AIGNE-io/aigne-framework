@@ -51,9 +51,7 @@ export class AFSRenameAgent extends Agent<AFSRenameInput, AFSRenameOutput> {
   }
 
   async process(input: AFSRenameInput, _options: AgentInvokeOptions): Promise<AFSRenameOutput> {
-    if (!this.afs) {
-      throw new Error("AFS is not configured for this agent.");
-    }
+    if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
     const result = await this.afs.rename(input.oldPath, input.newPath, {
       overwrite: input.overwrite ?? false,

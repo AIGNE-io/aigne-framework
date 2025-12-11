@@ -62,12 +62,10 @@ export class AFSEditAgent extends Agent<AFSEditInput, AFSEditOutput> {
   }
 
   async process(input: AFSEditInput, _options: AgentInvokeOptions): Promise<AFSEditOutput> {
+    if (!this.afs) throw new Error("AFS is not configured for this agent.");
+
     if (!input.patches?.length) {
       throw new Error("No patches provided for afs_edit.");
-    }
-
-    if (!this.afs) {
-      throw new Error("AFS is not configured for this agent.");
     }
 
     const readResult = await this.afs.read(input.path);

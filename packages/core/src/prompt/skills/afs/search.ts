@@ -65,9 +65,7 @@ export class AFSSearchAgent extends Agent<AFSSearchInput, AFSSearchOutput> {
   }
 
   async process(input: AFSSearchInput, _options: AgentInvokeOptions): Promise<AFSSearchOutput> {
-    if (!this.afs) {
-      throw new Error("AFS is not configured for this agent.");
-    }
+    if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
     const result = await this.afs.search(input.path, input.query, input.options);
 

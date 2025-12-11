@@ -47,9 +47,7 @@ export class AFSDeleteAgent extends Agent<AFSDeleteInput, AFSDeleteOutput> {
   }
 
   async process(input: AFSDeleteInput, _options: AgentInvokeOptions): Promise<AFSDeleteOutput> {
-    if (!this.afs) {
-      throw new Error("AFS is not configured for this agent.");
-    }
+    if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
     const result = await this.afs.delete(input.path, {
       recursive: input.recursive ?? false,

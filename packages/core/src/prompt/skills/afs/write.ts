@@ -49,9 +49,7 @@ export class AFSWriteAgent extends Agent<AFSWriteInput, AFSWriteOutput> {
   }
 
   async process(input: AFSWriteInput, _options: AgentInvokeOptions): Promise<AFSWriteOutput> {
-    if (!this.afs) {
-      throw new Error("AFS is not configured for this agent.");
-    }
+    if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
     const result = await this.afs.write(
       input.path,

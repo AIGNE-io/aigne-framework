@@ -56,9 +56,7 @@ export class AFSListAgent extends Agent<AFSListInput, AFSListOutput> {
   }
 
   async process(input: AFSListInput, _options: AgentInvokeOptions): Promise<AFSListOutput> {
-    if (!this.afs) {
-      throw new Error("AFS is not configured for this agent.");
-    }
+    if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
     const { list, message } = await this.afs.list(input.path, input.options);
     const result = this.buildTreeView(list);

@@ -59,7 +59,7 @@ export class UserAgent<I extends Message = Message, O extends Message = Message>
 
   async process(input: I, options: AgentInvokeOptions): Promise<AgentProcessResult<O>> {
     if (this._process) {
-      return this._process(input, options);
+      return this._process.apply(this as any, [input, options]);
     }
 
     if (this.activeAgent) {

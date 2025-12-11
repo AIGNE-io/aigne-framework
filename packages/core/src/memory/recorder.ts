@@ -113,6 +113,6 @@ export class MemoryRecorder extends Agent<MemoryRecorderInput, MemoryRecorderOut
     if (!this._process) {
       throw new Error("MemoryRecorder process function is not defined.");
     }
-    return this._process(input, options);
+    return this._process.apply(this as any, [input, options]);
   }
 }

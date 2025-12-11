@@ -1721,7 +1721,7 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
    * @returns Processing result
    */
   process(input: I, options: AgentInvokeOptions) {
-    return this._process(input, options);
+    return this._process.apply(this, [input, options]);
   }
 }
 
@@ -1736,10 +1736,11 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
  * @param context Execution context
  * @returns Processing result, can be synchronous or asynchronous
  */
-export type FunctionAgentFn<I extends Message = any, O extends Message = any> = (
-  input: I,
-  options: AgentInvokeOptions,
-) => PromiseOrValue<AgentProcessResult<O>>;
+export type FunctionAgentFn<
+  I extends Message = any,
+  O extends Message = any,
+  A extends FunctionAgent<I, O> = FunctionAgent<I, O>,
+> = (this: A, input: I, options: AgentInvokeOptions) => PromiseOrValue<AgentProcessResult<O>>;
 
 function functionToAgent<I extends Message, O extends Message>(
   agent: FunctionAgentFn<I, O>,

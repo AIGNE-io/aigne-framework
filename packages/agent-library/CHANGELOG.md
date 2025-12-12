@@ -7,6 +7,13 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.23.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.23.0-beta.7...agent-library-v1.23.0-beta.8) (2025-12-12)
+
+
+### Features
+
+* **agent-library:** add BashAgent with sandbox support ([#816](https://github.com/AIGNE-io/aigne-framework/issues/816)) ([0d4feee](https://github.com/AIGNE-io/aigne-framework/commit/0d4feeeac2b71df1c4d725adeee76c9318ce8e02))
+
 ## [1.23.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.23.0-beta.6...agent-library-v1.23.0-beta.7) (2025-12-11)
 
 

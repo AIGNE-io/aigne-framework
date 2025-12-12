@@ -1,139 +1,107 @@
-# MCP サーバー
+このガイドでは、AIGNE Framework の Agent をモデルコンテキストプロトコル（MCP）サーバーとして実行する方法について説明します。このドキュメントを読み終える頃には、サーバーを起動し、AI モデルに接続し、Claude Code のような MCP 互換クライアントを使用して Agent と対話できるようになります。
 
-このガイドでは、AIGNE Framework の Agent をモデルコンテキストプロトコル (MCP) サーバーとして実行する方法について説明します。これらの手順に従うことで、カスタム Agent を Claude Code などの MCP 互換クライアントにツールとして公開し、その機能を拡張できます。
+モデルコンテキストプロトコル（MCP）は、AIアシスタントが様々なデータソースやツールに安全に接続できるように設計されたオープンスタンダードです。AIGNE Agent を MCP サーバーとして公開することで、カスタム Agent の専門的なスキルや機能を MCP 互換クライアントに拡張できます。
 
-## 概要
+以下の図は、AIGNE MCP サーバーが Agent を AI モデルおよび MCP 互換クライアントに接続する仕組みを示しています。
 
-[モデルコンテキストプロトコル (MCP)](https://modelcontextprotocol.io) は、AI アシスタントがさまざまなデータソースやツールに安全に接続できるように設計されたオープンスタンダードです。AIGNE Agent を MCP サーバーとして運用することで、MCP 互換クライアントを Agent の専門的な機能で強化できます。
+<!-- DIAGRAM_IMAGE_START:guide:4:3 -->
+![This guide provides instructions on how to run AIGNE Framework agents as a Model Context Protocol...](assets/diagram/examples-mcp-server-01.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 前提条件
 
-続行する前に、以下の要件が満たされていることを確認してください：
+先に進む前に、開発環境が以下の要件を満たしていることを確認してください。
 
-*   **Node.js:** バージョン 20.0 以上がインストールされている必要があります。[nodejs.org](https://nodejs.org) からダウンロードできます。
-*   **AI モデルプロバイダー:** Agent が機能するには、[OpenAI](https://platform.openai.com/api-keys) などのプロバイダーからの API キーが必要です。
+*   **Node.js:** バージョン 20.0 以上。
+*   **AI モデルへのアクセス:** OpenAI などのサポートされている大規模言語モデルプロバイダーの API キー。
 
 ## クイックスタート
 
-`npx` を使用すると、ローカルにインストールすることなく、MCP サーバーを直接起動できます。
+`npx` を使用すると、ローカルにインストールすることなく直接サンプルを実行できます。
 
 ### 1. MCP サーバーを実行する
 
-ターミナルで次のコマンドを実行して、ポート `3456` でサーバーを起動します：
+ターミナルで以下のコマンドを実行し、MCP サーバーのサンプルをダウンロードして起動します。
 
-```bash server.js icon=lucide:terminal
+```sh serve-mcp icon=lucide:terminal
 npx -y @aigne/example-mcp-server serve-mcp --port 3456
 ```
 
-正常に実行されると、サーバーが起動し、MCP サーバーがアクティブでアクセス可能であることを示す次の出力が表示されます。
+正常に実行されるとサーバーが起動し、MCP サーバーがアクティブであり接続を待機していることを確認する以下の出力が表示されます。
 
-```bash
+```sh Expected Output icon=lucide:terminal
 Observability OpenTelemetry SDK Started, You can run `npx aigne observe` to start the observability server.
 MCP server is running on http://localhost:3456/mcp
 ```
 
 ### 2. AI モデルに接続する
 
-Agent は、リクエストを処理するために大規模言語モデル (LLM) への接続を必要とします。モデルプロバイダーを設定せずにサーバーを実行すると、接続方法を選択するように求められます。
+MCP サーバーが機能するには、大規模言語モデルへの接続が必要です。初めてサーバーを実行する場合、コマンドラインプロンプトが表示され、接続プロセスを案内します。
 
-![AI モデル設定の初期接続プロンプト。](../../../examples/mcp-server/run-example.png)
+![AI モデルへの接続を求めるターミナルのプロンプト。](../../../examples/mcp-server/run-example.png)
 
-AI モデルへの接続には、主に 3 つのオプションがあります。
+AI モデルへの接続には、主に3つの選択肢があります。
 
-#### オプション A: 公式 AIGNE Hub に接続する
+#### オプション1：AIGNE Hub（推奨）
 
-これは、新規ユーザーに推奨される方法です。
+公式の AIGNE Hub に接続すると、すぐに開始できます。新規ユーザーは無料クレジットを受け取れるため、評価にはこれが最も簡単なオプションです。プロンプトで最初のオプションを選択すると、ウェブブラウザが開き、認証プロセスを案内します。
 
-1.  最初のオプション「Arcblock 公式 AIGNE Hub に接続する」を選択します。
-2.  Web ブラウザが開き、AIGNE Hub の承認ページが表示されます。
-3.  画面の指示に従って接続を承認します。新規ユーザーには、評価目的で 400,000 トークンが自動的に付与されます。
+![AIGNE Hub の認証ページ。](../../../examples/images/connect-to-aigne-hub.png)
 
-![AIGNE Hub 承認ダイアログ。](../../../examples/images/connect-to-aigne-hub.png)
+#### オプション2：セルフホストの AIGNE Hub
 
-#### オプション B: セルフホストの AIGNE Hub に接続する
+組織がセルフホストの AIGNE Hub インスタンスを使用している場合は、2番目のオプションを選択し、プロンプトが表示されたらハブインスタンスの URL を入力します。
 
-独自の AIGNE Hub インスタンスを運用している場合は、2 番目のオプションを選択します。
+![セルフホストの AIGNE Hub の URL 入力を求めるターミナルのプロンプト。](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
 
-1.  セルフホストの AIGNE Hub の URL を入力するように求められます。
-2.  URL を入力し、その後のプロンプトに従って接続を完了します。
+#### オプション3：サードパーティのモデルプロバイダー
 
-セルフホストの AIGNE Hub をデプロイする手順については、[Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ?utm_source=www.arcblock.io&utm_medium=blog_link&utm_campaign=default&utm_content=store.blocklet.dev#:~:text=%F0%9F%9A%80%20Get%20Started%20in%20Minutes) にアクセスしてください。
+適切な環境変数を設定することで、サードパーティのモデルプロバイダーに直接接続できます。例えば、OpenAI を使用するには、サーバーコマンドを実行する前に API キーをエクスポートします。
 
-![セルフホストの AIGNE Hub URL を入力するプロンプト。](../../../examples/images/connect-to-self-hosted-aigne-hub.png)
-
-#### オプション C: サードパーティのモデルプロバイダー経由で接続する
-
-適切な API キーを環境変数として設定することで、OpenAI などのサードパーティのモデルプロバイダーに直接接続できます。
-
-例えば、OpenAI を使用するには、`OPENAI_API_KEY` 変数を設定します：
-
-```bash .env icon=lucide:terminal
-export OPENAI_API_KEY="your_openai_api_key_here"
+```sh Configure OpenAI API Key icon=lucide:terminal
+export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 ```
 
-環境変数を設定した後、MCP サーバーコマンドを再起動します。DeepSeek や Google Gemini などの他のプロバイダーでサポートされている変数の一覧については、リポジトリ内のサンプル設定ファイルを参照してください。
+環境変数を設定した後、`serve-mcp` コマンドを再起動します。
 
 ## 利用可能な Agent
 
-この例では、それぞれが異なる機能を持つ、いくつかの事前構築済み Agent を MCP ツールとして公開しています：
+このサンプルでは、それぞれが異なる機能を持つ、いくつかの事前設定された Agent を MCP ツールとして公開しています。
 
-| Agent | ファイルパス | 説明 |
-| ----------------- | -------------------------- | ------------------------------------- |
-| Current Time | `agents/current-time.js` | 現在の日付と時刻を提供します。 |
-| Poet | `agents/poet.yaml` | 詩や創造的なテキストを生成します。 |
-| System Info | `agents/system-info.js` | システムに関する情報を報告します。 |
+*   **Current Time Agent:** 現在の時刻を提供します。`agents/current-time.js` で定義されています。
+*   **Poet Agent:** 詩やその他の創造的なテキスト形式を生成します。`agents/poet.yaml` で定義されています。
+*   **System Info Agent:** ホストシステムに関する情報を取得します。`agents/system-info.js` で定義されています。
 
 ## MCP クライアントへの接続
 
-サーバーが実行されたら、MCP 互換のクライアントに接続できます。次の例では [Claude Code](https://claude.ai/code) を使用しています。
+MCP サーバーが実行されたら、任意の MCP 互換クライアントから接続できます。以下の例では Claude Code を使用します。
 
-1.  次のコマンドで、実行中の MCP サーバーを Claude Code に追加します：
+まず、[Claude Code](https://claude.ai/code) がインストールされていることを確認します。次に、以下のコマンドを使用して AIGNE MCP サーバーをツールソースとして追加します。
 
-    ```bash icon=lucide:terminal
-    claude mcp add -t http test http://localhost:3456/mcp
-    ```
+```sh Add MCP Server to Claude icon=lucide:terminal
+claude mcp add -t http test http://localhost:3456/mcp
+```
 
-2.  クライアント内から Agent を呼び出します。例えば、システム情報を要求したり、詩を依頼したりできます。
+サーバーを追加した後、Claude Code のインターフェースから直接 Agent のスキルを呼び出すことができます。
 
-    **例：System Info Agent の呼び出し**
-    ![Claude Code から System Info Agent を呼び出す。](https://www.arcblock.io/image-bin/uploads/4824b6bf01f393a064fb36ca91feefcc.gif)
+## Agent の実行を監視する
 
-    **例：Poet Agent の呼び出し**
-    ![Claude Code から Poet Agent を呼び出す。](https://www.arcblock.io/image-bin/uploads/d4b49b880c246f55e0809cdc712a5bdb.gif)
+AIGNE Framework には、Agent の振る舞いをリアルタイムで監視およびデバッグできる可観測性ツールが含まれています。このツールは、トレースの分析、入力と出力の検査、Agent のパフォーマンス理解に不可欠です。
 
-## Agent アクティビティの監視
+### 1. オブザーバーを起動する
 
-AIGNE には、Agent の実行をリアルタイムで監視およびデバッグできる可観測性ツールが含まれています。
+ローカルの可観測性ウェブサーバーを起動するには、新しいターミナルウィンドウで以下のコマンドを実行します。
 
-1.  新しいターミナルウィンドウで次のコマンドを実行して、可観測性サーバーを起動します：
+```sh Start Observability Server icon=lucide:terminal
+npx aigne observe --port 7890
+```
 
-    ```bash icon=lucide:terminal
-    npx aigne observe --port 7890
-    ```
+サーバーが起動し、ダッシュボードにアクセスするための URL が提供されます。
 
-    ![AIGNE observe サーバー起動後のターミナル出力。](../../../examples/images/aigne-observe-execute.png)
+![可観測性サーバーが実行中であることを示すターミナルの出力。](../../../examples/images/aigne-observe-execute.png)
 
-2.  Web ブラウザを開き、`http://localhost:7890` にアクセスします。
+### 2. トレースを表示する
 
-ダッシュボードは、実行トレースの検査、詳細な呼び出し情報の表示、Agent の動作の理解を可能にするユーザーフレンドリーなインターフェースを提供します。これは、デバッグ、パフォーマンスチューニング、および Agent が情報をどのように処理するかについての洞察を得るための不可欠なツールです。
+ウェブブラウザで `http://localhost:7890` を開き、AIGNE の可観測性ダッシュボードにアクセスします。「Traces」ビューには、レイテンシー、トークン使用量、ステータスなどの詳細を含む、最近の Agent 実行のリストが表示されます。
 
-![可観測性 UI の最近の実行リスト。](../../../examples/images/aigne-observe-list.png)
-
-以下は、Poet Agent によって処理されたリクエストの詳細なトレースの例です。
-
-![Poet Agent の詳細トレースビュー。](https://www.arcblock.io/image-bin/uploads/bb39338e593abc6f544c12636d1db739.png)
-
-## まとめ
-
-これで、MCP サーバーを起動し、AI モデルに接続し、AIGNE Agent を MCP クライアントにツールとして公開することに成功しました。これにより、カスタムロジックやデータソースで AI アシスタントの機能を拡張できます。
-
-より高度な例や Agent の種類については、次のセクションを参照してください：
-
-<x-cards data-columns="2">
-  <x-card data-title="MCP Agent" data-icon="lucide:box" data-href="/developer-guide/agents/mcp-agent">
-    モデルコンテキストプロトコル (MCP) を介して外部システムに接続し、対話する方法を学びます。
-  </x-card>
-  <x-card data-title="MCP GitHub Example" data-icon="lucide:github" data-href="/examples/mcp-github">
-    MCP サーバーを使用して GitHub リポジトリと対話する例をご覧ください。
-  </x-card>
-</x-cards>
+![トレースのリストを表示している Aigne 可観測性インターフェース。](../../../examples/images/aigne-observe-list.png)

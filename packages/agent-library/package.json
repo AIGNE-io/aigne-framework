@@ -1,6 +1,6 @@
 {
   "name": "@aigne/agent-library",
-  "version": "1.23.0-beta.7",
+  "version": "1.23.0-beta.8",
   "description": "Collection of agent libraries for AIGNE framework",
   "publishConfig": {
     "access": "public"
@@ -60,6 +60,8 @@
     "@aigne/openai": "workspace:^",
     "@aigne/sqlite": "workspace:^",
     "@aigne/uuid": "^13.0.1",
+    "@anthropic-ai/sandbox-runtime": "^0.0.19",
+    "@vscode/ripgrep": "^1.15.14",
     "drizzle-orm": "^0.44.5",
     "fastq": "^1.19.1",
     "jsonata": "^2.1.0",

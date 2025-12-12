@@ -29,6 +29,7 @@ Collection of agent libraries for [AIGNE Framework](https://github.com/AIGNE-io/
 ## Features
 
 * **Orchestrator Agent**: Provides OrchestratorAgent implementation for coordinating workflows between multiple agents
+* **Bash Agent**: Secure execution of bash scripts with sandboxed environment and comprehensive output handling
 * **Task Concurrency**: Supports parallel execution of multiple tasks to improve processing efficiency
 * **Planning & Execution**: Automatically generates execution plans and executes them step by step
 * **Result Synthesis**: Intelligently synthesizes results from multiple steps and tasks
@@ -61,6 +62,8 @@ The library provides the following components:
 ### Agent Types
 
 * **[Orchestrator Agent](src/orchestrator/README.md)**: A sophisticated agent pattern that enables autonomous task planning and execution through a three-phase architecture: Planner → Worker → Completer. It breaks down complex objectives into manageable tasks, executes them iteratively, and synthesizes the final results. Perfect for coordinating complex workflows and multi-step tasks.
+
+* **[Bash Agent](src/bash/README.md)**: Enables secure execution of bash scripts within a sandboxed environment. Provides controlled access to system commands, network resources, and the filesystem while returning comprehensive execution results including stdout, stderr, and exit codes. Ideal for running system commands, interacting with CLI tools, and executing shell scripts safely.
 
 ## License
 

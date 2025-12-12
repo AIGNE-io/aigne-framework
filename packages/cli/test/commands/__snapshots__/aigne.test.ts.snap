@@ -34,7 +34,8 @@ Positionals:
 
 Options:
       --help     Show help
-  -v, --version  Show version number  [boolean]"
+  -v, --version  Show version number  [boolean]
+      --chat     Run chat loop in terminal  [boolean] [default: false]"
 ,
   ],
 ]

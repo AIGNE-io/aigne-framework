@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.5-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.2.5-beta.7...example-nano-banana-v1.2.5-beta.8) (2025-12-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.23.0-beta.8
+    * @aigne/aigne-hub bumped to 0.10.15-beta.8
+    * @aigne/cli bumped to 1.58.0-beta.8
+
 ## [1.2.5-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/example-nano-banana-v1.2.5-beta.6...example-nano-banana-v1.2.5-beta.7) (2025-12-11)
 
 

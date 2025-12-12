@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.90.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.8...aigne-framework-v1.90.0-beta.9) (2025-12-12)
+
+
+### Features
+
+* **agent-library:** add BashAgent with sandbox support ([#816](https://github.com/AIGNE-io/aigne-framework/issues/816)) ([0d4feee](https://github.com/AIGNE-io/aigne-framework/commit/0d4feeeac2b71df1c4d725adeee76c9318ce8e02))
+
 ## [1.90.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.7...aigne-framework-v1.90.0-beta.8) (2025-12-11)
 
 

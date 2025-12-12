@@ -1,6 +1,6 @@
 import { logger } from "@aigne/core/utils/logger.js";
 import type { StoreOptions } from "@aigne/secrets";
-import { AIGNE_ENV_FILE } from "../constants.js";
+import { AIGNE_ENV_FILE, isTest } from "../constants.js";
 import FileStore from "./file.js";
 import KeyringStore from "./keytar.js";
 import { migrateFileToKeyring } from "./migrate.js";
@@ -38,7 +38,7 @@ const getSecretStore = async () => {
     cachedSecretStore = await createSecretStore({
       filepath: AIGNE_ENV_FILE,
       serviceName: "aigne-hub",
-      // forceKeytarUnavailable: true,
+      forceKeytarUnavailable: Boolean(isTest),
     });
   }
 

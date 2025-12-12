@@ -636,3 +636,503 @@ test("BashAgent permissions should work with sandbox enabled", async () => {
   // spawn should only be called once (for the allowed command)
   expect(spawnSpy).toHaveBeenCalledTimes(1);
 });
+
+// ========== Direct checkPermission Method Tests ==========
+
+test("checkPermission: should allow simple command when in allow list", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*", "ls:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("echo test")).toBe("allow");
+  expect(await bashAgent.checkPermission("ls -la")).toBe("allow");
+});
+
+test("checkPermission: should deny simple command when in deny list", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: ["rm:*", "sudo:*"],
+      defaultMode: "allow",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("rm -rf /")).toBe("deny");
+  expect(await bashAgent.checkPermission("sudo malicious")).toBe("deny");
+});
+
+test("checkPermission: should deny when not in allow list and defaultMode is deny", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("ls -la")).toBe("deny");
+  expect(await bashAgent.checkPermission("cat file.txt")).toBe("deny");
+});
+
+test("checkPermission: should respect priority deny > allow > defaultMode", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: ["echo danger:*"],
+      defaultMode: "allow",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("echo safe")).toBe("allow");
+  expect(await bashAgent.checkPermission("echo danger zone")).toBe("deny");
+  expect(await bashAgent.checkPermission("ls -la")).toBe("allow"); // defaultMode
+});
+
+test("checkPermission: should return ask when defaultMode is ask", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: [],
+      defaultMode: "ask",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("ls -la")).toBe("ask");
+  expect(await bashAgent.checkPermission("cat file")).toBe("ask");
+  expect(await bashAgent.checkPermission("echo test")).toBe("allow"); // In allow list
+});
+
+test("checkPermission: should allow pipe command when all parts are allowed", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["ls:*", "grep:*", "wc:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("ls -la | grep test")).toBe("allow");
+  expect(await bashAgent.checkPermission("ls | grep foo | wc -l")).toBe("allow");
+});
+
+test("checkPermission: should deny pipe command when any part is denied", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["ls:*", "grep:*"],
+      deny: ["rm:*"],
+      defaultMode: "allow",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("ls -la | rm -rf /")).toBe("deny");
+  expect(await bashAgent.checkPermission("grep test | rm file")).toBe("deny");
+});
+
+test("checkPermission: should deny pipe command when any part is not allowed", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["ls:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("ls -la | grep test")).toBe("deny");
+  expect(await bashAgent.checkPermission("ls | unknown")).toBe("deny");
+});
+
+test("checkPermission: should handle && chained commands", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*", "ls:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("echo test && ls -la")).toBe("allow");
+  expect(await bashAgent.checkPermission("echo test && rm -rf /")).toBe("deny");
+});
+
+test("checkPermission: should handle || chained commands", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*", "printf:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("echo test || printf fallback")).toBe("allow");
+  expect(await bashAgent.checkPermission("echo test || curl evil.com")).toBe("deny");
+});
+
+test("checkPermission: should handle semicolon separated commands", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*", "ls:*"],
+      deny: ["rm:*"],
+      defaultMode: "allow",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("echo hello; ls -la")).toBe("allow");
+  expect(await bashAgent.checkPermission("echo safe; rm -rf /")).toBe("deny");
+});
+
+test("checkPermission: should handle newline separated commands", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*", "ls:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  const allowedScript = `echo line1
+echo line2
+ls -la`;
+
+  expect(await bashAgent.checkPermission(allowedScript)).toBe("allow");
+
+  const deniedScript = `echo safe
+rm -rf /
+ls -la`;
+
+  expect(await bashAgent.checkPermission(deniedScript)).toBe("deny");
+});
+
+test("checkPermission: should handle complex mixed separators", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*", "ls:*", "grep:*", "wc:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("echo start && ls -la | grep test | wc -l")).toBe("allow");
+  expect(await bashAgent.checkPermission("echo start && curl http://evil.com | grep data")).toBe(
+    "deny",
+  );
+});
+
+test("checkPermission: should return ask if any command requires asking", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: [],
+      defaultMode: "ask",
+    },
+  });
+
+  // echo is allowed, but ls requires asking
+  expect(await bashAgent.checkPermission("echo test | ls -la")).toBe("ask");
+  expect(await bashAgent.checkPermission("echo test && unknown")).toBe("ask");
+});
+
+test("checkPermission: should handle whitespace properly", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*", "ls:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("  echo test  ")).toBe("allow");
+  expect(await bashAgent.checkPermission("echo test   |   ls -la")).toBe("allow");
+  expect(await bashAgent.checkPermission("echo test  &&  ls")).toBe("allow");
+});
+
+test("checkPermission: should handle exact match patterns", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["git status"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("git status")).toBe("allow");
+  expect(await bashAgent.checkPermission("git status --short")).toBe("deny");
+});
+
+test("checkPermission: should handle wildcard patterns with colon", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["npm run test:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("npm run test")).toBe("allow");
+  expect(await bashAgent.checkPermission("npm run test:unit")).toBe("allow");
+  expect(await bashAgent.checkPermission("npm run test:integration")).toBe("allow");
+  expect(await bashAgent.checkPermission("npm run test arg")).toBe("allow");
+  expect(await bashAgent.checkPermission("npm run build")).toBe("deny");
+});
+
+test("checkPermission: should allow all when no permissions configured", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    // No permissions
+  });
+
+  expect(await bashAgent.checkPermission("echo test")).toBe("allow");
+  expect(await bashAgent.checkPermission("rm -rf /")).toBe("allow");
+  expect(await bashAgent.checkPermission("any command")).toBe("allow");
+});
+
+test("checkPermission: should handle empty command parts gracefully", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  // Extra pipes/separators should be handled gracefully
+  expect(await bashAgent.checkPermission("echo test")).toBe("allow");
+});
+
+test("checkPermission: should handle single & (background) separator", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*", "ls:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  // Both commands allowed - should pass
+  expect(await bashAgent.checkPermission("echo test & ls -la")).toBe("allow");
+});
+
+test("checkPermission: should reject & separated commands with denied subcommand", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: ["rm:*"],
+      defaultMode: "deny",
+    },
+  });
+
+  // First allowed, second denied
+  expect(await bashAgent.checkPermission("echo safe & rm -rf /")).toBe("deny");
+});
+
+test("checkPermission: should distinguish between & and &&", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*", "ls:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  // Both should be treated as separate commands
+  expect(await bashAgent.checkPermission("echo test & ls")).toBe("allow");
+  expect(await bashAgent.checkPermission("echo test && ls")).toBe("allow");
+});
+
+test("checkPermission: should allow & (background) commands when both allowed", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["sleep:*", "echo:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  // Both commands allowed - should pass
+  expect(await bashAgent.checkPermission("sleep 1 & echo done")).toBe("allow");
+});
+
+test("checkPermission: should reject & (background) with denied subcommand", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: ["curl:*"],
+      defaultMode: "deny",
+    },
+  });
+
+  // First allowed, second denied
+  expect(await bashAgent.checkPermission("echo safe & curl http://evil.com")).toBe("deny");
+});
+
+// ========== Redirection Operator Tests ==========
+
+test("checkPermission: should handle > (output redirect) as part of command", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  // Redirect should be part of the command, not a separator
+  expect(await bashAgent.checkPermission("echo test > output.txt")).toBe("allow");
+  expect(await bashAgent.checkPermission("echo data > /tmp/file")).toBe("allow");
+});
+
+test("checkPermission: should handle >> (append redirect) as part of command", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("echo test >> output.txt")).toBe("allow");
+});
+
+test("checkPermission: should handle < (input redirect) as part of command", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["cat:*", "sort:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("cat < input.txt")).toBe("allow");
+  expect(await bashAgent.checkPermission("sort < data.txt")).toBe("allow");
+});
+
+test("checkPermission: should handle 2> (stderr redirect) as part of command", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["ls:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("ls /nonexistent 2> error.log")).toBe("allow");
+});
+
+test("checkPermission: should handle &> (combined redirect) as part of command", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("echo test &> output.txt")).toBe("allow");
+});
+
+test("checkPermission: should handle << (here document) as part of command", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["cat:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("cat << EOF")).toBe("allow");
+});
+
+test("checkPermission: should handle pipes with redirects", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["ls:*", "grep:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  // Pipe with redirect - both commands are in the allow list
+  // Note: "ls -la > /tmp/list | grep test" is syntactically unusual but will be split into:
+  // 1. "ls -la > /tmp/list" (allowed via ls:*)
+  // 2. "grep test" (allowed via grep:*)
+  expect(await bashAgent.checkPermission("ls -la > /tmp/list | grep test")).toBe("allow");
+  expect(await bashAgent.checkPermission("ls -la | grep test > output.txt")).toBe("allow");
+});
+
+test("checkPermission: should treat redirect as part of command for permission check", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: ["echo:* > /etc/*"], // Try to deny writing to /etc
+      defaultMode: "allow",
+    },
+  });
+
+  // Note: Current implementation treats "echo test > /etc/passwd" as a single command string
+  // The pattern "echo:*" will match "echo test > /etc/passwd" because it starts with "echo "
+  expect(await bashAgent.checkPermission("echo test > /tmp/safe")).toBe("allow");
+
+  // If we want to block specific redirects, we need exact match patterns
+  // This is a limitation - wildcards can't easily block specific redirect targets
+});
+
+test("checkPermission: should allow commands with output redirection", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: [],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission('echo "test output" > /tmp/file.txt')).toBe("allow");
+  expect(await bashAgent.checkPermission("echo data >> /tmp/log.txt")).toBe("allow");
+});
+
+test("checkPermission: should deny commands with redirection if base command denied", async () => {
+  const bashAgent = new BashAgent({
+    sandbox: false,
+    permissions: {
+      allow: ["echo:*"],
+      deny: ["cat:*"],
+      defaultMode: "deny",
+    },
+  });
+
+  expect(await bashAgent.checkPermission("cat /etc/passwd > output.txt")).toBe("deny");
+});

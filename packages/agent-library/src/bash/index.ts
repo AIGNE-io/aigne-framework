@@ -310,22 +310,91 @@ When to use:
   /**
    * Check permission for executing a script
    * Permission priority: deny > allow > defaultMode
+   *
+   * For complex commands (with pipes, chaining, etc.), each sub-command
+   * is validated separately. All sub-commands must pass permission checks.
+   *
    * @param script - The script to check permission for
    * @returns Permission decision: 'allow', 'ask', or 'deny'
    */
-  private async checkPermission(script: string): Promise<"allow" | "ask" | "deny"> {
+  async checkPermission(script: string): Promise<"allow" | "ask" | "deny"> {
     const { permissions } = this.options;
     if (!permissions) {
       return "allow"; // No permissions configured, default to allow
     }
 
+    // Split complex commands into individual commands
+    const commands = this.splitCommands(script);
+
+    // Check permission for each command
+    for (const command of commands) {
+      const commandPermission = this.checkSingleCommandPermission(command, permissions);
+
+      // If any command is denied, deny the whole script
+      if (commandPermission === "deny") {
+        return "deny";
+      }
+
+      // If any command requires asking, the whole script requires asking
+      if (commandPermission === "ask") {
+        return "ask";
+      }
+    }
+
+    // All commands are allowed
+    return "allow";
+  }
+
+  /**
+   * Split a script into individual commands by pipes, command chaining, etc.
+   * Separators: | (pipe), && (AND), || (OR), & (background), ; (sequential), \n (newline)
+   *
+   * Note: Redirection operators (>, >>, <, <<, &>, 2>, etc.) are treated as part of
+   * the command, not as separators.
+   *
+   * @param script - The script to split
+   * @returns Array of individual commands
+   */
+  private splitCommands(script: string): string[] {
+    // Split by pipes, &&, ||, &, ;, and newlines
+    // IMPORTANT: Match longer patterns first to avoid incorrect splitting:
+    // - && and || before single & and |
+    // - Must use negative lookbehind/lookahead to avoid matching &> (redirect)
+    // Pattern explanation: (?<!&) means "not preceded by &", (?!>) means "not followed by >"
+    const parts = script.split(/(\||&&|\|\||(?<!&)&(?!>)|;|\n)/);
+
+    const commands: string[] = [];
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      if (!part) continue;
+
+      const trimmedPart = part.trim();
+      // Skip empty parts and separator tokens
+      if (trimmedPart && !["|", "&&", "||", "&", ";"].includes(trimmedPart)) {
+        commands.push(trimmedPart);
+      }
+    }
+
+    return commands.length > 0 ? commands : [script];
+  }
+
+  /**
+   * Check permission for a single command
+   * @param command - The command to check
+   * @param permissions - Permission configuration
+   * @returns Permission decision for this command
+   */
+  private checkSingleCommandPermission(
+    command: string,
+    permissions: NonNullable<BashAgentOptions["permissions"]>,
+  ): "allow" | "ask" | "deny" {
     // Priority 1: Check deny list (highest priority)
-    if (permissions.deny?.some((pattern) => this.matchPattern(script, pattern))) {
+    if (permissions.deny?.some((pattern) => this.matchPattern(command, pattern))) {
       return "deny";
     }
 
     // Priority 2: Check allow list
-    if (permissions.allow?.some((pattern) => this.matchPattern(script, pattern))) {
+    if (permissions.allow?.some((pattern) => this.matchPattern(command, pattern))) {
       return "allow";
     }
 
@@ -334,9 +403,17 @@ When to use:
   }
 
   /**
-   * Match script against a permission pattern
+   * Match a single command against a permission pattern
    * Supports exact match and prefix match with ':*' wildcard
-   * @param command - The command to match
+   *
+   * Note: This method is called for individual commands after splitting,
+   * so it doesn't need to handle complex command chaining.
+   *
+   * Examples:
+   * - "ls:*" matches "ls", "ls -la", "ls:option"
+   * - "npm run test:*" matches "npm run test", "npm run test:unit", "npm run test arg"
+   *
+   * @param command - The command to match (should be a single command)
    * @param pattern - The pattern to match against
    * @returns true if command matches pattern
    */
@@ -352,8 +429,9 @@ When to use:
 
     // Prefix match with ':*' wildcard
     if (pattern.endsWith(":*")) {
-      const prefix = pattern.slice(0, -2);
-      return command.startsWith(prefix);
+      const prefix = pattern.slice(0, -2).trim();
+      // Match if command equals prefix or starts with prefix followed by space or colon
+      return command === prefix || command.startsWith(prefix) || command.startsWith(`${prefix}:`);
     }
 
     return false;

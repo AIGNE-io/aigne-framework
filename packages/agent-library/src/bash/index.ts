@@ -103,7 +103,12 @@ export class BashAgent extends Agent<BashAgentInput, BashAgentOutput> {
       permissions: {
         ...parsed.permissions,
         guard: parsed.permissions?.guard
-          ? await loadNestAgent(options.filepath, parsed.permissions.guard, options.options ?? {})
+          ? await loadNestAgent(options.filepath, parsed.permissions.guard, options.options ?? {}, {
+              outputSchema: z.object({
+                approved: z.boolean().describe("Whether the command is approved by the user."),
+                reason: z.string().describe("Optional reason for rejection.").optional(),
+              }),
+            })
           : undefined,
       },
     }) as Agent;
@@ -136,7 +141,7 @@ When to use:
 
   inputKey?: string;
 
-  guard?: Agent<{ script: string }, { approved: boolean; reason?: string }>;
+  guard?: Agent<{ script?: string }, { approved: boolean; reason?: string }>;
 
   override async process(
     input: BashAgentInput,
@@ -150,21 +155,20 @@ When to use:
     const permission = await this.checkPermission(script);
 
     if (permission === "deny") {
-      throw new Error(`Command blocked by permissions: ${input.script}`);
+      throw new Error(`Command blocked by permissions: ${script}`);
     }
 
     if (permission === "ask") {
       if (!this.guard) {
         throw new Error(`No guard agent configured for permission 'ask'`);
       }
-      const { approved, reason } = await this.invokeChildAgent(
-        this.guard,
-        { script },
-        { ...options, streaming: false },
-      );
+      const { approved, reason } = await this.invokeChildAgent(this.guard, input, {
+        ...options,
+        streaming: false,
+      });
       if (!approved) {
         throw new Error(
-          `Command rejected by user: ${input.script}, reason: ${reason || "no reason provided"}`,
+          `Command rejected by guard agent (${this.guard.name}): ${script}, reason: ${reason || "no reason provided"}`,
         );
       }
     }

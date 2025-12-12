@@ -25,7 +25,11 @@ test("BashAgent should load correctly", async () => {
   const bashAgent = (await BashAgent.load({
     filepath: "/path/to/agent.yaml",
     parsed: {
-      sandbox: false,
+      sandbox: {
+        network: {
+          allowedDomains: ["example.com"],
+        },
+      },
       timeout: 30e3,
       permissions: {
         allow: ["echo:*"],
@@ -58,11 +62,33 @@ test("BashAgent should load correctly", async () => {
         ],
         "guard": Any<AIAgent>,
       },
-      "sandbox": false,
+      "sandbox": {
+        "network": {
+          "allowedDomains": [
+            "example.com",
+          ],
+        },
+      },
       "timeout": 30000,
     }
   `,
   );
+
+  const bashAgentWithoutSandbox = (await BashAgent.load({
+    filepath: "/path/to/agent.yaml",
+    parsed: {
+      sandbox: false,
+    },
+  })) as BashAgent;
+
+  expect(bashAgentWithoutSandbox.options).toMatchInlineSnapshot(`
+    {
+      "permissions": {
+        "guard": undefined,
+      },
+      "sandbox": false,
+    }
+  `);
 });
 
 test("BashAgent should support disable sandbox", async () => {
@@ -546,14 +572,14 @@ test("BashAgent should ask guard agent for permission in ask mode", async () => 
       deny: [],
       defaultMode: "ask",
       guard: FunctionAgent.from(({ script }) => ({
-        approved: script.includes("echo allowed"),
+        approved: script?.includes("echo allowed"),
         reason: `Script was "${script}"`,
       })),
     },
   });
 
   expect(bashAgent.invoke({ script: "echo test" })).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"Command rejected by user: echo test, reason: Script was "echo test""`,
+    `"Command rejected by guard agent (FunctionAgent): echo test, reason: Script was "echo test""`,
   );
   expect(await bashAgent.invoke({ script: "echo allowed command" })).toMatchObject({
     exitCode: 0,

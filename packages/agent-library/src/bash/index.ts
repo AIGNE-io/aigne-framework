@@ -15,7 +15,7 @@ import {
   SandboxRuntimeConfigSchema,
 } from "@anthropic-ai/sandbox-runtime";
 import { rgPath } from "@vscode/ripgrep";
-import z from "zod";
+import z, { ZodObject, type ZodOptional, type ZodRawShape, type ZodType } from "zod";
 import { Mutex } from "../utils/mutex.js";
 
 const DEFAULT_TIMEOUT = 60e3; // 60 seconds
@@ -26,6 +26,8 @@ export interface BashAgentOptions extends AgentOptions<BashAgentInput, BashAgent
   sandbox?:
     | Partial<{ [K in keyof SandboxRuntimeConfig]: Partial<SandboxRuntimeConfig[K]> }>
     | boolean;
+
+  inputKey?: string; // Optional input key for the bash script
 
   /**
    * Optional timeout for script execution in milliseconds
@@ -75,7 +77,7 @@ export interface LoadBashAgentOptions extends Omit<BashAgentOptions, "permission
 }
 
 export interface BashAgentInput extends Message {
-  script: string;
+  script?: string;
 }
 
 export interface BashAgentOutput extends Message {
@@ -119,7 +121,7 @@ When to use:
 `,
       ...options,
       inputSchema: z.object({
-        script: z.string().describe("The bash script to execute."),
+        [options.inputKey || "script"]: z.string().describe("The bash script to execute."),
       }),
       outputSchema: z.object({
         stdout: z.string().describe("The standard output from the bash script.").optional(),
@@ -129,7 +131,10 @@ When to use:
     });
 
     this.guard = this.options.permissions?.guard;
+    this.inputKey = this.options.inputKey;
   }
+
+  inputKey?: string;
 
   guard?: Agent<{ script: string }, { approved: boolean; reason?: string }>;
 
@@ -137,8 +142,12 @@ When to use:
     input: BashAgentInput,
     options: AgentInvokeOptions,
   ): Promise<AgentResponseStream<BashAgentOutput>> {
+    const script = input[this.inputKey || "script"];
+    if (typeof script !== "string")
+      throw new Error(`Invalid or missing script input: ${this.inputKey || "script"}`);
+
     // Permission check
-    const permission = await this.checkPermission(input.script);
+    const permission = await this.checkPermission(script);
 
     if (permission === "deny") {
       throw new Error(`Command blocked by permissions: ${input.script}`);
@@ -150,9 +159,7 @@ When to use:
       }
       const { approved, reason } = await this.invokeChildAgent(
         this.guard,
-        {
-          script: input.script,
-        },
+        { script },
         { ...options, streaming: false },
       );
       if (!approved) {
@@ -170,7 +177,7 @@ When to use:
       })[globalThis.process.platform] || "unknown";
 
     if (this.options.sandbox === false) {
-      return this.spawn("bash", ["-c", input.script]);
+      return this.spawn("bash", ["-c", script]);
     } else {
       if (!SandboxManager.isSupportedPlatform(platform)) {
         throw new Error(`Sandboxed execution is not supported on this platform ${platform}`);
@@ -178,7 +185,7 @@ When to use:
 
       return await this.runInSandbox(
         typeof this.options.sandbox === "boolean" ? {} : this.options.sandbox,
-        input.script,
+        script,
         async (sandboxedCommand) => {
           return this.spawn(sandboxedCommand, undefined, {
             shell: true,
@@ -356,7 +363,10 @@ function getBashAgentSchema({ filepath }: { filepath: string }) {
 
   return camelizeSchema(
     z.object({
-      sandbox: optionalize(z.union([SandboxRuntimeConfigSchema, z.boolean()])),
+      sandbox: optionalize(
+        z.union([makeShapePropertiesOptions(SandboxRuntimeConfigSchema, 2), z.boolean()]),
+      ),
+      inputKey: optionalize(z.string().describe("The input key for the bash script.")),
       timeout: optionalize(z.number().describe("Timeout for script execution in milliseconds.")),
       permissions: optionalize(
         camelizeSchema(
@@ -369,5 +379,22 @@ function getBashAgentSchema({ filepath }: { filepath: string }) {
         ),
       ),
     }),
+  );
+}
+
+function makeShapePropertiesOptions<T extends ZodRawShape, S extends ZodObject<T>>(
+  schema: S,
+  depth = 1,
+): ZodObject<{ [key in keyof T]: ZodOptional<ZodType<T[key]>> }> {
+  return z.object(
+    Object.fromEntries(
+      Object.entries(schema.shape).map(([key, value]) => {
+        const isObject = value instanceof ZodObject;
+        if (isObject && depth > 1) {
+          return [key, optionalize(makeShapePropertiesOptions(value as ZodObject<any>, depth - 1))];
+        }
+        return [key, optionalize(value)];
+      }),
+    ) as { [key in keyof T]: ZodOptional<ZodType<T[key]>> },
   );
 }

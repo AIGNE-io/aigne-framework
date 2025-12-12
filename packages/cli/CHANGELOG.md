@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.58.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.58.0-beta.7...cli-v1.58.0-beta.8) (2025-12-12)
+
+
+### Features
+
+* **agent-library:** add BashAgent with sandbox support ([#816](https://github.com/AIGNE-io/aigne-framework/issues/816)) ([0d4feee](https://github.com/AIGNE-io/aigne-framework/commit/0d4feeeac2b71df1c4d725adeee76c9318ce8e02))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.23.0-beta.8
+    * @aigne/aigne-hub bumped to 0.10.15-beta.8
+
 ## [1.58.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.58.0-beta.6...cli-v1.58.0-beta.7) (2025-12-11)
 
 

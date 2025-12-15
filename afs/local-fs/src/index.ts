@@ -1,5 +1,5 @@
 import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
-import { dirname, join, relative } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import type {
   AFSDeleteOptions,
   AFSEntry,
@@ -11,7 +11,7 @@ import type {
   AFSWriteOptions,
 } from "@aigne/afs";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
-import { globStream } from "glob";
+import ignore from "ignore";
 import { z } from "zod";
 import { searchWithRipgrep } from "./utils/ripgrep.js";
 
@@ -48,39 +48,81 @@ export class LocalFS implements AFSModule {
     path: string,
     options?: AFSListOptions,
   ): Promise<{ list: AFSEntry[]; message?: string }> {
+    path = join("/", path); // Ensure leading slash
+
     const limit = Math.min(options?.limit || LIST_MAX_LIMIT, LIST_MAX_LIMIT);
+    const maxChildren =
+      typeof options?.maxChildren === "number" ? options.maxChildren : Number.MAX_SAFE_INTEGER;
+    const maxDepth = options?.maxDepth ?? 1;
+    const disableGitignore = options?.disableGitignore ?? false;
     const basePath = join(this.options.localPath, path);
 
-    const pattern =
-      options?.recursive || (options?.maxDepth && options.maxDepth > 1) ? "**/*" : "*";
-
-    const abortController = new AbortController();
-
-    const files = globStream(pattern, {
-      cwd: basePath,
-      dot: false,
-      absolute: false,
-      maxDepth: options?.maxDepth,
-      signal: abortController.signal,
-    });
+    // Validate maxChildren
+    if (typeof maxChildren === "number" && maxChildren <= 0) {
+      throw new Error(`Invalid maxChildren: ${maxChildren}. Must be positive.`);
+    }
 
     const entries: AFSEntry[] = [];
 
-    let hasMoreFiles = false;
+    // Queue for breadth-first traversal
+    interface QueueItem {
+      fullPath: string;
+      relativePath: string;
+      depth: number;
+    }
 
-    for await (const file of files) {
-      const itemPath = join(path, file);
-      const itemFullPath = join(basePath, file);
-      const stats = await stat(itemFullPath);
+    const queue: QueueItem[] = [];
+
+    // Add root path to queue as starting point
+    queue.push({ fullPath: basePath, relativePath: path || "/", depth: 0 });
+
+    // Process queue in breadth-first order
+    while (true) {
+      const item = queue.shift();
+      if (!item) break; // Queue is empty
+
+      const { fullPath, relativePath, depth } = item;
+
+      // Stat and readdir once per item
+      const stats = await stat(fullPath);
+      const isDirectory = stats.isDirectory();
+      let childItems: string[] | undefined;
+
+      if (isDirectory) {
+        const items = await readdir(fullPath);
+
+        // Load .gitignore rules for this directory if not disabled
+        let ig: ReturnType<typeof ignore> | null = null;
+        let gitRootForPath: string | null = null;
+        if (!disableGitignore) {
+          const result = await this.loadIgnoreRules(fullPath);
+          ig = result?.ig || null;
+          gitRootForPath = result?.gitRoot || null;
+        }
+
+        // Filter items based on gitignore rules
+        childItems = !ig
+          ? items
+          : items.filter((item) => {
+              const itemFullPath = join(fullPath, item);
+              // Calculate path relative to git root (or basePath if no git root)
+              const rootForIgnore = gitRootForPath || basePath;
+              const itemRelativePath = relative(rootForIgnore, itemFullPath);
+              // Check both the file and directory (with trailing slash) patterns
+              const isIgnored = ig.ignores(itemRelativePath);
+              const isDirIgnored = ig.ignores(`${itemRelativePath}/`);
+              return !isIgnored && !isDirIgnored;
+            });
+      }
 
       const entry: AFSEntry = {
-        id: itemPath,
-        path: itemPath,
+        id: relativePath,
+        path: relativePath,
         createdAt: stats.birthtime,
         updatedAt: stats.mtime,
         metadata: {
-          childrenCount: stats.isDirectory() ? (await readdir(itemFullPath)).length : undefined,
-          type: stats.isDirectory() ? "directory" : "file",
+          childrenCount: childItems?.length,
+          type: isDirectory ? "directory" : "file",
           size: stats.size,
           mode: stats.mode,
         },
@@ -88,16 +130,39 @@ export class LocalFS implements AFSModule {
 
       entries.push(entry);
 
+      // Check if we'll hit the limit after adding this entry
       if (entries.length >= limit) {
-        hasMoreFiles = true;
-        abortController.abort();
+        // Mark this directory as truncated since we can't process its children
+        if (isDirectory && entry.metadata) {
+          entry.metadata.childrenTruncated = true;
+        }
         break;
+      }
+
+      // If it's a directory and depth allows, add children to queue
+      if (isDirectory && depth < maxDepth && childItems) {
+        // Apply maxChildren limit
+        const itemsToProcess =
+          childItems.length > maxChildren ? childItems.slice(0, maxChildren) : childItems;
+        const isTruncated = itemsToProcess.length < childItems.length;
+
+        // Mark directory as truncated if children were limited by maxChildren
+        if (isTruncated && entry.metadata) {
+          entry.metadata.childrenTruncated = true;
+        }
+
+        for (const item of itemsToProcess) {
+          queue.push({
+            fullPath: join(fullPath, item),
+            relativePath: join(relativePath, item),
+            depth: depth + 1,
+          });
+        }
       }
     }
 
     return {
       list: entries,
-      message: hasMoreFiles ? `Results truncated to limit ${limit}` : undefined,
     };
   }
 
@@ -279,5 +344,81 @@ export class LocalFS implements AFSModule {
       list: entries,
       message: hasMoreFiles ? `Results truncated to limit ${limit}` : undefined,
     };
+  }
+
+  /**
+   * Load gitignore rules from the given directory up to git root.
+   * @param checkPath - The directory whose files we're checking
+   * @returns An object with ignore instance and git root, or null if no rules found
+   */
+  private async loadIgnoreRules(
+    checkPath: string,
+  ): Promise<{ ig: ReturnType<typeof ignore>; gitRoot: string | null } | null> {
+    const ig = ignore();
+    let hasRules = false;
+
+    // Find git root by searching upwards
+    let gitRoot: string | null = null;
+    let currentPath = resolve(checkPath);
+
+    while (true) {
+      try {
+        const gitDirPath = join(currentPath, ".git");
+        const gitStats = await stat(gitDirPath);
+        if (gitStats.isDirectory()) {
+          gitRoot = currentPath;
+          break;
+        }
+      } catch {
+        // .git doesn't exist at this level
+      }
+
+      // Move up one directory
+      const parentPath = dirname(currentPath);
+      // Check if we've reached the filesystem root
+      if (parentPath === currentPath) {
+        break;
+      }
+      currentPath = parentPath;
+    }
+
+    // Determine the root to search up to
+    // If git root found, search up to git root
+    // Otherwise, search up to filesystem root
+    const searchRoot = gitRoot;
+
+    // Collect all directories from checkPath up to searchRoot (or filesystem root)
+    const dirsToCheck: string[] = [];
+    currentPath = resolve(checkPath);
+
+    while (true) {
+      dirsToCheck.unshift(currentPath); // Add to beginning for correct order
+
+      // If we have a search root and reached it, stop
+      if (searchRoot && currentPath === searchRoot) {
+        break;
+      }
+
+      const parentPath = dirname(currentPath);
+      // Stop if we've reached filesystem root
+      if (parentPath === currentPath) {
+        break;
+      }
+      currentPath = parentPath;
+    }
+
+    // Load .gitignore files from root to checkPath (parent to child order)
+    for (const dirPath of dirsToCheck) {
+      try {
+        const gitignorePath = join(dirPath, ".gitignore");
+        const gitignoreContent = await readFile(gitignorePath, "utf8");
+        ig.add(gitignoreContent);
+        hasRules = true;
+      } catch {
+        // .gitignore doesn't exist at this level, continue
+      }
+    }
+
+    return hasRules ? { ig, gitRoot } : null;
   }
 }

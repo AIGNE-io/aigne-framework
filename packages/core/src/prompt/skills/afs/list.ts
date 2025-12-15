@@ -37,6 +37,14 @@ export class AFSListAgent extends Agent<AFSListInput, AFSListOutput> {
         options: z
           .object({
             maxDepth: z.number().optional().describe("Tree depth limit (default: 1)"),
+            disableGitignore: z
+              .boolean()
+              .optional()
+              .describe("Disable .gitignore filtering, default is enabled"),
+            maxChildren: z
+              .number()
+              .optional()
+              .describe("Maximum number of children to list per directory"),
           })
           .optional(),
       }),
@@ -47,6 +55,8 @@ export class AFSListAgent extends Agent<AFSListInput, AFSListOutput> {
         options: z
           .object({
             maxDepth: z.number().optional(),
+            disableGitignore: z.boolean().optional(),
+            maxChildren: z.number().optional(),
           })
           .optional(),
         message: z.string().optional(),
@@ -103,6 +113,11 @@ export class AFSListAgent extends Agent<AFSListInput, AFSListOutput> {
         const childrenCount = entry?.metadata?.childrenCount;
         if (childrenCount !== undefined && childrenCount > 0) {
           metadataParts.push(`${childrenCount} items`);
+        }
+
+        // Children truncated
+        if (entry?.metadata?.childrenTruncated) {
+          metadataParts.push("truncated");
         }
 
         // Executable

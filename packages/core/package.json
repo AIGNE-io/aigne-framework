@@ -107,6 +107,7 @@
     "zod-to-json-schema": "^3.24.6"
   },
   "devDependencies": {
+    "@aigne/afs-local-fs": "workspace:^",
     "@types/bun": "^1.2.22",
     "@types/compression": "^1.8.1",
     "@types/content-type": "^1.1.9",

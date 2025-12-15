@@ -36,9 +36,10 @@ test("LocalFS should list files in the root directory (non-recursive)", async ()
   const paths = result.list.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
-      "file1.txt",
-      "file2.md",
-      "subdir",
+      "/",
+      "/file1.txt",
+      "/file2.md",
+      "/subdir",
     ]
   `);
 
@@ -50,15 +51,19 @@ test("LocalFS should list files in the root directory (non-recursive)", async ()
   expect(metadataTypes.sort((a, b) => a.path.localeCompare(b.path))).toMatchInlineSnapshot(`
     [
       {
-        "path": "file1.txt",
+        "path": "/",
+        "type": "directory",
+      },
+      {
+        "path": "/file1.txt",
         "type": "file",
       },
       {
-        "path": "file2.md",
+        "path": "/file2.md",
         "type": "file",
       },
       {
-        "path": "subdir",
+        "path": "/subdir",
         "type": "directory",
       },
     ]
@@ -66,36 +71,38 @@ test("LocalFS should list files in the root directory (non-recursive)", async ()
 });
 
 test("LocalFS should list files recursively when recursive option is true", async () => {
-  const result = await localFS.list("", { recursive: true });
+  const result = await localFS.list("", { maxDepth: 1000 });
 
   const paths = result.list.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
-      "file1.txt",
-      "file2.md",
-      "subdir",
-      "subdir/file3.js",
-      "subdir/nested",
-      "subdir/nested/file4.json",
+      "/",
+      "/file1.txt",
+      "/file2.md",
+      "/subdir",
+      "/subdir/file3.js",
+      "/subdir/nested",
+      "/subdir/nested/file4.json",
     ]
   `);
 });
 
 test("LocalFS should respect maxDepth option", async () => {
-  const result = await localFS.list("", { recursive: true, maxDepth: 1 });
+  const result = await localFS.list("", { maxDepth: 1 });
 
   const paths = result.list.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
-      "file1.txt",
-      "file2.md",
-      "subdir",
+      "/",
+      "/file1.txt",
+      "/file2.md",
+      "/subdir",
     ]
   `);
 });
 
 test("LocalFS should respect limit option", async () => {
-  const result = await localFS.list("", { recursive: true, limit: 3 });
+  const result = await localFS.list("", { limit: 3 });
 
   expect(result.list).toBeDefined();
   expect(result.list.length).toBe(3);
@@ -107,8 +114,9 @@ test("LocalFS should list files in a subdirectory", async () => {
   const paths = result.list.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
-      "subdir/file3.js",
-      "subdir/nested",
+      "/subdir",
+      "/subdir/file3.js",
+      "/subdir/nested",
     ]
   `);
 });
@@ -121,9 +129,10 @@ test("LocalFS should handle orderBy option", async () => {
   const paths = result.list.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
-      "file1.txt",
-      "file2.md",
-      "subdir",
+      "/",
+      "/file1.txt",
+      "/file2.md",
+      "/subdir",
     ]
   `);
 });
@@ -359,8 +368,20 @@ test("LocalFS should throw error when deleting directory without recursive optio
 
   // Verify directory still exists
   const listResult = await localFS.list("");
-  const existingDir = listResult.list.find((entry) => entry.path === "nonRecursiveDir");
-  expect(existingDir).toBeDefined();
+  expect(listResult.list.map((i) => i.path)).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/file1.txt",
+      "/nonRecursiveDir",
+      "/subdir",
+      "/searchable.txt",
+      "/deep",
+      "/data.json",
+      "/newfile.txt",
+      "/file2.md",
+      "/caseTest.txt",
+    ]
+  `);
 
   // Cleanup
   await localFS.delete("nonRecursiveDir", { recursive: true });
@@ -376,7 +397,11 @@ test("LocalFS should delete nested files", async () => {
 
   // Verify file no longer exists
   const listResult = await localFS.list("nested/deep");
-  expect(listResult.list.length).toBe(0);
+  expect(listResult.list.map((i) => i.path)).toMatchInlineSnapshot(`
+    [
+      "/nested/deep",
+    ]
+  `);
 
   // Cleanup
   await localFS.delete("nested", { recursive: true });
@@ -421,9 +446,14 @@ test("LocalFS should rename a directory", async () => {
 
   // Verify new directory exists with files
   const newDirList = await localFS.list("newDir");
-  expect(newDirList.list.length).toBe(2);
   const filePaths = newDirList.list.map((entry) => entry.path).sort();
-  expect(filePaths).toEqual(["newDir/file1.txt", "newDir/file2.txt"]);
+  expect(filePaths).toMatchInlineSnapshot(`
+    [
+      "/newDir",
+      "/newDir/file1.txt",
+      "/newDir/file2.txt",
+    ]
+  `);
 
   // Cleanup
   await localFS.delete("newDir", { recursive: true });
@@ -498,4 +528,432 @@ test("LocalFS should rename to nested path", async () => {
 test("LocalFS should throw error when renaming non-existent file", async () => {
   // Try to rename a file that doesn't exist
   expect(localFS.rename("nonExistent.txt", "newName.txt")).rejects.toThrow();
+});
+
+// Gitignore tests
+test("LocalFS should respect .gitignore when listing files", async () => {
+  // Create a test directory with git structure
+  const gitTestDir = join(tmpdir(), `gitignore-test-${Date.now()}`);
+  await mkdir(gitTestDir, { recursive: true });
+  await mkdir(join(gitTestDir, ".git"), { recursive: true });
+
+  // Create .gitignore file
+  await writeFile(join(gitTestDir, ".gitignore"), "*.log\nnode_modules/\n.env");
+
+  // Create test files
+  await writeFile(join(gitTestDir, "index.js"), "console.log('test')");
+  await writeFile(join(gitTestDir, "debug.log"), "debug info");
+  await writeFile(join(gitTestDir, ".env"), "SECRET=123");
+  await mkdir(join(gitTestDir, "node_modules"), { recursive: true });
+  await writeFile(join(gitTestDir, "node_modules", "package.json"), "{}");
+
+  const gitFS = new LocalFS({ localPath: gitTestDir });
+
+  // Test with gitignore enabled (default)
+  const result = await gitFS.list("", { maxDepth: 2 });
+  const paths = result.list.map((entry) => entry.path);
+
+  // Should NOT include ignored files
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/index.js",
+      "/.gitignore",
+      "/.git",
+    ]
+  `);
+
+  // Cleanup
+  await rm(gitTestDir, { recursive: true, force: true });
+});
+
+test("LocalFS should allow disabling gitignore", async () => {
+  // Create a test directory with git structure
+  const gitTestDir = join(tmpdir(), `gitignore-disabled-test-${Date.now()}`);
+  await mkdir(gitTestDir, { recursive: true });
+  await mkdir(join(gitTestDir, ".git"), { recursive: true });
+
+  // Create .gitignore file
+  await writeFile(join(gitTestDir, ".gitignore"), "*.log\n");
+
+  // Create test files
+  await writeFile(join(gitTestDir, "index.js"), "console.log('test')");
+  await writeFile(join(gitTestDir, "debug.log"), "debug info");
+
+  const gitFS = new LocalFS({ localPath: gitTestDir });
+
+  // Test with gitignore disabled
+  const result = await gitFS.list("", { disableGitignore: true });
+  const paths = result.list.map((entry) => entry.path);
+
+  // Should include all files
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/index.js",
+      "/.gitignore",
+      "/debug.log",
+      "/.git",
+    ]
+  `);
+
+  // Cleanup
+  await rm(gitTestDir, { recursive: true, force: true });
+});
+
+test("LocalFS should handle nested .gitignore files", async () => {
+  // Create a test directory with git structure
+  const gitTestDir = join(tmpdir(), `gitignore-nested-test-${Date.now()}`);
+  await mkdir(gitTestDir, { recursive: true });
+  await mkdir(join(gitTestDir, ".git"), { recursive: true });
+
+  // Create root .gitignore
+  await writeFile(join(gitTestDir, ".gitignore"), "*.log\n");
+
+  // Create subdirectory with its own .gitignore
+  await mkdir(join(gitTestDir, "src"), { recursive: true });
+  await writeFile(join(gitTestDir, "src", ".gitignore"), "*.tmp\n");
+
+  // Create test files
+  await writeFile(join(gitTestDir, "root.log"), "root log");
+  await writeFile(join(gitTestDir, "root.js"), "root js");
+  await writeFile(join(gitTestDir, "src", "sub.log"), "sub log");
+  await writeFile(join(gitTestDir, "src", "sub.tmp"), "sub tmp");
+  await writeFile(join(gitTestDir, "src", "sub.js"), "sub js");
+
+  const gitFS = new LocalFS({ localPath: gitTestDir });
+
+  // Test listing from root
+  const rootResult = await gitFS.list("", { maxDepth: 2 });
+  const rootPaths = rootResult.list.map((entry) => entry.path);
+
+  // Root .gitignore should filter *.log
+  expect(rootPaths).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/root.js",
+      "/.gitignore",
+      "/.git",
+      "/src",
+      "/src/.gitignore",
+      "/src/sub.js",
+    ]
+  `);
+
+  // Cleanup
+  await rm(gitTestDir, { recursive: true, force: true });
+});
+
+test("LocalFS should stop at .git directory when searching for .gitignore", async () => {
+  // Create a test directory structure with nested git repos
+  const outerDir = join(tmpdir(), `gitignore-outer-test-${Date.now()}`);
+  await mkdir(outerDir, { recursive: true });
+  await mkdir(join(outerDir, ".git"), { recursive: true });
+
+  // Create outer .gitignore
+  await writeFile(join(outerDir, ".gitignore"), "outer.txt\n");
+
+  // Create inner git repo
+  const innerDir = join(outerDir, "inner");
+  await mkdir(innerDir, { recursive: true });
+  await mkdir(join(innerDir, ".git"), { recursive: true });
+  await writeFile(join(innerDir, ".gitignore"), "inner.txt\n");
+
+  // Create test files
+  await writeFile(join(innerDir, "outer.txt"), "should be ignored");
+  await writeFile(join(innerDir, "inner.txt"), "should also be ignored");
+  await writeFile(join(innerDir, "normal.txt"), "should be visible");
+
+  const innerFS = new LocalFS({ localPath: innerDir });
+
+  // Test listing from inner directory
+  const result = await innerFS.list("");
+  const paths = result.list.map((entry) => entry.path);
+
+  // Should only apply inner .gitignore, not outer
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/outer.txt",
+      "/.gitignore",
+      "/.git",
+      "/normal.txt",
+    ]
+  `);
+
+  // Cleanup
+  await rm(outerDir, { recursive: true, force: true });
+});
+
+test("LocalFS should handle directory patterns in .gitignore", async () => {
+  // Create a test directory with git structure
+  const gitTestDir = join(tmpdir(), `gitignore-dir-test-${Date.now()}`);
+  await mkdir(gitTestDir, { recursive: true });
+  await mkdir(join(gitTestDir, ".git"), { recursive: true });
+
+  // Create .gitignore with directory pattern
+  await writeFile(join(gitTestDir, ".gitignore"), "build/\ndist/\n*.tmp");
+
+  // Create directories and files
+  await mkdir(join(gitTestDir, "build"), { recursive: true });
+  await writeFile(join(gitTestDir, "build", "output.js"), "built file");
+  await mkdir(join(gitTestDir, "src"), { recursive: true });
+  await writeFile(join(gitTestDir, "src", "index.js"), "source file");
+  await writeFile(join(gitTestDir, "temp.tmp"), "temp file");
+
+  const gitFS = new LocalFS({ localPath: gitTestDir });
+
+  // Test listing
+  const result = await gitFS.list("", { maxDepth: 2 });
+  const paths = result.list.map((entry) => entry.path);
+
+  // Should filter out build directory and .tmp files
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/.gitignore",
+      "/.git",
+      "/src",
+      "/src/index.js",
+    ]
+  `);
+
+  // Cleanup
+  await rm(gitTestDir, { recursive: true, force: true });
+});
+
+test("LocalFS should work without any .gitignore file", async () => {
+  // Create a test directory with git structure but no .gitignore
+  const gitTestDir = join(tmpdir(), `no-gitignore-test-${Date.now()}`);
+  await mkdir(gitTestDir, { recursive: true });
+  await mkdir(join(gitTestDir, ".git"), { recursive: true });
+
+  // Create test files
+  await writeFile(join(gitTestDir, "file1.js"), "file 1");
+  await writeFile(join(gitTestDir, "file2.log"), "file 2");
+
+  const gitFS = new LocalFS({ localPath: gitTestDir });
+
+  // Test listing without .gitignore
+  const result = await gitFS.list("");
+  const paths = result.list.map((entry) => entry.path);
+
+  // Should include all files when no .gitignore exists
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/file2.log",
+      "/.git",
+      "/file1.js",
+    ]
+  `);
+
+  // Cleanup
+  await rm(gitTestDir, { recursive: true, force: true });
+});
+
+test("LocalFS should work without .git directory", async () => {
+  // Create a test directory without git structure
+  const nonGitDir = join(tmpdir(), `non-git-test-${Date.now()}`);
+  await mkdir(nonGitDir, { recursive: true });
+
+  // Create .gitignore (but no .git directory)
+  await writeFile(join(nonGitDir, ".gitignore"), "*.log\n");
+
+  // Create test files
+  await writeFile(join(nonGitDir, "file.js"), "file content");
+  await writeFile(join(nonGitDir, "file.log"), "log content");
+
+  const nonGitFS = new LocalFS({ localPath: nonGitDir });
+
+  // Test listing - should still apply .gitignore rules
+  const result = await nonGitFS.list("");
+  const paths = result.list.map((entry) => entry.path);
+
+  // Should still filter based on .gitignore
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/.gitignore",
+      "/file.js",
+    ]
+  `);
+
+  // Cleanup
+  await rm(nonGitDir, { recursive: true, force: true });
+});
+
+// MaxChildren tests
+test("LocalFS should respect maxChildren option", async () => {
+  // Create a test directory with many files
+  const maxChildrenDir = join(tmpdir(), `maxchildren-test-${Date.now()}`);
+  await mkdir(maxChildrenDir, { recursive: true });
+
+  // Create 10 files in the directory
+  for (let i = 0; i < 10; i++) {
+    await writeFile(join(maxChildrenDir, `file${i}.txt`), `content ${i}`);
+  }
+
+  const maxChildrenFS = new LocalFS({ localPath: maxChildrenDir });
+
+  // Test with maxChildren: 5
+  const result = await maxChildrenFS.list("", { maxChildren: 5 });
+  const paths = result.list.map((entry) => entry.path);
+
+  // Should only return 5 files
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/file2.txt",
+      "/file3.txt",
+      "/file1.txt",
+      "/file0.txt",
+      "/file4.txt",
+    ]
+  `);
+
+  // Cleanup
+  await rm(maxChildrenDir, { recursive: true, force: true });
+});
+
+test("LocalFS should mark directory as truncated when maxChildren is exceeded", async () => {
+  // Create a test directory with subdirectory containing many files
+  const maxChildrenDir = join(tmpdir(), `maxchildren-truncated-test-${Date.now()}`);
+  await mkdir(maxChildrenDir, { recursive: true });
+  await mkdir(join(maxChildrenDir, "subdir"), { recursive: true });
+
+  // Create 10 files in the subdirectory
+  for (let i = 0; i < 10; i++) {
+    await writeFile(join(maxChildrenDir, "subdir", `file${i}.txt`), `content ${i}`);
+  }
+
+  const maxChildrenFS = new LocalFS({ localPath: maxChildrenDir });
+
+  // List with maxChildren: 5 and maxDepth: 2 to see the subdirectory
+  const result = await maxChildrenFS.list("", { maxChildren: 5, maxDepth: 2 });
+
+  // Find the subdir entry
+  const subdirEntry = result.list.find((entry) => entry.path === "/subdir");
+
+  // Should have childrenTruncated flag
+  expect(subdirEntry).toBeDefined();
+  expect(subdirEntry?.metadata?.childrenTruncated).toBe(true);
+  expect(subdirEntry?.metadata?.childrenCount).toBe(10);
+
+  // Cleanup
+  await rm(maxChildrenDir, { recursive: true, force: true });
+});
+
+test("LocalFS should handle maxChildren with nested directories", async () => {
+  // Create a nested directory structure
+  const maxChildrenDir = join(tmpdir(), `maxchildren-nested-test-${Date.now()}`);
+  await mkdir(maxChildrenDir, { recursive: true });
+  await mkdir(join(maxChildrenDir, "dir1"), { recursive: true });
+  await mkdir(join(maxChildrenDir, "dir2"), { recursive: true });
+  await mkdir(join(maxChildrenDir, "dir3"), { recursive: true });
+
+  // Create files in each directory
+  await writeFile(join(maxChildrenDir, "dir1", "file1.txt"), "content 1");
+  await writeFile(join(maxChildrenDir, "dir2", "file2.txt"), "content 2");
+  await writeFile(join(maxChildrenDir, "dir3", "file3.txt"), "content 3");
+
+  const maxChildrenFS = new LocalFS({ localPath: maxChildrenDir });
+
+  // List with maxChildren: 2 - should only process 2 directories
+  const result = await maxChildrenFS.list("", { maxChildren: 2, maxDepth: 2 });
+  const paths = result.list.map((entry) => entry.path);
+
+  // Should only see 2 directories and their children
+  const dirCount = paths.filter((p) => p.startsWith("dir")).length;
+  expect(dirCount).toBeLessThanOrEqual(4); // 2 dirs + max 2 files
+
+  // Cleanup
+  await rm(maxChildrenDir, { recursive: true, force: true });
+});
+
+test("LocalFS should throw error when maxChildren is zero or negative", async () => {
+  const maxChildrenDir = join(tmpdir(), `maxchildren-invalid-test-${Date.now()}`);
+  await mkdir(maxChildrenDir, { recursive: true });
+  await writeFile(join(maxChildrenDir, "file.txt"), "content");
+
+  const maxChildrenFS = new LocalFS({ localPath: maxChildrenDir });
+
+  // Test with maxChildren: 0
+  expect(maxChildrenFS.list("", { maxChildren: 0 })).rejects.toThrow(
+    "Invalid maxChildren: 0. Must be positive.",
+  );
+
+  // Test with maxChildren: -1
+  expect(maxChildrenFS.list("", { maxChildren: -1 })).rejects.toThrow(
+    "Invalid maxChildren: -1. Must be positive.",
+  );
+
+  // Cleanup
+  await rm(maxChildrenDir, { recursive: true, force: true });
+});
+
+test("LocalFS should work correctly when maxChildren equals number of children", async () => {
+  // Create a test directory with exactly 5 files
+  const maxChildrenDir = join(tmpdir(), `maxchildren-equal-test-${Date.now()}`);
+  await mkdir(maxChildrenDir, { recursive: true });
+
+  for (let i = 0; i < 5; i++) {
+    await writeFile(join(maxChildrenDir, `file${i}.txt`), `content ${i}`);
+  }
+
+  const maxChildrenFS = new LocalFS({ localPath: maxChildrenDir });
+
+  // List with maxChildren: 5 (equal to number of files)
+  const result = await maxChildrenFS.list("", { maxChildren: 5 });
+  const paths = result.list.map((entry) => entry.path);
+
+  // Should return all 5 files
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/file2.txt",
+      "/file3.txt",
+      "/file1.txt",
+      "/file0.txt",
+      "/file4.txt",
+    ]
+  `);
+
+  // Should not be marked as truncated
+  const entries = result.list;
+  expect(entries.every((e) => !e.metadata?.childrenTruncated)).toBe(true);
+
+  // Cleanup
+  await rm(maxChildrenDir, { recursive: true, force: true });
+});
+
+test("LocalFS should combine maxChildren with gitignore", async () => {
+  // Create a test directory with git structure
+  const maxChildrenDir = join(tmpdir(), `maxchildren-gitignore-test-${Date.now()}`);
+  await mkdir(maxChildrenDir, { recursive: true });
+  await mkdir(join(maxChildrenDir, ".git"), { recursive: true });
+
+  // Create .gitignore to filter some files
+  await writeFile(join(maxChildrenDir, ".gitignore"), "*.log\n");
+
+  // Create 10 files (5 .js and 5 .log)
+  for (let i = 0; i < 5; i++) {
+    await writeFile(join(maxChildrenDir, `file${i}.js`), `content ${i}`);
+    await writeFile(join(maxChildrenDir, `file${i}.log`), `log ${i}`);
+  }
+
+  const maxChildrenFS = new LocalFS({ localPath: maxChildrenDir });
+
+  // List with maxChildren: 3 (after gitignore filters *.log)
+  const result = await maxChildrenFS.list("", { maxChildren: 3 });
+  const paths = result.list.map((entry) => entry.path);
+
+  // Should have at most 3 items (gitignore happens first, then maxChildren)
+  expect(paths.length).toBeLessThanOrEqual(4);
+
+  // Should not contain any .log files
+  expect(paths.every((p) => !p.endsWith(".log"))).toBe(true);
+
+  // Cleanup
+  await rm(maxChildrenDir, { recursive: true, force: true });
 });

@@ -5,10 +5,16 @@ export interface AFSListOptions {
     userId?: string;
     sessionId?: string;
   };
-  recursive?: boolean;
   maxDepth?: number;
   limit?: number;
   orderBy?: [string, "asc" | "desc"][];
+  maxChildren?: number;
+  onOverflow?: "truncate";
+  /**
+   * Whether to disable .gitignore files when listing files.
+   * @default false
+   */
+  disableGitignore?: boolean;
 }
 
 export interface AFSSearchOptions {
@@ -84,6 +90,7 @@ export interface AFSEntryMetadata extends Record<string, any> {
     outputSchema?: Record<string, any>;
   };
   childrenCount?: number;
+  childrenTruncated?: boolean;
 }
 
 export interface AFSEntry<T = any> {

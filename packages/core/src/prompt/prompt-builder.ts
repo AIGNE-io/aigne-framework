@@ -37,6 +37,7 @@ import {
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
 import { getAFSSkills } from "./skills/afs/index.js";
+import { AFSListAgent } from "./skills/afs/list.js";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
@@ -187,6 +188,14 @@ export class PromptBuilder {
           return getAFSSkills(afs).then((skills) =>
             skills.map((s) => pick(s, ["name", "description"])),
           );
+        },
+        async list(path: string, afsListOptions?: Record<string, any>) {
+          const afs = options.agent?.afs;
+          if (!afs) throw new Error("AFS is not configured for this agent.");
+          return new AFSListAgent({ afs }).invoke({
+            path,
+            options: afsListOptions,
+          });
         },
       },
       $agent: {

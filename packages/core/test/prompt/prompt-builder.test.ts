@@ -448,7 +448,7 @@ test("PromptBuilder should build with afs correctly", async () => {
   const afs = new AFS().mount(new AFSHistory());
 
   spyOn(afs, "search").mockResolvedValueOnce({
-    list: [
+    data: [
       {
         id: "1",
         path: "/modules/history/1",
@@ -543,7 +543,7 @@ test("PromptBuilder should build with afs correctly", async () => {
   `);
 
   const listSpy = spyOn(afs, "list").mockResolvedValueOnce({
-    list: [
+    data: [
       {
         id: "1",
         path: "/history/1",
@@ -669,6 +669,23 @@ test("PromptBuilder should build with afs correctly", async () => {
                 "options": {
                   "additionalProperties": false,
                   "properties": {
+                    "disableGitignore": {
+                      "description": "Disable .gitignore filtering, default is enabled",
+                      "type": "boolean",
+                    },
+                    "format": {
+                      "default": "tree",
+                      "description": "Output format, either 'tree' or 'list' (default: 'tree')",
+                      "enum": [
+                        "tree",
+                        "list",
+                      ],
+                      "type": "string",
+                    },
+                    "maxChildren": {
+                      "description": "Maximum number of children to list per directory",
+                      "type": "number",
+                    },
                     "maxDepth": {
                       "description": "Tree depth limit (default: 1)",
                       "type": "number",
@@ -1054,7 +1071,7 @@ ${"```"}
   });
 
   spyOn(afs, "list").mockResolvedValue({
-    list: [
+    data: [
       {
         id: "1",
         path: "/modules/history/1",

@@ -1550,36 +1550,70 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
 
 ---
 
-### Phase 2: i18n Driver 实现
+### Phase 2: i18n Driver 实现 ✅ 已完成
 
 **目标：** 实现第一个 driver：i18n driver
 
+**完成日期：** 2024-12-16
+
 **任务：**
-1. [ ] 创建 `afs/i18n-driver/` 包：
-   - `src/index.ts`: 实现 `I18nDriver` 类
-   - `src/default-translation-agent.ts`: 实现内置默认翻译 Agent
-   - `src/storage.ts`: 实现 `.i18n/{lang}/` 物理路径映射
+1. [x] 创建 `afs/i18n-driver/` 包：
+   - ✅ `src/index.ts`: 导出所有公共 API
+   - ✅ `src/driver.ts`: 实现 `I18nDriver` 类
+   - ✅ `src/default-translation-agent.ts`: 实现内置默认翻译 Agent
+   - ✅ `src/storage.ts`: 实现 `/.i18n/{lang}/path` 物理路径映射
 
-2. [ ] 配置选项设计：
-   - `defaultSourceLanguage`: 默认源语言（可选，如 "zh"）
-   - `supportedLanguages`: 支持的目标语言列表（可选）
-   - `model`: LLM 模型实例（用于默认翻译 Agent）
-   - `translationAgent`: 自定义翻译 Agent（可选，不提供则使用内置默认）
-   - `storagePath`: 物理存储路径模板（可选，默认 `.i18n/{language}/`）
+2. [x] 配置选项设计：
+   - ✅ `context`: AIGNE Context（必需，用于调用翻译 Agent）
+   - ✅ `defaultSourceLanguage`: 默认源语言（可选，如 "zh"）
+   - ✅ `supportedLanguages`: 支持的目标语言列表（可选）
+   - ✅ `translationAgent`: 自定义翻译 Agent（可选，不提供则使用内置默认）
+   - ✅ `storagePath`: 物理存储路径模板（可选，默认 `.i18n/{language}`）
+   - ⚠️ 删除 `model` 配置：通过 context 自动获取外层 model
 
-3. [ ] 默认翻译 Agent 实现：
-   - 使用 AIAgent.from 创建
-   - 支持多语言翻译，保持格式和技术术语
-   - 输入：content, targetLanguage, sourceLanguage
-   - 输出：translatedContent
+3. [x] 默认翻译 Agent 实现：
+   - ✅ 使用 AIAgent.from 创建
+   - ✅ 支持多语言翻译，保持格式和技术术语
+   - ✅ 输入：content, targetLanguage, sourceLanguage
+   - ✅ 输出：translatedContent
+   - ✅ 独立文件，方便后续优化
 
-4. [ ] 测试：
-   - 单元测试：driver 匹配、生成逻辑
-   - 集成测试：与 LocalFS 集成
-   - 测试默认翻译 Agent 和自定义 Agent 两种场景
+4. [x] 测试：
+   - ✅ 单元测试：getStoragePath 路径映射
+   - ✅ 单元测试：canHandle view 匹配
+   - ✅ 单元测试：supportedLanguages 过滤
+   - ✅ 集成测试：I18nDriver 翻译流程
+   - ✅ 集成测试：与 AFS 集成
+   - ✅ **测试结果:** 7 个测试全部通过 ✅
 
 **输出：**
-- `@aigne/afs-i18n-driver` v0.0.1
+- ✅ `@aigne/afs-i18n-driver` v0.0.1
+- ✅ TypeScript 编译通过
+- ✅ Biome lint 检查通过
+- ✅ 所有单元测试通过
+
+**实现亮点：**
+1. **Context 驱动** - 通过 `context.newContext({ reset: true }).invoke()` 调用翻译 Agent
+2. **路径映射简化** - `/.i18n/{lang}/` 前缀直接添加到原路径，保留完整目录结构
+3. **模块化设计** - 默认翻译 Agent 独立文件，支持自定义替换
+4. **完整的类型导出** - 导出 schema、类型、创建函数，便于扩展
+
+**文件结构：**
+```
+afs/i18n-driver/
+├── package.json
+├── tsconfig.json
+├── scripts/
+├── src/
+│   ├── index.ts                      # 导出所有公共 API
+│   ├── driver.ts                     # I18nDriver 实现
+│   ├── default-translation-agent.ts  # 内置翻译 Agent
+│   └── storage.ts                    # 路径映射
+├── test/
+│   └── i18n-driver.test.ts
+├── README.md
+└── CHANGELOG.md
+```
 
 ---
 

@@ -31,7 +31,7 @@ class MockI18nDriver implements AFSDriver {
     module: AFSModule,
     path: string,
     view: View,
-    options: { sourceEntry: AFSEntry; metadata: any; context: any },
+    options: { sourceEntry: AFSEntry; metadata: any },
   ): Promise<{ result: AFSEntry; message?: string }> {
     const { sourceEntry } = options;
     const targetLang = view.language;

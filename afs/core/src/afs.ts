@@ -154,7 +154,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     for (const { module, modulePath, subpath } of modules) {
       // If view is requested and we have a view processor, use it
       if (options?.view && this.viewProcessor) {
-        const res = await this.viewProcessor.handleRead(module, subpath, options, this);
+        const res = await this.viewProcessor.handleRead(module, subpath, options);
 
         if (res.result) {
           return {
@@ -347,7 +347,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     for (const path of paths) {
       const module = this.findModules(path, { exactMatch: true })[0];
       if (module) {
-        await this.viewProcessor.prefetch(module.module, [module.subpath], options.view, this, {
+        await this.viewProcessor.prefetch(module.module, [module.subpath], options.view, {
           concurrency: options.concurrency,
         });
       }

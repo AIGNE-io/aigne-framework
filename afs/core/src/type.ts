@@ -273,7 +273,6 @@ export interface AFSDriver {
     options: {
       sourceEntry: AFSEntry;
       metadata: any;
-      context: any;
     },
   ): Promise<{ result: AFSEntry; message?: string }>;
 

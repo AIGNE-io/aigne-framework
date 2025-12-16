@@ -74,7 +74,7 @@ export class ViewProcessor {
    * Process a view (generate or regenerate)
    * V1: Direct execution without job deduplication
    */
-  async processView(module: AFSModule, path: string, view: View, context: any): Promise<AFSEntry> {
+  async processView(module: AFSModule, path: string, view: View): Promise<AFSEntry> {
     try {
       // 1. Get or create source metadata
       let sourceMeta = await this.metadataStore.getSourceMetadata(path);
@@ -249,7 +249,6 @@ export class ViewProcessor {
     module: AFSModule,
     paths: string[],
     view: View,
-    context: any,
     options?: { concurrency?: number },
   ): Promise<void> {
     const tasksToGenerate: string[] = [];
@@ -271,7 +270,7 @@ export class ViewProcessor {
     await Promise.all(
       tasksToGenerate.map((path) =>
         limit(() =>
-          this.processView(module, path, view, context).catch((error) => {
+          this.processView(module, path, view).catch((error) => {
             console.error(`Prefetch failed for ${path}:`, error);
           }),
         ),

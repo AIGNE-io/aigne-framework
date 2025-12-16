@@ -128,6 +128,31 @@ importers:
         specifier: ^5.9.2
         version: 5.9.2
 
+  afs/i18n-driver:
+    dependencies:
+      '@aigne/afs':
+        specifier: workspace:^
+        version: link:../core
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      zod:
+        specifier: ^3.25.67
+        version: 3.25.67
+    devDependencies:
+      '@types/bun':
+        specifier: ^1.2.22
+        version: 1.2.22(@types/react@19.1.13)
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
   afs/local-fs:
     dependencies:
       '@aigne/afs':

@@ -260,6 +260,7 @@ console.log(result);
 This guide has demonstrated how to build and run a secure code execution workflow using the AIGNE Framework. By separating the concerns of code generation and execution into distinct `AIAgent` and `FunctionAgent` roles, you can safely leverage the power of LLMs for tasks that require dynamic code.
 
 For more advanced workflow patterns, explore the following examples:
+
 <x-cards data-columns="2">
   <x-card data-title="Sequential Workflow" data-href="/examples/workflow-sequential" data-icon="lucide:arrow-right-circle">Build step-by-step processing pipelines with guaranteed execution order.</x-card>
   <x-card data-title="Workflow Orchestration" data-href="/examples/workflow-orchestration" data-icon="lucide:milestone">Coordinate multiple agents working together in sophisticated processing pipelines.</x-card>

@@ -261,6 +261,7 @@ aigne observe
 この例では、AIGNEフレームワークを使用してルーターワークフローを構築する方法を実演しました。専門Agentをスキルとして持つ`triage` Agentを定義し、`toolChoice: "router"`を設定することで、タスクをインテリジェントに委任する強力なシステムを作成できます。
 
 より複雑なパターンについては、以下の例をご覧ください。
+
 <x-cards data-columns="2">
   <x-card data-title="ワークフローハンドオフ" data-icon="lucide:arrow-right-left" data-href="/examples/workflow-handoff">専門Agent間のシームレスな移行を作成し、複雑な問題を解決します。</x-card>
   <x-card data-title="ワークフローオーケストレーション" data-icon="lucide:network" data-href="/examples/workflow-orchestration">洗練された処理パイプラインで連携する複数のAgentを調整します。</x-card>

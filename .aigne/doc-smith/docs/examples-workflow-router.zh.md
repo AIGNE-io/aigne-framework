@@ -261,6 +261,7 @@ aigne observe
 本示例演示了如何使用 AIGNE 框架构建路由器工作流。通过定义一个 `triage` Agent，并将其专业 Agent 作为其技能，同时设置 `toolChoice: "router"`，您可以创建一个能够智能委派任务的强大系统。
 
 要了解更复杂的模式，请探索以下示例：
+
 <x-cards data-columns="2">
   <x-card data-title="工作流交接" data-icon="lucide:arrow-right-left" data-href="/examples/workflow-handoff">在专业 Agent 之间创建无缝过渡，以解决复杂问题。</x-card>
   <x-card data-title="工作流编排" data-icon="lucide:network" data-href="/examples/workflow-orchestration">协调多个 Agent 在复杂的处理管道中协同工作。</x-card>

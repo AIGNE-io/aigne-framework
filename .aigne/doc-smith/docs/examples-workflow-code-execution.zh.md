@@ -260,6 +260,7 @@ console.log(result);
 本指南演示了如何使用 AIGNE 框架构建和运行一个安全的代码执行工作流。通过将代码生成和执行的关注点分离到不同的 `AIAgent` 和 `FunctionAgent` 角色中，您可以安全地利用 LLM 的强大功能来完成需要动态代码的任务。
 
 要了解更高级的工作流模式，请浏览以下示例：
+
 <x-cards data-columns="2">
   <x-card data-title="顺序工作流" data-href="/examples/workflow-sequential" data-icon="lucide:arrow-right-circle">构建具有保证执行顺序的逐步处理管道。</x-card>
   <x-card data-title="工作流编排" data-href="/examples/workflow-orchestration" data-icon="lucide:milestone">协调多个 Agent 在复杂的处理管道中协同工作。</x-card>

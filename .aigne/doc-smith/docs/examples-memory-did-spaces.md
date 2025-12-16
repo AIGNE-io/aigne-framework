@@ -130,6 +130,7 @@ Once running, you can open the provided URL (`http://localhost:7893` by default)
 This example has demonstrated how to integrate decentralized, persistent memory into an AI agent using the `DIDSpacesMemory` plugin. This capability allows you to create more sophisticated and context-aware chatbots that remember user interactions across sessions.
 
 To learn more about related concepts, refer to the following documentation:
+
 <x-cards data-columns="2">
   <x-card data-title="Memory" data-href="/developer-guide/core-concepts/memory" data-icon="lucide:brain-circuit">
    Learn about the core concepts of agent memory in the AIGNE Framework.

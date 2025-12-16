@@ -130,6 +130,7 @@ aigne observe
 このサンプルでは、`DIDSpacesMemory` プラグインを使用して、分散型の永続メモリを AI Agent に統合する方法を示しました。この機能により、セッションを越えてユーザーの対話を記憶する、より洗練されたコンテキスト認識型のチャットボットを作成できます。
 
 関連する概念についてさらに学ぶには、以下のドキュメントを参照してください：
+
 <x-cards data-columns="2">
   <x-card data-title="メモリ" data-href="/developer-guide/core-concepts/memory" data-icon="lucide:brain-circuit">
    AIGNE フレームワークにおける Agent メモリのコアコンセプトについて学びます。

@@ -130,6 +130,7 @@ aigne observe
 本範例展示了如何使用 `DIDSpacesMemory` 外掛程式將去中心化的永久記憶體整合到 AI agent 中。此功能讓您能夠建立更精密、更具上下文感知能力的聊天機器人，這些機器人能記住跨會話的使用者互動。
 
 若要了解更多相關概念，請參閱以下文件：
+
 <x-cards data-columns="2">
   <x-card data-title="Memory" data-href="/developer-guide/core-concepts/memory" data-icon="lucide:brain-circuit">
    了解 AIGNE 框架中 agent 記憶體的核心概念。

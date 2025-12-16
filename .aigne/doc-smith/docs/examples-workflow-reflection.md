@@ -291,6 +291,7 @@ The server runs locally and is accessible at `http://localhost:7893`. With the s
 This guide has detailed the process of building a reflection workflow, where agents collaborate to iteratively improve an output. This pattern is a key technique for developing more dependable and sophisticated AI systems capable of self-correction.
 
 To explore other ways of coordinating agents, consider the following workflow patterns:
+
 <x-cards data-columns="2">
   <x-card data-title="Sequential Workflow" data-icon="lucide:arrow-right-circle" data-href="/examples/workflow-sequential">
     Build step-by-step processing pipelines with a guaranteed execution order.

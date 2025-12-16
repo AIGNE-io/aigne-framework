@@ -290,6 +290,7 @@ aigne observe
 本指南详细介绍了构建反思工作流的过程，其中 Agent 协作以迭代方式改进输出。这种模式是开发更可靠、更复杂的能够自我修正的 AI 系统的关键技术。
 
 要探索其他协调 Agent 的方式，请考虑以下工作流模式：
+
 <x-cards data-columns="2">
   <x-card data-title="顺序工作流" data-icon="lucide:arrow-right-circle" data-href="/examples/workflow-sequential">
     构建具有保证执行顺序的逐步处理管道。

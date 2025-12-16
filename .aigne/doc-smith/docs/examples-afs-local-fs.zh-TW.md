@@ -223,6 +223,7 @@ const afs = new AFS()
 您已經學會如何使用 AIGNE 框架來建立一個能與本機檔案系統互動的聊天機器人。這項強大的功能開啟了廣泛的應用可能性，從智慧文件搜尋到自動化程式碼分析。
 
 如需進一步閱讀，請探索以下相關範例和套件：
+
 <x-cards data-columns="2">
   <x-card data-title="記憶體範例" data-href="/examples/memory" data-icon="lucide:brain-circuit">
     了解如何為您的聊天機器人增加對話記憶。

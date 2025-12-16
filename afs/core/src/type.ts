@@ -245,6 +245,23 @@ export interface AFSContext {
 }
 
 /**
+ * View status in read result
+ * Indicates whether the requested view was returned or fell back to source
+ */
+export interface ViewStatus {
+  fallback?: boolean; // true = returned source content, view is being generated in background
+}
+
+/**
+ * Read result with optional view status
+ */
+export interface AFSReadResult {
+  result?: AFSEntry;
+  message?: string;
+  viewStatus?: ViewStatus;
+}
+
+/**
  * AFSDriver interface for view transformation
  */
 export interface AFSDriver {

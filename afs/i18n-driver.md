@@ -1590,37 +1590,48 @@ afs/i18n-driver/
 
 ---
 
-### Phase 3: Skill 层集成
+### Phase 3: Skill 层集成 ✅ 已完成
 
 **目标：** 在 `packages/core` 中集成 view 支持
 
+**完成日期：** 2024-12-16
+
 **任务：**
-1. [ ] 扩展 `packages/core/src/prompt/skills/afs/read.ts`：
-   - 使用 `extendSchemaWithView()` 动态扩展 schema
-   - 增加 `view` 字段到 `AFSReadInput`（根据 drivers 自动添加）
-   - 增加 `wait` 字段（可选，默认使用 AFS Core 的默认值 "strict"）
-   - 更新 description
+1. [x] 扩展 `packages/core/src/prompt/skills/afs/read.ts`：
+   - ✅ 使用 `extendSchemaWithView()` 动态扩展 schema
+   - ✅ 增加 `view` 字段到 `AFSReadInput`（根据 drivers 自动添加）
+   - ✅ 增加 `wait` 字段（可选，默认使用 AFS Core 的默认值 "strict"）
+   - ✅ 增加 `viewStatus` 字段到 `AFSReadOutput`（指示是否 fallback）
+   - ✅ 更新 description（根据 driver 可用性动态生成）
 
-2. [ ] 扩展 `packages/core/src/prompt/skills/afs/list.ts`：
-   - 使用 `extendSchemaWithView()` 动态扩展 schema
-   - 增加 `view` 字段到 `AFSListInput`（可选）
-   - 用于列出特定 view 的文件
+2. [x] AFS Core 扩展（支持 viewStatus 返回）：
+   - ✅ `type.ts`: 新增 `ViewStatus` 接口和 `AFSReadResult` 类型
+   - ✅ `view-processor.ts`: `handleRead` 返回增加 `viewStatus`
+   - ✅ `afs.ts`: `read` 方法返回类型改为 `AFSReadResult`
 
-3. [ ] 扩展 `packages/core/src/prompt/skills/afs/stat.ts`：
-   - 使用 `extendSchemaWithView()` 动态扩展 schema
-   - 增加 `view` 字段到 `AFSStatInput`（可选）
-   - 用于查询特定 view 的状态
+3. [x] **不实现** list/stat 的 view 支持（V1 简化）：
+   - ⚠️ `list.ts` 暂不支持 view（未来可扩展）
+   - ⚠️ `stat.ts` 不存在，暂不实现
 
-4. [ ] **不修改** `packages/core/src/prompt/skills/afs/write.ts`：
-   - write 不支持 view 参数
-   - 只能写入 source，view 由 driver 自动生成
+4. [x] **不修改** `packages/core/src/prompt/skills/afs/write.ts`：
+   - ✅ write 不支持 view 参数
+   - ✅ 只能写入 source，view 由 driver 自动生成
 
-5. [ ] 保持 `packages/core/src/prompt/skills/afs/index.ts` 简洁：
-   - `getAFSSkills` 不需要检查 driver
-   - 各 skill 内部自动根据 afs.drivers 动态处理
+5. [x] 保持 `packages/core/src/prompt/skills/afs/index.ts` 简洁：
+   - ✅ `getAFSSkills` 不需要检查 driver
+   - ✅ 各 skill 内部自动根据 afs.drivers 动态处理
 
 **输出：**
-- `@aigne/core` 支持 view 的 AFS skills
+- ✅ `@aigne/core` 支持 view 的 AFS skills
+- ✅ TypeScript 编译通过
+- ✅ Biome lint 检查通过
+- ✅ 所有测试通过
+
+**实现亮点：**
+1. **动态 Schema 构建** - 根据 drivers 配置自动添加 view/wait 字段到 inputSchema
+2. **viewStatus 反馈** - 输出中包含 `viewStatus.fallback` 指示是否降级到 source
+3. **向后兼容** - 无 driver 时行为与之前完全一致
+4. **辅助函数** - `getDriversFromAfsConfig()` 处理各种 AFS 配置类型
 
 **依赖：**
 - 使用 Phase 1 创建的 `afs/core/src/view-schema.ts` 公共模块
@@ -1845,14 +1856,14 @@ function computeRevision(entry: AFSEntry): string {
 ## 附录：关键文件清单
 
 ### AFS Core
-- `afs/core/src/type.ts` - 类型定义（View, AFSDriver, ReadOptions）
-- `afs/core/src/afs.ts` - AFS 主类，driver 匹配与调度，metadata 集成
-- `afs/core/src/view-schema.ts` - **新增** - 动态 View Schema 构建（buildViewSchema, extendSchemaWithView）
+- `afs/core/src/type.ts` - 类型定义（View, AFSDriver, ReadOptions, **ViewStatus**, **AFSReadResult**）
+- `afs/core/src/afs.ts` - AFS 主类，driver 匹配与调度，metadata 集成，**read 返回 AFSReadResult**
+- `afs/core/src/view-schema.ts` - 动态 View Schema 构建（buildViewSchema, extendSchemaWithView）
 - `afs/core/src/metadata/type.ts` - Metadata 接口定义
 - `afs/core/src/metadata/store.ts` - SQLiteMetadataStore 实现
 - `afs/core/src/metadata/migrations/001-init.ts` - 数据库 schema
 - `afs/core/src/metadata/index.ts` - Metadata 模块导出
-- `afs/core/src/view-processor.ts` - View 处理流程，job 队列，过期检测
+- `afs/core/src/view-processor.ts` - View 处理流程，**handleRead 返回 viewStatus**
 
 ### i18n Driver
 - `afs/i18n-driver/src/index.ts` - I18nDriver 实现
@@ -1860,11 +1871,11 @@ function computeRevision(entry: AFSEntry): string {
 - `afs/i18n-driver/src/storage.ts` - 物理存储映射
 
 ### Skills
-- `packages/core/src/prompt/skills/afs/read.ts` - 使用 extendSchemaWithView 动态扩展 schema（read 支持 view）
-- `packages/core/src/prompt/skills/afs/list.ts` - 使用 extendSchemaWithView 动态扩展 schema（list 可选支持 view）
-- `packages/core/src/prompt/skills/afs/stat.ts` - 使用 extendSchemaWithView 动态扩展 schema（stat 可选支持 view）
-- `packages/core/src/prompt/skills/afs/write.ts` - 无需修改（write 不支持 view）
-- `packages/core/src/prompt/skills/afs/index.ts` - 保持简洁（getAFSSkills 不检查 driver）
+- `packages/core/src/prompt/skills/afs/read.ts` - ✅ **已修改** - 动态 schema（view/wait）+ viewStatus 输出
+- `packages/core/src/prompt/skills/afs/list.ts` - ⚠️ 暂不支持 view（未来可扩展）
+- `packages/core/src/prompt/skills/afs/stat.ts` - ⚠️ 不存在，暂不实现
+- `packages/core/src/prompt/skills/afs/write.ts` - ✅ 无需修改（write 不支持 view）
+- `packages/core/src/prompt/skills/afs/index.ts` - ✅ 保持简洁（getAFSSkills 不检查 driver）
 
 ### Loader
 - `packages/core/src/loader/agent-yaml.ts` - YAML schema 扩展

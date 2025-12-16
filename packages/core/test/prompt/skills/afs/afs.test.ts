@@ -24,6 +24,14 @@ test("getAFSSkills should return all AFS skills", async () => {
             "options": {
               "additionalProperties": false,
               "properties": {
+                "disableGitignore": {
+                  "description": "Disable .gitignore filtering, default is enabled",
+                  "type": "boolean",
+                },
+                "maxChildren": {
+                  "description": "Maximum number of children to list per directory",
+                  "type": "number",
+                },
                 "maxDepth": {
                   "description": "Tree depth limit (default: 1)",
                   "type": "number",
@@ -52,6 +60,12 @@ test("getAFSSkills should return all AFS skills", async () => {
             "options": {
               "additionalProperties": false,
               "properties": {
+                "disableGitignore": {
+                  "type": "boolean",
+                },
+                "maxChildren": {
+                  "type": "number",
+                },
                 "maxDepth": {
                   "type": "number",
                 },

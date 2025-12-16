@@ -206,13 +206,13 @@ test("AFS'skill list should respect gitignore by default", async () => {
     (await list.invoke({ path: "/modules/project", options: { maxDepth: 3 } })).result,
   ).toMatchInlineSnapshot(`
     "└── modules
-        └── project
+        └── project [6 items]
             ├── tests [1 items]
             │   └── test.spec.js
             ├── index.js
             ├── README.md
             ├── .gitignore
-            ├── .git
+            ├── .git [0 items]
             └── src [3 items]
                 ├── utils [1 items]
                 │   └── helper.js
@@ -226,7 +226,7 @@ test("AFS'skill list should respect gitignore by default", async () => {
   ).toMatchInlineSnapshot(`
     "└── modules
         └── project
-            └── src
+            └── src [3 items]
                 ├── utils [1 items]
                 │   └── helper.js
                 ├── main.js
@@ -250,7 +250,7 @@ test("AFS'skill list should show all files when gitignore is disabled", async ()
 
   expect(result.result).toMatchInlineSnapshot(`
     "└── modules
-        └── project
+        └── project [10 items]
             ├── node_modules [1 items]
             │   └── package.json
             ├── tests [1 items]
@@ -262,7 +262,7 @@ test("AFS'skill list should show all files when gitignore is disabled", async ()
             ├── debug.log
             ├── build [1 items]
             │   └── output.js
-            ├── .git
+            ├── .git [0 items]
             └── src [6 items]
                 ├── test.tmp
                 ├── utils [2 items]
@@ -288,7 +288,7 @@ test("AFS'skill list should handle nested .gitignore files correctly", async () 
   expect(result.result).toMatchInlineSnapshot(`
     "└── modules
         └── project
-            └── src
+            └── src [3 items]
                 ├── utils [1 items]
                 │   └── helper.js
                 ├── main.js
@@ -356,7 +356,7 @@ test("AFS'skill list should handle maxChildren with nested directories", async (
   // Verify the result structure with inline snapshot
   expect(result.result).toMatchInlineSnapshot(`
     "└── modules
-        └── nested-test
+        └── nested-test [11 items, truncated]
             ├── dir2 [8 items, truncated]
             │   ├── file2.txt
             │   ├── file3.txt

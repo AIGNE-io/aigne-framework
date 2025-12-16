@@ -111,7 +111,7 @@ export class AFSListAgent extends Agent<AFSListInput, AFSListOutput> {
 
         // Children count
         const childrenCount = entry?.metadata?.childrenCount;
-        if (childrenCount !== undefined && childrenCount > 0) {
+        if (typeof childrenCount === "number") {
           metadataParts.push(`${childrenCount} items`);
         }
 

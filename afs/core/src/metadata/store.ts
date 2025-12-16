@@ -28,7 +28,12 @@ export class SQLiteMetadataStore implements MetadataStore {
   async getSourceMetadata(path: string): Promise<SourceMetadata | null> {
     const db = await this.db;
     const rows = await db
-      .select()
+      .select({
+        path: this.sourceTable.path,
+        sourceRevision: this.sourceTable.sourceRevision,
+        updatedAt: this.sourceTable.updatedAt,
+        driversHint: this.sourceTable.driversHint,
+      })
       .from(this.sourceTable)
       .where(eq(this.sourceTable.path, path))
       .limit(1)
@@ -58,7 +63,13 @@ export class SQLiteMetadataStore implements MetadataStore {
         driversHint: metadata.driversHint ? JSON.stringify(metadata.driversHint) : null,
       })
       .where(eq(this.sourceTable.path, path))
-      .returning()
+      .returning({
+        path: this.sourceTable.path,
+        sourceRevision: this.sourceTable.sourceRevision,
+        updatedAt: this.sourceTable.updatedAt,
+        driversHint: this.sourceTable.driversHint,
+        createdAt: this.sourceTable.createdAt,
+      })
       .execute();
 
     // If no rows updated, insert new record
@@ -87,7 +98,15 @@ export class SQLiteMetadataStore implements MetadataStore {
     const viewKey = JSON.stringify(view);
 
     const rows = await db
-      .select()
+      .select({
+        path: this.viewTable.path,
+        view: this.viewTable.view,
+        state: this.viewTable.state,
+        derivedFrom: this.viewTable.derivedFrom,
+        generatedAt: this.viewTable.generatedAt,
+        error: this.viewTable.error,
+        storagePath: this.viewTable.storagePath,
+      })
       .from(this.viewTable)
       .where(and(eq(this.viewTable.path, path), eq(this.viewTable.view, viewKey)))
       .limit(1)
@@ -135,7 +154,18 @@ export class SQLiteMetadataStore implements MetadataStore {
         updatedAt: now,
       })
       .where(and(eq(this.viewTable.path, path), eq(this.viewTable.view, viewKey)))
-      .returning()
+      .returning({
+        id: this.viewTable.id,
+        path: this.viewTable.path,
+        view: this.viewTable.view,
+        state: this.viewTable.state,
+        derivedFrom: this.viewTable.derivedFrom,
+        generatedAt: this.viewTable.generatedAt,
+        error: this.viewTable.error,
+        storagePath: this.viewTable.storagePath,
+        createdAt: this.viewTable.createdAt,
+        updatedAt: this.viewTable.updatedAt,
+      })
       .execute();
 
     // If no rows updated, insert new record
@@ -161,7 +191,15 @@ export class SQLiteMetadataStore implements MetadataStore {
     const db = await this.db;
 
     const rows = await db
-      .select()
+      .select({
+        path: this.viewTable.path,
+        view: this.viewTable.view,
+        state: this.viewTable.state,
+        derivedFrom: this.viewTable.derivedFrom,
+        generatedAt: this.viewTable.generatedAt,
+        error: this.viewTable.error,
+        storagePath: this.viewTable.storagePath,
+      })
       .from(this.viewTable)
       .where(eq(this.viewTable.path, path))
       .execute();
@@ -210,7 +248,15 @@ export class SQLiteMetadataStore implements MetadataStore {
     const db = await this.db;
 
     const rows = await db
-      .select()
+      .select({
+        path: this.viewTable.path,
+        view: this.viewTable.view,
+        state: this.viewTable.state,
+        derivedFrom: this.viewTable.derivedFrom,
+        generatedAt: this.viewTable.generatedAt,
+        error: this.viewTable.error,
+        storagePath: this.viewTable.storagePath,
+      })
       .from(this.viewTable)
       .where(eq(this.viewTable.state, "stale"))
       .execute();
@@ -230,7 +276,15 @@ export class SQLiteMetadataStore implements MetadataStore {
     const db = await this.db;
 
     const rows = await db
-      .select()
+      .select({
+        path: this.viewTable.path,
+        view: this.viewTable.view,
+        state: this.viewTable.state,
+        derivedFrom: this.viewTable.derivedFrom,
+        generatedAt: this.viewTable.generatedAt,
+        error: this.viewTable.error,
+        storagePath: this.viewTable.storagePath,
+      })
       .from(this.viewTable)
       .where(eq(this.viewTable.state, "generating"))
       .execute();
@@ -267,17 +321,9 @@ export class SQLiteMetadataStore implements MetadataStore {
 
   async cleanupFailedViews(_olderThan?: Date): Promise<void> {
     const db = await this.db;
-    // const cutoff = olderThan || new Date(Date.now() - 24 * 60 * 60 * 1000); // Default 24 hours
+    // Note: drizzle doesn't have a direct < operator for dates
+    // For now, we delete all failed views regardless of age
 
-    await db
-      .delete(this.viewTable)
-      .where(
-        and(
-          // Note: drizzle doesn't have a direct < operator for dates, we need to use sql
-          // For now, we'll keep this simple and delete all failed views
-          eq(this.viewTable.state, "failed"),
-        ),
-      )
-      .execute();
+    await db.delete(this.viewTable).where(eq(this.viewTable.state, "failed")).execute();
   }
 }

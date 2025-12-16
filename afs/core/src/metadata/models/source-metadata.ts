@@ -4,7 +4,6 @@ import { integer, sqliteTable, text } from "@aigne/sqlite";
  * Source metadata table schema
  */
 export const sourceMetadataTable = sqliteTable("source_metadata", {
-  id: integer("id").notNull().primaryKey({ autoIncrement: true }),
   path: text("path").notNull().primaryKey(),
   sourceRevision: text("source_revision").notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),

@@ -96,10 +96,14 @@ export class ViewProcessor {
         sourceMeta = await this.metadataStore.getSourceMetadata(path);
       }
 
+      if (!sourceMeta) {
+        throw new Error(`Failed to create source metadata for ${path}`);
+      }
+
       // 2. Mark as generating
       await this.metadataStore.setViewMetadata(path, view, {
         state: "generating",
-        derivedFrom: sourceMeta!.sourceRevision,
+        derivedFrom: sourceMeta.sourceRevision,
       });
 
       // 3. Read source
@@ -116,7 +120,7 @@ export class ViewProcessor {
 
       const result = await driver.process(module, path, view, {
         sourceEntry: sourceResult.data,
-        metadata: { derivedFrom: sourceMeta!.sourceRevision },
+        metadata: { derivedFrom: sourceMeta.sourceRevision },
         context,
       });
 

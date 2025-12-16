@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import pLimit from "p-limit";
 import type { MetadataStore, ViewMetadata } from "./metadata/index.js";
-import type { AFSDriver, AFSEntry, AFSModule, ReadOptions, View } from "./type.js";
+import type { AFSDriver, AFSEntry, AFSModule, AFSReadResult, ReadOptions, View } from "./type.js";
 
 /**
  * View processor for handling view generation and caching
@@ -172,7 +172,7 @@ export class ViewProcessor {
     module: AFSModule,
     path: string,
     options: ReadOptions | undefined,
-  ): Promise<{ result?: AFSEntry; message?: string }> {
+  ): Promise<AFSReadResult> {
     // No view, read source directly
     if (!options?.view) {
       return (await module.read?.(path)) || { result: undefined };
@@ -185,7 +185,7 @@ export class ViewProcessor {
     // 2. If view is ready and not stale, return it
     if (viewMeta?.state === "ready" && !isStale) {
       const result = await this.readViewResult(module, path, viewMeta);
-      return { result };
+      return { result, viewStatus: { fallback: false } };
     }
 
     // 3. Need to generate view
@@ -194,7 +194,7 @@ export class ViewProcessor {
     if (wait === "strict") {
       // Wait for generation to complete
       const result = await this.processView(module, path, options.view);
-      return { result };
+      return { result, viewStatus: { fallback: false } };
     } else {
       // Fallback: trigger background generation, return source
       this.processView(module, path, options.view).catch((error) => {
@@ -205,6 +205,7 @@ export class ViewProcessor {
       return {
         result: sourceResult?.result,
         message: `View (${JSON.stringify(options.view)}) is being processed in background`,
+        viewStatus: { fallback: true },
       };
     }
   }

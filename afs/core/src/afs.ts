@@ -7,6 +7,7 @@ import type {
   AFSEntry,
   AFSListOptions,
   AFSModule,
+  AFSReadResult,
   AFSRenameOptions,
   AFSRoot,
   AFSRootEvents,
@@ -145,10 +146,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     return { list: results, message: messages.join("; ").trim() || undefined };
   }
 
-  async read(
-    path: string,
-    options?: ReadOptions,
-  ): Promise<{ result?: AFSEntry; message?: string }> {
+  async read(path: string, options?: ReadOptions): Promise<AFSReadResult> {
     const modules = this.findModules(path, { exactMatch: true });
 
     for (const { module, modulePath, subpath } of modules) {

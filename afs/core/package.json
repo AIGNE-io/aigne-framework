@@ -56,8 +56,11 @@
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
+    "@aigne/sqlite": "workspace:^",
+    "p-limit": "^6.1.0",
     "strict-event-emitter": "^0.5.1",
-    "ufo": "^1.6.1"
+    "ufo": "^1.6.1",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/bun": "^1.2.22",

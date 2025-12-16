@@ -39,7 +39,7 @@ export interface AFSModule {
 
   list?(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[]; message?: string }>;
 
-  read?(path: string): Promise<{ result?: AFSEntry; message?: string }>;
+  read?(path: string, options?: ReadOptions): Promise<{ result?: AFSEntry; message?: string }>;
 
   write?(
     path: string,
@@ -98,4 +98,70 @@ export interface AFSEntry<T = any> {
   metadata?: AFSEntryMetadata | null;
   linkTo?: string | null;
   content?: T;
+}
+
+/**
+ * View represents different projections of the same file
+ * V1: Only language dimension is implemented
+ * Future: format, policy, variant dimensions
+ */
+export interface View {
+  language?: string; // Target language for translation (e.g., "en", "zh", "ja")
+  // format?: string;     // Future: format conversion (e.g., "html", "pdf")
+  // policy?: string;     // Future: content style policy (e.g., "technical", "marketing")
+  // variant?: string;    // Future: content variant (e.g., "summary", "toc", "index")
+}
+
+/**
+ * Wait strategy for view processing
+ * - strict: Wait for view generation to complete before returning
+ * - fallback: Return source immediately and trigger background generation
+ */
+export type WaitStrategy = "strict" | "fallback";
+
+/**
+ * Options for read operations with view support
+ */
+export interface ReadOptions {
+  view?: View;
+  wait?: WaitStrategy;
+}
+
+/**
+ * AFSDriver interface for view transformation
+ */
+export interface AFSDriver {
+  readonly name: string;
+  readonly description?: string;
+
+  /**
+   * Declare which view dimensions this driver can handle
+   */
+  readonly capabilities: {
+    dimensions: (keyof View)[];
+  };
+
+  /**
+   * Check if this driver can handle the given view
+   */
+  canHandle(view: View): boolean;
+
+  /**
+   * Process and generate the view projection
+   */
+  process(
+    module: AFSModule,
+    path: string,
+    view: View,
+    options: {
+      sourceEntry: AFSEntry;
+      metadata: any;
+      context: any;
+    },
+  ): Promise<{ result: AFSEntry; message?: string }>;
+
+  /**
+   * Optional: Called when driver is mounted to AFS
+   */
+  onMount?(root: AFSRoot): void;
 }

@@ -1,7 +1,9 @@
 import { Emitter } from "strict-event-emitter";
 import { joinURL } from "ufo";
+import { SQLiteMetadataStore } from "./metadata/index.js";
 import type {
   AFSDeleteOptions,
+  AFSDriver,
   AFSEntry,
   AFSListOptions,
   AFSModule,
@@ -11,7 +13,10 @@ import type {
   AFSSearchOptions,
   AFSWriteEntryPayload,
   AFSWriteOptions,
+  ReadOptions,
+  View,
 } from "./type.js";
+import { ViewProcessor } from "./view-processor.js";
 
 const DEFAULT_MAX_DEPTH = 1;
 
@@ -19,20 +24,45 @@ const MODULES_ROOT_DIR = "/modules";
 
 export interface AFSOptions {
   modules?: AFSModule[];
+  drivers?: AFSDriver[];
+  metadataPath?: string; // SQLite database path for metadata, default: ".afs/metadata.db"
 }
 
 export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
   name: string = "AFSRoot";
 
+  private modules = new Map<string, AFSModule>();
+  private _drivers: AFSDriver[] = [];
+  private metadataStore?: SQLiteMetadataStore;
+  private viewProcessor?: ViewProcessor;
+
   constructor(options?: AFSOptions) {
     super();
 
+    // Mount modules
     for (const module of options?.modules ?? []) {
       this.mount(module);
     }
+
+    // Initialize drivers
+    this._drivers = options?.drivers ?? [];
+
+    // Initialize metadata store and view processor if drivers are present
+    if (this._drivers.length > 0) {
+      const metadataPath = options?.metadataPath || "file:.afs/metadata.db";
+      this.metadataStore = new SQLiteMetadataStore({ url: metadataPath });
+      this.viewProcessor = new ViewProcessor(this.metadataStore, this._drivers);
+
+      // Mount drivers
+      for (const driver of this._drivers) {
+        driver.onMount?.(this);
+      }
+    }
   }
 
-  private modules = new Map<string, AFSModule>();
+  get drivers(): AFSDriver[] {
+    return this._drivers;
+  }
 
   mount(module: AFSModule): this {
     let path = joinURL("/", module.name);
@@ -115,20 +145,39 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     return { list: results, message: messages.join("; ").trim() || undefined };
   }
 
-  async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
+  async read(
+    path: string,
+    options?: ReadOptions,
+  ): Promise<{ result?: AFSEntry; message?: string }> {
     const modules = this.findModules(path, { exactMatch: true });
 
     for (const { module, modulePath, subpath } of modules) {
-      const res = await module.read?.(subpath);
+      // If view is requested and we have a view processor, use it
+      if (options?.view && this.viewProcessor) {
+        const res = await this.viewProcessor.handleRead(module, subpath, options, this);
 
-      if (res?.result) {
-        return {
-          ...res,
-          result: {
-            ...res.result,
-            path: joinURL(modulePath, res.result.path),
-          },
-        };
+        if (res.result) {
+          return {
+            ...res,
+            result: {
+              ...res.result,
+              path: joinURL(modulePath, res.result.path),
+            },
+          };
+        }
+      } else {
+        // No view requested, read normally
+        const res = await module.read?.(subpath, options);
+
+        if (res?.result) {
+          return {
+            ...res,
+            result: {
+              ...res.result,
+              path: joinURL(modulePath, res.result.path),
+            },
+          };
+        }
       }
     }
 
@@ -145,6 +194,11 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
     const res = await module.module.write(module.subpath, content, options);
 
+    // Update metadata if view processor is available
+    if (this.viewProcessor) {
+      await this.viewProcessor.handleWrite(module.subpath, res.result);
+    }
+
     return {
       ...res,
       result: {
@@ -158,7 +212,14 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     const module = this.findModules(path, { exactMatch: true })[0];
     if (!module?.module.delete) throw new Error(`No module found for path: ${path}`);
 
-    return await module.module.delete(module.subpath, options);
+    const result = await module.module.delete(module.subpath, options);
+
+    // Clean up metadata if view processor is available
+    if (this.viewProcessor) {
+      await this.viewProcessor.handleDelete(module.subpath);
+    }
+
+    return result;
   }
 
   async rename(
@@ -265,5 +326,31 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     if (!module?.module.exec) throw new Error(`No module found for path: ${path}`);
 
     return await module.module.exec(module.subpath, args, options);
+  }
+
+  /**
+   * Prefetch views for batch generation
+   * @param pathOrGlob - Single path or array of paths (glob support TBD)
+   * @param options - View options
+   */
+  async prefetch(
+    pathOrGlob: string | string[],
+    options: { view: View; concurrency?: number },
+  ): Promise<void> {
+    if (!this.viewProcessor) {
+      throw new Error("Prefetch requires drivers to be configured");
+    }
+
+    const paths = Array.isArray(pathOrGlob) ? pathOrGlob : [pathOrGlob];
+
+    // For each path, find the module and prefetch
+    for (const path of paths) {
+      const module = this.findModules(path, { exactMatch: true })[0];
+      if (module) {
+        await this.viewProcessor.prefetch(module.module, [module.subpath], options.view, this, {
+          concurrency: options.concurrency,
+        });
+      }
+    }
   }
 }

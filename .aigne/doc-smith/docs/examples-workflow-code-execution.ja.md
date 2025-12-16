@@ -260,6 +260,7 @@ console.log(result);
 このガイドでは、AIGNE フレームワークを使用して安全なコード実行ワークフローを構築し、実行する方法を実演しました。コード生成と実行の関心事を別々の `AIAgent` と `FunctionAgent` の役割に分離することで、動的なコードを必要とするタスクに対して LLM の能力を安全に活用できます。
 
 より高度なワークフローパターンについては、以下の例をご覧ください。
+
 <x-cards data-columns="2">
   <x-card data-title="シーケンシャルワークフロー" data-href="/examples/workflow-sequential" data-icon="lucide:arrow-right-circle">保証された実行順序でステップバイステップの処理パイプラインを構築します。</x-card>
   <x-card data-title="ワークフローオーケストレーション" data-href="/examples/workflow-orchestration" data-icon="lucide:milestone">洗練された処理パイプラインで連携する複数の Agent を調整します。</x-card>

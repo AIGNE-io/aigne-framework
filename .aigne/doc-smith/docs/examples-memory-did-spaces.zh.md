@@ -130,6 +130,7 @@ aigne observe
 本示例演示了如何使用 `DIDSpacesMemory` 插件将去中心化的持久内存集成到 AI Agent 中。此功能使您能够创建更复杂、更具上下文感知能力的聊天机器人，这些机器人能够跨会话记住用户交互。
 
 要了解更多相关概念，请参阅以下文档：
+
 <x-cards data-columns="2">
   <x-card data-title="内存" data-href="/developer-guide/core-concepts/memory" data-icon="lucide:brain-circuit">
    了解 AIGNE 框架中 Agent 内存的核心概念。

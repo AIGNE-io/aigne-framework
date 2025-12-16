@@ -225,6 +225,7 @@ const afs = new AFS()
 AIGNE Framework を使用して、ローカルファイルシステムと対話できるチャットボットを作成する方法を学びました。この強力な機能により、インテリジェントなドキュメント検索から自動コード分析まで、幅広いアプリケーションが可能になります。
 
 さらに詳しく知るには、以下の関連する例とパッケージをご覧ください。
+
 <x-cards data-columns="2">
   <x-card data-title="Memory の例" data-href="/examples/memory" data-icon="lucide:brain-circuit">
     チャットボットに会話メモリを追加する方法を学びます。

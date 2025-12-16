@@ -261,6 +261,7 @@ The server will start, and you can access the web interface at `http://localhost
 This example has demonstrated how to build a router workflow using the AIGNE Framework. By defining a `triage` agent with specialized agents as its skills and setting `toolChoice: "router"`, you can create a powerful system that intelligently delegates tasks.
 
 For more complex patterns, explore the following examples:
+
 <x-cards data-columns="2">
   <x-card data-title="Workflow Handoff" data-icon="lucide:arrow-right-left" data-href="/examples/workflow-handoff">Create seamless transitions between specialized agents to solve complex problems.</x-card>
   <x-card data-title="Workflow Orchestration" data-icon="lucide:network" data-href="/examples/workflow-orchestration">Coordinate multiple agents working together in sophisticated processing pipelines.</x-card>

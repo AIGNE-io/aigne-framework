@@ -290,6 +290,7 @@ aigne observe
 このガイドでは、Agent が協調して出力を反復的に改善するリフレクションワークフローの構築プロセスを詳述しました。このパターンは、自己修正が可能な、より信頼性が高く洗練された AI システムを開発するための重要なテクニックです。
 
 Agent を協調させる他の方法を探るには、以下のワークフローパターンを検討してください：
+
 <x-cards data-columns="2">
   <x-card data-title="シーケンシャルワークフロー" data-icon="lucide:arrow-right-circle" data-href="/examples/workflow-sequential">
     実行順序が保証されたステップバイステップの処理パイプラインを構築します。

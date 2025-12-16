@@ -290,6 +290,7 @@ aigne observe
 本指南詳細介紹了建立一個反思式工作流的過程，其中 Agent 協同合作以迭代地改進輸出。此模式是開發更可靠、更複雜且具備自我修正能力的 AI 系統的關鍵技術。
 
 若要探索其他協調 Agent 的方式，請考慮以下工作流模式：
+
 <x-cards data-columns="2">
   <x-card data-title="循序工作流" data-icon="lucide:arrow-right-circle" data-href="/examples/workflow-sequential">
     建立具有保證執行順序的逐步處理管道。

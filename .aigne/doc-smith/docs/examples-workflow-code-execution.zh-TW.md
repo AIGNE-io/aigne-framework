@@ -260,6 +260,7 @@ console.log(result);
 本指南示範了如何使用 AIGNE 框架建立並執行一個安全的程式碼執行工作流程。透過將程式碼產生和執行的關注點分離到不同的 `AIAgent` 和 `FunctionAgent` 角色中，您可以安全地利用 LLM 的強大功能來處理需要動態程式碼的任務。
 
 若想了解更進階的工作流程模式，請探索以下範例：
+
 <x-cards data-columns="2">
   <x-card data-title="循序工作流程" data-href="/examples/workflow-sequential" data-icon="lucide:arrow-right-circle">建立具備保證執行順序的逐步處理管道。</x-card>
   <x-card data-title="工作流程編排" data-href="/examples/workflow-orchestration" data-icon="lucide:milestone">協調多個 Agent 在複雜的處理管道中協同工作。</x-card>

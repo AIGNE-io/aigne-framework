@@ -78,7 +78,7 @@
     "@inquirer/type": "^3.0.8",
     "@listr2/prompt-adapter-inquirer": "^3.0.4",
     "@modelcontextprotocol/sdk": "^1.18.0",
-    "@ocap/mcrypto": "^1.27.14",
+    "@ocap/mcrypto": "^1.27.15",
     "@smithy/node-http-handler": "^4.2.1",
     "ansi-escapes": "^7.1.0",
     "ansi-regex": "^6.2.2",

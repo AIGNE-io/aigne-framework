@@ -23,7 +23,7 @@ export interface AFSEditOutput extends Message {
   tool: string;
   path: string;
   message: string;
-  content: string;
+  data: string;
 }
 
 export interface AFSEditAgentOptions extends AgentOptions<AFSEditInput, AFSEditOutput> {
@@ -56,7 +56,7 @@ export class AFSEditAgent extends Agent<AFSEditInput, AFSEditOutput> {
         tool: z.string(),
         path: z.string(),
         message: z.string(),
-        content: z.string(),
+        data: z.string(),
       }),
     });
   }
@@ -69,11 +69,11 @@ export class AFSEditAgent extends Agent<AFSEditInput, AFSEditOutput> {
     }
 
     const readResult = await this.afs.read(input.path);
-    if (!readResult.result?.content || typeof readResult.result.content !== "string") {
+    if (!readResult.data?.content || typeof readResult.data.content !== "string") {
       throw new Error(`Cannot read file content from: ${input.path}`);
     }
 
-    const originalContent = readResult.result.content;
+    const originalContent = readResult.data.content;
     const updatedContent = this.applyCustomPatches(originalContent, input.patches);
 
     await this.afs.write(input.path, {
@@ -85,7 +85,7 @@ export class AFSEditAgent extends Agent<AFSEditInput, AFSEditOutput> {
       tool: "afs_edit",
       path: input.path,
       message: `Applied ${input.patches.length} patches to ${input.path}`,
-      content: updatedContent,
+      data: updatedContent,
     };
   }
 

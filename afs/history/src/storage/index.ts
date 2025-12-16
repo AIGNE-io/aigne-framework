@@ -37,13 +37,13 @@ export class AFSStorageWithModule implements AFSStorage {
     private table: Promise<ReturnType<typeof entriesTable>>,
   ) {}
 
-  async list(options: AFSStorageListOptions = {}): Promise<{ list: AFSEntry[] }> {
+  async list(options: AFSStorageListOptions = {}): Promise<{ data: AFSEntry[] }> {
     const { filter, limit = DEFAULT_AFS_STORAGE_LIST_LIMIT } = options;
 
     const db = await this.db;
     const table = await this.table;
 
-    const list = await db
+    const data = await db
       .select()
       .from(table)
       .where(
@@ -60,7 +60,7 @@ export class AFSStorageWithModule implements AFSStorage {
       .limit(limit)
       .execute();
 
-    return { list };
+    return { data };
   }
 
   async read(path: string): Promise<AFSEntry | undefined> {

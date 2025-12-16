@@ -14,13 +14,13 @@ test("AFS'skill search should invoke afs.search", async () => {
   ];
 
   const searchSpy = spyOn(afs, "search").mockResolvedValue({
-    list: mockResults,
+    data: mockResults,
   });
 
   assert(search);
   expect(await search.invoke({ path: "/foo/bar", query: "test" })).toMatchInlineSnapshot(`
     {
-      "list": [
+      "data": [
         {
           "id": "file1",
           "path": "/foo/bar/file1.txt",
@@ -54,7 +54,7 @@ test("AFS'skill search should handle case-sensitive option", async () => {
   const search = skills.find((i) => i.name === "afs_search");
 
   const searchSpy = spyOn(afs, "search").mockResolvedValue({
-    list: [],
+    data: [],
   });
 
   assert(search);
@@ -75,7 +75,7 @@ test("AFS'skill search should handle limit option", async () => {
   const search = skills.find((i) => i.name === "afs_search");
 
   const searchSpy = spyOn(afs, "search").mockResolvedValue({
-    list: [],
+    data: [],
   });
 
   assert(search);
@@ -94,7 +94,7 @@ test("AFS'skill search should handle both caseSensitive and limit options", asyn
   const search = skills.find((i) => i.name === "afs_search");
 
   const searchSpy = spyOn(afs, "search").mockResolvedValue({
-    list: [],
+    data: [],
   });
 
   assert(search);
@@ -119,14 +119,14 @@ test("AFS'skill search should return empty list when no results found", async ()
   const search = skills.find((i) => i.name === "afs_search");
 
   spyOn(afs, "search").mockResolvedValue({
-    list: [],
+    data: [],
   });
 
   assert(search);
   const result = await search.invoke({ path: "/foo", query: "nonexistent" });
 
   expect(result.status).toBe("success");
-  expect(result.list).toEqual([]);
+  expect(result.data).toEqual([]);
 });
 
 test("AFS'skill search should include message when provided", async () => {
@@ -135,7 +135,7 @@ test("AFS'skill search should include message when provided", async () => {
   const search = skills.find((i) => i.name === "afs_search");
 
   spyOn(afs, "search").mockResolvedValue({
-    list: [],
+    data: [],
     message: "Search completed with 0 results",
   });
 
@@ -157,14 +157,14 @@ test("AFS'skill search should return multiple results", async () => {
   ];
 
   spyOn(afs, "search").mockResolvedValue({
-    list: mockResults,
+    data: mockResults,
   });
 
   assert(search);
   const result = await search.invoke({ path: "/src", query: "function" });
 
   expect(result.status).toBe("success");
-  expect(result.list).toHaveLength(3);
-  expect(result.list[0]?.path).toBe("/src/file1.ts");
-  expect(result.list[2]?.path).toBe("/src/utils/helper.ts");
+  expect(result.data).toHaveLength(3);
+  expect(result.data[0]?.path).toBe("/src/file1.ts");
+  expect(result.data[2]?.path).toBe("/src/utils/helper.ts");
 });

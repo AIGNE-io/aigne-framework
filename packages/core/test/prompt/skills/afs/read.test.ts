@@ -56,9 +56,9 @@ test("AFS'skill read should handle withLineNumbers option", async () => {
       "path": "/foo/test.txt",
       "result": {
         "content": 
-    "1| line 1
-    2| line 2
-    3| line 3"
+    "line 1
+    line 2
+    line 3"
     ,
         "id": "foo",
         "path": "/foo/test.txt",

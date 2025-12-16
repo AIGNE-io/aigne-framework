@@ -33,7 +33,7 @@ afterAll(async () => {
 test("LocalFS should list files in the root directory (non-recursive)", async () => {
   const result = await localFS.list("");
 
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
@@ -44,7 +44,7 @@ test("LocalFS should list files in the root directory (non-recursive)", async ()
   `);
 
   // Check metadata types
-  const metadataTypes = result.list.map((entry) => ({
+  const metadataTypes = result.data.map((entry) => ({
     path: entry.path,
     type: entry.metadata?.type,
   }));
@@ -73,7 +73,7 @@ test("LocalFS should list files in the root directory (non-recursive)", async ()
 test("LocalFS should list files recursively when recursive option is true", async () => {
   const result = await localFS.list("", { maxDepth: 1000 });
 
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
@@ -90,7 +90,7 @@ test("LocalFS should list files recursively when recursive option is true", asyn
 test("LocalFS should respect maxDepth option", async () => {
   const result = await localFS.list("", { maxDepth: 1 });
 
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
@@ -104,14 +104,14 @@ test("LocalFS should respect maxDepth option", async () => {
 test("LocalFS should respect limit option", async () => {
   const result = await localFS.list("", { limit: 3 });
 
-  expect(result.list).toBeDefined();
-  expect(result.list.length).toBe(3);
+  expect(result.data).toBeDefined();
+  expect(result.data.length).toBe(3);
 });
 
 test("LocalFS should list files in a subdirectory", async () => {
   const result = await localFS.list("subdir");
 
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/subdir",
@@ -126,7 +126,7 @@ test("LocalFS should handle orderBy option", async () => {
     orderBy: [["path", "asc"]],
   });
 
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
@@ -139,31 +139,31 @@ test("LocalFS should handle orderBy option", async () => {
 
 // Read method tests
 test("LocalFS should read a file and return content", async () => {
-  const { result } = await localFS.read("file1.txt");
+  const { data } = await localFS.read("file1.txt");
 
-  expect(result).toBeDefined();
-  expect(result?.path).toBe("file1.txt");
-  expect(result?.content).toBe("Hello World");
-  expect(result?.metadata?.type).toBe("file");
-  expect(result?.metadata?.size).toBeGreaterThan(0);
+  expect(data).toBeDefined();
+  expect(data?.path).toBe("file1.txt");
+  expect(data?.content).toBe("Hello World");
+  expect(data?.metadata?.type).toBe("file");
+  expect(data?.metadata?.size).toBeGreaterThan(0);
 });
 
 test("LocalFS should read a directory without content", async () => {
-  const { result } = await localFS.read("subdir");
+  const { data } = await localFS.read("subdir");
 
-  expect(result).toBeDefined();
-  expect(result?.path).toBe("subdir");
-  expect(result?.content).toBeUndefined();
-  expect(result?.metadata?.type).toBe("directory");
+  expect(data).toBeDefined();
+  expect(data?.path).toBe("subdir");
+  expect(data?.content).toBeUndefined();
+  expect(data?.metadata?.type).toBe("directory");
 });
 
 test("LocalFS should read a nested file", async () => {
-  const { result } = await localFS.read("subdir/file3.js");
+  const { data } = await localFS.read("subdir/file3.js");
 
-  expect(result).toBeDefined();
-  expect(result?.path).toBe("subdir/file3.js");
-  expect(result?.content).toBe('console.log("test");');
-  expect(result?.metadata?.type).toBe("file");
+  expect(data).toBeDefined();
+  expect(data?.path).toBe("subdir/file3.js");
+  expect(data?.content).toBe('console.log("test");');
+  expect(data?.metadata?.type).toBe("file");
 });
 
 // Write method tests
@@ -174,15 +174,15 @@ test("LocalFS should write a new file", async () => {
     metadata: { custom: "value" },
   };
 
-  const { result } = await localFS.write("newfile.txt", entry);
+  const { data } = await localFS.write("newfile.txt", entry);
 
-  expect(result).toBeDefined();
-  expect(result.path).toBe("newfile.txt");
-  expect(result.content).toBe("New file content");
-  expect(result.summary).toBe("Test file");
-  expect(result.metadata?.custom).toBe("value");
-  expect(result.metadata?.type).toBe("file");
-  expect(result.metadata?.size).toBeGreaterThan(0);
+  expect(data).toBeDefined();
+  expect(data.path).toBe("newfile.txt");
+  expect(data.content).toBe("New file content");
+  expect(data.summary).toBe("Test file");
+  expect(data.metadata?.custom).toBe("value");
+  expect(data.metadata?.type).toBe("file");
+  expect(data.metadata?.size).toBeGreaterThan(0);
 });
 
 test("LocalFS should write a file with JSON content", async () => {
@@ -192,15 +192,15 @@ test("LocalFS should write a file with JSON content", async () => {
     summary: "JSON test file",
   };
 
-  const { result } = await localFS.write("data.json", entry);
+  const { data } = await localFS.write("data.json", entry);
 
-  expect(result).toBeDefined();
-  expect(result.path).toBe("data.json");
-  expect(result.content).toEqual(jsonData);
-  expect(result.metadata?.type).toBe("file");
+  expect(data).toBeDefined();
+  expect(data.path).toBe("data.json");
+  expect(data.content).toEqual(jsonData);
+  expect(data.metadata?.type).toBe("file");
 
   // Verify the file was written with JSON formatting
-  const { result: readResult } = await localFS.read("data.json");
+  const { data: readResult } = await localFS.read("data.json");
   expect(readResult?.content).toBe(JSON.stringify(jsonData, null, 2));
 });
 
@@ -210,13 +210,13 @@ test("LocalFS should write a file in a nested directory", async () => {
     metadata: { nested: true },
   };
 
-  const { result } = await localFS.write("deep/nested/test.txt", entry);
+  const { data } = await localFS.write("deep/nested/test.txt", entry);
 
-  expect(result).toBeDefined();
-  expect(result.path).toBe("deep/nested/test.txt");
-  expect(result.content).toBe("Nested file content");
-  expect(result.metadata?.nested).toBe(true);
-  expect(result.metadata?.type).toBe("file");
+  expect(data).toBeDefined();
+  expect(data.path).toBe("deep/nested/test.txt");
+  expect(data.content).toBe("Nested file content");
+  expect(data.metadata?.nested).toBe(true);
+  expect(data.metadata?.type).toBe("file");
 });
 
 test("LocalFS should overwrite existing file", async () => {
@@ -225,15 +225,15 @@ test("LocalFS should overwrite existing file", async () => {
     summary: "Updated file",
   };
 
-  const { result } = await localFS.write("file1.txt", entry);
+  const { data } = await localFS.write("file1.txt", entry);
 
-  expect(result).toBeDefined();
-  expect(result.path).toBe("file1.txt");
-  expect(result.content).toBe("Updated content");
-  expect(result.summary).toBe("Updated file");
+  expect(data).toBeDefined();
+  expect(data.path).toBe("file1.txt");
+  expect(data.content).toBe("Updated content");
+  expect(data.summary).toBe("Updated file");
 
   // Verify the file was actually updated
-  const { result: readResult } = await localFS.read("file1.txt");
+  const { data: readResult } = await localFS.read("file1.txt");
   expect(readResult?.content).toBe("Updated content");
 });
 
@@ -244,10 +244,10 @@ test("LocalFS should search for text in files", async () => {
 
   const result = await localFS.search("", "Hello");
 
-  expect(result.list).toBeDefined();
-  expect(result.list.length).toBeGreaterThan(0);
+  expect(result.data).toBeDefined();
+  expect(result.data.length).toBeGreaterThan(0);
 
-  const foundFile = result.list.find((entry) => entry.path === "file1.txt");
+  const foundFile = result.data.find((entry) => entry.path === "file1.txt");
   expect(foundFile).toBeDefined();
   expect(foundFile?.summary).toContain("Hello");
 });
@@ -255,9 +255,9 @@ test("LocalFS should search for text in files", async () => {
 test("LocalFS should search with regex pattern", async () => {
   const result = await localFS.search("", "console\\.log");
 
-  expect(result.list).toBeDefined();
+  expect(result.data).toBeDefined();
 
-  const foundFile = result.list.find((entry) => entry.path.includes("file3.js"));
+  const foundFile = result.data.find((entry) => entry.path.includes("file3.js"));
   expect(foundFile).toBeDefined();
   expect(foundFile?.summary).toContain('console.log("test")');
 });
@@ -265,9 +265,9 @@ test("LocalFS should search with regex pattern", async () => {
 test("LocalFS should search in specific directory", async () => {
   const result = await localFS.search("subdir", "test");
 
-  expect(result.list).toBeDefined();
+  expect(result.data).toBeDefined();
 
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
   // All results should be within subdir
   paths.forEach((path) => {
     expect(path.startsWith("subdir/")).toBe(true);
@@ -277,15 +277,15 @@ test("LocalFS should search in specific directory", async () => {
 test("LocalFS should respect search limit option", async () => {
   const result = await localFS.search("", "test", { limit: 1 });
 
-  expect(result.list).toBeDefined();
-  expect(result.list.length).toBe(1);
+  expect(result.data).toBeDefined();
+  expect(result.data.length).toBe(1);
 });
 
 test("LocalFS should return empty results for no matches", async () => {
   const result = await localFS.search("", "nonexistenttext123");
 
-  expect(result.list).toBeDefined();
-  expect(result.list.length).toBe(0);
+  expect(result.data).toBeDefined();
+  expect(result.data.length).toBe(0);
 });
 
 test("LocalFS should search in written files", async () => {
@@ -296,8 +296,8 @@ test("LocalFS should search in written files", async () => {
 
   const result = await localFS.search("", "unique keyword");
 
-  expect(result.list).toBeDefined();
-  const foundFile = result.list.find((entry) => entry.path === "searchable.txt");
+  expect(result.data).toBeDefined();
+  const foundFile = result.data.find((entry) => entry.path === "searchable.txt");
   expect(foundFile).toBeDefined();
   expect(foundFile?.summary).toContain("unique keyword");
 });
@@ -310,20 +310,20 @@ test("LocalFS should handle search with case sensitive option (default false)", 
 
   // Search with caseSensitive: false (default)
   let result = await localFS.search("", "case sensitive");
-  expect(result.list).toBeDefined();
-  let foundFile = result.list.find((entry) => entry.path === "caseTest.txt");
+  expect(result.data).toBeDefined();
+  let foundFile = result.data.find((entry) => entry.path === "caseTest.txt");
   expect(foundFile).toBeDefined();
 
   // Search with caseSensitive: true
   result = await localFS.search("", "case sensitive", { caseSensitive: true });
-  expect(result.list).toBeDefined();
-  foundFile = result.list.find((entry) => entry.path === "caseTest.txt");
+  expect(result.data).toBeDefined();
+  foundFile = result.data.find((entry) => entry.path === "caseTest.txt");
   expect(foundFile).toBeUndefined();
 
   // Search with exact case
   result = await localFS.search("", "Case Sensitive", { caseSensitive: true });
-  expect(result.list).toBeDefined();
-  foundFile = result.list.find((entry) => entry.path === "caseTest.txt");
+  expect(result.data).toBeDefined();
+  foundFile = result.data.find((entry) => entry.path === "caseTest.txt");
   expect(foundFile).toBeDefined();
 });
 
@@ -338,7 +338,7 @@ test("LocalFS should delete a file successfully", async () => {
 
   // Verify file no longer exists
   const listResult = await localFS.list("");
-  const deletedFile = listResult.list.find((entry) => entry.path === "toDelete.txt");
+  const deletedFile = listResult.data.find((entry) => entry.path === "toDelete.txt");
   expect(deletedFile).toBeUndefined();
 });
 
@@ -353,7 +353,7 @@ test("LocalFS should delete a directory with recursive option", async () => {
 
   // Verify directory no longer exists
   const listResult = await localFS.list("");
-  const deletedDir = listResult.list.find((entry) => entry.path === "deleteDir");
+  const deletedDir = listResult.data.find((entry) => entry.path === "deleteDir");
   expect(deletedDir).toBeUndefined();
 });
 
@@ -368,7 +368,7 @@ test("LocalFS should throw error when deleting directory without recursive optio
 
   // Verify directory still exists
   const listResult = await localFS.list("");
-  expect(listResult.list.map((i) => i.path)).toMatchInlineSnapshot(`
+  expect(listResult.data.map((i) => i.path)).toMatchInlineSnapshot(`
     [
       "/",
       "/file1.txt",
@@ -397,7 +397,7 @@ test("LocalFS should delete nested files", async () => {
 
   // Verify file no longer exists
   const listResult = await localFS.list("nested/deep");
-  expect(listResult.list.map((i) => i.path)).toMatchInlineSnapshot(`
+  expect(listResult.data.map((i) => i.path)).toMatchInlineSnapshot(`
     [
       "/nested/deep",
     ]
@@ -418,11 +418,11 @@ test("LocalFS should rename a file successfully", async () => {
 
   // Verify old file no longer exists
   const listResult = await localFS.list("");
-  const oldFile = listResult.list.find((entry) => entry.path === "oldName.txt");
+  const oldFile = listResult.data.find((entry) => entry.path === "oldName.txt");
   expect(oldFile).toBeUndefined();
 
   // Verify new file exists with correct content
-  const { result: readResult } = await localFS.read("newName.txt");
+  const { data: readResult } = await localFS.read("newName.txt");
   expect(readResult?.path).toBe("newName.txt");
   expect(readResult?.content).toBe("Original content");
 
@@ -441,12 +441,12 @@ test("LocalFS should rename a directory", async () => {
 
   // Verify old directory no longer exists
   const listResult = await localFS.list("");
-  const oldDir = listResult.list.find((entry) => entry.path === "oldDir");
+  const oldDir = listResult.data.find((entry) => entry.path === "oldDir");
   expect(oldDir).toBeUndefined();
 
   // Verify new directory exists with files
   const newDirList = await localFS.list("newDir");
-  const filePaths = newDirList.list.map((entry) => entry.path).sort();
+  const filePaths = newDirList.data.map((entry) => entry.path).sort();
   expect(filePaths).toMatchInlineSnapshot(`
     [
       "/newDir",
@@ -470,10 +470,10 @@ test("LocalFS should throw error when renaming to existing path without overwrit
   );
 
   // Verify both files still exist with original content
-  const { result: sourceResult } = await localFS.read("source.txt");
+  const { data: sourceResult } = await localFS.read("source.txt");
   expect(sourceResult?.content).toBe("Source content");
 
-  const { result: targetResult } = await localFS.read("target.txt");
+  const { data: targetResult } = await localFS.read("target.txt");
   expect(targetResult?.content).toBe("Target content");
 
   // Cleanup
@@ -492,11 +492,11 @@ test("LocalFS should rename with overwrite option", async () => {
 
   // Verify source no longer exists
   const listResult = await localFS.list("");
-  const sourceFile = listResult.list.find((entry) => entry.path === "source2.txt");
+  const sourceFile = listResult.data.find((entry) => entry.path === "source2.txt");
   expect(sourceFile).toBeUndefined();
 
   // Verify target has source content
-  const { result: targetResult } = await localFS.read("target2.txt");
+  const { data: targetResult } = await localFS.read("target2.txt");
   expect(targetResult?.content).toBe("Source content 2");
 
   // Cleanup
@@ -513,11 +513,11 @@ test("LocalFS should rename to nested path", async () => {
 
   // Verify old path no longer exists
   const listResult = await localFS.list("");
-  const oldFile = listResult.list.find((entry) => entry.path === "flatFile.txt");
+  const oldFile = listResult.data.find((entry) => entry.path === "flatFile.txt");
   expect(oldFile).toBeUndefined();
 
   // Verify file exists at new nested path
-  const { result: readResult } = await localFS.read("nested/path/movedFile.txt");
+  const { data: readResult } = await localFS.read("nested/path/movedFile.txt");
   expect(readResult?.path).toBe("nested/path/movedFile.txt");
   expect(readResult?.content).toBe("Flat content");
 
@@ -551,7 +551,7 @@ test("LocalFS should respect .gitignore when listing files", async () => {
 
   // Test with gitignore enabled (default)
   const result = await gitFS.list("", { maxDepth: 2 });
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
 
   // Should NOT include ignored files
   expect(paths).toMatchInlineSnapshot(`
@@ -584,7 +584,7 @@ test("LocalFS should allow disabling gitignore", async () => {
 
   // Test with gitignore disabled
   const result = await gitFS.list("", { disableGitignore: true });
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
 
   // Should include all files
   expect(paths).toMatchInlineSnapshot(`
@@ -625,7 +625,7 @@ test("LocalFS should handle nested .gitignore files", async () => {
 
   // Test listing from root
   const rootResult = await gitFS.list("", { maxDepth: 2 });
-  const rootPaths = rootResult.list.map((entry) => entry.path);
+  const rootPaths = rootResult.data.map((entry) => entry.path);
 
   // Root .gitignore should filter *.log
   expect(rootPaths).toMatchInlineSnapshot(`
@@ -668,7 +668,7 @@ test("LocalFS should stop at .git directory when searching for .gitignore", asyn
 
   // Test listing from inner directory
   const result = await innerFS.list("");
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
 
   // Should only apply inner .gitignore, not outer
   expect(paths).toMatchInlineSnapshot(`
@@ -705,7 +705,7 @@ test("LocalFS should handle directory patterns in .gitignore", async () => {
 
   // Test listing
   const result = await gitFS.list("", { maxDepth: 2 });
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
 
   // Should filter out build directory and .tmp files
   expect(paths).toMatchInlineSnapshot(`
@@ -736,7 +736,7 @@ test("LocalFS should work without any .gitignore file", async () => {
 
   // Test listing without .gitignore
   const result = await gitFS.list("");
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
 
   // Should include all files when no .gitignore exists
   expect(paths).toMatchInlineSnapshot(`
@@ -768,7 +768,7 @@ test("LocalFS should work without .git directory", async () => {
 
   // Test listing - should still apply .gitignore rules
   const result = await nonGitFS.list("");
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
 
   // Should still filter based on .gitignore
   expect(paths).toMatchInlineSnapshot(`
@@ -798,7 +798,7 @@ test("LocalFS should respect maxChildren option", async () => {
 
   // Test with maxChildren: 5
   const result = await maxChildrenFS.list("", { maxChildren: 5 });
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
 
   // Should only return 5 files
   expect(paths).toMatchInlineSnapshot(`
@@ -833,7 +833,7 @@ test("LocalFS should mark directory as truncated when maxChildren is exceeded", 
   const result = await maxChildrenFS.list("", { maxChildren: 5, maxDepth: 2 });
 
   // Find the subdir entry
-  const subdirEntry = result.list.find((entry) => entry.path === "/subdir");
+  const subdirEntry = result.data.find((entry) => entry.path === "/subdir");
 
   // Should have childrenTruncated flag
   expect(subdirEntry).toBeDefined();
@@ -861,7 +861,7 @@ test("LocalFS should handle maxChildren with nested directories", async () => {
 
   // List with maxChildren: 2 - should only process 2 directories
   const result = await maxChildrenFS.list("", { maxChildren: 2, maxDepth: 2 });
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
 
   // Should only see 2 directories and their children
   const dirCount = paths.filter((p) => p.startsWith("dir")).length;
@@ -905,7 +905,7 @@ test("LocalFS should work correctly when maxChildren equals number of children",
 
   // List with maxChildren: 5 (equal to number of files)
   const result = await maxChildrenFS.list("", { maxChildren: 5 });
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
 
   // Should return all 5 files
   expect(paths).toMatchInlineSnapshot(`
@@ -920,7 +920,7 @@ test("LocalFS should work correctly when maxChildren equals number of children",
   `);
 
   // Should not be marked as truncated
-  const entries = result.list;
+  const entries = result.data;
   expect(entries.every((e) => !e.metadata?.childrenTruncated)).toBe(true);
 
   // Cleanup
@@ -946,7 +946,7 @@ test("LocalFS should combine maxChildren with gitignore", async () => {
 
   // List with maxChildren: 3 (after gitignore filters *.log)
   const result = await maxChildrenFS.list("", { maxChildren: 3 });
-  const paths = result.list.map((entry) => entry.path);
+  const paths = result.data.map((entry) => entry.path);
 
   // Should have at most 3 items (gitignore happens first, then maxChildren)
   expect(paths.length).toBeLessThanOrEqual(4);

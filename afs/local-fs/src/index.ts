@@ -2,13 +2,18 @@ import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from "node:fs/p
 import { dirname, join, relative, resolve } from "node:path";
 import type {
   AFSDeleteOptions,
+  AFSDeleteResult,
   AFSEntry,
   AFSListOptions,
+  AFSListResult,
   AFSModule,
+  AFSReadResult,
   AFSRenameOptions,
   AFSSearchOptions,
+  AFSSearchResult,
   AFSWriteEntryPayload,
   AFSWriteOptions,
+  AFSWriteResult,
 } from "@aigne/afs";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import ignore from "ignore";
@@ -44,10 +49,7 @@ export class LocalFS implements AFSModule {
 
   description?: string;
 
-  async list(
-    path: string,
-    options?: AFSListOptions,
-  ): Promise<{ list: AFSEntry[]; message?: string }> {
+  async list(path: string, options?: AFSListOptions): Promise<AFSListResult> {
     path = join("/", path); // Ensure leading slash
 
     const limit = Math.min(options?.limit || LIST_MAX_LIMIT, LIST_MAX_LIMIT);
@@ -162,11 +164,11 @@ export class LocalFS implements AFSModule {
     }
 
     return {
-      list: entries,
+      data: entries,
     };
   }
 
-  async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
+  async read(path: string): Promise<AFSReadResult> {
     const fullPath = join(this.options.localPath, path);
 
     const stats = await stat(fullPath);
@@ -190,14 +192,14 @@ export class LocalFS implements AFSModule {
       },
     };
 
-    return { result: entry };
+    return { data: entry };
   }
 
   async write(
     path: string,
     entry: AFSWriteEntryPayload,
     options?: AFSWriteOptions,
-  ): Promise<{ result: AFSEntry; message?: string }> {
+  ): Promise<AFSWriteResult> {
     const fullPath = join(this.options.localPath, path);
     const append = options?.append ?? false;
 
@@ -237,10 +239,10 @@ export class LocalFS implements AFSModule {
       linkTo: entry.linkTo,
     };
 
-    return { result: writtenEntry };
+    return { data: writtenEntry };
   }
 
-  async delete(path: string, options?: AFSDeleteOptions): Promise<{ message?: string }> {
+  async delete(path: string, options?: AFSDeleteOptions): Promise<AFSDeleteResult> {
     const fullPath = join(this.options.localPath, path);
     const recursive = options?.recursive ?? false;
 
@@ -294,11 +296,7 @@ export class LocalFS implements AFSModule {
     return { message: `Successfully renamed '${oldPath}' to '${newPath}'` };
   }
 
-  async search(
-    path: string,
-    query: string,
-    options?: AFSSearchOptions,
-  ): Promise<{ list: AFSEntry[]; message?: string }> {
+  async search(path: string, query: string, options?: AFSSearchOptions): Promise<AFSSearchResult> {
     const limit = Math.min(options?.limit || LIST_MAX_LIMIT, LIST_MAX_LIMIT);
     const basePath = join(this.options.localPath, path);
     const matches = await searchWithRipgrep(basePath, query, options);
@@ -341,7 +339,7 @@ export class LocalFS implements AFSModule {
     }
 
     return {
-      list: entries,
+      data: entries,
       message: hasMoreFiles ? `Results truncated to limit ${limit}` : undefined,
     };
   }

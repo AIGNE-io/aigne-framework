@@ -10,11 +10,11 @@ test("AFS'skill edit should invoke afs.read and afs.write", async () => {
 
   const originalContent = "line 1\nline 2\nline 3\nline 4";
   const readSpy = spyOn(afs, "read").mockResolvedValue({
-    result: { id: "foo", path: "/foo/test.txt", content: originalContent },
+    data: { id: "foo", path: "/foo/test.txt", content: originalContent },
   });
 
   const writeSpy = spyOn(afs, "write").mockResolvedValue({
-    result: {
+    data: {
       id: "foo",
       path: "/foo/test.txt",
       content: "line 1\nreplaced line\nline 3\nline 4",
@@ -37,7 +37,7 @@ test("AFS'skill edit should invoke afs.read and afs.write", async () => {
   expect(result.status).toBe("success");
   expect(result.tool).toBe("afs_edit");
   expect(result.path).toBe("/foo/test.txt");
-  expect(result.content).toMatchInlineSnapshot(`
+  expect(result.data).toMatchInlineSnapshot(`
     "line 1
     replaced line
     line 3
@@ -65,11 +65,11 @@ test("AFS'skill edit should handle delete patches", async () => {
 
   const originalContent = "line 1\nline 2\nline 3\nline 4";
   spyOn(afs, "read").mockResolvedValue({
-    result: { id: "foo", path: "/foo/test.txt", content: originalContent },
+    data: { id: "foo", path: "/foo/test.txt", content: originalContent },
   });
 
   spyOn(afs, "write").mockResolvedValue({
-    result: { id: "foo", path: "/foo/test.txt", content: "" },
+    data: { id: "foo", path: "/foo/test.txt", content: "" },
   });
 
   assert(editSkill);
@@ -84,7 +84,7 @@ test("AFS'skill edit should handle delete patches", async () => {
     ],
   });
 
-  expect(result.content).toMatchInlineSnapshot(`
+  expect(result.data).toMatchInlineSnapshot(`
     "line 1
     line 4"
   `);
@@ -97,11 +97,11 @@ test("AFS'skill edit should handle multiple patches", async () => {
 
   const originalContent = "line 1\nline 2\nline 3\nline 4\nline 5";
   spyOn(afs, "read").mockResolvedValue({
-    result: { id: "foo", path: "/foo/test.txt", content: originalContent },
+    data: { id: "foo", path: "/foo/test.txt", content: originalContent },
   });
 
   spyOn(afs, "write").mockResolvedValue({
-    result: { id: "foo", path: "/foo/test.txt", content: "" },
+    data: { id: "foo", path: "/foo/test.txt", content: "" },
   });
 
   assert(editSkill);
@@ -122,7 +122,7 @@ test("AFS'skill edit should handle multiple patches", async () => {
     ],
   });
 
-  expect(result.content).toMatchInlineSnapshot(`
+  expect(result.data).toMatchInlineSnapshot(`
     "line 1
     new line 2
     line 3
@@ -137,11 +137,11 @@ test("AFS'skill edit should handle multi-line replacement", async () => {
 
   const originalContent = "line 1\nline 2\nline 3\nline 4";
   spyOn(afs, "read").mockResolvedValue({
-    result: { id: "foo", path: "/foo/test.txt", content: originalContent },
+    data: { id: "foo", path: "/foo/test.txt", content: originalContent },
   });
 
   spyOn(afs, "write").mockResolvedValue({
-    result: { id: "foo", path: "/foo/test.txt", content: "" },
+    data: { id: "foo", path: "/foo/test.txt", content: "" },
   });
 
   assert(editSkill);
@@ -157,7 +157,7 @@ test("AFS'skill edit should handle multi-line replacement", async () => {
     ],
   });
 
-  expect(result.content).toMatchInlineSnapshot(`
+  expect(result.data).toMatchInlineSnapshot(`
     "line 1
     new line 2a
     new line 2b
@@ -173,11 +173,11 @@ test("AFS'skill edit should adjust line numbers for subsequent patches", async (
 
   const originalContent = "line 1\nline 2\nline 3\nline 4\nline 5\nline 6";
   spyOn(afs, "read").mockResolvedValue({
-    result: { id: "foo", path: "/foo/test.txt", content: originalContent },
+    data: { id: "foo", path: "/foo/test.txt", content: originalContent },
   });
 
   spyOn(afs, "write").mockResolvedValue({
-    result: { id: "foo", path: "/foo/test.txt", content: "" },
+    data: { id: "foo", path: "/foo/test.txt", content: "" },
   });
 
   assert(editSkill);
@@ -200,7 +200,7 @@ test("AFS'skill edit should adjust line numbers for subsequent patches", async (
     ],
   });
 
-  expect(result.content).toMatchInlineSnapshot(`
+  expect(result.data).toMatchInlineSnapshot(`
     "line 1
     replaced line
     line 5
@@ -233,7 +233,7 @@ test("AFS'skill edit should throw error when file cannot be read", async () => {
   const editSkill = skills.find((i) => i.name === "afs_edit");
 
   spyOn(afs, "read").mockResolvedValue({
-    result: undefined,
+    data: undefined,
   });
 
   assert(editSkill);

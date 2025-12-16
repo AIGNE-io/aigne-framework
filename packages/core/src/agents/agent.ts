@@ -1,9 +1,13 @@
 import {
   AFS,
   type AFSEntry,
+  type AFSExecOptions,
+  type AFSExecResult,
   type AFSListOptions,
+  type AFSListResult,
   type AFSModule,
   type AFSOptions,
+  type AFSReadResult,
   type AFSSearchOptions,
 } from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
@@ -1255,43 +1259,36 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
   }
 
   // TODO: support list skills inside agent path, and use options to filter skills
-  async list(
-    _path: string,
-    _options?: AFSListOptions,
-  ): Promise<{ list: AFSEntry[]; message?: string }> {
+  async list(_path: string, _options?: AFSListOptions): Promise<AFSListResult> {
     const agents = [this, ...this.skills];
 
-    return { list: agents.map((agent) => this.agentToAFSEntry(agent)) };
+    return { data: agents.map((agent) => this.agentToAFSEntry(agent)) };
   }
 
-  async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
+  async read(path: string): Promise<AFSReadResult> {
     const agent = this.findAgentByAFSPath(path);
     if (!agent) {
       return { message: `Agent not found at path: ${path}` };
     }
 
     return {
-      result: this.agentToAFSEntry(agent),
+      data: this.agentToAFSEntry(agent),
     };
   }
 
   // TODO: implement search inside agent skills
-  async search(
-    path: string,
-    _query: string,
-    options?: AFSSearchOptions,
-  ): Promise<{ list: AFSEntry[]; message?: string }> {
+  async search(path: string, _query: string, options?: AFSSearchOptions): Promise<AFSListResult> {
     return this.list(path, options);
   }
 
   async exec(
     path: string,
     args: Record<string, any>,
-    options: { context: Context },
-  ): Promise<{ result: Record<string, any> }> {
+    options: AFSExecOptions,
+  ): Promise<AFSExecResult> {
     const agent = this.findAgentByAFSPath(path);
     if (!agent) throw new Error(`Agent not found at path: ${path}`);
-    return { result: await options.context.invoke(agent, args) };
+    return { data: await options.context.invoke(agent, args) };
   }
 
   /** End AFSModule interface **/

@@ -19,7 +19,7 @@ export interface AFSSearchOutput extends Message {
   path: string;
   query: string;
   options?: AFSSearchOptions;
-  list: AFSEntry[];
+  data: AFSEntry[];
   message?: string;
 }
 
@@ -58,7 +58,7 @@ export class AFSSearchAgent extends Agent<AFSSearchInput, AFSSearchOutput> {
             caseSensitive: z.boolean().optional(),
           })
           .optional(),
-        list: z.array(z.custom<AFSEntry>()),
+        data: z.array(z.custom<AFSEntry>()),
         message: z.string().optional(),
       }),
     });

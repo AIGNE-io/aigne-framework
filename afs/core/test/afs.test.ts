@@ -22,7 +22,7 @@ test("AFS should list modules correctly", async () => {
   const module: AFSModule = {
     name: "test-module",
     description: "Test Module",
-    list: async () => ({ list: [] }),
+    list: async () => ({ data: [] }),
   };
 
   const afs = new AFS().mount(module);
@@ -45,13 +45,13 @@ test("AFS should list entries correctly", async () => {
   const module: AFSModule = {
     name: "test-module",
     description: "Test Module",
-    list: async () => ({ list: [] }),
+    list: async () => ({ data: [] }),
   };
 
   const afs = new AFS().mount(module);
 
   const listSpy = spyOn(module, "list").mockResolvedValue({
-    list: [
+    data: [
       { id: "foo", path: "/foo" },
       { id: "bar", path: "/bar" },
     ],
@@ -59,7 +59,7 @@ test("AFS should list entries correctly", async () => {
 
   expect(await afs.list("/")).toMatchInlineSnapshot(`
     {
-      "list": [
+      "data": [
         {
           "id": "test-module",
           "path": "/modules",
@@ -72,7 +72,7 @@ test("AFS should list entries correctly", async () => {
 
   expect(await afs.list("/", { maxDepth: 2 })).toMatchInlineSnapshot(`
     {
-      "list": [
+      "data": [
         {
           "id": "test-module",
           "path": "/modules/test-module",
@@ -85,7 +85,7 @@ test("AFS should list entries correctly", async () => {
 
   expect(await afs.list("/", { maxDepth: 3 })).toMatchInlineSnapshot(`
     {
-      "list": [
+      "data": [
         {
           "id": "foo",
           "path": "/modules/test-module/foo",
@@ -110,7 +110,7 @@ test("AFS should list entries correctly", async () => {
 
   expect(await afs.list("/foo")).toMatchInlineSnapshot(`
     {
-      "list": [],
+      "data": [],
       "message": undefined,
     }
   `);
@@ -118,7 +118,7 @@ test("AFS should list entries correctly", async () => {
   listSpy.mockClear();
   expect(await afs.list("/foo", { maxDepth: 2 })).toMatchInlineSnapshot(`
     {
-      "list": [],
+      "data": [],
       "message": undefined,
     }
   `);
@@ -128,13 +128,13 @@ test("AFS should list entries correctly", async () => {
 test("AFS should search entries correctly", async () => {
   const module: AFSModule = {
     name: "test-module",
-    search: async () => ({ list: [] }),
+    search: async () => ({ data: [] }),
   };
 
   const afs = new AFS().mount(module);
 
   const searchSpy = spyOn(module, "search").mockResolvedValue({
-    list: [
+    data: [
       { id: "foo", path: "/foo" },
       { id: "bar", path: "/bar" },
     ],
@@ -142,14 +142,14 @@ test("AFS should search entries correctly", async () => {
 
   expect(await afs.search("/bar", "foo")).toMatchInlineSnapshot(`
     {
-      "list": [],
+      "data": [],
       "message": "",
     }
   `);
 
   expect(await afs.search("/", "foo")).toMatchInlineSnapshot(`
     {
-      "list": [
+      "data": [
         {
           "id": "foo",
           "path": "/modules/test-module/foo",
@@ -174,7 +174,7 @@ test("AFS should search entries correctly", async () => {
   searchSpy.mockClear();
   expect(await afs.search("/foo/test-module/bar", "foo")).toMatchInlineSnapshot(`
     {
-      "list": [],
+      "data": [],
       "message": "",
     }
   `);
@@ -191,12 +191,12 @@ test("AFS should read entry correctly", async () => {
   const afs = new AFS().mount(module);
 
   const readSpy = spyOn(module, "read").mockResolvedValue({
-    result: { id: "foo", path: "/foo", content: "Test Content" },
+    data: { id: "foo", path: "/foo", content: "Test Content" },
   });
 
-  expect((await afs.read("/bar")).result).toMatchInlineSnapshot(`undefined`);
+  expect((await afs.read("/bar")).data).toMatchInlineSnapshot(`undefined`);
 
-  expect((await afs.read("/foo/test-module/foo")).result).toMatchInlineSnapshot(`undefined`);
+  expect((await afs.read("/foo/test-module/foo")).data).toMatchInlineSnapshot(`undefined`);
 
   expect(readSpy.mock.calls).toMatchInlineSnapshot(`[]`);
 });
@@ -204,16 +204,16 @@ test("AFS should read entry correctly", async () => {
 test("AFS should write entry correctly", async () => {
   const module: AFSModule = {
     name: "test-module",
-    write: async () => ({ result: { id: "foo", path: "/foo" } }),
+    write: async () => ({ data: { id: "foo", path: "/foo" } }),
   };
 
   const afs = new AFS().mount(module);
 
   const writeSpy = spyOn(module, "write").mockResolvedValue({
-    result: { id: "foo", path: "/foo", content: "Written Content" },
+    data: { id: "foo", path: "/foo", content: "Written Content" },
   });
 
-  expect((await afs.write("/modules/test-module/foo", {})).result).toMatchInlineSnapshot(`
+  expect((await afs.write("/modules/test-module/foo", {})).data).toMatchInlineSnapshot(`
     {
       "content": "Written Content",
       "id": "foo",

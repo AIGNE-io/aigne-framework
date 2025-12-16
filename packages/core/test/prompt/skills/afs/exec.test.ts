@@ -10,7 +10,7 @@ test("AFS'skill exec should invoke afs.exec", async () => {
 
   const mockResult = { output: "success", data: { value: 42 } };
   const execSpy = spyOn(afs, "exec").mockResolvedValue({
-    result: mockResult,
+    data: mockResult,
   });
 
   assert(exec);
@@ -21,7 +21,7 @@ test("AFS'skill exec should invoke afs.exec", async () => {
     }),
   ).toMatchInlineSnapshot(`
     {
-      "result": {
+      "data": {
         "data": {
           "value": 42,
         },
@@ -40,7 +40,7 @@ test("AFS'skill exec should parse JSON args", async () => {
   const exec = skills.find((i) => i.name === "afs_exec");
 
   const execSpy = spyOn(afs, "exec").mockResolvedValue({
-    result: {},
+    data: {},
   });
 
   assert(exec);
@@ -60,7 +60,7 @@ test("AFS'skill exec should handle empty args", async () => {
   const exec = skills.find((i) => i.name === "afs_exec");
 
   const execSpy = spyOn(afs, "exec").mockResolvedValue({
-    result: { status: "ok" },
+    data: { status: "ok" },
   });
 
   assert(exec);
@@ -69,7 +69,7 @@ test("AFS'skill exec should handle empty args", async () => {
     args: "{}",
   });
 
-  expect(result.result).toMatchObject({ status: "ok" });
+  expect(result.data).toMatchObject({ status: "ok" });
   expect(execSpy.mock.calls[0]?.[1]).toEqual({});
 });
 
@@ -79,7 +79,7 @@ test("AFS'skill exec should handle complex nested args", async () => {
   const exec = skills.find((i) => i.name === "afs_exec");
 
   const execSpy = spyOn(afs, "exec").mockResolvedValue({
-    result: { success: true },
+    data: { success: true },
   });
 
   assert(exec);
@@ -109,7 +109,7 @@ test("AFS'skill exec should return function result", async () => {
   };
 
   spyOn(afs, "exec").mockResolvedValue({
-    result: functionResult,
+    data: functionResult,
   });
 
   assert(exec);
@@ -118,9 +118,9 @@ test("AFS'skill exec should return function result", async () => {
     args: JSON.stringify({ x: 10, y: 10 }),
   });
 
-  expect(result.result).toMatchObject(functionResult);
-  expect(result.result.computed).toBe(100);
-  expect(result.result.data).toHaveLength(5);
+  expect(result.data).toMatchObject(functionResult);
+  expect(result.data.computed).toBe(100);
+  expect(result.data.data).toHaveLength(5);
 });
 
 test("AFS'skill exec should handle different executable paths", async () => {
@@ -129,7 +129,7 @@ test("AFS'skill exec should handle different executable paths", async () => {
   const exec = skills.find((i) => i.name === "afs_exec");
 
   const execSpy = spyOn(afs, "exec").mockResolvedValue({
-    result: {},
+    data: {},
   });
 
   assert(exec);
@@ -153,7 +153,7 @@ test("AFS'skill exec should throw error for invalid JSON args", async () => {
   const exec = skills.find((i) => i.name === "afs_exec");
 
   spyOn(afs, "exec").mockResolvedValue({
-    result: {},
+    data: {},
   });
 
   assert(exec);

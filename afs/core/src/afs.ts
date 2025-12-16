@@ -2,15 +2,28 @@ import { Emitter } from "strict-event-emitter";
 import { joinURL } from "ufo";
 import type {
   AFSDeleteOptions,
+  AFSDeleteResult,
   AFSEntry,
-  AFSListOptions,
+  AFSExecOptions,
+  AFSExecResult,
   AFSModule,
+  AFSReadOptions,
+  AFSReadResult,
   AFSRenameOptions,
+  AFSRenameResult,
   AFSRoot,
   AFSRootEvents,
+  AFSRootListOptions,
+  AFSRootListOptionsWithListOptions,
+  AFSRootListOptionsWithTreeFormat,
+  AFSRootListResult,
+  AFSRootListResultWithListFormat,
+  AFSRootListResultWithTreeFormat,
   AFSSearchOptions,
+  AFSSearchResult,
   AFSWriteEntryPayload,
   AFSWriteOptions,
+  AFSWriteResult,
 } from "./type.js";
 
 const DEFAULT_MAX_DEPTH = 1;
@@ -65,8 +78,14 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
   async list(
     path: string,
-    options?: AFSListOptions,
-  ): Promise<{ list: AFSEntry[]; message?: string }> {
+    options: AFSRootListOptionsWithTreeFormat,
+  ): Promise<AFSRootListResultWithTreeFormat>;
+  async list(
+    path: string,
+    options?: AFSRootListOptionsWithListOptions,
+  ): Promise<AFSRootListResultWithListFormat>;
+  async list(path: string, options?: AFSRootListOptions): Promise<AFSRootListResult>;
+  async list(path: string, options?: AFSRootListOptions): Promise<AFSRootListResult> {
     const maxDepth = options?.maxDepth ?? DEFAULT_MAX_DEPTH;
     if (!(maxDepth >= 0)) throw new Error(`Invalid maxDepth: ${maxDepth}`);
 
@@ -90,14 +109,14 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       if (!matched.module.list) continue;
 
       try {
-        const { list, message } = await matched.module.list(matched.subpath, {
+        const { data, message } = await matched.module.list(matched.subpath, {
           ...options,
           maxDepth: matched.maxDepth,
         });
 
-        if (list.length) {
+        if (data.length) {
           results.push(
-            ...list.map((entry) => ({
+            ...data.map((entry) => ({
               ...entry,
               path: joinURL(matched.modulePath, entry.path),
             })),
@@ -112,34 +131,43 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       }
     }
 
-    return { list: results, message: messages.join("; ").trim() || undefined };
+    const message = messages.join("; ").trim() || undefined;
+
+    if (options?.format === "tree") {
+      return {
+        data: this.buildTreeView(results),
+        message,
+      };
+    }
+
+    return { data: results, message };
   }
 
-  async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
+  async read(path: string, _options?: AFSReadOptions): Promise<AFSReadResult> {
     const modules = this.findModules(path, { exactMatch: true });
 
     for (const { module, modulePath, subpath } of modules) {
       const res = await module.read?.(subpath);
 
-      if (res?.result) {
+      if (res?.data) {
         return {
           ...res,
-          result: {
-            ...res.result,
-            path: joinURL(modulePath, res.result.path),
+          data: {
+            ...res.data,
+            path: joinURL(modulePath, res.data.path),
           },
         };
       }
     }
 
-    return { result: undefined, message: "File not found" };
+    return { data: undefined, message: "File not found" };
   }
 
   async write(
     path: string,
     content: AFSWriteEntryPayload,
     options?: AFSWriteOptions,
-  ): Promise<{ result: AFSEntry; message?: string }> {
+  ): Promise<AFSWriteResult> {
     const module = this.findModules(path, { exactMatch: true })[0];
     if (!module?.module.write) throw new Error(`No module found for path: ${path}`);
 
@@ -147,14 +175,14 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
     return {
       ...res,
-      result: {
-        ...res.result,
-        path: joinURL(module.modulePath, res.result.path),
+      data: {
+        ...res.data,
+        path: joinURL(module.modulePath, res.data.path),
       },
     };
   }
 
-  async delete(path: string, options?: AFSDeleteOptions): Promise<{ message?: string }> {
+  async delete(path: string, options?: AFSDeleteOptions): Promise<AFSDeleteResult> {
     const module = this.findModules(path, { exactMatch: true })[0];
     if (!module?.module.delete) throw new Error(`No module found for path: ${path}`);
 
@@ -165,7 +193,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     oldPath: string,
     newPath: string,
     options?: AFSRenameOptions,
-  ): Promise<{ message?: string }> {
+  ): Promise<AFSRenameResult> {
     const oldModule = this.findModules(oldPath, { exactMatch: true })[0];
     const newModule = this.findModules(newPath, { exactMatch: true })[0];
 
@@ -183,11 +211,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     return await oldModule.module.rename(oldModule.subpath, newModule.subpath, options);
   }
 
-  async search(
-    path: string,
-    query: string,
-    options?: AFSSearchOptions,
-  ): Promise<{ list: AFSEntry[]; message?: string }> {
+  async search(path: string, query: string, options?: AFSSearchOptions): Promise<AFSSearchResult> {
     const results: AFSEntry[] = [];
     const messages: string[] = [];
 
@@ -195,7 +219,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       if (!module.search) continue;
 
       try {
-        const { list, message } = await module.search(subpath, query, options);
+        const { data: list, message } = await module.search(subpath, query, options);
 
         results.push(
           ...list.map((entry) => ({
@@ -209,7 +233,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       }
     }
 
-    return { list: results, message: messages.join("; ") };
+    return { data: results, message: messages.join("; ") };
   }
 
   private findModules(
@@ -259,11 +283,67 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
   async exec(
     path: string,
     args: Record<string, any>,
-    options: { context: any },
-  ): Promise<{ result: Record<string, any> }> {
+    options: AFSExecOptions,
+  ): Promise<AFSExecResult> {
     const module = this.findModules(path)[0];
     if (!module?.module.exec) throw new Error(`No module found for path: ${path}`);
 
     return await module.module.exec(module.subpath, args, options);
+  }
+
+  private buildTreeView(entries: AFSEntry[]): string {
+    const tree: Record<string, any> = {};
+    const entryMap = new Map<string, AFSEntry>();
+
+    for (const entry of entries) {
+      entryMap.set(entry.path, entry);
+      const parts = entry.path.split("/").filter(Boolean);
+      let current = tree;
+
+      for (const part of parts) {
+        if (!current[part]) {
+          current[part] = {};
+        }
+        current = current[part];
+      }
+    }
+
+    const renderTree = (node: Record<string, any>, prefix = "", currentPath = ""): string => {
+      let result = "";
+      const keys = Object.keys(node);
+      keys.forEach((key, index) => {
+        const isLast = index === keys.length - 1;
+        const fullPath = currentPath ? `${currentPath}/${key}` : `/${key}`;
+        const entry = entryMap.get(fullPath);
+
+        // Build metadata suffix
+        const metadataParts: string[] = [];
+
+        // Children count
+        const childrenCount = entry?.metadata?.childrenCount;
+        if (typeof childrenCount === "number") {
+          metadataParts.push(`${childrenCount} items`);
+        }
+
+        // Children truncated
+        if (entry?.metadata?.childrenTruncated) {
+          metadataParts.push("truncated");
+        }
+
+        // Executable
+        if (entry?.metadata?.execute) {
+          metadataParts.push("executable");
+        }
+
+        const metadataSuffix = metadataParts.length > 0 ? ` [${metadataParts.join(", ")}]` : "";
+
+        result += `${prefix}${isLast ? "└── " : "├── "}${key}${metadataSuffix}`;
+        result += `\n`;
+        result += renderTree(node[key], `${prefix}${isLast ? "    " : "│   "}`, fullPath);
+      });
+      return result;
+    };
+
+    return renderTree(tree);
   }
 }

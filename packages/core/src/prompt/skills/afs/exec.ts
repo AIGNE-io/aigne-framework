@@ -12,7 +12,7 @@ export interface AFSExecInput extends Message {
 }
 
 export interface AFSExecOutput extends Message {
-  result: Record<string, any>;
+  data: Record<string, any>;
 }
 
 export interface AFSExecAgentOptions extends AgentOptions<AFSExecInput, AFSExecOutput> {
@@ -31,7 +31,7 @@ export class AFSExecAgent extends Agent<AFSExecInput, AFSExecOutput> {
         args: z.string().describe("JSON string of arguments matching the function's input schema"),
       }),
       outputSchema: z.object({
-        result: z.record(z.any()),
+        data: z.record(z.any()),
       }),
     });
   }
@@ -39,6 +39,8 @@ export class AFSExecAgent extends Agent<AFSExecInput, AFSExecOutput> {
   async process(input: AFSExecInput, options: AgentInvokeOptions): Promise<AFSExecOutput> {
     if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
-    return await this.afs.exec(input.path, JSON.parse(input.args), options);
+    return {
+      ...(await this.afs.exec(input.path, JSON.parse(input.args), options)),
+    };
   }
 }

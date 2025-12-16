@@ -17,7 +17,7 @@ export interface AFSReadOutput extends Message {
   tool: string;
   path: string;
   withLineNumbers?: boolean;
-  result?: AFSEntry;
+  data?: AFSEntry;
   message?: string;
 }
 
@@ -44,7 +44,7 @@ export class AFSReadAgent extends Agent<AFSReadInput, AFSReadOutput> {
         tool: z.string(),
         path: z.string(),
         withLineNumbers: z.boolean().optional(),
-        result: z.custom<AFSEntry>().optional(),
+        data: z.custom<AFSEntry>().optional(),
         message: z.string().optional(),
       }),
     });
@@ -55,7 +55,7 @@ export class AFSReadAgent extends Agent<AFSReadInput, AFSReadOutput> {
 
     const result = await this.afs.read(input.path);
 
-    let content = result.result?.content;
+    let content = result.data?.content;
 
     if (input.withLineNumbers && typeof content === "string") {
       content = content
@@ -70,8 +70,8 @@ export class AFSReadAgent extends Agent<AFSReadInput, AFSReadOutput> {
       path: input.path,
       withLineNumbers: input.withLineNumbers,
       ...result,
-      result: result.result && {
-        ...result.result,
+      data: result.data && {
+        ...result.data,
         content,
       },
     };

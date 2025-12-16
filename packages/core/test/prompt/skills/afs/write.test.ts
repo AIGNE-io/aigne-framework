@@ -9,7 +9,7 @@ test("AFS'skill write should invoke afs.write", async () => {
   const write = skills.find((i) => i.name === "afs_write");
 
   const writeSpy = spyOn(afs, "write").mockResolvedValue({
-    result: {
+    data: {
       id: "foo",
       path: "/foo",
       content: "bar",
@@ -19,12 +19,12 @@ test("AFS'skill write should invoke afs.write", async () => {
   assert(write);
   expect(await write.invoke({ path: "/foo", content: "bar" })).toMatchInlineSnapshot(`
     {
-      "path": "/foo",
-      "result": {
+      "data": {
         "content": "bar",
         "id": "foo",
         "path": "/foo",
       },
+      "path": "/foo",
       "status": "success",
       "tool": "afs_write",
     }
@@ -51,7 +51,7 @@ test("AFS'skill write should handle append mode", async () => {
   const write = skills.find((i) => i.name === "afs_write");
 
   const writeSpy = spyOn(afs, "write").mockResolvedValue({
-    result: {
+    data: {
       id: "foo",
       path: "/foo/test.txt",
       content: "existing content\nappended content",
@@ -72,7 +72,7 @@ test("AFS'skill write should overwrite by default", async () => {
   const write = skills.find((i) => i.name === "afs_write");
 
   const writeSpy = spyOn(afs, "write").mockResolvedValue({
-    result: {
+    data: {
       id: "foo",
       path: "/foo/test.txt",
       content: "new content",
@@ -92,7 +92,7 @@ test("AFS'skill write should handle multiline content", async () => {
 
   const multilineContent = "line 1\nline 2\nline 3\nline 4";
   const writeSpy = spyOn(afs, "write").mockResolvedValue({
-    result: {
+    data: {
       id: "test",
       path: "/test/file.txt",
       content: multilineContent,
@@ -103,7 +103,7 @@ test("AFS'skill write should handle multiline content", async () => {
   const result = await write.invoke({ path: "/test/file.txt", content: multilineContent });
 
   expect(result.status).toBe("success");
-  expect(result.result?.content).toBe(multilineContent);
+  expect(result.data?.content).toBe(multilineContent);
   expect(writeSpy.mock.calls[0]?.[1]?.content).toBe(multilineContent);
 });
 
@@ -113,7 +113,7 @@ test("AFS'skill write should handle empty content", async () => {
   const write = skills.find((i) => i.name === "afs_write");
 
   const writeSpy = spyOn(afs, "write").mockResolvedValue({
-    result: {
+    data: {
       id: "empty",
       path: "/test/empty.txt",
       content: "",

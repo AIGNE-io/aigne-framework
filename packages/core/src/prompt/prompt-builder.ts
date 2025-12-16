@@ -26,18 +26,16 @@ import {
   isNonNullable,
   isRecord,
   partition,
-  pick,
   unique,
 } from "../utils/type-utils.js";
+import { createPromptBuilderContext } from "./context/index.js";
 import {
-  AFS_DESCRIPTION_PROMPT_TEMPLATE,
   AFS_EXECUTABLE_TOOLS_PROMPT_TEMPLATE,
   getAFSSystemPrompt,
 } from "./prompts/afs-builtin-prompt.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
 import { getAFSSkills } from "./skills/afs/index.js";
-import { AFSListAgent } from "./skills/afs/list.js";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
@@ -163,47 +161,7 @@ export class PromptBuilder {
   }
 
   private getTemplateVariables(options: PromptBuildOptions) {
-    const self = this;
-
-    return {
-      userContext: options.context?.userContext,
-      ...options.context?.userContext,
-      ...options.input,
-      $afs: {
-        get enabled() {
-          return !!options.agent?.afs;
-        },
-        description: AFS_DESCRIPTION_PROMPT_TEMPLATE,
-        get modules() {
-          return options.agent?.afs
-            ?.listModules()
-            .then((list) => list.map((i) => pick(i, ["name", "path", "description"])));
-        },
-        get histories() {
-          return self.getHistories(options);
-        },
-        get skills() {
-          const afs = options.agent?.afs;
-          if (!afs) return [];
-          return getAFSSkills(afs).then((skills) =>
-            skills.map((s) => pick(s, ["name", "description"])),
-          );
-        },
-        async list(path: string, afsListOptions?: Record<string, any>) {
-          const afs = options.agent?.afs;
-          if (!afs) throw new Error("AFS is not configured for this agent.");
-          return new AFSListAgent({ afs }).invoke({
-            path,
-            options: afsListOptions,
-          });
-        },
-      },
-      $agent: {
-        get skills() {
-          return options.agent?.skills.map((s) => pick(s, ["name", "description"]));
-        },
-      },
-    };
+    return createPromptBuilderContext(options);
   }
 
   private async buildMessages(options: PromptBuildOptions): Promise<ChatModelInputMessage[]> {

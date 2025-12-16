@@ -99,6 +99,13 @@ export async function loadAIGNE({
               import("@aigne/afs-local-fs").then((m) => new m.LocalFS(options as any)),
           },
         ],
+        availableDrivers: [
+          {
+            driver: "i18n",
+            create: (options) =>
+              import("@aigne/afs-i18n-driver").then((m) => new m.I18nDriver(options)),
+          },
+        ],
       },
       metadata: { ...metadata, cliVersion: AIGNE_CLI_VERSION },
     });

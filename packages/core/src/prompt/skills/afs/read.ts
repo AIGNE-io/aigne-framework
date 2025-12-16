@@ -134,6 +134,7 @@ export class AFSReadAgent extends Agent<AFSReadInput, AFSReadOutput> {
     const result = await this.afs.read(input.path, {
       view: input.view,
       wait: input.wait,
+      context: _options.context,
     });
 
     let content = result.result?.content;

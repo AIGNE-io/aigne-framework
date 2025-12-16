@@ -11,9 +11,6 @@ import { getStoragePath } from "./storage.js";
  * I18n Driver configuration options
  */
 export interface I18nDriverOptions {
-  /** Context for invoking the translation agent */
-  context: Context;
-
   /** Default source language code (e.g., "zh") */
   defaultSourceLanguage?: string;
 
@@ -41,7 +38,7 @@ export class I18nDriver implements AFSDriver {
 
   private translationAgent: Agent<TranslationInput, TranslationOutput>;
 
-  constructor(private options: I18nDriverOptions) {
+  constructor(private options: I18nDriverOptions = {}) {
     // Use custom agent or create default
     this.translationAgent = options.translationAgent ?? createDefaultTranslationAgent();
   }
@@ -73,17 +70,26 @@ export class I18nDriver implements AFSDriver {
     options: {
       sourceEntry: AFSEntry;
       metadata: any;
+      context?: Context;
     },
   ): Promise<{ result: AFSEntry; message?: string }> {
     const { language } = view;
-    const { sourceEntry } = options;
+    const { sourceEntry, context } = options;
 
     if (!language) {
       throw new Error("Language is required for translation");
     }
 
-    // Translate content using context from constructor options
-    const translatedContent = await this.translate(sourceEntry.content as string, language);
+    if (!context) {
+      throw new Error("Context is required for translation. Pass context via read options.");
+    }
+
+    // Translate content using context from process options
+    const translatedContent = await this.translate(
+      sourceEntry.content as string,
+      language,
+      context,
+    );
 
     // Get storage path
     const storagePath = getStoragePath(path, language, this.options.storagePath);
@@ -109,8 +115,12 @@ export class I18nDriver implements AFSDriver {
   /**
    * Translate content using the translation agent
    */
-  private async translate(content: string, targetLanguage: string): Promise<string> {
-    const { translatedContent } = await this.options.context
+  private async translate(
+    content: string,
+    targetLanguage: string,
+    context: Context,
+  ): Promise<string> {
+    const { translatedContent } = await context
       .newContext({ reset: true })
       .invoke(this.translationAgent, {
         content,

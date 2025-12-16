@@ -116,8 +116,7 @@ test("getStoragePath should support custom template", () => {
 });
 
 test("I18nDriver.canHandle should return true for language-only views", () => {
-  const aigne = new AIGNE();
-  const driver = new I18nDriver({ context: aigne.newContext() });
+  const driver = new I18nDriver();
 
   expect(driver.canHandle({ language: "en" })).toBe(true);
   expect(driver.canHandle({ language: "ja" })).toBe(true);
@@ -127,9 +126,7 @@ test("I18nDriver.canHandle should return true for language-only views", () => {
 });
 
 test("I18nDriver.canHandle should check supportedLanguages", () => {
-  const aigne = new AIGNE();
   const driver = new I18nDriver({
-    context: aigne.newContext(),
     supportedLanguages: ["en", "ja"],
   });
 
@@ -146,7 +143,6 @@ test("I18nDriver should translate content using context", async () => {
   const mockTranslator = createMockTranslationAgent();
 
   const driver = new I18nDriver({
-    context,
     defaultSourceLanguage: "zh",
     translationAgent: mockTranslator,
   });
@@ -158,7 +154,7 @@ test("I18nDriver should translate content using context", async () => {
   const source = await mockFS.read("/test.md");
   assert(source.result, "source.result should be defined");
 
-  // Process translation
+  // Process translation (context is passed via options)
   const result = await driver.process(
     mockFS,
     "/test.md",
@@ -166,6 +162,7 @@ test("I18nDriver should translate content using context", async () => {
     {
       sourceEntry: source.result,
       metadata: {},
+      context,
     },
   );
 
@@ -182,7 +179,6 @@ test("I18nDriver should integrate with AFS", async () => {
   const mockTranslator = createMockTranslationAgent();
 
   const driver = new I18nDriver({
-    context,
     defaultSourceLanguage: "zh",
     translationAgent: mockTranslator,
   });
@@ -198,10 +194,11 @@ test("I18nDriver should integrate with AFS", async () => {
     content: "你好，世界！",
   });
 
-  // Read English version (should trigger translation)
+  // Read English version (should trigger translation, context is passed via options)
   const enResult = await afs.read("/modules/mock-fs/doc.md", {
     view: { language: "en" },
     wait: "strict",
+    context,
   });
 
   expect(enResult.result?.content).toBe("Hello，World！");
@@ -211,6 +208,7 @@ test("I18nDriver should integrate with AFS", async () => {
   const jaResult = await afs.read("/modules/mock-fs/doc.md", {
     view: { language: "ja" },
     wait: "strict",
+    context,
   });
 
   expect(jaResult.result?.content).toBe("こんにちは，世界！");
@@ -228,7 +226,6 @@ test("I18nDriver should throw error if language is missing", async () => {
   const mockTranslator = createMockTranslationAgent();
 
   const driver = new I18nDriver({
-    context,
     translationAgent: mockTranslator,
   });
 
@@ -244,7 +241,37 @@ test("I18nDriver should throw error if language is missing", async () => {
       {
         sourceEntry: source.result,
         metadata: {},
+        context,
       },
     ),
   ).rejects.toThrow("Language is required for translation");
+});
+
+test("I18nDriver should throw error if context is missing", async () => {
+  const aigne = new AIGNE();
+  const context = aigne.newContext();
+
+  const mockFS = new MockFSModule({ context });
+  const mockTranslator = createMockTranslationAgent();
+
+  const driver = new I18nDriver({
+    translationAgent: mockTranslator,
+  });
+
+  await mockFS.write("/test.md", { content: "test content" });
+  const source = await mockFS.read("/test.md");
+  assert(source.result, "source.result should be defined");
+
+  await expect(
+    driver.process(
+      mockFS,
+      "/test.md",
+      { language: "en" },
+      {
+        sourceEntry: source.result,
+        metadata: {},
+        // no context provided
+      },
+    ),
+  ).rejects.toThrow("Context is required for translation");
 });

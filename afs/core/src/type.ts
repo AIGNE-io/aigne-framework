@@ -125,6 +125,8 @@ export type WaitStrategy = "strict" | "fallback";
 export interface ReadOptions {
   view?: View;
   wait?: WaitStrategy;
+  /** Context for driver processing (passed from skill layer) */
+  context?: unknown;
 }
 
 /**
@@ -172,7 +174,9 @@ export interface AFSDriver {
     view: View,
     options: {
       sourceEntry: AFSEntry;
-      metadata: any;
+      metadata: unknown;
+      /** Context for invoking agents (passed from skill layer) */
+      context?: unknown;
     },
   ): Promise<{ result: AFSEntry; message?: string }>;
 

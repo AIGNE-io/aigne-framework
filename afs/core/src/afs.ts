@@ -333,7 +333,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
    */
   async prefetch(
     pathOrGlob: string | string[],
-    options: { view: View; concurrency?: number },
+    options: { view: View; concurrency?: number; context?: any },
   ): Promise<void> {
     if (!this.viewProcessor) {
       throw new Error("Prefetch requires drivers to be configured");
@@ -347,6 +347,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       if (module) {
         await this.viewProcessor.prefetch(module.module, [module.subpath], options.view, {
           concurrency: options.concurrency,
+          context: options.context,
         });
       }
     }

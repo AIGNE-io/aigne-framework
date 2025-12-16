@@ -59,6 +59,7 @@
   "dependencies": {
     "@aigne/afs": "workspace:^",
     "@aigne/afs-history": "workspace:^",
+    "@aigne/afs-i18n-driver": "workspace:^",
     "@aigne/afs-local-fs": "workspace:^",
     "@aigne/agent-library": "workspace:^",
     "@aigne/agentic-memory": "workspace:^",

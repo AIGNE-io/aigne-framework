@@ -1,4 +1,4 @@
-import { AFS, type AFSModule } from "@aigne/afs";
+import { AFS, type AFSDriver, type AFSModule } from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
@@ -51,6 +51,11 @@ export interface LoadOptions {
       module: string;
       alias?: string[];
       create: (options?: Record<string, any>) => PromiseOrValue<AFSModule>;
+    }[];
+    availableDrivers?: {
+      driver: string;
+      alias?: string[];
+      create: (options?: Record<string, any>) => PromiseOrValue<AFSDriver>;
     }[];
   };
   aigne?: z.infer<typeof aigneFileSchema>;
@@ -220,8 +225,8 @@ export async function parseAgent(
   } else if (agent.afs === true) {
     afs = new AFS();
   } else if (agent.afs) {
-    afs = new AFS();
-
+    // Create modules
+    const modules: AFSModule[] = [];
     for (const m of agent.afs.modules || []) {
       const moduleName = typeof m === "string" ? m : m.module;
 
@@ -231,9 +236,25 @@ export async function parseAgent(
       if (!mod) throw new Error(`AFS module not found: ${typeof m === "string" ? m : m.module}`);
 
       const module = await mod.create(typeof m === "string" ? {} : m.options);
-
-      afs.mount(module);
+      modules.push(module);
     }
+
+    // Create drivers
+    const drivers: AFSDriver[] = [];
+    for (const d of agent.afs.drivers || []) {
+      const driverName = typeof d === "string" ? d : d.driver;
+
+      const drv = options?.afs?.availableDrivers?.find(
+        (drv) => drv.driver === driverName || drv.alias?.includes(driverName),
+      );
+      if (!drv) throw new Error(`AFS driver not found: ${typeof d === "string" ? d : d.driver}`);
+
+      const driver = await drv.create(typeof d === "string" ? {} : d.options);
+      drivers.push(driver);
+    }
+
+    // Create AFS with modules and drivers
+    afs = new AFS({ modules, drivers });
   }
 
   const skills =

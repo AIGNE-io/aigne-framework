@@ -43,6 +43,13 @@ export type AFSModuleSchema =
       options?: Record<string, any>;
     };
 
+export type AFSDriverSchema =
+  | string
+  | {
+      driver: string;
+      options?: Record<string, any>;
+    };
+
 export interface BaseAgentSchema {
   name?: string;
   description?: string;
@@ -64,8 +71,9 @@ export interface BaseAgentSchema {
       };
   afs?:
     | boolean
-    | (Omit<AFSOptions, "modules"> & {
+    | (Omit<AFSOptions, "modules" | "drivers"> & {
         modules?: AFSModuleSchema[];
+        drivers?: AFSDriverSchema[];
       });
   shareAFS?: boolean;
 }
@@ -296,6 +304,19 @@ export const getAgentSchema = ({
                     camelizeSchema(
                       z.object({
                         module: z.string(),
+                        options: optionalize(z.record(z.any())),
+                      }),
+                    ),
+                  ]),
+                ),
+              ),
+              drivers: optionalize(
+                z.array(
+                  z.union([
+                    z.string(),
+                    camelizeSchema(
+                      z.object({
+                        driver: z.string(),
                         options: optionalize(z.record(z.any())),
                       }),
                     ),

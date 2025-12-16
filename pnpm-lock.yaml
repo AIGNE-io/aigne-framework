@@ -1932,6 +1932,9 @@ importers:
       '@aigne/afs-history':
         specifier: workspace:^
         version: link:../../afs/history
+      '@aigne/afs-i18n-driver':
+        specifier: workspace:^
+        version: link:../../afs/i18n-driver
       '@aigne/afs-local-fs':
         specifier: workspace:^
         version: link:../../afs/local-fs

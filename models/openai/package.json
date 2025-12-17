@@ -1,6 +1,6 @@
 {
   "name": "@aigne/openai",
-  "version": "0.16.16-beta.0",
+  "version": "0.16.16-beta.1",
   "description": "AIGNE OpenAI SDK for integrating with OpenAI's GPT models and API services",
   "publishConfig": {
     "access": "public"

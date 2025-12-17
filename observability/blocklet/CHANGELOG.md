@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.16.5-beta](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.16.4...blocklet-observability-v1.16.5-beta) (2025-12-17)
+
+
+### Bug Fixes
+
+* bump version ([70d217c](https://github.com/AIGNE-io/aigne-framework/commit/70d217c8360dd0dda7f5f17011c4e92ec836e801))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.14-beta
+    * @aigne/observability-ui bumped to 0.11.12-beta
+    * @aigne/sqlite bumped to 0.4.9-beta
+
 ## [1.16.4](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.16.4-beta.1...blocklet-observability-v1.16.4) (2025-12-12)
 
 

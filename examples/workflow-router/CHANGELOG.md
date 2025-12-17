@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.19.6-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-router-v1.19.6-beta...example-workflow-router-v1.19.6-beta.1) (2025-12-17)
+
+
+### Bug Fixes
+
+* bump version ([70d217c](https://github.com/AIGNE-io/aigne-framework/commit/70d217c8360dd0dda7f5f17011c4e92ec836e801))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.24.0-beta.1
+    * @aigne/cli bumped to 1.58.1-beta.1
+    * @aigne/core bumped to 1.72.0-beta.1
+    * @aigne/default-memory bumped to 1.3.6-beta.1
+    * @aigne/openai bumped to 0.16.16-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.1
+
 ## [1.19.6-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-router-v1.19.5...example-workflow-router-v1.19.6-beta) (2025-12-17)
 
 

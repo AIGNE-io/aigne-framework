@@ -218,14 +218,14 @@ export class PromptBuilder {
         });
 
         memories.push(
-          ...history.data
+          ...(history.data as AFSEntry[])
             .reverse()
             .filter((i): i is Required<AFSEntry> => isNonNullable(i.content)),
         );
 
         if (message) {
-          const result = await afs.search("/", message);
-          const ms = result.data
+          const result: AFSEntry[] = (await afs.search("/", message)).data;
+          const ms = result
             .map((entry) => {
               if (entry.metadata?.execute) return null;
 
@@ -240,7 +240,7 @@ export class PromptBuilder {
             .filter(isNonNullable);
           memories.push(...ms);
 
-          const executable = result.data.filter(
+          const executable = result.filter(
             (i): i is typeof i & { metadata: Required<Pick<AFSEntryMetadata, "execute">> } =>
               !!i.metadata?.execute,
           );
@@ -320,10 +320,12 @@ export class PromptBuilder {
     const historyModule = (await afs.listModules()).find((m) => m.module instanceof AFSHistory);
     if (!historyModule) return [];
 
-    const { data: history } = await afs.list(historyModule.path, {
-      limit: agent.historyConfig?.maxItems || 10,
-      orderBy: [["createdAt", "desc"]],
-    });
+    const history: AFSEntry[] = (
+      await afs.list(historyModule.path, {
+        limit: agent.historyConfig?.maxItems || 10,
+        orderBy: [["createdAt", "desc"]],
+      })
+    ).data;
 
     return history
       .reverse()

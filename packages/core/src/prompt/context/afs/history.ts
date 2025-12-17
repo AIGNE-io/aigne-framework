@@ -1,3 +1,4 @@
+import type { AFSEntry } from "@aigne/afs";
 import { AFSHistory } from "@aigne/afs-history";
 import type { Agent } from "../../../agents/agent.js";
 import { isNonNullable } from "../../../utils/type-utils.js";
@@ -11,10 +12,12 @@ export async function getHistories(
   const historyModule = (await afs.listModules()).find((m) => m.module instanceof AFSHistory);
   if (!historyModule) return [];
 
-  const { data: history } = await afs.list(historyModule.path, {
-    limit: agent.historyConfig?.maxItems || 10,
-    orderBy: [["createdAt", "desc"]],
-  });
+  const history: AFSEntry[] = (
+    await afs.list(historyModule.path, {
+      limit: agent.historyConfig?.maxItems || 10,
+      orderBy: [["createdAt", "desc"]],
+    })
+  ).data;
 
   return history
     .reverse()

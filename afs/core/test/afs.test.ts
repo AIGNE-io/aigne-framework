@@ -66,7 +66,6 @@ test("AFS should list entries correctly", async () => {
           "summary": "Test Module",
         },
       ],
-      "message": undefined,
     }
   `);
 
@@ -79,7 +78,6 @@ test("AFS should list entries correctly", async () => {
           "summary": "Test Module",
         },
       ],
-      "message": undefined,
     }
   `);
 
@@ -95,7 +93,6 @@ test("AFS should list entries correctly", async () => {
           "path": "/modules/test-module/bar",
         },
       ],
-      "message": undefined,
     }
   `);
 
@@ -111,7 +108,6 @@ test("AFS should list entries correctly", async () => {
   expect(await afs.list("/foo")).toMatchInlineSnapshot(`
     {
       "data": [],
-      "message": undefined,
     }
   `);
 
@@ -119,7 +115,6 @@ test("AFS should list entries correctly", async () => {
   expect(await afs.list("/foo", { maxDepth: 2 })).toMatchInlineSnapshot(`
     {
       "data": [],
-      "message": undefined,
     }
   `);
   expect(listSpy.mock.lastCall).toMatchInlineSnapshot(`undefined`);
@@ -143,7 +138,6 @@ test("AFS should search entries correctly", async () => {
   expect(await afs.search("/bar", "foo")).toMatchInlineSnapshot(`
     {
       "data": [],
-      "message": "",
     }
   `);
 
@@ -159,7 +153,6 @@ test("AFS should search entries correctly", async () => {
           "path": "/modules/test-module/bar",
         },
       ],
-      "message": "",
     }
   `);
 
@@ -167,7 +160,7 @@ test("AFS should search entries correctly", async () => {
     [
       "/",
       "foo",
-      undefined,
+      {},
     ]
   `);
 
@@ -175,7 +168,6 @@ test("AFS should search entries correctly", async () => {
   expect(await afs.search("/foo/test-module/bar", "foo")).toMatchInlineSnapshot(`
     {
       "data": [],
-      "message": "",
     }
   `);
 

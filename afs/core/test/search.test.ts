@@ -1,15 +1,22 @@
-import { expect, spyOn, test } from "bun:test";
-import assert from "node:assert";
+import { beforeEach, expect, spyOn, test } from "bun:test";
 import { AFS, type AFSContextPreset } from "@aigne/afs";
 import { JSONModule } from "./mocks/json-module.js";
 
-test("AFS search with preset should produce correct results", async () => {
+let afs: AFS;
+let preset: Required<AFSContextPreset>;
+
+beforeEach(() => {
   const module = new JSONModule({
     name: "test-module",
     data: {
       children: {
         foo: {
           content: "This is foo",
+          children: {
+            nested: {
+              content: "Nested content",
+            },
+          },
         },
         bar: {
           content: "This is bar",
@@ -21,7 +28,8 @@ test("AFS search with preset should produce correct results", async () => {
     },
   });
 
-  const preset: AFSContextPreset = {
+  preset = {
+    view: "test-view",
     select: {
       invoke: async () => {
         return { data: ["/modules/test-module/foo", "/modules/test-module/bar"] };
@@ -47,9 +55,10 @@ test("AFS search with preset should produce correct results", async () => {
         };
       },
     },
+    format: "default",
   };
 
-  const afs = new AFS({
+  afs = new AFS({
     context: {
       search: {
         presets: {
@@ -58,8 +67,9 @@ test("AFS search with preset should produce correct results", async () => {
       },
     },
   }).mount(module);
+});
 
-  assert(preset.select && preset.per && preset.dedupe);
+test("AFS search with preset should produce correct results", async () => {
   const selectSpy = spyOn(preset.select, "invoke");
   const perSpy = spyOn(preset.per, "invoke");
   const dedupeSpy = spyOn(preset.dedupe, "invoke");

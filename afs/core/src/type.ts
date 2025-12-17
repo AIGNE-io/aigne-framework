@@ -1,4 +1,5 @@
 import type { Emitter } from "strict-event-emitter";
+import { type ZodType, z } from "zod";
 
 export interface AFSListOptions {
   filter?: {
@@ -114,63 +115,25 @@ export type AFSRootEvents = {
   historyCreated: [{ entry: AFSEntry }];
 };
 
-export interface AFSRootListOptionsWithListOptions extends AFSListOptions {
-  format?: "list";
+export interface AFSRootListOptions extends AFSListOptions, AFSContextPreset {
+  preset?: string;
 }
 
-export interface AFSRootListOptionsWithTreeFormat extends AFSListOptions {
-  format: "tree";
+export interface AFSRootListResult extends Omit<AFSListResult, "data"> {
+  data: any;
 }
 
-export type AFSRootListOptions =
-  | AFSRootListOptionsWithListOptions
-  | AFSRootListOptionsWithTreeFormat;
-
-export interface AFSRootListResultWithListFormat extends AFSListResult {}
-
-export interface AFSRootListResultWithTreeFormat extends Omit<AFSListResult, "data"> {
-  data: string;
+export interface AFSRootSearchOptions extends AFSSearchOptions, AFSContextPreset {
+  preset?: string;
 }
 
-export type AFSRootListResult = AFSRootListResultWithListFormat | AFSRootListResultWithTreeFormat;
-
-export interface AFSRootSearchOptionsNormal extends AFSSearchOptions {}
-
-export interface AFSRootSearchOptionsWithPreset extends AFSSearchOptions {
-  preset: string;
+export interface AFSRootSearchResult extends Omit<AFSSearchResult, "data"> {
+  data: any;
 }
-
-export type AFSRootSearchOptions = AFSRootSearchOptionsNormal | AFSRootSearchOptionsWithPreset;
-
-export interface AFSRootSearchResultNormal extends AFSSearchResult {}
-
-export interface AFSRootSearchResultWithPreset extends Omit<AFSSearchResult, "data"> {
-  data: unknown;
-}
-
-export type AFSRootSearchResult = AFSRootSearchResultNormal | AFSRootSearchResultWithPreset;
 
 export interface AFSRoot extends Emitter<AFSRootEvents>, AFSModule {
-  list(
-    path: string,
-    options: AFSRootListOptionsWithTreeFormat,
-  ): Promise<AFSRootListResultWithTreeFormat>;
-  list(
-    path: string,
-    options?: AFSRootListOptionsWithListOptions,
-  ): Promise<AFSRootListResultWithListFormat>;
   list(path: string, options?: AFSRootListOptions): Promise<AFSRootListResult>;
 
-  search(
-    path: string,
-    query: string,
-    options: AFSRootSearchOptionsWithPreset,
-  ): Promise<AFSRootSearchResultWithPreset>;
-  search(
-    path: string,
-    query: string,
-    options?: AFSRootSearchOptionsNormal,
-  ): Promise<AFSRootSearchResultNormal>;
   search(path: string, query: string, options: AFSRootSearchOptions): Promise<AFSRootSearchResult>;
 }
 
@@ -199,17 +162,33 @@ export interface AFSEntry<T = any> {
   content?: T;
 }
 
+export const afsEntrySchema: ZodType<AFSEntry> = z.object({
+  id: z.string(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+  path: z.string(),
+  userId: z.string().nullable().optional(),
+  sessionId: z.string().nullable().optional(),
+  summary: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  metadata: z.record(z.any()).nullable().optional(),
+  linkTo: z.string().nullable().optional(),
+  content: z.any().optional(),
+});
+
 export interface AFSContextPreset {
   /**
    * The view template for presenting the search results.
    */
   view?: string;
 
-  select?: AFSContextPresetOptionAgent<{ path: string; query: string }, { data: string[] }>;
+  select?: AFSContextPresetOptionAgent<{ path: string; query?: string }, { data: string[] }>;
 
   per?: AFSContextPresetOptionAgent<{ data: AFSEntry }, { data: unknown }>;
 
   dedupe?: AFSContextPresetOptionAgent<{ data: unknown[] }, { data: unknown }>;
+
+  format?: "default" | "tree" | AFSContextPresetOptionAgent<{ data: unknown }, { data: unknown }>;
 }
 
 export interface AFSContextPresetOptionAgent<I = any, O = any> {

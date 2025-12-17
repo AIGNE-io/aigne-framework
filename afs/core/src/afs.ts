@@ -1,35 +1,32 @@
 import { Emitter } from "strict-event-emitter";
 import { joinURL } from "ufo";
-import type {
-  AFSContext,
-  AFSContextPreset,
-  AFSDeleteOptions,
-  AFSDeleteResult,
-  AFSEntry,
-  AFSExecOptions,
-  AFSExecResult,
-  AFSModule,
-  AFSReadOptions,
-  AFSReadResult,
-  AFSRenameOptions,
-  AFSRenameResult,
-  AFSRoot,
-  AFSRootEvents,
-  AFSRootListOptions,
-  AFSRootListOptionsWithListOptions,
-  AFSRootListOptionsWithTreeFormat,
-  AFSRootListResult,
-  AFSRootListResultWithListFormat,
-  AFSRootListResultWithTreeFormat,
-  AFSRootSearchOptions,
-  AFSRootSearchOptionsNormal,
-  AFSRootSearchOptionsWithPreset,
-  AFSRootSearchResult,
-  AFSRootSearchResultNormal,
-  AFSRootSearchResultWithPreset,
-  AFSWriteEntryPayload,
-  AFSWriteOptions,
-  AFSWriteResult,
+import { z } from "zod";
+import {
+  type AFSContext,
+  type AFSContextPreset,
+  type AFSDeleteOptions,
+  type AFSDeleteResult,
+  type AFSEntry,
+  type AFSExecOptions,
+  type AFSExecResult,
+  type AFSListResult,
+  type AFSModule,
+  type AFSReadOptions,
+  type AFSReadResult,
+  type AFSRenameOptions,
+  type AFSRenameResult,
+  type AFSRoot,
+  type AFSRootEvents,
+  type AFSRootListOptions,
+  type AFSRootListResult,
+  type AFSRootSearchOptions,
+  type AFSRootSearchResult,
+  type AFSSearchOptions,
+  type AFSSearchResult,
+  type AFSWriteEntryPayload,
+  type AFSWriteOptions,
+  type AFSWriteResult,
+  afsEntrySchema,
 } from "./type.js";
 
 const DEFAULT_MAX_DEPTH = 1;
@@ -83,21 +80,21 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     }));
   }
 
-  async list(
-    path: string,
-    options: AFSRootListOptionsWithTreeFormat,
-  ): Promise<AFSRootListResultWithTreeFormat>;
-  async list(
-    path: string,
-    options?: AFSRootListOptionsWithListOptions,
-  ): Promise<AFSRootListResultWithListFormat>;
-  async list(path: string, options?: AFSRootListOptions): Promise<AFSRootListResult>;
-  async list(path: string, options?: AFSRootListOptions): Promise<AFSRootListResult> {
-    const maxDepth = options?.maxDepth ?? DEFAULT_MAX_DEPTH;
-    if (!(maxDepth >= 0)) throw new Error(`Invalid maxDepth: ${maxDepth}`);
+  async list(path: string, options: AFSRootListOptions = {}): Promise<AFSRootListResult> {
+    let preset: AFSContextPreset | undefined;
+    if (options.preset) {
+      preset = this.options?.context?.list?.presets?.[options.preset];
+      if (!preset) throw new Error(`Preset not found: ${options.preset}`);
+    }
 
+    return await this.processWithPreset(path, undefined, preset, {
+      ...options,
+      defaultSelect: () => this._list(path, options),
+    });
+  }
+
+  private async _list(path: string, options: AFSRootListOptions = {}): Promise<AFSListResult> {
     const results: AFSEntry[] = [];
-    const messages: string[] = [];
 
     const matches = this.findModules(path, options);
 
@@ -116,7 +113,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       if (!matched.module.list) continue;
 
       try {
-        const { data, message } = await matched.module.list(matched.subpath, {
+        const { data } = await matched.module.list(matched.subpath, {
           ...options,
           maxDepth: matched.maxDepth,
         });
@@ -131,23 +128,12 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
         } else {
           results.push(moduleEntry);
         }
-
-        if (message) messages.push(message);
       } catch (error) {
         console.error(`Error listing from module at ${matched.modulePath}`, error);
       }
     }
 
-    const message = messages.join("; ").trim() || undefined;
-
-    if (options?.format === "tree") {
-      return {
-        data: this.buildTreeView(results),
-        message,
-      };
-    }
-
-    return { data: results, message };
+    return { data: results };
   }
 
   async read(path: string, _options?: AFSReadOptions): Promise<AFSReadResult> {
@@ -221,43 +207,34 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
   async search(
     path: string,
     query: string,
-    options: AFSRootSearchOptionsWithPreset,
-  ): Promise<AFSRootSearchResultWithPreset>;
-  async search(
-    path: string,
-    query: string,
-    options?: AFSRootSearchOptionsNormal,
-  ): Promise<AFSRootSearchResultNormal>;
-  async search(
-    path: string,
-    query: string,
-    options?: AFSRootSearchOptions,
-  ): Promise<AFSRootSearchResult>;
-  async search(
-    path: string,
-    query: string,
-    options?: AFSRootSearchOptions,
+    options: AFSRootSearchOptions = {},
   ): Promise<AFSRootSearchResult> {
-    if (options && "preset" in options && options.preset) {
-      return this.searchWithPreset(path, query, options);
+    let preset: AFSContextPreset | undefined;
+    if (options.preset) {
+      preset = this.options?.context?.search?.presets?.[options.preset];
+      if (!preset) throw new Error(`Preset not found: ${options.preset}`);
     }
 
-    return this.searchEntries(path, query, options);
+    return await this.processWithPreset(path, query, preset, {
+      ...options,
+      defaultSelect: () => this._search(path, query, options),
+    });
   }
 
-  private async searchWithPreset(
+  private async processWithPreset(
     path: string,
-    query: string,
-    options: AFSRootSearchOptionsWithPreset,
-  ): Promise<AFSRootSearchResultWithPreset> {
-    const preset = this.options?.context?.search?.presets?.[options.preset];
-    if (!preset) throw new Error(`Preset not found: ${options.preset}`);
-
-    const { select, per, dedupe } = preset;
+    query: string | undefined,
+    preset: AFSContextPreset | undefined,
+    options: AFSContextPreset & { defaultSelect: () => Promise<AFSListResult> },
+  ): Promise<AFSRootSearchResult> {
+    const select = options.select || preset?.select;
+    const per = options.per || preset?.per;
+    const dedupe = options.dedupe || preset?.dedupe;
+    const format = options.format || preset?.format;
 
     const entries = select
-      ? (await this.presetSelect(path, query, select, options)).data
-      : (await this.searchEntries(path, query, options)).data;
+      ? (await this._select(path, query, select, options)).data
+      : (await options.defaultSelect()).data;
 
     const mapped = per
       ? await Promise.all(
@@ -269,15 +246,25 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       ? await dedupe.invoke({ data: mapped }, options).then((res) => res.data)
       : mapped;
 
-    return { data: deduped };
+    let formatted = deduped;
+
+    if (format === "tree") {
+      const valid = z.array(afsEntrySchema).safeParse(deduped);
+      if (valid.data) formatted = this.buildTreeView(valid.data);
+      else throw new Error("Tree format requires entries to be AFSEntry objects");
+    } else if (typeof format === "object" && typeof format.invoke === "function") {
+      formatted = await format.invoke({ data: deduped }, options).then((res) => res.data);
+    }
+
+    return { data: formatted };
   }
 
-  private async presetSelect(
+  private async _select(
     path: string,
-    query: string,
+    query: string | undefined,
     select: NonNullable<AFSContextPreset["select"]>,
     options?: AFSRootSearchOptions,
-  ): Promise<AFSRootSearchResultNormal> {
+  ): Promise<AFSSearchResult> {
     const { data } = await select.invoke({ path, query }, options);
 
     const results: AFSEntry[] = (
@@ -287,11 +274,11 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     return { data: results };
   }
 
-  private async searchEntries(
+  private async _search(
     path: string,
     query: string,
-    options?: AFSRootSearchOptions,
-  ): Promise<AFSRootSearchResultNormal> {
+    options?: AFSSearchOptions,
+  ): Promise<AFSSearchResult> {
     const results: AFSEntry[] = [];
     const messages: string[] = [];
 

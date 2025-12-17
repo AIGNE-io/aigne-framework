@@ -368,18 +368,18 @@ test("LocalFS should throw error when deleting directory without recursive optio
 
   // Verify directory still exists
   const listResult = await localFS.list("");
-  expect(listResult.data.map((i) => i.path)).toMatchInlineSnapshot(`
+  expect(listResult.data.map((i) => i.path).sort()).toMatchInlineSnapshot(`
     [
       "/",
-      "/file1.txt",
-      "/nonRecursiveDir",
-      "/subdir",
-      "/searchable.txt",
-      "/deep",
-      "/data.json",
-      "/newfile.txt",
-      "/file2.md",
       "/caseTest.txt",
+      "/data.json",
+      "/deep",
+      "/file1.txt",
+      "/file2.md",
+      "/newfile.txt",
+      "/nonRecursiveDir",
+      "/searchable.txt",
+      "/subdir",
     ]
   `);
 
@@ -447,7 +447,7 @@ test("LocalFS should rename a directory", async () => {
   // Verify new directory exists with files
   const newDirList = await localFS.list("newDir");
   const filePaths = newDirList.data.map((entry) => entry.path).sort();
-  expect(filePaths).toMatchInlineSnapshot(`
+  expect(filePaths.sort()).toMatchInlineSnapshot(`
     [
       "/newDir",
       "/newDir/file1.txt",
@@ -554,12 +554,11 @@ test("LocalFS should respect .gitignore when listing files", async () => {
   const paths = result.data.map((entry) => entry.path);
 
   // Should NOT include ignored files
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
-      "/index.js",
       "/.gitignore",
-      "/.git",
+      "/index.js",
     ]
   `);
 
@@ -587,13 +586,13 @@ test("LocalFS should allow disabling gitignore", async () => {
   const paths = result.data.map((entry) => entry.path);
 
   // Should include all files
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
-      "/index.js",
+      "/.git",
       "/.gitignore",
       "/debug.log",
-      "/.git",
+      "/index.js",
     ]
   `);
 
@@ -628,12 +627,11 @@ test("LocalFS should handle nested .gitignore files", async () => {
   const rootPaths = rootResult.data.map((entry) => entry.path);
 
   // Root .gitignore should filter *.log
-  expect(rootPaths).toMatchInlineSnapshot(`
+  expect(rootPaths.sort()).toMatchInlineSnapshot(`
     [
       "/",
-      "/root.js",
       "/.gitignore",
-      "/.git",
+      "/root.js",
       "/src",
       "/src/.gitignore",
       "/src/sub.js",
@@ -671,13 +669,12 @@ test("LocalFS should stop at .git directory when searching for .gitignore", asyn
   const paths = result.data.map((entry) => entry.path);
 
   // Should only apply inner .gitignore, not outer
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
-      "/outer.txt",
       "/.gitignore",
-      "/.git",
       "/normal.txt",
+      "/outer.txt",
     ]
   `);
 
@@ -708,11 +705,10 @@ test("LocalFS should handle directory patterns in .gitignore", async () => {
   const paths = result.data.map((entry) => entry.path);
 
   // Should filter out build directory and .tmp files
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
       "/.gitignore",
-      "/.git",
       "/src",
       "/src/index.js",
     ]
@@ -739,12 +735,12 @@ test("LocalFS should work without any .gitignore file", async () => {
   const paths = result.data.map((entry) => entry.path);
 
   // Should include all files when no .gitignore exists
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
-      "/file2.log",
       "/.git",
       "/file1.js",
+      "/file2.log",
     ]
   `);
 
@@ -771,7 +767,7 @@ test("LocalFS should work without .git directory", async () => {
   const paths = result.data.map((entry) => entry.path);
 
   // Should still filter based on .gitignore
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
       "/.gitignore",
@@ -801,13 +797,13 @@ test("LocalFS should respect maxChildren option", async () => {
   const paths = result.data.map((entry) => entry.path);
 
   // Should only return 5 files
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
+      "/file0.txt",
+      "/file1.txt",
       "/file2.txt",
       "/file3.txt",
-      "/file1.txt",
-      "/file0.txt",
       "/file4.txt",
     ]
   `);
@@ -908,13 +904,13 @@ test("LocalFS should work correctly when maxChildren equals number of children",
   const paths = result.data.map((entry) => entry.path);
 
   // Should return all 5 files
-  expect(paths).toMatchInlineSnapshot(`
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
+      "/file0.txt",
+      "/file1.txt",
       "/file2.txt",
       "/file3.txt",
-      "/file1.txt",
-      "/file0.txt",
       "/file4.txt",
     ]
   `);

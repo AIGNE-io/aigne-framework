@@ -76,13 +76,12 @@ test("AFS'skill list should respect gitignore by default", async () => {
     (await gitAFS.list("/modules/project", { maxDepth: 3, format: "tree" })).data,
   ).toMatchInlineSnapshot(`
     "└── modules
-        └── project [6 items]
+        └── project [5 items]
             ├── tests [1 items]
             │   └── test.spec.js
             ├── index.js
             ├── README.md
             ├── .gitignore
-            ├── .git [0 items]
             └── src [3 items]
                 ├── utils [1 items]
                 │   └── helper.js

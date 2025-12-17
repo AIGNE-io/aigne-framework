@@ -417,6 +417,8 @@ export class LocalFS implements AFSModule {
       }
     }
 
+    ig.add(".git");
+
     return hasRules ? { ig, gitRoot } : null;
   }
 }

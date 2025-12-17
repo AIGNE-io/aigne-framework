@@ -226,8 +226,6 @@ export async function parseAgent(
     const loadAFSContextPresets = async (
       presets: Record<string, AFSContextPresetSchema>,
     ): Promise<Record<string, AFSContextPreset>> => {
-      console.log({ presets });
-
       return Object.fromEntries(
         await Promise.all(
           Object.entries(presets).map<Promise<[string, AFSContextPreset]>>(async ([key, value]) => {

@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.91.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0...aigne-framework-v1.91.0-beta) (2025-12-17)
+
+
+### Features
+
+* **afs:** support expand context into prompt template by call `$afs.xxx` ([#830](https://github.com/AIGNE-io/aigne-framework/issues/830)) ([5616acd](https://github.com/AIGNE-io/aigne-framework/commit/5616acd6ea257c91aa0b766608f45c5ce17f0345))
+* **agent-library:** add parallel tasks support for orchestrator agent ([#834](https://github.com/AIGNE-io/aigne-framework/issues/834)) ([7314eb1](https://github.com/AIGNE-io/aigne-framework/commit/7314eb1ef5f1eb4bf6f2b8160c61ef627a6aa3cc))
+
+
+### Bug Fixes
+
+* **afs:** read method should not throw not found error ([#835](https://github.com/AIGNE-io/aigne-framework/issues/835)) ([ebfdfc1](https://github.com/AIGNE-io/aigne-framework/commit/ebfdfc1cdba23efd23ac2ad4621e3f046990fd8b))
+* **docs:** fix docs x-cards use ([#832](https://github.com/AIGNE-io/aigne-framework/issues/832)) ([9c566eb](https://github.com/AIGNE-io/aigne-framework/commit/9c566ebc6be17f7688485b4614ffe9b1b37d6899))
+
 ## [1.90.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.9...aigne-framework-v1.90.0) (2025-12-12)
 
 ## [1.90.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.8...aigne-framework-v1.90.0-beta.9) (2025-12-12)

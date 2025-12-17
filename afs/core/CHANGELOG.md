@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.3.0...afs-v1.4.0-beta) (2025-12-17)
+
+
+### Features
+
+* **afs:** support expand context into prompt template by call `$afs.xxx` ([#830](https://github.com/AIGNE-io/aigne-framework/issues/830)) ([5616acd](https://github.com/AIGNE-io/aigne-framework/commit/5616acd6ea257c91aa0b766608f45c5ce17f0345))
+
+
+### Bug Fixes
+
+* **afs:** read method should not throw not found error ([#835](https://github.com/AIGNE-io/aigne-framework/issues/835)) ([ebfdfc1](https://github.com/AIGNE-io/aigne-framework/commit/ebfdfc1cdba23efd23ac2ad4621e3f046990fd8b))
+
 ## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.3.0-beta.3...afs-v1.3.0) (2025-12-12)
 
 ## [1.3.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.3.0-beta.2...afs-v1.3.0-beta.3) (2025-12-11)

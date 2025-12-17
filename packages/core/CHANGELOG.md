@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.72.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.71.0...core-v1.72.0-beta) (2025-12-17)
+
+
+### Features
+
+* **afs:** support expand context into prompt template by call `$afs.xxx` ([#830](https://github.com/AIGNE-io/aigne-framework/issues/830)) ([5616acd](https://github.com/AIGNE-io/aigne-framework/commit/5616acd6ea257c91aa0b766608f45c5ce17f0345))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta
+    * @aigne/afs-history bumped to 1.2.0-beta
+
 ## [1.71.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.71.0-beta.6...core-v1.71.0) (2025-12-12)
 
 

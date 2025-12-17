@@ -1,10 +1,14 @@
 import type {
   AFSEntry,
   AFSListOptions,
+  AFSListResult,
   AFSModule,
+  AFSReadResult,
   AFSRoot,
   AFSSearchOptions,
+  AFSSearchResult,
   AFSWriteEntryPayload,
+  AFSWriteResult,
 } from "@aigne/afs";
 import {
   type AFSStorage,
@@ -68,7 +72,7 @@ export class UserProfileMemory implements AFSModule {
   }
 
   async updateProfile(entry: AFSEntry) {
-    const { result: previous } = await this.read("/");
+    const { data: previous } = await this.read("/");
 
     const { ops } = await this.options.context.newContext({ reset: true }).invoke(this.extractor, {
       schema: zodToJsonSchema(userProfileSchema),
@@ -87,32 +91,29 @@ export class UserProfileMemory implements AFSModule {
     return await this.write("/", { content: profile });
   }
 
-  async list(
-    _path: string,
-    _options?: AFSListOptions,
-  ): Promise<{ list: AFSEntry[]; message?: string }> {
-    const { result: profile } = await this.read("/");
-    return { list: profile ? [profile] : [] };
+  async list(_path: string, _options?: AFSListOptions): Promise<AFSListResult> {
+    const { data: profile } = await this.read("/");
+    return { data: profile ? [profile] : [] };
   }
 
-  async read(path: string): Promise<{ result: AFSEntry | undefined }> {
-    const result = await this.storage.read(path);
-    if (result) result.description = this.description;
-    return { result };
+  async read(path: string): Promise<AFSReadResult> {
+    const data = await this.storage.read(path);
+    if (data) data.description = this.description;
+    return { data };
   }
 
-  async write(path: string, entry: AFSWriteEntryPayload): Promise<{ result: AFSEntry }> {
-    const result = await this.storage.create({ ...entry, path });
-    if (result) result.description = this.description;
-    return { result };
+  async write(path: string, entry: AFSWriteEntryPayload): Promise<AFSWriteResult> {
+    const data = await this.storage.create({ ...entry, path });
+    if (data) data.description = this.description;
+    return { data };
   }
 
   async search(
     _path: string,
     _query: string,
     _options?: AFSSearchOptions,
-  ): Promise<{ list: AFSEntry[] }> {
-    const { result: profile } = await this.read("/");
-    return { list: profile ? [profile] : [] };
+  ): Promise<AFSSearchResult> {
+    const { data: profile } = await this.read("/");
+    return { data: profile ? [profile] : [] };
   }
 }

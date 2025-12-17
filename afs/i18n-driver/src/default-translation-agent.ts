@@ -29,6 +29,14 @@ Translate the provided content from the source language to the target language.
 Maintain the original formatting, structure, and technical terms.
 Preserve markdown syntax, code blocks, and special formatting.
 
+Original content:
+Source language: {{ sourceLanguage }}
+<original>
+{{ content }}
+</original>
+
+Target language: {{ targetLanguage }}
+
 Requirements:
 - Translate naturally and fluently
 - Keep technical terms and proper nouns when appropriate

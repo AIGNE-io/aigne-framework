@@ -1514,17 +1514,17 @@ export async function getAFSSkills(afs: AFS): Promise<Agent[]> {
    - ✅ **注意：** 这是 AFS Core 的基础功能，供 Skill 层使用
 
 7. [x] 扩展 `afs/core/src/afs.ts` 集成 Metadata：
-   - ✅ 在 constructor 中初始化 MetadataStore（数据库路径：`file:.afs/metadata.db`）
-   - ✅ 配置项：`metadataPath`（可选，默认 `file:.afs/metadata.db`）
+   - ✅ 在 constructor 中初始化 MetadataStore（数据库路径：`.afs/metadata.db`）
+   - ✅ 配置项：`storage.url`（可选，默认 `.afs`）
    - ✅ `read()` 中使用 metadata 判断 view 状态
    - ✅ `write()` 中更新 source metadata 并标记 view 为 stale
    - ✅ `delete()` 中清理相关 metadata
    - ✅ Driver onMount 生命周期
 
 8. [x] AFS 配置扩展：
-   - ✅ 增加 `AFSOptions.metadataPath` 配置项
-   - ✅ 默认值：`file:.afs/metadata.db`（相对于 workspace 根目录）
-   - ✅ 支持自定义路径（绝对或相对路径）
+   - ✅ 增加 `AFSOptions.storage.url` 配置项
+   - ✅ 默认值：`.afs`（相对于 workspace 根目录）
+   - ✅ metadata.db 存放在 `{storage.url}/metadata.db`
 
 9. [x] 单元测试（`afs/core/test/view-driver.test.ts`）：
    - ✅ MockI18nDriver 翻译驱动

@@ -323,6 +323,13 @@ export const getAgentSchema = ({
                   ]),
                 ),
               ),
+              storage: optionalize(
+                camelizeSchema(
+                  z.object({
+                    url: z.string(),
+                  }),
+                ),
+              ),
             }),
           ),
         ]),

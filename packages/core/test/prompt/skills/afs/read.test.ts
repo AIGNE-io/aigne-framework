@@ -9,7 +9,7 @@ test("AFS'skill read should invoke afs.read", async () => {
   const read = skills.find((i) => i.name === "afs_read");
 
   const readSpy = spyOn(afs, "read").mockResolvedValue({
-    result: { id: "foo", path: "/foo", content: "bar" },
+    data: { id: "foo", path: "/foo", content: "bar" },
   });
 
   assert(read);
@@ -41,7 +41,7 @@ test("AFS'skill read should handle withLineNumbers option", async () => {
   const read = skills.find((i) => i.name === "afs_read");
 
   spyOn(afs, "read").mockResolvedValue({
-    result: {
+    data: {
       id: "foo",
       path: "/foo/test.txt",
       content: "line 1\nline 2\nline 3",
@@ -76,7 +76,7 @@ test("AFS'skill read should handle file not found", async () => {
   const read = skills.find((i) => i.name === "afs_read");
 
   spyOn(afs, "read").mockResolvedValue({
-    result: undefined,
+    data: undefined,
   });
 
   assert(read);
@@ -94,7 +94,7 @@ test("AFS'skill read should return file content", async () => {
 
   const fileContent = "Hello World\nThis is a test file";
   spyOn(afs, "read").mockResolvedValue({
-    result: {
+    data: {
       id: "test-id",
       path: "/test/file.txt",
       content: fileContent,

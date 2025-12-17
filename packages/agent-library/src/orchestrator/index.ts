@@ -20,6 +20,7 @@ import {
 } from "@aigne/core/loader/index.js";
 import { camelizeSchema, optionalize } from "@aigne/core/loader/schema.js";
 import { isAgent } from "@aigne/core/utils/agent-utils.js";
+import * as fastq from "@aigne/core/utils/queue.js";
 import { estimateTokens } from "@aigne/core/utils/token-estimator.js";
 import { omit, pick } from "@aigne/core/utils/type-utils.js";
 import { z } from "zod";
@@ -39,6 +40,7 @@ import {
   plannerOutputSchema,
   type StateManagementOptions,
   stateManagementOptionsSchema,
+  type TaskRecord,
   type WorkerInput,
   type WorkerOutput,
   workerInputSchema,
@@ -63,6 +65,8 @@ export interface OrchestratorAgentOptions<I extends Message = Message, O extends
    * Prevents context overflow during long-running executions
    */
   stateManagement?: StateManagementOptions;
+
+  concurrency?: number;
 }
 
 export interface LoadOrchestratorAgentOptions<
@@ -109,6 +113,8 @@ const defaultCompleterOptions: AIAgentOptions<CompleterInput, any> = {
     disabled: true,
   },
 };
+
+const DEFAULT_CONCURRENCY = 5;
 
 /**
  * Orchestrator Agent Class
@@ -215,6 +221,7 @@ export class OrchestratorAgent<
 
     // Initialize state management config
     this.stateManagement = options.stateManagement;
+    this.concurrency = options.concurrency ?? DEFAULT_CONCURRENCY;
   }
 
   private objective?: PromptBuilder;
@@ -226,6 +233,8 @@ export class OrchestratorAgent<
   private completer: Agent<CompleterInput, O>;
 
   private stateManagement?: StateManagementOptions;
+
+  private concurrency: number;
 
   /**
    * Compress execution state to prevent context overflow
@@ -318,40 +327,43 @@ export class OrchestratorAgent<
         { ...options, model, streaming: false },
       );
 
-      if (plan.finished || !plan.nextTask) {
+      if (plan.finished || !plan.nextTasks?.length) {
         break;
       }
 
-      const task = plan.nextTask;
       const createdAt = Date.now();
 
-      const taskResult = await this.invokeChildAgent(
-        this.worker,
-        {
-          objective,
-          executionState: compressedState,
-          task,
-          ...pick(input, this.worker.inputKeys),
-        },
-        { ...options, model, streaming: false },
-      )
-        .then((res) => {
-          if (res.error || res.success === false) {
-            return { status: "failed" as const, result: res.result, error: res.error };
-          }
-          return { status: "completed" as const, result: res.result };
-        })
-        .catch((error) => ({
-          status: "failed" as const,
-          error: { message: error instanceof Error ? error.message : String(error) },
-        }));
+      const queue = fastq.promise<unknown, { task: string }, TaskRecord>(
+        async ({ task }) => {
+          const taskResult = await this.invokeChildAgent(
+            this.worker,
+            {
+              objective,
+              executionState: compressedState,
+              task,
+              ...pick(input, this.worker.inputKeys),
+            },
+            { ...options, model, streaming: false },
+          )
+            .then((res) => {
+              if (res.error || res.success === false) {
+                return { status: "failed" as const, result: res.result, error: res.error };
+              }
+              return { status: "completed" as const, result: res.result };
+            })
+            .catch((error) => ({
+              status: "failed" as const,
+              error: { message: error instanceof Error ? error.message : String(error) },
+            }));
 
-      executionState.tasks.push({
-        ...taskResult,
-        task: task,
-        createdAt,
-        completedAt: Date.now(),
-      });
+          return { ...taskResult, task, createdAt, completedAt: Date.now() };
+        },
+        plan.parallelTasks ? this.concurrency : 1,
+      );
+
+      const taskResults = await Promise.all(plan.nextTasks.map((task) => queue.push({ task })));
+
+      executionState.tasks.push(...taskResults);
     }
 
     // Compress state for completer input if needed
@@ -382,6 +394,7 @@ function getOrchestratorAgentSchema({ filepath }: { filepath: string }) {
       worker: optionalize(nestAgentSchema),
       completer: optionalize(nestAgentSchema),
       stateManagement: optionalize(camelizeSchema(stateManagementOptionsSchema)),
+      concurrency: optionalize(z.number().int().min(1).default(DEFAULT_CONCURRENCY)),
     }),
   );
 }

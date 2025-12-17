@@ -67,22 +67,32 @@ export const plannerInputSchema = z.object({
 });
 
 export interface PlannerOutput extends Message {
-  nextTask?: string;
+  nextTasks?: string[];
+  parallelTasks?: boolean;
   finished?: boolean;
 }
 
 export const plannerOutputSchema = z.object({
-  nextTask: z
-    .string()
+  nextTasks: z
+    .array(z.string())
     .optional()
     .describe(
       `\
-The next task to be executed by the worker.
-Provide a clear, actionable task description that specifies what needs to be done.
+The next tasks to be executed by the worker.
+Provide clear, actionable task descriptions that specify what needs to be done.
 Include relevant context from previous task results if needed for execution.
 Omit this field when all necessary work has been completed.
 `,
     ),
+  parallelTasks: z
+    .boolean()
+    .optional()
+    .describe(`\
+Indicates whether the next tasks can be executed in parallel.
+Set to true if tasks are independent and can run simultaneously.
+Set to false if tasks must be executed sequentially.
+default is false.
+`),
   finished: z
     .boolean()
     .optional()

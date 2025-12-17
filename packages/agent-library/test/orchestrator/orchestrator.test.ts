@@ -284,7 +284,7 @@ test("OrchestratorAgent.invoke", async () => {
     .mockReturnValueOnce(
       Promise.resolve<{ json: PlannerOutput }>({
         json: {
-          nextTask: 'Use the "finder" skill to research ArcBlock blockchain platform',
+          nextTasks: ['Use the "finder" skill to research ArcBlock blockchain platform'],
           finished: false,
         },
       }),
@@ -347,7 +347,7 @@ test("OrchestratorAgent should pass declared input fields to the planner/worker/
     .mockReturnValueOnce(
       Promise.resolve<{ json: PlannerOutput }>({
         json: {
-          nextTask: 'Use the "finder" skill to research ArcBlock blockchain platform',
+          nextTasks: ['Use the "finder" skill to research ArcBlock blockchain platform'],
           finished: false,
         },
       }),
@@ -424,4 +424,219 @@ test("OrchestratorAgent should pass declared input fields to the planner/worker/
   `);
 
   dateNowSpy.mockRestore();
+});
+
+function getMessageContent(content: unknown): string {
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    return content
+      .map((c) => (typeof c === "string" ? c : (c as { text?: string }).text || ""))
+      .join("");
+  }
+  return "";
+}
+
+test("OrchestratorAgent should execute tasks in parallel when parallelTasks is true", async () => {
+  const model = new OpenAIChatModel();
+  const aigne = new AIGNE({ model });
+
+  const agent = OrchestratorAgent.from({
+    objective: PromptBuilder.from("Research multiple topics"),
+    inputKey: "message",
+    concurrency: 3,
+  });
+
+  const executionOrder: string[] = [];
+  let plannerCallCount = 0;
+
+  spyOn(model, "process").mockImplementation(async (options) => {
+    const messages = options.messages;
+    const systemMessage = getMessageContent(messages.find((m) => m.role === "system")?.content);
+
+    // Planner calls
+    if (systemMessage.includes("decide the next tasks")) {
+      plannerCallCount++;
+      if (plannerCallCount === 1) {
+        return {
+          json: {
+            nextTasks: ["Research topic A", "Research topic B", "Research topic C"],
+            parallelTasks: true,
+            finished: false,
+          } satisfies PlannerOutput,
+        };
+      }
+      return { json: { finished: true } satisfies PlannerOutput };
+    }
+
+    // Worker calls
+    if (systemMessage.includes("task execution agent")) {
+      const taskMatch = systemMessage.match(/Research topic ([ABC])/);
+      const taskId = taskMatch?.[1] ?? "unknown";
+
+      executionOrder.push(`start-${taskId}`);
+
+      // Simulate async work - all tasks should start before any finishes
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      executionOrder.push(`end-${taskId}`);
+
+      return {
+        json: { result: `Result for topic ${taskId}`, success: true } satisfies WorkerOutput,
+      };
+    }
+
+    // Completer call
+    return { text: "All topics researched successfully" };
+  });
+
+  const result = await aigne.invoke(agent, {
+    message: "Research multiple topics in parallel",
+  });
+
+  expect(result).toEqual({ message: "All topics researched successfully" });
+
+  // Verify all tasks started before any task ended (parallel execution)
+  const allStarted = ["start-A", "start-B", "start-C"].every((s) => executionOrder.includes(s));
+  const allEnded = ["end-A", "end-B", "end-C"].every((s) => executionOrder.includes(s));
+  expect(allStarted).toBe(true);
+  expect(allEnded).toBe(true);
+
+  // In parallel execution, all starts should come before all ends
+  const firstEndIndex = Math.min(
+    executionOrder.indexOf("end-A"),
+    executionOrder.indexOf("end-B"),
+    executionOrder.indexOf("end-C"),
+  );
+  const lastStartIndex = Math.max(
+    executionOrder.indexOf("start-A"),
+    executionOrder.indexOf("start-B"),
+    executionOrder.indexOf("start-C"),
+  );
+
+  // All tasks should start before the first task ends (parallel behavior)
+  expect(lastStartIndex).toBeLessThan(firstEndIndex);
+});
+
+test("OrchestratorAgent should execute tasks sequentially when parallelTasks is false", async () => {
+  const model = new OpenAIChatModel();
+  const aigne = new AIGNE({ model });
+
+  const agent = OrchestratorAgent.from({
+    objective: PromptBuilder.from("Research multiple topics sequentially"),
+    inputKey: "message",
+    concurrency: 3,
+  });
+
+  const executionOrder: string[] = [];
+  let plannerCallCount = 0;
+
+  spyOn(model, "process").mockImplementation(async (options) => {
+    const messages = options.messages;
+    const systemMessage = getMessageContent(messages.find((m) => m.role === "system")?.content);
+
+    // Planner calls
+    if (systemMessage.includes("decide the next tasks")) {
+      plannerCallCount++;
+      // First planner call - return sequential tasks (parallelTasks: false)
+      if (plannerCallCount === 1) {
+        return {
+          json: {
+            nextTasks: ["Research topic A", "Research topic B", "Research topic C"],
+            parallelTasks: false, // Sequential execution
+            finished: false,
+          } satisfies PlannerOutput,
+        };
+      }
+      // Second planner call - finished
+      return { json: { finished: true } satisfies PlannerOutput };
+    }
+
+    // Worker calls
+    if (systemMessage.includes("task execution agent")) {
+      const taskMatch = systemMessage.match(/Research topic ([ABC])/);
+      const taskId = taskMatch?.[1] ?? "unknown";
+
+      executionOrder.push(`start-${taskId}`);
+
+      // Simulate async work
+      await new Promise((resolve) => setTimeout(resolve, 20));
+
+      executionOrder.push(`end-${taskId}`);
+
+      return {
+        json: { result: `Result for topic ${taskId}`, success: true } satisfies WorkerOutput,
+      };
+    }
+
+    // Completer call
+    return { text: "All topics researched successfully" };
+  });
+
+  const result = await aigne.invoke(agent, {
+    message: "Research multiple topics sequentially",
+  });
+
+  expect(result).toEqual({ message: "All topics researched successfully" });
+
+  // In sequential execution, each task should complete before the next starts
+  // Expected order: start-A, end-A, start-B, end-B, start-C, end-C
+  expect(executionOrder).toEqual(["start-A", "end-A", "start-B", "end-B", "start-C", "end-C"]);
+});
+
+test("OrchestratorAgent should respect concurrency limit in parallel mode", async () => {
+  const model = new OpenAIChatModel();
+  const aigne = new AIGNE({ model });
+
+  const agent = OrchestratorAgent.from({
+    objective: PromptBuilder.from("Research many topics"),
+    inputKey: "message",
+    concurrency: 2, // Only 2 concurrent tasks allowed
+  });
+
+  let currentConcurrency = 0;
+  let maxConcurrency = 0;
+  let plannerCallCount = 0;
+
+  spyOn(model, "process").mockImplementation(async (options) => {
+    const messages = options.messages;
+    const systemMessage = getMessageContent(messages.find((m) => m.role === "system")?.content);
+
+    // Planner calls
+    if (systemMessage.includes("decide the next tasks")) {
+      plannerCallCount++;
+      if (plannerCallCount === 1) {
+        return {
+          json: {
+            nextTasks: ["Task 1", "Task 2", "Task 3", "Task 4"],
+            parallelTasks: true,
+            finished: false,
+          } satisfies PlannerOutput,
+        };
+      }
+      return { json: { finished: true } satisfies PlannerOutput };
+    }
+
+    // Worker calls
+    if (systemMessage.includes("task execution agent")) {
+      currentConcurrency++;
+      maxConcurrency = Math.max(maxConcurrency, currentConcurrency);
+
+      await new Promise((resolve) => setTimeout(resolve, 30));
+
+      currentConcurrency--;
+
+      return {
+        json: { result: "Done", success: true } satisfies WorkerOutput,
+      };
+    }
+
+    return { text: "Completed" };
+  });
+
+  await aigne.invoke(agent, { message: "Test concurrency" });
+
+  // Max concurrency should not exceed the configured limit
+  expect(maxConcurrency).toBeLessThanOrEqual(2);
+  // But should actually use parallelism (more than 1)
+  expect(maxConcurrency).toBeGreaterThan(1);
 });

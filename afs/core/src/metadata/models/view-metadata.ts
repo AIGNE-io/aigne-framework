@@ -7,6 +7,7 @@ export const viewMetadataTable = sqliteTable(
   "view_metadata",
   {
     id: integer("id").notNull().primaryKey({ autoIncrement: true }),
+    module: text("module").notNull(),
     path: text("path").notNull(),
     view: text("view").notNull(), // JSON stringified View object
     state: text("state").notNull(), // 'ready' | 'stale' | 'generating' | 'failed'
@@ -21,7 +22,7 @@ export const viewMetadataTable = sqliteTable(
     pathIdx: index("idx_view_path").on(table.path),
     stateIdx: index("idx_view_state").on(table.state),
     derivedFromIdx: index("idx_view_derived_from").on(table.derivedFrom),
-    uniquePathView: index("unique_path_view").on(table.path, table.view),
+    uniqueModulePathView: index("unique_module_path_view").on(table.module, table.path, table.view),
   }),
 );
 

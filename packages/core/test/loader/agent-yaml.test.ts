@@ -341,6 +341,55 @@ test("loadAgentFromYaml should load AIAgent with AFS correctly", async () => {
   expect(agent.afs).toBeInstanceOf(AFS);
 });
 
+test("loadAgentFromYaml should load AIAgent with AFS drivers correctly", async () => {
+  // Track options passed to create functions
+  let moduleOptions: any;
+  let driverOptions: any;
+
+  // Mock module for testing
+  const createMockModule = (options: any) => {
+    moduleOptions = options;
+    return {
+      name: "local-fs",
+      description: "Mock local-fs module",
+    };
+  };
+
+  // Mock driver for testing
+  const createMockDriver = (options: any) => {
+    driverOptions = options;
+    return {
+      name: "i18n",
+      description: "Mock i18n driver",
+      capabilities: { dimensions: ["language" as const] },
+      canHandle: (view: { language?: string }) => !!view.language,
+      process: async () => ({ result: { id: "test", path: "/test", content: "translated" } }),
+    };
+  };
+
+  const agent = await loadAgent(
+    join(import.meta.dirname, "../../test-agents/test-afs-driver.yaml"),
+    {
+      afs: {
+        availableModules: [{ module: "local-fs", create: createMockModule }],
+        availableDrivers: [{ driver: "i18n", create: createMockDriver }],
+      },
+    },
+  );
+
+  assert(agent instanceof AIAgent, "agent should be an instance of AIAgent");
+  expect(agent.afs).toBeInstanceOf(AFS);
+  expect(agent.afs?.drivers).toHaveLength(1);
+  expect(agent.afs?.drivers[0]?.name).toBe("i18n");
+
+  // Verify options are passed as-is from YAML (not camelized)
+  expect(moduleOptions).toEqual({ local_path: "./test-docs" });
+  expect(driverOptions).toEqual({
+    default_source_language: "zh",
+    supported_languages: ["en", "ja"],
+  });
+});
+
 test("loadAgentFromYaml should inline function correctly", async () => {
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/test-inline-function.yaml"),

@@ -10,10 +10,11 @@ import type { View } from "../type.js";
 export type ViewState = "ready" | "stale" | "generating" | "failed";
 
 /**
- * Source-level metadata (per path)
+ * Source-level metadata (per module + path)
  * Tracks the main content version
  */
 export interface SourceMetadata {
+  module: string;
   path: string;
   sourceRevision: string; // Content hash or mtime:size identifier
   updatedAt: Date;
@@ -21,10 +22,11 @@ export interface SourceMetadata {
 }
 
 /**
- * View-level metadata (per path + view combination)
+ * View-level metadata (per module + path + view combination)
  * Tracks the state of each view projection
  */
 export interface ViewMetadata {
+  module: string;
   path: string;
   view: View;
   state: ViewState;
@@ -40,18 +42,27 @@ export interface ViewMetadata {
  */
 export interface MetadataStore {
   // Source metadata operations
-  getSourceMetadata(path: string): Promise<SourceMetadata | null>;
-  setSourceMetadata(path: string, metadata: Omit<SourceMetadata, "path">): Promise<void>;
-  deleteSourceMetadata(path: string): Promise<void>;
+  getSourceMetadata(module: string, path: string): Promise<SourceMetadata | null>;
+  setSourceMetadata(
+    module: string,
+    path: string,
+    metadata: Omit<SourceMetadata, "module" | "path">,
+  ): Promise<void>;
+  deleteSourceMetadata(module: string, path: string): Promise<void>;
 
   // View metadata operations
-  getViewMetadata(path: string, view: View): Promise<ViewMetadata | null>;
-  setViewMetadata(path: string, view: View, metadata: Partial<ViewMetadata>): Promise<void>;
-  listViewMetadata(path: string): Promise<ViewMetadata[]>;
-  deleteViewMetadata(path: string, view?: View): Promise<void>;
+  getViewMetadata(module: string, path: string, view: View): Promise<ViewMetadata | null>;
+  setViewMetadata(
+    module: string,
+    path: string,
+    view: View,
+    metadata: Partial<ViewMetadata>,
+  ): Promise<void>;
+  listViewMetadata(module: string, path: string): Promise<ViewMetadata[]>;
+  deleteViewMetadata(module: string, path: string, view?: View): Promise<void>;
 
   // Batch operations
-  markViewsAsStale(path: string): Promise<void>;
+  markViewsAsStale(module: string, path: string): Promise<void>;
   listStaleViews(): Promise<ViewMetadata[]>;
   listGeneratingViews(): Promise<ViewMetadata[]>;
 

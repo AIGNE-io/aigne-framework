@@ -51,8 +51,8 @@ export class ViewProcessor {
   /**
    * Check if a view is stale (outdated)
    */
-  async isViewStale(path: string, view: View): Promise<boolean> {
-    const viewMeta = await this.metadataStore.getViewMetadata(path, view);
+  async isViewStale(module: AFSModule, path: string, view: View): Promise<boolean> {
+    const viewMeta = await this.metadataStore.getViewMetadata(module.name, path, view);
     if (!viewMeta) return true; // Missing view is stale
 
     if (viewMeta.state === "stale" || viewMeta.state === "failed") {
@@ -64,7 +64,7 @@ export class ViewProcessor {
     }
 
     // Check if derivedFrom matches current sourceRevision
-    const sourceMeta = await this.metadataStore.getSourceMetadata(path);
+    const sourceMeta = await this.metadataStore.getSourceMetadata(module.name, path);
     if (!sourceMeta) return true;
 
     return viewMeta.derivedFrom !== sourceMeta.sourceRevision;
@@ -82,7 +82,7 @@ export class ViewProcessor {
   ): Promise<AFSEntry> {
     try {
       // 1. Get or create source metadata
-      let sourceMeta = await this.metadataStore.getSourceMetadata(path);
+      let sourceMeta = await this.metadataStore.getSourceMetadata(module.name, path);
 
       if (!sourceMeta) {
         // Read source to create metadata
@@ -92,13 +92,13 @@ export class ViewProcessor {
         }
 
         const sourceRevision = this.computeRevision(sourceResult.result);
-        await this.metadataStore.setSourceMetadata(path, {
+        await this.metadataStore.setSourceMetadata(module.name, path, {
           sourceRevision,
           updatedAt: new Date(),
           driversHint: this.drivers.map((d) => d.name),
         });
 
-        sourceMeta = await this.metadataStore.getSourceMetadata(path);
+        sourceMeta = await this.metadataStore.getSourceMetadata(module.name, path);
       }
 
       if (!sourceMeta) {
@@ -106,7 +106,7 @@ export class ViewProcessor {
       }
 
       // 2. Mark as generating
-      await this.metadataStore.setViewMetadata(path, view, {
+      await this.metadataStore.setViewMetadata(module.name, path, view, {
         state: "generating",
         derivedFrom: sourceMeta.sourceRevision,
       });
@@ -130,7 +130,7 @@ export class ViewProcessor {
       });
 
       // 5. Update to ready
-      await this.metadataStore.setViewMetadata(path, view, {
+      await this.metadataStore.setViewMetadata(module.name, path, view, {
         state: "ready",
         generatedAt: new Date(),
         storagePath: result.result.metadata?.storagePath,
@@ -140,7 +140,7 @@ export class ViewProcessor {
       return result.result;
     } catch (error: any) {
       // 6. Mark as failed
-      await this.metadataStore.setViewMetadata(path, view, {
+      await this.metadataStore.setViewMetadata(module.name, path, view, {
         state: "failed",
         error: error.message,
       });
@@ -185,8 +185,8 @@ export class ViewProcessor {
     }
 
     // 1. Query view metadata
-    const viewMeta = await this.metadataStore.getViewMetadata(path, options.view);
-    const isStale = await this.isViewStale(path, options.view);
+    const viewMeta = await this.metadataStore.getViewMetadata(module.name, path, options.view);
+    const isStale = await this.isViewStale(module, path, options.view);
 
     // 2. If view is ready and not stale, return it
     if (viewMeta?.state === "ready" && !isStale) {
@@ -221,14 +221,14 @@ export class ViewProcessor {
   /**
    * Update source metadata after write
    */
-  async handleWrite(path: string, entry: AFSEntry): Promise<void> {
+  async handleWrite(module: AFSModule, path: string, entry: AFSEntry): Promise<void> {
     const newRevision = this.computeRevision(entry);
 
     // Get old metadata
-    const oldMeta = await this.metadataStore.getSourceMetadata(path);
+    const oldMeta = await this.metadataStore.getSourceMetadata(module.name, path);
 
     // Update source metadata
-    await this.metadataStore.setSourceMetadata(path, {
+    await this.metadataStore.setSourceMetadata(module.name, path, {
       sourceRevision: newRevision,
       updatedAt: new Date(),
       driversHint: this.drivers.map((d) => d.name),
@@ -236,16 +236,16 @@ export class ViewProcessor {
 
     // If revision changed, mark all views as stale
     if (!oldMeta || oldMeta.sourceRevision !== newRevision) {
-      await this.metadataStore.markViewsAsStale(path);
+      await this.metadataStore.markViewsAsStale(module.name, path);
     }
   }
 
   /**
    * Clean up metadata after delete
    */
-  async handleDelete(path: string): Promise<void> {
-    await this.metadataStore.deleteViewMetadata(path);
-    await this.metadataStore.deleteSourceMetadata(path);
+  async handleDelete(module: AFSModule, path: string): Promise<void> {
+    await this.metadataStore.deleteViewMetadata(module.name, path);
+    await this.metadataStore.deleteSourceMetadata(module.name, path);
   }
 
   /**
@@ -261,8 +261,8 @@ export class ViewProcessor {
 
     // Check which paths need generation
     for (const path of paths) {
-      const isStale = await this.isViewStale(path, view);
-      const viewMeta = await this.metadataStore.getViewMetadata(path, view);
+      const isStale = await this.isViewStale(module, path, view);
+      const viewMeta = await this.metadataStore.getViewMetadata(module.name, path, view);
 
       if (isStale || !viewMeta || viewMeta.state !== "ready") {
         tasksToGenerate.push(path);

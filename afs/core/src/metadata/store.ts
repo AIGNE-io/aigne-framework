@@ -25,17 +25,18 @@ export class SQLiteMetadataStore implements MetadataStore {
   }
 
   // Source metadata operations
-  async getSourceMetadata(path: string): Promise<SourceMetadata | null> {
+  async getSourceMetadata(module: string, path: string): Promise<SourceMetadata | null> {
     const db = await this.db;
     const rows = await db
       .select({
+        module: this.sourceTable.module,
         path: this.sourceTable.path,
         sourceRevision: this.sourceTable.sourceRevision,
         updatedAt: this.sourceTable.updatedAt,
         driversHint: this.sourceTable.driversHint,
       })
       .from(this.sourceTable)
-      .where(eq(this.sourceTable.path, path))
+      .where(and(eq(this.sourceTable.module, module), eq(this.sourceTable.path, path)))
       .limit(1)
       .execute();
 
@@ -43,6 +44,7 @@ export class SQLiteMetadataStore implements MetadataStore {
     if (!row) return null;
 
     return {
+      module: row.module,
       path: row.path,
       sourceRevision: row.sourceRevision,
       updatedAt: row.updatedAt,
@@ -50,7 +52,11 @@ export class SQLiteMetadataStore implements MetadataStore {
     };
   }
 
-  async setSourceMetadata(path: string, metadata: Omit<SourceMetadata, "path">): Promise<void> {
+  async setSourceMetadata(
+    module: string,
+    path: string,
+    metadata: Omit<SourceMetadata, "module" | "path">,
+  ): Promise<void> {
     const db = await this.db;
     const now = new Date();
 
@@ -62,13 +68,9 @@ export class SQLiteMetadataStore implements MetadataStore {
         updatedAt: metadata.updatedAt,
         driversHint: metadata.driversHint ? JSON.stringify(metadata.driversHint) : null,
       })
-      .where(eq(this.sourceTable.path, path))
+      .where(and(eq(this.sourceTable.module, module), eq(this.sourceTable.path, path)))
       .returning({
-        path: this.sourceTable.path,
-        sourceRevision: this.sourceTable.sourceRevision,
-        updatedAt: this.sourceTable.updatedAt,
-        driversHint: this.sourceTable.driversHint,
-        createdAt: this.sourceTable.createdAt,
+        id: this.sourceTable.id,
       })
       .execute();
 
@@ -77,6 +79,7 @@ export class SQLiteMetadataStore implements MetadataStore {
       await db
         .insert(this.sourceTable)
         .values({
+          module,
           path,
           sourceRevision: metadata.sourceRevision,
           updatedAt: metadata.updatedAt,
@@ -87,18 +90,22 @@ export class SQLiteMetadataStore implements MetadataStore {
     }
   }
 
-  async deleteSourceMetadata(path: string): Promise<void> {
+  async deleteSourceMetadata(module: string, path: string): Promise<void> {
     const db = await this.db;
-    await db.delete(this.sourceTable).where(eq(this.sourceTable.path, path)).execute();
+    await db
+      .delete(this.sourceTable)
+      .where(and(eq(this.sourceTable.module, module), eq(this.sourceTable.path, path)))
+      .execute();
   }
 
   // View metadata operations
-  async getViewMetadata(path: string, view: View): Promise<ViewMetadata | null> {
+  async getViewMetadata(module: string, path: string, view: View): Promise<ViewMetadata | null> {
     const db = await this.db;
     const viewKey = JSON.stringify(view);
 
     const rows = await db
       .select({
+        module: this.viewTable.module,
         path: this.viewTable.path,
         view: this.viewTable.view,
         state: this.viewTable.state,
@@ -108,7 +115,13 @@ export class SQLiteMetadataStore implements MetadataStore {
         storagePath: this.viewTable.storagePath,
       })
       .from(this.viewTable)
-      .where(and(eq(this.viewTable.path, path), eq(this.viewTable.view, viewKey)))
+      .where(
+        and(
+          eq(this.viewTable.module, module),
+          eq(this.viewTable.path, path),
+          eq(this.viewTable.view, viewKey),
+        ),
+      )
       .limit(1)
       .execute();
 
@@ -116,6 +129,7 @@ export class SQLiteMetadataStore implements MetadataStore {
     if (!row) return null;
 
     return {
+      module: row.module,
       path: row.path,
       view: JSON.parse(row.view),
       state: row.state as ViewState,
@@ -126,13 +140,18 @@ export class SQLiteMetadataStore implements MetadataStore {
     };
   }
 
-  async setViewMetadata(path: string, view: View, metadata: Partial<ViewMetadata>): Promise<void> {
+  async setViewMetadata(
+    module: string,
+    path: string,
+    view: View,
+    metadata: Partial<ViewMetadata>,
+  ): Promise<void> {
     const db = await this.db;
     const viewKey = JSON.stringify(view);
     const now = new Date();
 
     // Get existing record
-    const existing = await this.getViewMetadata(path, view);
+    const existing = await this.getViewMetadata(module, path, view);
 
     const merged = {
       state: metadata.state || existing?.state || "stale",
@@ -153,18 +172,15 @@ export class SQLiteMetadataStore implements MetadataStore {
         storagePath: merged.storagePath,
         updatedAt: now,
       })
-      .where(and(eq(this.viewTable.path, path), eq(this.viewTable.view, viewKey)))
+      .where(
+        and(
+          eq(this.viewTable.module, module),
+          eq(this.viewTable.path, path),
+          eq(this.viewTable.view, viewKey),
+        ),
+      )
       .returning({
         id: this.viewTable.id,
-        path: this.viewTable.path,
-        view: this.viewTable.view,
-        state: this.viewTable.state,
-        derivedFrom: this.viewTable.derivedFrom,
-        generatedAt: this.viewTable.generatedAt,
-        error: this.viewTable.error,
-        storagePath: this.viewTable.storagePath,
-        createdAt: this.viewTable.createdAt,
-        updatedAt: this.viewTable.updatedAt,
       })
       .execute();
 
@@ -173,6 +189,7 @@ export class SQLiteMetadataStore implements MetadataStore {
       await db
         .insert(this.viewTable)
         .values({
+          module,
           path,
           view: viewKey,
           state: merged.state,
@@ -187,11 +204,12 @@ export class SQLiteMetadataStore implements MetadataStore {
     }
   }
 
-  async listViewMetadata(path: string): Promise<ViewMetadata[]> {
+  async listViewMetadata(module: string, path: string): Promise<ViewMetadata[]> {
     const db = await this.db;
 
     const rows = await db
       .select({
+        module: this.viewTable.module,
         path: this.viewTable.path,
         view: this.viewTable.view,
         state: this.viewTable.state,
@@ -201,10 +219,11 @@ export class SQLiteMetadataStore implements MetadataStore {
         storagePath: this.viewTable.storagePath,
       })
       .from(this.viewTable)
-      .where(eq(this.viewTable.path, path))
+      .where(and(eq(this.viewTable.module, module), eq(this.viewTable.path, path)))
       .execute();
 
     return rows.map((row) => ({
+      module: row.module,
       path: row.path,
       view: JSON.parse(row.view),
       state: row.state as ViewState,
@@ -215,22 +234,31 @@ export class SQLiteMetadataStore implements MetadataStore {
     }));
   }
 
-  async deleteViewMetadata(path: string, view?: View): Promise<void> {
+  async deleteViewMetadata(module: string, path: string, view?: View): Promise<void> {
     const db = await this.db;
 
     if (view) {
       const viewKey = JSON.stringify(view);
       await db
         .delete(this.viewTable)
-        .where(and(eq(this.viewTable.path, path), eq(this.viewTable.view, viewKey)))
+        .where(
+          and(
+            eq(this.viewTable.module, module),
+            eq(this.viewTable.path, path),
+            eq(this.viewTable.view, viewKey),
+          ),
+        )
         .execute();
     } else {
-      await db.delete(this.viewTable).where(eq(this.viewTable.path, path)).execute();
+      await db
+        .delete(this.viewTable)
+        .where(and(eq(this.viewTable.module, module), eq(this.viewTable.path, path)))
+        .execute();
     }
   }
 
   // Batch operations
-  async markViewsAsStale(path: string): Promise<void> {
+  async markViewsAsStale(module: string, path: string): Promise<void> {
     const db = await this.db;
     const now = new Date();
 
@@ -240,7 +268,7 @@ export class SQLiteMetadataStore implements MetadataStore {
         state: "stale",
         updatedAt: now,
       })
-      .where(eq(this.viewTable.path, path))
+      .where(and(eq(this.viewTable.module, module), eq(this.viewTable.path, path)))
       .execute();
   }
 
@@ -249,6 +277,7 @@ export class SQLiteMetadataStore implements MetadataStore {
 
     const rows = await db
       .select({
+        module: this.viewTable.module,
         path: this.viewTable.path,
         view: this.viewTable.view,
         state: this.viewTable.state,
@@ -262,6 +291,7 @@ export class SQLiteMetadataStore implements MetadataStore {
       .execute();
 
     return rows.map((row) => ({
+      module: row.module,
       path: row.path,
       view: JSON.parse(row.view),
       state: row.state as ViewState,
@@ -277,6 +307,7 @@ export class SQLiteMetadataStore implements MetadataStore {
 
     const rows = await db
       .select({
+        module: this.viewTable.module,
         path: this.viewTable.path,
         view: this.viewTable.view,
         state: this.viewTable.state,
@@ -290,6 +321,7 @@ export class SQLiteMetadataStore implements MetadataStore {
       .execute();
 
     return rows.map((row) => ({
+      module: row.module,
       path: row.path,
       view: JSON.parse(row.view),
       state: row.state as ViewState,
@@ -304,17 +336,17 @@ export class SQLiteMetadataStore implements MetadataStore {
   async cleanupOrphanedViewMetadata(): Promise<void> {
     const db = await this.db;
 
-    // Get all distinct paths from view_metadata
+    // Get all distinct (module, path) pairs from view_metadata
     const rows = await db
-      .selectDistinct({ path: this.viewTable.path })
+      .selectDistinct({ module: this.viewTable.module, path: this.viewTable.path })
       .from(this.viewTable)
       .execute();
 
-    for (const { path } of rows) {
-      const sourceMeta = await this.getSourceMetadata(path);
+    for (const { module, path } of rows) {
+      const sourceMeta = await this.getSourceMetadata(module, path);
       if (!sourceMeta) {
-        // Source doesn't exist, delete all view metadata for this path
-        await this.deleteViewMetadata(path);
+        // Source doesn't exist, delete all view metadata for this module + path
+        await this.deleteViewMetadata(module, path);
       }
     }
   }

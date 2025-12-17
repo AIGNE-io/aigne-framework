@@ -197,7 +197,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
     // Update metadata if view processor is available
     if (this.viewProcessor) {
-      await this.viewProcessor.handleWrite(module.subpath, res.result);
+      await this.viewProcessor.handleWrite(module.module, module.subpath, res.result);
     }
 
     return {
@@ -217,7 +217,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
     // Clean up metadata if view processor is available
     if (this.viewProcessor) {
-      await this.viewProcessor.handleDelete(module.subpath);
+      await this.viewProcessor.handleDelete(module.module, module.subpath);
     }
 
     return result;

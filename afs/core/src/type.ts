@@ -209,7 +209,7 @@ export interface AFSContextPreset {
 
   per?: AFSContextPresetOptionAgent<{ data: AFSEntry }, { data: unknown }>;
 
-  dedupe?: AFSContextPresetOptionAgent<{ data: unknown[] }, { data: unknown[] }>;
+  dedupe?: AFSContextPresetOptionAgent<{ data: unknown[] }, { data: unknown }>;
 }
 
 export interface AFSContextPresetOptionAgent<I = any, O = any> {

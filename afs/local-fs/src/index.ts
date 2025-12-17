@@ -91,7 +91,7 @@ export class LocalFS implements AFSModule {
       let childItems: string[] | undefined;
 
       if (isDirectory) {
-        const items = await readdir(fullPath);
+        const items = (await readdir(fullPath)).sort();
 
         // Load .gitignore rules for this directory if not disabled
         let ig: ReturnType<typeof ignore> | null = null;

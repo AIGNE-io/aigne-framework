@@ -77,16 +77,16 @@ test("AFS'skill list should respect gitignore by default", async () => {
   ).toMatchInlineSnapshot(`
     "└── modules
         └── project [5 items]
-            ├── tests [1 items]
-            │   └── test.spec.js
-            ├── index.js
-            ├── README.md
             ├── .gitignore
-            └── src [3 items]
-                ├── utils [1 items]
-                │   └── helper.js
-                ├── main.js
-                └── .gitignore
+            ├── README.md
+            ├── index.js
+            ├── src [3 items]
+            │   ├── .gitignore
+            │   ├── main.js
+            │   └── utils [1 items]
+            │       └── helper.js
+            └── tests [1 items]
+                └── test.spec.js
     "
   `);
 
@@ -96,10 +96,10 @@ test("AFS'skill list should respect gitignore by default", async () => {
     "└── modules
         └── project
             └── src [3 items]
-                ├── utils [1 items]
-                │   └── helper.js
+                ├── .gitignore
                 ├── main.js
-                └── .gitignore
+                └── utils [1 items]
+                    └── helper.js
     "
   `);
 });
@@ -114,27 +114,27 @@ test("AFS'skill list should show all files when gitignore is disabled", async ()
   expect(result.data).toMatchInlineSnapshot(`
     "└── modules
         └── project [10 items]
-            ├── node_modules [1 items]
-            │   └── package.json
-            ├── tests [1 items]
-            │   └── test.spec.js
-            ├── index.js
-            ├── README.md
-            ├── .gitignore
             ├── .env
-            ├── debug.log
+            ├── .git [0 items]
+            ├── .gitignore
+            ├── README.md
             ├── build [1 items]
             │   └── output.js
-            ├── .git [0 items]
-            └── src [6 items]
-                ├── test.tmp
-                ├── utils [2 items]
-                │   ├── test.tmp
-                │   └── helper.js
-                ├── main.js
-                ├── .gitignore
-                ├── debug.log
-                └── data.cache
+            ├── debug.log
+            ├── index.js
+            ├── node_modules [1 items]
+            │   └── package.json
+            ├── src [6 items]
+            │   ├── .gitignore
+            │   ├── data.cache
+            │   ├── debug.log
+            │   ├── main.js
+            │   ├── test.tmp
+            │   └── utils [2 items]
+            │       ├── helper.js
+            │       └── test.tmp
+            └── tests [1 items]
+                └── test.spec.js
     "
   `);
 });
@@ -146,10 +146,10 @@ test("AFS'skill list should handle nested .gitignore files correctly", async () 
     "└── modules
         └── project
             └── src [3 items]
-                ├── utils [1 items]
-                │   └── helper.js
+                ├── .gitignore
                 ├── main.js
-                └── .gitignore
+                └── utils [1 items]
+                    └── helper.js
     "
   `);
 });
@@ -188,31 +188,36 @@ test("AFS'skill list should handle maxChildren with nested directories", async (
   expect(result.data).toMatchInlineSnapshot(`
     "└── modules
         └── nested-test [11 items, truncated]
+            ├── dir0 [8 items, truncated]
+            │   ├── file0.txt
+            │   ├── file1.txt
+            │   ├── file2.txt
+            │   ├── file3.txt
+            │   └── file4.txt
+            ├── dir1 [8 items, truncated]
+            │   ├── file0.txt
+            │   ├── file1.txt
+            │   ├── file2.txt
+            │   ├── file3.txt
+            │   └── file4.txt
             ├── dir2 [8 items, truncated]
+            │   ├── file0.txt
+            │   ├── file1.txt
             │   ├── file2.txt
             │   ├── file3.txt
-            │   ├── file1.txt
-            │   ├── file0.txt
-            │   └── file4.txt
-            ├── dir5 [8 items, truncated]
-            │   ├── file2.txt
-            │   ├── file3.txt
-            │   ├── file1.txt
-            │   ├── file0.txt
-            │   └── file4.txt
-            ├── dir4 [8 items, truncated]
-            │   ├── file2.txt
-            │   ├── file3.txt
-            │   ├── file1.txt
-            │   ├── file0.txt
             │   └── file4.txt
             ├── dir3 [8 items, truncated]
+            │   ├── file0.txt
+            │   ├── file1.txt
             │   ├── file2.txt
             │   ├── file3.txt
-            │   ├── file1.txt
-            │   ├── file0.txt
             │   └── file4.txt
-            └── root1.txt
+            └── dir4 [8 items, truncated]
+                ├── file0.txt
+                ├── file1.txt
+                ├── file2.txt
+                ├── file3.txt
+                └── file4.txt
     "
   `);
 

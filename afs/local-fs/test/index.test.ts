@@ -166,6 +166,20 @@ test("LocalFS should read a nested file", async () => {
   expect(data?.metadata?.type).toBe("file");
 });
 
+test("LocalFS should return error message instead of raising error", async () => {
+  expect(await localFS.read("FILE_NOT_EXIST.md")).toMatchInlineSnapshot(
+    {
+      message: expect.stringMatching("ENOENT: no such file or directory, stat"),
+    },
+    `
+    {
+      "data": undefined,
+      "message": StringMatching "ENOENT: no such file or directory, stat",
+    }
+  `,
+  );
+});
+
 // Write method tests
 test("LocalFS should write a new file", async () => {
   const entry = {

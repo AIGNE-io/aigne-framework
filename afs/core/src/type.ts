@@ -36,12 +36,13 @@ export interface AFSSearchResult {
   message?: string;
 }
 
-export type AFSReadOptions = object;
+export interface AFSReadOptions {
+  context?: any;
+}
 
 export interface AFSReadResult {
   data?: AFSEntry;
   message?: string;
-  context?: any;
 }
 
 export interface AFSDeleteOptions {

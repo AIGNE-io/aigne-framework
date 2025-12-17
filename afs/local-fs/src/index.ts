@@ -7,6 +7,7 @@ import type {
   AFSListOptions,
   AFSListResult,
   AFSModule,
+  AFSReadOptions,
   AFSReadResult,
   AFSRenameOptions,
   AFSSearchOptions,
@@ -170,31 +171,38 @@ export class LocalFS implements AFSModule {
     };
   }
 
-  async read(path: string): Promise<AFSReadResult> {
-    const fullPath = join(this.options.localPath, path);
+  async read(path: string, _options?: AFSReadOptions): Promise<AFSReadResult> {
+    try {
+      const fullPath = join(this.options.localPath, path);
 
-    const stats = await stat(fullPath);
+      const stats = await stat(fullPath);
 
-    let content: string | undefined;
-    if (stats.isFile()) {
-      const fileContent = await readFile(fullPath, "utf8");
-      content = fileContent;
+      let content: string | undefined;
+      if (stats.isFile()) {
+        const fileContent = await readFile(fullPath, "utf8");
+        content = fileContent;
+      }
+
+      const entry: AFSEntry = {
+        id: path,
+        path: path,
+        createdAt: stats.birthtime,
+        updatedAt: stats.mtime,
+        content,
+        metadata: {
+          type: stats.isDirectory() ? "directory" : "file",
+          size: stats.size,
+          mode: stats.mode,
+        },
+      };
+
+      return { data: entry };
+    } catch (error) {
+      return {
+        data: undefined,
+        message: error.message,
+      };
     }
-
-    const entry: AFSEntry = {
-      id: path,
-      path: path,
-      createdAt: stats.birthtime,
-      updatedAt: stats.mtime,
-      content,
-      metadata: {
-        type: stats.isDirectory() ? "directory" : "file",
-        size: stats.size,
-        mode: stats.mode,
-      },
-    };
-
-    return { data: entry };
   }
 
   async write(

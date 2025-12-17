@@ -120,13 +120,11 @@ export class I18nDriver implements AFSDriver {
     targetLanguage: string,
     context: Context,
   ): Promise<string> {
-    const { translatedContent } = await context
-      .newContext({ reset: true })
-      .invoke(this.translationAgent, {
-        content,
-        targetLanguage,
-        sourceLanguage: this.options.defaultSourceLanguage,
-      });
+    const { translatedContent } = await context.invoke(this.translationAgent, {
+      content,
+      targetLanguage,
+      sourceLanguage: this.options.defaultSourceLanguage,
+    });
 
     return translatedContent;
   }

@@ -50,7 +50,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
     // Initialize metadata store and view processor if drivers are present
     if (this._drivers.length > 0) {
-      const metadataPath = options?.metadataPath || "file:.afs/metadata.db";
+      const metadataPath = options?.metadataPath || "file:./.afs/metadata.db";
       this.metadataStore = new SQLiteMetadataStore({ url: metadataPath });
       this.viewProcessor = new ViewProcessor(this.metadataStore, this._drivers);
 

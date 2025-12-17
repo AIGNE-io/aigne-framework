@@ -132,7 +132,7 @@ test("View driver: should translate content with view", async () => {
   const afs = new AFS({
     modules: [mockFS],
     drivers: [mockDriver],
-    metadataPath: `file:${testDbPath}/metadata.db`,
+    storage: { url: testDbPath },
   });
 
   // Write source content (Chinese)
@@ -178,7 +178,7 @@ test("View driver: should use cached view on second read", async () => {
   const afs = new AFS({
     modules: [mockFS],
     drivers: [mockDriver],
-    metadataPath: `file:${testDbPath}/metadata-cache.db`,
+    storage: { url: `${testDbPath}/cache` },
   });
 
   await afs.write("/modules/mock-fs/cache-test.md", {
@@ -217,7 +217,7 @@ test("View driver: should invalidate cache when source changes", async () => {
   const afs = new AFS({
     modules: [mockFS],
     drivers: [mockDriver],
-    metadataPath: `file:${testDbPath}/metadata-invalidate.db`,
+    storage: { url: `${testDbPath}/invalidate` },
   });
 
   // Write initial content
@@ -266,7 +266,7 @@ test("View driver: fallback mode should return source immediately", async () => 
   const afs = new AFS({
     modules: [mockFS],
     drivers: [slowDriver],
-    metadataPath: `file:${testDbPath}/metadata-fallback.db`,
+    storage: { url: `${testDbPath}/fallback` },
   });
 
   await afs.write("/modules/mock-fs/fallback-test.md", {
@@ -309,7 +309,7 @@ test("View driver: prefetch should batch generate views", async () => {
   const afs = new AFS({
     modules: [mockFS],
     drivers: [mockDriver],
-    metadataPath: `file:${testDbPath}/metadata-prefetch.db`,
+    storage: { url: `${testDbPath}/prefetch` },
   });
 
   // Create multiple files

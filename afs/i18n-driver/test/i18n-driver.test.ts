@@ -186,7 +186,7 @@ test("I18nDriver should integrate with AFS", async () => {
   const afs = new AFS({
     modules: [mockFS],
     drivers: [driver],
-    metadataPath: "file:.afs-test/i18n-test.db",
+    storage: { url: ".afs-test/i18n-test" },
   });
 
   // Write source content (Chinese)

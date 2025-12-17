@@ -41,7 +41,9 @@ export interface AFSOptions {
   modules?: AFSModule[];
   context?: AFSContext;
   drivers?: AFSDriver[];
-  metadataPath?: string; // SQLite database path for metadata, default: ".afs/metadata.db"
+  storage?: {
+    url: string; // Storage path for AFS data, default: ".afs"
+  };
 }
 
 export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
@@ -65,7 +67,8 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
     // Initialize metadata store and view processor if drivers are present
     if (this._drivers.length > 0) {
-      const metadataPath = options?.metadataPath || "file:./.afs/metadata.db";
+      const storageUrl = options?.storage?.url || ".afs";
+      const metadataPath = `file:${storageUrl}/metadata.db`;
       this.metadataStore = new SQLiteMetadataStore({ url: metadataPath });
       this.viewProcessor = new ViewProcessor(this.metadataStore, this._drivers);
 

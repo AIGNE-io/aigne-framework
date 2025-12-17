@@ -253,8 +253,12 @@ export async function parseAgent(
       drivers.push(driver);
     }
 
-    // Create AFS with modules and drivers
-    afs = new AFS({ modules, drivers });
+    // Create AFS with modules, drivers, and storage options
+    afs = new AFS({
+      modules,
+      drivers,
+      storage: agent.afs.storage,
+    });
   }
 
   const skills =

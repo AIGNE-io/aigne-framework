@@ -43,6 +43,28 @@ export type AFSModuleSchema =
       options?: Record<string, any>;
     };
 
+export interface AFSContextPresetSchema {
+  view?: string;
+  select?: {
+    agent: NestAgentSchema;
+  };
+  per?: {
+    agent: NestAgentSchema;
+  };
+  dedupe?: {
+    agent: NestAgentSchema;
+  };
+}
+
+export interface AFSContextSchema {
+  search?: {
+    presets?: Record<string, AFSContextPresetSchema>;
+  };
+  list?: {
+    presets?: Record<string, AFSContextPresetSchema>;
+  };
+}
+
 export interface BaseAgentSchema {
   name?: string;
   description?: string;
@@ -64,8 +86,9 @@ export interface BaseAgentSchema {
       };
   afs?:
     | boolean
-    | (Omit<AFSOptions, "modules"> & {
+    | (Omit<AFSOptions, "modules" | "context"> & {
         modules?: AFSModuleSchema[];
+        context?: AFSContextSchema;
       });
   shareAFS?: boolean;
 }
@@ -255,6 +278,32 @@ export const getAgentSchema = ({
       }),
     );
 
+    const afsContextPresetsSchema = z.object({
+      presets: optionalize(
+        z.record(
+          z.string(),
+          z.object({
+            view: optionalize(z.string()),
+            select: optionalize(
+              z.object({
+                agent: nestAgentSchema,
+              }),
+            ),
+            per: optionalize(
+              z.object({
+                agent: nestAgentSchema,
+              }),
+            ),
+            dedupe: optionalize(
+              z.object({
+                agent: nestAgentSchema,
+              }),
+            ),
+          }),
+        ),
+      ),
+    });
+
     const baseAgentSchema = z.object({
       name: optionalize(z.string()),
       alias: optionalize(z.array(z.string())),
@@ -301,6 +350,12 @@ export const getAgentSchema = ({
                     ),
                   ]),
                 ),
+              ),
+              context: optionalize(
+                z.object({
+                  search: optionalize(afsContextPresetsSchema),
+                  list: optionalize(afsContextPresetsSchema),
+                }),
               ),
             }),
           ),

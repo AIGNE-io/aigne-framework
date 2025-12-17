@@ -1,11 +1,11 @@
-import type { AFSRootListOptions, AFSSearchOptions } from "@aigne/afs";
-import type { Agent } from "../../../agents/agent.js";
+import type { AFSRootListOptions, AFSRootSearchOptions } from "@aigne/afs";
+import type { Agent, AgentInvokeOptions } from "../../../agents/agent.js";
 import { pick } from "../../../utils/type-utils.js";
 import { AFS_DESCRIPTION_PROMPT_TEMPLATE } from "../../prompts/afs-builtin-prompt.js";
 import { getAFSSkills } from "../../skills/afs/index.js";
 import { getHistories } from "./history.js";
 
-export function createAFSContext(agent?: Agent<any, any>) {
+export function createAFSContext(agent?: Agent<any, any>, context?: AgentInvokeOptions["context"]) {
   const afs = agent?.afs;
 
   return {
@@ -31,15 +31,16 @@ export function createAFSContext(agent?: Agent<any, any>) {
     },
     async list(path: string, options?: AFSRootListOptions) {
       if (!afs) throw new Error("AFS is not configured for this agent.");
-      return (await afs.list(path, { ...options, format: options?.format || "tree" })).data;
+      return (await afs.list(path, { ...options, context, format: options?.format || "tree" }))
+        .data;
     },
     async read(path: string) {
       if (!afs) throw new Error("AFS is not configured for this agent.");
       return (await afs.read(path)).data;
     },
-    async search(path: string, query: string, options: AFSSearchOptions = {}) {
+    async search(path: string, query: string, options: AFSRootSearchOptions = {}) {
       if (!afs) throw new Error("AFS is not configured for this agent.");
-      return (await afs.search(path, query, options)).data;
+      return (await afs.search(path, query, { ...options, context })).data;
     },
   };
 }

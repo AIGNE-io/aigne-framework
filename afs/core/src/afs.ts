@@ -1,6 +1,8 @@
 import { Emitter } from "strict-event-emitter";
 import { joinURL } from "ufo";
 import type {
+  AFSContext,
+  AFSContextPreset,
   AFSDeleteOptions,
   AFSDeleteResult,
   AFSEntry,
@@ -19,8 +21,12 @@ import type {
   AFSRootListResult,
   AFSRootListResultWithListFormat,
   AFSRootListResultWithTreeFormat,
-  AFSSearchOptions,
-  AFSSearchResult,
+  AFSRootSearchOptions,
+  AFSRootSearchOptionsNormal,
+  AFSRootSearchOptionsWithPreset,
+  AFSRootSearchResult,
+  AFSRootSearchResultNormal,
+  AFSRootSearchResultWithPreset,
   AFSWriteEntryPayload,
   AFSWriteOptions,
   AFSWriteResult,
@@ -32,12 +38,13 @@ const MODULES_ROOT_DIR = "/modules";
 
 export interface AFSOptions {
   modules?: AFSModule[];
+  context?: AFSContext;
 }
 
 export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
   name: string = "AFSRoot";
 
-  constructor(options?: AFSOptions) {
+  constructor(public options: AFSOptions = {}) {
     super();
 
     for (const module of options?.modules ?? []) {
@@ -211,7 +218,80 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     return await oldModule.module.rename(oldModule.subpath, newModule.subpath, options);
   }
 
-  async search(path: string, query: string, options?: AFSSearchOptions): Promise<AFSSearchResult> {
+  async search(
+    path: string,
+    query: string,
+    options: AFSRootSearchOptionsWithPreset,
+  ): Promise<AFSRootSearchResultWithPreset>;
+  async search(
+    path: string,
+    query: string,
+    options?: AFSRootSearchOptionsNormal,
+  ): Promise<AFSRootSearchResultNormal>;
+  async search(
+    path: string,
+    query: string,
+    options?: AFSRootSearchOptions,
+  ): Promise<AFSRootSearchResult>;
+  async search(
+    path: string,
+    query: string,
+    options?: AFSRootSearchOptions,
+  ): Promise<AFSRootSearchResult> {
+    if (options && "preset" in options && options.preset) {
+      return this.searchWithPreset(path, query, options);
+    }
+
+    return this.searchEntries(path, query, options);
+  }
+
+  private async searchWithPreset(
+    path: string,
+    query: string,
+    options: AFSRootSearchOptionsWithPreset,
+  ): Promise<AFSRootSearchResultWithPreset> {
+    const preset = this.options?.context?.search?.presets?.[options.preset];
+    if (!preset) throw new Error(`Preset not found: ${options.preset}`);
+
+    const { select, per, dedupe } = preset;
+
+    const entries = select
+      ? (await this.presetSelect(path, query, select, options)).data
+      : (await this.searchEntries(path, query, options)).data;
+
+    const mapped = per
+      ? await Promise.all(
+          entries.map((data) => per.invoke({ data }, options).then((res) => res.data)),
+        )
+      : entries;
+
+    const deduped = dedupe
+      ? await dedupe.invoke({ data: mapped }, options).then((res) => res.data)
+      : mapped;
+
+    return { data: deduped };
+  }
+
+  private async presetSelect(
+    path: string,
+    query: string,
+    select: NonNullable<AFSContextPreset["select"]>,
+    options?: AFSRootSearchOptions,
+  ): Promise<AFSRootSearchResultNormal> {
+    const { data } = await select.invoke({ path, query }, options);
+
+    const results: AFSEntry[] = (
+      await Promise.all(data.map((p: string) => this.read(p).then((res) => res.data)))
+    ).filter((i): i is NonNullable<typeof i> => !!i);
+
+    return { data: results };
+  }
+
+  private async searchEntries(
+    path: string,
+    query: string,
+    options?: AFSRootSearchOptions,
+  ): Promise<AFSRootSearchResultNormal> {
     const results: AFSEntry[] = [];
     const messages: string[] = [];
 
@@ -219,10 +299,10 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       if (!module.search) continue;
 
       try {
-        const { data: list, message } = await module.search(subpath, query, options);
+        const { data, message } = await module.search(subpath, query, options);
 
         results.push(
-          ...list.map((entry) => ({
+          ...data.map((entry) => ({
             ...entry,
             path: joinURL(modulePath, entry.path),
           })),

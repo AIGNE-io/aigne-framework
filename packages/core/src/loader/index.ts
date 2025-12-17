@@ -1,4 +1,4 @@
-import { AFS, type AFSModule } from "@aigne/afs";
+import { AFS, type AFSContext, type AFSContextPreset, type AFSModule } from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
@@ -26,6 +26,7 @@ import {
 } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
 import {
+  type AFSContextPresetSchema,
   type HooksSchema,
   type Instructions,
   loadAgentFromYamlFile,
@@ -220,7 +221,46 @@ export async function parseAgent(
   } else if (agent.afs === true) {
     afs = new AFS();
   } else if (agent.afs) {
-    afs = new AFS();
+    afs = new AFS({});
+
+    const loadAFSContextPresets = async (
+      presets: Record<string, AFSContextPresetSchema>,
+    ): Promise<Record<string, AFSContextPreset>> => {
+      console.log({ presets });
+
+      return Object.fromEntries(
+        await Promise.all(
+          Object.entries(presets).map<Promise<[string, AFSContextPreset]>>(async ([key, value]) => {
+            const [select, per, dedupe] = await Promise.all(
+              [value.select, value.per, value.dedupe].map(async (item) => {
+                if (!item?.agent) return undefined;
+                const agent = await loadNestAgent(path, item.agent, options, { afs });
+                return {
+                  invoke: (input: any, options: any) =>
+                    options.context.invoke(agent, input, {
+                      ...options,
+                      streaming: false,
+                    }),
+                };
+              }),
+            );
+
+            return [key, { ...value, select, per, dedupe }];
+          }),
+        ),
+      );
+    };
+
+    const context: AFSContext = {
+      search: {
+        presets: await loadAFSContextPresets(agent.afs.context?.search?.presets || {}),
+      },
+      list: {
+        presets: await loadAFSContextPresets(agent.afs.context?.list?.presets || {}),
+      },
+    };
+
+    afs.options.context = context;
 
     for (const m of agent.afs.modules || []) {
       const moduleName = typeof m === "string" ? m : m.module;

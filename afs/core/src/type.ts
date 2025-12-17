@@ -15,16 +15,19 @@ export interface AFSListOptions {
    * @default false
    */
   disableGitignore?: boolean;
+  context?: any;
 }
 
 export interface AFSListResult {
   data: AFSEntry[];
   message?: string;
+  context?: any;
 }
 
 export interface AFSSearchOptions {
   limit?: number;
   caseSensitive?: boolean;
+  context?: any;
 }
 
 export interface AFSSearchResult {
@@ -37,10 +40,12 @@ export type AFSReadOptions = object;
 export interface AFSReadResult {
   data?: AFSEntry;
   message?: string;
+  context?: any;
 }
 
 export interface AFSDeleteOptions {
   recursive?: boolean;
+  context?: any;
 }
 
 export interface AFSDeleteResult {
@@ -49,6 +54,7 @@ export interface AFSDeleteResult {
 
 export interface AFSRenameOptions {
   overwrite?: boolean;
+  context?: any;
 }
 
 export interface AFSRenameResult {
@@ -57,17 +63,19 @@ export interface AFSRenameResult {
 
 export interface AFSWriteOptions {
   append?: boolean;
+  context?: any;
 }
 
 export interface AFSWriteResult {
   data: AFSEntry;
   message?: string;
+  context?: any;
 }
 
 export interface AFSWriteEntryPayload extends Omit<AFSEntry, "id" | "path"> {}
 
 export interface AFSExecOptions {
-  context: Record<string, any>;
+  context: any;
 }
 
 export interface AFSExecResult {
@@ -126,6 +134,22 @@ export interface AFSRootListResultWithTreeFormat extends Omit<AFSListResult, "da
 
 export type AFSRootListResult = AFSRootListResultWithListFormat | AFSRootListResultWithTreeFormat;
 
+export interface AFSRootSearchOptionsNormal extends AFSSearchOptions {}
+
+export interface AFSRootSearchOptionsWithPreset extends AFSSearchOptions {
+  preset: string;
+}
+
+export type AFSRootSearchOptions = AFSRootSearchOptionsNormal | AFSRootSearchOptionsWithPreset;
+
+export interface AFSRootSearchResultNormal extends AFSSearchResult {}
+
+export interface AFSRootSearchResultWithPreset extends Omit<AFSSearchResult, "data"> {
+  data: unknown;
+}
+
+export type AFSRootSearchResult = AFSRootSearchResultNormal | AFSRootSearchResultWithPreset;
+
 export interface AFSRoot extends Emitter<AFSRootEvents>, AFSModule {
   list(
     path: string,
@@ -136,6 +160,18 @@ export interface AFSRoot extends Emitter<AFSRootEvents>, AFSModule {
     options?: AFSRootListOptionsWithListOptions,
   ): Promise<AFSRootListResultWithListFormat>;
   list(path: string, options?: AFSRootListOptions): Promise<AFSRootListResult>;
+
+  search(
+    path: string,
+    query: string,
+    options: AFSRootSearchOptionsWithPreset,
+  ): Promise<AFSRootSearchResultWithPreset>;
+  search(
+    path: string,
+    query: string,
+    options?: AFSRootSearchOptionsNormal,
+  ): Promise<AFSRootSearchResultNormal>;
+  search(path: string, query: string, options: AFSRootSearchOptions): Promise<AFSRootSearchResult>;
 }
 
 export interface AFSEntryMetadata extends Record<string, any> {
@@ -161,4 +197,30 @@ export interface AFSEntry<T = any> {
   metadata?: AFSEntryMetadata | null;
   linkTo?: string | null;
   content?: T;
+}
+
+export interface AFSContextPreset {
+  /**
+   * The view template for presenting the search results.
+   */
+  view?: string;
+
+  select?: AFSContextPresetOptionAgent<{ path: string; query: string }, { data: string[] }>;
+
+  per?: AFSContextPresetOptionAgent<{ data: AFSEntry }, { data: unknown }>;
+
+  dedupe?: AFSContextPresetOptionAgent<{ data: unknown[] }, { data: unknown[] }>;
+}
+
+export interface AFSContextPresetOptionAgent<I = any, O = any> {
+  invoke(input: I, options?: any): Promise<O>;
+}
+
+export interface AFSContext {
+  search?: {
+    presets?: Record<string, AFSContextPreset>;
+  };
+  list?: {
+    presets?: Record<string, AFSContextPreset>;
+  };
 }

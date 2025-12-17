@@ -7,7 +7,7 @@ export function createPromptBuilderContext(options: PromptBuildOptions) {
     userContext: options.context?.userContext,
     ...options.context?.userContext,
     ...options.input,
-    $afs: createAFSContext(options.agent),
+    $afs: createAFSContext(options.agent, options.context),
     $agent: {
       get skills() {
         return options.agent?.skills.map((s) => pick(s, ["name", "description"]));

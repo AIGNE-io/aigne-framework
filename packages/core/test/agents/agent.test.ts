@@ -1007,7 +1007,7 @@ test("Agent should correct handle list/read/search/exec methods for AFS", async 
 
   expect(await agent.list("/")).toMatchInlineSnapshot(`
     {
-      "list": [
+      "data": [
         {
           "id": "/test-agent-list/test-agent-list",
           "metadata": {
@@ -1060,7 +1060,7 @@ test("Agent should correct handle list/read/search/exec methods for AFS", async 
 
   expect(await agent.read("/skill-agent-1")).toMatchInlineSnapshot(`
     {
-      "result": {
+      "data": {
         "id": "/test-agent-list/skill-agent-1",
         "metadata": {
           "execute": {
@@ -1094,7 +1094,7 @@ test("Agent should correct handle list/read/search/exec methods for AFS", async 
     ),
   ).toMatchInlineSnapshot(`
     {
-      "result": {
+      "data": {
         "text": "test message",
       },
     }

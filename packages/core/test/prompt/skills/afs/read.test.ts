@@ -15,12 +15,12 @@ test("AFS'skill read should invoke afs.read", async () => {
   assert(read);
   expect(await read.invoke({ path: "/foo" })).toMatchInlineSnapshot(`
     {
-      "path": "/foo",
-      "result": {
+      "data": {
         "content": "bar",
         "id": "foo",
         "path": "/foo",
       },
+      "path": "/foo",
       "status": "success",
       "tool": "afs_read",
     }
@@ -53,16 +53,16 @@ test("AFS'skill read should handle withLineNumbers option", async () => {
 
   expect(result).toMatchInlineSnapshot(`
     {
-      "path": "/foo/test.txt",
-      "result": {
+      "data": {
         "content": 
-    "line 1
-    line 2
-    line 3"
+    "1| line 1
+    2| line 2
+    3| line 3"
     ,
         "id": "foo",
         "path": "/foo/test.txt",
       },
+      "path": "/foo/test.txt",
       "status": "success",
       "tool": "afs_read",
       "withLineNumbers": true,
@@ -104,6 +104,6 @@ test("AFS'skill read should return file content", async () => {
   assert(read);
   const result = await read.invoke({ path: "/test/file.txt" });
 
-  expect(result.result?.content).toBe(fileContent);
-  expect(result.result?.path).toBe("/test/file.txt");
+  expect(result.data?.content).toBe(fileContent);
+  expect(result.data?.path).toBe("/test/file.txt");
 });

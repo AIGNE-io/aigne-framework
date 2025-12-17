@@ -26,12 +26,14 @@ export interface LocalFSOptions {
   name?: string;
   localPath: string;
   description?: string;
+  ignore?: string[];
 }
 
 const localFSOptionsSchema = z.object({
   name: z.string().nullish(),
   localPath: z.string().describe("The path to the local directory to mount"),
   description: z.string().describe("A description of the mounted directory").nullish(),
+  ignore: z.array(z.string()).nullish(),
 });
 
 export class LocalFS implements AFSModule {
@@ -418,6 +420,7 @@ export class LocalFS implements AFSModule {
     }
 
     ig.add(".git");
+    ig.add(this.options.ignore || []);
 
     return hasRules ? { ig, gitRoot } : null;
   }

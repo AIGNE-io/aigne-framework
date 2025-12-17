@@ -549,15 +549,25 @@ test("LocalFS should respect .gitignore when listing files", async () => {
 
   const gitFS = new LocalFS({ localPath: gitTestDir });
 
-  // Test with gitignore enabled (default)
-  const result = await gitFS.list("", { maxDepth: 2 });
-  const paths = result.data.map((entry) => entry.path);
-
   // Should NOT include ignored files
-  expect(paths.sort()).toMatchInlineSnapshot(`
+  expect(
+    (await gitFS.list("", { maxDepth: 2 })).data.map((i) => i.path).sort(),
+  ).toMatchInlineSnapshot(`
     [
       "/",
       "/.gitignore",
+      "/index.js",
+    ]
+  `);
+
+  // Now test with custom ignore patterns
+  gitFS.options.ignore = [".gitignore"];
+
+  expect(
+    (await gitFS.list("", { maxDepth: 2 })).data.map((i) => i.path).sort(),
+  ).toMatchInlineSnapshot(`
+    [
+      "/",
       "/index.js",
     ]
   `);

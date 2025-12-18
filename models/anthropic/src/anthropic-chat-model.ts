@@ -251,11 +251,18 @@ export class AnthropicChatModel extends ChatModel {
                 model = chunk.message.model;
                 controller.enqueue({ delta: { json: { model } } });
               }
-              const { input_tokens, output_tokens } = chunk.message.usage;
+              const {
+                input_tokens,
+                output_tokens,
+                cache_creation_input_tokens,
+                cache_read_input_tokens,
+              } = chunk.message.usage;
 
               usage = {
                 inputTokens: input_tokens,
                 outputTokens: output_tokens,
+                cacheCreationInputTokens: cache_creation_input_tokens ?? undefined,
+                cacheReadInputTokens: cache_read_input_tokens ?? undefined,
               };
             }
 

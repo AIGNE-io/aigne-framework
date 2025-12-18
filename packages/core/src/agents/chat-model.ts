@@ -261,6 +261,10 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
       options.context.usage.outputTokens += usage.outputTokens;
       options.context.usage.inputTokens += usage.inputTokens;
       if (usage.aigneHubCredits) options.context.usage.aigneHubCredits += usage.aigneHubCredits;
+      if (usage.cacheCreationInputTokens)
+        options.context.usage.cacheCreationInputTokens += usage.cacheCreationInputTokens;
+      if (usage.cacheReadInputTokens)
+        options.context.usage.cacheReadInputTokens += usage.cacheReadInputTokens;
     }
   }
 
@@ -841,12 +845,26 @@ export interface ChatModelOutputUsage {
    * AIGNE Hub credit usage
    */
   aigneHubCredits?: number;
+
+  /**
+   * Number of tokens written to cache (first time caching)
+   * Only applicable for providers that support explicit cache creation (e.g., Anthropic)
+   */
+  cacheCreationInputTokens?: number;
+
+  /**
+   * Number of tokens read from cache (cache hit)
+   * Supported by OpenAI, Anthropic, and Gemini
+   */
+  cacheReadInputTokens?: number;
 }
 
 export const chatModelOutputUsageSchema = z.object({
   inputTokens: z.number(),
   outputTokens: z.number(),
   aigneHubCredits: optionalize(z.number()),
+  cacheCreationInputTokens: optionalize(z.number()),
+  cacheReadInputTokens: optionalize(z.number()),
 });
 
 const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({

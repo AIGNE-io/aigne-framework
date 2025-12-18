@@ -311,6 +311,10 @@ export class GeminiChatModel extends ChatModel {
           usage.outputTokens =
             (chunk.usageMetadata.candidatesTokenCount || 0) +
             (chunk.usageMetadata.thoughtsTokenCount || 0);
+        // Parse cache statistics if available
+        if (chunk.usageMetadata.cachedContentTokenCount) {
+          usage.cacheReadInputTokens = chunk.usageMetadata.cachedContentTokenCount;
+        }
       }
     }
 

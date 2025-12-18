@@ -10,6 +10,7 @@ import {
   type ChatModelInputTool,
   type ChatModelOptions,
   type ChatModelOutput,
+  type ChatModelOutputUsage,
   createRoleMapper,
   STANDARD_ROLE_MAP,
   safeParseJSON,
@@ -418,13 +419,21 @@ export class OpenAIChatModel extends ChatModel {
             }
 
             if (chunk.usage) {
+              const usage: ChatModelOutputUsage = {
+                inputTokens: chunk.usage.prompt_tokens,
+                outputTokens: chunk.usage.completion_tokens,
+              };
+
+              // Parse cache statistics if available
+              const inputDetails = chunk.usage.prompt_tokens_details;
+              if (inputDetails?.cached_tokens) {
+                usage.cacheReadInputTokens = inputDetails.cached_tokens;
+              }
+
               controller.enqueue({
                 delta: {
                   json: {
-                    usage: {
-                      inputTokens: chunk.usage.prompt_tokens,
-                      outputTokens: chunk.usage.completion_tokens,
-                    },
+                    usage,
                   },
                 },
               });

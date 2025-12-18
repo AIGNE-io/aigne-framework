@@ -337,7 +337,7 @@ export class TerminalTracer {
               : usage.aigneHubCredits.toFixed();
 
             if (usage.creditPrefix) {
-              return [chalk.grey("cost:"), chalk.blue(`${usage.creditPrefix} ${formattedCredits}`)];
+              return [chalk.grey("cost:"), chalk.blue(`${usage.creditPrefix}${formattedCredits}`)];
             } else {
               return [chalk.blue(formattedCredits), chalk.grey("AIGNE Hub credits")];
             }

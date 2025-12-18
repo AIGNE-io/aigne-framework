@@ -846,14 +846,14 @@ export interface ChatModelOutputUsage {
   /**
    * Credit prefix
    */
-  creditPrefix?: string;
+  creditPrefix?: "$" | "€" | "¥";
 }
 
 export const chatModelOutputUsageSchema = z.object({
   inputTokens: z.number(),
   outputTokens: z.number(),
   aigneHubCredits: optionalize(z.number()),
-  creditPrefix: optionalize(z.string()),
+  creditPrefix: optionalize(z.union([z.literal("$"), z.literal("€"), z.literal("¥")])),
 });
 
 const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({

@@ -15,7 +15,7 @@ test("AFS'skill list should invoke afs.list", async () => {
     {
       "data": [],
       "options": {
-        "format": "tree",
+        "format": "simple-list",
         "maxDepth": 2,
       },
       "path": "/foo/bar",
@@ -29,7 +29,7 @@ test("AFS'skill list should invoke afs.list", async () => {
       [
         "/foo/bar",
         {
-          "format": "tree",
+          "format": "simple-list",
           "maxDepth": 2,
         },
       ],

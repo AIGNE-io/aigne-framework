@@ -29,11 +29,11 @@ test("getAFSSkills should return all AFS skills", async () => {
                   "type": "boolean",
                 },
                 "format": {
-                  "default": "tree",
-                  "description": "Output format, either 'tree' or 'list' (default: 'tree')",
+                  "default": "simple-list",
+                  "description": "Output format, either 'simple-list', or 'tree', default is 'simple-list'",
                   "enum": [
+                    "simple-list",
                     "tree",
-                    "list",
                   ],
                   "type": "string",
                 },
@@ -68,25 +68,7 @@ test("getAFSSkills should return all AFS skills", async () => {
               "type": "string",
             },
             "options": {
-              "additionalProperties": false,
-              "properties": {
-                "disableGitignore": {
-                  "type": "boolean",
-                },
-                "format": {
-                  "enum": [
-                    "tree",
-                    "list",
-                  ],
-                  "type": "string",
-                },
-                "maxChildren": {
-                  "type": "number",
-                },
-                "maxDepth": {
-                  "type": "number",
-                },
-              },
+              "additionalProperties": {},
               "type": "object",
             },
             "path": {

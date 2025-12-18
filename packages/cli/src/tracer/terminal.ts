@@ -330,7 +330,18 @@ export class TerminalTracer {
       [chalk.yellow(usage.inputTokens), chalk.grey("input tokens")],
       [chalk.cyan(usage.outputTokens), chalk.grey("output tokens")],
       usage.aigneHubCredits
-        ? [chalk.blue(usage.aigneHubCredits.toFixed()), chalk.grey("AIGNE Hub credits")]
+        ? (() => {
+            const hasDecimal = usage.aigneHubCredits % 1 !== 0;
+            const formattedCredits = hasDecimal
+              ? parseFloat(usage.aigneHubCredits.toFixed(6)).toString()
+              : usage.aigneHubCredits.toFixed();
+
+            if (usage.creditPrefix) {
+              return [chalk.grey("cost:"), chalk.blue(`${usage.creditPrefix} ${formattedCredits}`)];
+            } else {
+              return [chalk.blue(formattedCredits), chalk.grey("AIGNE Hub credits")];
+            }
+          })()
         : undefined,
       usage.agentCalls ? [chalk.magenta(usage.agentCalls), chalk.grey("agent calls")] : undefined,
     ];

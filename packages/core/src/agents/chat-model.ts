@@ -261,6 +261,7 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
       options.context.usage.outputTokens += usage.outputTokens;
       options.context.usage.inputTokens += usage.inputTokens;
       if (usage.aigneHubCredits) options.context.usage.aigneHubCredits += usage.aigneHubCredits;
+      if (usage.creditPrefix) options.context.usage.creditPrefix = usage.creditPrefix;
     }
   }
 
@@ -841,12 +842,18 @@ export interface ChatModelOutputUsage {
    * AIGNE Hub credit usage
    */
   aigneHubCredits?: number;
+
+  /**
+   * Credit prefix
+   */
+  creditPrefix?: string;
 }
 
 export const chatModelOutputUsageSchema = z.object({
   inputTokens: z.number(),
   outputTokens: z.number(),
   aigneHubCredits: optionalize(z.number()),
+  creditPrefix: optionalize(z.string()),
 });
 
 const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({

@@ -5,6 +5,7 @@ export interface ContextUsage {
   inputTokens: number;
   outputTokens: number;
   aigneHubCredits: number;
+  creditPrefix?: string;
   agentCalls: number;
   duration: number;
 }
@@ -17,6 +18,7 @@ export function newEmptyContextUsage(): ContextUsage {
     inputTokens: 0,
     outputTokens: 0,
     aigneHubCredits: 0,
+    creditPrefix: "",
     agentCalls: 0,
     duration: 0,
   };

@@ -366,6 +366,29 @@ export class AnthropicChatModel extends ChatModel {
   }
 }
 
+/**
+ * Parse cache configuration from model options
+ */
+function parseCacheConfig(modelOptions?: ChatModelInput["modelOptions"]) {
+  console.log("modelOptions", modelOptions);
+  const cacheConfig = (modelOptions?.cacheConfig as any) || {};
+  const shouldCache = cacheConfig.enabled !== false; // Default: enabled
+  const ttl: "5m" | "1h" = cacheConfig.ttl === "1h" ? "1h" : "5m"; // Default: 5m
+  const strategy = cacheConfig.strategy || "auto"; // Default: auto
+  const autoBreakpoints = {
+    tools: cacheConfig.autoBreakpoints?.tools !== false, // Default: true
+    system: cacheConfig.autoBreakpoints?.system !== false, // Default: true
+    lastMessage: cacheConfig.autoBreakpoints?.lastMessage === true, // Default: false
+  };
+
+  return {
+    shouldCache,
+    ttl,
+    strategy,
+    autoBreakpoints,
+  };
+}
+
 async function convertMessages({
   messages,
   responseFormat,
@@ -379,15 +402,7 @@ async function convertMessages({
   const msgs: MessageParam[] = [];
 
   // Extract cache configuration with defaults
-  const cacheConfig = (modelOptions?.cacheConfig as any) || {};
-  const shouldCache = cacheConfig.enabled !== false; // Default: enabled
-  const ttl: "5m" | "1h" = cacheConfig.ttl === "1h" ? "1h" : "5m"; // Default: 5m
-  const strategy = cacheConfig.strategy || "auto"; // Default: auto
-  const autoBreakpoints = {
-    tools: cacheConfig.autoBreakpoints?.tools !== false, // Default: true
-    system: cacheConfig.autoBreakpoints?.system !== false, // Default: true
-    lastMessage: cacheConfig.autoBreakpoints?.lastMessage === true, // Default: false
-  };
+  const { shouldCache, ttl, strategy, autoBreakpoints } = parseCacheConfig(modelOptions);
 
   for (const msg of messages) {
     if (msg.role === "system") {
@@ -547,12 +562,8 @@ function convertTools({
   }
 
   // Extract cache configuration with defaults
-  const cacheConfig = (modelOptions?.cacheConfig as any) || {};
-  const shouldCache = cacheConfig.enabled !== false; // Default: enabled
-  const ttl: "5m" | "1h" = cacheConfig.ttl === "1h" ? "1h" : "5m"; // Default: 5m
-  const strategy = cacheConfig.strategy || "auto"; // Default: auto
-  const shouldCacheTools =
-    shouldCache && strategy === "auto" && cacheConfig.autoBreakpoints?.tools !== false;
+  const { shouldCache, ttl, strategy, autoBreakpoints } = parseCacheConfig(modelOptions);
+  const shouldCacheTools = shouldCache && strategy === "auto" && autoBreakpoints.tools;
 
   return {
     tools: tools?.length

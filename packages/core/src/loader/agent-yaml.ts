@@ -93,7 +93,15 @@ export interface BaseAgentSchema {
   shareAFS?: boolean;
 }
 
-export type Instructions = { role: Exclude<Role, "tool">; content: string; path: string }[];
+export type Instructions = {
+  role: Exclude<Role, "tool">;
+  content: string;
+  path: string;
+  cacheControl?: {
+    type: "ephemeral";
+    ttl?: "5m" | "1h";
+  };
+}[];
 
 export interface AIAgentSchema extends BaseAgentSchema {
   type: "ai";
@@ -199,31 +207,51 @@ export async function loadAgentFromYamlFile(path: string, options: LoadOptions) 
   return agent;
 }
 
-const instructionItemSchema = z.union([
-  z.object({
-    role: roleSchema.default("system"),
-    url: z.string(),
-  }),
-  z.object({
-    role: roleSchema.default("system"),
-    content: z.string(),
-  }),
-]);
+const instructionItemSchema = camelizeSchema(
+  z.union([
+    z.object({
+      role: roleSchema.default("system"),
+      url: z.string(),
+      cacheControl: optionalize(
+        z.object({
+          type: z.literal("ephemeral"),
+          ttl: optionalize(z.union([z.literal("5m"), z.literal("1h")])),
+        }),
+      ),
+    }),
+    z.object({
+      role: roleSchema.default("system"),
+      content: z.string(),
+      cacheControl: optionalize(
+        z.object({
+          type: z.literal("ephemeral"),
+          ttl: optionalize(z.union([z.literal("5m"), z.literal("1h")])),
+        }),
+      ),
+    }),
+  ]),
+);
 
 const parseInstructionItem =
   ({ filepath }: { filepath: string }) =>
-  async ({ role, ...v }: z.infer<typeof instructionItemSchema>): Promise<Instructions[number]> => {
+  async ({
+    role,
+    cacheControl,
+    ...v
+  }: z.infer<typeof instructionItemSchema>): Promise<Instructions[number]> => {
     if (role === "tool")
       throw new Error(`'tool' role is not allowed in instruction item in agent file ${filepath}`);
 
     if ("content" in v && typeof v.content === "string") {
-      return { role, content: v.content, path: filepath };
+      return { role, content: v.content, path: filepath, cacheControl };
     }
     if ("url" in v && typeof v.url === "string") {
       const url = nodejs.path.isAbsolute(v.url)
         ? v.url
         : nodejs.path.join(nodejs.path.dirname(filepath), v.url);
-      return nodejs.fs.readFile(url, "utf8").then((content) => ({ role, content, path: url }));
+      return nodejs.fs
+        .readFile(url, "utf8")
+        .then((content) => ({ role, content, path: url, cacheControl }));
     }
     throw new Error(
       `Invalid instruction item in agent file ${filepath}. Expected 'content' or 'url' property`,

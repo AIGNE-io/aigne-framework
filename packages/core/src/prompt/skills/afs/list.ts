@@ -1,11 +1,7 @@
 import type { AFSListOptions } from "@aigne/afs";
 import { z } from "zod";
-import {
-  Agent,
-  type AgentInvokeOptions,
-  type AgentOptions,
-  type Message,
-} from "../../../agents/agent.js";
+import type { AgentInvokeOptions, AgentOptions, Message } from "../../../agents/agent.js";
+import { AFSSkillBase } from "./base.js";
 
 export interface AFSListInput extends Message {
   path: string;
@@ -25,7 +21,7 @@ export interface AFSListAgentOptions extends AgentOptions<AFSListInput, AFSListO
   afs: NonNullable<AgentOptions<AFSListInput, AFSListOutput>["afs"]>;
 }
 
-export class AFSListAgent extends Agent<AFSListInput, AFSListOutput> {
+export class AFSListAgent extends AFSSkillBase<AFSListInput, AFSListOutput> {
   constructor(options: AFSListAgentOptions) {
     super({
       name: "afs_list",

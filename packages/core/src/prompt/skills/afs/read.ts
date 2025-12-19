@@ -1,11 +1,7 @@
 import type { AFSEntry } from "@aigne/afs";
 import { z } from "zod";
-import {
-  Agent,
-  type AgentInvokeOptions,
-  type AgentOptions,
-  type Message,
-} from "../../../agents/agent.js";
+import type { AgentInvokeOptions, AgentOptions, Message } from "../../../agents/agent.js";
+import { AFSSkillBase } from "./base.js";
 
 export interface AFSReadInput extends Message {
   path: string;
@@ -25,7 +21,7 @@ export interface AFSReadAgentOptions extends AgentOptions<AFSReadInput, AFSReadO
   afs: NonNullable<AgentOptions<AFSReadInput, AFSReadOutput>["afs"]>;
 }
 
-export class AFSReadAgent extends Agent<AFSReadInput, AFSReadOutput> {
+export class AFSReadAgent extends AFSSkillBase<AFSReadInput, AFSReadOutput> {
   constructor(options: AFSReadAgentOptions) {
     super({
       name: "afs_read",

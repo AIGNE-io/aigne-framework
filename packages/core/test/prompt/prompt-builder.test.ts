@@ -917,7 +917,10 @@ test("PromptBuilder should build with afs correctly", async () => {
         },
         {
           "function": {
-            "description": "Execute functions or commands from AFS modules. Use when running operations provided by mounted modules.",
+            "description": 
+    "Execute files marked as executable in the Agentic File System (AFS).
+    Use this to run executable files registered at a given path with specified arguments."
+    ,
             "name": "afs_exec",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -928,7 +931,7 @@ test("PromptBuilder should build with afs correctly", async () => {
                   "type": "string",
                 },
                 "path": {
-                  "description": "Absolute path to the executable function in AFS",
+                  "description": "Absolute path to the executable file in AFS",
                   "type": "string",
                 },
               },
@@ -1134,8 +1137,11 @@ ${"```"}
       description: Rename or move files and directories. Use when reorganizing files,
         changing names, or moving to different locations.
     - name: afs_exec
-      description: Execute functions or commands from AFS modules. Use when running
-        operations provided by mounted modules.
+      description: >-
+        Execute files marked as executable in the Agentic File System (AFS).
+
+        Use this to run executable files registered at a given path with specified
+        arguments.
 
     \`\`\`
 

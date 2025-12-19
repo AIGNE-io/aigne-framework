@@ -456,7 +456,10 @@ test("getAFSSkills should return all AFS skills", async () => {
         },
       },
       {
-        "description": "Execute functions or commands from AFS modules. Use when running operations provided by mounted modules.",
+        "description": 
+    "Execute files marked as executable in the Agentic File System (AFS).
+    Use this to run executable files registered at a given path with specified arguments."
+    ,
         "inputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
@@ -466,7 +469,7 @@ test("getAFSSkills should return all AFS skills", async () => {
               "type": "string",
             },
             "path": {
-              "description": "Absolute path to the executable function in AFS",
+              "description": "Absolute path to the executable file in AFS",
               "type": "string",
             },
           },

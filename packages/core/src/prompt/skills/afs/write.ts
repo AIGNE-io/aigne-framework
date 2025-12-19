@@ -1,10 +1,6 @@
 import { z } from "zod";
-import {
-  Agent,
-  type AgentInvokeOptions,
-  type AgentOptions,
-  type Message,
-} from "../../../agents/agent.js";
+import type { AgentInvokeOptions, AgentOptions, Message } from "../../../agents/agent.js";
+import { AFSSkillBase } from "./base.js";
 
 export interface AFSWriteInput extends Message {
   path: string;
@@ -23,7 +19,7 @@ export interface AFSWriteAgentOptions extends AgentOptions<AFSWriteInput, AFSWri
   afs: NonNullable<AgentOptions<AFSWriteInput, AFSWriteOutput>["afs"]>;
 }
 
-export class AFSWriteAgent extends Agent<AFSWriteInput, AFSWriteOutput> {
+export class AFSWriteAgent extends AFSSkillBase<AFSWriteInput, AFSWriteOutput> {
   constructor(options: AFSWriteAgentOptions) {
     super({
       name: "afs_write",

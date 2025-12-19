@@ -363,7 +363,6 @@ export class LocalFS implements AFSModule {
     checkPath: string,
   ): Promise<{ ig: ReturnType<typeof ignore>; gitRoot: string | null } | null> {
     const ig = ignore();
-    let hasRules = false;
 
     // Find git root by searching upwards
     let gitRoot: string | null = null;
@@ -421,7 +420,6 @@ export class LocalFS implements AFSModule {
         const gitignorePath = join(dirPath, ".gitignore");
         const gitignoreContent = await readFile(gitignorePath, "utf8");
         ig.add(gitignoreContent);
-        hasRules = true;
       } catch {
         // .gitignore doesn't exist at this level, continue
       }
@@ -430,6 +428,6 @@ export class LocalFS implements AFSModule {
     ig.add(".git");
     ig.add(this.options.ignore || []);
 
-    return hasRules ? { ig, gitRoot } : null;
+    return { ig, gitRoot };
   }
 }

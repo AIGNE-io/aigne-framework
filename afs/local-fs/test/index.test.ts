@@ -762,7 +762,6 @@ test("LocalFS should work without any .gitignore file", async () => {
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
-      "/.git",
       "/file1.js",
       "/file2.log",
     ]
@@ -976,4 +975,76 @@ test("LocalFS should combine maxChildren with gitignore", async () => {
 
   // Cleanup
   await rm(maxChildrenDir, { recursive: true, force: true });
+});
+
+test("LocalFS should use custom ignore patterns and default ignore .git when no .gitignore file exists", async () => {
+  // Create a test directory without .gitignore file
+  const noGitignoreDir = join(tmpdir(), `no-gitignore-custom-ignore-test-${Date.now()}`);
+  await mkdir(noGitignoreDir, { recursive: true });
+  await mkdir(join(noGitignoreDir, ".git"), { recursive: true });
+  await mkdir(join(noGitignoreDir, "node_modules"), { recursive: true });
+
+  // Create test files
+  await writeFile(join(noGitignoreDir, ".git", "config"), "git config");
+  await writeFile(join(noGitignoreDir, "node_modules", "package.json"), "{}");
+  await writeFile(join(noGitignoreDir, "index.js"), "console.log('test')");
+  await writeFile(join(noGitignoreDir, "debug.log"), "debug info");
+
+  // Test with default ignore (.git should be ignored by default)
+  const defaultIgnoreFS = new LocalFS({
+    localPath: noGitignoreDir,
+    ignore: [".git"],
+  });
+
+  const defaultResult = await defaultIgnoreFS.list("", { maxDepth: 2 });
+  const defaultPaths = defaultResult.data.map((entry) => entry.path);
+
+  // .git should be ignored by default
+  expect(defaultPaths.sort()).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/debug.log",
+      "/index.js",
+      "/node_modules",
+      "/node_modules/package.json",
+    ]
+  `);
+
+  // Test with custom ignore patterns (ignore both .git and node_modules)
+  const customIgnoreFS = new LocalFS({
+    localPath: noGitignoreDir,
+    ignore: [".git", "node_modules"],
+  });
+
+  const customResult = await customIgnoreFS.list("", { maxDepth: 2 });
+  const customPaths = customResult.data.map((entry) => entry.path);
+
+  // Both .git and node_modules should be ignored
+  expect(customPaths.sort()).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/debug.log",
+      "/index.js",
+    ]
+  `);
+
+  // Test with custom ignore patterns (ignore .git, node_modules and *.log)
+  const customIgnoreFS2 = new LocalFS({
+    localPath: noGitignoreDir,
+    ignore: [".git", "node_modules", "*.log"],
+  });
+
+  const customResult2 = await customIgnoreFS2.list("", { maxDepth: 2 });
+  const customPaths2 = customResult2.data.map((entry) => entry.path);
+
+  // .git, node_modules and *.log should all be ignored
+  expect(customPaths2.sort()).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/index.js",
+    ]
+  `);
+
+  // Cleanup
+  await rm(noGitignoreDir, { recursive: true, force: true });
 });

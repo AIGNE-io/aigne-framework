@@ -1,10 +1,6 @@
 import { z } from "zod";
-import {
-  Agent,
-  type AgentInvokeOptions,
-  type AgentOptions,
-  type Message,
-} from "../../../agents/agent.js";
+import type { AgentInvokeOptions, AgentOptions, Message } from "../../../agents/agent.js";
+import { AFSSkillBase } from "./base.js";
 
 export interface AFSExecInput extends Message {
   path: string;
@@ -19,15 +15,17 @@ export interface AFSExecAgentOptions extends AgentOptions<AFSExecInput, AFSExecO
   afs: NonNullable<AgentOptions<AFSExecInput, AFSExecOutput>["afs"]>;
 }
 
-export class AFSExecAgent extends Agent<AFSExecInput, AFSExecOutput> {
+export class AFSExecAgent extends AFSSkillBase<AFSExecInput, AFSExecOutput> {
   constructor(options: AFSExecAgentOptions) {
     super({
       name: "afs_exec",
-      description:
-        "Execute functions or commands from AFS modules. Use when running operations provided by mounted modules.",
+      description: `
+Execute files marked as executable in the Agentic File System (AFS).
+Use this to run executable files registered at a given path with specified arguments.
+      `.trim(),
       ...options,
       inputSchema: z.object({
-        path: z.string().describe("Absolute path to the executable function in AFS"),
+        path: z.string().describe("Absolute path to the executable file in AFS"),
         args: z.string().describe("JSON string of arguments matching the function's input schema"),
       }),
       outputSchema: z.object({

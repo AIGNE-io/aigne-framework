@@ -1,11 +1,7 @@
 import type { AFSEntry, AFSSearchOptions } from "@aigne/afs";
 import { z } from "zod";
-import {
-  Agent,
-  type AgentInvokeOptions,
-  type AgentOptions,
-  type Message,
-} from "../../../agents/agent.js";
+import type { AgentInvokeOptions, AgentOptions, Message } from "../../../agents/agent.js";
+import { AFSSkillBase } from "./base.js";
 
 export interface AFSSearchInput extends Message {
   path: string;
@@ -27,7 +23,7 @@ export interface AFSSearchAgentOptions extends AgentOptions<AFSSearchInput, AFSS
   afs: NonNullable<AgentOptions<AFSSearchInput, AFSSearchOutput>["afs"]>;
 }
 
-export class AFSSearchAgent extends Agent<AFSSearchInput, AFSSearchOutput> {
+export class AFSSearchAgent extends AFSSkillBase<AFSSearchInput, AFSSearchOutput> {
   constructor(options: AFSSearchAgentOptions) {
     super({
       name: "afs_search",

@@ -1,10 +1,6 @@
 import { z } from "zod";
-import {
-  Agent,
-  type AgentInvokeOptions,
-  type AgentOptions,
-  type Message,
-} from "../../../agents/agent.js";
+import type { AgentInvokeOptions, AgentOptions, Message } from "../../../agents/agent.js";
+import { AFSSkillBase } from "./base.js";
 
 export interface Patch {
   start_line: number;
@@ -30,7 +26,7 @@ export interface AFSEditAgentOptions extends AgentOptions<AFSEditInput, AFSEditO
   afs: NonNullable<AgentOptions<AFSEditInput, AFSEditOutput>["afs"]>;
 }
 
-export class AFSEditAgent extends Agent<AFSEditInput, AFSEditOutput> {
+export class AFSEditAgent extends AFSSkillBase<AFSEditInput, AFSEditOutput> {
   constructor(options: AFSEditAgentOptions) {
     super({
       name: "afs_edit",

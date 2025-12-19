@@ -1,10 +1,6 @@
 import { z } from "zod";
-import {
-  Agent,
-  type AgentInvokeOptions,
-  type AgentOptions,
-  type Message,
-} from "../../../agents/agent.js";
+import type { AgentInvokeOptions, AgentOptions, Message } from "../../../agents/agent.js";
+import { AFSSkillBase } from "./base.js";
 
 export interface AFSRenameInput extends Message {
   oldPath: string;
@@ -24,7 +20,7 @@ export interface AFSRenameAgentOptions extends AgentOptions<AFSRenameInput, AFSR
   afs: NonNullable<AgentOptions<AFSRenameInput, AFSRenameOutput>["afs"]>;
 }
 
-export class AFSRenameAgent extends Agent<AFSRenameInput, AFSRenameOutput> {
+export class AFSRenameAgent extends AFSSkillBase<AFSRenameInput, AFSRenameOutput> {
   constructor(options: AFSRenameAgentOptions) {
     super({
       name: "afs_rename",

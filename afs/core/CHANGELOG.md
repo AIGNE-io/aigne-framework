@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.1...afs-v1.4.0-beta.2) (2025-12-19)
+
+
+### Bug Fixes
+
+* **afs:** use simple-list instead of tree as default type ([#839](https://github.com/AIGNE-io/aigne-framework/issues/839)) ([65a9a40](https://github.com/AIGNE-io/aigne-framework/commit/65a9a4054b3bdad6f7e40357299ef3dc48f7c3e4))
+
 ## [1.4.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta...afs-v1.4.0-beta.1) (2025-12-17)
 
 

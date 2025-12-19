@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.91.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.1...aigne-framework-v1.91.0-beta.2) (2025-12-19)
+
+
+### Bug Fixes
+
+* **afs:** set AFS tag for all AFS's skills ([#841](https://github.com/AIGNE-io/aigne-framework/issues/841)) ([0bd995a](https://github.com/AIGNE-io/aigne-framework/commit/0bd995aeb68aa68caac1ce19a200b42a022a9998))
+* **afs:** use simple-list instead of tree as default type ([#839](https://github.com/AIGNE-io/aigne-framework/issues/839)) ([65a9a40](https://github.com/AIGNE-io/aigne-framework/commit/65a9a4054b3bdad6f7e40357299ef3dc48f7c3e4))
+* **core:** add creditPrefix field to usage tracking ([#837](https://github.com/AIGNE-io/aigne-framework/issues/837)) ([9ef25e0](https://github.com/AIGNE-io/aigne-framework/commit/9ef25e0687b4e7b4ba39a27a35805f377f0979eb))
+
 ## [1.91.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta...aigne-framework-v1.91.0-beta.1) (2025-12-17)
 
 

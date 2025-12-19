@@ -115,6 +115,7 @@ userContext.name: {{userContext.name}}
   expect(prompt2.messages).toMatchInlineSnapshot(`
     [
       {
+        "cacheControl": undefined,
         "content": 
     "Test instructions
 
@@ -535,6 +536,7 @@ test("PromptBuilder should build with afs correctly", async () => {
         "role": "system",
       },
       {
+        "cacheControl": undefined,
         "content": "User message is: Hello, I'm Bob, I'm from ArcBlock",
         "name": undefined,
         "role": "user",
@@ -647,6 +649,7 @@ test("PromptBuilder should build with afs correctly", async () => {
           "role": "agent",
         },
         {
+          "cacheControl": undefined,
           "content": "User message is: Hello, I'm Bob, I'm from ArcBlock",
           "name": undefined,
           "role": "user",
@@ -967,16 +970,19 @@ test("PromptBuilder should refine system messages by config", async () => {
   expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
     [
       {
+        "cacheControl": undefined,
         "content": "System message 1",
         "name": undefined,
         "role": "system",
       },
       {
+        "cacheControl": undefined,
         "content": "System message 2",
         "name": undefined,
         "role": "system",
       },
       {
+        "cacheControl": undefined,
         "content": "User message 1",
         "name": undefined,
         "role": "user",
@@ -988,16 +994,19 @@ test("PromptBuilder should refine system messages by config", async () => {
   expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
     [
       {
+        "cacheControl": undefined,
         "content": "System message 1",
         "name": undefined,
         "role": "system",
       },
       {
+        "cacheControl": undefined,
         "content": "System message 2",
         "name": undefined,
         "role": "system",
       },
       {
+        "cacheControl": undefined,
         "content": "User message 1",
         "name": undefined,
         "role": "user",
@@ -1016,6 +1025,7 @@ test("PromptBuilder should refine system messages by config", async () => {
         "role": "system",
       },
       {
+        "cacheControl": undefined,
         "content": "User message 1",
         "name": undefined,
         "role": "user",

@@ -187,6 +187,7 @@ test("OrchestratorAgent.load should use custom planner/worker/completer", async 
   expect((await planner.instructions.build({})).messages).toMatchInlineSnapshot(`
     [
       {
+        "cacheControl": undefined,
         "content": "Custom planner instructions",
         "name": undefined,
         "role": "system",
@@ -212,6 +213,7 @@ test("OrchestratorAgent.load should use custom planner/worker/completer", async 
     {
       "messages": [
         {
+          "cacheControl": undefined,
           "content": "Custom worker instructions",
           "name": undefined,
           "role": "system",
@@ -244,6 +246,7 @@ test("OrchestratorAgent.load should use custom planner/worker/completer", async 
     {
       "messages": [
         {
+          "cacheControl": undefined,
           "content": "Custom completer instructions",
           "name": undefined,
           "role": "system",

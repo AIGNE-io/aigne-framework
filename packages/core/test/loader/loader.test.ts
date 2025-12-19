@@ -262,6 +262,7 @@ test("loadAgent should support nested relative prompt paths", async () => {
     {
       "messages": [
         {
+          "cacheControl": undefined,
           "content": 
     "You are a professional chatbot.
 
@@ -304,6 +305,7 @@ test("loadAgent should load agent with multi roles instructions", async () => {
     {
       "messages": [
         {
+          "cacheControl": undefined,
           "content": 
     "You are a smart agent that helps with code editing and understanding.
 
@@ -316,17 +318,20 @@ test("loadAgent should load agent with multi roles instructions", async () => {
           "role": "system",
         },
         {
+          "cacheControl": undefined,
           "content": "This is a user instruction.",
           "name": undefined,
           "role": "user",
         },
         {
+          "cacheControl": undefined,
           "content": "This is an agent instruction.",
           "name": undefined,
           "role": "agent",
           "toolCalls": undefined,
         },
         {
+          "cacheControl": undefined,
           "content": "Latest user instruction about AIGNE is the best framework to build AI applications.",
           "name": undefined,
           "role": "user",

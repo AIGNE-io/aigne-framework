@@ -189,7 +189,11 @@ export interface AFSContextPreset {
 
   dedupe?: AFSContextPresetOptionAgent<{ data: unknown[] }, { data: unknown }>;
 
-  format?: "default" | "tree" | AFSContextPresetOptionAgent<{ data: unknown }, { data: unknown }>;
+  format?:
+    | "default"
+    | "simple-list"
+    | "tree"
+    | AFSContextPresetOptionAgent<{ data: unknown }, { data: unknown }>;
 }
 
 export interface AFSContextPresetOptionAgent<I = any, O = any> {

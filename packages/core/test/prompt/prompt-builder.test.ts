@@ -674,11 +674,11 @@ test("PromptBuilder should build with afs correctly", async () => {
                       "type": "boolean",
                     },
                     "format": {
-                      "default": "tree",
-                      "description": "Output format, either 'tree' or 'list' (default: 'tree')",
+                      "default": "simple-list",
+                      "description": "Output format, either 'simple-list', or 'tree', default is 'simple-list'",
                       "enum": [
+                        "simple-list",
                         "tree",
-                        "list",
                       ],
                       "type": "string",
                     },

@@ -248,10 +248,11 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
     let formatted = deduped;
 
-    if (format === "tree") {
+    if (format === "simple-list" || format === "tree") {
       const valid = z.array(afsEntrySchema).safeParse(deduped);
-      if (valid.data) formatted = this.buildTreeView(valid.data);
-      else throw new Error("Tree format requires entries to be AFSEntry objects");
+      if (!valid.data) throw new Error("Tree format requires entries to be AFSEntry objects");
+      if (format === "tree") formatted = this.buildTreeView(valid.data);
+      else if (format === "simple-list") formatted = this.buildSimpleListView(valid.data);
     } else if (typeof format === "object" && typeof format.invoke === "function") {
       formatted = await format.invoke({ data: deduped }, options).then((res) => res.data);
     }
@@ -358,6 +359,10 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     return await module.module.exec(module.subpath, args, options);
   }
 
+  private buildSimpleListView(entries: AFSEntry[]): string[] {
+    return entries.map((entry) => `${entry.path}${this.buildMetadataSuffix(entry)}`);
+  }
+
   private buildTreeView(entries: AFSEntry[]): string {
     const tree: Record<string, any> = {};
     const entryMap = new Map<string, AFSEntry>();
@@ -383,28 +388,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
         const fullPath = currentPath ? `${currentPath}/${key}` : `/${key}`;
         const entry = entryMap.get(fullPath);
 
-        // Build metadata suffix
-        const metadataParts: string[] = [];
-
-        // Children count
-        const childrenCount = entry?.metadata?.childrenCount;
-        if (typeof childrenCount === "number") {
-          metadataParts.push(`${childrenCount} items`);
-        }
-
-        // Children truncated
-        if (entry?.metadata?.childrenTruncated) {
-          metadataParts.push("truncated");
-        }
-
-        // Executable
-        if (entry?.metadata?.execute) {
-          metadataParts.push("executable");
-        }
-
-        const metadataSuffix = metadataParts.length > 0 ? ` [${metadataParts.join(", ")}]` : "";
-
-        result += `${prefix}${isLast ? "└── " : "├── "}${key}${metadataSuffix}`;
+        result += `${prefix}${isLast ? "└── " : "├── "}${key}${entry ? this.buildMetadataSuffix(entry) : ""}`;
         result += `\n`;
         result += renderTree(node[key], `${prefix}${isLast ? "    " : "│   "}`, fullPath);
       });
@@ -412,5 +396,30 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     };
 
     return renderTree(tree);
+  }
+
+  private buildMetadataSuffix(entry: AFSEntry): string {
+    // Build metadata suffix
+    const metadataParts: string[] = [];
+
+    // Children count
+    const childrenCount = entry?.metadata?.childrenCount;
+    if (typeof childrenCount === "number") {
+      metadataParts.push(`${childrenCount} items`);
+    }
+
+    // Children truncated
+    if (entry?.metadata?.childrenTruncated) {
+      metadataParts.push("truncated");
+    }
+
+    // Executable
+    if (entry?.metadata?.execute) {
+      metadataParts.push("executable");
+    }
+
+    const metadataSuffix = metadataParts.length > 0 ? ` [${metadataParts.join(", ")}]` : "";
+
+    return metadataSuffix;
   }
 }

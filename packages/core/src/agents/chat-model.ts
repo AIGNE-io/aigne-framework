@@ -265,6 +265,7 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
         options.context.usage.cacheCreationInputTokens += usage.cacheCreationInputTokens;
       if (usage.cacheReadInputTokens)
         options.context.usage.cacheReadInputTokens += usage.cacheReadInputTokens;
+      if (usage.creditPrefix) options.context.usage.creditPrefix = usage.creditPrefix;
     }
   }
 
@@ -1005,6 +1006,11 @@ export interface ChatModelOutputUsage {
    * Supported by OpenAI, Anthropic, and Gemini
    */
   cacheReadInputTokens?: number;
+
+  /**
+   * Credit prefix
+   */
+  creditPrefix?: "$" | "€" | "¥";
 }
 
 export const chatModelOutputUsageSchema = z.object({
@@ -1013,6 +1019,7 @@ export const chatModelOutputUsageSchema = z.object({
   aigneHubCredits: optionalize(z.number()),
   cacheCreationInputTokens: optionalize(z.number()),
   cacheReadInputTokens: optionalize(z.number()),
+  creditPrefix: optionalize(z.union([z.literal("$"), z.literal("€"), z.literal("¥")])),
 });
 
 const chatModelOutputSchema: z.ZodType<ChatModelOutput> = z.object({

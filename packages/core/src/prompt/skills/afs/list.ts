@@ -1,11 +1,7 @@
 import type { AFSListOptions } from "@aigne/afs";
 import { z } from "zod";
-import {
-  Agent,
-  type AgentInvokeOptions,
-  type AgentOptions,
-  type Message,
-} from "../../../agents/agent.js";
+import type { AgentInvokeOptions, AgentOptions, Message } from "../../../agents/agent.js";
+import { AFSSkillBase } from "./base.js";
 
 export interface AFSListInput extends Message {
   path: string;
@@ -25,7 +21,7 @@ export interface AFSListAgentOptions extends AgentOptions<AFSListInput, AFSListO
   afs: NonNullable<AgentOptions<AFSListInput, AFSListOutput>["afs"]>;
 }
 
-export class AFSListAgent extends Agent<AFSListInput, AFSListOutput> {
+export class AFSListAgent extends AFSSkillBase<AFSListInput, AFSListOutput> {
   constructor(options: AFSListAgentOptions) {
     super({
       name: "afs_list",
@@ -46,10 +42,10 @@ export class AFSListAgent extends Agent<AFSListInput, AFSListOutput> {
               .optional()
               .describe("Maximum number of children to list per directory"),
             format: z
-              .union([z.literal("tree"), z.literal("list")])
+              .union([z.literal("simple-list"), z.literal("tree")])
               .optional()
-              .default("tree")
-              .describe("Output format, either 'tree' or 'list' (default: 'tree')"),
+              .default("simple-list")
+              .describe("Output format, either 'simple-list', or 'tree', default is 'simple-list'"),
           })
           .optional(),
       }),
@@ -57,14 +53,7 @@ export class AFSListAgent extends Agent<AFSListInput, AFSListOutput> {
         status: z.string(),
         tool: z.string(),
         path: z.string(),
-        options: z
-          .object({
-            maxDepth: z.number().optional(),
-            disableGitignore: z.boolean().optional(),
-            maxChildren: z.number().optional(),
-            format: z.union([z.literal("tree"), z.literal("list")]).optional(),
-          })
-          .optional(),
+        options: z.record(z.any()).optional(),
         message: z.string().optional(),
         data: z.unknown(),
       }),

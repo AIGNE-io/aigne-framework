@@ -86,7 +86,7 @@ export class AIGNEHubChatModel extends ChatModel {
       ABT_NODE_DID ||
       `@aigne/aigne-hub:${typeof process !== "undefined" ? nodejs.os.hostname() : "unknown"}`;
 
-    return (await this.client).__invoke(
+    const response = await (await this.client).__invoke<ChatModelInput, ChatModelOutput>(
       undefined,
       {
         ...input,
@@ -108,5 +108,7 @@ export class AIGNEHubChatModel extends ChatModel {
         },
       },
     );
+
+    return response;
   }
 }

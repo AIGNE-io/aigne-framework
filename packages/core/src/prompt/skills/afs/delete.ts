@@ -1,10 +1,6 @@
 import { z } from "zod";
-import {
-  Agent,
-  type AgentInvokeOptions,
-  type AgentOptions,
-  type Message,
-} from "../../../agents/agent.js";
+import type { AgentInvokeOptions, AgentOptions, Message } from "../../../agents/agent.js";
+import { AFSSkillBase } from "./base.js";
 
 export interface AFSDeleteInput extends Message {
   path: string;
@@ -22,7 +18,7 @@ export interface AFSDeleteAgentOptions extends AgentOptions<AFSDeleteInput, AFSD
   afs: NonNullable<AgentOptions<AFSDeleteInput, AFSDeleteOutput>["afs"]>;
 }
 
-export class AFSDeleteAgent extends Agent<AFSDeleteInput, AFSDeleteOutput> {
+export class AFSDeleteAgent extends AFSSkillBase<AFSDeleteInput, AFSDeleteOutput> {
   constructor(options: AFSDeleteAgentOptions) {
     super({
       name: "afs_delete",

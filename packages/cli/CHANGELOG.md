@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.58.1-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.58.1-beta.1...cli-v1.58.1-beta.2) (2025-12-19)
+
+
+### Bug Fixes
+
+* **core:** add creditPrefix field to usage tracking ([#837](https://github.com/AIGNE-io/aigne-framework/issues/837)) ([9ef25e0](https://github.com/AIGNE-io/aigne-framework/commit/9ef25e0687b4e7b4ba39a27a35805f377f0979eb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.2
+    * @aigne/afs-history bumped to 1.2.0-beta.2
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.2
+    * @aigne/agent-library bumped to 1.24.0-beta.2
+    * @aigne/agentic-memory bumped to 1.1.6-beta.2
+    * @aigne/aigne-hub bumped to 0.10.16-beta.2
+    * @aigne/core bumped to 1.72.0-beta.2
+    * @aigne/default-memory bumped to 1.3.6-beta.2
+    * @aigne/openai bumped to 0.16.16-beta.2
+    * @aigne/secrets bumped to 0.1.6-beta.2
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.2
+
 ## [1.58.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.58.1-beta...cli-v1.58.1-beta.1) (2025-12-17)
 
 

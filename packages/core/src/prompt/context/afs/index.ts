@@ -31,8 +31,9 @@ export function createAFSContext(agent?: Agent<any, any>, context?: AgentInvokeO
     },
     async list(path: string, options?: AFSRootListOptions) {
       if (!afs) throw new Error("AFS is not configured for this agent.");
-      return (await afs.list(path, { ...options, context, format: options?.format || "tree" }))
-        .data;
+      return (
+        await afs.list(path, { ...options, context, format: options?.format || "simple-list" })
+      ).data;
     },
     async read(path: string) {
       if (!afs) throw new Error("AFS is not configured for this agent.");

@@ -69,6 +69,7 @@ export abstract class VideoModel<
       options.context.usage.outputTokens += usage.outputTokens;
       options.context.usage.inputTokens += usage.inputTokens;
       if (usage.aigneHubCredits) options.context.usage.aigneHubCredits += usage.aigneHubCredits;
+      if (usage.creditPrefix) options.context.usage.creditPrefix = usage.creditPrefix;
     }
   }
 

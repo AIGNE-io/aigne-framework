@@ -329,6 +329,19 @@ export class TerminalTracer {
       });
   }
 
+  formatAigneHubCredits(credits: number, creditPrefix?: string): [string, string] {
+    const hasDecimal = credits % 1 !== 0;
+    const formattedCredits = hasDecimal
+      ? parseFloat(credits.toFixed(6)).toString()
+      : credits.toFixed();
+
+    if (creditPrefix) {
+      return [chalk.grey("cost:"), chalk.blue(`${creditPrefix}${formattedCredits}`)];
+    }
+
+    return [chalk.blue(formattedCredits), chalk.grey("AIGNE Hub credits")];
+  }
+
   formatTokenUsage(usage: Partial<ContextUsage>, extra?: { [key: string]: string }) {
     const items = [
       [chalk.yellow(usage.inputTokens), chalk.grey("input tokens")],
@@ -340,7 +353,7 @@ export class TerminalTracer {
         : undefined,
       [chalk.cyan(usage.outputTokens), chalk.grey("output tokens")],
       usage.aigneHubCredits
-        ? [chalk.blue(usage.aigneHubCredits.toFixed()), chalk.grey("AIGNE Hub credits")]
+        ? this.formatAigneHubCredits(usage.aigneHubCredits, usage.creditPrefix)
         : undefined,
       usage.agentCalls ? [chalk.magenta(usage.agentCalls), chalk.grey("agent calls")] : undefined,
     ];

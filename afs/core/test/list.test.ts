@@ -180,15 +180,17 @@ test("AFS list should return correct structure with default format", async () =>
   `);
 });
 
-test("AFS list should return correct structure", async () => {
-  expect((await afs.list("/modules/test-module", { format: "tree" })).data).toMatchInlineSnapshot(`
-    "└── modules
-        └── test-module [3 items]
-            ├── foo [1 items]
-            ├── bar
-            └── baz
-    "
-  `);
+test("AFS list should return correct tree structure", async () => {
+  expect((await afs.list("/modules/test-module", { format: "tree" })).data).toMatchInlineSnapshot(
+    `
+      "└── modules
+          └── test-module [3 items]
+              ├── foo [1 items]
+              ├── bar
+              └── baz
+      "
+    `,
+  );
 
   expect((await afs.list("/", { format: "tree", maxDepth: 10 })).data).toMatchInlineSnapshot(`
     "└── modules
@@ -198,6 +200,31 @@ test("AFS list should return correct structure", async () => {
             ├── bar
             └── baz
     "
+  `);
+});
+
+test("AFS list should return correct simple-list structure", async () => {
+  expect(
+    (await afs.list("/modules/test-module", { format: "simple-list" })).data,
+  ).toMatchInlineSnapshot(`
+    [
+      "/modules/test-module [3 items]",
+      "/modules/test-module/foo [1 items]",
+      "/modules/test-module/bar",
+      "/modules/test-module/baz",
+    ]
+  `);
+
+  expect(
+    (await afs.list("/", { format: "simple-list", maxDepth: 10 })).data,
+  ).toMatchInlineSnapshot(`
+    [
+      "/modules/test-module [3 items]",
+      "/modules/test-module/foo [1 items]",
+      "/modules/test-module/bar",
+      "/modules/test-module/baz",
+      "/modules/test-module/foo/nested",
+    ]
   `);
 });
 

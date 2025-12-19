@@ -370,10 +370,9 @@ export class AnthropicChatModel extends ChatModel {
  * Parse cache configuration from model options
  */
 function parseCacheConfig(modelOptions?: ChatModelInput["modelOptions"]) {
-  console.log("modelOptions", modelOptions);
-  const cacheConfig = (modelOptions?.cacheConfig as any) || {};
+  const cacheConfig = modelOptions?.cacheConfig || {};
   const shouldCache = cacheConfig.enabled !== false; // Default: enabled
-  const ttl: "5m" | "1h" = cacheConfig.ttl === "1h" ? "1h" : "5m"; // Default: 5m
+  const ttl = cacheConfig.ttl === "1h" ? "1h" : "5m"; // Default: 5m
   const strategy = cacheConfig.strategy || "auto"; // Default: auto
   const autoBreakpoints = {
     tools: cacheConfig.autoBreakpoints?.tools !== false, // Default: true
@@ -474,7 +473,7 @@ async function convertMessages({
   // Manual cache control: apply user-specified cacheControl from system messages
   if (shouldCache && strategy === "manual") {
     for (const [index, msg] of messages.entries()) {
-      const msgWithCache = msg as any;
+      const msgWithCache = msg;
       if (msg.role === "system" && msgWithCache.cacheControl) {
         const block = systemBlocks[index];
         if (block) {
@@ -585,7 +584,7 @@ function convertTools({
           }
           // Manual mode: use tool-specific cacheControl if provided
           else if (shouldCache && strategy === "manual") {
-            const toolWithCache = i as any;
+            const toolWithCache = i;
             if (toolWithCache.cacheControl) {
               tool.cache_control = {
                 type: toolWithCache.cacheControl.type,

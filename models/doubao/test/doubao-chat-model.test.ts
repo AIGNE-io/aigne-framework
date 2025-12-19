@@ -144,14 +144,18 @@ test("DoubaoChatModel.invoke", async () => {
     responseFormat: COMMON_RESPONSE_FORMAT,
   });
 
-  expect(result).toEqual(
-    expect.objectContaining({
-      json: { text: "The current temperature in New York is 20°C." },
-      usage: {
-        cacheReadInputTokens: 192,
-        inputTokens: 193,
-        outputTokens: 16,
+  expect(result).toMatchInlineSnapshot(`
+    {
+      "json": {
+        "text": "The current temperature in New York is 20°C.",
       },
-    }),
-  );
+      "model": "doubao-chat",
+      "modelOptions": {},
+      "usage": {
+        "cacheReadInputTokens": 192,
+        "inputTokens": 193,
+        "outputTokens": 16,
+      },
+    }
+  `);
 });

@@ -135,6 +135,7 @@ function TraceItem({
             overflow: "hidden",
             textOverflow: "ellipsis",
             color: hasError ? "error.light" : isPending ? "warning.light" : "inherit",
+            flexShrink: 0,
           }}
         >
           {name}

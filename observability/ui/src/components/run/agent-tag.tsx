@@ -18,6 +18,7 @@ const agentTagColors = {
   ClientAgent: { color: "#01579b", backgroundColor: "#e1f5fe" },
   ImageModelAgent: { color: "#7A4F01", backgroundColor: "#fffde7" },
   VideoModelAgent: { color: "#7A4F01", backgroundColor: "#fffde7" },
+  AFS: { color: "#004d40", backgroundColor: "#f5fcfc" },
 };
 
 const agentColors = Object.fromEntries(

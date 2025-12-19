@@ -1627,7 +1627,7 @@ importers:
         version: 3.2.11(7d1a0dd794c522f6cb5f063dad4f7347)
       '@blocklet/uploader-server':
         specifier: ^0.3.14
-        version: 0.3.14(@tus/file-store@1.0.0(@tus/server@1.0.0))(@tus/server@1.0.0)(@uppy/companion@4.15.1)(axios@1.12.2(debug@4.4.3))
+        version: 0.3.14(@tus/file-store@1.0.0(@tus/server@1.0.0))(@tus/server@1.0.0)(@uppy/companion@4.15.1)(axios@1.12.2)
       '@mui/material':
         specifier: ^7.3.2
         version: 7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -2019,8 +2019,8 @@ importers:
         specifier: ^10.2.0
         version: 10.2.0
       openai:
-        specifier: ^6.6.0
-        version: 6.6.0(ws@8.18.2)(zod@3.25.67)
+        specifier: ^6.14.0
+        version: 6.14.0(ws@8.18.2)(zod@3.25.67)
       p-wait-for:
         specifier: ^5.0.2
         version: 5.0.2
@@ -9960,18 +9960,6 @@ packages:
       zod:
         optional: true
 
-  openai@6.6.0:
-    resolution: {integrity: sha512-1yWk4cBsHF5Bq9TreHYOHY7pbqdlT74COnm8vPx7WKn36StS+Hyk8DdAitnLaw67a5Cudkz5EmlFQjSrNnrA2w==}
-    hasBin: true
-    peerDependencies:
-      ws: ^8.18.0
-      zod: ^3.25 || ^4.0
-    peerDependenciesMeta:
-      ws:
-        optional: true
-      zod:
-        optional: true
-
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
@@ -12888,7 +12876,7 @@ snapshots:
       '@ocap/wallet': 1.27.14
       archiver: 7.0.1
       axios: 1.12.2(debug@4.4.3)
-      axios-mock-adapter: 2.1.0(axios@1.12.2(debug@4.4.3))
+      axios-mock-adapter: 2.1.0(axios@1.12.2)
       axon: 2.0.3
       chalk: 4.1.2
       cookie: 1.0.2
@@ -15186,7 +15174,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@blocklet/uploader-server@0.3.14(@tus/file-store@1.0.0(@tus/server@1.0.0))(@tus/server@1.0.0)(@uppy/companion@4.15.1)(axios@1.12.2(debug@4.4.3))':
+  '@blocklet/uploader-server@0.3.14(@tus/file-store@1.0.0(@tus/server@1.0.0))(@tus/server@1.0.0)(@uppy/companion@4.15.1)(axios@1.12.2)':
     dependencies:
       '@abtnode/cron': 1.17.3
       '@blocklet/constant': 1.17.3
@@ -15195,7 +15183,7 @@ snapshots:
       '@tus/file-store': 1.0.0(@tus/server@1.0.0)
       '@tus/server': 1.0.0
       '@uppy/companion': 4.15.1
-      axios: 1.12.2(debug@4.4.3)
+      axios: 1.12.2
       body-parser: 1.20.3
       exif-be-gone: 1.5.1
       express-session: 1.17.3
@@ -23374,11 +23362,6 @@ snapshots:
       wsl-utils: 0.1.0
 
   openai@6.14.0(ws@8.18.2)(zod@3.25.67):
-    optionalDependencies:
-      ws: 8.18.2
-      zod: 3.25.67
-
-  openai@6.6.0(ws@8.18.2)(zod@3.25.67):
     optionalDependencies:
       ws: 8.18.2
       zod: 3.25.67

@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.72.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.2...core-v1.72.0-beta.3) (2025-12-19)
+
+
+### Features
+
+* add prompt caching for OpenAI/Gemini/Anthropic and cache token display ([#838](https://github.com/AIGNE-io/aigne-framework/issues/838)) ([46c628f](https://github.com/AIGNE-io/aigne-framework/commit/46c628f180572ea1b955d1a9888aad6145204842))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.14-beta.1
+
 ## [1.72.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.1...core-v1.72.0-beta.2) (2025-12-19)
 
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.7.62-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.7.62-beta.2...open-router-v0.7.62-beta.3) (2025-12-19)
+
+
+### Bug Fixes
+
+* **models:** enable parallel tool calls for open router model ([0aa7d1b](https://github.com/AIGNE-io/aigne-framework/commit/0aa7d1ba30907ee820b793e20e42c4201ca763cc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.16-beta.3
+  * devDependencies
+    * @aigne/core bumped to 1.72.0-beta.3
+    * @aigne/test-utils bumped to 0.5.69-beta.3
+
 ## [0.7.62-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/open-router-v0.7.62-beta.1...open-router-v0.7.62-beta.2) (2025-12-19)
 
 

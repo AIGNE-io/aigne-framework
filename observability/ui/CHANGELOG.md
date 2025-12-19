@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.12-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.12-beta...observability-ui-v0.11.12-beta.1) (2025-12-19)
+
+
+### Features
+
+* add prompt caching for OpenAI/Gemini/Anthropic and cache token display ([#838](https://github.com/AIGNE-io/aigne-framework/issues/838)) ([46c628f](https://github.com/AIGNE-io/aigne-framework/commit/46c628f180572ea1b955d1a9888aad6145204842))
+
+
+### Bug Fixes
+
+* **observability:** ui improvements ([fb63f37](https://github.com/AIGNE-io/aigne-framework/commit/fb63f3791c989be8512b85e62f74306bbddb25a0))
+
 ## [0.11.12-beta](https://github.com/AIGNE-io/aigne-framework/compare/observability-ui-v0.11.11...observability-ui-v0.11.12-beta) (2025-12-17)
 
 

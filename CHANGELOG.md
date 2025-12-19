@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.91.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.2...aigne-framework-v1.91.0-beta.3) (2025-12-19)
+
+
+### Features
+
+* add prompt caching for OpenAI/Gemini/Anthropic and cache token display ([#838](https://github.com/AIGNE-io/aigne-framework/issues/838)) ([46c628f](https://github.com/AIGNE-io/aigne-framework/commit/46c628f180572ea1b955d1a9888aad6145204842))
+
+
+### Bug Fixes
+
+* **afs:** always respect ignore option for local-fs ([#843](https://github.com/AIGNE-io/aigne-framework/issues/843)) ([b19a731](https://github.com/AIGNE-io/aigne-framework/commit/b19a7316f03070878c481221550a5cd1ac7ce46f))
+* **models:** enable parallel tool calls for open router model ([0aa7d1b](https://github.com/AIGNE-io/aigne-framework/commit/0aa7d1ba30907ee820b793e20e42c4201ca763cc))
+* **observability:** ui improvements ([fb63f37](https://github.com/AIGNE-io/aigne-framework/commit/fb63f3791c989be8512b85e62f74306bbddb25a0))
+
 ## [1.91.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.1...aigne-framework-v1.91.0-beta.2) (2025-12-19)
 
 

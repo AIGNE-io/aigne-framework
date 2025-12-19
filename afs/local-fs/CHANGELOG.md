@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.4.0-beta.2...afs-local-fs-v1.4.0-beta.3) (2025-12-19)
+
+
+### Bug Fixes
+
+* **afs:** always respect ignore option for local-fs ([#843](https://github.com/AIGNE-io/aigne-framework/issues/843)) ([b19a731](https://github.com/AIGNE-io/aigne-framework/commit/b19a7316f03070878c481221550a5cd1ac7ce46f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.3
+
 ## [1.4.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.4.0-beta.1...afs-local-fs-v1.4.0-beta.2) (2025-12-19)
 
 

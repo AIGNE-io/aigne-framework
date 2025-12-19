@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.16-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.16-beta.2...anthropic-v0.14.16-beta.3) (2025-12-19)
+
+
+### Features
+
+* add prompt caching for OpenAI/Gemini/Anthropic and cache token display ([#838](https://github.com/AIGNE-io/aigne-framework/issues/838)) ([46c628f](https://github.com/AIGNE-io/aigne-framework/commit/46c628f180572ea1b955d1a9888aad6145204842))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.3
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.3
+
 ## [0.14.16-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.16-beta.1...anthropic-v0.14.16-beta.2) (2025-12-19)
 
 

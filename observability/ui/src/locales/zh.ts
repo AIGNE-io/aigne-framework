@@ -17,6 +17,8 @@ export default flatten({
   outputTokens: "输出 Tokens",
   totalTokens: "总 Tokens",
   tokens: "Tokens",
+  cacheReadTokens: "缓存读取",
+  cacheCreationTokens: "缓存写入",
   count: "次数",
   timestamp: "时间",
   duration: "执行时间",

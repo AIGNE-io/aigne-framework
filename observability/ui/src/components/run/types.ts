@@ -17,6 +17,8 @@ export interface TraceData {
       usage?: {
         inputTokens: number;
         outputTokens: number;
+        cacheCreationInputTokens?: number;
+        cacheReadInputTokens?: number;
       };
       [key: string]: any;
     };

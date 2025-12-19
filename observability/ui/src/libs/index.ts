@@ -124,6 +124,8 @@ const getTraceStats = (trace: TraceData | null) => {
   let count = 0;
   let inputTokens = 0;
   let outputTokens = 0;
+  let cacheCreationInputTokens = 0;
+  let cacheReadInputTokens = 0;
   let inputCost = ZERO;
   let outputCost = ZERO;
 
@@ -133,6 +135,8 @@ const getTraceStats = (trace: TraceData | null) => {
     if (node.attributes.output?.usage) {
       inputTokens += node.attributes.output.usage.inputTokens || 0;
       outputTokens += node.attributes.output.usage.outputTokens || 0;
+      cacheCreationInputTokens += node.attributes.output.usage.cacheCreationInputTokens || 0;
+      cacheReadInputTokens += node.attributes.output.usage.cacheReadInputTokens || 0;
       const cost = calculateCost(node.attributes.output);
       inputCost = inputCost.add(cost.inputCost);
       outputCost = outputCost.add(cost.outputCost);
@@ -147,6 +151,8 @@ const getTraceStats = (trace: TraceData | null) => {
     count,
     inputTokens,
     outputTokens,
+    cacheCreationInputTokens,
+    cacheReadInputTokens,
     totalTokens: inputTokens + outputTokens,
     inputCost: inputCost.gt(0) ? `$${inputCost.toString()}` : "",
     outputCost: outputCost.gt(0) ? `$${outputCost.toString()}` : "",
@@ -158,6 +164,8 @@ interface TraceCostStats {
   count: number;
   inputTokens: number;
   outputTokens: number;
+  cacheCreationInputTokens: number;
+  cacheReadInputTokens: number;
   totalTokens: number;
   inputCost: Decimal;
   outputCost: Decimal;
@@ -173,6 +181,8 @@ const getTraceCostMap = (trace: TraceData | null): Map<string, TraceCostStats> =
         count: 0,
         inputTokens: 0,
         outputTokens: 0,
+        cacheCreationInputTokens: 0,
+        cacheReadInputTokens: 0,
         totalTokens: 0,
         inputCost: ZERO,
         outputCost: ZERO,
@@ -183,12 +193,16 @@ const getTraceCostMap = (trace: TraceData | null): Map<string, TraceCostStats> =
     let count = 1;
     let inputTokens = 0;
     let outputTokens = 0;
+    let cacheCreationInputTokens = 0;
+    let cacheReadInputTokens = 0;
     let inputCost = ZERO;
     let outputCost = ZERO;
 
     if (node.attributes.output?.usage) {
       inputTokens = node.attributes.output.usage.inputTokens || 0;
       outputTokens = node.attributes.output.usage.outputTokens || 0;
+      cacheCreationInputTokens = node.attributes.output.usage.cacheCreationInputTokens || 0;
+      cacheReadInputTokens = node.attributes.output.usage.cacheReadInputTokens || 0;
       const cost = calculateCost(node.attributes.output);
       inputCost = cost.inputCost;
       outputCost = cost.outputCost;
@@ -200,6 +214,8 @@ const getTraceCostMap = (trace: TraceData | null): Map<string, TraceCostStats> =
         count += childStats.count;
         inputTokens += childStats.inputTokens;
         outputTokens += childStats.outputTokens;
+        cacheCreationInputTokens += childStats.cacheCreationInputTokens;
+        cacheReadInputTokens += childStats.cacheReadInputTokens;
         inputCost = inputCost.add(childStats.inputCost);
         outputCost = outputCost.add(childStats.outputCost);
       }
@@ -209,6 +225,8 @@ const getTraceCostMap = (trace: TraceData | null): Map<string, TraceCostStats> =
       count,
       inputTokens,
       outputTokens,
+      cacheCreationInputTokens,
+      cacheReadInputTokens,
       totalTokens: inputTokens + outputTokens,
       inputCost,
       outputCost,

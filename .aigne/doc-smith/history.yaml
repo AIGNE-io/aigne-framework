@@ -1,4 +1,51 @@
 entries:
+  - timestamp: 2025-12-08T02:29:29.786Z
+    operation: structure_update
+    feedback: 添加一个 agent-library 模块，并加入 orchestrator 子文档，agent-library 放到顶层目录中，置于 Models 之前
+  - timestamp: 2025-11-16T11:16:30.889Z
+    operation: document_update
+    feedback: 连接到 AI 模型的时候，应该尽可能详细描述，添加已有的配图。可以参考 examples/chat-bot/README.md
+    docPaths:
+      - /examples
+  - timestamp: 2025-11-14T09:27:01.764Z
+    operation: document_update
+    feedback: 连接到 AI 模型的时候，应该尽可能详细描述，添加已有的配图。examples 下的子页面的标题不需要翻译成其他语言。
+    docPaths:
+      - /examples/chat-bot
+      - /examples/afs-system-fs
+      - /examples/memory
+      - /examples/memory-did-spaces
+      - /examples/mcp-server
+      - /examples/mcp-blocklet
+      - /examples/mcp-did-spaces
+      - /examples/mcp-github
+      - /examples/mcp-puppeteer
+      - /examples/mcp-sqlite
+      - /examples/nano-banana
+      - /examples/workflow-code-execution
+      - /examples/workflow-concurrency
+      - /examples/workflow-group-chat
+      - /examples/workflow-handoff
+      - /examples/workflow-orchestration
+      - /examples/workflow-reflection
+      - /examples/workflow-router
+      - /examples/workflow-sequential
+  - timestamp: 2025-11-13T14:00:17.303Z
+    operation: structure_update
+    feedback: 根目录下创建一个 examples，然后里面描述各种示例的文档，上下文参考 examples/**/*.md
+  - timestamp: 2025-11-06T14:55:06.640Z
+    operation: document_update
+    feedback: 提供商配置这个部分是写的太敷衍了，你必须参考 examples/README.md 详细描述。
+    docPaths:
+      - /models/configuration
+  - timestamp: 2025-11-06T14:49:14.339Z
+    operation: structure_update
+    feedback: 新增一个文档，添加到模型这个主题下。内容是讲解怎么配置各大模型的环境变量，参考文件 examples/README.md 来构建。
+  - timestamp: 2025-12-04T11:08:25.330Z
+    operation: document_update
+    feedback: update image
+    docPaths:
+      - /developer-guide/agents/function-agent
   - timestamp: 2025-11-04T01:09:17.587Z
     operation: document_update
     feedback: Re-read the model. Currently, openai gemini aignehub model supports video generation.

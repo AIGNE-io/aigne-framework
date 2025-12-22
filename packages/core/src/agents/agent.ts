@@ -1,9 +1,13 @@
 import {
   AFS,
   type AFSEntry,
+  type AFSExecOptions,
+  type AFSExecResult,
   type AFSListOptions,
+  type AFSListResult,
   type AFSModule,
   type AFSOptions,
+  type AFSReadResult,
   type AFSSearchOptions,
 } from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
@@ -20,7 +24,7 @@ import type { Memory, MemoryAgent } from "../memory/memory.js";
 import type { MemoryRecorderInput } from "../memory/recorder.js";
 import type { MemoryRetrieverInput } from "../memory/retriever.js";
 import { sortHooks } from "../utils/agent-utils.js";
-import { isZodSchema } from "../utils/json-schema.js";
+import { getZodObjectKeys, isZodSchema } from "../utils/json-schema.js";
 import { logger } from "../utils/logger.js";
 import {
   agentResponseStreamToObject,
@@ -186,6 +190,8 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    */
   disableEvents?: boolean;
 
+  historyConfig?: Agent["historyConfig"];
+
   /**
    * One or more memory agents this agent can use
    */
@@ -315,6 +321,13 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
  * {@includeCode ../../test/agents/agent.test.ts#example-custom-agent}
  */
 export abstract class Agent<I extends Message = any, O extends Message = any> implements AFSModule {
+  static async load<I extends Message = any, O extends Message = any>(_options: {
+    filepath: string;
+    parsed: object;
+  }): Promise<Agent<I, O>> {
+    throw new Error("Not implemented");
+  }
+
   constructor(options: AgentOptions<I, O> = {}) {
     checkArguments("Agent options", agentOptionsSchema, options);
 
@@ -338,6 +351,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     this.publishTopic = options.publishTopic as PublishTopic<Message>;
     if (options.skills?.length) this.skills.push(...options.skills.map(functionToAgent));
     this.disableEvents = options.disableEvents;
+    this.historyConfig = options.historyConfig;
 
     if (Array.isArray(options.memory)) {
       this.memories.push(...options.memory);
@@ -494,6 +508,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     return schema.passthrough() as unknown as ZodType<I>;
   }
 
+  get inputKeys(): string[] {
+    return getZodObjectKeys(this.inputSchema);
+  }
+
   /**
    * Get the output data schema for this agent
    *
@@ -507,6 +525,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     const schema = typeof s === "function" ? s(this) : s || z.object({});
     checkAgentInputOutputSchema(schema);
     return schema.passthrough() as unknown as ZodType<O>;
+  }
+
+  get outputKeys(): string[] {
+    return getZodObjectKeys(this.outputSchema);
   }
 
   /**
@@ -546,6 +568,12 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
    * agentSucceed, or agentFailed
    */
   private disableEvents?: boolean;
+
+  historyConfig?: {
+    disabled?: boolean;
+    maxTokens?: number;
+    maxItems?: number;
+  };
 
   private subscriptions: Unsubscribe[] = [];
 
@@ -948,7 +976,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     const o = await this.callHooks(["onSuccess", "onEnd"], { input, output: finalOutput }, options);
     if (o?.output) finalOutput = o.output as O;
 
-    this.afs?.emit("agentSucceed", { input, output: finalOutput });
+    if (this.historyConfig?.disabled !== true)
+      this.afs?.emit("agentSucceed", { input, output: finalOutput });
 
     if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 
@@ -1230,43 +1259,36 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
   }
 
   // TODO: support list skills inside agent path, and use options to filter skills
-  async list(
-    _path: string,
-    _options?: AFSListOptions,
-  ): Promise<{ list: AFSEntry[]; message?: string }> {
+  async list(_path: string, _options?: AFSListOptions): Promise<AFSListResult> {
     const agents = [this, ...this.skills];
 
-    return { list: agents.map((agent) => this.agentToAFSEntry(agent)) };
+    return { data: agents.map((agent) => this.agentToAFSEntry(agent)) };
   }
 
-  async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
+  async read(path: string): Promise<AFSReadResult> {
     const agent = this.findAgentByAFSPath(path);
     if (!agent) {
       return { message: `Agent not found at path: ${path}` };
     }
 
     return {
-      result: this.agentToAFSEntry(agent),
+      data: this.agentToAFSEntry(agent),
     };
   }
 
   // TODO: implement search inside agent skills
-  async search(
-    path: string,
-    _query: string,
-    options?: AFSSearchOptions,
-  ): Promise<{ list: AFSEntry[]; message?: string }> {
+  async search(path: string, _query: string, options?: AFSSearchOptions): Promise<AFSListResult> {
     return this.list(path, options);
   }
 
   async exec(
     path: string,
     args: Record<string, any>,
-    options: { context: Context },
-  ): Promise<{ result: Record<string, any> }> {
+    options: AFSExecOptions,
+  ): Promise<AFSExecResult> {
     const agent = this.findAgentByAFSPath(path);
     if (!agent) throw new Error(`Agent not found at path: ${path}`);
-    return { result: await options.context.invoke(agent, args) };
+    return { data: await options.context.invoke(agent, args) };
   }
 
   /** End AFSModule interface **/
@@ -1704,7 +1726,7 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
    * @returns Processing result
    */
   process(input: I, options: AgentInvokeOptions) {
-    return this._process(input, options);
+    return this._process.apply(this, [input, options]);
   }
 }
 
@@ -1719,10 +1741,11 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
  * @param context Execution context
  * @returns Processing result, can be synchronous or asynchronous
  */
-export type FunctionAgentFn<I extends Message = any, O extends Message = any> = (
-  input: I,
-  options: AgentInvokeOptions,
-) => PromiseOrValue<AgentProcessResult<O>>;
+export type FunctionAgentFn<
+  I extends Message = any,
+  O extends Message = any,
+  A extends FunctionAgent<I, O> = FunctionAgent<I, O>,
+> = (this: A, input: I, options: AgentInvokeOptions) => PromiseOrValue<AgentProcessResult<O>>;
 
 function functionToAgent<I extends Message, O extends Message>(
   agent: FunctionAgentFn<I, O>,

@@ -4,77 +4,9 @@
 
 この Agent は、テキスト記述に基づいて視覚コンテンツを動的に作成する必要があるあらゆるワークフローに不可欠です。`PromptBuilder` を活用してプロンプトを構築し、テンプレートを使用して可変入力から画像を生成できます。
 
-```d2
-direction: down
-
-# External Actor
-User: {
-  label: "ユーザー / アプリケーション"
-  shape: c4-person
-}
-
-# Configuration Sources
-Configuration: {
-  label: "設定方法"
-  shape: rectangle
-  style.stroke-dash: 2
-
-  TS-Config: {
-    label: "TypeScript\n`ImageAgent.from()`"
-  }
-
-  YAML-Config: {
-    label: "YAML\n`.yaml` ファイル"
-  }
-}
-
-# AIGNE Framework
-AIGNE-Framework: {
-  label: "AIGNE フレームワーク"
-  shape: rectangle
-
-  AIGNE: {
-    label: "AIGNE インスタンス"
-  }
-
-  Agent-Subsystem: {
-    label: "Agent サブシステム"
-    shape: rectangle
-    style.stroke-dash: 2
-
-    ImageAgent: {
-      label: "ImageAgent"
-    }
-
-    PromptBuilder: {
-      label: "PromptBuilder"
-    }
-  }
-
-  ImageModel: {
-    label: "ImageModel\n(例: dall-e-3)"
-  }
-}
-
-# Configuration Flow (defines relationships)
-Configuration.TS-Config -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "定義する"
-Configuration.YAML-Config -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "定義する"
-AIGNE-Framework.AIGNE -> AIGNE-Framework.ImageModel: {
-  label: "で設定される"
-  style.stroke-dash: 2
-}
-
-# Invocation Flow (runtime)
-User -> AIGNE-Framework.AIGNE: "1. aigne.invoke(agent, input)"
-AIGNE-Framework.AIGNE -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "2. リクエストを渡す"
-AIGNE-Framework.Agent-Subsystem.ImageAgent -> AIGNE-Framework.Agent-Subsystem.PromptBuilder: "3. instructions と input から\nプロンプトを構築"
-AIGNE-Framework.Agent-Subsystem.PromptBuilder -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "4. 最終的なプロンプトを返す"
-AIGNE-Framework.Agent-Subsystem.ImageAgent -> AIGNE-Framework.ImageModel: "5. プロンプトと modelOptions で\nモデルを呼び出す"
-AIGNE-Framework.ImageModel -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "6. ImageModelOutput を返す"
-AIGNE-Framework.Agent-Subsystem.ImageAgent -> AIGNE-Framework.AIGNE: "7. 結果を転送する"
-AIGNE-Framework.AIGNE -> User: "8. 最終的な出力\n(url/base64) を返す"
-
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![Image Agent](assets/diagram/image-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 設定
 

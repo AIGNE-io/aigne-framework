@@ -86,15 +86,13 @@ export class AIGNEHubChatModel extends ChatModel {
       ABT_NODE_DID ||
       `@aigne/aigne-hub:${typeof process !== "undefined" ? nodejs.os.hostname() : "unknown"}`;
 
-    const modelOptions = await this.getModelOptions(input, options);
-
-    return (await this.client).__invoke(
+    const response = await (await this.client).__invoke<ChatModelInput, ChatModelOutput>(
       undefined,
       {
         ...input,
         modelOptions: {
-          ...modelOptions,
-          model: modelOptions.model || (await this.credential).model,
+          ...input.modelOptions,
+          model: input.modelOptions?.model || (await this.credential).model,
         },
         // Shouldn't use `local` output type for remote AIGNE Hub call, client can not access the remote filesystem
         outputFileType: "url",
@@ -110,5 +108,7 @@ export class AIGNEHubChatModel extends ChatModel {
         },
       },
     );
+
+    return response;
   }
 }

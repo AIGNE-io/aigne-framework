@@ -25,35 +25,9 @@ my-agent-project/
 
 下圖說明了 AIGNE 專案核心元件之間的關係。中心的 `aigne.yaml` 檔案協調所有部分，定義了存在哪些 agent、它們可以使用哪些技能，以及哪個 AI 模型為它們的智能提供支援。
 
-```d2
-direction: down
-
-aigne-yaml: {
-  label: "aigne.yaml"
-  shape: rectangle
-}
-
-agent: {
-  label: "Agent\n(e.g., chat.yaml)"
-  shape: rectangle
-}
-
-skill: {
-  label: "Skill\n(e.g., sandbox.js)"
-  shape: rectangle
-}
-
-chat-model: {
-  label: "Chat Model\n(e.g., gpt-4o-mini)"
-  shape: cylinder
-}
-
-aigne-yaml -> agent: "Defines"
-aigne-yaml -> skill: "Registers"
-aigne-yaml -> chat-model: "Configures"
-agent -> skill: "Uses"
-agent -> chat-model: "Communicates with"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![---](assets/diagram/core-concepts-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 要了解 AIGNE 專案如何運作，必須掌握其兩個主要元件：中央專案設定以及可執行的 agent 和技能。下面將更詳細地探討它們。
 

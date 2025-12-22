@@ -27,35 +27,9 @@
 
 プロセスは簡単です。ユーザーが Agent に入力を提供します。その後、Agent はそのコアな指示を参照してコンテキストとルールを理解し、必要に応じて持っているスキルを使用し、出力を生成します。
 
-```d2 icon=material-symbols:robot-2-outline
-direction: right
-
-User: {
-  label: "ユーザー"
-  shape: person
-}
-
-Agent: {
-  label: "基本的な Agent"
-  shape: hexagon
-  style.fill: "#f0f4f8"
-}
-
-Instructions: {
-  label: "コアな指示\n(ルールブック)"
-  shape: document
-}
-
-Output: {
-  label: "結果"
-  shape: document
-}
-
-User -> Agent: "入力 (例：特定の質問)"
-Agent -> Instructions: "参照する"
-Instructions -> Agent: "ガイダンスを提供"
-Agent -> Output: "出力を生成 (例：回答)"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Basic Agents](assets/diagram/user-guide-understanding-agents-basic-agents-01.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 例：シンプルなチャット Agent
 

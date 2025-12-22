@@ -8,41 +8,70 @@
   </picture>
 </p>
 
-This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) to build an orchestrator workflow. The example now supports both one-shot and interactive chat modes, along with customizable model settings and pipeline input/output.
+This is a demonstration of using [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) to build an orchestrator workflow using YAML configuration. The orchestrator pattern enables autonomous task planning and execution through a planner-worker-completer architecture.
+
+## 💡 Key Concept
+
+**The orchestrator uses your current directory as its workspace.** When you run the orchestrator in any directory, it can access and analyze files in that location. This makes it perfect for:
+
+- 📊 **Project Analysis**: Analyze any codebase by running it in the project root
+- 🔍 **Code Auditing**: Review project structure, dependencies, and configurations
+- 📝 **Documentation Generation**: Automatically generate documentation based on actual code
+- 🛠️ **Workspace Automation**: Perform complex multi-step operations on your files
+
+> **Example**: Running `npx -y @aigne/example-workflow-orchestrator` in your project directory will analyze that specific project, not a fixed demo directory.
+
+## Architecture
+
+The orchestrator follows a three-phase workflow:
 
 ```mermaid
 flowchart LR
+    Input([User Objective]) --> Planner
+    Planner -->|Next Task| Worker
+    Worker -->|Task Result| State[Execution State]
+    State --> Planner
+    Planner -->|Finished| Completer
+    Completer --> Output([Final Response])
 
-in(In)
-out(Out)
-orchestrator(Orchestrator)
-synthesizer(Synthesizer)
-finder(Finder)
-writer(Writer)
-proofreader(Proofreader)
-fact_checker(Fact Checker)
-style_enforcer(Style Enforcer)
+    Skills[Skills/Tools] -.->|Available to| Worker
 
-in ==> orchestrator
-orchestrator -.-> finder -.-> synthesizer
-orchestrator -.-> writer -.-> synthesizer
-orchestrator -.-> proofreader -.-> synthesizer
-orchestrator -.-> fact_checker -.-> synthesizer
-orchestrator -.-> style_enforcer -.-> synthesizer
-synthesizer ==> out
+    classDef inputOutput fill:#f9f0ed,stroke:#debbae,stroke-width:2px,color:#b35b39,font-weight:bolder
+    classDef agent fill:#F0F4EB,stroke:#C2D7A7,stroke-width:2px,color:#6B8F3C,font-weight:bolder
+    classDef resource fill:#E8F4F8,stroke:#4A9EBF,stroke-width:2px,color:#2B5F75,font-weight:bolder
 
-classDef inputOutput fill:#f9f0ed,stroke:#debbae,stroke-width:2px,color:#b35b39,font-weight:bolder;
-classDef processing fill:#F0F4EB,stroke:#C2D7A7,stroke-width:2px,color:#6B8F3C,font-weight:bolder;
+    class Input,Output inputOutput
+    class Planner,Worker,Completer agent
+    class State,Skills resource
+```
 
-class in inputOutput
-class out inputOutput
-class orchestrator processing
-class synthesizer processing
-class finder processing
-class writer processing
-class proofreader processing
-class fact_checker processing
-class style_enforcer processing
+**Components:**
+- **Planner**: Analyzes the objective and execution state to determine the next task
+- **Worker**: Executes assigned tasks using available skills and tools
+- **Completer**: Synthesizes all results and provides the final response
+- **Execution State**: Tracks task history, results, and progress
+
+## How It Works
+
+When you run the orchestrator in a directory:
+
+1. **Directory Mounting**: Your current directory is automatically mounted as `/modules/workspace/`
+2. **Planning Phase**: The Planner analyzes your objective and decides what information to gather
+3. **Execution Phase**: The Worker uses filesystem tools to read files, explore directories, etc.
+4. **Iteration**: Steps 2-3 repeat until the objective is complete
+5. **Completion**: The Completer synthesizes all gathered information into a final response
+
+**Example Workflow**:
+```
+User runs: npx -y @aigne/example-workflow-orchestrator
+Current directory: /home/user/my-project/
+
+→ Planner: "Need to explore project structure"
+→ Worker: Lists files in /modules/workspace/ (maps to /home/user/my-project/)
+→ Planner: "Need to read package.json"
+→ Worker: Reads /modules/workspace/package.json
+→ Planner: "Have enough information, generate report"
+→ Completer: Creates final project summary
 ```
 
 ## Prerequisites
@@ -53,20 +82,127 @@ class style_enforcer processing
   * [Bun](https://bun.sh) for running unit tests & examples
   * [Pnpm](https://pnpm.io) for package management
 
-## Quick Start (No Installation Required)
+## Quick Start
+
+The orchestrator is configured using YAML files. This example uses:
+- [aigne.yaml](./aigne.yaml) - Main configuration file
+- [agents/orchestrator.yaml](./agents/orchestrator.yaml) - Orchestrator agent definition
+- [agents/objective.md](./agents/objective.md) - Objective prompt template
+- [agents/planner.md](./agents/planner.md) - Custom planner instructions
+
+### Run with npx (No Installation Required)
+
+**Important**: The orchestrator will analyze the directory where you run it. Navigate to your target project first:
 
 ```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
+# Navigate to your project directory
+cd /path/to/your/project
 
-# Run in one-shot mode (default)
+# Run the orchestrator - it will analyze the current directory
 npx -y @aigne/example-workflow-orchestrator
 
-# Run in interactive chat mode
+# Run with chat mode for interactive instructions
 npx -y @aigne/example-workflow-orchestrator --chat
 
-# Use pipeline input
-echo "Research ArcBlock and compile a report about their products and architecture" | npx -y @aigne/example-workflow-orchestrator
+# Run with custom message
+npx -y @aigne/example-workflow-orchestrator --message "Analyze the project dependencies and security issues"
 ```
+
+**What happens**: The orchestrator mounts your current directory as `/modules/workspace/` and can read, analyze, and work with all files in that location.
+
+### Test Cases
+
+#### 1. Basic Analysis (2-3 steps)
+Run the orchestrator in a simple project directory to generate a summary report.
+
+```bash
+cd /path/to/simple-project
+npx -y @aigne/example-workflow-orchestrator --message "Generate a project summary report"
+```
+
+**What this tests**: Basic file exploration and information extraction
+
+---
+
+#### 2. Security Audit (5-8 steps)
+Run the orchestrator in a codebase to identify potential security issues.
+
+```bash
+cd /path/to/codebase
+npx -y @aigne/example-workflow-orchestrator --message "Perform a security audit: check for outdated dependencies, exposed secrets, insecure configurations, missing security headers, and vulnerable code patterns. Provide a risk-rated report"
+```
+
+**What this tests**: Multi-dimensional analysis and risk assessment
+
+---
+
+#### 3. Code Review (4-6 steps)
+Run the orchestrator to review code quality and suggest improvements.
+
+```bash
+cd /path/to/codebase
+npx -y @aigne/example-workflow-orchestrator --message "Review the code quality: identify code smells, adherence to best practices, and suggest improvements. Provide a summary report"
+```
+
+**What this tests**: Code quality analysis and pattern recognition
+
+---
+
+#### 4. Documentation Suite Generation ⭐ (12-15 steps)
+**Advanced test case**: Analyze repository and create comprehensive, well-organized documentation.
+
+```bash
+cd /path/to/any/project
+npx -y @aigne/example-workflow-orchestrator --message "Analyze this repository and create a comprehensive documentation suite in the docs/ directory. Include: 1) Architecture overview, 2) Getting started guide, 3) API reference, 4) Contributing guidelines, 5) Component/module documentation. Organize the docs logically with a clear navigation structure."
+```
+
+**What this tests**:
+- Multi-file creation workflow
+- Comprehensive analysis and synthesis
+- Structured output generation
+- File system write operations
+- Logical organization and planning
+
+### Connect to an AI Model
+
+As an example, running `npx -y @aigne/example-workflow-orchestrator --chat` requires an AI model. If this is your first run, you need to connect one.
+
+![run example](./run-example.png)
+
+- Connect via the official AIGNE Hub
+
+Choose the first option and your browser will open the official AIGNE Hub page. Follow the prompts to complete the connection. If you're a new user, the system automatically grants 400,000 tokens for you to use.
+
+![connect to official aigne hub](../images/connect-to-aigne-hub.png)
+
+- Connect via a self-hosted AIGNE Hub
+
+Choose the second option, enter the URL of your self-hosted AIGNE Hub, and follow the prompts to complete the connection. If you need to set up a self-hosted AIGNE Hub, visit the Blocklet Store to install and deploy it: [Blocklet Store](https://store.blocklet.dev/blocklets/z8ia3xzq2tMq8CRHfaXj1BTYJyYnEcHbqP8cJ?utm_source=www.arcblock.io&utm_medium=blog_link&utm_campaign=default&utm_content=store.blocklet.dev#:~:text=%F0%9F%9A%80%20Get%20Started%20in%20Minutes).
+
+![connect to self hosted aigne hub](../images/connect-to-self-hosted-aigne-hub.png)
+
+- Connect via a third-party model provider
+
+Using OpenAI as an example, you can configure the provider's API key via environment variables. After configuration, run the example again:
+
+```bash
+export OPENAI_API_KEY="" # Set your OpenAI API key here
+```
+For more details on third-party model configuration (e.g., OpenAI, DeepSeek, Google Gemini), see [.env.local.example](./.env.local.example).
+
+After configuration, run the example again.
+
+### Debugging
+
+The `aigne observe` command starts a local web server to monitor and analyze agent execution data. It provides a user-friendly interface to inspect traces, view detailed call information, and understand your agent’s behavior during runtime. This tool is essential for debugging, performance tuning, and gaining insight into how your agent processes information and interacts with tools and models.
+
+Start the observation server.
+
+![aigne-observe-execute](../images/aigne-observe-execute.png)
+
+View a list of recent executions.
+
+![aigne-observe-list](../images/aigne-observe-list.png)
 
 ## Installation
 
@@ -115,125 +251,111 @@ You can use different AI models by setting the `MODEL` environment variable alon
 
 For detailed configuration examples, please refer to the `.env.local.example` file in this directory.
 
-### Run the Example
+### Run from Source
 
 ```bash
-pnpm start # Run in one-shot mode (default)
-
-# Run in interactive chat mode
-pnpm start -- --chat
-
-# Use pipeline input
-echo "Research ArcBlock and compile a report about their products and architecture" | pnpm start
+cd examples/workflow-orchestrator
+pnpm start
 ```
 
-### Run Options
-
-The example supports the following command-line parameters:
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
-| `--model <provider[:model]>` | AI model to use in format 'provider\[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
-| `--temperature <value>` | Temperature for model generation | Provider default |
-| `--top-p <value>` | Top-p sampling value | Provider default |
-| `--presence-penalty <value>` | Presence penalty value | Provider default |
-| `--frequency-penalty <value>` | Frequency penalty value | Provider default |
-| `--log-level <level>` | Set logging level (ERROR, WARN, INFO, DEBUG, TRACE) | INFO |
-| `--input`, `-i <input>` | Specify input directly | None |
-
-#### Examples
+You can pass custom messages to the orchestrator:
 
 ```bash
-# Run in chat mode (interactive)
-pnpm start -- --chat
+# Pass message via command line
+pnpm start --message "Analyze the project structure"
 
-# Set logging level
-pnpm start -- --log-level DEBUG
-
-# Use pipeline input
-echo "Research ArcBlock and compile a report about their products and architecture" | pnpm start
+# Or use YAML input
+pnpm start --input-yaml '{ message: "Generate a README for this project" }'
 ```
 
-## Example
+## Configuration
 
-The following example demonstrates how to build a orchestrator workflow:
+### Main Configuration (aigne.yaml)
 
-Here is the generated report for this example: [arcblock-deep-research.md](./generated-report-arcblock.md)
+```yaml
+#!/usr/bin/env aigne
 
-```typescript
-import { OrchestratorAgent } from "@aigne/agent-library/orchestrator/index.js";
-import { AIAgent, AIGNE, MCPAgent } from "@aigne/core";
-import { OpenAIChatModel } from "@aigne/core/models/openai-chat-model.js";
-
-const { OPENAI_API_KEY } = process.env;
-
-const model = new OpenAIChatModel({
-  apiKey: OPENAI_API_KEY,
-  modelOptions: {
-    parallelToolCalls: false, // puppeteer can only run one task at a time
-  },
-});
-
-const puppeteer = await MCPAgent.from({
-  command: "npx",
-  args: ["-y", "@modelcontextprotocol/server-puppeteer"],
-  env: process.env as Record<string, string>,
-});
-
-const filesystem = await MCPAgent.from({
-  command: "npx",
-  args: ["-y", "@modelcontextprotocol/server-filesystem", import.meta.dir],
-});
-
-const finder = AIAgent.from({
-  name: "finder",
-  description: "Find the closest match to a user's request",
-  instructions: `You are an agent that can find information on the web.
-You are tasked with finding the closest match to the user's request.
-You can use puppeteer to scrape the web for information.
-You can also use the filesystem to save the information you find.
-
-Rules:
-- do not use screenshot of puppeteer
-- use document.body.innerText to get the text content of a page
-- if you want a url to some page, you should get all link and it's title of current(home) page,
-then you can use the title to search the url of the page you want to visit.
-  `,
-  skills: [puppeteer, filesystem],
-});
-
-const writer = AIAgent.from({
-  name: "writer",
-  description: "Write to the filesystem",
-  instructions: `You are an agent that can write to the filesystem.
-  You are tasked with taking the user's input, addressing it, and
-  writing the result to disk in the appropriate location.`,
-  skills: [filesystem],
-});
-
-const agent = OrchestratorAgent.from({
-  skills: [finder, writer],
-  maxIterations: 3,
-  tasksConcurrency: 1, // puppeteer can only run one task at a time
-});
-
-const aigne = new AIGNE({ model });
-
-const result = await aigne.invoke(
-  agent,
-  `\
-Conduct an in-depth research on ArcBlock using only the official website\
-(avoid search engines or third-party sources) and compile a detailed report saved as arcblock.md. \
-The report should include comprehensive insights into the company's products \
-(with detailed research findings and links), technical architecture, and future plans.`,
-);
-console.log(result);
-// Output:
-// {
-//   $message: "The objective of conducting in-depth research on ArcBlock using only the official website has been successfully completed...",
-// }
+model: aignehub/google/gemini-2.5-pro
+agents:
+  - agents/orchestrator.yaml
 ```
+
+### Orchestrator Configuration (agents/orchestrator.yaml)
+
+```yaml
+type: "@aigne/agent-library/orchestrator"
+name: orchestrator
+input_schema:
+  type: object
+  properties:
+    message:
+      type: string
+      description: (Optional) User's instruction
+  required: []
+
+# Specify the objective for the orchestrator agent
+objective:
+  url: objective.md
+
+# Custom planner agent can be defined here
+planner:
+  type: ai
+  instructions:
+    url: planner.md
+
+# Custom worker agent (optional)
+# worker:
+#   type: ai
+#   instructions:
+#     url: path/to/worker_instructions.md
+
+# Custom completer agent (optional)
+# completer:
+#   type: ai
+#   instructions:
+#     url: path/to/completer_instructions.md
+
+# State management configuration
+state_management:
+  max_iterations: 5              # Maximum planning-execution iterations
+  max_tokens: 100000            # Optional: limit total tokens for state management
+  keep_recent: 20               # Optional: keep only N most recent states in memory
+
+# Agent File System (AFS) configuration - Critical for accessing files
+afs:
+  modules:
+    - module: history      # Enables access to conversation history
+    - module: local-fs     # Mounts local filesystem
+      options:
+        name: workspace    # Mounted as /modules/workspace/
+        localPath: .       # Current directory (where you run the command)
+        description: Workspace directory for the orchestrator agent.
+```
+
+### Objective Template (agents/objective.md)
+
+```markdown
+{% if message %}
+{{ message }}
+{% else %}
+Explore the workspace structure and generate a project summary report in Markdown format.
+{% endif %}
+```
+
+When you run without the `--message` flag, it uses the default objective. With `--message`, your custom message replaces the entire objective.
+
+### Custom Planner Instructions (agents/planner.md)
+
+The planner is responsible for iterative task planning. See [agents/planner.md](./agents/planner.md) for the full custom planner prompt that enables autonomous exploration and task decomposition.
+
+### Key Features
+
+1. **Current Directory as Workspace**: Automatically mounts your current directory for file access
+2. **YAML-based Configuration**: Define your orchestrator workflow declaratively
+3. **Customizable Components**: Override planner, worker, or completer with custom instructions
+4. **State Management**: Control iteration limits and memory usage
+5. **Agent File System**: Shared storage accessible to all agent components
+6. **Template Support**: Use Jinja2-style templates in objective prompts
 
 ## License
 

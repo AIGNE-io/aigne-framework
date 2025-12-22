@@ -25,7 +25,7 @@ export interface ImageModelOptions<
 > extends Omit<AgentOptions<I, O>, "model"> {
   model?: string;
 
-  modelOptions?: Omit<ImageModelInputOptions, "model">;
+  modelOptions?: ImageModelInputOptionsWithGetter;
 }
 
 export abstract class ImageModel<
@@ -34,12 +34,11 @@ export abstract class ImageModel<
 > extends Model<I, O> {
   override tag = "ImageModelAgent";
 
-  constructor(public options?: ImageModelOptions<I, O>) {
+  constructor(public override options?: ImageModelOptions<I, O>) {
     super({
       inputSchema: imageModelInputSchema as ZodType<I>,
       outputSchema: imageModelOutputSchema as ZodType<O>,
       ...options,
-      model: undefined,
     });
   }
 
@@ -107,6 +106,7 @@ export abstract class ImageModel<
       options.context.usage.outputTokens += usage.outputTokens;
       options.context.usage.inputTokens += usage.inputTokens;
       if (usage.aigneHubCredits) options.context.usage.aigneHubCredits += usage.aigneHubCredits;
+      if (usage.creditPrefix) options.context.usage.creditPrefix = usage.creditPrefix;
     }
   }
 

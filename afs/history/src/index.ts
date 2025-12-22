@@ -1,9 +1,11 @@
 import type {
-  AFSEntry,
   AFSListOptions,
+  AFSListResult,
   AFSModule,
+  AFSReadResult,
   AFSRoot,
   AFSWriteEntryPayload,
+  AFSWriteResult,
 } from "@aigne/afs";
 import { v7 } from "@aigne/uuid";
 import { joinURL } from "ufo";
@@ -47,22 +49,19 @@ export class AFSHistory implements AFSModule {
     });
   }
 
-  async list(path: string, options?: AFSListOptions): Promise<{ list: AFSEntry[] }> {
-    if (path !== "/") return { list: [] };
+  async list(path: string, options?: AFSListOptions): Promise<AFSListResult> {
+    if (path !== "/") return { data: [] };
 
     return await this.storage.list(options);
   }
 
-  async read(path: string): Promise<{ result: AFSEntry | undefined; message?: string }> {
-    const result = await this.storage.read(path);
-    return { result };
+  async read(path: string): Promise<AFSReadResult> {
+    const data = await this.storage.read(path);
+    return { data };
   }
 
-  async write(
-    path: string,
-    content: AFSWriteEntryPayload,
-  ): Promise<{ result: AFSEntry; message?: string }> {
-    const result = await this.storage.create({ ...content, path });
-    return { result };
+  async write(path: string, content: AFSWriteEntryPayload): Promise<AFSWriteResult> {
+    const data = await this.storage.create({ ...content, path });
+    return { data };
   }
 }

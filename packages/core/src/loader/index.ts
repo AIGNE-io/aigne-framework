@@ -1,4 +1,4 @@
-import { AFS, type AFSModule } from "@aigne/afs";
+import { AFS, type AFSContext, type AFSContextPreset, type AFSModule } from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
@@ -16,6 +16,7 @@ import type { AIGNECLIAgent } from "../aigne/type.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { ChatMessagesTemplate, parseChatMessages } from "../prompt/template.js";
+import { isAgent } from "../utils/agent-utils.js";
 import {
   flat,
   isNil,
@@ -25,7 +26,13 @@ import {
   tryOrThrow,
 } from "../utils/type-utils.js";
 import { loadAgentFromJsFile } from "./agent-js.js";
-import { type HooksSchema, loadAgentFromYamlFile, type NestAgentSchema } from "./agent-yaml.js";
+import {
+  type AFSContextPresetSchema,
+  type HooksSchema,
+  type Instructions,
+  loadAgentFromYamlFile,
+  type NestAgentSchema,
+} from "./agent-yaml.js";
 import { camelizeSchema, chatModelSchema, imageModelSchema, optionalize } from "./schema.js";
 
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
@@ -41,6 +48,7 @@ export interface LoadOptions {
         model?: z.infer<typeof aigneFileSchema>["imageModel"],
       ) => PromiseOrValue<ImageModel | undefined>);
   afs?: {
+    sharedAFS?: AFS;
     availableModules?: {
       module: string;
       alias?: string[];
@@ -48,6 +56,7 @@ export interface LoadOptions {
     }[];
   };
   aigne?: z.infer<typeof aigneFileSchema>;
+  require?: (modulePath: string, options: { parent?: string }) => Promise<any>;
 }
 
 export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
@@ -113,17 +122,17 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
 
 export async function loadAgent(
   path: string,
-  options?: LoadOptions,
+  options: LoadOptions,
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
   if ([".js", ".mjs", ".ts", ".mts"].includes(nodejs.path.extname(path))) {
-    const agent = await loadAgentFromJsFile(path);
+    const agent = await loadAgentFromJsFile(path, options);
     if (agent instanceof Agent) return agent;
     return parseAgent(path, agent, options, agentOptions);
   }
 
   if ([".yml", ".yaml"].includes(nodejs.path.extname(path))) {
-    const agent = await loadAgentFromYamlFile(path);
+    const agent = await loadAgentFromYamlFile(path, options);
 
     return parseAgent(path, agent, options, agentOptions);
   }
@@ -131,16 +140,18 @@ export async function loadAgent(
   throw new Error(`Unsupported agent file type: ${path}`);
 }
 
-async function loadNestAgent(
+export async function loadNestAgent(
   path: string,
   agent: NestAgentSchema,
-  options?: LoadOptions,
+  options: LoadOptions,
+  agentOptions?: AgentOptions<any, any> & Record<string, unknown>,
 ): Promise<Agent> {
   return typeof agent === "object" && "type" in agent
-    ? parseAgent(path, agent, options)
+    ? parseAgent(path, agent, options, agentOptions)
     : typeof agent === "string"
-      ? loadAgent(nodejs.path.join(nodejs.path.dirname(path), agent), options)
+      ? loadAgent(nodejs.path.join(nodejs.path.dirname(path), agent), options, agentOptions)
       : loadAgent(nodejs.path.join(nodejs.path.dirname(path), agent.url), options, {
+          ...agentOptions,
           defaultInput: agent.defaultInput,
           hooks: await parseHooks(path, agent.hooks, options),
         });
@@ -148,8 +159,8 @@ async function loadNestAgent(
 
 async function parseHooks(
   path: string,
-  hooks?: HooksSchema | HooksSchema[],
-  options?: LoadOptions,
+  hooks: HooksSchema | HooksSchema[] | undefined,
+  options: LoadOptions,
 ): Promise<AgentHooks[] | undefined> {
   hooks = [hooks].flat().filter(isNonNullable);
   if (!hooks.length) return undefined;
@@ -179,7 +190,7 @@ async function parseHooks(
 async function loadSkills(
   path: string,
   skills: NestAgentSchema[],
-  options?: LoadOptions,
+  options: LoadOptions,
 ): Promise<Agent[]> {
   const loadedSkills: Agent[] = [];
   for (const skill of skills) {
@@ -188,14 +199,13 @@ async function loadSkills(
   return loadedSkills;
 }
 
-async function parseAgent(
+export async function parseAgent(
   path: string,
   agent: Awaited<ReturnType<typeof loadAgentFromYamlFile>>,
-  options?: LoadOptions,
+  options: LoadOptions,
   agentOptions?: AgentOptions,
 ): Promise<Agent> {
-  const skills =
-    "skills" in agent && agent.skills ? await loadSkills(path, agent.skills, options) : undefined;
+  if (isAgent(agent)) return agent;
 
   const memory =
     "memory" in agent && options?.memories?.length
@@ -207,10 +217,49 @@ async function parseAgent(
       : undefined;
 
   let afs: AFS | undefined;
-  if (typeof agent.afs === "boolean") {
-    if (agent.afs) afs = new AFS();
-  } else if (agent.afs) {
+  if (agent.afs !== false && (!agent.afs || agent.afs === true) && options?.afs?.sharedAFS) {
+    afs = options.afs.sharedAFS;
+  } else if (agent.afs === true) {
     afs = new AFS();
+  } else if (agent.afs) {
+    afs = new AFS({});
+
+    const loadAFSContextPresets = async (
+      presets: Record<string, AFSContextPresetSchema>,
+    ): Promise<Record<string, AFSContextPreset>> => {
+      return Object.fromEntries(
+        await Promise.all(
+          Object.entries(presets).map<Promise<[string, AFSContextPreset]>>(async ([key, value]) => {
+            const [select, per, dedupe] = await Promise.all(
+              [value.select, value.per, value.dedupe].map(async (item) => {
+                if (!item?.agent) return undefined;
+                const agent = await loadNestAgent(path, item.agent, options, { afs });
+                return {
+                  invoke: (input: any, options: any) =>
+                    options.context.invoke(agent, input, {
+                      ...options,
+                      streaming: false,
+                    }),
+                };
+              }),
+            );
+
+            return [key, { ...value, select, per, dedupe }];
+          }),
+        ),
+      );
+    };
+
+    const context: AFSContext = {
+      search: {
+        presets: await loadAFSContextPresets(agent.afs.context?.search?.presets || {}),
+      },
+      list: {
+        presets: await loadAFSContextPresets(agent.afs.context?.list?.presets || {}),
+      },
+    };
+
+    afs.options.context = context;
 
     for (const m of agent.afs.modules || []) {
       const moduleName = typeof m === "string" ? m : m.module;
@@ -225,6 +274,14 @@ async function parseAgent(
       afs.mount(module);
     }
   }
+
+  const skills =
+    "skills" in agent && agent.skills
+      ? await loadSkills(path, agent.skills, {
+          ...options,
+          afs: { ...options?.afs, sharedAFS: (agent.shareAFS && afs) || options?.afs?.sharedAFS },
+        })
+      : [];
 
   const model =
     agent.model && typeof options?.model === "function"
@@ -243,27 +300,18 @@ async function parseAgent(
     ...agent,
     model,
     imageModel,
-    skills,
     memory,
     hooks: [
       ...((await parseHooks(path, agent.hooks, options)) ?? []),
       ...[agentOptions?.hooks].flat().filter(isNonNullable),
     ],
-    afs,
+    skills: [...(agentOptions?.skills || []), ...skills],
+    afs: afs || agentOptions?.afs,
   };
 
   let instructions: PromptBuilder | undefined;
-  if ("instructions" in agent && agent.instructions) {
-    instructions = new PromptBuilder({
-      instructions: ChatMessagesTemplate.from(
-        parseChatMessages(
-          agent.instructions.map((i) => ({
-            ...i,
-            options: { workingDir: nodejs.path.dirname(i.path) },
-          })),
-        ),
-      ),
-    });
+  if ("instructions" in agent && agent.instructions && ["ai", "image"].includes(agent.type)) {
+    instructions = instructionsToPromptBuilder(agent.instructions);
   }
 
   switch (agent.type) {
@@ -328,6 +376,18 @@ async function parseAgent(
       });
     }
   }
+
+  if ("agentClass" in agent && agent.agentClass) {
+    return await agent.agentClass.load({
+      filepath: path,
+      parsed: baseOptions,
+      options,
+    });
+  }
+
+  throw new Error(
+    `Unsupported agent type: ${"type" in agent ? agent.type : "unknown"} at path: ${path}`,
+  );
 }
 
 async function loadMemory(
@@ -411,7 +471,7 @@ export async function loadAIGNEFile(path: string): Promise<{
   return { aigne, rootDir: nodejs.path.dirname(file) };
 }
 
-async function findAIGNEFile(path: string): Promise<string> {
+export async function findAIGNEFile(path: string): Promise<string> {
   const possibleFiles = AIGNE_FILE_NAME.includes(nodejs.path.basename(path))
     ? [path]
     : AIGNE_FILE_NAME.map((name) => nodejs.path.join(path, name));
@@ -427,4 +487,17 @@ async function findAIGNEFile(path: string): Promise<string> {
   throw new Error(
     `aigne.yaml not found in ${path}. Please ensure you are in the correct directory or provide a valid path.`,
   );
+}
+
+export function instructionsToPromptBuilder(instructions: Instructions) {
+  return new PromptBuilder({
+    instructions: ChatMessagesTemplate.from(
+      parseChatMessages(
+        instructions.map((i) => ({
+          ...i,
+          options: { workingDir: nodejs.path.dirname(i.path) },
+        })),
+      ),
+    ),
+  });
 }

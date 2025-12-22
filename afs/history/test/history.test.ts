@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import assert from "node:assert";
-import { AFS } from "@aigne/afs";
+import { AFS, type AFSEntry } from "@aigne/afs";
 import { AFSHistory } from "@aigne/afs-history";
 
 test("AFS should record history correctly", async () => {
@@ -18,7 +18,7 @@ test("AFS should record history correctly", async () => {
 
   assert(historyPath);
 
-  const histories = (await afs.list(historyPath)).list;
+  const histories: AFSEntry[] = (await afs.list(historyPath)).data;
 
   expect(histories.map(({ createdAt, id, path, updatedAt, ...i }) => i)).toMatchInlineSnapshot(`
     [
@@ -42,7 +42,7 @@ test("AFS should record history correctly", async () => {
 
   assert(histories[0]);
 
-  expect((await afs.read(histories[0].path)).result).toMatchInlineSnapshot(
+  expect((await afs.read(histories[0].path)).data).toMatchInlineSnapshot(
     {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),

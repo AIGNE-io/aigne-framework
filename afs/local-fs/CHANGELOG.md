@@ -1,5 +1,256 @@
 # Changelog
 
+## [1.4.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.4.0-beta.2...afs-local-fs-v1.4.0-beta.3) (2025-12-19)
+
+
+### Bug Fixes
+
+* **afs:** always respect ignore option for local-fs ([#843](https://github.com/AIGNE-io/aigne-framework/issues/843)) ([b19a731](https://github.com/AIGNE-io/aigne-framework/commit/b19a7316f03070878c481221550a5cd1ac7ce46f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.3
+
+## [1.4.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.4.0-beta.1...afs-local-fs-v1.4.0-beta.2) (2025-12-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.2
+    * @aigne/core bumped to 1.72.0-beta.2
+
+## [1.4.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.4.0-beta...afs-local-fs-v1.4.0-beta.1) (2025-12-17)
+
+
+### Bug Fixes
+
+* bump version ([70d217c](https://github.com/AIGNE-io/aigne-framework/commit/70d217c8360dd0dda7f5f17011c4e92ec836e801))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.1
+    * @aigne/core bumped to 1.72.0-beta.1
+
+## [1.4.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.3.0...afs-local-fs-v1.4.0-beta) (2025-12-17)
+
+
+### Features
+
+* **afs:** support expand context into prompt template by call `$afs.xxx` ([#830](https://github.com/AIGNE-io/aigne-framework/issues/830)) ([5616acd](https://github.com/AIGNE-io/aigne-framework/commit/5616acd6ea257c91aa0b766608f45c5ce17f0345))
+
+
+### Bug Fixes
+
+* **afs:** read method should not throw not found error ([#835](https://github.com/AIGNE-io/aigne-framework/issues/835)) ([ebfdfc1](https://github.com/AIGNE-io/aigne-framework/commit/ebfdfc1cdba23efd23ac2ad4621e3f046990fd8b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta
+    * @aigne/core bumped to 1.72.0-beta
+
+## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.3.0-beta.6...afs-local-fs-v1.3.0) (2025-12-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0
+    * @aigne/core bumped to 1.71.0
+
+## [1.3.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.3.0-beta.5...afs-local-fs-v1.3.0-beta.6) (2025-12-11)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.71.0-beta.6
+
+## [1.3.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.3.0-beta.4...afs-local-fs-v1.3.0-beta.5) (2025-12-11)
+
+
+### Features
+
+* **afs:** add edit/delete/rename methods for AFS ([#820](https://github.com/AIGNE-io/aigne-framework/issues/820)) ([68cb508](https://github.com/AIGNE-io/aigne-framework/commit/68cb508d1cfc9c516d56303018139f1e567f897e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta.3
+    * @aigne/core bumped to 1.71.0-beta.5
+
+## [1.3.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.3.0-beta.3...afs-local-fs-v1.3.0-beta.4) (2025-12-10)
+
+
+### Bug Fixes
+
+* bump version ([af04b69](https://github.com/AIGNE-io/aigne-framework/commit/af04b6931951afa35d52065430acc7fef4b10087))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta.2
+    * @aigne/core bumped to 1.71.0-beta.4
+
+## [1.3.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.3.0-beta.2...afs-local-fs-v1.3.0-beta.3) (2025-12-10)
+
+
+### Bug Fixes
+
+* **afs:** add case-sensitive option for search with case-insensitive default ([#814](https://github.com/AIGNE-io/aigne-framework/issues/814)) ([9dc9446](https://github.com/AIGNE-io/aigne-framework/commit/9dc944635104fc311e7756b4bde0a20275cfe8ec))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta.1
+    * @aigne/core bumped to 1.71.0-beta.3
+
+## [1.3.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.3.0-beta.1...afs-local-fs-v1.3.0-beta.2) (2025-12-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.71.0-beta.2
+
+## [1.3.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.3.0-beta...afs-local-fs-v1.3.0-beta.1) (2025-12-08)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.71.0-beta.1
+
+## [1.3.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.2.4...afs-local-fs-v1.3.0-beta) (2025-12-07)
+
+
+### Features
+
+* support define agent by third library & orchestrator agent refactor ([#799](https://github.com/AIGNE-io/aigne-framework/issues/799)) ([7264b11](https://github.com/AIGNE-io/aigne-framework/commit/7264b11ab6eed787e928367f09aa08d254968d40))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.3.0-beta
+    * @aigne/core bumped to 1.71.0-beta
+
+## [1.2.4](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.2.4-beta...afs-local-fs-v1.2.4) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.1
+
+## [1.2.4-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.2.3...afs-local-fs-v1.2.4-beta) (2025-12-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.1-beta
+
+## [1.2.3](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.2.3-beta.1...afs-local-fs-v1.2.3) (2025-12-05)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.3
+    * @aigne/core bumped to 1.70.0
+
+## [1.2.3-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.2.3-beta...afs-local-fs-v1.2.3-beta.1) (2025-12-05)
+
+
+### Bug Fixes
+
+* return tree view instead of list for afs_list ([#774](https://github.com/AIGNE-io/aigne-framework/issues/774)) ([8ec2f93](https://github.com/AIGNE-io/aigne-framework/commit/8ec2f93fb5870f6404d886ad0197cc21c61dfd74))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.70.0-beta.1
+
+## [1.2.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.2.2...afs-local-fs-v1.2.3-beta) (2025-12-02)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.3-beta
+    * @aigne/core bumped to 1.70.0-beta
+
+## [1.2.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.2.2-beta.1...afs-local-fs-v1.2.2) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.2
+    * @aigne/core bumped to 1.69.2
+
+## [1.2.2-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.2.2-beta...afs-local-fs-v1.2.2-beta.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.2-beta.1
+
+## [1.2.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.2.1...afs-local-fs-v1.2.2-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.2.2-beta
+    * @aigne/core bumped to 1.69.2-beta
+
+## [1.2.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.2.1-beta...afs-local-fs-v1.2.1) (2025-11-28)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.69.1
+
 ## [1.2.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.2.0...afs-local-fs-v1.2.1-beta) (2025-11-24)
 
 

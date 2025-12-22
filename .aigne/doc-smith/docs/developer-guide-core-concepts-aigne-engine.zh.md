@@ -4,79 +4,9 @@
 
 本指南介绍了如何实例化和配置 AIGNE，如何使用 `invoke` 方法执行 Agent，以及如何管理应用程序的生命周期。
 
-```d2
-direction: down
-
-Developer: {
-  shape: c4-person
-}
-
-Instantiation: {
-  label: "实例化方法"
-  shape: rectangle
-  style.stroke-dash: 2
-
-  Constructor: {
-    label: "`new AIGNE()`\n(编程方式)"
-  }
-
-  Load-Method: {
-    label: "`AIGNE.load()`\n(从目录加载)"
-  }
-}
-
-AIGNE-Engine: {
-  label: "AIGNE"
-  shape: rectangle
-
-  Core: {
-    label: "核心职责"
-    shape: rectangle
-    style.stroke-dash: 4
-
-    Agent-Management: {
-      label: "Agent 和技能\n管理"
-    }
-    Model-Configuration: {
-      label: "全局模型\n配置"
-    }
-    Execution-Context: {
-      label: "执行上下文"
-    }
-  }
-}
-
-Invocation-Results: {
-  label: "`invoke()` 结果"
-  shape: rectangle
-  style.stroke-dash: 2
-
-  Standard-Response: {
-    label: "标准响应\n(Promise)"
-  }
-
-  Streaming-Response: {
-    label: "流式响应\n(AgentResponseStream)"
-  }
-
-  User-Agent: {
-    label: "有状态 UserAgent\n(维护上下文)"
-  }
-}
-
-Developer -> Instantiation: "通过...初始化"
-Instantiation.Constructor -> AIGNE-Engine
-Instantiation.Load-Method -> AIGNE-Engine
-
-Developer -> AIGNE-Engine: "调用 `invoke()`"
-
-AIGNE-Engine -> Invocation-Results.Standard-Response: "返回"
-AIGNE-Engine -> Invocation-Results.Streaming-Response: "返回"
-AIGNE-Engine -> Invocation-Results.User-Agent: "返回"
-
-Invocation-Results -> Developer: "接收结果"
-
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![AIGNE](assets/diagram/aigne-engine-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 概述
 

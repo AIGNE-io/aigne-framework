@@ -16,40 +16,9 @@
 
 例如，如果使用者問：「我的訂單狀態是什麼？」，管理員 Agent 會將查詢路由到「訂單狀態」Agent。如果使用者問：「我該如何重設密碼？」，查詢將被路由到「帳戶支援」Agent。
 
-```d2
-direction: down
-
-User: {
-  shape: c4-person
-}
-
-Manager-Agent: {
-  label: "管理員 Agent\n（路由器）"
-  shape: rectangle
-}
-
-Specialist-Agents: {
-  label: "專業 Agent 團隊"
-  shape: rectangle
-  style: {
-    stroke-dash: 4
-  }
-  grid-columns: 3
-
-  Order-Status: { label: "訂單狀態 Agent" }
-  Account-Support: { label: "帳戶支援 Agent" }
-  Technical-Support: { label: "技術支援 Agent" }
-}
-
-User -> Manager-Agent: "1. 提交請求"
-Manager-Agent -> Specialist-Agents.Order-Status: "2. 根據意圖路由\n（例如：'訂單狀態'）"
-Manager-Agent -> Specialist-Agents.Account-Support: "2. 根據意圖路由\n（例如：'重設密碼'）"
-Manager-Agent -> Specialist-Agents.Technical-Support: "2. 根據意圖路由\n（例如：'技術問題'）"
-
-Specialist-Agents.Order-Status -> User: "3. 處理並返回輸出"
-Specialist-Agents.Account-Support -> User: "3. 處理並返回輸出"
-Specialist-Agents.Technical-Support -> User: "3. 處理並返回輸出"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Decision-Making](assets/diagram/decision-making-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 使用案例
 

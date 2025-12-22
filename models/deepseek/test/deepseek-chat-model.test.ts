@@ -147,7 +147,9 @@ test("DeepSeekChatModel.invoke", async () => {
   expect(result).toEqual(
     expect.objectContaining({
       json: { text: "The current temperature in New York is 20°C." },
+      model: "deepseek-chat",
       usage: {
+        cacheReadInputTokens: 192,
         inputTokens: 193,
         outputTokens: 16,
       },

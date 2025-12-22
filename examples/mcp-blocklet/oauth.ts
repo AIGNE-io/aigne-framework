@@ -49,6 +49,9 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
       contacts: ["support@aigne.io"],
       software_id: "AIGNE Framework",
       software_version: "1.0.0",
+
+      token_endpoint_auth_method: "client_secret_post",
+      jwks_uri: `${this.redirectUrl}/.well-known/jwks.json`,
     };
   }
 
@@ -79,6 +82,10 @@ export class TerminalOAuthProvider extends EventEmitter implements OAuthClientPr
   }
 
   async redirectToAuthorization(authorizationUrl: URL): Promise<void> {
+    console.log(
+      "🚀 redirectToAuthorization called, authorizationUrl:",
+      authorizationUrl.toString(),
+    );
     // Create a local server to handle the callback
     return new Promise((resolve, reject) => {
       const server = createServer(async (req, res) => {

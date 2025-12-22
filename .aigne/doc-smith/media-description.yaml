@@ -1,0 +1,194 @@
+descriptions:
+  9d9afa0b11913379341d2b5f55802b0e7a7e6343c2bb1cd5d206a4101de8a2ed:
+    path: ../../../examples/workflow-reflection/run-example.png
+    description: This screenshot displays a command-line interface showing the
+      output of an `npx` command, including several `npm warn` messages about
+      deprecated packages. The main focus is a prompt asking the user to
+      configure LLM API Keys or AIGNE Hub connections, with "Connect to the
+      Archblock official AIGNE Hub" highlighted as the recommended option. This
+      image illustrates a guided initial setup or configuration process within a
+      terminal environment.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  d4ebcae0faecc4be2b57c3f4407276682451e25016775332c963f29937df7b24:
+    path: ../../../examples/workflow-code-execution/run-example.png
+    description: This screenshot captures a command-line interface (CLI) prompt
+      guiding the user through initial setup when no LLM API Keys or AIGNE Hub
+      connections are found. It presents three options for proceeding, with
+      "Connect to the Arcblock official AIGNE Hub (recommended, free credits for
+      new users)" highlighted as the active choice. This image is useful for
+      documenting setup processes or interactive CLI prompts.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  d3dc01907bf69a64fd7edbc311157986a13a02b1f2872cfc20100ddb766ec622:
+    path: ../../../examples/workflow-router/run-example.png
+    description: This screenshot displays a terminal interface showing the output of
+      an `npx` command, `npx -y @aigne/example-workflow-router --chat`. After
+      several npm deprecation warnings, an interactive prompt appears, asking
+      the user how to proceed due to missing LLM API Keys or AIGNE Hub
+      connections. The first option, "Connect to the Archblock official AIGNE
+      Hub (recommended, free credits for new users)," is highlighted.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  d559dd2a1f34acaade4bb864898b74888221bfafb8acae81d9582a4c1c86fd0d:
+    path: ../../../examples/workflow-sequential/run-example.png
+    description: This screenshot displays a terminal window showing the output of an
+      `npx` command to run an example workflow, including several npm
+      deprecation warnings. The primary focus is an interactive prompt asking
+      the user how to proceed when no LLM API Keys or AIGNE Hub connections are
+      found, presenting options such as connecting to the official AIGNE Hub or
+      configuring API keys.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  3b507241ce7423c35e1f704279236fd9c0468ca112efe3c49ed50051437a21cd:
+    path: ../../../examples/nano-banana/run-example.png
+    description: "This screenshot depicts a terminal window displaying a command
+      line execution followed by a prompt for user interaction. The command `npx
+      -y @aigne/example-nano-banana --input 'Draw an image of a lovely cat'` has
+      been run, leading to a message indicating \"No LLM API Keys or AIGNE Hub
+      connections found.\" The user is presented with three options: connect to
+      the official Arcblock AIGNE Hub (highlighted), connect to a self-hosted
+      AIGNE Hub, or exit to configure LLM API keys."
+    generatedAt: 2025-11-14T08:40:02.011Z
+  b547e1eb5cde9c69a6ad9f1a0ade2d1a434e6a806afb72e5568160c84683fb44:
+    path: ../../../examples/chat-bot/run-example.png
+    description: This image is a screenshot of a terminal interface, displaying a
+      prompt that indicates "No LLM API Keys or AIGNE Hub connections found." It
+      offers three distinct options for the user to proceed, with the first
+      option, "Connect to the Arcblock official AIGNE Hub," highlighted as the
+      selected and recommended choice. The screenshot effectively illustrates a
+      configuration step within a command-line application, guiding the user on
+      initial setup.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  96938661648993fc4363d9f04b6c2b0286233fb2519bb3e367670ded9a1a76b9:
+    path: ../../../examples/workflow-concurrency/run-example.png
+    description: This terminal screenshot captures the output of a command-line
+      operation, initially showing `npm warn` messages related to deprecated
+      packages. Subsequently, an interactive prompt appears, asking the user how
+      to proceed as "No LLM API Keys or AIGNE Hub connections found," with the
+      option "Connect to the Arcblock official AIGNE Hub" highlighted as the
+      recommended choice.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  ce107f134436a7c8402e52e3d4e84f5f813e47f1288ea05520d311c8e4d08275:
+    path: ../../../examples/workflow-orchestrator/run-example.png
+    description: This screenshot displays a command-line interface output, featuring
+      several `npm warn` messages and a prompt regarding missing LLM API Keys or
+      AIGNE Hub connections. The prompt offers three choices for proceeding,
+      with "Connect to the Archblock official AIGNE Hub (recommended, free
+      credits for new users)" highlighted.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  40d2d17af24c49bf9cf2f580174691541f14d719274cd43fececa8d2a177cfe8:
+    path: ../../../examples/memory/run-example.png
+    description: This screenshot depicts a terminal window displaying the execution
+      of an `npx` command, which results in several `npm warn` messages for
+      deprecated packages. Following these warnings, a prompt appears, asking
+      the user how to proceed as "No LLM API Keys or AIGNE Hub connections
+      found." Three options are presented, with "Connect to the Arcblock
+      official AIGNE Hub" highlighted as the default selection.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  fd3700482377c3cac8b3012612e56018f4ea4542ada493cb91851bedcbeb02ec:
+    path: ../../../examples/mcp-puppeteer/run-example.png
+    description: This screenshot captures a terminal window displaying the output of
+      an `npx` command, followed by several `npm warn` messages. The primary
+      focus is a prompt asking the user to choose how to proceed due to missing
+      LLM API Keys or AIGNE Hub connections, offering options like connecting to
+      the official AIGNE Hub (recommended) or a self-hosted instance.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  05a13bf04fd48b703435d963852ad7868550d89ffefa8030c5f568fa88dbc2cf:
+    path: ../../../examples/mcp-sqlite/run-example.png
+    description: This screenshot displays a terminal output after running an `npx`
+      command, showing several `npm` deprecation warnings. The main focus is an
+      interactive command-line prompt asking the user how to proceed when no LLM
+      API Keys or AIGNE Hub connections are found. It presents three options,
+      with "Connect to the Arcblock official AIGNE Hub" highlighted as the
+      recommended choice.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  036c470831dc238a33c68c3e04d36c235bc808dff0fe03249354811d9e91e259:
+    path: ../../../examples/workflow-handoff/run-example.png
+    description: This screenshot displays a terminal output, showing the execution
+      of an `npx` command and several `npm warn` messages. The terminal then
+      presents a prompt asking the user to choose a connection method for "LLM
+      API Keys or AIGNE Hub," with "Connect to the Arcblock official AIGNE Hub"
+      highlighted as the recommended option.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  477e419ccffbe0cb4360ea13bfe33d6ff3544bb51f08f2ffde624807570b59db:
+    path: ../../../examples/mcp-github/run-example.png
+    description: "This screenshot displays a command-line interface (CLI) prompt
+      during a configuration process, asking the user how to proceed without LLM
+      API Keys or AIGNE Hub connections. It presents three options: connecting
+      to the official Arcblock AIGNE Hub (recommended and selected), connecting
+      to a self-hosted AIGNE Hub instance, or exiting to configure LLM API Keys.
+      The terminal output features a dark background with multi-colored text,
+      highlighting the selected option in teal."
+    generatedAt: 2025-11-14T08:40:02.011Z
+  8ccdbc027ddcbb8fd432075037e7ce95bde3cb4e6c232ea61f8a2113eaae6274:
+    path: ../../../examples/images/connect-to-self-hosted-aigne-hub.png
+    description: This screenshot displays a command-line interface (CLI) prompt on a
+      dark background, guiding the user to establish a connection to an AIGNE
+      Hub. The prompt, prefixed with a green checkmark, indicates that no LLM
+      API Keys or AIGNE Hub connections were found. Below this, a question mark
+      icon precedes an input field prompting the user to "Enter the URL of your
+      AIGNE Hub", with `https://staging-hub.aigne.io_` as an example URL.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  305233c275170db3dfc2805421d9c97dcec106bae0be2cb11140032ea15da5c5:
+    path: ../../../examples/images/aigne-observe-list.png
+    description: This screenshot displays the "Traces" section of the Aigne
+      Observability web interface, featuring a dark theme. The main content area
+      shows a table detailing a single agent trace, including its ID, agent name
+      ("afs-system-fs-chatbot" with "cli@1.53.0"), input/output messages,
+      latency, token usage, cost, and a "Success" status. The interface includes
+      navigation for "Overview" and "Traces," along with controls for searching,
+      date filtering, live updates, and importing data.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  cc02f9ff8f8e9cb32d9b6adcbf2e3b4b3788372beb88738498ea6d9a7506ba11:
+    path: ../../../examples/images/aigne-observe-execute.png
+    description: This screenshot displays a terminal output showing the successful
+      execution of the `aigne observe` command. The output indicates the
+      observability database path as
+      `file:/Users/skypesky/.aigne/observability/observer.db` and confirms an
+      observability server is running on `http://localhost:7893`. Different text
+      colors highlight elements like the timestamp and the current directory in
+      the command line.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  7a8b39134016fd4cd38129866a7364adbac38337c97f43925b07aed5cc8338af:
+    path: ../../../examples/mcp-server/run-example.png
+    description: This screenshot displays a command-line interface output, showing
+      the execution of an `npx` command that starts a server and generates
+      multiple `npm warn deprecated` messages. Following these warnings, the
+      user is prompted to configure LLM API Keys or AIGNE Hub connections, with
+      the option to "Connect to the Arcblock official AIGNE Hub" highlighted as
+      recommended. This image is useful for illustrating development environment
+      setup, common warnings, and initial configuration prompts.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  23709cff8ea937c66055867ab01c49aedc6792ab5f530f540a1b87882b39994d:
+    path: ../../../examples/afs-system-fs/run-example.png
+    description: This terminal UI screenshot displays a prompt regarding missing LLM
+      API Keys or AIGNE Hub connections, offering a user a choice of how to
+      proceed. The options include connecting to the official Archblock AIGNE
+      Hub (highlighted), connecting to a self-hosted instance, or exiting to
+      configure personal API keys. It illustrates an interactive command-line
+      interface for initial setup or error handling.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  be333450dfb435cfc52d5a715dffe8742f4506d2a65883e31d1d003699016886:
+    path: ../../../examples/memory-did-spaces/run-example.png
+    description: This is a screenshot of a terminal interface displaying the output
+      of a command execution and an interactive prompt. After running an `npx`
+      command, the system prompts the user on how to proceed without detected
+      LLM API Keys or AIGNE Hub connections. The prompt offers three choices,
+      with "Connect to the Arcblock official AIGNE Hub" highlighted as the
+      recommended option.
+    generatedAt: 2025-11-14T08:40:02.011Z
+  71683af3a27ab961d7eb081be2a676417ba28365b03a9d4f3fcd240d201992c5:
+    path: ../../../examples/images/connect-to-aigne-hub.png
+    description: A screenshot displays a dark-themed authorization dialog box
+      prompting the user to "Authorize AIGNE CLI" to connect to "AIGNE Hub" on
+      their behalf. The modal shows the user's profile ("JianChao"), an
+      informational message about the access, and offers "Cancel" or "Approve"
+      buttons. The bottom of the dialog indicates it is "Secured by
+      DID:Connect."
+    generatedAt: 2025-11-14T08:40:02.011Z
+  387cd4ef36681ee2df9a3d7719b11117a46d49e7c329f83350cf7a2f9ab4c79d:
+    path: ../../../examples/afs-memory/run-example.png
+    description: A screenshot of a command-line interface shows the execution of an
+      `npx` command for an AIGNE example. After several `npm warn` messages, the
+      program prompts the user with options to configure API keys or connect to
+      an AIGNE Hub because no existing connections were found. The recommended
+      option, "Connect to the Arcblock official AIGNE Hub," is highlighted.
+    generatedAt: 2025-12-08T02:30:10.678Z
+lastUpdated: 2025-12-08T02:30:10.683Z

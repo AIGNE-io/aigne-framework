@@ -7,9 +7,12 @@ import { DefaultMemory } from "@aigne/default-memory";
 import { refreshAuthorization, UnauthorizedError } from "@modelcontextprotocol/sdk/client/auth.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import JWT from "jsonwebtoken";
+import { joinURL } from "ufo";
 import { TerminalOAuthProvider } from "./oauth.js";
 
-const rawUrl = process.argv[2] || process.env.BLOCKLET_APP_URL;
+const rawUrl =
+  process.argv.find((arg) => arg.startsWith("https://") || arg.startsWith("http://")) ||
+  process.env.BLOCKLET_APP_URL;
 assert(
   rawUrl,
   "Please provide a blocklet url as an argument or set the BLOCKLET_APP_URL environment variable",
@@ -17,8 +20,7 @@ assert(
 
 const appUrl = new URL(rawUrl);
 try {
-  appUrl.pathname = "/__blocklet__.js";
-  const result = await fetch(appUrl.href);
+  const result = await fetch(joinURL(appUrl.href, "__blocklet__.js"));
   if (result.status !== 200) {
     console.error("Seems like the provided url is not a valid blocklet url: ", rawUrl);
     process.exit(1);
@@ -28,7 +30,6 @@ try {
   process.exit(1);
 }
 
-appUrl.pathname = "/.well-known/service/mcp";
 console.info("Connecting to blocklet", appUrl.href);
 
 let transport: StreamableHTTPClientTransport;
@@ -111,8 +112,9 @@ try {
 
 await runWithAIGNE(
   async () => {
+    const url = joinURL(appUrl.origin, "/.well-known/service/mcp");
     const blocklet = await MCPAgent.from({
-      url: appUrl.href,
+      url,
       transport: "streamableHttp",
       opts: {
         authProvider: provider,

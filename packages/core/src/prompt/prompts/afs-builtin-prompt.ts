@@ -6,9 +6,7 @@ export async function getAFSSystemPrompt(afs: AFS): Promise<string> {
   return `\
 
 <afs_usage>
-AFS (Agentic File System) provides tools to interact with a virtual file system,
-allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
-Use these tools to manage and retrieve files as needed.
+${AFS_DESCRIPTION_PROMPT_TEMPLATE}
 
 Provided modules:
 ${stringify((await afs.listModules()).map((i) => pick(i, ["name", "path", "description"])))}
@@ -29,4 +27,10 @@ Here are the executable tools available in the AFS you can use:
 
 {{ tools | yaml.stringify }}
 </afs_executable_tools>
+`;
+
+export const AFS_DESCRIPTION_PROMPT_TEMPLATE = `\
+AFS (Agentic File System) provides tools to interact with a virtual file system,
+allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
+You can use these tools to manage and retrieve files as needed.
 `;

@@ -4,39 +4,9 @@
 
 `@aigne/xai` 套件作為 xAI API 的直接介面，讓開發者可以透過 AIGNE 框架提供的標準化 `ChatModel` 介面，將 Grok 的功能整合到他們的應用程式中。
 
-```d2
-direction: down
-
-Developer: {
-  label: "開發者"
-  shape: c4-person
-}
-
-aigne-xai: {
-  label: "@aigne/xai 套件"
-  shape: rectangle
-}
-
-xAI-Platform: {
-  label: "xAI 平台"
-  shape: rectangle
-
-  API-Key: {
-    label: "API 金鑰"
-  }
-
-  Grok-Models: {
-    label: "Grok 模型"
-  }
-}
-
-Developer -> xAI-Platform.API-Key: "1. 取得 API 金鑰"
-Developer -> aigne-xai: "2. 設定套件\n(API 金鑰、模型選擇)"
-aigne-xai -> xAI-Platform.Grok-Models: "3. 傳送 API 請求"
-xAI-Platform.Grok-Models -> aigne-xai: "4. 回傳回應"
-aigne-xai -> Developer: "5. 交付結果"
-
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![xAI](assets/diagram/xai-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 安裝
 

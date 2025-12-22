@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 import {
   AIGNE,
   type ChatModel,
@@ -61,6 +62,12 @@ export async function loadAIGNE({
 
   if (path) {
     aigne = await AIGNE.load(path, {
+      require: async (modulePath: string, options: { parent?: string }) => {
+        if (!options.parent || modulePath.startsWith("@aigne/")) return import(modulePath);
+
+        const require = createRequire(options.parent);
+        return require(modulePath);
+      },
       memories: availableMemories,
       model: (options) => {
         if (skipModelLoading) return undefined;

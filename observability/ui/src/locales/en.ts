@@ -17,6 +17,8 @@ export default flatten({
   outputTokens: "Output Tokens",
   totalTokens: "Total Tokens",
   tokens: "Tokens",
+  cacheReadTokens: "Cache Read",
+  cacheCreationTokens: "Cache Write",
   count: "Count",
   timestamp: "Timestamp",
   duration: "Duration",

@@ -39,61 +39,9 @@
 
 下圖說明了這三種主要的協作模式。
 
-```d2
-direction: down
-
-Sequential-Workflow: {
-  label: "循序式工作流程：裝配線"
-  style.stroke-dash: 2
-
-  Input: { shape: oval }
-  Researcher: "研究員 Agent"
-  Writer: "撰寫員 Agent"
-  Editor: "編輯員 Agent"
-  Output: { label: "最終版本"; shape: oval }
-
-  Input -> Researcher: "主題"
-  Researcher -> Writer: "研究成果"
-  Writer -> Editor: "草稿"
-  Editor -> Output: "批准的文章"
-}
-
-Parallel-Workflow: {
-  label: "平行式工作流程：腦力激盪會議"
-  style.stroke-dash: 2
-
-  Input: { label: "公司名稱"; shape: oval }
-  Social-Media: "社群媒體 Agent"
-  News: "新聞 Agent"
-  Financial: "金融 Agent"
-  Output: { label: "綜合市場分析"; shape: oval }
-
-  Input -> Social-Media
-  Input -> News
-  Input -> Financial
-  Social-Media -> Output: "提及"
-  News -> Output: "文章"
-  Financial -> Output: "股票數據"
-}
-
-Reflection-Workflow: {
-  label: "反思：品質保證循環"
-  style.stroke-dash: 2
-
-  Team: "Agent 團隊"
-  Task-Output: "任務輸出"
-  Reviewer: {
-    label: "審查員 Agent"
-    shape: diamond
-  }
-  Final-Output: { label: "最終批准的輸出"; shape: oval }
-
-  Team -> Task-Output
-  Task-Output -> Reviewer
-  Reviewer -> Final-Output: "已批准"
-  Reviewer -> Team: "需要修訂\n（回饋）"
-}
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Agent Teams](assets/diagram/agent-teams-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 總結
 

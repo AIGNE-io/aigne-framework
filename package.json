@@ -1,6 +1,6 @@
 {
   "name": "aigne-framework",
-  "version": "1.88.0-beta.1",
+  "version": "1.91.0-beta.3",
   "description": "AIGNE framework is a collection of libraries and tools for building AI-powered applications",
   "private": true,
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
@@ -26,7 +26,7 @@
     "build:markdown": "remark ./*.md docs/ examples/**/*.md packages/**/*.md memory/**/*.md models/**/*.md blocklets/**/*.md -o --silently-ignore"
   },
   "devDependencies": {
-    "@aigne/publish-docs": "^0.13.1",
+    "@aigne/publish-docs": "^0.14.2",
     "@biomejs/biome": "^2.2.4",
     "@biomejs/js-api": "^3.0.0",
     "@biomejs/wasm-nodejs": "^2.2.4",

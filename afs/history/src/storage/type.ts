@@ -15,7 +15,7 @@ export interface AFSStorageListOptions {
 export interface AFSStorage {
   create(entry: AFSStorageCreatePayload): Promise<AFSEntry>;
 
-  list(options?: AFSStorageListOptions): Promise<{ list: AFSEntry[] }>;
+  list(options?: AFSStorageListOptions): Promise<{ data: AFSEntry[] }>;
 
   read(path: string): Promise<AFSEntry | undefined>;
 }

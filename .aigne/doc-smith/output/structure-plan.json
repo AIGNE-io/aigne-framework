@@ -11,7 +11,8 @@
       "packages/core/src/agents/agent.ts",
       "packages/core/src/index.ts"
     ],
-    "parentId": ""
+    "parentId": "",
+    "icon": "lucide:book-open"
   },
   {
     "title": "Getting Started",
@@ -24,7 +25,8 @@
       "packages/core/src/agents/ai-agent.ts",
       "models/openai/src/openai-chat-model.ts"
     ],
-    "parentId": null
+    "parentId": null,
+    "icon": "lucide:rocket"
   },
   {
     "title": "Core Concepts",
@@ -35,7 +37,8 @@
       "packages/core/src/aigne/aigne.ts",
       "packages/core/src/agents/agent.ts"
     ],
-    "parentId": null
+    "parentId": null,
+    "icon": "lucide:puzzle"
   },
   {
     "title": "AIGNE",
@@ -94,7 +97,8 @@
       "packages/core/src/agents/transform-agent.ts",
       "packages/core/src/agents/mcp-agent.ts"
     ],
-    "parentId": null
+    "parentId": null,
+    "icon": "lucide:bot"
   },
   {
     "title": "AI Agent",
@@ -171,7 +175,8 @@
       "packages/core/src/prompt/prompt-builder.ts",
       "packages/core/src/agents/agent.ts"
     ],
-    "parentId": null
+    "parentId": null,
+    "icon": "lucide:graduation-cap"
   },
   {
     "title": "Defining Agents with YAML",
@@ -224,7 +229,8 @@
     "description": "A non-technical guide designed for end-users, explaining the core concepts of AI agents and workflows in simple terms with a focus on potential applications and business outcomes.",
     "path": "/user-guide",
     "sourceIds": ["./README.md", "packages/core/README.md"],
-    "parentId": ""
+    "parentId": "",
+    "icon": "lucide:users"
   },
   {
     "title": "What is AIGNE?",
@@ -283,6 +289,34 @@
     "parentId": "/user-guide/common-workflows"
   },
   {
+    "title": "Agent Library",
+    "description": "A collection of pre-built, reusable agents that can be easily integrated into your applications to perform complex tasks.",
+    "path": "/agent-library",
+    "parentId": null,
+    "sourceIds": ["packages/agent-library/README.md"],
+    "icon": "lucide:library"
+  },
+  {
+    "title": "Orchestrator",
+    "description": "Explains the Orchestrator agent, a powerful agent designed to manage and coordinate complex workflows involving multiple specialized agents. Learn how to use it to break down high-level objectives into executable steps.",
+    "path": "/agent-library/orchestrator",
+    "parentId": "/agent-library",
+    "sourceIds": [
+      "packages/agent-library/src/orchestrator/README.md",
+      "examples/workflow-orchestrator/README.md"
+    ]
+  },
+  {
+    "title": "Bash",
+    "description": "Details the Bash agent, which allows execution of bash scripts and command-line tools within an agentic workflow. This agent is ideal for tasks that require system-level operations, such as file manipulation, process management, and automation of shell commands.",
+    "path": "/agent-library/bash",
+    "parentId": "/agent-library",
+    "sourceIds": [
+      "packages/agent-library/src/bash/index.ts",
+      "packages/agent-library/src/bash/README.md"
+    ]
+  },
+  {
     "title": "Models",
     "description": "Provides an overview and specific guides for integrating various third-party AI model providers, such as OpenAI, Anthropic, and Google, into the AIGNE Framework.",
     "path": "/models",
@@ -300,7 +334,8 @@
       "models/xai/README.md",
       "models/aigne-hub/README.md"
     ],
-    "parentId": ""
+    "parentId": "",
+    "icon": "lucide:brain-circuit"
   },
   {
     "title": "Overview",
@@ -419,5 +454,168 @@
       "models/aigne-hub/src/index.ts"
     ],
     "parentId": "/models"
+  },
+  {
+    "title": "Model Configuration",
+    "description": "Provides a comprehensive guide on how to configure the necessary environment variables, such as API keys, for each supported AI model provider to ensure proper authentication and connection.",
+    "path": "/models/configuration",
+    "parentId": "/models",
+    "sourceIds": [
+      "examples/README.md",
+      "models/openai/README.md",
+      "models/anthropic/README.md",
+      "models/gemini/README.md",
+      "models/bedrock/README.md",
+      "models/deepseek/README.md",
+      "models/doubao/README.md",
+      "models/ideogram/README.md",
+      "models/ollama/README.md",
+      "models/open-router/README.md",
+      "models/poe/README.md",
+      "models/xai/README.md",
+      "models/lmstudio/README.md",
+      "models/aigne-hub/README.md"
+    ]
+  },
+  {
+    "title": "Examples",
+    "description": "A collection of practical examples demonstrating various features and workflow patterns of the AIGNE Framework.",
+    "path": "/examples",
+    "parentId": null,
+    "sourceIds": ["examples/README.md", "examples/chat-bot/README.md"],
+    "icon": "lucide:flask-conical"
+  },
+  {
+    "title": "Chatbot",
+    "description": "Demonstrates how to create and run an agent-based chatbot, supporting both one-shot and interactive modes.",
+    "path": "/examples/chat-bot",
+    "parentId": "/examples",
+    "sourceIds": ["examples/chat-bot/README.md"]
+  },
+  {
+    "title": "AFS Local FS",
+    "description": "Shows how to build a chatbot that can interact with the local file system using the AIGNE File System (AFS).",
+    "path": "/examples/afs-local-fs",
+    "parentId": "/examples",
+    "sourceIds": ["examples/afs-local-fs/README.md"]
+  },
+  {
+    "title": "Memory",
+    "description": "Illustrates how to create a chatbot with memory capabilities using the FSMemory plugin for session persistence.",
+    "path": "/examples/memory",
+    "parentId": "/examples",
+    "sourceIds": ["examples/memory/README.md"]
+  },
+  {
+    "title": "DID Spaces Memory",
+    "description": "Demonstrates creating a chatbot with memory persistence using DID Spaces through the DIDSpacesMemory plugin.",
+    "path": "/examples/memory-did-spaces",
+    "parentId": "/examples",
+    "sourceIds": ["examples/memory-did-spaces/README.md"]
+  },
+  {
+    "title": "MCP Server",
+    "description": "Shows how to run AIGNE Framework agents as a Model Context Protocol (MCP) Server.",
+    "path": "/examples/mcp-server",
+    "parentId": "/examples",
+    "sourceIds": ["examples/mcp-server/README.md"]
+  },
+  {
+    "title": "MCP Blocklet",
+    "description": "Explains how to integrate with a Blocklet and expose its functionalities as MCP skills.",
+    "path": "/examples/mcp-blocklet",
+    "parentId": "/examples",
+    "sourceIds": ["examples/mcp-blocklet/README.md"]
+  },
+  {
+    "title": "MCP DID Spaces",
+    "description": "Demonstrates creating a chatbot with MCP DID Spaces integration to provide access to DID Spaces functionality through skills.",
+    "path": "/examples/mcp-did-spaces",
+    "parentId": "/examples",
+    "sourceIds": ["examples/mcp-did-spaces/README.md"]
+  },
+  {
+    "title": "MCP GitHub",
+    "description": "An example of interacting with GitHub repositories using the GitHub MCP Server.",
+    "path": "/examples/mcp-github",
+    "parentId": "/examples",
+    "sourceIds": ["examples/mcp-github/README.md"]
+  },
+  {
+    "title": "MCP Puppeteer",
+    "description": "Learn how to leverage Puppeteer for automated web scraping through the AIGNE Framework.",
+    "path": "/examples/mcp-puppeteer",
+    "parentId": "/examples",
+    "sourceIds": ["examples/mcp-puppeteer/README.md"]
+  },
+  {
+    "title": "MCP SQLite",
+    "description": "Explore database operations by connecting to SQLite through the Model Context Protocol.",
+    "path": "/examples/mcp-sqlite",
+    "parentId": "/examples",
+    "sourceIds": ["examples/mcp-sqlite/README.md"]
+  },
+  {
+    "title": "Nano Banana",
+    "description": "Demonstrates how to create a chatbot with image capabilities.",
+    "path": "/examples/nano-banana",
+    "parentId": "/examples",
+    "sourceIds": ["examples/nano-banana/README.md"]
+  },
+  {
+    "title": "Workflow Code Execution",
+    "description": "Shows how to safely execute dynamically generated code within AI-driven workflows.",
+    "path": "/examples/workflow-code-execution",
+    "parentId": "/examples",
+    "sourceIds": ["examples/workflow-code-execution/README.md"]
+  },
+  {
+    "title": "Workflow Concurrency",
+    "description": "Optimize performance by processing multiple tasks simultaneously with parallel execution.",
+    "path": "/examples/workflow-concurrency",
+    "parentId": "/examples",
+    "sourceIds": ["examples/workflow-concurrency/README.md"]
+  },
+  {
+    "title": "Workflow Group Chat",
+    "description": "Shows how to share messages and interact with multiple agents in a group chat environment.",
+    "path": "/examples/workflow-group-chat",
+    "parentId": "/examples",
+    "sourceIds": ["examples/workflow-group-chat/README.md"]
+  },
+  {
+    "title": "Workflow Handoff",
+    "description": "Create seamless transitions between specialized agents to solve complex problems.",
+    "path": "/examples/workflow-handoff",
+    "parentId": "/examples",
+    "sourceIds": ["examples/workflow-handoff/README.md"]
+  },
+  {
+    "title": "Workflow Orchestration",
+    "description": "Coordinate multiple agents working together in sophisticated processing pipelines.",
+    "path": "/examples/workflow-orchestration",
+    "parentId": "/examples",
+    "sourceIds": ["examples/workflow-orchestrator/README.md"]
+  },
+  {
+    "title": "Workflow Reflection",
+    "description": "Enable self-improvement through output evaluation and refinement capabilities.",
+    "path": "/examples/workflow-reflection",
+    "parentId": "/examples",
+    "sourceIds": ["examples/workflow-reflection/README.md"]
+  },
+  {
+    "title": "Workflow Router",
+    "description": "Implement intelligent routing logic to direct requests to appropriate handlers based on content.",
+    "path": "/examples/workflow-router",
+    "parentId": "/examples",
+    "sourceIds": ["examples/workflow-router/README.md"]
+  },
+  {
+    "title": "Workflow Sequential",
+    "description": "Build step-by-step processing pipelines with guaranteed execution order.",
+    "path": "/examples/workflow-sequential",
+    "parentId": "/examples",
+    "sourceIds": ["examples/workflow-sequential/README.md"]
   }
 ]

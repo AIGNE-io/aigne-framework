@@ -1,6 +1,6 @@
 {
   "name": "@aigne/sqlite",
-  "version": "0.4.6",
+  "version": "0.4.9-beta",
   "description": "AIGNE SQLite database library for building AI-powered applications",
   "publishConfig": {
     "access": "public"

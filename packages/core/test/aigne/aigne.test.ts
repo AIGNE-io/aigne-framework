@@ -578,6 +578,8 @@ test.each<[InvokeOptions]>([
             "usage": {
               "agentCalls": 4,
               "aigneHubCredits": 0,
+              "cacheCreationInputTokens": 0,
+              "cacheReadInputTokens": 0,
               "inputTokens": 13,
               "outputTokens": 24,
             },

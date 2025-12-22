@@ -1,5 +1,206 @@
 # Changelog
 
+## [1.91.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.2...aigne-framework-v1.91.0-beta.3) (2025-12-19)
+
+
+### Features
+
+* add prompt caching for OpenAI/Gemini/Anthropic and cache token display ([#838](https://github.com/AIGNE-io/aigne-framework/issues/838)) ([46c628f](https://github.com/AIGNE-io/aigne-framework/commit/46c628f180572ea1b955d1a9888aad6145204842))
+
+
+### Bug Fixes
+
+* **afs:** always respect ignore option for local-fs ([#843](https://github.com/AIGNE-io/aigne-framework/issues/843)) ([b19a731](https://github.com/AIGNE-io/aigne-framework/commit/b19a7316f03070878c481221550a5cd1ac7ce46f))
+* **models:** enable parallel tool calls for open router model ([0aa7d1b](https://github.com/AIGNE-io/aigne-framework/commit/0aa7d1ba30907ee820b793e20e42c4201ca763cc))
+* **observability:** ui improvements ([fb63f37](https://github.com/AIGNE-io/aigne-framework/commit/fb63f3791c989be8512b85e62f74306bbddb25a0))
+
+## [1.91.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.1...aigne-framework-v1.91.0-beta.2) (2025-12-19)
+
+
+### Bug Fixes
+
+* **afs:** set AFS tag for all AFS's skills ([#841](https://github.com/AIGNE-io/aigne-framework/issues/841)) ([0bd995a](https://github.com/AIGNE-io/aigne-framework/commit/0bd995aeb68aa68caac1ce19a200b42a022a9998))
+* **afs:** use simple-list instead of tree as default type ([#839](https://github.com/AIGNE-io/aigne-framework/issues/839)) ([65a9a40](https://github.com/AIGNE-io/aigne-framework/commit/65a9a4054b3bdad6f7e40357299ef3dc48f7c3e4))
+* **core:** add creditPrefix field to usage tracking ([#837](https://github.com/AIGNE-io/aigne-framework/issues/837)) ([9ef25e0](https://github.com/AIGNE-io/aigne-framework/commit/9ef25e0687b4e7b4ba39a27a35805f377f0979eb))
+
+## [1.91.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta...aigne-framework-v1.91.0-beta.1) (2025-12-17)
+
+
+### Bug Fixes
+
+* bump version ([70d217c](https://github.com/AIGNE-io/aigne-framework/commit/70d217c8360dd0dda7f5f17011c4e92ec836e801))
+
+## [1.91.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0...aigne-framework-v1.91.0-beta) (2025-12-17)
+
+
+### Features
+
+* **afs:** support expand context into prompt template by call `$afs.xxx` ([#830](https://github.com/AIGNE-io/aigne-framework/issues/830)) ([5616acd](https://github.com/AIGNE-io/aigne-framework/commit/5616acd6ea257c91aa0b766608f45c5ce17f0345))
+* **agent-library:** add parallel tasks support for orchestrator agent ([#834](https://github.com/AIGNE-io/aigne-framework/issues/834)) ([7314eb1](https://github.com/AIGNE-io/aigne-framework/commit/7314eb1ef5f1eb4bf6f2b8160c61ef627a6aa3cc))
+
+
+### Bug Fixes
+
+* **afs:** read method should not throw not found error ([#835](https://github.com/AIGNE-io/aigne-framework/issues/835)) ([ebfdfc1](https://github.com/AIGNE-io/aigne-framework/commit/ebfdfc1cdba23efd23ac2ad4621e3f046990fd8b))
+* **docs:** fix docs x-cards use ([#832](https://github.com/AIGNE-io/aigne-framework/issues/832)) ([9c566eb](https://github.com/AIGNE-io/aigne-framework/commit/9c566ebc6be17f7688485b4614ffe9b1b37d6899))
+
+## [1.90.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.9...aigne-framework-v1.90.0) (2025-12-12)
+
+## [1.90.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.8...aigne-framework-v1.90.0-beta.9) (2025-12-12)
+
+
+### Features
+
+* **agent-library:** add BashAgent with sandbox support ([#816](https://github.com/AIGNE-io/aigne-framework/issues/816)) ([0d4feee](https://github.com/AIGNE-io/aigne-framework/commit/0d4feeeac2b71df1c4d725adeee76c9318ce8e02))
+
+## [1.90.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.7...aigne-framework-v1.90.0-beta.8) (2025-12-11)
+
+
+### Bug Fixes
+
+* **orchestrator:** support custom input schema for planner/worker/completer ([#823](https://github.com/AIGNE-io/aigne-framework/issues/823)) ([3d26f8b](https://github.com/AIGNE-io/aigne-framework/commit/3d26f8bac8b679010f25d9e4eb59fc6e80afda4c))
+
+## [1.90.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.6...aigne-framework-v1.90.0-beta.7) (2025-12-11)
+
+
+### Features
+
+* **afs:** add edit/delete/rename methods for AFS ([#820](https://github.com/AIGNE-io/aigne-framework/issues/820)) ([68cb508](https://github.com/AIGNE-io/aigne-framework/commit/68cb508d1cfc9c516d56303018139f1e567f897e))
+
+
+### Bug Fixes
+
+* **core:** support access agent instance by `this` in function agent ([#822](https://github.com/AIGNE-io/aigne-framework/issues/822)) ([68103bc](https://github.com/AIGNE-io/aigne-framework/commit/68103bc8d6d553e1c1374595db98ff61f3046842))
+
+## [1.90.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.5...aigne-framework-v1.90.0-beta.6) (2025-12-10)
+
+
+### Bug Fixes
+
+* bump version ([af04b69](https://github.com/AIGNE-io/aigne-framework/commit/af04b6931951afa35d52065430acc7fef4b10087))
+* **core:** support load third agent in skills ([#819](https://github.com/AIGNE-io/aigne-framework/issues/819)) ([bcbb140](https://github.com/AIGNE-io/aigne-framework/commit/bcbb1404d2fe9c709d99a8c28883b21dd107a844))
+
+## [1.90.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.4...aigne-framework-v1.90.0-beta.5) (2025-12-10)
+
+
+### Bug Fixes
+
+* **afs:** add case-sensitive option for search with case-insensitive default ([#814](https://github.com/AIGNE-io/aigne-framework/issues/814)) ([9dc9446](https://github.com/AIGNE-io/aigne-framework/commit/9dc944635104fc311e7756b4bde0a20275cfe8ec))
+* **core:** disable Immer autofreeze to return mutable response objects ([#817](https://github.com/AIGNE-io/aigne-framework/issues/817)) ([a3d0651](https://github.com/AIGNE-io/aigne-framework/commit/a3d06512cdadb9d85f92b7e8d2fd85b4f35a804b))
+* **observability:** improve trace shutdown handling and exit status  ([#813](https://github.com/AIGNE-io/aigne-framework/issues/813)) ([6215f13](https://github.com/AIGNE-io/aigne-framework/commit/6215f13243b23103c1793a4559798f0e90722384))
+
+## [1.90.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.3...aigne-framework-v1.90.0-beta.4) (2025-12-09)
+
+
+### Bug Fixes
+
+* **orchestrator:** enhance prompts with detailed guidance ([#811](https://github.com/AIGNE-io/aigne-framework/issues/811)) ([5656f38](https://github.com/AIGNE-io/aigne-framework/commit/5656f38c09e458e18b90e962a5e85c96755be2e4))
+
+## [1.90.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.2...aigne-framework-v1.90.0-beta.3) (2025-12-08)
+
+
+### Bug Fixes
+
+* **orchestrator:** add default task title for worker agent ([#809](https://github.com/AIGNE-io/aigne-framework/issues/809)) ([3524c3c](https://github.com/AIGNE-io/aigne-framework/commit/3524c3c03c6a6822656c8b1684660677af49d508))
+
+## [1.90.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta.1...aigne-framework-v1.90.0-beta.2) (2025-12-08)
+
+
+### Bug Fixes
+
+* remove files entry from package.json include all files ([02a0a1b](https://github.com/AIGNE-io/aigne-framework/commit/02a0a1bebb249a525bcda4d443b4d080b1d3db2d))
+
+## [1.90.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.90.0-beta...aigne-framework-v1.90.0-beta.1) (2025-12-08)
+
+
+### Bug Fixes
+
+* correct run example & doc improvements ([#707](https://github.com/AIGNE-io/aigne-framework/issues/707)) ([f98fc5d](https://github.com/AIGNE-io/aigne-framework/commit/f98fc5df28fd6ce6134128c2f0e5395c1554b740))
+
+## [1.90.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.89.1...aigne-framework-v1.90.0-beta) (2025-12-07)
+
+
+### Features
+
+* support define agent by third library & orchestrator agent refactor ([#799](https://github.com/AIGNE-io/aigne-framework/issues/799)) ([7264b11](https://github.com/AIGNE-io/aigne-framework/commit/7264b11ab6eed787e928367f09aa08d254968d40))
+
+## [1.89.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.89.1-beta...aigne-framework-v1.89.1) (2025-12-06)
+
+## [1.89.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.89.0...aigne-framework-v1.89.1-beta) (2025-12-06)
+
+
+### Bug Fixes
+
+* update deps ([#802](https://github.com/AIGNE-io/aigne-framework/issues/802)) ([2bedc5c](https://github.com/AIGNE-io/aigne-framework/commit/2bedc5c01ac3b17ba00552ed8878e220fecbc0f0))
+
+## [1.89.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.89.0-beta.1...aigne-framework-v1.89.0) (2025-12-05)
+
+## [1.89.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.89.0-beta...aigne-framework-v1.89.0-beta.1) (2025-12-05)
+
+
+### Bug Fixes
+
+* return tree view instead of list for afs_list ([#774](https://github.com/AIGNE-io/aigne-framework/issues/774)) ([8ec2f93](https://github.com/AIGNE-io/aigne-framework/commit/8ec2f93fb5870f6404d886ad0197cc21c61dfd74))
+
+## [1.89.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.1...aigne-framework-v1.89.0-beta) (2025-12-02)
+
+
+### Features
+
+* **core:** add nested getter pattern support for model options ([#796](https://github.com/AIGNE-io/aigne-framework/issues/796)) ([824b2fe](https://github.com/AIGNE-io/aigne-framework/commit/824b2fe55cb2a24620e2bb73b470532918fa2996))
+
+
+### Bug Fixes
+
+* **afs:** check module existence on normalized path ([#793](https://github.com/AIGNE-io/aigne-framework/issues/793)) ([0c991bf](https://github.com/AIGNE-io/aigne-framework/commit/0c991bf0caa948ce62948986ce885b5a98437689))
+
+## [1.88.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.1-beta.1...aigne-framework-v1.88.1) (2025-11-28)
+
+## [1.88.1-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.1-beta...aigne-framework-v1.88.1-beta.1) (2025-11-28)
+
+
+### Bug Fixes
+
+* update package to latest ([#790](https://github.com/AIGNE-io/aigne-framework/issues/790)) ([69c77b3](https://github.com/AIGNE-io/aigne-framework/commit/69c77b353667acc72a2f35eadca7892fb99838b6))
+
+## [1.88.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0...aigne-framework-v1.88.1-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+* **secrets:** use workspace protocol for @aigne/core dependency ([895f127](https://github.com/AIGNE-io/aigne-framework/commit/895f12791d788f9d7298504ab3de5425710b3292))
+
+## [1.88.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0-beta.5...aigne-framework-v1.88.0) (2025-11-28)
+
+## [1.88.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0-beta.4...aigne-framework-v1.88.0-beta.5) (2025-11-28)
+
+
+### Bug Fixes
+
+* **cli:** improve hub status display for non-default hubs ([#784](https://github.com/AIGNE-io/aigne-framework/issues/784)) ([9e83e01](https://github.com/AIGNE-io/aigne-framework/commit/9e83e01385bdf8fe6d6801c3b49007cac31a6eb5))
+
+## [1.88.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0-beta.3...aigne-framework-v1.88.0-beta.4) (2025-11-28)
+
+
+### Bug Fixes
+
+* **cli:** improve hub deletion with auto default switching ([#782](https://github.com/AIGNE-io/aigne-framework/issues/782)) ([f30b8c2](https://github.com/AIGNE-io/aigne-framework/commit/f30b8c2d0a8167c3678d500944c77ed257427564))
+
+## [1.88.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0-beta.2...aigne-framework-v1.88.0-beta.3) (2025-11-27)
+
+
+### Bug Fixes
+
+* **secrets:** simplify default item handling in KeyringStore ([#780](https://github.com/AIGNE-io/aigne-framework/issues/780)) ([4c1ff51](https://github.com/AIGNE-io/aigne-framework/commit/4c1ff51e982ed5787df37b127a381276537ec92f))
+
+## [1.88.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0-beta.1...aigne-framework-v1.88.0-beta.2) (2025-11-27)
+
+
+### Bug Fixes
+
+* **secrets:** improve keyring availability detection with environment checks ([#778](https://github.com/AIGNE-io/aigne-framework/issues/778)) ([75dceab](https://github.com/AIGNE-io/aigne-framework/commit/75dceabeb7d6fd8c057759f003e703a2ebb41afd))
+
 ## [1.88.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.88.0-beta...aigne-framework-v1.88.0-beta.1) (2025-11-26)
 
 

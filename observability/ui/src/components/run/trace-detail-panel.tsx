@@ -165,6 +165,8 @@ export default function TraceDetailPanel({
       inputTokens: costData.inputTokens,
       outputTokens: costData.outputTokens,
       totalTokens: costData.totalTokens,
+      cacheCreationInputTokens: costData.cacheCreationInputTokens,
+      cacheReadInputTokens: costData.cacheReadInputTokens,
     };
   }, [trace?.id, map]);
 
@@ -322,6 +324,32 @@ export default function TraceDetailPanel({
                     {prices?.inputTokens || 0} {prices?.inputCost ? `($${prices?.inputCost})` : ""}
                   </Box>
                 </InfoRowBox>
+
+                {!!(prices?.cacheReadInputTokens || prices?.cacheCreationInputTokens) && (
+                  <>
+                    {!!prices?.cacheReadInputTokens && (
+                      <InfoRowBox
+                        valueComponent="div"
+                        nameFormatter={(v) => v}
+                        nameWidth={110}
+                        name={t("cacheReadTokens")}
+                      >
+                        <Box sx={{ textAlign: "right" }}>{prices.cacheReadInputTokens}</Box>
+                      </InfoRowBox>
+                    )}
+
+                    {!!prices?.cacheCreationInputTokens && (
+                      <InfoRowBox
+                        valueComponent="div"
+                        nameFormatter={(v) => v}
+                        nameWidth={110}
+                        name={t("cacheCreationTokens")}
+                      >
+                        <Box sx={{ textAlign: "right" }}>{prices.cacheCreationInputTokens}</Box>
+                      </InfoRowBox>
+                    )}
+                  </>
+                )}
 
                 <InfoRowBox
                   valueComponent="div"

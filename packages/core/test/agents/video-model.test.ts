@@ -1,13 +1,12 @@
 import { expect, test } from "bun:test";
+import type { AgentInvokeOptions, AgentProcessResult } from "../../src/agents/agent.js";
 import {
-  type AgentInvokeOptions,
-  type AgentProcessResult,
-  AIGNE,
   VideoModel,
   type VideoModelInput,
   type VideoModelOutput,
-} from "@aigne/core";
-import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
+} from "../../src/agents/video-model.js";
+import { AIGNE } from "../../src/aigne/aigne.js";
+import type { PromiseOrValue } from "../../src/utils/type-utils.js";
 
 test("VideoModel should work correctly", async () => {
   class TestVideoModel extends VideoModel {
@@ -172,4 +171,54 @@ test("VideoModel tag should be VideoModelAgent", async () => {
 
   const model = new TestVideoModel();
   expect(model.tag).toBe("VideoModelAgent");
+});
+
+test("VideoModel getModelOptions should support nested getter pattern", async () => {
+  class TestVideoModel extends VideoModel {
+    override process(_input: VideoModelInput): VideoModelOutput {
+      return {
+        videos: [{ type: "file", data: Buffer.from("test").toString("base64") }],
+      };
+    }
+  }
+
+  const model = new TestVideoModel({
+    modelOptions: {
+      model: "video-gen-1",
+      customConfig: {
+        resolution: { $get: "videoResolution" },
+        fps: 30,
+        nested: {
+          level2: { $get: "nestedValue" },
+        },
+      },
+    },
+  });
+
+  const context = new AIGNE().newContext();
+  context.userContext.videoResolution = "1920x1080";
+  context.userContext.nestedValue = "advanced";
+
+  const resolvedOptions = await model.getModelOptions(
+    {
+      prompt: "test video",
+      modelOptions: {
+        outputFormat: { $get: "formatType" },
+      },
+      formatType: "mp4",
+    },
+    { context },
+  );
+
+  expect(resolvedOptions).toEqual({
+    model: "video-gen-1",
+    outputFormat: "mp4",
+    customConfig: {
+      resolution: "1920x1080",
+      fps: 30,
+      nested: {
+        level2: "advanced",
+      },
+    },
+  });
 });

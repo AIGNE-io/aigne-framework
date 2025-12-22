@@ -117,3 +117,121 @@ exports[`AIGNE.load should load agents correctly 1`] = `
   ],
 }
 `;
+
+exports[`AIGNE.load should load agents correctly 4`] = `
+{
+  "agents": [
+    {
+      "description": "Chat agent",
+      "name": "chat",
+      "taskTitle": "process: {{message}}",
+    },
+    {
+      "description": "Chat agent",
+      "name": "chat-with-prompt",
+      "taskTitle": undefined,
+    },
+    {
+      "description": "Test team agent",
+      "name": "test-team-agent",
+      "taskTitle": undefined,
+    },
+    {
+      "description": undefined,
+      "name": "test-image-agent",
+      "taskTitle": undefined,
+    },
+    {
+      "description": undefined,
+      "name": "test-relative-prompt-paths",
+      "taskTitle": undefined,
+    },
+    {
+      "description": "A test agent defined in JSON format",
+      "name": "testJsonDefinitionAgent",
+      "taskTitle": undefined,
+    },
+  ],
+  "cli": {
+    "agents": [
+      {
+        "agent": {
+          "description": "Chat agent",
+          "name": "chat",
+        },
+        "agents": undefined,
+      },
+      {
+        "agent": {
+          "description": undefined,
+          "name": "b",
+        },
+        "agents": undefined,
+      },
+      {
+        "agent": {
+          "description": undefined,
+          "name": "a",
+        },
+        "agents": [
+          {
+            "agent": {
+              "description": undefined,
+              "name": "a1",
+            },
+            "agents": [
+              {
+                "agent": {
+                  "description": undefined,
+                  "name": "a11",
+                },
+                "agents": undefined,
+                "url": "test-cli-agents/a-1-1.yaml",
+              },
+              {
+                "agent": {
+                  "description": undefined,
+                  "name": "a12",
+                },
+                "agents": undefined,
+                "description": "A agent from a-1-2.yaml",
+                "name": "a12-renamed",
+                "url": "test-cli-agents/a-1-2.yaml",
+              },
+            ],
+            "url": "test-cli-agents/a-1.yaml",
+          },
+          {
+            "agent": {
+              "description": undefined,
+              "name": "a2",
+            },
+            "agents": undefined,
+          },
+        ],
+        "alias": [
+          "a",
+          "a-agent",
+        ],
+        "description": "A agent from a.yaml",
+        "name": "a-renamed",
+        "url": "test-cli-agents/a.yaml",
+      },
+    ],
+  },
+  "mcpServer": {
+    "agents": [
+      {
+        "description": "Chat agent",
+        "name": "chat",
+      },
+    ],
+  },
+  "skills": [
+    {
+      "description": "This agent evaluates JavaScript code.",
+      "name": "evaluateJs",
+    },
+  ],
+}
+`;

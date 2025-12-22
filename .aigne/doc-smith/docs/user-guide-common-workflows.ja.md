@@ -6,62 +6,9 @@ AIGNE フレームワークでは、単一の Agent が特定のタスクを実�
 
 以下の図は、3つの基本的なワークフローパターンを示しています。
 
-```d2
-direction: down
-
-Sequential-Tasks: {
-  label: "シーケンシャルタスク"
-  shape: rectangle
-  Agent-A: { label: "Agent A" }
-  Agent-B: { label: "Agent B" }
-  Agent-C: { label: "Agent C" }
-}
-
-Parallel-Tasks: {
-  label: "パラレルタスク"
-  shape: rectangle
-  Initial-Task: { label: "初期タスク" }
-  Parallel-Agents: {
-    shape: rectangle
-    grid-columns: 3
-    Agent-A: { label: "Agent A" }
-    Agent-B: { label: "Agent B" }
-    Agent-C: { label: "Agent C" }
-  }
-  Combined-Result: { label: "結合された結果" }
-}
-
-Decision-Making: {
-  label: "意思決定"
-  shape: rectangle
-  Request: { label: "リクエスト" }
-  Manager-Agent: {
-    label: "Manager Agent"
-    shape: diamond
-  }
-  Specialized-Agents: {
-    shape: rectangle
-    grid-columns: 2
-    Agent-A: { label: "専門Agent A" }
-    Agent-B: { label: "専門Agent B" }
-  }
-}
-
-Sequential-Tasks.Agent-A -> Sequential-Tasks.Agent-B: "結果"
-Sequential-Tasks.Agent-B -> Sequential-Tasks.Agent-C: "結果"
-
-Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-A
-Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-B
-Parallel-Tasks.Initial-Task -> Parallel-Tasks.Parallel-Agents.Agent-C
-
-Parallel-Tasks.Parallel-Agents.Agent-A -> Parallel-Tasks.Combined-Result
-Parallel-Tasks.Parallel-Agents.Agent-B -> Parallel-Tasks.Combined-Result
-Parallel-Tasks.Parallel-Agents.Agent-C -> Parallel-Tasks.Combined-Result
-
-Decision-Making.Request -> Decision-Making.Manager-Agent
-Decision-Making.Manager-Agent -> Decision-Making.Specialized-Agents.Agent-A: "タスクA"
-Decision-Making.Manager-Agent -> Decision-Making.Specialized-Agents.Agent-B: "タスクB"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Common Workflows](assets/diagram/common-workflows-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 このガイドでは、最も一般的なワークフローを紹介します。これらのパターンを理解することで、Agent が複雑な多段階のプロセスをどのように自動化できるかを視覚化するのに役立ちます。
 

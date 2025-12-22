@@ -17,63 +17,9 @@
 
 這種結構確保了完成所有任務所需的總時間取決於運行時間最長的 Agent，而不是所有 Agent 時間的總和。
 
-```d2
-direction: down
-
-Input: {
-  label: "1. 單一輸入"
-  shape: rectangle
-}
-
-Agent-Team: {
-  label: "Agent Team (並行模式)"
-  style.stroke-dash: 4
-
-  Distribution: {
-    label: "2. 分發任務"
-    shape: diamond
-  }
-
-  Agents: {
-    label: "3. 獨立處理"
-    style.stroke-width: 0
-    grid-columns: 3
-
-    Agent-1: { 
-      label: "Agent 1"
-      shape: rectangle 
-    }
-    Agent-2: { 
-      label: "Agent 2"
-      shape: rectangle 
-    }
-    Agent-N: {
-      label: "Agent N..."
-      shape: rectangle
-    }
-  }
-
-  Aggregation: {
-    label: "4. 彙整結果"
-    shape: diamond
-  }
-}
-
-Output: {
-  label: "5. 組合結果"
-  shape: rectangle
-}
-
-Input -> Agent-Team.Distribution
-Agent-Team.Distribution -> Agent-Team.Agents.Agent-1
-Agent-Team.Distribution -> Agent-Team.Agents.Agent-2
-Agent-Team.Distribution -> Agent-Team.Agents.Agent-N
-Agent-Team.Agents.Agent-1 -> Agent-Team.Aggregation
-Agent-Team.Agents.Agent-2 -> Agent-Team.Aggregation
-Agent-Team.Agents.Agent-N -> Agent-Team.Aggregation
-Agent-Team.Aggregation -> Output
-
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Parallel Tasks](assets/diagram/parallel-tasks-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 常見使用案例
 

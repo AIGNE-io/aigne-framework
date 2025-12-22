@@ -113,7 +113,7 @@ export class AIGNEHubVideoModel extends VideoModel {
       usage: {
         inputTokens: response.usage?.inputTokens ?? 0,
         outputTokens: response.usage?.outputTokens ?? 0,
-        aigneHubCredits: response.usage?.aigneHubCredits,
+        ...response.usage,
       },
       model: response?.model,
     };

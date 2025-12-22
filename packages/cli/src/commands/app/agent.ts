@@ -59,7 +59,11 @@ export const agentCommandModule = ({
     aliases: agent.alias || [],
     describe: agent.description || "",
     builder: async (yargs) => {
-      return withAgentInputSchema(yargs, { inputSchema: agent.inputSchema });
+      return withAgentInputSchema(yargs, {
+        inputSchema: agent.inputSchema,
+        optionalInputs:
+          chat && "inputKey" in agent && typeof agent.inputKey === "string" ? [agent.inputKey] : [],
+      });
     },
     handler: async (options) => {
       if (options.logLevel) logger.level = options.logLevel;

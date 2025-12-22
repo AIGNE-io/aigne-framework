@@ -163,9 +163,9 @@ export class AnthropicChatModel extends ChatModel {
 
   private async _process(
     input: ChatModelInput,
-    options: AgentInvokeOptions,
+    _options: AgentInvokeOptions,
   ): Promise<AgentResponse<ChatModelOutput>> {
-    const modelOptions = await this.getModelOptions(input, options);
+    const { modelOptions = {} } = input;
 
     const model = modelOptions.model || this.credential.model;
 
@@ -251,11 +251,18 @@ export class AnthropicChatModel extends ChatModel {
                 model = chunk.message.model;
                 controller.enqueue({ delta: { json: { model } } });
               }
-              const { input_tokens, output_tokens } = chunk.message.usage;
+              const {
+                input_tokens,
+                output_tokens,
+                cache_creation_input_tokens,
+                cache_read_input_tokens,
+              } = chunk.message.usage;
 
               usage = {
                 inputTokens: input_tokens,
                 outputTokens: output_tokens,
+                cacheCreationInputTokens: cache_creation_input_tokens ?? undefined,
+                cacheReadInputTokens: cache_read_input_tokens ?? undefined,
               };
             }
 
@@ -359,18 +366,53 @@ export class AnthropicChatModel extends ChatModel {
   }
 }
 
-async function convertMessages({ messages, responseFormat, tools }: ChatModelInput): Promise<{
+/**
+ * Parse cache configuration from model options
+ */
+function parseCacheConfig(modelOptions?: ChatModelInput["modelOptions"]) {
+  const cacheConfig = modelOptions?.cacheConfig || {};
+  const shouldCache = cacheConfig.enabled !== false; // Default: enabled
+  const ttl = cacheConfig.ttl === "1h" ? "1h" : "5m"; // Default: 5m
+  const strategy = cacheConfig.strategy || "auto"; // Default: auto
+  const autoBreakpoints = {
+    tools: cacheConfig.autoBreakpoints?.tools !== false, // Default: true
+    system: cacheConfig.autoBreakpoints?.system !== false, // Default: true
+    lastMessage: cacheConfig.autoBreakpoints?.lastMessage === true, // Default: false
+  };
+
+  return {
+    shouldCache,
+    ttl,
+    strategy,
+    autoBreakpoints,
+  };
+}
+
+async function convertMessages({
+  messages,
+  responseFormat,
+  tools,
+  modelOptions,
+}: ChatModelInput): Promise<{
   messages: MessageParam[];
-  system?: string;
+  system?: Anthropic.Messages.TextBlockParam[];
 }> {
-  const systemMessages: string[] = [];
+  const systemBlocks: Anthropic.Messages.TextBlockParam[] = [];
   const msgs: MessageParam[] = [];
+
+  // Extract cache configuration with defaults
+  const { shouldCache, ttl, strategy, autoBreakpoints } = parseCacheConfig(modelOptions);
 
   for (const msg of messages) {
     if (msg.role === "system") {
       if (typeof msg.content !== "string") throw new Error("System message must have content");
 
-      systemMessages.push(msg.content);
+      const block: Anthropic.Messages.TextBlockParam = {
+        type: "text",
+        text: msg.content,
+      };
+
+      systemBlocks.push(block);
     } else if (msg.role === "tool") {
       if (!msg.toolCallId) throw new Error("Tool message must have toolCallId");
       if (typeof msg.content !== "string") throw new Error("Tool message must have string content");
@@ -411,20 +453,51 @@ async function convertMessages({ messages, responseFormat, tools }: ChatModelInp
   // If there are tools and responseFormat is json_schema, we need to add a system message
   // to inform the model about the expected json schema, then trying to parse the response as json
   if (tools?.length && responseFormat?.type === "json_schema") {
-    systemMessages.push(
-      `You should provide a json response with schema: ${JSON.stringify(responseFormat.jsonSchema.schema)}`,
-    );
+    systemBlocks.push({
+      type: "text",
+      text: `You should provide a json response with schema: ${JSON.stringify(responseFormat.jsonSchema.schema)}`,
+    });
   }
 
-  const system = systemMessages.join("\n").trim() || undefined;
+  // Apply cache_control to the last system block if auto strategy is enabled
+  if (shouldCache && strategy === "auto" && autoBreakpoints.system && systemBlocks.length > 0) {
+    const lastBlock = systemBlocks[systemBlocks.length - 1];
+    if (lastBlock) {
+      lastBlock.cache_control = { type: "ephemeral" };
+      if (ttl === "1h") {
+        lastBlock.cache_control = { type: "ephemeral", ttl: "1h" };
+      }
+    }
+  }
+
+  // Manual cache control: apply user-specified cacheControl from system messages
+  if (shouldCache && strategy === "manual") {
+    for (const [index, msg] of messages.entries()) {
+      const msgWithCache = msg;
+      if (msg.role === "system" && msgWithCache.cacheControl) {
+        const block = systemBlocks[index];
+        if (block) {
+          block.cache_control = {
+            type: msgWithCache.cacheControl.type,
+            ...(msgWithCache.cacheControl.ttl && { ttl: msgWithCache.cacheControl.ttl }),
+          };
+        }
+      }
+    }
+  }
 
   // Claude requires at least one message, so we add a system message if there are no messages
   if (msgs.length === 0) {
-    if (!system) throw new Error("No messages provided");
-    return { messages: [{ role: "user", content: system }] };
+    if (systemBlocks.length === 0) throw new Error("No messages provided");
+    // Convert system blocks to a single user message
+    const systemText = systemBlocks.map((b) => b.text).join("\n");
+    return { messages: [{ role: "user", content: systemText }] };
   }
 
-  return { messages: msgs, system };
+  return {
+    messages: msgs,
+    system: systemBlocks.length > 0 ? systemBlocks : undefined,
+  };
 }
 
 async function convertContent(
@@ -465,6 +538,7 @@ function convertTools({
   tools,
   toolChoice,
   disableParallelToolUse,
+  modelOptions,
 }: ChatModelInput & {
   disableParallelToolUse?: boolean;
 }): { tools?: ToolUnion[]; tool_choice?: ToolChoice } | undefined {
@@ -486,15 +560,41 @@ function convertTools({
     choice = { type: "none" };
   }
 
+  // Extract cache configuration with defaults
+  const { shouldCache, ttl, strategy, autoBreakpoints } = parseCacheConfig(modelOptions);
+  const shouldCacheTools = shouldCache && strategy === "auto" && autoBreakpoints.tools;
+
   return {
     tools: tools?.length
-      ? tools.map<Tool>((i) => ({
-          name: i.function.name,
-          description: i.function.description,
-          input_schema: isEmpty(i.function.parameters)
-            ? { type: "object" }
-            : (i.function.parameters as Anthropic.Messages.Tool.InputSchema),
-        }))
+      ? tools.map<Tool>((i, index, arr) => {
+          const tool: Tool = {
+            name: i.function.name,
+            description: i.function.description,
+            input_schema: isEmpty(i.function.parameters)
+              ? { type: "object" }
+              : (i.function.parameters as Anthropic.Messages.Tool.InputSchema),
+          };
+
+          // Auto mode: add cache_control to the last tool
+          if (shouldCacheTools && index === arr.length - 1) {
+            tool.cache_control = { type: "ephemeral" };
+            if (ttl === "1h") {
+              tool.cache_control = { type: "ephemeral", ttl: "1h" };
+            }
+          }
+          // Manual mode: use tool-specific cacheControl if provided
+          else if (shouldCache && strategy === "manual") {
+            const toolWithCache = i;
+            if (toolWithCache.cacheControl) {
+              tool.cache_control = {
+                type: toolWithCache.cacheControl.type,
+                ...(toolWithCache.cacheControl.ttl && { ttl: toolWithCache.cacheControl.ttl }),
+              };
+            }
+          }
+
+          return tool;
+        })
       : undefined,
     tool_choice: choice,
   };

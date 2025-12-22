@@ -6,44 +6,9 @@
 
 下圖說明了這些核心元件之間的關係。
 
-```d2
-direction: down
-
-AIGNE-Orchestrator: {
-  label: "AIGNE 編排器"
-  shape: rectangle
-
-  Agent: {
-    label: "Agent\n（工作單元）"
-    shape: rectangle
-  }
-
-  Models: {
-    label: "Models\n（AI 服務介面）"
-    shape: rectangle
-  }
-
-  Memory: {
-    label: "Memory\n（狀態持久化）"
-    shape: rectangle
-  }
-}
-
-AI-Services: {
-  label: "外部 AI 服務"
-  shape: cylinder
-}
-
-State-Store: {
-  label: "狀態儲存"
-  shape: cylinder
-}
-
-AIGNE-Orchestrator.Agent <-> AIGNE-Orchestrator.Models: "使用"
-AIGNE-Orchestrator.Agent <-> AIGNE-Orchestrator.Memory: "使用"
-AIGNE-Orchestrator.Models -> AI-Services: "API 呼叫"
-AIGNE-Orchestrator.Memory -> State-Store: "讀取/寫入狀態"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Core Concepts](assets/diagram/core-concepts-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 架構建構區塊
 

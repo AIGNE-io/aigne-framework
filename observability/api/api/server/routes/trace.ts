@@ -456,14 +456,15 @@ export default ({
   router.patch("/tree/:id", async (req: Request, res: Response) => {
     const db = req.app.locals.db as LibSQLDatabase;
     const { id } = req.params;
-    const { input, output } = req.body;
+    const { input, output, userContext, memories, status } = req.body;
 
     if (!id) {
       res.status(400).json({ error: "id is required" });
       return;
     }
 
-    await updateTrace(db, id, { input, output });
+    await updateTrace(db, id, { input, output, userContext, memories, status });
+
     res.json({ code: 0, message: "ok" });
   });
 

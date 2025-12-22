@@ -326,11 +326,7 @@ test("GeminiChatModel should support image mode", async () => {
             "image",
           ],
           "temperature": undefined,
-          "thinkingConfig": {
-            "includeThoughts": true,
-            "thinkingBudget": undefined,
-            "thinkingLevel": undefined,
-          },
+          "thinkingConfig": undefined,
           "toolConfig": {
             "functionCallingConfig": undefined,
           },
@@ -357,6 +353,46 @@ test("GeminiChatModel should support image mode", async () => {
       },
     ]
   `);
+});
+
+test("GeminiChatModel should disable thinking for image-preview model", async () => {
+  const generateSpy = spyOn(
+    model.googleClient.models,
+    "generateContentStream",
+  ).mockResolvedValueOnce(
+    (async function* (): AsyncGenerator<GenerateContentResponse> {
+      // 提供一个最小的非空流，避免触发空响应重试逻辑
+      const common = {
+        text: undefined,
+        data: undefined,
+        functionCalls: undefined,
+        executableCode: undefined,
+        codeExecutionResult: undefined,
+      };
+      yield { ...common, candidates: [{ content: { parts: [{ text: "ok" }] } }] };
+    })(),
+  );
+
+  await model.invoke({
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: "Test image preview thinkingConfig" },
+          { type: "file", data: Buffer.from("hello").toString("base64") },
+        ],
+      },
+    ],
+    modelOptions: {
+      model: "gemini-2.5-flash-image-preview",
+      modalities: ["text", "image"],
+      reasoningEffort: "high",
+    },
+  });
+
+  expect(generateSpy.mock.lastCall).toBeDefined();
+  const params = generateSpy.mock.lastCall?.[0];
+  expect(params?.config?.thinkingConfig).toBeUndefined();
 });
 
 test("GeminiChatModel should support optional schema", async () => {

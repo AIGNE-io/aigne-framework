@@ -4,7 +4,8 @@
     "description": "An introduction to @aigne/cli, its main features, and the problems it solves for agent development.",
     "path": "/overview",
     "parentId": null,
-    "sourceIds": ["README.md", "package.json", "src/cli.ts"]
+    "sourceIds": ["README.md", "package.json", "src/cli.ts"],
+    "icon": "lucide:book"
   },
   {
     "title": "Getting Started",
@@ -16,7 +17,8 @@
       "src/commands/create.ts",
       "src/commands/run.ts",
       "templates/default/README.md"
-    ]
+    ],
+    "icon": "lucide:rocket"
   },
   {
     "title": "Core Concepts",
@@ -29,7 +31,8 @@
       "templates/default/sandbox.js",
       "templates/default/filesystem.yaml",
       "test-agents/aigne.yaml"
-    ]
+    ],
+    "icon": "lucide:layers"
   },
   {
     "title": "Project Configuration (aigne.yaml)",
@@ -60,7 +63,8 @@
     "description": "A detailed reference for all available CLI commands and their options, organized for quick look-up.",
     "path": "/command-reference",
     "parentId": null,
-    "sourceIds": ["README.md", "src/commands/aigne.ts", "src/cli.ts"]
+    "sourceIds": ["README.md", "src/commands/aigne.ts", "src/cli.ts"],
+    "icon": "lucide:terminal"
   },
   {
     "title": "aigne create",
@@ -147,7 +151,8 @@
       "src/commands/hub.ts",
       "src/commands/run.ts",
       "src/commands/deploy.ts"
-    ]
+    ],
+    "icon": "lucide:compass"
   },
   {
     "title": "Creating a Custom Agent",
@@ -183,6 +188,7 @@
     "description": "Guidelines for contributing to the @aigne/cli project, including setup, build process, and code standards.",
     "path": "/contributing",
     "parentId": null,
-    "sourceIds": ["package.json", "tsconfig.json", "tsconfig.build.json", "src/cli.ts"]
+    "sourceIds": ["package.json", "tsconfig.json", "tsconfig.build.json", "src/cli.ts"],
+    "icon": "lucide:git-pull-request"
   }
 ]

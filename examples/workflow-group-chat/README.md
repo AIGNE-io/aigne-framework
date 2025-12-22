@@ -49,9 +49,9 @@ class illustrator processing
 
 ## Quick Start (No Installation Required)
 
-```bash
-export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
+### Run the Example
 
+```bash
 # Run in one-shot mode (default)
 npx -y @aigne/example-workflow-group-chat
 
@@ -61,6 +61,18 @@ npx -y @aigne/example-workflow-group-chat --chat
 # Use pipeline input
 echo "Write a short story about space exploration" | npx -y @aigne/example-workflow-group-chat
 ```
+
+### Debugging
+
+The `aigne observe` command starts a local web server to monitor and analyze agent execution data. It provides a user-friendly interface to inspect traces, view detailed call information, and understand your agent’s behavior during runtime. This tool is essential for debugging, performance tuning, and gaining insight into how your agent processes information and interacts with tools and models.
+
+Start the observation server.
+
+![aigne-observe-execute](../images/aigne-observe-execute.png)
+
+View a list of recent executions.
+
+![aigne-observe-list](../images/aigne-observe-list.png)
 
 ## Installation
 
@@ -77,29 +89,6 @@ cd aigne-framework/examples/workflow-group-chat
 
 pnpm install
 ```
-
-### Setup Environment Variables
-
-Setup your OpenAI API key in the `.env.local` file:
-
-```bash
-OPENAI_API_KEY="" # Set your OpenAI API key here
-```
-
-#### Using Different Models
-
-You can use different AI models by setting the `MODEL` environment variable along with the corresponding API key. The framework supports multiple providers:
-
-* **OpenAI**: `MODEL="openai:gpt-4.1"` with `OPENAI_API_KEY`
-* **Anthropic**: `MODEL="anthropic:claude-3-7-sonnet-latest"` with `ANTHROPIC_API_KEY`
-* **Google Gemini**: `MODEL="gemini:gemini-2.0-flash"` with `GEMINI_API_KEY`
-* **AWS Bedrock**: `MODEL="bedrock:us.amazon.nova-premier-v1:0"` with AWS credentials
-* **DeepSeek**: `MODEL="deepseek:deepseek-chat"` with `DEEPSEEK_API_KEY`
-* **OpenRouter**: `MODEL="openrouter:openai/gpt-4o"` with `OPEN_ROUTER_API_KEY`
-* **xAI**: `MODEL="xai:grok-2-latest"` with `XAI_API_KEY`
-* **Ollama**: `MODEL="ollama:llama3.2"` with `OLLAMA_DEFAULT_BASE_URL`
-
-For detailed configuration examples, please refer to the `.env.local.example` file in this directory.
 
 ### Run the Example
 

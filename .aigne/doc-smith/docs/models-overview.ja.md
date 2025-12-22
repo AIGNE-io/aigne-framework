@@ -6,91 +6,9 @@ AIGNEフレームワークは、モデル非依存に設計されており、開
 
 このセクションでは、公式にサポートされているすべてのモデルプロバイダーの概要を説明します。特定のプロバイダーのインストール、設定、および使用方法に関する詳細な手順については、その専用のドキュメントページを参照してください。
 
-```d2
-direction: down
-style: {
-  stroke-width: 2
-  font-size: 14
-}
-
-AIGNE_Framework_Core: {
-  label: "AIGNEフレームワークコア"
-  shape: rectangle
-  style: {
-    fill: "#D1E7DD"
-    stroke: "#198754"
-  }
-}
-
-Model_Abstraction_Layer: {
-  label: "モデル抽象化レイヤー"
-  shape: rectangle
-  style: {
-    fill: "#cfe2ff"
-    stroke: "#0d6efd"
-  }
-}
-
-ChatModel: {
-  label: "ChatModelインターフェース"
-  shape: rectangle
-  style: {
-    fill: "#f8d7da"
-    stroke: "#dc3545"
-  }
-}
-
-ImageModel: {
-  label: "ImageModelインターフェース"
-  shape: rectangle
-  style: {
-    fill: "#f8d7da"
-    stroke: "#dc3545"
-  }
-}
-
-Model_Providers: {
-  label: "モデルプロバイダーアダプター"
-  shape: cloud
-  style: {
-    fill: "#fff3cd"
-    stroke: "#ffc107"
-  }
-}
-
-OpenAI: "OpenAIアダプター\n(@aigne/openai)"
-Anthropic: "Anthropicアダプター\n(@aigne/anthropic)"
-Google: "Google Geminiアダプター\n(@aigne/gemini)"
-Bedrock: "AWS Bedrockアダプター\n(@aigne/bedrock)"
-Ollama: "Ollamaアダプター\n(@aigne/ollama)"
-Other_Providers: {
-    label: "..."
-    shape: circle
-}
-
-
-AIGNE_Framework_Core -> Model_Abstraction_Layer: と相互作用
-
-Model_Abstraction_Layer.ChatModel
-Model_Abstraction_Layer.ImageModel
-
-Model_Abstraction_Layer -> Model_Providers: に接続
-
-Model_Providers.OpenAI
-Model_Providers.Anthropic
-Model_Providers.Google
-Model_Providers.Bedrock
-Model_Providers.Ollama
-Model_Providers.Other_Providers
-
-ChatModel -> OpenAI
-ChatModel -> Anthropic
-ChatModel -> Google
-ChatModel -> Bedrock
-ChatModel -> Ollama
-ImageModel -> OpenAI
-ImageModel -> Google
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Overview](assets/diagram/overview-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## サポートされているチャットモデル
 

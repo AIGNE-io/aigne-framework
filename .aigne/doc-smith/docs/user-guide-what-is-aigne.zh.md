@@ -38,79 +38,9 @@ AIGNE 将 agents 组织成**工作流**，这些是执行任务的结构化过�
 
 下图说明了 AIGNE 框架如何分解一个复杂任务，并管理一个 agents 团队以产生最终结果。
 
-```d2
-direction: down
-
-Complex-Task: {
-  label: "复杂的多步骤任务"
-  shape: oval
-}
-
-AIGNE: {
-  label: "AIGNE 框架"
-  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-}
-
-Decomposition: {
-  label: "将任务分解为子任务"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-}
-
-Orchestration-Patterns: {
-  label: "使用协作模式编排 Agents"
-  grid-columns: 3
-  grid-gap: 50
-
-  Sequential-Workflow: {
-    label: "顺序（流水线）"
-    shape: rectangle
-    direction: down
-    Researcher: "研究员 Agent"
-    Summarizer: "总结员 Agent"
-    Report-Writer: "报告撰写员 Agent"
-  }
-
-  Parallel-Workflow: {
-    label: "并行（团队协作）"
-    shape: rectangle
-    Task: "分析反馈"
-    Agent-A: "处理正面反馈"
-    Agent-B: "处理负面反馈"
-  }
-
-  Routing-Workflow: {
-    label: "路由（管理者）"
-    shape: rectangle
-    Request: "传入请求"
-    Manager: {
-      label: "管理者 Agent"
-      shape: diamond
-    }
-    Coder: "编码员 Agent"
-    Writer: "撰写员 Agent"
-  }
-}
-
-Final-Goal: {
-  label: "连贯、完整的输出"
-  shape: oval
-}
-
-Complex-Task -> AIGNE: "输入"
-AIGNE -> Decomposition
-Decomposition -> Orchestration-Patterns
-Orchestration-Patterns -> Final-Goal: "输出"
-Orchestration-Patterns.Sequential-Workflow.Researcher -> Orchestration-Patterns.Sequential-Workflow.Summarizer -> Orchestration-Patterns.Sequential-Workflow.Report-Writer
-Orchestration-Patterns.Parallel-Workflow.Task -> Orchestration-Patterns.Parallel-Workflow.Agent-A
-Orchestration-Patterns.Parallel-Workflow.Task -> Orchestration-Patterns.Parallel-Workflow.Agent-B
-Orchestration-Patterns.Routing-Workflow.Request -> Orchestration-Patterns.Routing-Workflow.Manager
-Orchestration-Patterns.Routing-Workflow.Manager -> Orchestration-Patterns.Routing-Workflow.Coder: "路由"
-Orchestration-Patterns.Routing-Workflow.Manager -> Orchestration-Patterns.Routing-Workflow.Writer: "路由"
-
-```
+<!-- DIAGRAM_IMAGE_START:intro:16:9 -->
+![What is AIGNE?](assets/diagram/what-is-aigne-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 常见的工作流模式包括：
 

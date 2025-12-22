@@ -4,77 +4,9 @@
 
 這個 Agent 對於任何需要根據文字描述動態創建視覺內容的工作流程至關重要。它利用 `PromptBuilder` 來建構其提示，從而能夠使用範本從可變輸入中生成圖片。
 
-```d2
-direction: down
-
-# External Actor
-User: {
-  label: "使用者 / 應用程式"
-  shape: c4-person
-}
-
-# Configuration Sources
-Configuration: {
-  label: "設定方法"
-  shape: rectangle
-  style.stroke-dash: 2
-
-  TS-Config: {
-    label: "TypeScript\n`ImageAgent.from()`"
-  }
-
-  YAML-Config: {
-    label: "YAML\n`.yaml` 檔案"
-  }
-}
-
-# AIGNE Framework
-AIGNE-Framework: {
-  label: "AIGNE 框架"
-  shape: rectangle
-
-  AIGNE: {
-    label: "AIGNE 實例"
-  }
-
-  Agent-Subsystem: {
-    label: "Agent 子系統"
-    shape: rectangle
-    style.stroke-dash: 2
-
-    ImageAgent: {
-      label: "ImageAgent"
-    }
-
-    PromptBuilder: {
-      label: "PromptBuilder"
-    }
-  }
-
-  ImageModel: {
-    label: "ImageModel\n(例如 dall-e-3)"
-  }
-}
-
-# Configuration Flow (defines relationships)
-Configuration.TS-Config -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "定義"
-Configuration.YAML-Config -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "定義"
-AIGNE-Framework.AIGNE -> AIGNE-Framework.ImageModel: {
-  label: "配置了"
-  style.stroke-dash: 2
-}
-
-# Invocation Flow (runtime)
-User -> AIGNE-Framework.AIGNE: "1. aigne.invoke(agent, input)"
-AIGNE-Framework.AIGNE -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "2. 傳遞請求"
-AIGNE-Framework.Agent-Subsystem.ImageAgent -> AIGNE-Framework.Agent-Subsystem.PromptBuilder: "3. 從\ninstructions 和 input\n建構提示"
-AIGNE-Framework.Agent-Subsystem.PromptBuilder -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "4. 回傳最終提示"
-AIGNE-Framework.Agent-Subsystem.ImageAgent -> AIGNE-Framework.ImageModel: "5. 使用\nprompt 和 modelOptions\n呼叫模型"
-AIGNE-Framework.ImageModel -> AIGNE-Framework.Agent-Subsystem.ImageAgent: "6. 回傳 ImageModelOutput"
-AIGNE-Framework.Agent-Subsystem.ImageAgent -> AIGNE-Framework.AIGNE: "7. 轉發結果"
-AIGNE-Framework.AIGNE -> User: "8. 回傳最終輸出\n(url/base64)"
-
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![Image Agent](assets/diagram/image-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 設定
 

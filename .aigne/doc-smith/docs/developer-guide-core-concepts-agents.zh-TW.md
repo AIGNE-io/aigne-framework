@@ -54,61 +54,9 @@ export abstract class Agent<I extends Message = any, O extends Message = any> {
 
 Agent 的執行遵循一個結構化的生命週期，該生命週期透過掛鉤提供了清晰的擴展點。
 
-```d2
-direction: down
-
-Agent-Lifecycle: {
-  label: "Agent 執行生命週期"
-  style: {
-    stroke-dash: 4
-  }
-
-  invoke: {
-    label: "1. invoke(input)"
-    shape: oval
-  }
-
-  on-start: {
-    label: "2. onStart 掛鉤"
-    shape: rectangle
-  }
-
-  input-validation: {
-    label: "3. 輸入有效？"
-    shape: diamond
-  }
-
-  process: {
-    label: "4. process(input)"
-    shape: rectangle
-    style.fill: "#e6f7ff"
-  }
-
-  output-validation: {
-    label: "5. 輸出有效？"
-    shape: diamond
-  }
-
-  on-end: {
-    label: "6. onEnd 掛鉤\n(處理成功或錯誤)"
-    shape: rectangle
-  }
-
-  return-value: {
-    label: "7. 返回輸出或拋出錯誤"
-    shape: oval
-  }
-}
-
-Agent-Lifecycle.invoke -> Agent-Lifecycle.on-start
-Agent-Lifecycle.on-start -> Agent-Lifecycle.input-validation
-Agent-Lifecycle.input-validation -> Agent-Lifecycle.process: "是"
-Agent-Lifecycle.process -> Agent-Lifecycle.output-validation
-Agent-Lifecycle.output-validation -> Agent-Lifecycle.on-end: "是"
-Agent-Lifecycle.on-end -> Agent-Lifecycle.return-value
-Agent-Lifecycle.input-validation -> Agent-Lifecycle.on-end: "否"
-Agent-Lifecycle.output-validation -> Agent-Lifecycle.on-end: "否"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![Agents](assets/diagram/agents-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 1.  **調用**：透過使用輸入負載呼叫其 `invoke()` 方法來啟動 Agent 的執行。
 2.  **`onStart` 掛鉤**：觸發 `onStart` 掛鉤，為預處理邏輯（如日誌記錄或輸入轉換）提供機會。

@@ -1,4 +1,4 @@
-// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+// Bun Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AnthropicChatModel.invoke 1`] = `
 {
@@ -16,6 +16,8 @@ exports[`AnthropicChatModel.invoke 1`] = `
     },
   ],
   "usage": {
+    "cacheCreationInputTokens": 0,
+    "cacheReadInputTokens": 0,
     "inputTokens": 416,
     "outputTokens": 54,
   },
@@ -29,6 +31,8 @@ exports[`AnthropicChatModel.invoke 2`] = `
   },
   "model": "claude-3-7-sonnet-20250219",
   "usage": {
+    "cacheCreationInputTokens": 0,
+    "cacheReadInputTokens": 0,
     "inputTokens": 486,
     "outputTokens": 20,
   },
@@ -83,6 +87,8 @@ exports[`AnthropicChatModel.invoke with streaming 1`] = `
     "delta": {
       "json": {
         "usage": {
+          "cacheCreationInputTokens": 0,
+          "cacheReadInputTokens": 0,
           "inputTokens": 8,
           "outputTokens": 45,
         },
@@ -97,6 +103,8 @@ exports[`AnthropicChatModel.invoke without streaming 1`] = `
   "model": "claude-3-7-sonnet-20250219",
   "text": "Hello! How can I assist you today? Whether you have a question, need information, or just want to chat, I'm here to help. Feel free to let me know what's on your mind.",
   "usage": {
+    "cacheCreationInputTokens": 0,
+    "cacheReadInputTokens": 0,
     "inputTokens": 8,
     "outputTokens": 45,
   },

@@ -31,7 +31,7 @@ test("UserProfileMemory should update memory based on conversation", async () =>
   await waitMockCalled(updateProfileSpy);
 
   expect(
-    (await userProfileMemory.search("/", "")).list.map((i) => i.content),
+    (await userProfileMemory.search("/", "")).data.map((i) => i.content),
   ).toMatchInlineSnapshot(`
     [
       {

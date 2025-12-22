@@ -39,61 +39,9 @@ Agent チームは、タスクの性質に応じて、さまざまな方法で�
 
 下の図は、これら 3 つの主要な連携パターンを示しています。
 
-```d2
-direction: down
-
-Sequential-Workflow: {
-  label: "シーケンシャルワークフロー：組み立てライン"
-  style.stroke-dash: 2
-
-  Input: { shape: oval }
-  Researcher: "リサーチャー Agent"
-  Writer: "ライター Agent"
-  Editor: "エディター Agent"
-  Output: { label: "最終版"; shape: oval }
-
-  Input -> Researcher: "トピック"
-  Researcher -> Writer: "調査結果"
-  Writer -> Editor: "草稿"
-  Editor -> Output: "承認済み投稿"
-}
-
-Parallel-Workflow: {
-  label: "パラレルワークフロー：ブレーンストーミングセッション"
-  style.stroke-dash: 2
-
-  Input: { label: "会社名"; shape: oval }
-  Social-Media: "ソーシャルメディア Agent"
-  News: "ニュース Agent"
-  Financial: "財務 Agent"
-  Output: { label: "統合市場分析"; shape: oval }
-
-  Input -> Social-Media
-  Input -> News
-  Input -> Financial
-  Social-Media -> Output: "言及"
-  News -> Output: "記事"
-  Financial -> Output: "株価データ"
-}
-
-Reflection-Workflow: {
-  label: "リフレクション：品質保証ループ"
-  style.stroke-dash: 2
-
-  Team: "Agent チーム"
-  Task-Output: "タスク出力"
-  Reviewer: {
-    label: "レビュアー Agent"
-    shape: diamond
-  }
-  Final-Output: { label: "最終承認済み出力"; shape: oval }
-
-  Team -> Task-Output
-  Task-Output -> Reviewer
-  Reviewer -> Final-Output: "承認済み"
-  Reviewer -> Team: "要修正\n（フィードバック）"
-}
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:16:9 -->
+![Agent Teams](assets/diagram/agent-teams-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## まとめ
 

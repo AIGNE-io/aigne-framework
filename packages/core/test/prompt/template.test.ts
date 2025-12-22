@@ -30,6 +30,7 @@ test("AgentMessageTemplate", async () => {
   });
   expect(prompt).toMatchInlineSnapshot(`
     {
+      "cacheControl": undefined,
       "content": "Hello, {{name}}!",
       "name": "AgentA",
       "role": "agent",
@@ -53,6 +54,7 @@ test("AgentMessageTemplate", async () => {
   ).format();
   expect(toolCallsPrompt).toMatchInlineSnapshot(`
     {
+      "cacheControl": undefined,
       "content": undefined,
       "name": "AgentA",
       "role": "agent",
@@ -79,6 +81,7 @@ test("ToolMessageTemplate", async () => {
   });
   expect(prompt).toMatchInlineSnapshot(`
     {
+      "cacheControl": undefined,
       "content": "Hello, {{name}}!",
       "name": "AgentA",
       "role": "tool",
@@ -93,7 +96,12 @@ test("ToolMessageTemplate", async () => {
   ).format();
   expect(objectPrompt).toMatchInlineSnapshot(`
     {
-      "content": "{"result":{"content":"call tool success"}}",
+      "cacheControl": undefined,
+      "content": 
+    "result:
+      content: call tool success
+    "
+    ,
       "name": "AgentA",
       "role": "tool",
       "toolCallId": "tool1",
@@ -107,7 +115,12 @@ test("ToolMessageTemplate", async () => {
   ).format();
   expect(bigintPrompt).toMatchInlineSnapshot(`
     {
-      "content": "{"result":{"content":"1234567890"}}",
+      "cacheControl": undefined,
+      "content": 
+    "result:
+      content: 1234567890
+    "
+    ,
       "name": "AgentA",
       "role": "tool",
       "toolCallId": "tool1",

@@ -37,80 +37,9 @@ AIGNE addresses this by providing a framework to deconstruct such a complex requ
 AIGNE orchestrates agents into **workflows**, which are structured processes for executing tasks. By connecting agents, you can automate processes that would otherwise require significant manual coordination. The framework supports several patterns of collaboration, allowing for flexible and powerful automation.
 
 The following diagram illustrates how the AIGNE Framework breaks down a complex task and manages a team of agents to produce a final result.
-
-```d2
-direction: down
-
-Complex-Task: {
-  label: "Complex, Multi-Step Task"
-  shape: oval
-}
-
-AIGNE: {
-  label: "AIGNE Framework"
-  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-}
-
-Decomposition: {
-  label: "Decomposes Task into Sub-tasks"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-}
-
-Orchestration-Patterns: {
-  label: "Orchestrates Agents Using Collaboration Patterns"
-  grid-columns: 3
-  grid-gap: 50
-
-  Sequential-Workflow: {
-    label: "Sequential (Assembly Line)"
-    shape: rectangle
-    direction: down
-    Researcher: "Researcher Agent"
-    Summarizer: "Summarizer Agent"
-    Report-Writer: "Report Writer Agent"
-  }
-
-  Parallel-Workflow: {
-    label: "Parallel (Teamwork)"
-    shape: rectangle
-    Task: "Analyze Feedback"
-    Agent-A: "Process Positive"
-    Agent-B: "Process Negative"
-  }
-
-  Routing-Workflow: {
-    label: "Routing (Manager)"
-    shape: rectangle
-    Request: "Incoming Request"
-    Manager: {
-      label: "Manager Agent"
-      shape: diamond
-    }
-    Coder: "Coder Agent"
-    Writer: "Writer Agent"
-  }
-}
-
-Final-Goal: {
-  label: "Coherent, Complete Output"
-  shape: oval
-}
-
-Complex-Task -> AIGNE: "Input"
-AIGNE -> Decomposition
-Decomposition -> Orchestration-Patterns
-Orchestration-Patterns -> Final-Goal: "Output"
-Orchestration-Patterns.Sequential-Workflow.Researcher -> Orchestration-Patterns.Sequential-Workflow.Summarizer -> Orchestration-Patterns.Sequential-Workflow.Report-Writer
-Orchestration-Patterns.Parallel-Workflow.Task -> Orchestration-Patterns.Parallel-Workflow.Agent-A
-Orchestration-Patterns.Parallel-Workflow.Task -> Orchestration-Patterns.Parallel-Workflow.Agent-B
-Orchestration-Patterns.Routing-Workflow.Request -> Orchestration-Patterns.Routing-Workflow.Manager
-Orchestration-Patterns.Routing-Workflow.Manager -> Orchestration-Patterns.Routing-Workflow.Coder: "Route"
-Orchestration-Patterns.Routing-Workflow.Manager -> Orchestration-Patterns.Routing-Workflow.Writer: "Route"
-
-```
+<!-- DIAGRAM_IMAGE_START:intro:16:9 -->
+![What is AIGNE?](assets/diagram/what-is-aigne-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 Common workflow patterns include:
 

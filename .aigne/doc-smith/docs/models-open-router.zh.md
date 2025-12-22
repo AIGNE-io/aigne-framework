@@ -4,55 +4,9 @@ OpenRouter 是一个统一的网关，可以访问来自 OpenAI、Anthropic 和 
 
 本指南详细介绍了安装、配置和使用 `@aigne/open-router` 包以利用多种 AI 模型的过程。
 
-```d2
-direction: down
-
-Application: {
-  label: "你的应用程序"
-  shape: rectangle
-}
-
-aigne-open-router: {
-  label: "@aigne/open-router"
-  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-}
-
-OpenRouter-Service: {
-  label: "OpenRouter 服务"
-  shape: rectangle
-}
-
-Providers: {
-  label: "模型提供商"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  OpenAI: {
-    shape: rectangle
-    "GPT-4": {}
-    "GPT-3.5": {}
-  }
-
-  Google: {
-    shape: rectangle
-    "Gemini Pro": {}
-  }
-
-  Anthropic: {
-    shape: rectangle
-    "Claude 3": {}
-  }
-}
-
-Application -> aigne-open-router: "1. 使用 API 密钥进行配置"
-aigne-open-router -> OpenRouter-Service: "2. 使用模型 ID 发出 API 请求"
-OpenRouter-Service -> Providers: "3. 路由到提供商"
-Providers -> OpenRouter-Service: "4. 提供商响应"
-OpenRouter-Service -> aigne-open-router: "5. 统一响应"
-aigne-open-router -> Application: "6. 返回结果"
-```
+<!-- DIAGRAM_IMAGE_START:guide:4:3 -->
+![OpenRouter](assets/diagram/open-router-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## 安装
 

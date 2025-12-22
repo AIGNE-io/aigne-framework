@@ -1,5 +1,79 @@
 # Changelog
 
+## [1.4.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.1...afs-v1.4.0-beta.2) (2025-12-19)
+
+
+### Bug Fixes
+
+* **afs:** use simple-list instead of tree as default type ([#839](https://github.com/AIGNE-io/aigne-framework/issues/839)) ([65a9a40](https://github.com/AIGNE-io/aigne-framework/commit/65a9a4054b3bdad6f7e40357299ef3dc48f7c3e4))
+
+## [1.4.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta...afs-v1.4.0-beta.1) (2025-12-17)
+
+
+### Bug Fixes
+
+* bump version ([70d217c](https://github.com/AIGNE-io/aigne-framework/commit/70d217c8360dd0dda7f5f17011c4e92ec836e801))
+
+## [1.4.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.3.0...afs-v1.4.0-beta) (2025-12-17)
+
+
+### Features
+
+* **afs:** support expand context into prompt template by call `$afs.xxx` ([#830](https://github.com/AIGNE-io/aigne-framework/issues/830)) ([5616acd](https://github.com/AIGNE-io/aigne-framework/commit/5616acd6ea257c91aa0b766608f45c5ce17f0345))
+
+
+### Bug Fixes
+
+* **afs:** read method should not throw not found error ([#835](https://github.com/AIGNE-io/aigne-framework/issues/835)) ([ebfdfc1](https://github.com/AIGNE-io/aigne-framework/commit/ebfdfc1cdba23efd23ac2ad4621e3f046990fd8b))
+
+## [1.3.0](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.3.0-beta.3...afs-v1.3.0) (2025-12-12)
+
+## [1.3.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.3.0-beta.2...afs-v1.3.0-beta.3) (2025-12-11)
+
+
+### Features
+
+* **afs:** add edit/delete/rename methods for AFS ([#820](https://github.com/AIGNE-io/aigne-framework/issues/820)) ([68cb508](https://github.com/AIGNE-io/aigne-framework/commit/68cb508d1cfc9c516d56303018139f1e567f897e))
+
+## [1.3.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.3.0-beta.1...afs-v1.3.0-beta.2) (2025-12-10)
+
+
+### Bug Fixes
+
+* bump version ([af04b69](https://github.com/AIGNE-io/aigne-framework/commit/af04b6931951afa35d52065430acc7fef4b10087))
+
+## [1.3.0-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.3.0-beta...afs-v1.3.0-beta.1) (2025-12-10)
+
+
+### Bug Fixes
+
+* **afs:** add case-sensitive option for search with case-insensitive default ([#814](https://github.com/AIGNE-io/aigne-framework/issues/814)) ([9dc9446](https://github.com/AIGNE-io/aigne-framework/commit/9dc944635104fc311e7756b4bde0a20275cfe8ec))
+
+## [1.3.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.3...afs-v1.3.0-beta) (2025-12-07)
+
+
+### Features
+
+* support define agent by third library & orchestrator agent refactor ([#799](https://github.com/AIGNE-io/aigne-framework/issues/799)) ([7264b11](https://github.com/AIGNE-io/aigne-framework/commit/7264b11ab6eed787e928367f09aa08d254968d40))
+
+## [1.2.3](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.3-beta...afs-v1.2.3) (2025-12-05)
+
+## [1.2.3-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.2...afs-v1.2.3-beta) (2025-12-02)
+
+
+### Bug Fixes
+
+* **afs:** check module existence on normalized path ([#793](https://github.com/AIGNE-io/aigne-framework/issues/793)) ([0c991bf](https://github.com/AIGNE-io/aigne-framework/commit/0c991bf0caa948ce62948986ce885b5a98437689))
+
+## [1.2.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.2-beta...afs-v1.2.2) (2025-11-28)
+
+## [1.2.2-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.1...afs-v1.2.2-beta) (2025-11-28)
+
+
+### Bug Fixes
+
+* bump version ([ba7ad18](https://github.com/AIGNE-io/aigne-framework/commit/ba7ad184fcf32b49bf0507a3cb638d20fb00690d))
+
 ## [1.2.1](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.1-beta...afs-v1.2.1) (2025-11-15)
 
 ## [1.2.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.2.0...afs-v1.2.1-beta) (2025-11-15)

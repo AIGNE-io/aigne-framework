@@ -2,6 +2,8 @@
 labels: ["Reference"]
 ---
 
+---labels: ["Reference"]---
+
 # Agents and Skills
 
 In the AIGNE ecosystem, Agents and Skills are the fundamental building blocks that bring your AI applications to life. They work together to create sophisticated, tool-augmented AI systems. Think of an Agent as the brain responsible for reasoning and conversation, and Skills as the tools it uses to perform actions and interact with the outside world.
@@ -90,35 +92,10 @@ A skill file consists of three main parts:
 
 ## How They Work Together
 
-The interaction between a user, an agent, and a skill follows a clear pattern. The agent acts as an intelligent orchestrator, interpreting the user's request and invoking the appropriate skill to fulfill it.
-
-```d2
-direction: down
-
-User: {
-  shape: c4-person
-}
-
-AIGNE-Runtime: {
-  label: "AIGNE Runtime"
-  shape: rectangle
-
-  Chat-Agent: {
-    label: "Chat Agent"
-  }
-
-  Sandbox-Skill: {
-    label: "Sandbox Skill (sandbox.js)"
-  }
-}
-
-User -> AIGNE-Runtime.Chat-Agent: "1. Input: 'What is 5 + 7?'"
-AIGNE-Runtime.Chat-Agent -> AIGNE-Runtime.Chat-Agent: "2. LLM reasons it needs to calculate"
-AIGNE-Runtime.Chat-Agent -> AIGNE-Runtime.Sandbox-Skill: "3. Invokes skill with { code: '5 + 7' }"
-AIGNE-Runtime.Sandbox-Skill -> AIGNE-Runtime.Sandbox-Skill: "4. Executes code in a sandbox"
-AIGNE-Runtime.Sandbox-Skill -> AIGNE-Runtime.Chat-Agent: "5. Returns { result: 12 }"
-AIGNE-Runtime.Chat-Agent -> User: "6. Formulates response: 'The result is 12.'"
-```
+The interaction between a user, an agent, and a skill follows a clear pattern. The agent acts as an intelligent orchestrator, interpreting the user's request and invoking the appropriate skill to fulfill it. The following diagram illustrates this process:
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![---labels: ["Reference"]---](assets/diagram/agents-and-skills-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 By separating the reasoning (Agent) from the execution (Skill), you can build powerful and extensible AI systems that are easy to maintain and upgrade.
 

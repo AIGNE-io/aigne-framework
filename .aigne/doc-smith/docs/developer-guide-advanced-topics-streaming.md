@@ -155,65 +155,9 @@ A common use case for streaming is to send real-time updates to a web frontend. 
 
 The following diagram illustrates the data flow from the backend AIGNE to the frontend application when using SSE.
 
-```d2
-direction: down
-
-Frontend: {
-  label: "Frontend Application"
-  shape: rectangle
-
-  EventSource-Client: {
-    label: "EventSource Client"
-    shape: rectangle
-  }
-
-  UI-Component: {
-    label: "UI Component"
-    shape: rectangle
-  }
-}
-
-Backend: {
-  label: "Backend Server"
-  shape: rectangle
-
-  SSE-Endpoint: {
-    label: "SSE Endpoint"
-  }
-
-  AIGNE-Core: {
-    label: "AIGNE Framework"
-
-    invoke: {
-        label: "aigne.invoke(..., { stream: true })"
-    }
-
-    AgentResponseStream: {
-        label: "AgentResponseStream\n(ReadableStream)"
-    }
-
-    AgentResponseStreamSSE: {
-        label: "AgentResponseStreamSSE\n(Utility)"
-    }
-  }
-}
-
-LLM: {
-  label: "LLM Service"
-  shape: cylinder
-}
-
-Frontend.EventSource-Client -> Backend.SSE-Endpoint: "1. POST /api/chat-stream"
-Backend.SSE-Endpoint -> Backend.AIGNE-Core.invoke: "2. Invoke agent"
-Backend.AIGNE-Core.invoke -> LLM: "3. Request to LLM API"
-LLM -> Backend.AIGNE-Core.invoke: "4. Streams response"
-Backend.AIGNE-Core.invoke -> Backend.AIGNE-Core.AgentResponseStream: "5. Returns stream"
-Backend.AIGNE-Core.AgentResponseStream -> Backend.AIGNE-Core.AgentResponseStreamSSE: "6. Pipe to SSE utility"
-Backend.AIGNE-Core.AgentResponseStreamSSE -> Backend.SSE-Endpoint: "7. Yields SSE-formatted chunks"
-Backend.SSE-Endpoint -> Frontend.EventSource-Client: "8. Stream response via HTTP"
-Frontend.EventSource-Client -> Frontend.UI-Component: "9. 'onmessage' event triggers UI update"
-Frontend.UI-Component -> Frontend.UI-Component: "10. Render text incrementally"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Streaming](assets/diagram/streaming-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ### Backend Implementation
 

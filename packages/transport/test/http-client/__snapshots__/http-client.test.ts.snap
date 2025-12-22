@@ -1494,9 +1494,7 @@ exports[`AIGNEClient should support custom memory for client agent 2`] = `
         "role": "user",
       },
     ],
-    "modelOptions": {
-      "parallelToolCalls": true,
-    },
+    "modelOptions": {},
     "responseFormat": undefined,
     "toolChoice": undefined,
     "tools": undefined,

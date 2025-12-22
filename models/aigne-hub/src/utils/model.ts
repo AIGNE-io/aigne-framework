@@ -5,7 +5,7 @@ import type {
   ChatModel,
   ChatModelInputOptionsWithGetter,
   ImageModel,
-  ImageModelInputOptions,
+  ImageModelInputOptionsWithGetter,
   VideoModel,
 } from "@aigne/core";
 import { DeepSeekChatModel } from "@aigne/deepseek";
@@ -144,7 +144,7 @@ export interface LoadableImageModel {
     apiKey?: string;
     baseURL?: string;
     model?: string;
-    modelOptions?: ImageModelInputOptions;
+    modelOptions?: ImageModelInputOptionsWithGetter;
   }) => ImageModel;
 }
 

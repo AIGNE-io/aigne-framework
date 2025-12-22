@@ -89,7 +89,6 @@ export class AIGNEHubImageModel extends ImageModel {
       {
         ...input,
         modelOptions: {
-          ...this.options.modelOptions,
           ...input.modelOptions,
           model: input.modelOptions?.model || (await this.credential).model,
         },
@@ -115,7 +114,7 @@ export class AIGNEHubImageModel extends ImageModel {
       usage: {
         inputTokens: response.usage?.inputTokens ?? 0,
         outputTokens: response.usage?.outputTokens ?? 0,
-        aigneHubCredits: response.usage?.aigneHubCredits,
+        ...response.usage,
       },
       model: response?.model,
     };

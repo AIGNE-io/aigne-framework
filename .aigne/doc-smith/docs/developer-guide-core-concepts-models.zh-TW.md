@@ -15,72 +15,9 @@ AIGNE 框架定義了一個基礎的 `Model` 類別，它被兩個主要的特�
 
 下圖說明了基礎 `Agent`、`Model` 抽象以及它們所連接的外部 AI 服務之間的關係。
 
-```d2
-direction: down
-
-Application-Layer: {
-  label: "應用層 (您的程式碼)"
-  shape: rectangle
-
-  AIAgent: {
-    label: "AIAgent"
-    shape: rectangle
-  }
-
-  ImageAgent: {
-    label: "ImageAgent"
-    shape: rectangle
-  }
-}
-
-AIGNE-Framework: {
-  label: "AIGNE 框架 (抽象層)"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  Model-Abstractions: {
-    grid-columns: 2
-
-    ChatModel: {
-      label: "ChatModel"
-      shape: rectangle
-    }
-  
-    ImageModel: {
-      label: "ImageModel"
-      shape: rectangle
-    }
-  }
-}
-
-External-AI-Services: {
-  label: "外部 AI 服務"
-  shape: rectangle
-  grid-columns: 3
-
-  OpenAI: {
-    label: "OpenAI\n(GPT-4, etc.)"
-    shape: cylinder
-  }
-
-  Anthropic: {
-    label: "Anthropic\n(Claude 3, etc.)"
-    shape: cylinder
-  }
-
-  Google: {
-    label: "Google\n(Gemini, etc.)"
-    shape: cylinder
-  }
-}
-
-Application-Layer.AIAgent -> AIGNE-Framework.Model-Abstractions.ChatModel: "使用 (ChatModelInput/Output)"
-Application-Layer.ImageAgent -> AIGNE-Framework.Model-Abstractions.ImageModel: "使用 (ImageModelInput/Output)"
-AIGNE-Framework.Model-Abstractions.ChatModel -> External-AI-Services: "連接至 LLM 供應商"
-AIGNE-Framework.Model-Abstractions.ImageModel -> External-AI-Services: "連接至圖像供應商"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Models](assets/diagram/models-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## ChatModel 抽象
 

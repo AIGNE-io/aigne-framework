@@ -1,5 +1,6 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import nunjucks, { type Callback, type LoaderSource } from "nunjucks";
+import { stringify } from "yaml";
 import { z } from "zod";
 import type {
   ChatModelInputMessage,
@@ -93,6 +94,7 @@ export class ChatMessageTemplate {
     public content?: ChatModelInputMessage["content"],
     public name?: string,
     public options?: FormatOptions,
+    public cacheControl?: ChatModelInputMessage["cacheControl"],
   ) {}
 
   async format(
@@ -119,19 +121,30 @@ export class ChatMessageTemplate {
       role: this.role,
       content,
       name: this.name,
+      cacheControl: this.cacheControl,
     };
   }
 }
 
 export class SystemMessageTemplate extends ChatMessageTemplate {
-  static from(content: string, name?: string, options?: FormatOptions) {
-    return new SystemMessageTemplate("system", content, name, options);
+  static from(
+    content: string,
+    name?: string,
+    options?: FormatOptions,
+    cacheControl?: ChatModelInputMessage["cacheControl"],
+  ) {
+    return new SystemMessageTemplate("system", content, name, options, cacheControl);
   }
 }
 
 export class UserMessageTemplate extends ChatMessageTemplate {
-  static from(template: ChatModelInputMessageContent, name?: string, options?: FormatOptions) {
-    return new UserMessageTemplate("user", template, name, options);
+  static from(
+    template: ChatModelInputMessageContent,
+    name?: string,
+    options?: FormatOptions,
+    cacheControl?: ChatModelInputMessage["cacheControl"],
+  ) {
+    return new UserMessageTemplate("user", template, name, options, cacheControl);
   }
 }
 
@@ -141,8 +154,9 @@ export class AgentMessageTemplate extends ChatMessageTemplate {
     toolCalls?: ChatModelOutputToolCall[],
     name?: string,
     options?: FormatOptions,
+    cacheControl?: ChatModelInputMessage["cacheControl"],
   ) {
-    return new AgentMessageTemplate(template, toolCalls, name, options);
+    return new AgentMessageTemplate(template, toolCalls, name, options, cacheControl);
   }
 
   constructor(
@@ -150,8 +164,9 @@ export class AgentMessageTemplate extends ChatMessageTemplate {
     public toolCalls?: ChatModelOutputToolCall[],
     name?: string,
     options?: FormatOptions,
+    cacheControl?: ChatModelInputMessage["cacheControl"],
   ) {
-    super("agent", content, name, options);
+    super("agent", content, name, options, cacheControl);
   }
 
   override async format(_variables?: Record<string, unknown>, _options?: FormatOptions) {
@@ -161,6 +176,7 @@ export class AgentMessageTemplate extends ChatMessageTemplate {
       // NOTE: agent message should not rendered by template
       content: this.content,
       toolCalls: this.toolCalls,
+      cacheControl: this.cacheControl,
     };
   }
 }
@@ -171,8 +187,9 @@ export class ToolMessageTemplate extends ChatMessageTemplate {
     toolCallId: string,
     name?: string,
     options?: FormatOptions,
+    cacheControl?: ChatModelInputMessage["cacheControl"],
   ) {
-    return new ToolMessageTemplate(content, toolCallId, name, options);
+    return new ToolMessageTemplate(content, toolCallId, name, options, cacheControl);
   }
 
   constructor(
@@ -180,16 +197,14 @@ export class ToolMessageTemplate extends ChatMessageTemplate {
     public toolCallId: string,
     name?: string,
     options?: FormatOptions,
+    cacheControl?: ChatModelInputMessage["cacheControl"],
   ) {
     super(
       "tool",
-      typeof content === "string"
-        ? content
-        : JSON.stringify(content, (_, value) =>
-            typeof value === "bigint" ? value.toString() : value,
-          ),
+      typeof content === "string" ? content : stringify(content),
       name,
       options,
+      cacheControl,
     );
   }
 
@@ -200,6 +215,7 @@ export class ToolMessageTemplate extends ChatMessageTemplate {
       // NOTE: tool result should not rendered by template
       content: this.content,
       toolCallId: this.toolCallId,
+      cacheControl: this.cacheControl,
     };
   }
 }
@@ -213,6 +229,10 @@ export class ChatMessagesTemplate {
 
   constructor(public messages: ChatMessageTemplate[]) {}
 
+  copy(): ChatMessagesTemplate {
+    return new ChatMessagesTemplate(this.messages.map((m) => m));
+  }
+
   async format(
     variables?: Record<string, unknown>,
     options?: FormatOptions,
@@ -225,12 +245,24 @@ const systemChatMessageSchema = z.object({
   role: z.literal("system"),
   content: z.string(),
   name: z.string().optional(),
+  cacheControl: z
+    .object({
+      type: z.literal("ephemeral"),
+      ttl: z.union([z.literal("5m"), z.literal("1h")]).optional(),
+    })
+    .optional(),
 });
 
 const userChatMessageSchema = z.object({
   role: z.literal("user"),
   content: z.string(),
   name: z.string().optional(),
+  cacheControl: z
+    .object({
+      type: z.literal("ephemeral"),
+      ttl: z.union([z.literal("5m"), z.literal("1h")]).optional(),
+    })
+    .optional(),
 });
 
 const chatModelOutputToolCallSchema = z.object({
@@ -247,6 +279,12 @@ const agentChatMessageSchema = z.object({
   content: z.string().optional(),
   toolCalls: z.array(chatModelOutputToolCallSchema).optional(),
   name: z.string().optional(),
+  cacheControl: z
+    .object({
+      type: z.literal("ephemeral"),
+      ttl: z.union([z.literal("5m"), z.literal("1h")]).optional(),
+    })
+    .optional(),
 });
 
 const toolChatMessageSchema = z.object({
@@ -256,6 +294,12 @@ const toolChatMessageSchema = z.object({
     .transform((val) => (typeof val !== "string" ? JSON.stringify(val) : val)),
   toolCallId: z.string(),
   name: z.string().optional(),
+  cacheControl: z
+    .object({
+      type: z.literal("ephemeral"),
+      ttl: z.union([z.literal("5m"), z.literal("1h")]).optional(),
+    })
+    .optional(),
 });
 
 const chatMessageSchema = z.union([
@@ -280,15 +324,26 @@ export function parseChatMessages(
   return messages.map((message) => {
     switch (message.role) {
       case "system":
-        return SystemMessageTemplate.from(message.content, message.name, message.options);
+        return SystemMessageTemplate.from(
+          message.content,
+          message.name,
+          message.options,
+          message.cacheControl,
+        );
       case "user":
-        return UserMessageTemplate.from(message.content, message.name, message.options);
+        return UserMessageTemplate.from(
+          message.content,
+          message.name,
+          message.options,
+          message.cacheControl,
+        );
       case "agent":
         return AgentMessageTemplate.from(
           message.content,
           message.toolCalls,
           message.name,
           message.options,
+          message.cacheControl,
         );
       case "tool":
         return ToolMessageTemplate.from(
@@ -296,6 +351,7 @@ export function parseChatMessages(
           message.toolCallId,
           message.name,
           message.options,
+          message.cacheControl,
         );
     }
   });

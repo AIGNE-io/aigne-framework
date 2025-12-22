@@ -155,65 +155,9 @@ getFinalObject();
 
 下图说明了使用 SSE 时从后端 AIGNE 到前端应用程序的数据流。
 
-```d2
-direction: down
-
-Frontend: {
-  label: "前端应用程序"
-  shape: rectangle
-
-  EventSource-Client: {
-    label: "EventSource 客户端"
-    shape: rectangle
-  }
-
-  UI-Component: {
-    label: "UI 组件"
-    shape: rectangle
-  }
-}
-
-Backend: {
-  label: "后端服务器"
-  shape: rectangle
-
-  SSE-Endpoint: {
-    label: "SSE 端点"
-  }
-
-  AIGNE-Core: {
-    label: "AIGNE 框架"
-
-    invoke: {
-        label: "aigne.invoke(..., { stream: true })"
-    }
-
-    AgentResponseStream: {
-        label: "AgentResponseStream\n(ReadableStream)"
-    }
-
-    AgentResponseStreamSSE: {
-        label: "AgentResponseStreamSSE\n(实用工具)"
-    }
-  }
-}
-
-LLM: {
-  label: "LLM 服务"
-  shape: cylinder
-}
-
-Frontend.EventSource-Client -> Backend.SSE-Endpoint: "1. POST /api/chat-stream"
-Backend.SSE-Endpoint -> Backend.AIGNE-Core.invoke: "2. 调用 Agent"
-Backend.AIGNE-Core.invoke -> LLM: "3. 请求 LLM API"
-LLM -> Backend.AIGNE-Core.invoke: "4. 流式传输响应"
-Backend.AIGNE-Core.invoke -> Backend.AIGNE-Core.AgentResponseStream: "5. 返回流"
-Backend.AIGNE-Core.AgentResponseStream -> Backend.AIGNE-Core.AgentResponseStreamSSE: "6. 管道传输至 SSE 实用工具"
-Backend.AIGNE-Core.AgentResponseStreamSSE -> Backend.SSE-Endpoint: "7. 生成 SSE 格式的数据块"
-Backend.SSE-Endpoint -> Frontend.EventSource-Client: "8. 通过 HTTP 流式传输响应"
-Frontend.EventSource-Client -> Frontend.UI-Component: "9. 'onmessage' 事件触发 UI 更新"
-Frontend.UI-Component -> Frontend.UI-Component: "10. 增量渲染文本"
-```
+<!-- DIAGRAM_IMAGE_START:architecture:16:9 -->
+![Streaming](assets/diagram/streaming-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ### 后端实现
 

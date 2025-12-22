@@ -17,7 +17,6 @@ import type {
   ChatModelInputTool,
   ChatModelInputToolChoice,
 } from "../agents/chat-model.js";
-import type { ImageAgent } from "../agents/image-agent.js";
 import { type FileUnionContent, fileUnionContentsSchema } from "../agents/model.js";
 import { optionalize } from "../loader/schema.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
@@ -29,13 +28,14 @@ import {
   partition,
   unique,
 } from "../utils/type-utils.js";
+import { createPromptBuilderContext } from "./context/index.js";
 import {
   AFS_EXECUTABLE_TOOLS_PROMPT_TEMPLATE,
   getAFSSystemPrompt,
 } from "./prompts/afs-builtin-prompt.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
-import { getAFSSkills } from "./skills/afs.js";
+import { getAFSSkills } from "./skills/afs/index.js";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
@@ -115,6 +115,14 @@ export class PromptBuilder {
 
   workingDir?: string;
 
+  copy(): PromptBuilder {
+    return new PromptBuilder({
+      instructions:
+        typeof this.instructions === "string" ? this.instructions : this.instructions?.copy(),
+      workingDir: this.workingDir,
+    });
+  }
+
   async build(options: PromptBuildOptions): Promise<ChatModelInput & { toolAgents?: Agent[] }> {
     return {
       messages: await this.buildMessages(options),
@@ -126,8 +134,8 @@ export class PromptBuilder {
     };
   }
 
-  async buildImagePrompt(
-    options: Pick<PromptBuildOptions, "input" | "context"> & { agent: ImageAgent },
+  async buildPrompt(
+    options: Pick<PromptBuildOptions, "input" | "context"> & { inputFileKey?: string },
   ): Promise<{ prompt: string; image?: FileUnionContent[] }> {
     const messages =
       (await (typeof this.instructions === "string"
@@ -135,7 +143,7 @@ export class PromptBuilder {
         : this.instructions
       )?.format(this.getTemplateVariables(options), { workingDir: this.workingDir })) ?? [];
 
-    const inputFileKey = options.agent?.inputFileKey;
+    const inputFileKey = options.inputFileKey;
     const files = flat(
       inputFileKey
         ? checkArguments(
@@ -152,12 +160,8 @@ export class PromptBuilder {
     };
   }
 
-  private getTemplateVariables(options: Pick<PromptBuildOptions, "input" | "context">) {
-    return {
-      userContext: options.context?.userContext,
-      ...options.context?.userContext,
-      ...options.input,
-    };
+  private getTemplateVariables(options: PromptBuildOptions) {
+    return createPromptBuilderContext(options);
   }
 
   private async buildMessages(options: PromptBuildOptions): Promise<ChatModelInputMessage[]> {
@@ -202,7 +206,7 @@ export class PromptBuilder {
 
     const afs = options.agent?.afs;
 
-    if (afs) {
+    if (afs && options.agent?.historyConfig?.disabled !== true) {
       const historyModule = (await afs.listModules()).find((m) => m.module instanceof AFSHistory);
 
       messages.push(await SystemMessageTemplate.from(await getAFSSystemPrompt(afs)).format({}));
@@ -214,14 +218,14 @@ export class PromptBuilder {
         });
 
         memories.push(
-          ...history.list
+          ...(history.data as AFSEntry[])
             .reverse()
             .filter((i): i is Required<AFSEntry> => isNonNullable(i.content)),
         );
 
         if (message) {
-          const result = await afs.search("/", message);
-          const ms = result.list
+          const result: AFSEntry[] = (await afs.search("/", message)).data;
+          const ms = result
             .map((entry) => {
               if (entry.metadata?.execute) return null;
 
@@ -236,7 +240,7 @@ export class PromptBuilder {
             .filter(isNonNullable);
           memories.push(...ms);
 
-          const executable = result.list.filter(
+          const executable = result.filter(
             (i): i is typeof i & { metadata: Required<Pick<AFSEntryMetadata, "execute">> } =>
               !!i.metadata?.execute,
           );
@@ -304,6 +308,40 @@ export class PromptBuilder {
     messages.push(...otherCustomMessages);
 
     return this.refineMessages(options, messages);
+  }
+
+  async getHistories(
+    options: PromptBuildOptions,
+  ): Promise<{ role: "user" | "agent"; content: unknown }[]> {
+    const { agent } = options;
+    const afs = agent?.afs;
+    if (!afs) return [];
+
+    const historyModule = (await afs.listModules()).find((m) => m.module instanceof AFSHistory);
+    if (!historyModule) return [];
+
+    const history: AFSEntry[] = (
+      await afs.list(historyModule.path, {
+        limit: agent.historyConfig?.maxItems || 10,
+        orderBy: [["createdAt", "desc"]],
+      })
+    ).data;
+
+    return history
+      .reverse()
+      .map((i) => {
+        if (!i.content) return;
+
+        const { input, output } = i.content;
+        if (!input || !output) return;
+
+        return [
+          { role: "user" as const, content: input },
+          { role: "agent" as const, content: output },
+        ];
+      })
+      .filter(isNonNullable)
+      .flat();
   }
 
   private refineMessages(

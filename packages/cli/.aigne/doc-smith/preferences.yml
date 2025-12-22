@@ -1,4 +1,10 @@
 rules:
+  - id: pref_71e65aaa3e32afd8
+    active: true
+    scope: translation
+    rule: 文章头部的 `labels` 字段不应被翻译。
+    feedback: '文章头部 labels: ["xxx"] 不需要翻译'
+    createdAt: 2025-10-27T13:29:20.779Z
   - id: pref_fd6643bfe933eadd
     active: true
     scope: translation

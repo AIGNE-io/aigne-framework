@@ -8,48 +8,9 @@
 
 `AIAgent` 遵循一個系統化的流程來處理使用者輸入並產生回應。這個過程通常涉及與 LLM 的多次互動，尤其是在使用工具時。
 
-```d2
-direction: right
-style {
-  stroke-width: 2
-}
-
-# Start with user input
-input: 使用者輸入
-
-# Agent components
-agent: AIAgent {
-  shape: package
-  style.fill: "#f0f4f8"
-
-  builder: PromptBuilder
-  model: ChatModel
-  tools: "工具 (技能)"
-}
-
-# End with final output
-output: 最終回應
-
-# Process Flow
-input -> agent.builder: "1. 建構提示"
-agent.builder -> agent.model: "2. 叫用模型"
-agent.model -> agent: "3. 接收回應"
-
-subgraph "工具執行迴圈" {
-  direction: down
-  style {
-    stroke-dash: 4
-  }
-
-  agent -> check_tool_call: "4. 解析回應" {shape: diamond}
-  check_tool_call -> output: "否"
-  check_tool_call -> agent.tools: "是 (偵測到工具呼叫)"
-
-  agent.tools -> agent.builder: "5. 執行工具並格式化結果"
-}
-
-agent -> output: "6. 格式化最終輸出"
-```
+<!-- DIAGRAM_IMAGE_START:flowchart:4:3 -->
+![AI Agent](assets/diagram/ai-agent-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 上圖說明了一個請求的典型生命週期：
 1.  **提示建構**：`AIAgent` 使用 `PromptBuilder` 從其 `instructions`、使用者輸入以及任何先前工具呼叫的歷史記錄中組合出最終的提示。

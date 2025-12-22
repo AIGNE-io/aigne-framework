@@ -4,55 +4,9 @@ OpenRouterは、OpenAI、Anthropic、Googleなど、さまざまなプロバイ�
 
 このガイドでは、`@aigne/open-router` パッケージをインストール、設定、および利用して、複数のAIモデルを活用するプロセスを詳しく説明します。
 
-```d2
-direction: down
-
-Application: {
-  label: "あなたのアプリケーション"
-  shape: rectangle
-}
-
-aigne-open-router: {
-  label: "@aigne/open-router"
-  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-}
-
-OpenRouter-Service: {
-  label: "OpenRouterサービス"
-  shape: rectangle
-}
-
-Providers: {
-  label: "モデルプロバイダー"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-
-  OpenAI: {
-    shape: rectangle
-    "GPT-4": {}
-    "GPT-3.5": {}
-  }
-
-  Google: {
-    shape: rectangle
-    "Gemini Pro": {}
-  }
-
-  Anthropic: {
-    shape: rectangle
-    "Claude 3": {}
-  }
-}
-
-Application -> aigne-open-router: "1. APIキーで設定"
-aigne-open-router -> OpenRouter-Service: "2. モデルIDを含むAPIリクエスト"
-OpenRouter-Service -> Providers: "3. プロバイダーへのルーティング"
-Providers -> OpenRouter-Service: "4. プロバイダーからのレスポンス"
-OpenRouter-Service -> aigne-open-router: "5. 統一されたレスポンス"
-aigne-open-router -> Application: "6. 結果を返す"
-```
+<!-- DIAGRAM_IMAGE_START:guide:4:3 -->
+![OpenRouter](assets/diagram/open-router-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 ## インストール
 

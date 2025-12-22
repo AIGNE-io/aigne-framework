@@ -173,7 +173,13 @@ test("AnthropicChatModel.invoke should pass system and messages to claude correc
   expect(stream.mock.calls).toEqual([
     [
       expect.objectContaining({
-        system: "You are a chatbot",
+        system: [
+          {
+            type: "text",
+            text: "You are a chatbot",
+            cache_control: { type: "ephemeral" },
+          },
+        ],
         messages: [{ role: "user", content: "hello" }],
       }),
     ],

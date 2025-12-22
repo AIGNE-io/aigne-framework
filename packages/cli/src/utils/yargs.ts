@@ -199,9 +199,12 @@ export function inferZodType(
   };
 }
 
-export function withAgentInputSchema(yargs: Argv, agent: Pick<Agent, "inputSchema">) {
+export function withAgentInputSchema(
+  yargs: Argv,
+  options: Pick<Agent, "inputSchema"> & { optionalInputs?: string[] },
+) {
   const inputSchema: { [key: string]: ZodType } =
-    agent.inputSchema instanceof ZodObject ? agent.inputSchema.shape : {};
+    options.inputSchema instanceof ZodObject ? options.inputSchema.shape : {};
 
   for (const [option, config] of Object.entries(inputSchema)) {
     const type = inferZodType(config);
@@ -213,7 +216,7 @@ export function withAgentInputSchema(yargs: Argv, agent: Pick<Agent, "inputSchem
       array: type.array,
     });
 
-    if (!type.optional) {
+    if (!type.optional && !options.optionalInputs?.includes(option)) {
       yargs.demandOption(option);
     }
   }

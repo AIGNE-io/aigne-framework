@@ -61,9 +61,7 @@ function printHubStatus(data: {
   console.log(`${chalk.bold("Hub:".padEnd(10))} ${data.hub}`);
   console.log(
     `${chalk.bold("Status:".padEnd(10))} ${
-      data.status === "Connected"
-        ? chalk.green(`${data.status} ✅`)
-        : chalk.red(`${data.status} ❌`)
+      data.status === "Connected" ? chalk.green(`${data.status} ✅`) : `${data.status}`
     }`,
   );
   console.log("");
@@ -343,11 +341,38 @@ async function deleteHub(url: string) {
   try {
     const secretStore = await getSecretStore();
     const key = await secretStore.getKey(url);
-    if (key) {
-      await secretStore.deleteKey(url);
+
+    if (!key) {
+      console.error(chalk.red("✗ Hub not found"));
+      return;
     }
 
-    await secretStore.deleteDefault();
+    const defaultHub = await getDefaultHub();
+
+    await secretStore.deleteKey(url);
+
+    if (!defaultHub) {
+      return;
+    }
+
+    const isDefaultHub = getUrlOrigin(url) === getUrlOrigin(defaultHub);
+    if (isDefaultHub) {
+      await secretStore.deleteDefault();
+      const remainingHubs = await getHubs();
+
+      const nextHub = remainingHubs[0];
+      if (nextHub) {
+        await secretStore.setDefault(nextHub?.apiUrl);
+
+        console.log(
+          chalk.green(
+            `✓ Hub ${getUrlOrigin(url)} removed, switched to ${getUrlOrigin(nextHub?.apiUrl)}`,
+          ),
+        );
+        return;
+      }
+    }
+
     console.log(chalk.green(`✓ Hub ${getUrlOrigin(url)} removed`));
   } catch {
     console.error(chalk.red("✗ Failed to delete hub"));
@@ -367,7 +392,7 @@ async function printHubDetails(url: string) {
 
   printHubStatus({
     hub: getUrlOrigin(url),
-    status: isDefault ? "Connected" : "Not connected",
+    status: isDefault ? "Connected" : "Not Used",
     user: {
       name: userInfo?.user.fullName || "",
       did: userInfo?.user.did || "",

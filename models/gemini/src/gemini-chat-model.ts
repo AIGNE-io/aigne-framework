@@ -33,6 +33,7 @@ import {
   ThinkingLevel,
   type ToolListUnion,
 } from "@google/genai";
+import { parse } from "yaml";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
@@ -122,6 +123,11 @@ export class GeminiChatModel extends ChatModel {
 
   // References: https://ai.google.dev/gemini-api/docs/thinking#set-budget
   protected thinkingBudgetModelMap = [
+    // 注意：gemini-2.5-flash-image-preview 模型并不支持 thinking。see: https://github.com/CherryHQ/cherry-studio/issues/9614
+    {
+      pattern: /gemini-2.5-flash-image-preview/,
+      support: false,
+    },
     {
       pattern: /gemini-3(?!.*-image-)/,
       support: true,
@@ -200,7 +206,7 @@ export class GeminiChatModel extends ChatModel {
     input: ChatModelInput,
     options: AgentInvokeOptions,
   ): AgentProcessAsyncGenerator<ChatModelOutput> {
-    const modelOptions = await this.getModelOptions(input, options);
+    const { modelOptions = {} } = input;
 
     const model = modelOptions.model || this.credential.model;
     const { contents, config } = await this.buildContents(input, options);
@@ -305,6 +311,10 @@ export class GeminiChatModel extends ChatModel {
           usage.outputTokens =
             (chunk.usageMetadata.candidatesTokenCount || 0) +
             (chunk.usageMetadata.thoughtsTokenCount || 0);
+        // Parse cache statistics if available
+        if (chunk.usageMetadata.cachedContentTokenCount) {
+          usage.cacheReadInputTokens = chunk.usageMetadata.cachedContentTokenCount;
+        }
       }
     }
 
@@ -561,7 +571,7 @@ export class GeminiChatModel extends ChatModel {
               .find((c) => c?.id === msg.toolCallId);
             if (!call) throw new Error(`Tool call not found: ${msg.toolCallId}`);
 
-            const output = JSON.parse(msg.content as string);
+            const output = parse(msg.content as string);
 
             const isError = "error" in output && Boolean(input.error);
 

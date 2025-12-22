@@ -18,11 +18,22 @@ export interface RipgrepMatch {
   };
 }
 
-export async function searchWithRipgrep(basePath: string, query: string): Promise<RipgrepMatch[]> {
+export interface SearchOptions {
+  caseSensitive?: boolean;
+}
+
+export async function searchWithRipgrep(
+  basePath: string,
+  query: string,
+  options?: SearchOptions,
+): Promise<RipgrepMatch[]> {
   await ensureNativeDependenciesInstalled();
 
   return new Promise((resolve, reject) => {
     const args = ["--json", "--no-heading", "--with-filename", query, basePath];
+    if (!options?.caseSensitive) {
+      args.unshift("-i");
+    }
 
     const rg = spawn(rgPath, args);
     let output = "";

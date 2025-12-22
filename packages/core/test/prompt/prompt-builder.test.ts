@@ -8,7 +8,6 @@ import {
   AIGNE,
   ChatMessagesTemplate,
   FunctionAgent,
-  ImageAgent,
   MCPAgent,
   PromptBuilder,
   SystemMessageTemplate,
@@ -116,6 +115,7 @@ userContext.name: {{userContext.name}}
   expect(prompt2.messages).toMatchInlineSnapshot(`
     [
       {
+        "cacheControl": undefined,
         "content": 
     "Test instructions
 
@@ -430,9 +430,8 @@ test("PromptBuilder should build image prompt correctly", async () => {
   const builder = PromptBuilder.from("Draw an image about {{topic}}");
 
   expect(
-    await builder.buildImagePrompt({
+    await builder.buildPrompt({
       input: { topic: "a cat" },
-      agent: ImageAgent.from({ instructions: builder }),
     }),
   ).toEqual({
     prompt: "Draw an image about a cat",
@@ -450,7 +449,7 @@ test("PromptBuilder should build with afs correctly", async () => {
   const afs = new AFS().mount(new AFSHistory());
 
   spyOn(afs, "search").mockResolvedValueOnce({
-    list: [
+    data: [
       {
         id: "1",
         path: "/modules/history/1",
@@ -494,7 +493,8 @@ test("PromptBuilder should build with afs correctly", async () => {
     <afs_usage>
     AFS (Agentic File System) provides tools to interact with a virtual file system,
     allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
-    Use these tools to manage and retrieve files as needed.
+    You can use these tools to manage and retrieve files as needed.
+
 
     Provided modules:
     - path: /modules/history
@@ -536,6 +536,7 @@ test("PromptBuilder should build with afs correctly", async () => {
         "role": "system",
       },
       {
+        "cacheControl": undefined,
         "content": "User message is: Hello, I'm Bob, I'm from ArcBlock",
         "name": undefined,
         "role": "user",
@@ -544,7 +545,7 @@ test("PromptBuilder should build with afs correctly", async () => {
   `);
 
   const listSpy = spyOn(afs, "list").mockResolvedValueOnce({
-    list: [
+    data: [
       {
         id: "1",
         path: "/history/1",
@@ -592,7 +593,8 @@ test("PromptBuilder should build with afs correctly", async () => {
     <afs_usage>
     AFS (Agentic File System) provides tools to interact with a virtual file system,
     allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
-    Use these tools to manage and retrieve files as needed.
+    You can use these tools to manage and retrieve files as needed.
+
 
     Provided modules:
     - path: /modules/history
@@ -647,6 +649,7 @@ test("PromptBuilder should build with afs correctly", async () => {
           "role": "agent",
         },
         {
+          "cacheControl": undefined,
           "content": "User message is: Hello, I'm Bob, I'm from ArcBlock",
           "name": undefined,
           "role": "user",
@@ -660,7 +663,7 @@ test("PromptBuilder should build with afs correctly", async () => {
       "tools": [
         {
           "function": {
-            "description": "Browse directory contents in the AFS like filesystem ls/tree command - shows files and folders in the specified path",
+            "description": "Browse directory structure as a tree view. Use when exploring directory contents or understanding file organization.",
             "name": "afs_list",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -669,24 +672,33 @@ test("PromptBuilder should build with afs correctly", async () => {
                 "options": {
                   "additionalProperties": false,
                   "properties": {
-                    "limit": {
-                      "description": "Maximum number of entries to return",
+                    "disableGitignore": {
+                      "description": "Disable .gitignore filtering, default is enabled",
+                      "type": "boolean",
+                    },
+                    "format": {
+                      "default": "simple-list",
+                      "description": "Output format, either 'simple-list', or 'tree', default is 'simple-list'",
+                      "enum": [
+                        "simple-list",
+                        "tree",
+                      ],
+                      "type": "string",
+                    },
+                    "maxChildren": {
+                      "description": "Maximum number of children to list per directory",
                       "type": "number",
                     },
                     "maxDepth": {
-                      "description": "Maximum depth to list files",
+                      "description": "Tree depth limit (default: 1)",
                       "type": "number",
-                    },
-                    "recursive": {
-                      "description": "Whether to list files recursively",
-                      "type": "boolean",
                     },
                   },
                   "required": [],
                   "type": "object",
                 },
                 "path": {
-                  "description": "The directory path to browse (e.g., '/', '/docs', '/src')",
+                  "description": "Absolute directory path to browse",
                   "type": "string",
                 },
               },
@@ -700,7 +712,7 @@ test("PromptBuilder should build with afs correctly", async () => {
         },
         {
           "function": {
-            "description": "Find files by searching content using keywords - returns matching files with their paths",
+            "description": "Search file contents by keywords. Use when finding files containing specific text or code patterns.",
             "name": "afs_search",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -709,8 +721,12 @@ test("PromptBuilder should build with afs correctly", async () => {
                 "options": {
                   "additionalProperties": false,
                   "properties": {
+                    "caseSensitive": {
+                      "description": "Case-sensitive search (default: false)",
+                      "type": "boolean",
+                    },
                     "limit": {
-                      "description": "Maximum number of entries to return",
+                      "description": "Max results to return",
                       "type": "number",
                     },
                   },
@@ -718,11 +734,11 @@ test("PromptBuilder should build with afs correctly", async () => {
                   "type": "object",
                 },
                 "path": {
-                  "description": "The directory path to search in (e.g., '/', '/docs')",
+                  "description": "Absolute directory path to search in",
                   "type": "string",
                 },
                 "query": {
-                  "description": "Keywords to search for in file contents (e.g., 'function authentication', 'database config')",
+                  "description": "Search keywords or patterns",
                   "type": "string",
                 },
               },
@@ -737,15 +753,19 @@ test("PromptBuilder should build with afs correctly", async () => {
         },
         {
           "function": {
-            "description": "Read file contents from the AFS - path must be an exact file path from list or search results",
+            "description": "Read complete file contents. Use when you need to review, analyze, or understand file content before making changes.",
             "name": "afs_read",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
               "additionalProperties": false,
               "properties": {
                 "path": {
-                  "description": "Exact file path from list or search results (e.g., '/docs/api.md', '/src/utils/helper.js')",
+                  "description": "Absolute file path to read",
                   "type": "string",
+                },
+                "withLineNumbers": {
+                  "description": "Include line numbers in output (required when planning to edit the file)",
+                  "type": "boolean",
                 },
               },
               "required": [
@@ -758,18 +778,23 @@ test("PromptBuilder should build with afs correctly", async () => {
         },
         {
           "function": {
-            "description": "Create or update a file in the AFS with new content - overwrites existing files",
+            "description": "Create new file or append content to existing file. Use when creating files, rewriting entire files, or appending to files.",
             "name": "afs_write",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
               "additionalProperties": false,
               "properties": {
+                "append": {
+                  "default": false,
+                  "description": "Append mode: add content to end of file (default: false, overwrites file)",
+                  "type": "boolean",
+                },
                 "content": {
-                  "description": "The text content to write to the file",
+                  "description": "Complete file content or content to append",
                   "type": "string",
                 },
                 "path": {
-                  "description": "Full file path where to write content (e.g., '/docs/new-file.md', '/src/component.js')",
+                  "description": "Absolute file path to write",
                   "type": "string",
                 },
               },
@@ -784,18 +809,132 @@ test("PromptBuilder should build with afs correctly", async () => {
         },
         {
           "function": {
-            "description": "Execute a function or command available in the AFS modules",
+            "description": "Apply precise line-based patches to modify file content. Use when making targeted changes without rewriting the entire file.",
+            "name": "afs_edit",
+            "parameters": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false,
+              "properties": {
+                "patches": {
+                  "description": "List of patches to apply sequentially",
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "delete": {
+                        "description": "Delete mode: true to delete lines, false to replace",
+                        "type": "boolean",
+                      },
+                      "end_line": {
+                        "description": "End line number (0-based, exclusive)",
+                        "type": "integer",
+                      },
+                      "replace": {
+                        "description": "New content to replace the line range",
+                        "type": "string",
+                      },
+                      "start_line": {
+                        "description": "Start line number (0-based, inclusive)",
+                        "type": "integer",
+                      },
+                    },
+                    "required": [
+                      "start_line",
+                      "end_line",
+                      "delete",
+                    ],
+                    "type": "object",
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                },
+                "path": {
+                  "description": "Absolute file path to edit",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "path",
+                "patches",
+              ],
+              "type": "object",
+            },
+          },
+          "type": "function",
+        },
+        {
+          "function": {
+            "description": "Permanently delete files or directories. Use when removing unwanted files or cleaning up temporary data.",
+            "name": "afs_delete",
+            "parameters": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "description": "Absolute file or directory path to delete",
+                  "type": "string",
+                },
+                "recursive": {
+                  "default": false,
+                  "description": "Allow directory deletion (default: false, required for directories)",
+                  "type": "boolean",
+                },
+              },
+              "required": [
+                "path",
+              ],
+              "type": "object",
+            },
+          },
+          "type": "function",
+        },
+        {
+          "function": {
+            "description": "Rename or move files and directories. Use when reorganizing files, changing names, or moving to different locations.",
+            "name": "afs_rename",
+            "parameters": {
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false,
+              "properties": {
+                "newPath": {
+                  "description": "Absolute new file or directory path",
+                  "type": "string",
+                },
+                "oldPath": {
+                  "description": "Absolute current file or directory path",
+                  "type": "string",
+                },
+                "overwrite": {
+                  "default": false,
+                  "description": "Overwrite if destination exists (default: false)",
+                  "type": "boolean",
+                },
+              },
+              "required": [
+                "oldPath",
+                "newPath",
+              ],
+              "type": "object",
+            },
+          },
+          "type": "function",
+        },
+        {
+          "function": {
+            "description": 
+    "Execute files marked as executable in the Agentic File System (AFS).
+    Use this to run executable files registered at a given path with specified arguments."
+    ,
             "name": "afs_exec",
             "parameters": {
               "$schema": "http://json-schema.org/draft-07/schema#",
               "additionalProperties": false,
               "properties": {
                 "args": {
-                  "description": "JSON stringified arguments to pass to the executable, must be an object matching the input schema of the executable",
+                  "description": "JSON string of arguments matching the function's input schema",
                   "type": "string",
                 },
                 "path": {
-                  "description": "The exact path to the executable entry in AFS",
+                  "description": "Absolute path to the executable file in AFS",
                   "type": "string",
                 },
               },
@@ -831,16 +970,19 @@ test("PromptBuilder should refine system messages by config", async () => {
   expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
     [
       {
+        "cacheControl": undefined,
         "content": "System message 1",
         "name": undefined,
         "role": "system",
       },
       {
+        "cacheControl": undefined,
         "content": "System message 2",
         "name": undefined,
         "role": "system",
       },
       {
+        "cacheControl": undefined,
         "content": "User message 1",
         "name": undefined,
         "role": "user",
@@ -852,16 +994,19 @@ test("PromptBuilder should refine system messages by config", async () => {
   expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
     [
       {
+        "cacheControl": undefined,
         "content": "System message 1",
         "name": undefined,
         "role": "system",
       },
       {
+        "cacheControl": undefined,
         "content": "System message 2",
         "name": undefined,
         "role": "system",
       },
       {
+        "cacheControl": undefined,
         "content": "User message 1",
         "name": undefined,
         "role": "user",
@@ -880,9 +1025,148 @@ test("PromptBuilder should refine system messages by config", async () => {
         "role": "system",
       },
       {
+        "cacheControl": undefined,
         "content": "User message 1",
         "name": undefined,
         "role": "user",
+      },
+    ]
+  `);
+});
+
+test("PromptBuilder should support all builtin variables", async () => {
+  const builder = new PromptBuilder({
+    instructions: `\
+{% if $afs.enabled %}
+## AFS
+
+{{ $afs.description }}
+
+${"```"}yaml alt="$afs.histories"
+{{ $afs.histories | yaml.stringify }}
+${"```"}
+
+${"```"}yaml alt="$afs.modules"
+{{ $afs.modules | yaml.stringify }}
+${"```"}
+
+${"```"}yaml alt="$afs.skills"
+{{ $afs.skills | yaml.stringify }}
+${"```"}
+{% endif %}
+
+## Agent Skills
+${"```"}yaml alt="$agent.skills"
+{{ $agent.skills | yaml.stringify }}
+${"```"}
+`,
+  });
+
+  const afs = new AFS().mount(new AFSHistory());
+
+  const agent = AIAgent.from({
+    afs,
+    historyConfig: {
+      disabled: true,
+    },
+    skills: [
+      FunctionAgent.from({
+        name: "TestSkill1",
+        description: "Test skill 1 description",
+        process: () => ({}),
+      }),
+      FunctionAgent.from({
+        name: "TestSkill2",
+        description: "Test skill 2 description",
+        process: () => ({}),
+      }),
+    ],
+  });
+
+  spyOn(afs, "list").mockResolvedValue({
+    data: [
+      {
+        id: "1",
+        path: "/modules/history/1",
+        content: {
+          input: { message: "hello" },
+          output: { message: "Hello, How can I assist you today?" },
+        },
+      },
+    ],
+  });
+
+  expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": 
+    "
+    ## AFS
+
+    AFS (Agentic File System) provides tools to interact with a virtual file system,
+    allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
+    You can use these tools to manage and retrieve files as needed.
+
+
+    \`\`\`yaml alt="$afs.histories"
+    - role: user
+      content:
+        message: hello
+    - role: agent
+      content:
+        message: Hello, How can I assist you today?
+
+    \`\`\`
+
+    \`\`\`yaml alt="$afs.modules"
+    - path: /modules/history
+      name: history
+
+    \`\`\`
+
+    \`\`\`yaml alt="$afs.skills"
+    - name: afs_list
+      description: Browse directory structure as a tree view. Use when exploring
+        directory contents or understanding file organization.
+    - name: afs_search
+      description: Search file contents by keywords. Use when finding files containing
+        specific text or code patterns.
+    - name: afs_read
+      description: Read complete file contents. Use when you need to review, analyze,
+        or understand file content before making changes.
+    - name: afs_write
+      description: Create new file or append content to existing file. Use when
+        creating files, rewriting entire files, or appending to files.
+    - name: afs_edit
+      description: Apply precise line-based patches to modify file content. Use when
+        making targeted changes without rewriting the entire file.
+    - name: afs_delete
+      description: Permanently delete files or directories. Use when removing unwanted
+        files or cleaning up temporary data.
+    - name: afs_rename
+      description: Rename or move files and directories. Use when reorganizing files,
+        changing names, or moving to different locations.
+    - name: afs_exec
+      description: >-
+        Execute files marked as executable in the Agentic File System (AFS).
+
+        Use this to run executable files registered at a given path with specified
+        arguments.
+
+    \`\`\`
+
+
+    ## Agent Skills
+    \`\`\`yaml alt="$agent.skills"
+    - name: TestSkill1
+      description: Test skill 1 description
+    - name: TestSkill2
+      description: Test skill 2 description
+
+    \`\`\`
+    "
+    ,
+        "role": "system",
       },
     ]
   `);

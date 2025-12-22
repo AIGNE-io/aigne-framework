@@ -38,78 +38,9 @@ AIGNE は Agent を**ワークフロー**に編成します。ワークフロー
 
 以下の図は、AIGNE フレームワークが複雑なタスクをどのように分解し、Agent のチームを管理して最終的な結果を生成するかを示しています。
 
-```d2
-direction: down
-
-Complex-Task: {
-  label: "複雑な複数ステップのタスク"
-  shape: oval
-}
-
-AIGNE: {
-  label: "AIGNE フレームワーク"
-  icon: "https://www.arcblock.io/image-bin/uploads/89a24f04c34eca94f26c9dd30aec44fc.png"
-}
-
-Decomposition: {
-  label: "タスクをサブタスクに分解"
-  shape: rectangle
-  style: {
-    stroke-dash: 2
-  }
-}
-
-Orchestration-Patterns: {
-  label: "コラボレーションパターンを用いて Agent を編成"
-  grid-columns: 3
-  grid-gap: 50
-
-  Sequential-Workflow: {
-    label: "シーケンシャル (組み立てライン)"
-    shape: rectangle
-    direction: down
-    Researcher: "Researcher Agent"
-    Summarizer: "Summarizer Agent"
-    Report-Writer: "Report Writer Agent"
-  }
-
-  Parallel-Workflow: {
-    label: "パラレル (チームワーク)"
-    shape: rectangle
-    Task: "フィードバックを分析"
-    Agent-A: "ポジティブなものを処理"
-    Agent-B: "ネガティブなものを処理"
-  }
-
-  Routing-Workflow: {
-    label: "ルーティング (マネージャー)"
-    shape: rectangle
-    Request: "受信リクエスト"
-    Manager: {
-      label: "Manager Agent"
-      shape: diamond
-    }
-    Coder: "Coder Agent"
-    Writer: "Writer Agent"
-  }
-}
-
-Final-Goal: {
-  label: "一貫性のある完全な出力"
-  shape: oval
-}
-
-Complex-Task -> AIGNE: "入力"
-AIGNE -> Decomposition
-Decomposition -> Orchestration-Patterns
-Orchestration-Patterns -> Final-Goal: "出力"
-Orchestration-Patterns.Sequential-Workflow.Researcher -> Orchestration-Patterns.Sequential-Workflow.Summarizer -> Orchestration-Patterns.Sequential-Workflow.Report-Writer
-Orchestration-Patterns.Parallel-Workflow.Task -> Orchestration-Patterns.Parallel-Workflow.Agent-A
-Orchestration-Patterns.Parallel-Workflow.Task -> Orchestration-Patterns.Parallel-Workflow.Agent-B
-Orchestration-Patterns.Routing-Workflow.Request -> Orchestration-Patterns.Routing-Workflow.Manager
-Orchestration-Patterns.Routing-Workflow.Manager -> Orchestration-Patterns.Routing-Workflow.Coder: "ルート"
-Orchestration-Patterns.Routing-Workflow.Manager -> Orchestration-Patterns.Routing-Workflow.Writer: "ルート"
-```
+<!-- DIAGRAM_IMAGE_START:intro:16:9 -->
+![What is AIGNE?](assets/diagram/what-is-aigne-diagram-0.jpg)
+<!-- DIAGRAM_IMAGE_END -->
 
 一般的なワークフローパターンには以下が含まれます。
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.16-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.16-beta.3...gemini-v0.14.16-beta.4) (2025-12-22)
+
+
+### Bug Fixes
+
+* **models:** parallel tool calls for gemini model ([#844](https://github.com/AIGNE-io/aigne-framework/issues/844)) ([adfae33](https://github.com/AIGNE-io/aigne-framework/commit/adfae337709295b594a8f5da61213535d2ef61aa))
+
 ## [0.14.16-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.16-beta.2...gemini-v0.14.16-beta.3) (2025-12-19)
 
 

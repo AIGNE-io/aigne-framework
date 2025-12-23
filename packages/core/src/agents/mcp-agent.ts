@@ -137,6 +137,11 @@ export class MCPAgent extends Agent {
     parsed: object;
   }): Promise<Agent<I, O>> {
     const valid = await MCPAgent.schema().parseAsync(options.parsed);
+
+    if (!valid.url && !valid.command) {
+      throw new Error(`Missing url or command in mcp agent: ${options.filepath}`);
+    }
+
     return MCPAgent.from({
       ...options.parsed,
       ...valid,

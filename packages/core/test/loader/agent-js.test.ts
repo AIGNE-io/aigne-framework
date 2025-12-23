@@ -1,8 +1,8 @@
 import { expect, test } from "bun:test";
-import assert from "node:assert";
 import { resolve } from "node:path";
 import { loadAgentFromJsFile } from "@aigne/core/loader/agent-js.js";
 import type { AgentSchema } from "@aigne/core/loader/agent-yaml.js";
+import { pick } from "@aigne/core/utils/type-utils.js";
 import { mockModule } from "../_mocks/mock-module.js";
 
 test("loadAgentFromJs should error if agent.js file is invalid", async () => {
@@ -28,17 +28,13 @@ test("loadAgentFromJs should support construct agent from json data as yaml form
     {},
   )) as AgentSchema;
 
-  assert(agent.type === "ai");
-
-  expect(agent.name).toMatchInlineSnapshot(`"testJsonDefinitionAgent"`);
-  expect(agent.instructions?.map((i) => i.content)).toMatchInlineSnapshot(`
-    [
-      
-    "You are a helper agent to answer everything about chat prompt in AIGNE.
-
-    {% include "language_instruction.txt" %}
-    "
-    ,
-    ]
+  expect(pick(agent as any, "type", "name", "instructions")).toMatchInlineSnapshot(`
+    {
+      "instructions": {
+        "url": "./chat-prompt.md",
+      },
+      "name": "testJsonDefinitionAgent",
+      "type": "ai",
+    }
   `);
 });

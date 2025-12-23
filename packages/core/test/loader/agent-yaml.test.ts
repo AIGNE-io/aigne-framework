@@ -96,16 +96,28 @@ args: ["-y", "@modelcontextprotocol/server-filesystem", "."]
 `),
     );
 
-  expect(await loadAgentFromYamlFile("./remote-mcp.yaml", {})).toEqual({
-    type: "mcp",
-    url: "http://localhost:3000/sse",
-  });
+  expect(await loadAgentFromYamlFile("./remote-mcp.yaml", {})).toMatchInlineSnapshot(`
+    {
+      "model": undefined,
+      "skills": undefined,
+      "type": "mcp",
+      "url": "http://localhost:3000/sse",
+    }
+  `);
 
-  expect(await loadAgentFromYamlFile("./local-mcp.yaml", {})).toEqual({
-    type: "mcp",
-    command: "npx",
-    args: ["-y", "@modelcontextprotocol/server-filesystem", "."],
-  });
+  expect(await loadAgentFromYamlFile("./local-mcp.yaml", {})).toMatchInlineSnapshot(`
+    {
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        ".",
+      ],
+      "command": "npx",
+      "model": undefined,
+      "skills": undefined,
+      "type": "mcp",
+    }
+  `);
 });
 
 test("loadAgentFromYaml should load TeamAgent correctly", async () => {

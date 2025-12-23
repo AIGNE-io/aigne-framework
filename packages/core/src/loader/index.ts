@@ -44,7 +44,7 @@ export interface LoadOptions {
     availableModules?: {
       module: string;
       alias?: string[];
-      create: (options?: Record<string, any>) => PromiseOrValue<AFSModule>;
+      load: (options: { filepath: string; parsed?: object }) => PromiseOrValue<AFSModule>;
     }[];
   };
   aigne?: z.infer<typeof aigneFileSchema>;
@@ -270,7 +270,10 @@ export async function parseAgent(
       );
       if (!mod) throw new Error(`AFS module not found: ${typeof m === "string" ? m : m.module}`);
 
-      const module = await mod.create(typeof m === "string" ? {} : m.options);
+      const module = await mod.load({
+        filepath: path,
+        parsed: typeof m === "string" ? {} : m.options,
+      });
 
       afs.mount(module);
     }

@@ -330,8 +330,8 @@ test("loadAgentFromYaml should load AIAgent with AFS correctly", async () => {
   const agent = await loadAgent(join(import.meta.dirname, "../../test-agents/test-afs.yaml"), {
     afs: {
       availableModules: [
-        { module: "history", create: (options) => ({ name: "AFSHistory", options }) },
-        { module: "local-fs", create: (options) => ({ name: "AFSLocalFS", options }) },
+        { module: "history", load: (options) => ({ name: "AFSHistory", options }) },
+        { module: "local-fs", load: (options) => ({ name: "AFSLocalFS", options }) },
       ],
     },
   });

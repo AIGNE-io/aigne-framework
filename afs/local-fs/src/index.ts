@@ -1,5 +1,5 @@
 import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import type {
   AFSDeleteOptions,
   AFSDeleteResult,
@@ -16,6 +16,7 @@ import type {
   AFSWriteOptions,
   AFSWriteResult,
 } from "@aigne/afs";
+import { optionalize } from "@aigne/core/loader/schema.js";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import ignore from "ignore";
 import { minimatch } from "minimatch";
@@ -32,13 +33,33 @@ export interface LocalFSOptions {
 }
 
 const localFSOptionsSchema = z.object({
-  name: z.string().nullish(),
+  name: optionalize(z.string()),
   localPath: z.string().describe("The path to the local directory to mount"),
-  description: z.string().describe("A description of the mounted directory").nullish(),
-  ignore: z.array(z.string()).nullish(),
+  description: optionalize(z.string().describe("A description of the mounted directory")),
+  ignore: optionalize(z.array(z.string())),
 });
 
 export class LocalFS implements AFSModule {
+  static schema() {
+    return localFSOptionsSchema;
+  }
+
+  static async load({ filepath, parsed }: { filepath: string; parsed?: object }) {
+    const valid = await LocalFS.schema().parseAsync(parsed);
+
+    let localPath: string;
+
+    if (valid.localPath === ".") {
+      localPath = process.cwd();
+    } else {
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: explicitly replace ${CWD}
+      localPath = valid.localPath.replaceAll("${CWD}", process.cwd());
+      if (!isAbsolute(localPath)) localPath = join(dirname(filepath), localPath);
+    }
+
+    return new LocalFS({ ...valid, localPath });
+  }
+
   constructor(public options: LocalFSOptions) {
     checkArguments("LocalFS", localFSOptionsSchema, {
       ...options,

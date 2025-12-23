@@ -67,7 +67,7 @@ export interface OrchestratorAgentOptions<I extends Message = Message, O extends
 }
 
 export interface LoadOrchestratorAgentOptions {
-  objective?: Instructions;
+  objective?: string | Instructions;
 
   planner?: NestAgentSchema;
 
@@ -153,8 +153,8 @@ export class OrchestratorAgent<
     options,
   }: {
     filepath: string;
-    parsed: AgentOptions<I, O>;
-    options: AgentLoadOptions;
+    parsed: LoadOrchestratorAgentOptions & AgentOptions<I, O>;
+    options?: AgentLoadOptions;
   }): Promise<OrchestratorAgent<I, O>> {
     const valid = await OrchestratorAgent.schema<LoadOrchestratorAgentOptions>({
       filepath,
@@ -162,23 +162,23 @@ export class OrchestratorAgent<
 
     return new OrchestratorAgent({
       ...parsed,
-      objective: valid.objective && instructionsToPromptBuilder(valid.objective),
+      objective: valid.objective ? instructionsToPromptBuilder(valid.objective) : undefined,
       planner: valid.planner
-        ? ((await options.loadNestAgent(filepath, valid.planner, options, {
+        ? ((await options?.loadNestAgent(filepath, valid.planner, options, {
             ...defaultPlannerOptions,
             afs: parsed.afs,
             skills: parsed.skills,
           })) as OrchestratorAgent["planner"])
         : undefined,
       worker: valid.worker
-        ? ((await options.loadNestAgent(filepath, valid.worker, options, {
+        ? ((await options?.loadNestAgent(filepath, valid.worker, options, {
             ...defaultWorkerOptions,
             afs: parsed.afs,
             skills: parsed.skills,
           })) as OrchestratorAgent["worker"])
         : undefined,
       completer: valid.completer
-        ? ((await options.loadNestAgent(filepath, valid.completer, options, {
+        ? ((await options?.loadNestAgent(filepath, valid.completer, options, {
             ...defaultCompleterOptions,
             outputSchema: parsed.outputSchema,
             afs: parsed.afs,

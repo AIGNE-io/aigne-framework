@@ -87,6 +87,7 @@ export interface AgentSchema {
         context?: AFSContextSchema;
       });
   shareAFS?: boolean;
+  [key: string]: unknown;
 }
 
 export async function parseAgentFile(

@@ -213,15 +213,18 @@ export const getInstructionsSchema = ({ filepath }: { filepath: string }) =>
       return [await parseInstructionItem({ filepath })(v)];
     }) as unknown as ZodType<Instructions>;
 
-export function instructionsToPromptBuilder(instructions: Instructions) {
+export function instructionsToPromptBuilder(instructions: Instructions | string) {
   return new PromptBuilder({
-    instructions: ChatMessagesTemplate.from(
-      parseChatMessages(
-        instructions.map((i) => ({
-          ...i,
-          options: { workingDir: nodejs.path.dirname(i.path) },
-        })),
-      ),
-    ),
+    instructions:
+      typeof instructions === "string"
+        ? instructions
+        : ChatMessagesTemplate.from(
+            parseChatMessages(
+              instructions.map((i) => ({
+                ...i,
+                options: { workingDir: nodejs.path.dirname(i.path) },
+              })),
+            ),
+          ),
   });
 }

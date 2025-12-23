@@ -45,7 +45,7 @@ export class LocalFS implements AFSModule {
   }
 
   static async load({ filepath, parsed }: { filepath: string; parsed?: object }) {
-    const valid = await LocalFS.schema().parseAsync(parsed);
+    const valid = await LocalFS.schema().passthrough().parseAsync(parsed);
 
     let localPath: string;
 

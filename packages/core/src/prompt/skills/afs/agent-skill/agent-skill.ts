@@ -29,7 +29,8 @@ export class AgentSkill extends Agent<SkillToolInput, SkillToolOutput> {
       description: `\
 Execute a skill within the main conversation
 
-<skills_instructions> When users ask you to perform tasks, check if any of the available skills below can help complete the task more effectively. Skills provide specialized capabilities and domain knowledge.
+<skills_instructions>
+When users ask you to perform tasks, check if any of the available skills below can help complete the task more effectively. Skills provide specialized capabilities and domain knowledge.
 
 When users ask you to run a "slash command" or reference "/" (e.g., "/commit", "/review-pr"), they are referring to a skill. Use this tool to invoke the corresponding skill.
 
@@ -45,8 +46,12 @@ NEVER just announce or mention a skill in your text response without actually ca
 This is a BLOCKING REQUIREMENT: invoke the relevant Skill tool BEFORE generating any other response about the task
 Only use skills listed in <available_skills> below
 Do not invoke a skill that is already running
-Do not use this tool for built-in CLI commands (like /help, /clear, etc.) </skills_instructions>
-<available_skills> ${options.agentSkills.map((s) => `${s.name}: ${s.description}`).join("\n\n")} </available_skills>
+Do not use this tool for built-in CLI commands (like /help, /clear, etc.)
+</skills_instructions>
+
+<available_skills>
+${options.agentSkills.map((s) => `${s.name}: ${s.description}`).join("\n\n")}
+</available_skills>
 `,
       inputSchema: skillToolInputSchema,
     });

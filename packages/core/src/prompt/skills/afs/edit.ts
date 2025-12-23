@@ -30,22 +30,52 @@ export class AFSEditAgent extends AFSSkillBase<AFSEditInput, AFSEditOutput> {
   constructor(options: AFSEditAgentOptions) {
     super({
       name: "afs_edit",
-      description:
-        "Apply precise line-based patches to modify file content. Use when making targeted changes without rewriting the entire file.",
+      description: `Apply precise line-based patches to modify files in the Agentic File System (AFS)
+- Performs targeted edits using line numbers without rewriting the entire file
+- Supports both replacing and deleting line ranges
+- Multiple patches can be applied in a single operation
+
+Usage:
+- The path must be an absolute AFS path starting with "/" (e.g., "/docs/readme.md")
+- This is NOT a local system file path - it operates within the AFS virtual file system
+- IMPORTANT: You MUST use afs_read with withLineNumbers=true before editing to get accurate line numbers
+- Line numbers are 0-based: first line is 0, second line is 1, etc.
+- The range [start_line, end_line) is exclusive on end_line`,
       ...options,
       inputSchema: z.object({
-        path: z.string().describe("Absolute file path to edit"),
+        path: z
+          .string()
+          .describe(
+            "Absolute AFS path to the file to edit (e.g., '/docs/readme.md'). Must start with '/'",
+          ),
         patches: z
           .array(
             z.object({
-              start_line: z.number().int().describe("Start line number (0-based, inclusive)"),
-              end_line: z.number().int().describe("End line number (0-based, exclusive)"),
-              replace: z.string().optional().describe("New content to replace the line range"),
-              delete: z.boolean().describe("Delete mode: true to delete lines, false to replace"),
+              start_line: z
+                .number()
+                .int()
+                .describe("Start line number (0-based, inclusive). First line is 0"),
+              end_line: z
+                .number()
+                .int()
+                .describe(
+                  "End line number (0-based, exclusive). To edit line 5 only, use start_line=5, end_line=6",
+                ),
+              replace: z
+                .string()
+                .optional()
+                .describe("New content to insert. Omit when delete=true"),
+              delete: z
+                .boolean()
+                .describe(
+                  "Set to true to delete the line range. Set to false to replace with 'replace' content",
+                ),
             }),
           )
           .min(1)
-          .describe("List of patches to apply sequentially"),
+          .describe(
+            "Array of patches to apply. Each patch specifies a line range and the operation (delete or replace)",
+          ),
       }),
       outputSchema: z.object({
         status: z.string(),

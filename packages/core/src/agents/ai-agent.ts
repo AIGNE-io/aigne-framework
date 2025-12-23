@@ -587,7 +587,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         if (this.keepTextInToolUses !== true) {
           yield { delta: { json: { [outputKey]: "" } as Partial<O> } };
         } else {
-          yield { delta: { text: { [outputKey]: "\n" } } };
+          yield { delta: { text: { [outputKey]: "\n\n" } } };
         }
 
         const executedToolCalls: {

@@ -121,14 +121,15 @@ export class BashAgent extends Agent<BashAgentInput, BashAgentOutput> {
     parsed: LoadBashAgentOptions;
     options?: LoadOptions;
   }) {
-    const parsed = await BashAgent.schema(options).parseAsync(options.parsed);
+    const valid = await BashAgent.schema(options).parseAsync(options.parsed);
 
     return new BashAgent({
-      ...parsed,
+      ...options.parsed,
+      ...valid,
       permissions: {
-        ...parsed.permissions,
-        guard: parsed.permissions?.guard
-          ? await loadNestAgent(options.filepath, parsed.permissions.guard, options.options ?? {}, {
+        ...valid.permissions,
+        guard: valid.permissions?.guard
+          ? await loadNestAgent(options.filepath, valid.permissions.guard, options.options ?? {}, {
               outputSchema: z.object({
                 approved: z.boolean().describe("Whether the command is approved by the user."),
                 reason: z.string().describe("Optional reason for rejection.").optional(),

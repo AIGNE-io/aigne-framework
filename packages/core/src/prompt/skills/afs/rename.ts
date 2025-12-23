@@ -24,17 +24,32 @@ export class AFSRenameAgent extends AFSSkillBase<AFSRenameInput, AFSRenameOutput
   constructor(options: AFSRenameAgentOptions) {
     super({
       name: "afs_rename",
-      description:
-        "Rename or move files and directories. Use when reorganizing files, changing names, or moving to different locations.",
+      description: `Rename or move files and directories within the Agentic File System (AFS)
+- Renames a file or directory to a new name
+- Can also move files/directories to a different location
+- Optionally overwrites existing files at the destination
+
+Usage:
+- Both paths must be absolute AFS paths starting with "/" (e.g., "/docs/old-name.md" -> "/docs/new-name.md")
+- This is NOT a local system file path - it operates within the AFS virtual file system
+- To move a file, specify a different directory in newPath (e.g., "/docs/file.md" -> "/archive/file.md")
+- If newPath already exists, the operation will fail unless overwrite=true
+- Moving directories moves all contents recursively`,
       ...options,
       inputSchema: z.object({
-        oldPath: z.string().describe("Absolute current file or directory path"),
-        newPath: z.string().describe("Absolute new file or directory path"),
+        oldPath: z
+          .string()
+          .describe("Current absolute AFS path (e.g., '/docs/old-name.md'). Must start with '/'"),
+        newPath: z
+          .string()
+          .describe("New absolute AFS path (e.g., '/docs/new-name.md'). Must start with '/'"),
         overwrite: z
           .boolean()
           .optional()
           .default(false)
-          .describe("Overwrite if destination exists (default: false)"),
+          .describe(
+            "Set to true to overwrite if destination already exists. Default: false (fails if exists)",
+          ),
       }),
       outputSchema: z.object({
         status: z.string(),

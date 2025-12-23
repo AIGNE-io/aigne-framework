@@ -296,8 +296,6 @@ export class GeminiChatModel extends ChatModel {
                 }
 
                 toolCalls.push(toolCall);
-
-                yield { delta: { json: { toolCalls } } };
               }
             }
           }
@@ -318,6 +316,9 @@ export class GeminiChatModel extends ChatModel {
       }
     }
 
+    if (toolCalls.length) {
+      yield { delta: { json: { toolCalls } } };
+    }
     if (input.responseFormat?.type === "json_schema") {
       if (json) {
         yield { delta: { json: { json } } };

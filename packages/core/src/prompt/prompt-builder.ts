@@ -29,10 +29,7 @@ import {
   unique,
 } from "../utils/type-utils.js";
 import { createPromptBuilderContext } from "./context/index.js";
-import {
-  AFS_EXECUTABLE_TOOLS_PROMPT_TEMPLATE,
-  getAFSSystemPrompt,
-} from "./prompts/afs-builtin-prompt.js";
+import { AFS_EXECUTABLE_TOOLS_PROMPT_TEMPLATE } from "./prompts/afs-builtin-prompt.js";
 import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
 import { getAFSSkills } from "./skills/afs/index.js";
@@ -208,8 +205,6 @@ export class PromptBuilder {
 
     if (afs && options.agent?.historyConfig?.disabled !== true) {
       const historyModule = (await afs.listModules()).find((m) => m.module instanceof AFSHistory);
-
-      messages.push(await SystemMessageTemplate.from(await getAFSSystemPrompt(afs)).format({}));
 
       if (historyModule) {
         const history = await afs.list(historyModule.path, {

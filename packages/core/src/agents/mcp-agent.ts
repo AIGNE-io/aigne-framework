@@ -22,6 +22,7 @@ import type {
 } from "@modelcontextprotocol/sdk/types.js";
 import type { RetryContext } from "p-retry";
 import { type ZodType, z } from "zod";
+import { optionalize } from "../loader/schema.js";
 import { logger } from "../utils/logger.js";
 import {
   promptFromMCPPrompt,
@@ -122,6 +123,25 @@ function getMCPServerString(options: MCPAgentOptions | MCPServerOptions): string
  */
 export class MCPAgent extends Agent {
   override tag = "MCPAgent";
+
+  static schema() {
+    return z.object({
+      url: optionalize(z.string()),
+      command: optionalize(z.string()),
+      args: optionalize(z.array(z.string())),
+    });
+  }
+
+  static override async load<I extends Message = any, O extends Message = any>(options: {
+    filepath: string;
+    parsed: object;
+  }): Promise<Agent<I, O>> {
+    const valid = await MCPAgent.schema().parseAsync(options.parsed);
+    return MCPAgent.from({
+      ...options.parsed,
+      ...valid,
+    } as any) as any;
+  }
 
   /**
    * Create an MCPAgent from a connection to an SSE server.

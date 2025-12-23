@@ -20,6 +20,7 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 import type { AgentEvent, Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import type { ContextUsage } from "../aigne/usage.js";
+import { codeToFunctionAgentFn } from "../loader/function-agent.js";
 import type { Memory, MemoryAgent } from "../memory/memory.js";
 import type { MemoryRecorderInput } from "../memory/recorder.js";
 import type { MemoryRetrieverInput } from "../memory/retriever.js";
@@ -1670,6 +1671,26 @@ export class FunctionAgent<I extends Message = Message, O extends Message = Mess
   O
 > {
   override tag = "FunctionAgent";
+
+  static schema() {
+    return z.object({
+      process: z.preprocess(
+        (v) => (typeof v === "string" ? codeToFunctionAgentFn(v) : v),
+        z.custom<FunctionAgentFn>(),
+      ) as ZodType<FunctionAgentFn>,
+    });
+  }
+
+  static override async load<I extends Message = any, O extends Message = any>(options: {
+    filepath: string;
+    parsed: object;
+  }): Promise<Agent<I, O>> {
+    const valid = await FunctionAgent.schema().parseAsync(options.parsed);
+    return new FunctionAgent<I, O>({
+      ...options.parsed,
+      process: valid.process,
+    });
+  }
 
   /**
    * Create a function agent from a function or options

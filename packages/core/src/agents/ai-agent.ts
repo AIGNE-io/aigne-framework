@@ -1,4 +1,11 @@
 import { type ZodObject, type ZodType, z } from "zod";
+import {
+  camelizeSchema,
+  getInstructionsSchema,
+  type Instructions,
+  instructionsToPromptBuilder,
+  optionalize,
+} from "../loader/schema.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "../prompt/prompts/structured-stream-instructions.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
@@ -254,6 +261,53 @@ export const aiAgentOptionsSchema: ZodObject<{
  */
 export class AIAgent<I extends Message = any, O extends Message = any> extends Agent<I, O> {
   override tag = "AIAgent";
+
+  static schema<T>({ filepath }: { filepath: string }): ZodType<T> {
+    const instructionsSchema = getInstructionsSchema({ filepath });
+
+    return camelizeSchema(
+      z.object({
+        instructions: optionalize(instructionsSchema),
+        autoReorderSystemMessages: optionalize(z.boolean()),
+        autoMergeSystemMessages: optionalize(z.boolean()),
+        inputKey: optionalize(z.string()),
+        outputKey: optionalize(z.string()),
+        inputFileKey: optionalize(z.string()),
+        outputFileKey: optionalize(z.string()),
+        toolChoice: optionalize(z.nativeEnum(AIAgentToolChoice)),
+        toolCallsConcurrency: optionalize(z.number().int().min(0)),
+        keepTextInToolUses: optionalize(z.boolean()),
+        catchToolsError: optionalize(z.boolean()),
+        structuredStreamMode: optionalize(z.boolean()),
+      }),
+    ) as any;
+  }
+
+  static override async load<I extends Message = any, O extends Message = any>(options: {
+    filepath: string;
+    parsed: object;
+  }): Promise<Agent<I, O>> {
+    interface AIAgentLoadSchema {
+      instructions?: Instructions;
+      autoReorderSystemMessages?: boolean;
+      autoMergeSystemMessages?: boolean;
+      inputKey?: string;
+      inputFileKey?: string;
+      outputKey?: string;
+      outputFileKey?: string;
+      toolChoice?: AIAgentToolChoice;
+      toolCallsConcurrency?: number;
+      keepTextInToolUses?: boolean;
+    }
+
+    const schema = AIAgent.schema<AIAgentLoadSchema>(options);
+    const valid = await schema.parseAsync(options.parsed);
+    return new AIAgent<I, O>({
+      ...options.parsed,
+      ...valid,
+      instructions: valid.instructions && instructionsToPromptBuilder(valid.instructions),
+    });
+  }
 
   /**
    * Create an AIAgent with the specified options

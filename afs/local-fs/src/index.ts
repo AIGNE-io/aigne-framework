@@ -18,6 +18,7 @@ import type {
 } from "@aigne/afs";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import ignore from "ignore";
+import { minimatch } from "minimatch";
 import { z } from "zod";
 import { searchWithRipgrep } from "./utils/ripgrep.js";
 
@@ -60,6 +61,7 @@ export class LocalFS implements AFSModule {
       typeof options?.maxChildren === "number" ? options.maxChildren : Number.MAX_SAFE_INTEGER;
     const maxDepth = options?.maxDepth ?? 1;
     const disableGitignore = options?.disableGitignore ?? false;
+    const pattern = options?.pattern;
     const basePath = join(this.options.localPath, path);
 
     // Validate maxChildren
@@ -133,7 +135,11 @@ export class LocalFS implements AFSModule {
         },
       };
 
-      entries.push(entry);
+      // Apply pattern filter if specified
+      const matchesPattern = !pattern || minimatch(relativePath, pattern, { matchBase: true });
+      if (matchesPattern) {
+        entries.push(entry);
+      }
 
       // Check if we'll hit the limit after adding this entry
       if (entries.length >= limit) {

@@ -1048,3 +1048,208 @@ test("LocalFS should use custom ignore patterns and default ignore .git when no 
   // Cleanup
   await rm(noGitignoreDir, { recursive: true, force: true });
 });
+
+// Pattern tests
+test("LocalFS should filter files by simple pattern", async () => {
+  const result = await localFS.list("", { maxDepth: 10, pattern: "*.txt" });
+  const paths = result.data.map((entry) => entry.path);
+
+  // Should only include .txt files
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/caseTest.txt",
+      "/file1.txt",
+      "/newfile.txt",
+      "/searchable.txt",
+      "/deep/nested/test.txt",
+    ]
+  `);
+});
+
+test("LocalFS should filter files by extension pattern with matchBase", async () => {
+  const result = await localFS.list("", { maxDepth: 10, pattern: "*.js" });
+  const paths = result.data.map((entry) => entry.path);
+
+  // Should match .js files at any depth due to matchBase: true
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/subdir/file3.js",
+    ]
+  `);
+});
+
+test("LocalFS should filter files by glob pattern with **", async () => {
+  const result = await localFS.list("", { maxDepth: 10, pattern: "**/*.json" });
+  const paths = result.data.map((entry) => entry.path);
+
+  // Should match nested .json files
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/data.json",
+      "/subdir/nested/file4.json",
+    ]
+  `);
+});
+
+test("LocalFS should filter files by exact filename pattern", async () => {
+  const result = await localFS.list("", { maxDepth: 10, pattern: "file1.txt" });
+  const paths = result.data.map((entry) => entry.path);
+
+  // Should only match file1.txt
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/file1.txt",
+    ]
+  `);
+});
+
+test("LocalFS should return empty results when pattern matches nothing", async () => {
+  const result = await localFS.list("", { maxDepth: 10, pattern: "*.nonexistent" });
+  const paths = result.data.map((entry) => entry.path);
+
+  // Should only contain root directory (or be empty depending on implementation)
+  expect(paths).toMatchInlineSnapshot(`[]`);
+});
+
+test("LocalFS should combine pattern with maxDepth", async () => {
+  // Create a deep nested structure for this test
+  const patternDir = join(tmpdir(), `pattern-depth-test-${Date.now()}`);
+  await mkdir(patternDir, { recursive: true });
+  await mkdir(join(patternDir, "level1", "level2"), { recursive: true });
+
+  await writeFile(join(patternDir, "root.ts"), "root");
+  await writeFile(join(patternDir, "level1", "l1.ts"), "level1");
+  await writeFile(join(patternDir, "level1", "level2", "l2.ts"), "level2");
+
+  const patternFS = new LocalFS({ localPath: patternDir });
+
+  // With maxDepth: 1, should only find root.ts
+  const result1 = await patternFS.list("", { maxDepth: 1, pattern: "*.ts" });
+  const paths1 = result1.data.map((e) => e.path);
+  expect(paths1).toMatchInlineSnapshot(`
+    [
+      "/root.ts",
+    ]
+  `);
+
+  // With maxDepth: 2, should find root.ts and l1.ts
+  const result2 = await patternFS.list("", { maxDepth: 2, pattern: "*.ts" });
+  const paths2 = result2.data.map((e) => e.path);
+  expect(paths2).toMatchInlineSnapshot(`
+    [
+      "/root.ts",
+      "/level1/l1.ts",
+    ]
+  `);
+
+  // Cleanup
+  await rm(patternDir, { recursive: true, force: true });
+});
+
+test("LocalFS should combine pattern with limit", async () => {
+  // Create multiple matching files
+  const patternDir = join(tmpdir(), `pattern-limit-test-${Date.now()}`);
+  await mkdir(patternDir, { recursive: true });
+
+  for (let i = 0; i < 10; i++) {
+    await writeFile(join(patternDir, `file${i}.ts`), `content ${i}`);
+  }
+
+  const patternFS = new LocalFS({ localPath: patternDir });
+
+  // With limit: 3 and pattern, should only return 3 matching entries
+  const result = await patternFS.list("", { limit: 3, pattern: "*.ts" });
+  expect(result.data.length).toMatchInlineSnapshot(`3`);
+
+  // Cleanup
+  await rm(patternDir, { recursive: true, force: true });
+});
+
+test("LocalFS should match directories with pattern", async () => {
+  const result = await localFS.list("", { maxDepth: 10, pattern: "**/nested" });
+  const paths = result.data.map((entry) => entry.path);
+
+  // Should match the nested directory
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/deep/nested",
+      "/subdir/nested",
+    ]
+  `);
+});
+
+test("LocalFS should support brace expansion pattern", async () => {
+  const result = await localFS.list("", { maxDepth: 10, pattern: "*.{txt,md}" });
+  const paths = result.data.map((entry) => entry.path);
+
+  // Should match both .txt and .md files
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/caseTest.txt",
+      "/file1.txt",
+      "/file2.md",
+      "/newfile.txt",
+      "/searchable.txt",
+      "/deep/nested/test.txt",
+    ]
+  `);
+});
+
+test("LocalFS should combine pattern with gitignore", async () => {
+  const patternDir = join(tmpdir(), `pattern-gitignore-test-${Date.now()}`);
+  await mkdir(patternDir, { recursive: true });
+  await mkdir(join(patternDir, ".git"), { recursive: true });
+
+  await writeFile(join(patternDir, ".gitignore"), "ignored.ts\n");
+  await writeFile(join(patternDir, "included.ts"), "included");
+  await writeFile(join(patternDir, "ignored.ts"), "ignored");
+  await writeFile(join(patternDir, "other.js"), "other");
+
+  const patternFS = new LocalFS({ localPath: patternDir });
+
+  const result = await patternFS.list("", { pattern: "*.ts" });
+  const paths = result.data.map((e) => e.path);
+
+  // Should match .ts files but respect gitignore
+  expect(paths).toMatchInlineSnapshot(`
+    [
+      "/included.ts",
+    ]
+  `);
+
+  // Cleanup
+  await rm(patternDir, { recursive: true, force: true });
+});
+
+test("LocalFS should match all files under a specific directory", async () => {
+  // Test **/subdir/* - direct children of any subdir
+  const result1 = await localFS.list("", { maxDepth: 10, pattern: "**/subdir/*" });
+  const paths1 = result1.data.map((entry) => entry.path);
+  expect(paths1).toMatchInlineSnapshot(`
+    [
+      "/subdir/file3.js",
+      "/subdir/nested",
+    ]
+  `);
+
+  // Test **/subdir/** - all descendants of any subdir
+  const result2 = await localFS.list("", { maxDepth: 10, pattern: "**/subdir/**" });
+  const paths2 = result2.data.map((entry) => entry.path);
+  expect(paths2).toMatchInlineSnapshot(`
+    [
+      "/subdir/file3.js",
+      "/subdir/nested",
+      "/subdir/nested/file4.json",
+    ]
+  `);
+
+  // Test **/nested/** - all descendants of any nested directory
+  const result3 = await localFS.list("", { maxDepth: 10, pattern: "**/nested/**" });
+  const paths3 = result3.data.map((entry) => entry.path);
+  expect(paths3).toMatchInlineSnapshot(`
+    [
+      "/deep/nested/test.txt",
+      "/subdir/nested/file4.json",
+    ]
+  `);
+});

@@ -1,0 +1,81 @@
+project:
+  title: "@aigne/cli"
+  description: "Command-line interface for the AIGNE Framework"
+
+documents:
+  - title: "Introduction"
+    description: "Overview, features, and installation guide."
+    path: "/introduction.md"
+    sourcePaths:
+      - "README.md"
+    icon: "lucide:book-open"
+
+  - title: "Getting Started"
+    description: "Create your first project and run an agent."
+    path: "/getting-started.md"
+    sourcePaths:
+      - "README.md"
+      - "src/commands/create.ts"
+    icon: "lucide:rocket"
+
+  - title: "Command Reference"
+    description: "Detailed documentation for all CLI commands."
+    path: "/commands/index.md"
+    sourcePaths:
+      - "src/cli.ts"
+    icon: "lucide:terminal"
+    children:
+      - title: "create"
+        description: "Create a new AIGNE project."
+        path: "/commands/create.md"
+        sourcePaths:
+          - "src/commands/create.ts"
+      - title: "run"
+        description: "Run an agent locally."
+        path: "/commands/run.md"
+        sourcePaths:
+          - "src/commands/run.ts"
+      - title: "test"
+        description: "Run tests for agents."
+        path: "/commands/test.md"
+        sourcePaths:
+          - "src/commands/test.ts"
+      - title: "serve-mcp"
+        description: "Serve agents as MCP server."
+        path: "/commands/serve-mcp.md"
+        sourcePaths:
+          - "src/commands/serve-mcp.ts"
+      - title: "observe"
+        description: "Start observability service."
+        path: "/commands/observe.md"
+        sourcePaths:
+          - "src/commands/observe.ts"
+      - title: "deploy"
+        description: "Deploy agents."
+        path: "/commands/deploy.md"
+        sourcePaths:
+          - "src/commands/deploy.ts"
+      - title: "eval"
+        description: "Evaluate agents."
+        path: "/commands/eval.md"
+        sourcePaths:
+          - "src/commands/eval.ts"
+      - title: "hub"
+        description: "Interact with AIGNE Hub."
+        path: "/commands/hub.md"
+        sourcePaths:
+          - "src/commands/hub.ts"
+      - title: "app"
+        description: "App management commands."
+        path: "/commands/app.md"
+        sourcePaths:
+          - "src/commands/app.ts"
+          - "src/commands/app/app.ts"
+
+  - title: "Contributing"
+    description: "Guide for developers contributing to the CLI."
+    path: "/contributing.md"
+    sourcePaths:
+      - "package.json"
+      - "test/README.md"
+    icon: "lucide:git-pull-request"

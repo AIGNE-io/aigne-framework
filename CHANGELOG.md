@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.91.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.4...aigne-framework-v1.91.0-beta.5) (2025-12-24)
+
+
+### Features
+
+* add Agent Skill support ([#787](https://github.com/AIGNE-io/aigne-framework/issues/787)) ([f04fbe7](https://github.com/AIGNE-io/aigne-framework/commit/f04fbe76ec24cf3c59c74adf92d87b0c3784a8f7))
+
+
+### Bug Fixes
+
+* **cli:** improve terminal outputs ([#847](https://github.com/AIGNE-io/aigne-framework/issues/847)) ([329e91b](https://github.com/AIGNE-io/aigne-framework/commit/329e91bc3323f72fc8a2d278ff5e6bba9adbd6e0))
+
 ## [1.91.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.3...aigne-framework-v1.91.0-beta.4) (2025-12-22)
 
 

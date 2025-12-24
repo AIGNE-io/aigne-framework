@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.59.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.3...cli-v1.59.0-beta.4) (2025-12-24)
+
+
+### Features
+
+* add Agent Skill support ([#787](https://github.com/AIGNE-io/aigne-framework/issues/787)) ([f04fbe7](https://github.com/AIGNE-io/aigne-framework/commit/f04fbe76ec24cf3c59c74adf92d87b0c3784a8f7))
+
+
+### Bug Fixes
+
+* **cli:** improve terminal outputs ([#847](https://github.com/AIGNE-io/aigne-framework/issues/847)) ([329e91b](https://github.com/AIGNE-io/aigne-framework/commit/329e91bc3323f72fc8a2d278ff5e6bba9adbd6e0))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.3
+    * @aigne/afs-history bumped to 1.2.0-beta.3
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.4
+    * @aigne/agent-library bumped to 1.24.0-beta.4
+    * @aigne/agentic-memory bumped to 1.1.6-beta.4
+    * @aigne/aigne-hub bumped to 0.10.16-beta.5
+    * @aigne/core bumped to 1.72.0-beta.4
+    * @aigne/default-memory bumped to 1.3.6-beta.4
+    * @aigne/openai bumped to 0.16.16-beta.4
+    * @aigne/secrets bumped to 0.1.6-beta.4
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.4
+
 ## [1.59.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.2...cli-v1.59.0-beta.3) (2025-12-22)
 
 

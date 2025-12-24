@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.2...afs-v1.4.0-beta.3) (2025-12-24)
+
+
+### Features
+
+* add Agent Skill support ([#787](https://github.com/AIGNE-io/aigne-framework/issues/787)) ([f04fbe7](https://github.com/AIGNE-io/aigne-framework/commit/f04fbe76ec24cf3c59c74adf92d87b0c3784a8f7))
+
 ## [1.4.0-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.1...afs-v1.4.0-beta.2) (2025-12-19)
 
 

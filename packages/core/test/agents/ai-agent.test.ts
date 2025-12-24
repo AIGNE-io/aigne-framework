@@ -731,11 +731,7 @@ test.each(<AIAgentOptions[]>[{ keepTextInToolUses: true }, { keepTextInToolUses:
     if (options.keepTextInToolUses) {
       expect(result1).toMatchInlineSnapshot(`
         {
-          "message": 
-        "Let me check the weather for you.
-
-        The weather in New York is Sunny."
-        ,
+          "message": "The weather in New York is Sunny.",
         }
       `);
     } else {

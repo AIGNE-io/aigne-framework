@@ -2,6 +2,9 @@ import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
 import { getterSchema } from "../agents/agent.js";
+import { type Role, roleSchema } from "../agents/chat-model.js";
+import { PromptBuilder } from "../prompt/prompt-builder.js";
+import { ChatMessagesTemplate, parseChatMessages } from "../prompt/template.js";
 import { camelize } from "../utils/camelize.js";
 import { isRecord } from "../utils/type-utils.js";
 
@@ -134,4 +137,94 @@ export function camelizeSchema<T extends ZodType>(
 
 export function preprocessSchema<T extends ZodType>(fn: (data: unknown) => unknown, schema: T): T {
   return z.preprocess(fn, schema) as unknown as T;
+}
+
+const instructionItemSchema = camelizeSchema(
+  z.union([
+    z.object({
+      role: roleSchema.default("system"),
+      url: z.string(),
+      cacheControl: optionalize(
+        z.object({
+          type: z.literal("ephemeral"),
+          ttl: optionalize(z.union([z.literal("5m"), z.literal("1h")])),
+        }),
+      ),
+    }),
+    z.object({
+      role: roleSchema.default("system"),
+      content: z.string(),
+      cacheControl: optionalize(
+        z.object({
+          type: z.literal("ephemeral"),
+          ttl: optionalize(z.union([z.literal("5m"), z.literal("1h")])),
+        }),
+      ),
+    }),
+  ]),
+);
+
+export type Instructions = {
+  role: Exclude<Role, "tool">;
+  content: string;
+  path: string;
+  cacheControl?: {
+    type: "ephemeral";
+    ttl?: "5m" | "1h";
+  };
+}[];
+
+const parseInstructionItem =
+  ({ filepath }: { filepath: string }) =>
+  async ({
+    role,
+    cacheControl,
+    ...v
+  }: z.infer<typeof instructionItemSchema>): Promise<Instructions[number]> => {
+    if (role === "tool")
+      throw new Error(`'tool' role is not allowed in instruction item in agent file ${filepath}`);
+
+    if ("content" in v && typeof v.content === "string") {
+      return { role, content: v.content, path: filepath, cacheControl };
+    }
+    if ("url" in v && typeof v.url === "string") {
+      const url = nodejs.path.isAbsolute(v.url)
+        ? v.url
+        : nodejs.path.join(nodejs.path.dirname(filepath), v.url);
+      return nodejs.fs
+        .readFile(url, "utf8")
+        .then((content) => ({ role, content, path: url, cacheControl }));
+    }
+    throw new Error(
+      `Invalid instruction item in agent file ${filepath}. Expected 'content' or 'url' property`,
+    );
+  };
+
+export const getInstructionsSchema = ({ filepath }: { filepath: string }) =>
+  z
+    .union([z.string(), instructionItemSchema, z.array(instructionItemSchema)])
+    .transform(async (v): Promise<Instructions> => {
+      if (typeof v === "string") return [{ role: "system", content: v, path: filepath }];
+
+      if (Array.isArray(v)) {
+        return Promise.all(v.map((item) => parseInstructionItem({ filepath })(item)));
+      }
+
+      return [await parseInstructionItem({ filepath })(v)];
+    }) as unknown as ZodType<Instructions>;
+
+export function instructionsToPromptBuilder(instructions: Instructions | string) {
+  return new PromptBuilder({
+    instructions:
+      typeof instructions === "string"
+        ? instructions
+        : ChatMessagesTemplate.from(
+            parseChatMessages(
+              instructions.map((i) => ({
+                ...i,
+                options: { workingDir: nodejs.path.dirname(i.path) },
+              })),
+            ),
+          ),
+  });
 }

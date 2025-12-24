@@ -2,19 +2,12 @@ import { AFS, type AFSContext, type AFSContextPreset, type AFSModule } from "@ai
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
-import { Agent, type AgentHooks, type AgentOptions, FunctionAgent } from "../agents/agent.js";
-import { AIAgent } from "../agents/ai-agent.js";
+import { Agent, type AgentHooks, type AgentOptions } from "../agents/agent.js";
 import type { ChatModel } from "../agents/chat-model.js";
-import { ImageAgent } from "../agents/image-agent.js";
 import type { ImageModel } from "../agents/image-model.js";
-import { MCPAgent } from "../agents/mcp-agent.js";
-import { TeamAgent } from "../agents/team-agent.js";
-import { TransformAgent } from "../agents/transform-agent.js";
 import type { AIGNEOptions } from "../aigne/aigne.js";
 import type { AIGNECLIAgent } from "../aigne/type.js";
 import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
-import { PromptBuilder } from "../prompt/prompt-builder.js";
-import { ChatMessagesTemplate, parseChatMessages } from "../prompt/template.js";
 import { isAgent } from "../utils/agent-utils.js";
 import {
   flat,
@@ -28,10 +21,10 @@ import { loadAgentFromJsFile } from "./agent-js.js";
 import {
   type AFSContextPresetSchema,
   type HooksSchema,
-  type Instructions,
   loadAgentFromYamlFile,
   type NestAgentSchema,
 } from "./agent-yaml.js";
+import { builtinAgents } from "./agents.js";
 import { camelizeSchema, chatModelSchema, imageModelSchema, optionalize } from "./schema.js";
 
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
@@ -51,11 +44,20 @@ export interface LoadOptions {
     availableModules?: {
       module: string;
       alias?: string[];
-      create: (options?: Record<string, any>) => PromiseOrValue<AFSModule>;
+      load: (options: { filepath: string; parsed?: object }) => PromiseOrValue<AFSModule>;
     }[];
   };
   aigne?: z.infer<typeof aigneFileSchema>;
   require?: (modulePath: string, options: { parent?: string }) => Promise<any>;
+}
+
+export interface AgentLoadOptions extends LoadOptions {
+  loadNestAgent: (
+    path: string,
+    agent: NestAgentSchema,
+    options: LoadOptions,
+    agentOptions?: AgentOptions<any, any> & Record<string, unknown>,
+  ) => Promise<Agent>;
 }
 
 export async function load(path: string, options: LoadOptions = {}): Promise<AIGNEOptions> {
@@ -268,7 +270,10 @@ export async function parseAgent(
       );
       if (!mod) throw new Error(`AFS module not found: ${typeof m === "string" ? m : m.module}`);
 
-      const module = await mod.create(typeof m === "string" ? {} : m.options);
+      const module = await mod.load({
+        filepath: path,
+        parsed: typeof m === "string" ? {} : m.options,
+      });
 
       afs.mount(module);
     }
@@ -308,79 +313,30 @@ export async function parseAgent(
     afs: afs || agentOptions?.afs,
   };
 
-  let instructions: PromptBuilder | undefined;
-  if ("instructions" in agent && agent.instructions && ["ai", "image"].includes(agent.type)) {
-    instructions = instructionsToPromptBuilder(agent.instructions);
+  let agentClass = builtinAgents[agent.type];
+
+  if (!agentClass) {
+    if (!options?.require)
+      throw new Error(
+        `Module loader is not provided to load agent type module ${agent.type} from ${path}`,
+      );
+    const Mod = await options.require(agent.type, { parent: path });
+    if (typeof Mod?.default?.prototype?.constructor !== "function") {
+      throw new Error(`The agent type module ${agent.type} does not export a default Agent class`);
+    }
+
+    agentClass = Mod.default;
   }
 
-  switch (agent.type) {
-    case "ai": {
-      return AIAgent.from({
-        ...baseOptions,
-        instructions,
-      });
-    }
-    case "image": {
-      if (!instructions)
-        throw new Error(`Missing required instructions for image agent at path: ${path}`);
-
-      return ImageAgent.from({
-        ...baseOptions,
-        instructions,
-      });
-    }
-    case "mcp": {
-      if (agent.url) {
-        return MCPAgent.from({
-          ...baseOptions,
-          url: agent.url,
-        });
-      }
-      if (agent.command) {
-        return MCPAgent.from({
-          ...baseOptions,
-          command: agent.command,
-          args: agent.args,
-        });
-      }
-      throw new Error(`Missing url or command in mcp agent: ${path}`);
-    }
-    case "team": {
-      return TeamAgent.from({
-        ...baseOptions,
-        mode: agent.mode,
-        iterateOn: agent.iterateOn,
-        reflection: agent.reflection && {
-          ...agent.reflection,
-          reviewer: await loadNestAgent(path, agent.reflection.reviewer, options),
-        },
-      });
-    }
-    case "transform": {
-      return TransformAgent.from({
-        ...baseOptions,
-        jsonata: agent.jsonata,
-      });
-    }
-    case "function": {
-      return FunctionAgent.from({
-        ...baseOptions,
-        process: agent.process,
-      });
-    }
+  if (!agentClass) {
+    throw new Error(`Unsupported agent type: ${agent.type} from ${path}`);
   }
 
-  if ("agentClass" in agent && agent.agentClass) {
-    return await agent.agentClass.load({
-      filepath: path,
-      parsed: baseOptions,
-      options,
-    });
-  }
-
-  throw new Error(
-    `Unsupported agent type: ${"type" in agent ? agent.type : "unknown"} at path: ${path}`,
-  );
+  return await agentClass.load({
+    filepath: path,
+    parsed: baseOptions,
+    options: { ...options, loadNestAgent },
+  });
 }
 
 async function loadMemory(
@@ -480,17 +436,4 @@ export async function findAIGNEFile(path: string): Promise<string> {
   throw new Error(
     `aigne.yaml not found in ${path}. Please ensure you are in the correct directory or provide a valid path.`,
   );
-}
-
-export function instructionsToPromptBuilder(instructions: Instructions) {
-  return new PromptBuilder({
-    instructions: ChatMessagesTemplate.from(
-      parseChatMessages(
-        instructions.map((i) => ({
-          ...i,
-          options: { workingDir: nodejs.path.dirname(i.path) },
-        })),
-      ),
-    ),
-  });
 }

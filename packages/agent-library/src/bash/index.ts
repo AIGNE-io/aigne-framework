@@ -90,20 +90,46 @@ let sandboxInitialization: Promise<void> | undefined;
 const mutex = new Mutex();
 
 export class BashAgent extends Agent<BashAgentInput, BashAgentOutput> {
+  override tag = "Bash";
+
+  static schema({ filepath }: { filepath: string }) {
+    const nestAgentSchema = getNestAgentSchema({ filepath });
+
+    return camelizeSchema(
+      z.object({
+        sandbox: optionalize(
+          z.union([makeShapePropertiesOptions(SandboxRuntimeConfigSchema, 2), z.boolean()]),
+        ),
+        inputKey: optionalize(z.string().describe("The input key for the bash script.")),
+        timeout: optionalize(z.number().describe("Timeout for script execution in milliseconds.")),
+        permissions: optionalize(
+          camelizeSchema(
+            z.object({
+              allow: optionalize(z.array(z.string())),
+              deny: optionalize(z.array(z.string())),
+              defaultMode: optionalize(z.enum(["allow", "ask", "deny"])),
+              guard: optionalize(nestAgentSchema),
+            }),
+          ),
+        ),
+      }),
+    );
+  }
+
   static override async load(options: {
     filepath: string;
     parsed: LoadBashAgentOptions;
     options?: LoadOptions;
   }) {
-    const schema = getBashAgentSchema({ filepath: options.filepath });
-    const parsed = await schema.parseAsync(options.parsed);
+    const valid = await BashAgent.schema(options).parseAsync(options.parsed);
 
     return new BashAgent({
-      ...parsed,
+      ...options.parsed,
+      ...valid,
       permissions: {
-        ...parsed.permissions,
-        guard: parsed.permissions?.guard
-          ? await loadNestAgent(options.filepath, parsed.permissions.guard, options.options ?? {}, {
+        ...valid.permissions,
+        guard: valid.permissions?.guard
+          ? await loadNestAgent(options.filepath, valid.permissions.guard, options.options ?? {}, {
               outputSchema: z.object({
                 approved: z.boolean().describe("Whether the command is approved by the user."),
                 reason: z.string().describe("Optional reason for rejection.").optional(),
@@ -439,30 +465,6 @@ When to use:
 }
 
 export default BashAgent;
-
-function getBashAgentSchema({ filepath }: { filepath: string }) {
-  const nestAgentSchema = getNestAgentSchema({ filepath });
-
-  return camelizeSchema(
-    z.object({
-      sandbox: optionalize(
-        z.union([makeShapePropertiesOptions(SandboxRuntimeConfigSchema, 2), z.boolean()]),
-      ),
-      inputKey: optionalize(z.string().describe("The input key for the bash script.")),
-      timeout: optionalize(z.number().describe("Timeout for script execution in milliseconds.")),
-      permissions: optionalize(
-        camelizeSchema(
-          z.object({
-            allow: optionalize(z.array(z.string())),
-            deny: optionalize(z.array(z.string())),
-            defaultMode: optionalize(z.enum(["allow", "ask", "deny"])),
-            guard: optionalize(nestAgentSchema),
-          }),
-        ),
-      ),
-    }),
-  );
-}
 
 function makeShapePropertiesOptions<T extends ZodRawShape, S extends ZodObject<T>>(
   schema: S,

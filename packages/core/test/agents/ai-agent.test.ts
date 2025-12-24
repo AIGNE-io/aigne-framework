@@ -733,6 +733,7 @@ test.each(<AIAgentOptions[]>[{ keepTextInToolUses: true }, { keepTextInToolUses:
         {
           "message": 
         "Let me check the weather for you.
+
         The weather in New York is Sunny."
         ,
         }

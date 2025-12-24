@@ -1,4 +1,10 @@
 import z, { type ZodObject, type ZodType } from "zod";
+import {
+  camelizeSchema,
+  getInstructionsSchema,
+  instructionsToPromptBuilder,
+  optionalize,
+} from "../loader/schema.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { checkArguments } from "../utils/type-utils.js";
 import {
@@ -32,6 +38,31 @@ export class ImageAgent<I extends Message = any, O extends ImageModelOutput = an
   O
 > {
   override tag = "ImageAgent";
+
+  static schema({ filepath }: { filepath: string }) {
+    const instructionsSchema = getInstructionsSchema({ filepath });
+
+    return camelizeSchema(
+      z.object({
+        instructions: instructionsSchema,
+        inputFileKey: optionalize(z.string()),
+      }),
+    );
+  }
+
+  static override async load<I extends Message = any, O extends Message = any>(options: {
+    filepath: string;
+    parsed: object;
+  }): Promise<Agent<I, O>> {
+    const valid = await ImageAgent.schema({ filepath: options.filepath }).parseAsync(
+      options.parsed,
+    );
+    return new ImageAgent({
+      ...options.parsed,
+      ...valid,
+      instructions: instructionsToPromptBuilder(valid.instructions),
+    }) as any;
+  }
 
   static from<I extends Message = any, O extends ImageModelOutput = any>(
     options: ImageAgentOptions<I, O>,

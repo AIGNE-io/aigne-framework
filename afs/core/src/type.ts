@@ -16,6 +16,11 @@ export interface AFSListOptions {
    * @default false
    */
   disableGitignore?: boolean;
+  /**
+   * Glob pattern to filter entries by path.
+   * Examples: "*.ts", "**\/*.js", "src/**\/*.{ts,tsx}"
+   */
+  pattern?: string;
   context?: any;
 }
 

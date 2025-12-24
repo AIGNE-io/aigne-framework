@@ -7,23 +7,20 @@ import {
   type Message,
   type PromptBuilder,
 } from "@aigne/core";
+import { getNestAgentSchema, type NestAgentSchema } from "@aigne/core/loader/agent-yaml.js";
+import type { AgentLoadOptions } from "@aigne/core/loader/index.js";
 import {
+  camelizeSchema,
   getInstructionsSchema,
-  getNestAgentSchema,
   type Instructions,
-  type NestAgentSchema,
-} from "@aigne/core/loader/agent-yaml.js";
-import {
   instructionsToPromptBuilder,
-  type LoadOptions,
-  loadNestAgent,
-} from "@aigne/core/loader/index.js";
-import { camelizeSchema, optionalize } from "@aigne/core/loader/schema.js";
+  optionalize,
+} from "@aigne/core/loader/schema.js";
 import { isAgent } from "@aigne/core/utils/agent-utils.js";
 import * as fastq from "@aigne/core/utils/queue.js";
 import { estimateTokens } from "@aigne/core/utils/token-estimator.js";
 import { omit, pick } from "@aigne/core/utils/type-utils.js";
-import { z } from "zod";
+import { type ZodType, z } from "zod";
 import {
   ORCHESTRATOR_COMPLETE_PROMPT,
   TODO_PLANNER_PROMPT_TEMPLATE,
@@ -69,17 +66,14 @@ export interface OrchestratorAgentOptions<I extends Message = Message, O extends
   concurrency?: number;
 }
 
-export interface LoadOrchestratorAgentOptions<
-  I extends Message = Message,
-  O extends Message = Message,
-> extends Omit<AIAgentOptions<I, O>, "instructions"> {
-  objective?: string | PromptBuilder | Instructions;
+export interface LoadOrchestratorAgentOptions {
+  objective?: string | Instructions;
 
-  planner?: NestAgentSchema | { instructions?: string | PromptBuilder | Instructions };
+  planner?: NestAgentSchema;
 
-  worker?: NestAgentSchema | { instructions?: string | PromptBuilder | Instructions };
+  worker?: NestAgentSchema;
 
-  completer?: NestAgentSchema | { instructions?: string | PromptBuilder | Instructions };
+  completer?: NestAgentSchema;
 
   stateManagement?: StateManagementOptions;
 }
@@ -137,37 +131,54 @@ export class OrchestratorAgent<
 > extends AIAgent<I, O> {
   override tag = "OrchestratorAgent";
 
+  static override schema<T>({ filepath }: { filepath: string }): ZodType<T> {
+    const nestAgentSchema = getNestAgentSchema({ filepath });
+    const instructionsSchema = getInstructionsSchema({ filepath });
+
+    return camelizeSchema(
+      z.object({
+        objective: optionalize(instructionsSchema),
+        planner: optionalize(nestAgentSchema),
+        worker: optionalize(nestAgentSchema),
+        completer: optionalize(nestAgentSchema),
+        stateManagement: optionalize(camelizeSchema(stateManagementOptionsSchema)),
+        concurrency: optionalize(z.number().int().min(1).default(DEFAULT_CONCURRENCY)),
+      }),
+    ) as any;
+  }
+
   static override async load<I extends Message = Message, O extends Message = Message>({
     filepath,
     parsed,
-    options = {},
+    options,
   }: {
     filepath: string;
-    parsed: AgentOptions<I, O> & LoadOrchestratorAgentOptions<I, O>;
-    options?: LoadOptions;
+    parsed: LoadOrchestratorAgentOptions & AgentOptions<I, O>;
+    options?: AgentLoadOptions;
   }): Promise<OrchestratorAgent<I, O>> {
-    const schema = getOrchestratorAgentSchema({ filepath });
-    const valid = await schema.parseAsync(parsed);
+    const valid = await OrchestratorAgent.schema<LoadOrchestratorAgentOptions>({
+      filepath,
+    }).parseAsync(parsed);
 
     return new OrchestratorAgent({
       ...parsed,
-      objective: valid.objective && instructionsToPromptBuilder(valid.objective),
+      objective: valid.objective ? instructionsToPromptBuilder(valid.objective) : undefined,
       planner: valid.planner
-        ? ((await loadNestAgent(filepath, valid.planner, options, {
+        ? ((await options?.loadNestAgent(filepath, valid.planner, options, {
             ...defaultPlannerOptions,
             afs: parsed.afs,
             skills: parsed.skills,
           })) as OrchestratorAgent["planner"])
         : undefined,
       worker: valid.worker
-        ? ((await loadNestAgent(filepath, valid.worker, options, {
+        ? ((await options?.loadNestAgent(filepath, valid.worker, options, {
             ...defaultWorkerOptions,
             afs: parsed.afs,
             skills: parsed.skills,
           })) as OrchestratorAgent["worker"])
         : undefined,
       completer: valid.completer
-        ? ((await loadNestAgent(filepath, valid.completer, options, {
+        ? ((await options?.loadNestAgent(filepath, valid.completer, options, {
             ...defaultCompleterOptions,
             outputSchema: parsed.outputSchema,
             afs: parsed.afs,
@@ -382,19 +393,3 @@ export class OrchestratorAgent<
 }
 
 export default OrchestratorAgent;
-
-function getOrchestratorAgentSchema({ filepath }: { filepath: string }) {
-  const nestAgentSchema = getNestAgentSchema({ filepath });
-  const instructionsSchema = getInstructionsSchema({ filepath });
-
-  return camelizeSchema(
-    z.object({
-      objective: optionalize(instructionsSchema),
-      planner: optionalize(nestAgentSchema),
-      worker: optionalize(nestAgentSchema),
-      completer: optionalize(nestAgentSchema),
-      stateManagement: optionalize(camelizeSchema(stateManagementOptionsSchema)),
-      concurrency: optionalize(z.number().int().min(1).default(DEFAULT_CONCURRENCY)),
-    }),
-  );
-}

@@ -1,4 +1,5 @@
 import jsonata from "jsonata";
+import { z } from "zod";
 import { Agent, type AgentOptions, type Message } from "./agent.js";
 
 /**
@@ -54,6 +55,23 @@ export class TransformAgent<I extends Message = Message, O extends Message = Mes
   O
 > {
   static type = "TransformAgent";
+
+  static schema() {
+    return z.object({
+      jsonata: z.string(),
+    });
+  }
+
+  static override async load<I extends Message = any, O extends Message = any>(options: {
+    filepath: string;
+    parsed: object;
+  }): Promise<Agent<I, O>> {
+    const parsed = await TransformAgent.schema().parseAsync(options.parsed);
+    return TransformAgent.from<I, O>({
+      ...options.parsed,
+      ...parsed,
+    });
+  }
 
   /**
    * Factory method to create a new TransformAgent instance

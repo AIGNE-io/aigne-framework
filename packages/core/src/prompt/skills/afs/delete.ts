@@ -22,16 +22,29 @@ export class AFSDeleteAgent extends AFSSkillBase<AFSDeleteInput, AFSDeleteOutput
   constructor(options: AFSDeleteAgentOptions) {
     super({
       name: "afs_delete",
-      description:
-        "Permanently delete files or directories. Use when removing unwanted files or cleaning up temporary data.",
+      description: `Permanently delete files or directories from the Agentic File System (AFS)
+- Removes files or directories at the specified AFS path
+- Supports recursive deletion for directories with contents
+- Use with caution as deletion is permanent
+
+Usage:
+- The path must be an absolute AFS path starting with "/" (e.g., "/docs/old-file.md", "/temp")
+- This is NOT a local system file path - it operates within the AFS virtual file system
+- To delete a directory, you MUST set recursive=true
+- Deleting a non-empty directory without recursive=true will fail
+- This operation cannot be undone`,
       ...options,
       inputSchema: z.object({
-        path: z.string().describe("Absolute file or directory path to delete"),
+        path: z
+          .string()
+          .describe(
+            "Absolute AFS path to delete (e.g., '/docs/old-file.md', '/temp'). Must start with '/'",
+          ),
         recursive: z
           .boolean()
           .optional()
           .default(false)
-          .describe("Allow directory deletion (default: false, required for directories)"),
+          .describe("MUST be set to true to delete directories. Default: false (files only)"),
       }),
       outputSchema: z.object({
         status: z.string(),

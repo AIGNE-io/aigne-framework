@@ -23,17 +23,36 @@ export class AFSWriteAgent extends AFSSkillBase<AFSWriteInput, AFSWriteOutput> {
   constructor(options: AFSWriteAgentOptions) {
     super({
       name: "afs_write",
-      description:
-        "Create new file or append content to existing file. Use when creating files, rewriting entire files, or appending to files.",
+      description: `Write or create files in the Agentic File System (AFS)
+- Creates a new file or overwrites an existing file with the provided content
+- Supports append mode to add content to the end of existing files
+- Use this tool when creating new files or completely replacing file contents
+
+Usage:
+- The path must be an absolute AFS path starting with "/" (e.g., "/docs/new-file.md", "/memory/user/notes")
+- This is NOT a local system file path - it operates within the AFS virtual file system
+- By default, this tool overwrites the entire file content
+- Use append mode to add content to the end of an existing file without replacing it
+- For partial edits to existing files, prefer using afs_edit instead`,
       ...options,
       inputSchema: z.object({
-        path: z.string().describe("Absolute file path to write"),
-        content: z.string().describe("Complete file content or content to append"),
+        path: z
+          .string()
+          .describe(
+            "Absolute AFS path for the file to write (e.g., '/docs/new-file.md'). Must start with '/'",
+          ),
+        content: z
+          .string()
+          .describe(
+            "The content to write to the file. In overwrite mode, this replaces the entire file",
+          ),
         append: z
           .boolean()
           .optional()
           .default(false)
-          .describe("Append mode: add content to end of file (default: false, overwrites file)"),
+          .describe(
+            "Set to true to append content to the end of an existing file. Default: false (overwrites entire file)",
+          ),
       }),
       outputSchema: z.object({
         status: z.string(),

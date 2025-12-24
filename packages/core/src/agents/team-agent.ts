@@ -1,5 +1,9 @@
 import assert from "node:assert";
 import { produce } from "immer";
+import { z } from "zod";
+import { getNestAgentSchema } from "../loader/agent-yaml.js";
+import type { AgentLoadOptions } from "../loader/index.js";
+import { camelizeSchema, optionalize } from "../loader/schema.js";
 import * as fastq from "../utils/queue.js";
 import { mergeAgentResponseChunk } from "../utils/stream-utils.js";
 import { isEmpty, isNil, isRecord, omit, type PromiseOrValue } from "../utils/type-utils.js";
@@ -228,6 +232,49 @@ export interface TeamAgentOptions<I extends Message, O extends Message> extends 
  */
 export class TeamAgent<I extends Message, O extends Message> extends Agent<I, O> {
   override tag = "TeamAgent";
+
+  static schema({ filepath }: { filepath: string }) {
+    const nestAgentSchema = getNestAgentSchema({ filepath });
+
+    return z.object({
+      mode: optionalize(z.nativeEnum(ProcessMode)),
+      iterateOn: optionalize(z.string()),
+      concurrency: optionalize(z.number().int().min(1)),
+      iterateWithPreviousOutput: optionalize(z.boolean()),
+      includeAllStepsOutput: optionalize(z.boolean()),
+      reflection: camelizeSchema(
+        optionalize(
+          z.object({
+            reviewer: nestAgentSchema,
+            isApproved: z.string(),
+            maxIterations: optionalize(z.number().int().min(1)),
+            returnLastOnMaxIterations: optionalize(z.boolean()),
+            customErrorMessage: optionalize(z.string()),
+          }),
+        ),
+      ),
+    });
+  }
+
+  static override async load<I extends Message = any, O extends Message = any>(options: {
+    filepath: string;
+    parsed: object;
+    options: AgentLoadOptions;
+  }): Promise<Agent<I, O>> {
+    const valid = await TeamAgent.schema({ filepath: options.filepath }).parseAsync(options.parsed);
+    return TeamAgent.from({
+      ...options.parsed,
+      ...valid,
+      reflection: valid.reflection && {
+        ...valid.reflection,
+        reviewer: await options.options.loadNestAgent(
+          options.filepath,
+          valid.reflection.reviewer,
+          options.options,
+        ),
+      },
+    });
+  }
 
   /**
    * Create a TeamAgent from the provided options.

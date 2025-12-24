@@ -16,6 +16,7 @@ import {
   workerOutputSchema,
 } from "@aigne/agent-library/orchestrator/type.js";
 import { AIAgent, AIGNE, FunctionAgent, PromptBuilder } from "@aigne/core";
+import { loadNestAgent } from "@aigne/core/loader/index.js";
 import { z } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
 import { OpenAIChatModel } from "../_mocks_/mock-models.js";
@@ -160,6 +161,9 @@ test("OrchestratorAgent.load should use custom planner/worker/completer", async 
         type: "ai",
         instructions: "Custom completer instructions",
       },
+    },
+    options: {
+      loadNestAgent,
     },
   });
 
@@ -343,6 +347,9 @@ test("OrchestratorAgent should pass declared input fields to the planner/worker/
         instructions:
           "Test completer\ncustomField: {{customField}}\nobjective: {{objective}}\nexecutionState: {{executionState}}",
       },
+    },
+    options: {
+      loadNestAgent,
     },
   });
 

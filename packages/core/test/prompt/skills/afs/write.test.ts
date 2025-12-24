@@ -19,11 +19,7 @@ test("AFS'skill write should invoke afs.write", async () => {
   assert(write);
   expect(await write.invoke({ path: "/foo", content: "bar" })).toMatchInlineSnapshot(`
     {
-      "data": {
-        "content": "bar",
-        "id": "foo",
-        "path": "/foo",
-      },
+      "message": "File written successfully",
       "path": "/foo",
       "status": "success",
       "tool": "afs_write",
@@ -103,7 +99,6 @@ test("AFS'skill write should handle multiline content", async () => {
   const result = await write.invoke({ path: "/test/file.txt", content: multilineContent });
 
   expect(result.status).toBe("success");
-  expect(result.data?.content).toBe(multilineContent);
   expect(writeSpy.mock.calls[0]?.[1]?.content).toBe(multilineContent);
 });
 

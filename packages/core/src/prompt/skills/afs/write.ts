@@ -66,7 +66,7 @@ Usage:
   async process(input: AFSWriteInput, _options: AgentInvokeOptions): Promise<AFSWriteOutput> {
     if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
-    const result = await this.afs.write(
+    const _result = await this.afs.write(
       input.path,
       {
         content: input.content,
@@ -80,7 +80,7 @@ Usage:
       status: "success",
       tool: "afs_write",
       path: input.path,
-      ...result,
+      message: "File written successfully",
     };
   }
 }

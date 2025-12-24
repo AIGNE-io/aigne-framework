@@ -1,19 +1,40 @@
-# User Intent for @aigne/cli Documentation
+# 用户意图描述
 
-## 1. Target Audience
-- **Agent Developers**: Developers using the AIGNE Framework to build, test, and deploy AI agents. They need to know how to use the CLI to facilitate their workflow.
-- **AIGNE Framework Users**: General users looking to explore or run existing AIGNE agents.
-- **CLI Contributors**: Developers who want to contribute to the `@aigne/cli` codebase itself, understanding its internal structure and testing mechanisms.
+## 目标用户
 
-## 2. Primary Use Cases
-- **Project Initialization**: Creating new AIGNE projects from templates (`aigne create`).
-- **Development Loop**: Running agents locally for testing and debugging (`aigne run`).
-- **Testing**: Executing unit and integration tests for agents (`aigne test`).
-- **Integration**: Serving agents as MCP (Model Context Protocol) servers (`aigne serve-mcp`).
-- **Observability**: Monitoring agent activities (`aigne observe`).
-- **Tool Maintenance**: Understanding how to build, test, and extend the CLI itself.
+本文档的主要目标用户包括：
 
-## 3. Documentation Focus
-- **User Guide**: Step-by-step instructions on how to install and use the CLI for daily tasks.
-- **Command Reference**: Detailed documentation of all commands, flags, and arguments (e.g., `run`, `create`, `test`).
-- **Developer Guide**: Information for contributors on how to build, test, and understand the CLI architecture (given the presence of `src/` and `test/` in the workspace).
+1. **AIGNE 框架的开发者**：需要使用 CLI 工具进行代理应用的开发、测试和部署
+2. **新接触 AIGNE 的开发者**：希望快速上手，了解如何创建和运行 AIGNE 项目
+3. **运维人员**：需要部署和管理 AIGNE 应用，包括 MCP 服务器和可观察性服务
+
+## 主要使用场景
+
+用户在以下场景下会查阅本文档：
+
+1. **快速开始**：首次使用 AIGNE CLI，需要了解安装方法和基本用法
+2. **项目创建**：创建新的 AIGNE 项目
+3. **代理运行**：运行和测试 AIGNE 代理
+4. **命令参考**：查找特定命令的详细参数和选项
+5. **集成开发**：将 AIGNE 代理作为 MCP 服务器集成到其他系统
+6. **问题排查**：遇到问题时查找解决方案和最佳实践
+
+## 文档侧重点
+
+本文档采用**使用指南型**侧重点，具体包括：
+
+1. **快速上手**：提供清晰的安装和快速开始指南，帮助用户在 5 分钟内运行第一个代理
+2. **命令详解**：详细说明每个命令的功能、参数和使用示例
+3. **实用场景**：提供常见使用场景的完整示例
+4. **参考手册**：完整的命令参数参考，便于查阅
+
+文档不会深入探讨：
+- AIGNE 框架的内部实现细节
+- CLI 工具的源代码架构
+- 框架的高级定制化开发
+
+文档强调：
+- 清晰的步骤说明
+- 丰富的实用示例
+- 常见问题的解决方案
+- 最佳实践建议

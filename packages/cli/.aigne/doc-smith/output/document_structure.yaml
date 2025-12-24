@@ -1,81 +1,102 @@
 project:
-  title: "@aigne/cli"
-  description: "Command-line interface for the AIGNE Framework"
+  title: "@aigne/cli 中文文档"
+  description: "AIGNE 框架命令行工具的完整使用指南和参考手册"
 
 documents:
-  - title: "Introduction"
-    description: "Overview, features, and installation guide."
-    path: "/introduction.md"
+  - title: "概览"
+    description: "介绍 @aigne/cli 的核心功能、特性和使用场景"
+    path: "/overview.md"
     sourcePaths:
       - "README.md"
-    icon: "lucide:book-open"
+      - "package.json"
+    icon: "lucide:home"
 
-  - title: "Getting Started"
-    description: "Create your first project and run an agent."
+  - title: "快速开始"
+    description: "安装 CLI 工具并运行第一个 AIGNE 代理"
     path: "/getting-started.md"
     sourcePaths:
       - "README.md"
       - "src/commands/create.ts"
+      - "src/commands/run.ts"
     icon: "lucide:rocket"
 
-  - title: "Command Reference"
-    description: "Detailed documentation for all CLI commands."
-    path: "/commands/index.md"
+  - title: "命令参考"
+    description: "所有 CLI 命令的详细说明、参数和使用示例"
+    path: "/commands.md"
     sourcePaths:
-      - "src/cli.ts"
+      - "src/commands"
     icon: "lucide:terminal"
     children:
-      - title: "create"
-        description: "Create a new AIGNE project."
+      - title: "create - 创建项目"
+        description: "创建新的 AIGNE 项目"
         path: "/commands/create.md"
         sourcePaths:
           - "src/commands/create.ts"
-      - title: "run"
-        description: "Run an agent locally."
+
+      - title: "run - 运行代理"
+        description: "运行 AIGNE 代理并启动交互式对话"
         path: "/commands/run.md"
         sourcePaths:
           - "src/commands/run.ts"
-      - title: "test"
-        description: "Run tests for agents."
+          - "src/utils/run-chat-loop.ts"
+
+      - title: "test - 运行测试"
+        description: "执行代理测试"
         path: "/commands/test.md"
         sourcePaths:
           - "src/commands/test.ts"
-      - title: "serve-mcp"
-        description: "Serve agents as MCP server."
+
+      - title: "serve-mcp - MCP 服务器"
+        description: "将代理作为 MCP 服务器运行"
         path: "/commands/serve-mcp.md"
         sourcePaths:
           - "src/commands/serve-mcp.ts"
-      - title: "observe"
-        description: "Start observability service."
+          - "src/utils/serve-mcp.ts"
+
+      - title: "observe - 可观察性"
+        description: "启动可观察性服务器监控代理运行"
         path: "/commands/observe.md"
         sourcePaths:
           - "src/commands/observe.ts"
-      - title: "deploy"
-        description: "Deploy agents."
+
+      - title: "deploy - 部署应用"
+        description: "部署 AIGNE 应用到生产环境"
         path: "/commands/deploy.md"
         sourcePaths:
           - "src/commands/deploy.ts"
-      - title: "eval"
-        description: "Evaluate agents."
-        path: "/commands/eval.md"
-        sourcePaths:
-          - "src/commands/eval.ts"
-      - title: "hub"
-        description: "Interact with AIGNE Hub."
+
+      - title: "hub - AIGNE Hub"
+        description: "与 AIGNE Hub 交互，管理远程代理和模型"
         path: "/commands/hub.md"
         sourcePaths:
           - "src/commands/hub.ts"
-      - title: "app"
-        description: "App management commands."
-        path: "/commands/app.md"
-        sourcePaths:
-          - "src/commands/app.ts"
-          - "src/commands/app/app.ts"
+          - "src/utils/aigne-hub"
 
-  - title: "Contributing"
-    description: "Guide for developers contributing to the CLI."
-    path: "/contributing.md"
+      - title: "eval - 评估代理"
+        description: "评估代理性能和质量"
+        path: "/commands/eval.md"
+        sourcePaths:
+          - "src/commands/eval.ts"
+          - "src/utils/evaluation"
+
+  - title: "使用场景"
+    description: "常见使用场景的完整示例和最佳实践"
+    path: "/use-cases.md"
     sourcePaths:
-      - "package.json"
-      - "test/README.md"
-    icon: "lucide:git-pull-request"
+      - "README.md"
+      - "src/commands"
+    icon: "lucide:book-open"
+
+  - title: "配置和环境"
+    description: "环境变量、配置文件和模型提供商设置"
+    path: "/configuration.md"
+    sourcePaths:
+      - "src/constants.ts"
+      - "src/utils/load-aigne.ts"
+    icon: "lucide:settings"
+
+  - title: "常见问题"
+    description: "故障排查和常见问题解答"
+    path: "/faq.md"
+    sourcePaths: []
+    icon: "lucide:help-circle"

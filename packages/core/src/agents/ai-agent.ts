@@ -10,6 +10,7 @@ import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "../prompt/prompts/structured-stream-instructions.js";
 import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
 import * as fastq from "../utils/queue.js";
+import { mergeAgentResponseChunk } from "../utils/stream-utils.js";
 import { ExtractMetadataTransform } from "../utils/structured-stream-extractor.js";
 import { checkArguments, isEmpty } from "../utils/type-utils.js";
 import {
@@ -18,6 +19,7 @@ import {
   type AgentOptions,
   type AgentProcessAsyncGenerator,
   type AgentProcessResult,
+  type AgentResponseProgress,
   type AgentResponseStream,
   agentOptionsSchema,
   isAgentResponseDelta,
@@ -543,6 +545,17 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     const toolCallMessages: ChatModelInputMessage[] = [];
     const outputKey = this.outputKey;
 
+    const inputMessage = this.inputKey ? input[this.inputKey] : undefined;
+    if (inputMessage) {
+      yield <AgentResponseProgress>{
+        progress: {
+          event: "message",
+          role: "user",
+          message: [{ type: "text", content: inputMessage }],
+        },
+      };
+    }
+
     for (;;) {
       const modelOutput: ChatModelOutput = {};
 
@@ -564,13 +577,14 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
       let isTextIgnored = false;
 
       for await (const value of stream) {
+        mergeAgentResponseChunk(modelOutput, value);
+
         if (isAgentResponseDelta(value)) {
           if (!isTextIgnored && value.delta.text?.text) {
             yield { delta: { text: { [outputKey]: value.delta.text.text } } };
           }
 
           if (value.delta.json) {
-            Object.assign(modelOutput, value.delta.json);
             if (this.structuredStreamMode) {
               yield { delta: { json: value.delta.json.json as Partial<O> } };
               if (!isTextIgnored && modelOutput.json && this.ignoreTextOfStructuredStreamMode) {
@@ -581,7 +595,18 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         }
       }
 
-      const { toolCalls, json, text, files } = modelOutput;
+      const { toolCalls, json, text, thoughts, files } = modelOutput;
+
+      if (text) {
+        yield <AgentResponseProgress>{
+          progress: { event: "message", role: "agent", message: [{ type: "text", content: text }] },
+        };
+      }
+      if (thoughts) {
+        yield <AgentResponseProgress>{
+          progress: { event: "message", role: "agent", message: [{ type: "thinking", thoughts }] },
+        };
+      }
 
       if (toolCalls?.length) {
         if (this.keepTextInToolUses !== true) {
@@ -632,6 +657,21 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
           const tool = toolsMap.get(call.function.name);
           if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
 
+          yield <AgentResponseProgress>{
+            progress: {
+              event: "message",
+              role: "agent",
+              message: [
+                {
+                  type: "tool_use",
+                  name: call.function.name,
+                  input: call.function.arguments,
+                  toolUseId: call.id,
+                },
+              ],
+            },
+          };
+
           queue.push({ tool, call });
         }
 
@@ -641,6 +681,22 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
 
         // Continue LLM function calling loop if any tools were executed
         if (executedToolCalls.length) {
+          for (const { call, output } of executedToolCalls) {
+            yield <AgentResponseProgress>{
+              progress: {
+                event: "message",
+                role: "agent",
+                message: [
+                  {
+                    type: "tool_result",
+                    toolUseId: call.id,
+                    content: output,
+                  },
+                ],
+              },
+            };
+          }
+
           const transferOutput = executedToolCalls.find(
             (i): i is { call: ChatModelOutputToolCall; output: TransferAgentOutput } =>
               isTransferAgentOutput(i.output),
@@ -677,6 +733,12 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
 
       if (!isEmpty(result)) {
         yield { delta: { json: result } };
+      }
+
+      if (text) {
+        yield <AgentResponseProgress>{
+          progress: { event: "message", role: "agent", message: [{ type: "text", content: text }] },
+        };
       }
       return;
     }

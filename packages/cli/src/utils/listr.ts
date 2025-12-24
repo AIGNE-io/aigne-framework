@@ -1,6 +1,6 @@
 import { EOL } from "node:os";
 import { format } from "node:util";
-import type { AgentResponseStream, Message } from "@aigne/core";
+import { type AgentResponseStream, isAgentResponseProgress, type Message } from "@aigne/core";
 import { LogLevel, logger } from "@aigne/core/utils/logger.js";
 import { mergeAgentResponseChunk } from "@aigne/core/utils/stream-utils.js";
 import type { PromiseOrValue } from "@aigne/core/utils/type-utils.js";
@@ -17,7 +17,10 @@ import {
   SimpleRenderer,
   Spinner,
 } from "@aigne/listr2";
+import { markedTerminal } from "@aigne/marked-terminal";
+import chalk from "chalk";
 import type { createLogUpdate } from "log-update";
+import { Marked } from "marked";
 import wrap from "wrap-ansi";
 
 export type AIGNEListrTaskWrapper = ListrTaskWrapper<
@@ -54,11 +57,12 @@ export class AIGNEListr extends Listr<
       getStdoutLogs: () => {
         return this.logs.splice(0);
       },
-      getBottomBarLogs: (options?: { running?: boolean; renderImage?: boolean }) => {
-        if (!options?.running) return [];
-        const r = this.myOptions.formatResult(this.result);
-        if (typeof r !== "string") throw new Error("Must return a string result for running task");
-        return [r];
+      getBottomBarLogs: (_options?: { running?: boolean; renderImage?: boolean }) => {
+        // if (!options?.running) return [];
+        // const r = this.myOptions.formatResult(this.result);
+        // if (typeof r !== "string") throw new Error("Must return a string result for running task");
+        // return [r];
+        return [];
       },
     };
 
@@ -146,12 +150,56 @@ export class AIGNEListr extends Listr<
     }
   }
 
+  private marked = new Marked().use(
+    {
+      // marked-terminal does not support code block meta, so we need to strip it
+      walkTokens: (token) => {
+        if (token.type === "code") {
+          if (typeof token.lang === "string") {
+            token.lang = token.lang.trim().split(/\s+/)[0];
+          }
+        }
+      },
+    },
+    markedTerminal(
+      { forceHyperLink: false },
+      {
+        theme: {
+          string: chalk.green,
+        },
+      },
+    ),
+  );
+
   private async extractStream(stream: AgentResponseStream<Message>) {
     try {
       this.result = {};
 
       for await (const value of stream) {
         mergeAgentResponseChunk(this.result, value);
+
+        if (isAgentResponseProgress(value) && value.progress.event === "message") {
+          const { role, message } = value.progress;
+
+          const rendered: string[] = [];
+
+          for (const msg of message) {
+            if (msg.type === "text") {
+              rendered.push(this.marked.parse(msg.content, { async: false }).trim());
+            } else if (msg.type === "thinking") {
+              rendered.push(chalk.dim(chalk.grey(chalk.italic(`[Thinking] ${msg.thoughts}`))));
+            } else if (msg.type === "tool_use") {
+              rendered.push(
+                `${chalk.bold.gray(`[${msg.name}]`)} ${chalk.gray(`${JSON.stringify(msg.input).slice(0, 200)}...`)}`,
+              );
+            }
+          }
+
+          if (rendered.length) {
+            const prefix = role === "user" ? chalk.blue.bold(">") : chalk.green.bold("•");
+            console.log(`${prefix} ${rendered.join("\n")}\n`);
+          }
+        }
       }
 
       return this.result;

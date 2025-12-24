@@ -1523,6 +1523,16 @@ export interface AgentResponseProgress {
         event: "agentFailed";
         error: Error;
       }
+    | {
+        event: "message";
+        role: "user" | "agent";
+        message: (
+          | { type: "text"; content: string }
+          | { type: "thinking"; thoughts: string }
+          | { type: "tool_use"; toolUseId: string; name: string; input: unknown }
+          | { type: "tool_result"; toolUseId: string; content: unknown }
+        )[];
+      }
   ) &
     Omit<AgentEvent, "agent"> & { agent: { name: string } };
 }

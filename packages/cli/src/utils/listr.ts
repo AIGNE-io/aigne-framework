@@ -104,6 +104,8 @@ export class AIGNEListr extends Listr<
     this.spinner = new Spinner();
   }
 
+  private needLogResult = true;
+
   override async run(stream: () => PromiseOrValue<AgentResponseStream<Message>>): Promise<Message> {
     const originalLog = logger.logMessage;
     const originalConsole = { ...console };
@@ -137,9 +139,11 @@ export class AIGNEListr extends Listr<
         return { ...this.result };
       });
 
-      console.log(
-        await this.myOptions.formatResult(this.result, { running: false, renderImage: true }),
-      );
+      if (this.needLogResult) {
+        console.log(
+          await this.myOptions.formatResult(this.result, { running: false, renderImage: true }),
+        );
+      }
 
       return result;
     } finally {
@@ -198,6 +202,7 @@ export class AIGNEListr extends Listr<
           if (rendered.length) {
             const prefix = role === "user" ? chalk.blue.bold(">") : chalk.green.bold("•");
             console.log(`${prefix} ${rendered.join("\n")}\n`);
+            this.needLogResult = false;
           }
         }
       }

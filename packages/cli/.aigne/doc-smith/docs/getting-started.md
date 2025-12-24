@@ -136,6 +136,15 @@ aigne run --model anthropic:claude-3-sonnet-20240229
 如果项目中有多个 agents，可以指定要运行的 agent：
 
 ```bash
+::: PATCH
+# Original
+aigne run --entry-agent myAgent
+
+# Revised
+指定 Agent 可以更简洁，直接运行指定的 Agent：
+aigne run myAgent
+:::
+
 aigne run --entry-agent myAgent
 ```
 

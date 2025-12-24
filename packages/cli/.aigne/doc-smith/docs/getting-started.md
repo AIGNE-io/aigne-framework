@@ -1,12 +1,12 @@
 # 快速开始
 
-**前置条件：** 安装 Node.js（推荐使用 LTS 版本）
+> **前置条件**: [概述](./overview.md) - 了解 AIGNE CLI 的核心功能和特性
 
-本指南将帮助您在 5 分钟内安装 `@aigne/cli` 并运行您的第一个 AIGNE 代理。
+本指南将帮助您快速安装 AIGNE CLI 并创建第一个 AI agent 项目。
 
 ## 安装
 
-`@aigne/cli` 可以通过多种包管理器全局安装：
+AIGNE CLI 可以通过多种包管理器全局安装：
 
 ### 使用 npm
 
@@ -26,129 +26,182 @@ yarn global add @aigne/cli
 pnpm add -g @aigne/cli
 ```
 
-安装完成后，验证安装：
+## 验证安装
+
+安装完成后，运行以下命令验证安装是否成功：
 
 ```bash
 aigne --version
 ```
 
-您应该看到版本号输出，例如 `1.59.0-beta.3`。
+您应该看到类似 `1.59.0-beta.3` 的版本号输出。
 
-## 查看帮助
-
-查看所有可用命令：
+查看帮助信息：
 
 ```bash
 aigne --help
 ```
 
-查看特定命令的帮助：
+这将显示所有可用的命令和选项。
+
+## 创建第一个项目
+
+使用 `create` 命令创建新的 AIGNE 项目：
+
+### 在当前目录创建
 
 ```bash
-aigne create --help
-aigne run --help
+aigne create
 ```
 
-## 创建您的第一个项目
+运行后会提示您输入项目名称：
 
-使用 `create` 命令创建新项目：
+```
+? Project name: my-first-agent
+? Select a template: default
+```
+
+### 指定项目路径
+
+您也可以直接指定项目路径：
 
 ```bash
 aigne create my-first-agent
 ```
 
-CLI 会引导您完成交互式创建流程：
+### 项目结构
 
-1. **项目名称**：输入项目名称（默认为 `my-first-agent`）
-2. **选择模板**：目前支持 `default` 模板
+创建完成后，项目目录结构如下：
 
-创建完成后，进入项目目录：
+```
+my-first-agent/
+├── agents/           # Agent 定义目录
+│   └── example.yml   # 示例 agent 配置
+├── .env.example      # 环境变量模板
+├── package.json      # 项目配置
+└── README.md         # 项目说明
+```
+
+## 配置环境变量
+
+在运行 agent 之前，需要配置 AI 模型的 API 密钥。
+
+1. 复制环境变量模板：
 
 ```bash
 cd my-first-agent
+cp .env.example .env
 ```
 
-## 运行您的第一个代理
-
-在项目目录中运行代理：
+2. 编辑 `.env` 文件，添加您的 API 密钥：
 
 ```bash
+# OpenAI
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Claude
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# XAI
+XAI_API_KEY=your_xai_api_key_here
+```
+
+根据您使用的模型提供商配置相应的 API 密钥。
+
+## 运行第一个 Agent
+
+配置完成后，运行 agent：
+
+```bash
+cd my-first-agent
 aigne run
 ```
 
-这将：
-1. 加载项目中的代理配置
-2. 启动交互式对话界面
-3. 等待您的输入
+这将启动交互式聊天界面，您可以与 agent 进行对话。
 
-现在您可以与代理对话了！输入您的问题或命令，按 Enter 发送。
+### 指定模型
 
-## 指定代理运行
+默认情况下，AIGNE CLI 使用配置文件中指定的模型。您也可以通过命令行选项指定：
 
-如果项目中有多个代理，可以指定运行哪一个：
+```bash
+# 使用 OpenAI GPT-4
+aigne run --model openai:gpt-4
+
+# 使用 Claude 3
+aigne run --model anthropic:claude-3-sonnet-20240229
+```
+
+### 运行特定 Agent
+
+如果项目中有多个 agents，可以指定要运行的 agent：
 
 ```bash
 aigne run --entry-agent myAgent
 ```
 
-或者使用简化语法：
+或使用简化语法：
 
 ```bash
 aigne run myAgent
 ```
 
-## 运行远程代理
+## 测试 Agent
 
-您也可以直接从 URL 运行代理：
-
-```bash
-aigne run --url https://example.com/aigne-project
-```
-
-CLI 会自动下载并缓存远程项目到 `~/.aigne/` 目录。
-
-## 常用选项
-
-### 指定模型
-
-使用 `--model` 选项指定 AI 模型：
+运行测试以验证 agent 的功能：
 
 ```bash
-# 使用默认的 OpenAI 模型
-aigne run --model openai
-
-# 使用特定的 GPT-4 模型
-aigne run --model openai:gpt-4o-mini
+aigne test
 ```
 
-### 启用详细日志
+这将执行 agent 目录中定义的所有测试用例。
 
-使用 `--verbose` 选项查看详细日志：
+## 启动可观测性服务器
+
+为了监控 agent 的运行状态，可以启动可观测性服务器：
 
 ```bash
-aigne run --verbose
+aigne observe
 ```
 
-### 非交互式运行
+服务器默认在 `http://localhost:7890` 启动，您可以通过浏览器访问监控界面。
 
-使用 `--chat` 选项控制是否启动交互式对话：
+## 常见问题
+
+### API 密钥未配置
+
+如果运行时出现 API 密钥相关错误，请检查：
+
+1. `.env` 文件是否存在
+2. API 密钥是否正确配置
+3. 环境变量名称是否正确
+
+### 端口被占用
+
+如果可观测性服务器端口被占用，可以指定其他端口：
 
 ```bash
-aigne run --chat false
+aigne observe --port 8080
 ```
+
+### 模型不可用
+
+如果指定的模型不可用，请：
+
+1. 检查 API 密钥是否有效
+2. 确认您的账户是否有权限访问该模型
+3. 尝试使用其他模型
 
 ## 下一步
 
-现在您已经成功运行了第一个 AIGNE 代理，可以：
+恭喜！您已经成功创建并运行了第一个 AIGNE agent。接下来可以：
 
-- 查看 [命令参考](/commands.md) 了解所有命令的详细用法
-- 探索 [使用场景](/use-cases.md) 学习更多实际应用
-- 阅读 [配置和环境](/configuration.md) 了解如何配置模型和环境变量
-- 尝试 [serve-mcp 命令](/commands/serve-mcp.md) 将代理作为服务运行
+- [基本工作流程](./workflow.md) - 了解完整的开发工作流程
+- [命令参考](./commands.md) - 深入了解所有可用命令
+- [配置](./configuration.md) - 学习如何配置 AIGNE CLI
 
----
+## 相关命令
 
-**相关文档：**
-- [create 命令](/commands/create.md) - 详细的项目创建说明
-- [run 命令](/commands/run.md) - 运行代理的完整选项
-- [配置和环境](/configuration.md) - 环境变量和模型配置
+- [`create`](./commands/create.md) - 详细的项目创建说明
+- [`run`](./commands/run.md) - Agent 运行选项和高级用法
+- [`test`](./commands/test.md) - 测试相关配置
+- [`observe`](./commands/observe.md) - 可观测性功能详解

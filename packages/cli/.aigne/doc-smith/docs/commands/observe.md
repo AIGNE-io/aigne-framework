@@ -1,6 +1,12 @@
-# observe - 可观察性
+# observe - 可观测性服务器
 
-`observe` 命令启动可观察性服务器，用于监控 AIGNE 代理的运行状态、性能指标和执行日志。
+> **前置条件**:
+> - [命令参考](../commands.md) - 了解所有可用命令
+> - [run](./run.md) - 了解如何运行 agent
+
+## 概述
+
+`observe` 命令启动可观测性服务器，用于监控 AIGNE agents 的运行数据、性能指标和调试信息。提供 Web 界面查看实时和历史数据。
 
 ## 语法
 
@@ -10,161 +16,236 @@ aigne observe [options]
 
 ## 选项
 
-| 选项 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| `--host` | string | `localhost` | 服务器监听地址 |
-| `--port` | number | `7890` | 服务器监听端口 |
+### --host
 
-## 使用方式
+- **类型**: 字符串
+- **默认值**: `localhost`
+- **描述**: 可观测性服务器运行的主机地址
+
+使用 `0.0.0.0` 可公开暴露服务器：
+
+```bash
+aigne observe --host 0.0.0.0
+```
+
+### --port
+
+- **类型**: 数字
+- **默认值**: 从环境变量 `PORT` 读取，如未设置则为 `7890`
+- **描述**: 可观测性服务器运行的端口
+
+## 使用示例
 
 ### 基本用法
 
-在默认端口（7890）启动可观察性服务器：
+#### 启动默认服务器
 
 ```bash
 aigne observe
 ```
 
-服务将在 `http://localhost:7890` 上运行。
+服务器将在 `http://localhost:7890` 启动。
 
-### 指定端口
-
-在自定义端口启动服务：
+#### 指定端口
 
 ```bash
 aigne observe --port 8080
 ```
 
-### 公开访问
+服务器将在 `http://localhost:8080` 启动。
 
-允许外部访问（绑定到所有网络接口）：
+#### 公开暴露服务器
 
 ```bash
 aigne observe --host 0.0.0.0 --port 7890
 ```
 
-## 功能特性
+允许外部访问监控界面。
 
-### 实时监控
+### 高级用法
 
-可观察性服务器提供实时监控功能：
-
-- **运行状态**：查看代理的当前运行状态
-- **执行历史**：浏览历史执行记录
-- **性能指标**：查看响应时间、Token 使用量等
-- **错误追踪**：监控和分析错误信息
-
-### 数据存储
-
-监控数据存储在本地 SQLite 数据库中：
+#### 自定义主机和端口
 
 ```bash
-# 数据库位置
-~/.aigne/observability.db
+aigne observe --host 0.0.0.0 --port 9000
 ```
 
-启动时会显示数据库路径：
+#### 在后台运行
 
+```bash
+# Unix/Linux/macOS
+aigne observe &
+
+# 使用 nohup
+nohup aigne observe > observe.log 2>&1 &
+
+# 使用 screen
+screen -dmS observe aigne observe
 ```
+
+## 服务器输出
+
+启动时显示：
+
+```bash
+$ aigne observe
 Observability database path: /Users/username/.aigne/observability.db
+Server is running on http://localhost:7890
 ```
 
-## Web 界面
+### 数据库位置
 
-可观察性服务器提供 Web 界面，通过浏览器访问：
+默认数据库路径：`~/.aigne/observability.db`
 
-```
-http://localhost:7890
-```
+存储内容：
+- Agent 运行记录
+- API 调用日志
+- 性能指标
+- 错误信息
 
-### 界面功能
+## 监控界面
 
-1. **仪表板**：总览代理运行情况
-2. **执行记录**：查看详细的执行日志
-3. **性能分析**：分析响应时间和资源使用
-4. **错误日志**：查看和搜索错误信息
+### 访问界面
 
-## 与代理集成
+在浏览器中打开：`http://localhost:7890`
 
-可观察性服务器会自动收集运行在同一环境中的代理数据。
+### 主要功能
 
-### 自动集成
+#### 1. 实时监控
 
-当您运行代理时，它们会自动向可观察性服务器发送数据：
+- **Agent 状态**: 当前运行的 agents
+- **活动连接**: 实时连接数
+- **请求速率**: 每秒请求数
+- **错误率**: 错误发生频率
+
+#### 2. 运行历史
+
+查看历史运行记录：
+- 运行时间
+- 输入/输出
+- 执行时长
+- Token 使用量
+
+#### 3. 性能分析
+
+- **响应时间分布**: 响应时间直方图
+- **Token 使用趋势**: Token 消耗随时间变化
+- **API 调用统计**: 各 API 的调用次数
+- **成本分析**: API 调用成本统计
+
+#### 4. 错误日志
+
+- **错误列表**: 所有错误记录
+- **错误详情**: 堆栈跟踪和上下文
+- **错误趋势**: 错误发生率变化
+
+#### 5. 工具使用
+
+- **工具调用**: 各工具的使用频率
+- **工具性能**: 工具执行时间
+- **工具成功率**: 工具调用成功率
+
+## 监控指标
+
+### Agent 指标
+
+- **运行次数**: Agent 被调用的总次数
+- **成功率**: 成功执行的比例
+- **平均响应时间**: 平均执行时长
+- **Token 使用量**: 总 Token 消耗
+
+### API 指标
+
+- **调用次数**: API 调用总数
+- **成功/失败**: API 调用结果统计
+- **成本**: API 调用总成本
+- **速率**: 每分钟调用次数
+
+### 系统指标
+
+- **内存使用**: 进程内存占用
+- **CPU 使用**: CPU 使用率
+- **活动连接**: 当前连接数
+
+## 数据查询
+
+### 过滤条件
+
+在界面中可以按以下条件过滤：
+
+- **时间范围**: 最近 1 小时、24 小时、7 天等
+- **Agent 名称**: 特定 agent 的数据
+- **状态**: 成功、失败、运行中
+- **模型**: 使用的 AI 模型
+
+### 导出数据
+
+可以导出监控数据为：
+- JSON
+- CSV
+- Excel
+
+## 集成使用
+
+### 与其他命令配合
+
+#### 监控 run 命令
 
 ```bash
-# 终端 1：启动可观察性服务器
+# 终端 1: 启动监控
 aigne observe
 
-# 终端 2：运行代理（会自动发送数据到可观察性服务器）
-aigne run
+# 终端 2: 运行 agent
+aigne run myAgent
 ```
 
-### 环境变量配置
+在监控界面实时查看 agent 的运行情况。
 
-通过环境变量配置可观察性设置：
-
-```bash
-# 禁用可观察性
-export AIGNE_OBSERVABILITY_ENABLED=false
-aigne run
-
-# 自定义可观察性数据库路径
-export AIGNE_OBSERVABILITY_DB_PATH=/custom/path/observability.db
-aigne observe
-```
-
-## 示例
-
-### 示例 1：基本监控
+#### 监控 serve-mcp
 
 ```bash
-# 启动可观察性服务器
+# 终端 1: 启动监控
 aigne observe
 
-# 在浏览器打开
-open http://localhost:7890
+# 终端 2: 启动 MCP 服务器
+aigne serve-mcp
 ```
 
-### 示例 2：多环境监控
+监控 MCP 服务器的请求和性能。
+
+#### 监控 eval
 
 ```bash
-# 开发环境
-aigne observe --port 7890
+# 终端 1: 启动监控
+aigne observe
 
-# 测试环境
-aigne observe --port 7891
-
-# 生产环境
-aigne observe --port 7892
+# 终端 2: 运行评估
+aigne eval myAgent --dataset data.csv
 ```
 
-### 示例 3：后台运行
+查看评估过程的详细数据。
+
+## 生产环境部署
+
+### 使用进程管理器
+
+#### PM2
 
 ```bash
-# 使用 nohup 后台运行
-nohup aigne observe --port 7890 > observe.log 2>&1 &
+# 安装 PM2
+npm install -g pm2
 
-# 查看日志
-tail -f observe.log
-```
-
-### 示例 4：使用 PM2
-
-```bash
-# 使用 PM2 管理
-pm2 start aigne --name observe-server -- observe --port 7890
+# 启动服务
+pm2 start "aigne observe --port 7890" --name aigne-observe
 
 # 查看状态
-pm2 status observe-server
+pm2 status
 
 # 查看日志
-pm2 logs observe-server
+pm2 logs aigne-observe
 ```
 
-## 生产部署
-
-### 使用 systemd
+#### systemd
 
 创建服务文件 `/etc/systemd/system/aigne-observe.service`：
 
@@ -176,10 +257,9 @@ After=network.target
 [Service]
 Type=simple
 User=aigne
-WorkingDirectory=/app
-Environment="PORT=7890"
-ExecStart=/usr/bin/aigne observe --host 0.0.0.0
-Restart=always
+WorkingDirectory=/home/aigne
+ExecStart=/usr/bin/aigne observe --port 7890
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
@@ -188,234 +268,203 @@ WantedBy=multi-user.target
 启动服务：
 
 ```bash
-sudo systemctl daemon-reload
 sudo systemctl enable aigne-observe
 sudo systemctl start aigne-observe
 sudo systemctl status aigne-observe
 ```
 
-### 反向代理（Nginx）
+### 反向代理
+
+#### Nginx
 
 ```nginx
 server {
-    listen 80;
-    server_name observe.example.com;
+  listen 80;
+  server_name monitor.example.com;
 
-    location / {
-        proxy_pass http://localhost:7890;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
+  location / {
+    proxy_pass http://localhost:7890;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+  }
 }
 ```
 
-### Docker 容器
+#### Caddy
 
-```dockerfile
-# Dockerfile
-FROM node:18
-WORKDIR /app
-RUN npm install -g @aigne/cli
-EXPOSE 7890
-VOLUME ["/data"]
-ENV AIGNE_OBSERVABILITY_DB_PATH=/data/observability.db
-CMD ["aigne", "observe", "--host", "0.0.0.0"]
+```
+monitor.example.com {
+  reverse_proxy localhost:7890
+}
 ```
 
+## 安全配置
+
+### 访问控制
+
+可观测性界面包含敏感数据，建议：
+
+1. **仅在本地网络暴露**：使用 `--host localhost`
+2. **使用 VPN**：通过 VPN 访问
+3. **添加认证**：在反向代理层添加 HTTP 基本认证
+
+#### Nginx 基本认证
+
+```nginx
+location / {
+  auth_basic "AIGNE Observability";
+  auth_basic_user_file /etc/nginx/.htpasswd;
+  proxy_pass http://localhost:7890;
+}
+```
+
+创建密码文件：
+
 ```bash
-# 构建并运行
-docker build -t aigne-observe .
-docker run -d -p 7890:7890 -v /path/to/data:/data aigne-observe
+htpasswd -c /etc/nginx/.htpasswd admin
+```
+
+### HTTPS
+
+使用 Let's Encrypt 启用 HTTPS：
+
+```bash
+certbot --nginx -d monitor.example.com
 ```
 
 ## 数据管理
 
-### 查看数据库
+### 数据库维护
 
-使用 SQLite 命令行工具查看数据：
+#### 查看数据库大小
 
 ```bash
-sqlite3 ~/.aigne/observability.db
-
-# 查看表
-.tables
-
-# 查询数据
-SELECT * FROM executions LIMIT 10;
-
-# 退出
-.quit
+ls -lh ~/.aigne/observability.db
 ```
 
-### 备份数据
-
-定期备份可观察性数据：
+#### 清理旧数据
 
 ```bash
 # 备份数据库
+cp ~/.aigne/observability.db ~/.aigne/observability.db.bak
+
+# 清理 30 天前的数据（需自定义脚本）
+# 或手动删除重新开始
+rm ~/.aigne/observability.db
+```
+
+#### 备份数据库
+
+```bash
+# 定期备份
 cp ~/.aigne/observability.db ~/backups/observability-$(date +%Y%m%d).db
-
-# 或使用 SQLite 命令
-sqlite3 ~/.aigne/observability.db ".backup ~/backups/observability-$(date +%Y%m%d).db"
 ```
-
-### 清理数据
-
-清理旧数据以节省空间：
-
-```bash
-# 删除 30 天前的数据
-sqlite3 ~/.aigne/observability.db "DELETE FROM executions WHERE timestamp < datetime('now', '-30 days')"
-
-# 压缩数据库
-sqlite3 ~/.aigne/observability.db "VACUUM"
-```
-
-## 监控指标
-
-可观察性服务器收集以下指标：
-
-### 执行指标
-
-- **执行次数**：总执行次数和成功率
-- **响应时间**：平均响应时间、P50、P95、P99
-- **Token 使用**：输入和输出 Token 数量
-- **成本统计**：基于 Token 的成本估算
-
-### 错误指标
-
-- **错误率**：错误发生频率
-- **错误类型**：不同类型错误的分布
-- **错误详情**：具体的错误信息和堆栈
-
-### 资源指标
-
-- **内存使用**：代理运行时的内存占用
-- **CPU 使用**：CPU 使用率
-- **并发数**：同时运行的代理数量
-
-## 性能优化
-
-### 数据库优化
-
-定期优化数据库性能：
-
-```bash
-# 重建索引
-sqlite3 ~/.aigne/observability.db "REINDEX"
-
-# 分析查询计划
-sqlite3 ~/.aigne/observability.db "ANALYZE"
-```
-
-### 数据保留策略
-
-实施数据保留策略：
-
-```bash
-# 创建清理脚本
-cat > cleanup_observability.sh << 'EOF'
-#!/bin/bash
-DB_PATH="$HOME/.aigne/observability.db"
-DAYS=30
-
-sqlite3 "$DB_PATH" "DELETE FROM executions WHERE timestamp < datetime('now', '-$DAYS days')"
-sqlite3 "$DB_PATH" "VACUUM"
-echo "Cleaned up data older than $DAYS days"
-EOF
-
-chmod +x cleanup_observability.sh
-
-# 添加到 crontab（每天凌晨 2 点执行）
-crontab -e
-# 添加：0 2 * * * /path/to/cleanup_observability.sh
-```
-
-## 安全建议
-
-1. **访问控制**：不要直接暴露到公网，使用 VPN 或反向代理
-2. **认证**：在 Nginx 中配置基本认证
-3. **HTTPS**：生产环境使用 SSL 加密
-4. **数据加密**：敏感数据加密存储
-5. **日志审计**：记录访问日志
 
 ## 常见问题
 
-### Q: 如何访问远程服务器的可观察性界面？
+### 端口被占用
 
-A: 使用 SSH 端口转发：
+```
+Error: Port 7890 is already in use
+```
+
+解决方法：
+1. 使用其他端口：`--port 7891`
+2. 停止占用端口的进程
+3. 检查是否已有 observe 服务在运行
+
+### 无法访问界面
+
+检查：
+1. 服务器是否正常启动
+2. 防火墙是否允许访问
+3. 主机地址配置是否正确
+
+### 数据未显示
+
+确保：
+1. Agents 正在运行
+2. 可观测性功能已启用
+3. 数据库路径正确
+
+## 环境变量
+
+### PORT
+
+设置默认端口：
 
 ```bash
-ssh -L 7890:localhost:7890 user@remote-server
+export PORT=8080
+aigne observe
 ```
 
-然后在本地浏览器访问 `http://localhost:7890`。
+## 性能考虑
 
-### Q: 数据库文件太大怎么办？
+### 数据库性能
 
-A: 定期清理旧数据和压缩数据库：
+随着数据增长，查询可能变慢：
 
-```bash
-sqlite3 ~/.aigne/observability.db "DELETE FROM executions WHERE timestamp < datetime('now', '-7 days')"
-sqlite3 ~/.aigne/observability.db "VACUUM"
+1. **定期清理**: 删除旧数据
+2. **索引优化**: 确保数据库索引正常
+3. **分离数据库**: 使用专用数据库服务器
+
+### 监控开销
+
+可观测性会带来少量性能开销：
+
+- **内存**: 约 50-100 MB
+- **CPU**: 1-2% 额外占用
+- **磁盘**: 取决于保存的数据量
+
+## 技术细节
+
+### 源码位置
+
+实现文件：`src/commands/observe.ts:25`
+
+关键函数：
+- `createObservabilityCommand()` - 创建命令
+- `startObservabilityCLIServer()` - 启动服务器
+
+### 数据库
+
+使用 SQLite 存储数据：
+- **路径**: `~/.aigne/observability.db`
+- **表结构**: 运行记录、API 调用、指标数据
+
+### 默认端口逻辑
+
+```typescript
+const DEFAULT_PORT = () => {
+  const { PORT } = process.env;
+  if (!PORT) return 7890;
+  const port = Number.parseInt(PORT, 10);
+  if (!port || !Number.isInteger(port)) {
+    throw new Error(`Invalid PORT: ${PORT}`);
+  }
+  return port;
+};
 ```
-
-### Q: 如何导出监控数据？
-
-A: 使用 SQLite 导出为 CSV：
-
-```bash
-sqlite3 -header -csv ~/.aigne/observability.db "SELECT * FROM executions" > executions.csv
-```
-
-### Q: 可以同时运行多个可观察性服务器吗？
-
-A: 可以，但它们需要使用不同的端口和数据库文件：
-
-```bash
-aigne observe --port 7890  # 默认数据库
-AIGNE_OBSERVABILITY_DB_PATH=/path/to/db2.db aigne observe --port 7891
-```
-
-## 与其他工具集成
-
-### Prometheus
-
-导出指标到 Prometheus（需要自定义脚本）：
-
-```javascript
-// prometheus-exporter.js
-import sqlite3 from 'sqlite3';
-import express from 'express';
-
-const app = express();
-const db = new sqlite3.Database(`${process.env.HOME}/.aigne/observability.db`);
-
-app.get('/metrics', (req, res) => {
-  db.all('SELECT COUNT(*) as count FROM executions', (err, rows) => {
-    res.send(`aigne_executions_total ${rows[0].count}\n`);
-  });
-});
-
-app.listen(9090);
-```
-
-### Grafana
-
-连接 SQLite 数据库创建仪表板（需要 Grafana SQLite 插件）。
 
 ## 下一步
 
-- 查看 [run 命令](/commands/run.md) 了解如何运行代理
-- 查看 [serve-mcp 命令](/commands/serve-mcp.md) 了解如何运行 MCP 服务
-- 查看 [eval 命令](/commands/eval.md) 了解如何评估代理性能
+启动监控后，可以：
 
----
+1. [run](./run.md) - 运行 agent 并监控
+2. [serve-mcp](./serve-mcp.md) - 监控 MCP 服务
+3. [eval](./eval.md) - 评估并分析性能数据
 
-**相关命令：**
-- [run](/commands/run.md) - 运行代理
-- [serve-mcp](/commands/serve-mcp.md) - MCP 服务器
-- [eval](/commands/eval.md) - 评估代理
+## 相关命令
+
+- [run](./run.md) - 运行并监控 agent
+- [serve-mcp](./serve-mcp.md) - MCP 服务监控
+- [eval](./eval.md) - 性能评估
+
+## 参考
+
+- [命令参考](../commands.md) - 返回命令列表
+- [基本工作流程](../workflow.md#可观测性) - 监控在开发流程中的作用
+- [配置](../configuration.md) - 相关配置选项

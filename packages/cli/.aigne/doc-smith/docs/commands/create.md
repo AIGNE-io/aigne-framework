@@ -1,6 +1,10 @@
 # create - 创建项目
 
-`create` 命令用于快速创建新的 AIGNE 项目，包含预定义的代理配置文件和项目结构。
+> **前置条件**: [命令参考](../commands.md) - 了解所有可用命令
+
+## 概述
+
+`create` 命令用于创建新的 AIGNE 项目，自动生成项目结构和 agent 配置文件。该命令提供交互式界面，引导用户完成项目初始化。
 
 ## 语法
 
@@ -10,188 +14,211 @@ aigne create [path]
 
 ## 参数
 
-| 参数 | 类型 | 必需 | 默认值 | 描述 |
-|------|------|------|--------|------|
-| `path` | string | 否 | `.` | 创建项目的目录路径 |
+### path
 
-## 选项
+- **类型**: 字符串（可选）
+- **默认值**: `.` (当前目录)
+- **描述**: 项目创建的目标路径
 
-`create` 命令本身没有特殊选项，但支持全局选项 `--help` 和 `--version`。
+如果未指定路径或指定为 `.`，命令会提示输入项目名称。
 
-## 使用方式
+## 使用示例
 
 ### 基本用法
 
-在当前目录创建项目（会提示输入项目名称）：
+#### 创建项目（交互式）
 
 ```bash
 aigne create
 ```
 
-指定项目路径：
+运行后会提示：
 
-```bash
-aigne create my-aigne-project
+```
+? Project name: my-aigne-project
+? Select a template: default
 ```
 
-使用绝对路径：
+#### 指定项目路径
+
+```bash
+aigne create my-agent-project
+```
+
+直接创建名为 `my-agent-project` 的项目目录。
+
+#### 指定完整路径
 
 ```bash
 aigne create /path/to/my-project
 ```
 
-## 交互流程
+在指定的绝对路径创建项目。
 
-运行 `create` 命令后，CLI 会引导您完成以下交互步骤：
+### 高级用法
 
-### 1. 项目名称
+#### 覆盖已有目录
 
-如果未指定路径或路径为 `.`，会提示输入项目名称：
+如果目标目录已存在且非空，会提示是否覆盖：
 
-```
-? Project name: (my-aigne-project)
-```
-
-- 项目名称不能为空
-- 默认值为命令行参数中指定的路径名
-
-### 2. 目录覆盖确认
-
-如果目标目录已存在且不为空，会询问是否覆盖：
-
-```
-? The directory "my-project" is not empty. Do you want to remove its contents? (y/N)
+```bash
+$ aigne create existing-project
+? The directory "existing-project" is not empty. Do you want to remove its contents? (y/N)
 ```
 
-- 选择 `y` 将清空目录并继续
-- 选择 `n` 将取消操作
-
-### 3. 选择模板
-
-选择项目模板：
-
-```
-? Select a template: (Use arrow keys)
-❯ default
-```
-
-目前支持的模板：
-- **default**: 标准 AIGNE 项目模板
+- 选择 `y` 会清空目录并创建新项目
+- 选择 `N` 会取消操作
 
 ## 项目结构
 
-创建的项目包含以下文件和目录：
+创建完成后的项目结构：
 
 ```
 my-aigne-project/
-├── aigne.yaml          # AIGNE 配置文件
-├── agents/             # 代理定义目录
-│   └── example.yaml    # 示例代理配置
-├── .env.example        # 环境变量示例
-└── README.md           # 项目说明
+├── agents/              # Agent 配置目录
+│   └── example.yml      # 示例 agent 配置
+├── .env.example         # 环境变量模板
+├── package.json         # 项目配置
+└── README.md            # 项目说明文档
 ```
 
-## 示例
+### 文件说明
 
-### 示例 1：快速创建项目
+#### agents/example.yml
+
+示例 agent 配置文件，定义 agent 的行为、工具和模型配置。
+
+#### .env.example
+
+环境变量模板文件，包含：
+- API 密钥配置示例
+- 环境变量说明
+
+使用前需复制为 `.env` 并填写实际值：
 
 ```bash
-# 创建项目
-aigne create my-bot
+cp .env.example .env
+```
 
-# 进入项目目录
-cd my-bot
+#### package.json
 
-# 运行代理
+项目的 npm 配置文件，包含依赖和脚本定义。
+
+#### README.md
+
+项目说明文档，包含使用指南和快速开始步骤。
+
+## 可用模板
+
+当前支持的模板：
+
+### default
+
+默认模板，包含：
+- 基础 agent 配置示例
+- 环境变量模板
+- 项目文档
+- 测试用例示例
+
+未来版本可能会添加更多模板选项。
+
+## 完整工作流
+
+### 1. 创建项目
+
+```bash
+aigne create my-first-agent
+```
+
+### 2. 配置环境
+
+```bash
+cd my-first-agent
+cp .env.example .env
+# 编辑 .env 文件，添加 API 密钥
+```
+
+### 3. 运行 agent
+
+```bash
 aigne run
-```
-
-### 示例 2：创建多个项目
-
-```bash
-# 创建不同用途的项目
-aigne create customer-support-bot
-aigne create data-analysis-agent
-aigne create code-review-assistant
-```
-
-### 示例 3：在特定位置创建
-
-```bash
-# 在用户目录下创建
-aigne create ~/projects/my-agent
-
-# 在工作区创建
-aigne create /workspace/agents/new-agent
 ```
 
 ## 常见问题
 
-### Q: 如何使用自定义模板？
+### 项目名称验证
 
-A: 目前仅支持内置的 `default` 模板。自定义模板功能在未来版本中会支持。
-
-### Q: 创建的项目可以立即运行吗？
-
-A: 可以！创建的项目包含示例代理配置，可以直接运行：
+项目名称不能为空：
 
 ```bash
-cd my-project
-aigne run
+? Project name:
+✗ Project name cannot be empty.
 ```
 
-### Q: 如何自定义项目结构？
+### 路径处理
 
-A: 创建项目后，您可以根据需要修改配置文件和添加新的代理定义。参考 AIGNE Framework 文档了解配置选项。
+- **相对路径**: 相对于当前工作目录
+- **绝对路径**: 使用提供的完整路径
+- **`.` (点)**: 在当前目录创建，会提示输入项目名
 
-### Q: 创建失败怎么办？
+### 目录已存在
 
-A: 检查以下几点：
-1. 确保有目标目录的写入权限
-2. 确保磁盘空间充足
-3. 检查路径是否正确
-4. 使用 `--verbose` 选项查看详细错误信息
+如果目录已存在：
+- 空目录: 直接在其中创建项目
+- 非空目录: 提示是否覆盖
 
-## 最佳实践
+### 模板不存在
 
-1. **使用描述性名称**：项目名称应该清楚地表达代理的用途
-   ```bash
-   aigne create email-assistant
-   aigne create customer-support-bot
-   ```
+如果指定的模板不存在（内部错误），会抛出错误：
 
-2. **组织项目结构**：为不同类型的项目创建专门的目录
-   ```bash
-   mkdir ~/aigne-projects
-   cd ~/aigne-projects
-   aigne create project1
-   aigne create project2
-   ```
+```
+Error: Template "template-name" not found.
+```
 
-3. **立即测试**：创建后立即运行确保环境正常
-   ```bash
-   aigne create test-agent && cd test-agent && aigne run
-   ```
+这种情况通常不会发生，因为当前只有 `default` 模板。
 
-4. **版本控制**：创建后立即初始化 Git 仓库
-   ```bash
-   aigne create my-agent
-   cd my-agent
-   git init
-   git add .
-   git commit -m "Initial commit"
-   ```
+## 成功提示
+
+创建成功后会显示：
+
+```bash
+✅ AIGNE project created successfully!
+
+To use your new agent, run:
+  cd my-first-agent && aigne run
+```
+
+## 技术细节
+
+### 实现逻辑
+
+1. **路径处理**: 解析并验证目标路径
+2. **交互提示**: 收集项目名称和模板选择
+3. **目录检查**: 验证目标目录状态
+4. **模板复制**: 从模板目录复制文件到目标位置
+5. **完成提示**: 显示成功消息和后续步骤
+
+### 源码位置
+
+实现文件：`src/commands/create.ts:12`
+
+关键函数：`createCreateCommand()`
 
 ## 下一步
 
-创建项目后，您可以：
+创建项目后，建议：
 
-- 查看 [run 命令](/commands/run.md) 了解如何运行代理
-- 查看 [test 命令](/commands/test.md) 了解如何测试代理
-- 阅读 [配置和环境](/configuration.md) 了解项目配置
+1. [快速开始](../getting-started.md#配置环境变量) - 配置环境变量
+2. [run](./run.md) - 学习如何运行 agent
+3. [基本工作流程](../workflow.md) - 了解完整开发流程
 
----
+## 相关命令
 
-**相关命令：**
-- [run](/commands/run.md) - 运行创建的代理
-- [test](/commands/test.md) - 测试代理功能
+- [run](./run.md) - 运行创建的 agent
+- [test](./test.md) - 测试 agent 功能
+- [hub](./hub.md) - 连接到 AIGNE Hub
+
+## 参考
+
+- [命令参考](../commands.md) - 返回命令列表
+- [配置](../configuration.md) - 环境变量和配置选项

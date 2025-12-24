@@ -1,274 +1,216 @@
 # test - 运行测试
 
-`test` 命令用于在指定的代理目录中运行测试，验证代理功能的正确性。
+> **前置条件**:
+> - [命令参考](../commands.md) - 了解所有可用命令
+> - [run](./run.md) - 了解如何运行 agent
+
+## 概述
+
+`test` 命令用于在指定的 agents 目录中运行测试。它基于 Node.js 的内置测试运行器，确保 agent 的功能正确性和稳定性。
 
 ## 语法
 
 ```bash
-aigne test [path]
+aigne test [options]
 ```
-
-## 参数
-
-| 参数 | 类型 | 必需 | 默认值 | 描述 |
-|------|------|------|--------|------|
-| `path` | string | 否 | `.` | 代理目录路径或 URL |
 
 ## 选项
 
-| 选项 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| `--aigne-hub-url` | string | - | 自定义 AIGNE Hub 服务 URL |
+### --path, --url
 
-## 使用方式
+- **类型**: 字符串
+- **默认值**: `.` (当前目录)
+- **别名**: `--url`
+- **描述**: agents 目录的路径或 AIGNE 项目的 URL
+
+支持：
+- 本地路径（相对路径或绝对路径）
+- HTTP/HTTPS URL
+
+### --aigne-hub-url
+
+- **类型**: 字符串
+- **描述**: 自定义 AIGNE Hub 服务 URL
+- **用途**: 用于获取远程 agent 定义或模型
+
+## 使用示例
 
 ### 基本用法
 
-在当前目录运行测试：
+#### 测试当前目录的 agents
 
 ```bash
 aigne test
 ```
 
-指定目录运行测试：
+在当前目录查找并运行所有测试文件。
+
+#### 测试指定路径的 agents
 
 ```bash
-aigne test ./my-agents
-aigne test /path/to/agents
+aigne test --path path/to/agents
 ```
 
-### 运行远程项目测试
-
-从 URL 运行测试：
+#### 测试远程 agent
 
 ```bash
 aigne test --url https://example.com/aigne-project
 ```
 
-## 测试工作原理
+### 高级用法
 
-`test` 命令使用 Node.js 内置的测试运行器，在代理项目的根目录执行：
+#### 使用自定义 Hub
+
+```bash
+aigne test --path . --aigne-hub-url https://custom-hub.example.com
+```
+
+#### 组合选项
+
+```bash
+aigne test --path path/to/agents --aigne-hub-url https://hub.aigne.io
+```
+
+## 工作原理
+
+### 测试执行流程
+
+1. **路径解析**: 确定 agents 目录位置
+2. **加载 AIGNE**: 加载项目配置和 agents
+3. **运行测试**: 使用 Node.js 测试运行器执行测试
+
+### 测试发现
+
+命令会在 agent 根目录下查找测试文件，通常为：
+
+```
+agents/
+├── __tests__/
+│   ├── agent1.test.ts
+│   └── agent2.test.ts
+└── agent.yml
+```
+
+### Node.js 测试运行器
+
+使用 Node.js 内置的 `--test` 标志：
 
 ```bash
 node --test
 ```
 
-这意味着项目中所有符合以下命名模式的文件都会被执行：
-- `*.test.js`
-- `*.test.mjs`
-- `*.test.cjs`
-- `test/*.js`
-- `test/*.mjs`
-- `test/*.cjs`
+这会自动发现并运行项目中的所有测试文件。
 
-## 编写测试
+## 测试文件编写
 
-### 测试文件结构
+### 基本测试结构
 
-在项目中创建测试文件：
-
-```
-my-aigne-project/
-├── agents/
-│   └── myAgent.yaml
-├── test/
-│   ├── agent.test.js
-│   └── utils.test.js
-└── aigne.yaml
-```
-
-### 测试示例
-
-```javascript
-// test/agent.test.js
+```typescript
+// agents/__tests__/myAgent.test.ts
 import { test } from 'node:test';
 import assert from 'node:assert';
 
-test('代理应该正确响应问候', async (t) => {
-  const response = await runAgent('你好');
-  assert.ok(response.includes('你好'));
-});
+test('agent should respond correctly', async () => {
+  const response = await agent.run({
+    message: 'Hello'
+  });
 
-test('代理应该处理错误输入', async (t) => {
-  const response = await runAgent('');
-  assert.ok(response !== null);
+  assert.ok(response);
+  assert.match(response, /hello/i);
 });
 ```
 
 ### 使用 AIGNE 测试工具
 
-```javascript
-import { test } from 'node:test';
-import { loadAIGNE } from '@aigne/core';
+```typescript
+import { test, expect } from '@aigne/test-utils';
 
-test('测试代理功能', async (t) => {
-  const aigne = await loadAIGNE({ path: '.' });
-  const agent = aigne.agents[0];
-  
-  // 测试代理
-  const result = await agent.run({ input: '测试消息' });
-  assert.ok(result.success);
+test('myAgent should handle queries', async () => {
+  const result = await agent.run({
+    message: 'What is 2+2?'
+  });
+
+  expect(result).toContain('4');
 });
 ```
 
-## 示例
+### 测试文件命名规范
 
-### 示例 1：基本测试流程
+推荐的测试文件命名：
 
-```bash
-# 创建项目
-aigne create test-project
-cd test-project
+- `*.test.ts` - TypeScript 测试
+- `*.test.js` - JavaScript 测试
+- `__tests__/` 目录下的所有文件
 
-# 添加测试文件
-mkdir test
-cat > test/example.test.js << 'EOF'
-import { test } from 'node:test';
-import assert from 'node:assert';
+## 测试输出
 
-test('示例测试', () => {
-  assert.strictEqual(1 + 1, 2);
-});
-EOF
-
-# 运行测试
-aigne test
-```
-
-### 示例 2：持续集成
+### 成功示例
 
 ```bash
-# 在 CI/CD 脚本中
-aigne test || exit 1
+$ aigne test
+✔ agent should respond correctly (123ms)
+✔ agent should handle errors (45ms)
+✔ agent should use tools (67ms)
+
+3 tests passed
 ```
 
-### 示例 3：测试特定项目
+### 失败示例
 
 ```bash
-# 测试多个项目
-aigne test ./project1
-aigne test ./project2
-aigne test ./project3
+$ aigne test
+✔ agent should respond correctly (123ms)
+✖ agent should handle errors (45ms)
+  AssertionError: Expected response to contain 'error'
+
+1 test passed, 1 test failed
 ```
 
-## 测试最佳实践
+## 测试场景
 
-### 1. 组织测试文件
+### 单元测试
 
-将测试文件放在 `test/` 目录：
+测试单个 agent 的功能：
 
-```
-project/
-├── agents/
-├── test/
-│   ├── unit/
-│   │   ├── agent.test.js
-│   │   └── utils.test.js
-│   └── integration/
-│       └── workflow.test.js
-└── aigne.yaml
-```
+```typescript
+test('calculator agent adds numbers', async () => {
+  const result = await calculatorAgent.run({
+    message: 'Add 5 and 3'
+  });
 
-### 2. 使用描述性测试名称
-
-```javascript
-test('当用户输入问候语时，代理应该返回友好的回复', async () => {
-  // 测试逻辑
+  expect(result).toContain('8');
 });
 ```
 
-### 3. 模拟外部依赖
+### 集成测试
 
-```javascript
-import { mock } from 'node:test';
+测试多个 agents 或工具的集成：
 
-test('应该调用 API', async () => {
-  const mockFetch = mock.fn(() => Promise.resolve({ ok: true }));
-  // 使用 mockFetch
+```typescript
+test('agent uses web search tool', async () => {
+  const result = await searchAgent.run({
+    message: 'Search for latest news'
+  });
+
+  expect(result).toBeDefined();
 });
 ```
 
-### 4. 测试边界情况
+### 错误处理测试
 
-```javascript
-test('应该处理空输入', async () => {
-  const result = await processInput('');
-  assert.ok(result !== undefined);
-});
+```typescript
+test('agent handles invalid input', async () => {
+  const result = await agent.run({
+    message: ''
+  });
 
-test('应该处理超长输入', async () => {
-  const longInput = 'a'.repeat(10000);
-  const result = await processInput(longInput);
-  assert.ok(result !== null);
+  expect(result).toContain('error');
 });
 ```
 
-## 环境配置
+## 持续集成
 
-### 测试环境变量
-
-创建 `.env.test` 文件用于测试：
-
-```bash
-# .env.test
-OPENAI_API_KEY=test-key
-LOG_LEVEL=silent
-NODE_ENV=test
-```
-
-### 加载测试配置
-
-```javascript
-import { config } from 'dotenv-flow';
-
-// 在测试文件开头加载测试配置
-config({ path: '.', pattern: '.env.test' });
-```
-
-## 常见问题
-
-### Q: 如何只运行特定的测试文件？
-
-A: 使用 Node.js 的 `--test` 参数指定文件：
-
-```bash
-cd my-project
-node --test test/specific.test.js
-```
-
-### Q: 如何查看测试覆盖率？
-
-A: 使用 Node.js 的覆盖率工具：
-
-```bash
-cd my-project
-node --test --experimental-test-coverage
-```
-
-### Q: 测试失败如何调试？
-
-A: 启用详细日志：
-
-```bash
-cd my-project
-LOG_LEVEL=debug node --test
-```
-
-### Q: 如何跳过某些测试？
-
-A: 使用 `test.skip()`：
-
-```javascript
-import { test } from 'node:test';
-
-test.skip('暂时跳过的测试', () => {
-  // 这个测试不会运行
-});
-```
-
-## 持续集成示例
-
-### GitHub Actions
+### 在 CI 中运行
 
 ```yaml
 # .github/workflows/test.yml
@@ -283,63 +225,176 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: 18
       - run: npm install -g @aigne/cli
       - run: aigne test
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 ```
 
-### GitLab CI
+### 环境变量配置
+
+在 CI 中设置必要的环境变量：
 
 ```yaml
-# .gitlab-ci.yml
-test:
-  image: node:18
-  script:
-    - npm install -g @aigne/cli
-    - aigne test
-  variables:
-    OPENAI_API_KEY: $CI_OPENAI_API_KEY
+env:
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 ```
 
-## 高级测试技巧
+## 常见问题
 
-### 异步测试
+### 测试未找到
 
-```javascript
-test('异步操作测试', async () => {
-  const result = await someAsyncFunction();
-  assert.ok(result);
+```
+Error: No test files found
+```
+
+解决方法：
+1. 确认测试文件存在
+2. 检查文件命名是否符合规范
+3. 确保在正确的目录运行命令
+
+### Agent 加载失败
+
+```
+Error: Failed to load AIGNE
+```
+
+解决方法：
+1. 检查 `aigne.yaml` 配置文件
+2. 确认 agent 配置正确
+3. 验证所有依赖已安装
+
+### API 调用失败
+
+测试中的 API 调用失败时：
+
+1. 检查 API 密钥是否配置
+2. 使用 mock 数据避免实际 API 调用
+3. 考虑使用测试专用的 API 密钥
+
+## 最佳实践
+
+### 1. 使用 Mock
+
+避免在测试中调用实际的 API：
+
+```typescript
+import { mockAgent } from '@aigne/test-utils';
+
+test('agent with mock', async () => {
+  const agent = mockAgent({
+    response: 'Mocked response'
+  });
+
+  const result = await agent.run({ message: 'test' });
+  expect(result).toBe('Mocked response');
 });
 ```
 
-### 并行测试
+### 2. 隔离测试
 
-Node.js 测试运行器默认并行运行测试，提高速度：
+每个测试应该独立，不依赖其他测试：
 
-```javascript
-test('测试 1', async () => { /* ... */ });
-test('测试 2', async () => { /* ... */ });
-// 这两个测试会并行运行
+```typescript
+test('test 1', async () => {
+  // 独立的测试逻辑
+});
+
+test('test 2', async () => {
+  // 不依赖 test 1 的结果
+});
 ```
 
-### 测试超时设置
+### 3. 清理资源
 
-```javascript
-test('应该在 5 秒内完成', { timeout: 5000 }, async () => {
-  await longRunningOperation();
+在测试后清理创建的资源：
+
+```typescript
+import { after } from 'node:test';
+
+after(async () => {
+  // 清理测试数据
+  await cleanup();
+});
+```
+
+### 4. 使用描述性名称
+
+测试名称应该清楚说明测试内容：
+
+```typescript
+// 好
+test('calculator agent correctly adds two positive numbers', async () => {});
+
+// 不好
+test('test 1', async () => {});
+```
+
+## 调试测试
+
+### 单独运行测试文件
+
+```bash
+cd path/to/agents
+node --test __tests__/specific.test.ts
+```
+
+### 使用 console.log
+
+在测试中添加日志：
+
+```typescript
+test('debug test', async () => {
+  console.log('Input:', input);
+  const result = await agent.run(input);
+  console.log('Result:', result);
+  expect(result).toBeDefined();
+});
+```
+
+### 使用调试器
+
+```bash
+node --inspect-brk --test
+```
+
+然后在浏览器中打开 `chrome://inspect` 进行调试。
+
+## 技术细节
+
+### 源码位置
+
+实现文件：`src/commands/test.ts:12`
+
+关键函数：`createTestCommand()`
+
+### 测试运行命令
+
+实际执行的命令：
+
+```typescript
+spawnSync('node', ['--test'], {
+  cwd: aigne.rootDir,
+  stdio: 'inherit'
 });
 ```
 
 ## 下一步
 
-- 查看 [run 命令](/commands/run.md) 了解如何运行代理
-- 查看 [eval 命令](/commands/eval.md) 了解如何评估代理性能
-- 阅读 AIGNE Framework 测试文档了解更多测试技巧
+测试通过后，可以：
 
----
+1. [eval](./eval.md) - 评估 agent 性能
+2. [deploy](./deploy.md) - 部署到生产环境
+3. [observe](./observe.md) - 监控 agent 运行状态
 
-**相关命令：**
-- [run](/commands/run.md) - 运行代理
-- [eval](/commands/eval.md) - 评估代理性能
+## 相关命令
+
+- [run](./run.md) - 运行 agent 进行手动测试
+- [eval](./eval.md) - 性能评估
+- [create](./create.md) - 创建包含测试模板的项目
+
+## 参考
+
+- [命令参考](../commands.md) - 返回命令列表
+- [基本工作流程](../workflow.md#4-本地测试) - 测试在开发流程中的位置
+- [Node.js 测试文档](https://nodejs.org/api/test.html) - Node.js 测试运行器文档

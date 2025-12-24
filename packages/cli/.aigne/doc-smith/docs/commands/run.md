@@ -1,335 +1,370 @@
-# run - 运行代理
+# run - 运行 Agent
 
-`run` 命令用于运行 AIGNE 代理，支持本地项目和远程 URL，提供交互式对话界面。
+> **前置条件**:
+> - [命令参考](../commands.md) - 了解所有可用命令
+> - [create](./create.md) - 了解如何创建项目
+
+## 概述
+
+`run` 命令用于运行 AIGNE agent 并启动聊天循环。这是 AIGNE CLI 的默认命令，也是最常用的命令之一。
 
 ## 语法
 
 ```bash
-aigne run [path] [entry-agent]
-aigne [path] [entry-agent]  # 简化形式（run 是默认命令）
+aigne run [path] [entry-agent] [options]
+# 或简化为
+aigne [path] [entry-agent] [options]
 ```
+
+当不指定子命令时，`aigne` 默认执行 `run` 命令。
 
 ## 参数
 
-| 参数 | 类型 | 必需 | 默认值 | 描述 |
-|------|------|------|--------|------|
-| `path` | string | 否 | `.` | 代理目录路径或 URL |
-| `entry-agent` | string | 否 | 第一个代理 | 要运行的代理名称 |
+### path
+
+- **类型**: 字符串（可选）
+- **默认值**: `.` (当前目录)
+- **描述**: agents 目录的路径或 AIGNE 项目的 URL
+
+支持：
+- 本地路径（相对路径或绝对路径）
+- HTTP/HTTPS URL
+
+### entry-agent
+
+- **类型**: 字符串（可选）
+- **描述**: 要运行的 agent 名称
+- **默认值**: 项目中的第一个 agent（如未指定）
 
 ## 选项
 
-| 选项 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| `--version`, `-v` | boolean | - | 显示版本号 |
-| `--chat` | boolean | `false` | 在终端启动交互式对话 |
-| `--model` | string | - | 指定 AI 模型，格式：`provider[:model]` |
-| `--image-model` | string | - | 指定图像生成模型 |
-| `--log-level` | string | `info` | 日志级别：`debug`、`info`、`warn`、`error` |
-| `--verbose` | boolean | `false` | 启用详细日志输出 |
-| `--aigne-hub-url` | string | - | 自定义 AIGNE Hub 服务 URL |
+### --version, -v
 
-## 使用方式
-
-### 基本用法
-
-运行当前目录的代理：
+显示版本号并退出。
 
 ```bash
-aigne run
-# 或使用简化形式
-aigne
+aigne --version
+# 或
+aigne -v
 ```
 
-运行指定路径的代理：
+### --chat
 
-```bash
-aigne run ./my-agents
-aigne run /absolute/path/to/agents
-```
-
-### 指定代理
-
-运行特定代理：
-
-```bash
-aigne run --entry-agent myAgent
-# 或使用简化形式
-aigne run myAgent
-aigne myAgent
-```
-
-### 运行远程代理
-
-从 URL 运行代理：
-
-```bash
-aigne run --url https://example.com/aigne-project.tar.gz
-# 或直接使用 URL 作为 path
-aigne run https://example.com/aigne-project
-```
-
-远程代理会被下载到 `~/.aigne/<hostname><pathname>/` 目录并缓存。
-
-## 模型配置
-
-### 指定模型提供商
-
-使用默认模型：
-
-```bash
-# OpenAI（默认模型）
-aigne run --model openai
-
-# Claude
-aigne run --model anthropic
-
-# XAI
-aigne run --model xai
-```
-
-### 指定具体模型
-
-使用特定模型版本：
-
-```bash
-# OpenAI GPT-4
-aigne run --model openai:gpt-4o-mini
-
-# Claude Sonnet
-aigne run --model anthropic:claude-3-5-sonnet-20241022
-
-# XAI Grok
-aigne run --model xai:grok-beta
-```
-
-### 配置图像模型
-
-指定图像生成模型：
-
-```bash
-aigne run --image-model dall-e-3
-```
-
-## 日志和调试
-
-### 设置日志级别
-
-```bash
-# 详细日志
-aigne run --log-level debug
-
-# 仅错误
-aigne run --log-level error
-```
-
-### 使用 verbose 模式
-
-```bash
-aigne run --verbose
-```
-
-这等同于 `--log-level debug`。
-
-## 交互式对话
-
-### 启动对话模式
+在终端中运行聊天循环。
 
 ```bash
 aigne run --chat
 ```
 
-在对话模式中：
-- 输入消息后按 Enter 发送
-- 使用 `Ctrl+C` 或输入 `exit` 退出
-- 代理的回复会实时显示
+### --model
 
-### 非交互式运行
-
-某些代理可能设计为非交互式运行（如定时任务、事件处理器）：
+指定要使用的 AI 模型。
 
 ```bash
-aigne run --chat false
+aigne run --model <provider[:model]>
+```
+
+格式：`provider` 或 `provider:model`
+- `provider`: 模型提供商（如 `openai`, `anthropic`）
+- `model`: 具体模型名称（可选）
+
+示例：
+```bash
+# 使用 OpenAI 默认模型
+aigne run --model openai
+
+# 使用特定的 OpenAI 模型
+aigne run --model openai:gpt-4
+
+# 使用 Claude
+aigne run --model anthropic:claude-3-sonnet-20240229
+```
+
+### --verbose
+
+启用详细日志输出，用于调试。
+
+```bash
+aigne run --verbose
+```
+
+### --log-level
+
+设置日志级别。
+
+```bash
+aigne run --log-level debug
+```
+
+### --cache-dir
+
+指定下载包的缓存目录（用于 URL 模式）。
+
+```bash
+aigne run --url https://example.com/agent --cache-dir /path/to/cache
+```
+
+## 使用示例
+
+### 基本用法
+
+#### 运行当前目录的 agent
+
+```bash
+aigne run
+# 或简化为
+aigne
+```
+
+#### 运行指定路径的 agent
+
+```bash
+aigne run --path path/to/agents
+# 或简化为
+aigne path/to/agents
+```
+
+#### 运行远程 agent
+
+```bash
+aigne run --url https://example.com/aigne-project
+# 或简化为
+aigne https://example.com/aigne-project
+```
+
+#### 运行特定 agent
+
+```bash
+aigne run --entry-agent myAgent
+# 或简化为
+aigne myAgent
+```
+
+### 高级用法
+
+#### 指定模型和详细日志
+
+```bash
+aigne run --model openai:gpt-4 --verbose
+```
+
+#### 运行远程 agent 并指定模型
+
+```bash
+aigne run --url https://hub.aigne.io/agents/example --model anthropic:claude-3-opus-20240229
+```
+
+#### 启用聊天模式
+
+```bash
+aigne run --chat --entry-agent chatbot
+```
+
+#### 组合多个选项
+
+```bash
+aigne run path/to/agents --entry-agent myAgent --model openai:gpt-4o-mini --verbose
+```
+
+## 工作原理
+
+### 加载流程
+
+1. **路径解析**: 确定 agent 的位置（本地或远程）
+2. **下载（如需要）**: 如果是 URL，下载并缓存项目
+3. **环境加载**: 加载 `.env` 文件中的环境变量
+4. **AIGNE 初始化**: 加载 AIGNE 配置和 agents
+5. **Agent 选择**: 确定要运行的 agent
+6. **启动执行**: 启动 agent 并进入聊天循环
+
+### 远程 URL 支持
+
+当使用 URL 时：
+
+```bash
+aigne run --url https://example.com/agent.tar.gz
+```
+
+1. 下载包到 `~/.aigne/<hostname>/<path>`
+2. 解压并缓存
+3. 从缓存位置加载运行
+
+缓存位置示例：
+```
+~/.aigne/example.com/agent/
+```
+
+### Agent 选择优先级
+
+1. 命令行指定的 `--entry-agent`
+2. 位置参数指定的 agent 名称
+3. 配置文件中的 entry agent
+4. 项目中的第一个 agent
+
+## 交互式聊天
+
+启动后进入交互式聊天界面：
+
+```
+> Hello
+Agent: Hi! How can I help you today?
+
+> What can you do?
+Agent: I can help you with...
+
+> exit
+```
+
+常用命令：
+- `exit` 或 `quit`: 退出聊天
+- `help`: 显示帮助信息
+
+## 兼容性
+
+### 旧版命令格式
+
+为了向后兼容，支持以下旧格式：
+
+```bash
+# 旧格式
+aigne run --path /path/to/agents --entry-agent myAgent
+
+# 新格式（推荐）
+aigne /path/to/agents myAgent
 ```
 
 ## 环境变量
 
-`run` 命令会自动加载以下环境变量：
+运行时会自动加载以下环境变量：
 
-### API 密钥
+- `OPENAI_API_KEY` - OpenAI API 密钥
+- `ANTHROPIC_API_KEY` - Anthropic API 密钥
+- `XAI_API_KEY` - XAI API 密钥
+- `AIGNE_HUB_API_URL` - AIGNE Hub URL
+- `AIGNE_HUB_API_KEY` - AIGNE Hub API 密钥
 
-```bash
-# OpenAI
-export OPENAI_API_KEY=sk-xxx
-aigne run
-
-# Claude
-export ANTHROPIC_API_KEY=sk-ant-xxx
-aigne run --model anthropic
-
-# XAI
-export XAI_API_KEY=xai-xxx
-aigne run --model xai
-```
-
-### 项目配置
-
-在项目目录创建 `.env` 文件：
-
-```bash
-# .env
-OPENAI_API_KEY=sk-xxx
-LOG_LEVEL=debug
-AIGNE_HUB_URL=https://custom-hub.example.com
-```
-
-CLI 会自动加载这些配置。
-
-## 示例
-
-### 示例 1：基本运行
-
-```bash
-# 创建并运行项目
-aigne create my-bot
-cd my-bot
-aigne run
-```
-
-### 示例 2：使用特定模型
-
-```bash
-# 使用 GPT-4
-aigne run --model openai:gpt-4o-mini
-
-# 使用 Claude
-aigne run --model anthropic:claude-3-5-sonnet-20241022
-```
-
-### 示例 3：运行远程代理
-
-```bash
-# 从 GitHub 运行
-aigne run https://github.com/user/repo/archive/main.tar.gz
-
-# 从私有服务器运行
-aigne run https://my-server.com/agents/customer-support.tar.gz
-```
-
-### 示例 4：调试模式
-
-```bash
-# 启用详细日志
-aigne run --verbose
-
-# 或指定日志级别
-aigne run --log-level debug
-```
-
-### 示例 5：多代理项目
-
-```bash
-# 列出所有可用代理
-aigne run --help
-
-# 运行特定代理
-aigne run agent1
-aigne run agent2
-```
-
-## 工作流程
-
-`run` 命令的执行流程：
-
-1. **解析参数**：解析命令行参数和选项
-2. **加载项目**：
-   - 本地项目：直接加载
-   - 远程 URL：下载并解压到缓存目录
-3. **加载环境**：读取 `.env` 文件
-4. **初始化 AIGNE**：加载代理配置和依赖
-5. **启动代理**：根据指定的代理名称启动
-6. **交互循环**：如果启用 `--chat`，进入交互式对话
+详见 [配置文档](../configuration.md)。
 
 ## 常见问题
 
-### Q: 如何查看项目中有哪些代理？
+### Agent 未找到
 
-A: 运行 `aigne run --help` 会列出所有可用代理。
+```
+Error: Entry agent does not exist
+```
 
-### Q: 可以同时运行多个代理吗？
+解决方法：
+1. 检查 agent 名称是否正确
+2. 确认 agent 配置文件存在
+3. 使用 `--verbose` 查看详细日志
 
-A: 一次只能运行一个代理。如果需要运行多个，可以在不同终端窗口中分别运行。
+### API 密钥未配置
 
-### Q: 远程代理如何更新？
+```
+Error: API key not configured
+```
 
-A: 删除缓存目录 `~/.aigne/<hostname><pathname>/` 后重新运行即可重新下载。
+解决方法：
+1. 创建 `.env` 文件
+2. 添加相应的 API 密钥
+3. 确保环境变量名称正确
 
-### Q: 如何切换不同的 API 提供商？
+### 下载失败
 
-A: 使用 `--model` 选项指定提供商，并确保相应的 API 密钥已配置。
+```
+Error: Failed to download package
+```
 
-## 最佳实践
+解决方法：
+1. 检查 URL 是否正确
+2. 确认网络连接
+3. 尝试手动下载验证
 
-1. **使用环境变量**：将 API 密钥存储在 `.env` 文件而非命令行
-   ```bash
-   # .env
-   OPENAI_API_KEY=sk-xxx
-   ```
+## 调试技巧
 
-2. **开发时启用详细日志**：便于调试
-   ```bash
-   aigne run --verbose
-   ```
+### 启用详细日志
 
-3. **生产环境禁用详细日志**：减少日志输出
-   ```bash
-   aigne run --log-level warn
-   ```
+```bash
+aigne run --verbose
+```
 
-4. **使用别名简化命令**：
-   ```bash
-   # 在 ~/.bashrc 或 ~/.zshrc 中
-   alias aigne-dev="aigne run --verbose"
-   alias aigne-prod="aigne run --log-level warn"
-   ```
+显示：
+- API 调用详情
+- 工具执行日志
+- 内存操作记录
+- 错误堆栈
 
-5. **版本控制 .env.example**：提供环境变量模板
-   ```bash
-   # .env.example
-   OPENAI_API_KEY=your-api-key-here
-   LOG_LEVEL=info
-   ```
+### 查看版本信息
+
+```bash
+aigne --version
+```
+
+### 查看帮助
+
+```bash
+aigne run --help
+```
 
 ## 性能优化
 
-### 缓存远程代理
+### 使用本地缓存
 
-远程代理会自动缓存到本地，后续运行会直接使用缓存：
+远程 agent 会自动缓存，重复运行更快：
 
 ```bash
-# 首次运行会下载
-aigne run https://example.com/agent.tar.gz
+# 第一次运行（下载）
+aigne run --url https://example.com/agent
 
-# 后续运行使用缓存，速度更快
-aigne run https://example.com/agent.tar.gz
+# 后续运行（使用缓存）
+aigne run --url https://example.com/agent  # 更快
 ```
 
-### 清理缓存
+### 选择合适的模型
 
-手动清理缓存以节省磁盘空间：
+根据任务选择模型：
+- 简单任务: `gpt-4o-mini`
+- 复杂推理: `gpt-4`, `claude-3-opus`
+- 平衡性能: `claude-3-sonnet`
 
-```bash
-rm -rf ~/.aigne/
+## 技术细节
+
+### 源码位置
+
+实现文件：`src/commands/run.ts:22`
+
+关键函数：
+- `createRunCommand()` - 创建命令
+- `loadApplication()` - 加载应用
+- `prepareDirs()` - 准备目录
+
+### V1 包兼容性
+
+支持旧版 V1 格式的 agent 包，会自动转换：
+
+```typescript
+if (await isV1Package(cacheDir)) {
+  await toAIGNEPackage(cacheDir, dir);
+}
 ```
 
 ## 下一步
 
-- 查看 [serve-mcp 命令](/commands/serve-mcp.md) 了解如何将代理作为服务运行
-- 查看 [test 命令](/commands/test.md) 了解如何测试代理
-- 查看 [配置和环境](/configuration.md) 了解详细的配置选项
+运行 agent 后，可以：
 
----
+1. [test](./test.md) - 运行测试验证功能
+2. [eval](./eval.md) - 评估 agent 性能
+3. [observe](./observe.md) - 启动监控查看运行状态
 
-**相关命令：**
-- [create](/commands/create.md) - 创建新项目
-- [test](/commands/test.md) - 运行测试
-- [serve-mcp](/commands/serve-mcp.md) - 作为 MCP 服务运行
+## 相关命令
+
+- [create](./create.md) - 创建新项目
+- [test](./test.md) - 运行测试
+- [serve-mcp](./serve-mcp.md) - 作为 MCP 服务运行
+- [hub](./hub.md) - 管理 Hub 连接
+
+## 参考
+
+- [命令参考](../commands.md) - 返回命令列表
+- [基本工作流程](../workflow.md) - 完整开发流程
+- [配置](../configuration.md) - 配置选项详解

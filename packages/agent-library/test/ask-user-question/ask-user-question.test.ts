@@ -207,12 +207,12 @@ test("AskUserQuestionAgent should use select for single-select questions with op
       "choices": [
         {
           "description": "First option",
-          "short": "Option A",
+          "name": "Option A",
           "value": "Option A",
         },
         {
           "description": "Second option",
-          "short": "Option B",
+          "name": "Option B",
           "value": "Option B",
         },
       ],
@@ -278,11 +278,11 @@ test("AskUserQuestionAgent should add OTHER_OPTION when allowCustomAnswer is tru
       "choices": [
         {
           "description": "Option A",
-          "short": "Option A",
+          "name": "Option A",
           "value": "Option A",
         },
         {
-          "short": "None of the above / Enter my own response",
+          "name": "None of the above / Enter my own response",
           "value": "OTHER_OPTION",
         },
       ],
@@ -434,12 +434,12 @@ test("AskUserQuestionAgent should use label as description fallback", async () =
       "choices": [
         {
           "description": "Option A",
-          "short": "Option A",
+          "name": "Option A",
           "value": "Option A",
         },
         {
           "description": "Has description",
-          "short": "Option B",
+          "name": "Option B",
           "value": "Option B",
         },
       ],

@@ -82,17 +82,17 @@ export default class AskUserQuestionAgent extends Agent<
       let answer: string | string[];
 
       if (q.options?.length) {
-        const choices: { value: string; short?: string; description?: string }[] = q.options.map(
+        const choices: { value: string; name?: string; description?: string }[] = q.options.map(
           (opt) => ({
             value: opt.label,
-            short: opt.label,
+            name: opt.label,
             description: opt.description ?? opt.label,
           }),
         );
 
         if (allowCustomAnswer) {
           choices.push({
-            short: "None of the above / Enter my own response",
+            name: "None of the above / Enter my own response",
             value: "OTHER_OPTION",
           });
         }

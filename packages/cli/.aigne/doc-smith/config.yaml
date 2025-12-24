@@ -1,5 +1,5 @@
 # Project information for documentation publishing
-projectName: AIGNE CLI
+projectName: AIGNE CLI skill test with aigne
 projectDesc: "@aigne/cli is the official command-line tool for AIGNE Framework, designed to simplify the development, testing, and deployment processes for AIGNE applications. It provides a series of useful commands to help developers quickly create projects, run agents, test code, and deploy applications."
 projectLogo: https://avatars.githubusercontent.com/u/143965177?v=4
 
@@ -58,20 +58,14 @@ rules: |
 targetAudience: |
   
 
-locale: en
-translateLanguages:
-  - zh
-  - zh-TW
-  - ja
-labels:
-  - Reference
+locale: zh
+# translateLanguages:
+#   - zh
+#   - zh-TW
+#   - ja
+# labels:
+#   - Reference
 docsDir: ./docs  # Directory to save generated documentation
 sourcesPath:  # Source code paths to analyze
   - ./
 lastGitHead: 0e78e6bd2f5602448e8558f363e6b68d6a873108
-appUrl: https://docsmith.aigne.io
-boardId: "aigne-cli"
-# Checkout ID for document deployment service
-checkoutId: ""
-# Should sync branding for documentation
-shouldSyncBranding: ""

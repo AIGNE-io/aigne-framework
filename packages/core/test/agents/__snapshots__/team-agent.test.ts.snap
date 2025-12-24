@@ -3,6 +3,18 @@
 exports[`TeamAgent should return streaming response with sequential process method (multiple agent with different output keys) 1`] = `
 [
   {
+    "progress": {
+      "event": "message",
+      "message": [
+        {
+          "content": "hello",
+          "type": "text",
+        },
+      ],
+      "role": "user",
+    },
+  },
+  {
     "delta": {
       "text": {
         "second": "Hello",
@@ -35,6 +47,37 @@ exports[`TeamAgent should return streaming response with sequential process meth
       "text": {
         "second": "!",
       },
+    },
+  },
+  {
+    "progress": {
+      "event": "message",
+      "message": [
+        {
+          "content": "Hello, world!",
+          "type": "text",
+        },
+      ],
+      "role": "agent",
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "second": "Hello, world!",
+      },
+    },
+  },
+  {
+    "progress": {
+      "event": "message",
+      "message": [
+        {
+          "content": "Hello, world!",
+          "type": "text",
+        },
+      ],
+      "role": "agent",
     },
   },
 ]
@@ -93,9 +136,25 @@ exports[`TeamAgent should return streaming response with parallel process method
   },
   {
     "delta": {
+      "json": {
+        "first": "Hello, ",
+      },
+      "text": undefined,
+    },
+  },
+  {
+    "delta": {
       "text": {
         "second": "!",
       },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "second": "Hello, world!",
+      },
+      "text": undefined,
     },
   },
 ]
@@ -138,6 +197,37 @@ exports[`TeamAgent should return streaming response with sequential process meth
       },
     },
   },
+  {
+    "progress": {
+      "event": "message",
+      "message": [
+        {
+          "content": "Hello, world!",
+          "type": "text",
+        },
+      ],
+      "role": "agent",
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "text": "Hello, world!",
+      },
+    },
+  },
+  {
+    "progress": {
+      "event": "message",
+      "message": [
+        {
+          "content": "Hello, world!",
+          "type": "text",
+        },
+      ],
+      "role": "agent",
+    },
+  },
 ]
 `;
 
@@ -162,6 +252,22 @@ exports[`TeamAgent should return streaming response with parallel process method
       "text": {
         "text": " ",
       },
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "text": "Hello, ",
+      },
+      "text": undefined,
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "text": "Hello, world!",
+      },
+      "text": undefined,
     },
   },
 ]
@@ -223,6 +329,37 @@ exports[`TeamAgent with sequential mode should yield output chunks correctly 1`]
       "text": {
         "summary": "Result",
       },
+    },
+  },
+  {
+    "progress": {
+      "event": "message",
+      "message": [
+        {
+          "content": "First Result, Second Result",
+          "type": "text",
+        },
+      ],
+      "role": "agent",
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "summary": "First Result, Second Result",
+      },
+    },
+  },
+  {
+    "progress": {
+      "event": "message",
+      "message": [
+        {
+          "content": "First Result, Second Result",
+          "type": "text",
+        },
+      ],
+      "role": "agent",
     },
   },
 ]

@@ -23,6 +23,7 @@ test("AFS should record history correctly", async () => {
   expect(histories.map(({ createdAt, id, path, updatedAt, ...i }) => i)).toMatchInlineSnapshot(`
     [
       {
+        "agentId": null,
         "content": {
           "input": {
             "message": "foo",
@@ -51,6 +52,7 @@ test("AFS should record history correctly", async () => {
     },
     `
     {
+      "agentId": null,
       "content": {
         "input": {
           "message": "foo",

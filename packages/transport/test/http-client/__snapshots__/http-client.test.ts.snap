@@ -8,14 +8,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -63,14 +65,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "Hello world!",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -79,21 +83,6 @@ exports[`AIGNEClient should return correct process options {
       "json": {
         "message": "Hello world!",
       },
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
-      "timestamp": 123456,
     },
   },
 ]
@@ -147,14 +136,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -216,14 +207,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "Hello world!",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -245,21 +238,6 @@ exports[`AIGNEClient should return correct process options {
         "message": "Hello world!",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -282,14 +260,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -337,14 +317,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "Hello world!",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -353,21 +335,6 @@ exports[`AIGNEClient should return correct process options {
       "json": {
         "message": "Hello world!",
       },
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
-      "timestamp": 123456,
     },
   },
 ]
@@ -421,14 +388,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -490,14 +459,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "Hello world!",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -519,21 +490,6 @@ exports[`AIGNEClient should return correct process options {
         "message": "Hello world!",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -556,14 +512,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -611,14 +569,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "Hello world!",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -627,21 +587,6 @@ exports[`AIGNEClient should return correct process options {
       "json": {
         "message": "Hello world!",
       },
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
-      "timestamp": 123456,
     },
   },
 ]
@@ -695,14 +640,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -764,14 +711,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "Hello world!",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -793,21 +742,6 @@ exports[`AIGNEClient should return correct process options {
         "message": "Hello world!",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -830,14 +764,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -885,14 +821,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "Hello world!",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -901,21 +839,6 @@ exports[`AIGNEClient should return correct process options {
       "json": {
         "message": "Hello world!",
       },
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
-      "timestamp": 123456,
     },
   },
 ]
@@ -969,14 +892,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -1038,14 +963,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "Hello world!",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -1067,21 +994,6 @@ exports[`AIGNEClient should return correct process options {
         "message": "Hello world!",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -1104,14 +1016,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -1159,14 +1073,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "Hello world!",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -1175,21 +1091,6 @@ exports[`AIGNEClient should return correct process options {
       "json": {
         "message": "Hello world!",
       },
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
-      "timestamp": 123456,
     },
   },
 ]
@@ -1243,14 +1144,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -1312,14 +1215,16 @@ exports[`AIGNEClient should return correct process options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "Hello world!",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -1341,21 +1246,6 @@ exports[`AIGNEClient should return correct process options {
         "message": "Hello world!",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello world!",
-          "type": "text",
-        },
-      ],
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "agent",
       "timestamp": 123456,
     },
   },
@@ -1378,14 +1268,16 @@ exports[`AIGNEClient should return error with options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -1461,14 +1353,16 @@ exports[`AIGNEClient should return error with options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -1528,14 +1422,16 @@ exports[`AIGNEClient should return error with options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -1611,14 +1507,16 @@ exports[`AIGNEClient should return error with options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -1678,14 +1576,16 @@ exports[`AIGNEClient should return error with options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -1761,14 +1661,16 @@ exports[`AIGNEClient should return error with options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -1828,14 +1730,16 @@ exports[`AIGNEClient should return error with options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -1911,14 +1815,16 @@ exports[`AIGNEClient should return error with options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -1978,14 +1884,16 @@ exports[`AIGNEClient should return error with options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },
@@ -2061,14 +1969,16 @@ exports[`AIGNEClient should return error with options {
     "progress": {
       "contextId": "TEST_CONTEXT_ID",
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "role": "user",
       "timestamp": 123456,
     },
   },

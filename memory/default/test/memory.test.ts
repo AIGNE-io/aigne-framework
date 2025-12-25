@@ -131,6 +131,10 @@ test("DefaultMemory should remember memories for AIAgent correctly", async () =>
     instructions: "You are a helpful assistant.\nPlease answer in {{language}}.",
     inputKey: "message",
     outputKey: "message",
+    historyConfig: {
+      enabled: true,
+      useOldMemory: true,
+    },
   });
 
   const aigne = new AIGNE({ model, agents: [agent] });

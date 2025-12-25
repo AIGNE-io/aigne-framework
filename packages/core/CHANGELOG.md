@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.72.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.4...core-v1.72.0-beta.5) (2025-12-25)
+
+
+### Bug Fixes
+
+* **core:** afs skills improvements ([#849](https://github.com/AIGNE-io/aigne-framework/issues/849)) ([557cc8b](https://github.com/AIGNE-io/aigne-framework/commit/557cc8b4b72f0e91ad654556f47bbe0ad0ececdb))
+
 ## [1.72.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.3...core-v1.72.0-beta.4) (2025-12-24)
 
 

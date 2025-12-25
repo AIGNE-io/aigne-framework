@@ -9,6 +9,7 @@ export interface AskUserQuestionAgentOption {
 
 export interface AskUserQuestionAgentInput extends Message {
   questions: {
+    header: string;
     question: string;
     options?: AskUserQuestionAgentOption[];
     multipleSelect?: boolean;
@@ -25,6 +26,11 @@ const askUserQuestionAgentInputSchema = z.object({
   questions: z
     .array(
       z.object({
+        header: z
+          .string()
+          .describe(
+            "Very short label (max 12 chars) used as key in answers. Examples: 'Auth method', 'Library', 'Approach'",
+          ),
         question: z.string().describe("The question to ask the user"),
         options: optionalize(z.array(askUserQuestionAgentOptionSchema)).describe(
           "List of options to present to the user",
@@ -39,10 +45,7 @@ const askUserQuestionAgentInputSchema = z.object({
 });
 
 export interface AskUserQuestionAgentOutput extends Message {
-  answers: {
-    question: string;
-    answer: string | string[];
-  }[];
+  answers: Record<string, string>;
 }
 
 export default class AskUserQuestionAgent extends Agent<
@@ -76,7 +79,7 @@ export default class AskUserQuestionAgent extends Agent<
 
     const { questions, allowCustomAnswer } = input;
 
-    const answers: AskUserQuestionAgentOutput["answers"] = [];
+    const answers: AskUserQuestionAgentOutput["answers"] = {};
 
     for (const q of questions) {
       let answer: string | string[];
@@ -123,10 +126,7 @@ export default class AskUserQuestionAgent extends Agent<
         });
       }
 
-      answers.push({
-        question: q.question,
-        answer,
-      });
+      answers[q.header] = Array.isArray(answer) ? answer.join(", ") : answer;
     }
 
     return {

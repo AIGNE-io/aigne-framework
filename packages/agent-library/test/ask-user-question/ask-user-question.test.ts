@@ -73,6 +73,10 @@ test("AskUserQuestionAgent.inputSchema should match expected structure", async (
           "items": {
             "additionalProperties": false,
             "properties": {
+              "header": {
+                "description": "Very short label (max 12 chars) used as key in answers. Examples: 'Auth method', 'Library', 'Approach'",
+                "type": "string",
+              },
               "multipleSelect": {
                 "description": "Whether to allow multiple selections",
                 "type": [
@@ -117,6 +121,7 @@ test("AskUserQuestionAgent.inputSchema should match expected structure", async (
               },
             },
             "required": [
+              "header",
               "question",
             ],
             "type": "object",
@@ -140,7 +145,7 @@ test("AskUserQuestionAgent should throw error if prompts is not available", asyn
 
   await expect(
     agent.invoke({
-      questions: [{ question: "What is your name?" }],
+      questions: [{ header: "Name", question: "What is your name?" }],
     }),
   ).rejects.toThrow("Prompts is not available in AskUserQuestionAgent");
 });
@@ -157,13 +162,13 @@ test("AskUserQuestionAgent should use input for questions without options", asyn
 
   const result = await agent.invoke(
     {
-      questions: [{ question: "What is your name?" }],
+      questions: [{ header: "Name", question: "What is your name?" }],
     },
     { prompts: mockPrompts as any },
   );
 
   expect(result).toEqual({
-    answers: [{ question: "What is your name?", answer: "John Doe" }],
+    answers: { Name: "John Doe" },
   });
   expect(mockPrompts.input).toHaveBeenCalledTimes(1);
   expect(mockPrompts.input.mock.calls[0]?.[0]).toMatchInlineSnapshot(`
@@ -187,6 +192,7 @@ test("AskUserQuestionAgent should use select for single-select questions with op
     {
       questions: [
         {
+          header: "Choice",
           question: "Choose an option",
           options: [
             { label: "Option A", description: "First option" },
@@ -199,7 +205,7 @@ test("AskUserQuestionAgent should use select for single-select questions with op
   );
 
   expect(result).toEqual({
-    answers: [{ question: "Choose an option", answer: "Option A" }],
+    answers: { Choice: "Option A" },
   });
   expect(mockPrompts.select).toHaveBeenCalledTimes(1);
   expect(mockPrompts.select.mock.calls[0]?.[0]).toMatchInlineSnapshot(`
@@ -235,6 +241,7 @@ test("AskUserQuestionAgent should use checkbox for multi-select questions", asyn
     {
       questions: [
         {
+          header: "Options",
           question: "Select multiple options",
           options: [{ label: "Option A" }, { label: "Option B" }, { label: "Option C" }],
           multipleSelect: true,
@@ -245,7 +252,7 @@ test("AskUserQuestionAgent should use checkbox for multi-select questions", asyn
   );
 
   expect(result).toEqual({
-    answers: [{ question: "Select multiple options", answer: ["Option A", "Option C"] }],
+    answers: { Options: "Option A, Option C" },
   });
   expect(mockPrompts.checkbox).toHaveBeenCalledTimes(1);
 });
@@ -264,6 +271,7 @@ test("AskUserQuestionAgent should add OTHER_OPTION when allowCustomAnswer is tru
     {
       questions: [
         {
+          header: "Choice",
           question: "Choose an option",
           options: [{ label: "Option A" }],
         },
@@ -306,6 +314,7 @@ test("AskUserQuestionAgent should prompt for input when OTHER_OPTION is selected
     {
       questions: [
         {
+          header: "Choice",
           question: "Choose an option",
           options: [{ label: "Option A" }],
         },
@@ -316,7 +325,7 @@ test("AskUserQuestionAgent should prompt for input when OTHER_OPTION is selected
   );
 
   expect(result).toEqual({
-    answers: [{ question: "Choose an option", answer: "My custom answer" }],
+    answers: { Choice: "My custom answer" },
   });
   expect(mockPrompts.select).toHaveBeenCalledTimes(1);
   expect(mockPrompts.input).toHaveBeenCalledTimes(1);
@@ -342,6 +351,7 @@ test("AskUserQuestionAgent should prompt for input when OTHER_OPTION is in check
     {
       questions: [
         {
+          header: "Options",
           question: "Select options",
           options: [{ label: "Option A" }, { label: "Option B" }],
           multipleSelect: true,
@@ -353,7 +363,7 @@ test("AskUserQuestionAgent should prompt for input when OTHER_OPTION is in check
   );
 
   expect(result).toEqual({
-    answers: [{ question: "Select options", answer: "My custom answer" }],
+    answers: { Options: "My custom answer" },
   });
   expect(mockPrompts.checkbox).toHaveBeenCalledTimes(1);
   expect(mockPrompts.input).toHaveBeenCalledTimes(1);
@@ -382,23 +392,24 @@ test("AskUserQuestionAgent should handle multiple questions", async () => {
   const result = await agent.invoke(
     {
       questions: [
-        { question: "What is your name?" },
+        { header: "Name", question: "What is your name?" },
         {
+          header: "Color",
           question: "What is your favorite color?",
           options: [{ label: "Red" }, { label: "Blue" }, { label: "Green" }],
         },
-        { question: "What is your age?" },
+        { header: "Age", question: "What is your age?" },
       ],
     },
     { prompts: mockPrompts as any },
   );
 
   expect(result).toEqual({
-    answers: [
-      { question: "What is your name?", answer: "John" },
-      { question: "What is your favorite color?", answer: "Blue" },
-      { question: "What is your age?", answer: "Unknown" },
-    ],
+    answers: {
+      Name: "John",
+      Color: "Blue",
+      Age: "Unknown",
+    },
   });
   expect(inputCallCount).toBe(2);
   expect(selectCallCount).toBe(1);
@@ -418,6 +429,7 @@ test("AskUserQuestionAgent should use label as description fallback", async () =
     {
       questions: [
         {
+          header: "Choice",
           question: "Choose",
           options: [
             { label: "Option A" }, // no description

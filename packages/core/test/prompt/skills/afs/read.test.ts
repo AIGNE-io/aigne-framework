@@ -20,9 +20,13 @@ test("AFS'skill read should invoke afs.read", async () => {
         "id": "foo",
         "path": "/foo",
       },
+      "offset": 0,
       "path": "/foo",
+      "returnedLines": 1,
       "status": "success",
       "tool": "afs_read",
+      "totalLines": 1,
+      "truncated": false,
     }
   `);
 
@@ -32,41 +36,6 @@ test("AFS'skill read should invoke afs.read", async () => {
         "/foo",
       ],
     ]
-  `);
-});
-
-test("AFS'skill read should handle withLineNumbers option", async () => {
-  const afs = new AFS();
-  const skills = await getAFSSkills(afs);
-  const read = skills.find((i) => i.name === "afs_read");
-
-  spyOn(afs, "read").mockResolvedValue({
-    data: {
-      id: "foo",
-      path: "/foo/test.txt",
-      content: "line 1\nline 2\nline 3",
-    },
-  });
-
-  assert(read);
-  const result = await read.invoke({ path: "/foo/test.txt", withLineNumbers: true });
-
-  expect(result).toMatchInlineSnapshot(`
-    {
-      "data": {
-        "content": 
-    "1| line 1
-    2| line 2
-    3| line 3"
-    ,
-        "id": "foo",
-        "path": "/foo/test.txt",
-      },
-      "path": "/foo/test.txt",
-      "status": "success",
-      "tool": "afs_read",
-      "withLineNumbers": true,
-    }
   `);
 });
 
@@ -106,4 +75,106 @@ test("AFS'skill read should return file content", async () => {
 
   expect(result.data?.content).toBe(fileContent);
   expect(result.data?.path).toBe("/test/file.txt");
+  expect(result.totalLines).toBe(2);
+  expect(result.returnedLines).toBe(2);
+  expect(result.truncated).toBe(false);
+});
+
+test("AFS'skill read should handle offset parameter", async () => {
+  const afs = new AFS();
+  const skills = await getAFSSkills(afs);
+  const read = skills.find((i) => i.name === "afs_read");
+
+  const fileContent = "line 1\nline 2\nline 3\nline 4\nline 5";
+  spyOn(afs, "read").mockResolvedValue({
+    data: {
+      id: "test-id",
+      path: "/test/file.txt",
+      content: fileContent,
+    },
+  });
+
+  assert(read);
+  const result = await read.invoke({ path: "/test/file.txt", offset: 2 });
+
+  expect(result.data?.content).toBe("line 3\nline 4\nline 5");
+  expect(result.totalLines).toBe(5);
+  expect(result.returnedLines).toBe(3);
+  expect(result.offset).toBe(2);
+  expect(result.truncated).toBe(true);
+  expect(result.message).toContain("Showing lines 3-5 of 5");
+});
+
+test("AFS'skill read should handle limit parameter", async () => {
+  const afs = new AFS();
+  const skills = await getAFSSkills(afs);
+  const read = skills.find((i) => i.name === "afs_read");
+
+  const fileContent = "line 1\nline 2\nline 3\nline 4\nline 5";
+  spyOn(afs, "read").mockResolvedValue({
+    data: {
+      id: "test-id",
+      path: "/test/file.txt",
+      content: fileContent,
+    },
+  });
+
+  assert(read);
+  const result = await read.invoke({ path: "/test/file.txt", limit: 3 });
+
+  expect(result.data?.content).toBe("line 1\nline 2\nline 3");
+  expect(result.totalLines).toBe(5);
+  expect(result.returnedLines).toBe(3);
+  expect(result.truncated).toBe(true);
+  expect(result.message).toContain("Showing lines 1-3 of 5");
+});
+
+test("AFS'skill read should handle offset and limit together", async () => {
+  const afs = new AFS();
+  const skills = await getAFSSkills(afs);
+  const read = skills.find((i) => i.name === "afs_read");
+
+  const fileContent = "line 1\nline 2\nline 3\nline 4\nline 5";
+  spyOn(afs, "read").mockResolvedValue({
+    data: {
+      id: "test-id",
+      path: "/test/file.txt",
+      content: fileContent,
+    },
+  });
+
+  assert(read);
+  const result = await read.invoke({ path: "/test/file.txt", offset: 1, limit: 2 });
+
+  expect(result.data?.content).toBe("line 2\nline 3");
+  expect(result.totalLines).toBe(5);
+  expect(result.returnedLines).toBe(2);
+  expect(result.offset).toBe(1);
+  expect(result.truncated).toBe(true);
+  expect(result.message).toContain("Showing lines 2-3 of 5");
+});
+
+test("AFS'skill read should truncate long lines", async () => {
+  const afs = new AFS();
+  const skills = await getAFSSkills(afs);
+  const read = skills.find((i) => i.name === "afs_read");
+
+  const longLine = "x".repeat(2500);
+  const fileContent = `short line\n${longLine}\nanother short`;
+  spyOn(afs, "read").mockResolvedValue({
+    data: {
+      id: "test-id",
+      path: "/test/file.txt",
+      content: fileContent,
+    },
+  });
+
+  assert(read);
+  const result = await read.invoke({ path: "/test/file.txt" });
+
+  const lines = result.data?.content?.split("\n") ?? [];
+  expect(lines[0]).toBe("short line");
+  expect(lines[1]).toContain("... [truncated]");
+  expect(lines[1]?.length).toBeLessThan(2100); // 2000 + "... [truncated]"
+  expect(lines[2]).toBe("another short");
 });

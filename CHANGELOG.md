@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.91.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.6...aigne-framework-v1.91.0-beta.7) (2025-12-25)
+
+
+### Bug Fixes
+
+* **agent-library:** add header field and use object-based answers in AskUserQuestion ([#851](https://github.com/AIGNE-io/aigne-framework/issues/851)) ([095db95](https://github.com/AIGNE-io/aigne-framework/commit/095db95e43b5d39b35c638d90d6f0b99565e0dc4))
+
+## [1.91.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.5...aigne-framework-v1.91.0-beta.6) (2025-12-25)
+
+
+### Features
+
+* **agent-library:** add askUserQuestion agent ([#848](https://github.com/AIGNE-io/aigne-framework/issues/848)) ([60fa69b](https://github.com/AIGNE-io/aigne-framework/commit/60fa69b40ec122295e57ad175075875ed4840345))
+
+
+### Bug Fixes
+
+* **core:** afs skills improvements ([#849](https://github.com/AIGNE-io/aigne-framework/issues/849)) ([557cc8b](https://github.com/AIGNE-io/aigne-framework/commit/557cc8b4b72f0e91ad654556f47bbe0ad0ececdb))
+
 ## [1.91.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.4...aigne-framework-v1.91.0-beta.5) (2025-12-24)
 
 

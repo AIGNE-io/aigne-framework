@@ -198,27 +198,34 @@ test("getAFSSkills should return all AFS skills", async () => {
       {
         "description": 
     "Read file contents from the Agentic File System (AFS)
-    - Returns the complete content of a file at the specified AFS path
-    - Supports line numbers output for precise editing references
-    - Use this tool when you need to review, analyze, or understand file content
+    - Returns the content of a file at the specified AFS path
+    - By default reads up to 2000 lines, use offset/limit for large files
+    - Lines longer than 2000 characters will be truncated
 
     Usage:
-    - The path must be an absolute AFS path starting with "/" (e.g., "/docs/readme.md", "/memory/user/notes")
-    - This is NOT a local system file path - it operates within the AFS virtual file system
-    - IMPORTANT: You MUST set withLineNumbers to true before using afs_edit, as line numbers are required for precise edits
-    - Returns the file's content along with metadata (id, path, timestamps, etc.)"
+    - The path must be an absolute AFS path starting with "/" (e.g., "/docs/readme.md")
+    - Use offset to start reading from a specific line (0-based)
+    - Use limit to control number of lines returned (default: 2000)
+    - Check truncated field to know if file was partially returned"
     ,
         "inputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
           "properties": {
+            "limit": {
+              "description": "Maximum number of lines to read (default: 2000)",
+              "maximum": 2000,
+              "minimum": 1,
+              "type": "integer",
+            },
+            "offset": {
+              "description": "Line number to start reading from (0-based, default: 0)",
+              "minimum": 0,
+              "type": "integer",
+            },
             "path": {
               "description": "Absolute AFS path to the file to read (e.g., '/docs/readme.md'). Must start with '/'",
               "type": "string",
-            },
-            "withLineNumbers": {
-              "description": "MUST be set to true before using afs_edit. Adds line numbers to output (format: '1| line content')",
-              "type": "boolean",
             },
           },
           "required": [
@@ -235,8 +242,14 @@ test("getAFSSkills should return all AFS skills", async () => {
             "message": {
               "type": "string",
             },
+            "offset": {
+              "type": "number",
+            },
             "path": {
               "type": "string",
+            },
+            "returnedLines": {
+              "type": "number",
             },
             "status": {
               "type": "string",
@@ -244,7 +257,10 @@ test("getAFSSkills should return all AFS skills", async () => {
             "tool": {
               "type": "string",
             },
-            "withLineNumbers": {
+            "totalLines": {
+              "type": "number",
+            },
+            "truncated": {
               "type": "boolean",
             },
           },
@@ -322,62 +338,42 @@ test("getAFSSkills should return all AFS skills", async () => {
       },
       {
         "description": 
-    "Apply precise line-based patches to modify files in the Agentic File System (AFS)
-    - Performs targeted edits using line numbers without rewriting the entire file
-    - Supports both replacing and deleting line ranges
-    - Multiple patches can be applied in a single operation
+    "Performs exact string replacements in files within the Agentic File System (AFS).
 
     Usage:
+    - You must use afs_read at least once before editing to understand the file content
     - The path must be an absolute AFS path starting with "/" (e.g., "/docs/readme.md")
-    - This is NOT a local system file path - it operates within the AFS virtual file system
-    - IMPORTANT: You MUST use afs_read with withLineNumbers=true before editing to get accurate line numbers
-    - Line numbers are 0-based: first line is 0, second line is 1, etc.
-    - The range [start_line, end_line) is exclusive on end_line"
+    - Preserve exact indentation (tabs/spaces) as it appears in the file
+    - The edit will FAIL if oldString is not found in the file
+    - The edit will FAIL if oldString appears multiple times (unless replaceAll is true)
+    - Use replaceAll to replace/rename strings across the entire file"
     ,
         "inputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
           "properties": {
-            "patches": {
-              "description": "Array of patches to apply. Each patch specifies a line range and the operation (delete or replace)",
-              "items": {
-                "additionalProperties": false,
-                "properties": {
-                  "delete": {
-                    "description": "Set to true to delete the line range. Set to false to replace with 'replace' content",
-                    "type": "boolean",
-                  },
-                  "end_line": {
-                    "description": "End line number (0-based, exclusive). To edit line 5 only, use start_line=5, end_line=6",
-                    "type": "integer",
-                  },
-                  "replace": {
-                    "description": "New content to insert. Omit when delete=true",
-                    "type": "string",
-                  },
-                  "start_line": {
-                    "description": "Start line number (0-based, inclusive). First line is 0",
-                    "type": "integer",
-                  },
-                },
-                "required": [
-                  "start_line",
-                  "end_line",
-                  "delete",
-                ],
-                "type": "object",
-              },
-              "minItems": 1,
-              "type": "array",
+            "newString": {
+              "description": "The text to replace it with (must be different from oldString)",
+              "type": "string",
+            },
+            "oldString": {
+              "description": "The exact text to replace. Must match file content exactly including whitespace",
+              "type": "string",
             },
             "path": {
               "description": "Absolute AFS path to the file to edit (e.g., '/docs/readme.md'). Must start with '/'",
               "type": "string",
             },
+            "replaceAll": {
+              "default": false,
+              "description": "Replace all occurrences of oldString (default: false)",
+              "type": "boolean",
+            },
           },
           "required": [
             "path",
-            "patches",
+            "oldString",
+            "newString",
           ],
           "type": "object",
         },
@@ -386,13 +382,13 @@ test("getAFSSkills should return all AFS skills", async () => {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "additionalProperties": true,
           "properties": {
-            "data": {
-              "type": "string",
-            },
             "message": {
               "type": "string",
             },
             "path": {
+              "type": "string",
+            },
+            "snippet": {
               "type": "string",
             },
             "status": {
@@ -407,7 +403,7 @@ test("getAFSSkills should return all AFS skills", async () => {
             "tool",
             "path",
             "message",
-            "data",
+            "snippet",
           ],
           "type": "object",
         },

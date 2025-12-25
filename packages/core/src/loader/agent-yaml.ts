@@ -3,12 +3,8 @@ import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
-import type { AgentClass, AgentHooks, FunctionAgentFn, TaskRenderMode } from "../agents/agent.js";
-import { AIAgentToolChoice } from "../agents/ai-agent.js";
-import { type Role, roleSchema } from "../agents/chat-model.js";
-import { ProcessMode, type ReflectionMode } from "../agents/team-agent.js";
+import type { AgentHooks, TaskRenderMode } from "../agents/agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
-import { codeToFunctionAgentFn } from "./function-agent.js";
 import type { LoadOptions } from "./index.js";
 import {
   camelizeSchema,
@@ -17,7 +13,6 @@ import {
   imageModelSchema,
   inputOutputSchema,
   optionalize,
-  preprocessSchema,
 } from "./schema.js";
 
 export interface HooksSchema {
@@ -72,7 +67,8 @@ export interface AFSContextSchema {
   };
 }
 
-export interface BaseAgentSchema {
+export interface AgentSchema {
+  type: string;
   name?: string;
   description?: string;
   model?: z.infer<typeof chatModelSchema>;
@@ -99,71 +95,8 @@ export interface BaseAgentSchema {
         context?: AFSContextSchema;
       });
   shareAFS?: boolean;
+  [key: string]: unknown;
 }
-
-export type Instructions = { role: Exclude<Role, "tool">; content: string; path: string }[];
-
-export interface AIAgentSchema extends BaseAgentSchema {
-  type: "ai";
-  instructions?: Instructions;
-  autoReorderSystemMessages?: boolean;
-  autoMergeSystemMessages?: boolean;
-  inputKey?: string;
-  inputFileKey?: string;
-  outputKey?: string;
-  outputFileKey?: string;
-  toolChoice?: AIAgentToolChoice;
-  toolCallsConcurrency?: number;
-  keepTextInToolUses?: boolean;
-}
-
-export interface ImageAgentSchema extends BaseAgentSchema {
-  type: "image";
-  instructions: Instructions;
-  inputFileKey?: string;
-}
-
-export interface MCPAgentSchema extends BaseAgentSchema {
-  type: "mcp";
-  url?: string;
-  command?: string;
-  args?: string[];
-}
-
-export interface TeamAgentSchema extends BaseAgentSchema {
-  type: "team";
-  mode?: ProcessMode;
-  iterateOn?: string;
-  concurrency?: number;
-  iterateWithPreviousOutput?: boolean;
-  includeAllStepsOutput?: boolean;
-  reflection?: Omit<ReflectionMode, "reviewer"> & { reviewer: NestAgentSchema };
-}
-
-export interface TransformAgentSchema extends BaseAgentSchema {
-  type: "transform";
-  jsonata: string;
-}
-
-export interface FunctionAgentSchema extends BaseAgentSchema {
-  type: "function";
-  process: FunctionAgentFn;
-}
-
-export interface ThirdAgentSchema extends BaseAgentSchema {
-  agentClass?: AgentClass;
-  type: ""; // type is a non-empty string, here set to empty string to avoid type conflict
-  [key: string]: any;
-}
-
-export type AgentSchema =
-  | AIAgentSchema
-  | ImageAgentSchema
-  | MCPAgentSchema
-  | TeamAgentSchema
-  | TransformAgentSchema
-  | FunctionAgentSchema
-  | ThirdAgentSchema;
 
 export async function parseAgentFile(
   path: string,
@@ -207,57 +140,7 @@ export async function loadAgentFromYamlFile(path: string, options: LoadOptions) 
   return agent;
 }
 
-const instructionItemSchema = z.union([
-  z.object({
-    role: roleSchema.default("system"),
-    url: z.string(),
-  }),
-  z.object({
-    role: roleSchema.default("system"),
-    content: z.string(),
-  }),
-]);
-
-const parseInstructionItem =
-  ({ filepath }: { filepath: string }) =>
-  async ({ role, ...v }: z.infer<typeof instructionItemSchema>): Promise<Instructions[number]> => {
-    if (role === "tool")
-      throw new Error(`'tool' role is not allowed in instruction item in agent file ${filepath}`);
-
-    if ("content" in v && typeof v.content === "string") {
-      return { role, content: v.content, path: filepath };
-    }
-    if ("url" in v && typeof v.url === "string") {
-      const url = nodejs.path.isAbsolute(v.url)
-        ? v.url
-        : nodejs.path.join(nodejs.path.dirname(filepath), v.url);
-      return nodejs.fs.readFile(url, "utf8").then((content) => ({ role, content, path: url }));
-    }
-    throw new Error(
-      `Invalid instruction item in agent file ${filepath}. Expected 'content' or 'url' property`,
-    );
-  };
-
-export const getInstructionsSchema = ({ filepath }: { filepath: string }) =>
-  z
-    .union([z.string(), instructionItemSchema, z.array(instructionItemSchema)])
-    .transform(async (v): Promise<Instructions> => {
-      if (typeof v === "string") return [{ role: "system", content: v, path: filepath }];
-
-      if (Array.isArray(v)) {
-        return Promise.all(v.map((item) => parseInstructionItem({ filepath })(item)));
-      }
-
-      return [await parseInstructionItem({ filepath })(v)];
-    }) as unknown as ZodType<Instructions>;
-
-export const getAgentSchema = ({
-  filepath,
-  options,
-}: {
-  filepath: string;
-  options?: LoadOptions;
-}) => {
+export const getAgentSchema = ({ filepath }: { filepath: string; options?: LoadOptions }) => {
   const agentSchema: ZodType<AgentSchema> = z.lazy(() => {
     const nestAgentSchema: ZodType<NestAgentSchema> = z.lazy(() =>
       z.union([
@@ -313,6 +196,7 @@ export const getAgentSchema = ({
     });
 
     const baseAgentSchema = z.object({
+      type: z.string(),
       name: optionalize(z.string()),
       alias: optionalize(z.array(z.string())),
       description: optionalize(z.string()),
@@ -322,11 +206,11 @@ export const getAgentSchema = ({
       taskRenderMode: optionalize(z.union([z.literal("hide"), z.literal("collapse")])),
       inputSchema: optionalize(inputOutputSchema({ path: filepath })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
-      ) as unknown as ZodType<BaseAgentSchema["inputSchema"]>,
+      ) as unknown as ZodType<AgentSchema["inputSchema"]>,
       defaultInput: optionalize(defaultInputSchema),
       outputSchema: optionalize(inputOutputSchema({ path: filepath })).transform((v) =>
         v ? jsonSchemaToZod(v) : undefined,
-      ) as unknown as ZodType<BaseAgentSchema["outputSchema"]>,
+      ) as unknown as ZodType<AgentSchema["outputSchema"]>,
       includeInputInOutput: optionalize(z.boolean()),
       hooks: optionalize(z.union([hooksSchema, z.array(hooksSchema)])),
       skills: optionalize(z.array(nestAgentSchema)),
@@ -392,117 +276,7 @@ export const getAgentSchema = ({
       shareAFS: optionalize(z.boolean()),
     });
 
-    const instructionsSchema = getInstructionsSchema({ filepath: filepath });
-
-    return camelizeSchema(
-      preprocessSchema(
-        async (json: unknown) => {
-          if (
-            typeof json === "object" &&
-            json &&
-            "type" in json &&
-            typeof json.type === "string" &&
-            !["ai", "image", "mcp", "team", "transform", "function"].includes(json.type)
-          ) {
-            if (!options?.require)
-              throw new Error(
-                `Module loader is not provided to load agent type module ${json.type} from ${filepath}`,
-              );
-            const Mod = await options.require(json.type, { parent: filepath });
-            if (typeof Mod?.default?.prototype?.constructor !== "function") {
-              throw new Error(
-                `The agent type module ${json.type} does not export a default Agent class`,
-              );
-            }
-
-            Object.assign(json, { agentClass: Mod.default });
-          }
-
-          return json;
-        },
-        z.union([
-          z
-            .object({
-              type: z.string() as z.ZodType<"">,
-              agentClass: z.custom<AgentClass>(
-                (v) => typeof v?.prototype?.constructor === "function",
-              ),
-            })
-            .extend(baseAgentSchema.shape)
-            .passthrough(),
-          z.discriminatedUnion("type", [
-            z
-              .object({
-                type: z.literal("ai"),
-                instructions: optionalize(instructionsSchema),
-                autoReorderSystemMessages: optionalize(z.boolean()),
-                autoMergeSystemMessages: optionalize(z.boolean()),
-                inputKey: optionalize(z.string()),
-                outputKey: optionalize(z.string()),
-                inputFileKey: optionalize(z.string()),
-                outputFileKey: optionalize(z.string()),
-                toolChoice: optionalize(z.nativeEnum(AIAgentToolChoice)),
-                toolCallsConcurrency: optionalize(z.number().int().min(0)),
-                keepTextInToolUses: optionalize(z.boolean()),
-                catchToolsError: optionalize(z.boolean()),
-                structuredStreamMode: optionalize(z.boolean()),
-              })
-              .extend(baseAgentSchema.shape),
-            z
-              .object({
-                type: z.literal("image"),
-                instructions: instructionsSchema,
-                inputFileKey: optionalize(z.string()),
-              })
-              .extend(baseAgentSchema.shape),
-            z
-              .object({
-                type: z.literal("mcp"),
-                url: optionalize(z.string()),
-                command: optionalize(z.string()),
-                args: optionalize(z.array(z.string())),
-              })
-              .extend(baseAgentSchema.shape),
-            z
-              .object({
-                type: z.literal("team"),
-                mode: optionalize(z.nativeEnum(ProcessMode)),
-                iterateOn: optionalize(z.string()),
-                concurrency: optionalize(z.number().int().min(1)),
-                iterateWithPreviousOutput: optionalize(z.boolean()),
-                includeAllStepsOutput: optionalize(z.boolean()),
-                reflection: camelizeSchema(
-                  optionalize(
-                    z.object({
-                      reviewer: nestAgentSchema,
-                      isApproved: z.string(),
-                      maxIterations: optionalize(z.number().int().min(1)),
-                      returnLastOnMaxIterations: optionalize(z.boolean()),
-                      customErrorMessage: optionalize(z.string()),
-                    }),
-                  ),
-                ),
-              })
-              .extend(baseAgentSchema.shape),
-            z
-              .object({
-                type: z.literal("transform"),
-                jsonata: z.string(),
-              })
-              .extend(baseAgentSchema.shape),
-            z
-              .object({
-                type: z.literal("function"),
-                process: z.preprocess(
-                  (v) => (typeof v === "string" ? codeToFunctionAgentFn(v) : v),
-                  z.custom<FunctionAgentFn>(),
-                ) as ZodType<FunctionAgentFn>,
-              })
-              .extend(baseAgentSchema.shape),
-          ]),
-        ]),
-      ),
-    );
+    return camelizeSchema(baseAgentSchema.passthrough());
   });
 
   return agentSchema;

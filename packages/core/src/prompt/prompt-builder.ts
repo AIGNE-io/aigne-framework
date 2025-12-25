@@ -222,7 +222,7 @@ export class PromptBuilder {
       if (
         message &&
         // avoid duplicate user messages: developer may have already included the message in the messages
-        !messages.some(
+        !otherCustomMessages.some(
           (i) =>
             i.role === "user" &&
             (typeof i.content === "string"

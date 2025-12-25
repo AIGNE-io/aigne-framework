@@ -5,13 +5,15 @@ exports[`AIAgent.invoke with streaming true 1`] = `
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "content": "write a long blog about arcblock",
-          "type": "text",
-        },
-      ],
-      "role": "user",
+      "message": {
+        "content": [
+          {
+            "text": "write a long blog about arcblock",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
     },
   },
   {
@@ -94,13 +96,15 @@ exports[`AIAgent.invoke with streaming true 1`] = `
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "content": "Here is a beautiful T-shirt",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
+      "message": {
+        "content": [
+          {
+            "text": "Here is a beautiful T-shirt",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
     },
   },
   {
@@ -108,18 +112,6 @@ exports[`AIAgent.invoke with streaming true 1`] = `
       "json": {
         "message": "Here is a beautiful T-shirt",
       },
-    },
-  },
-  {
-    "progress": {
-      "event": "message",
-      "message": [
-        {
-          "content": "Here is a beautiful T-shirt",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
     },
   },
 ]
@@ -213,13 +205,15 @@ exports[`AIAgent with router toolChoice should return router result with streami
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "content": "Here is a beautiful T-shirt",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
+      "message": {
+        "content": [
+          {
+            "text": "Here is a beautiful T-shirt",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
     },
   },
   {
@@ -227,18 +221,6 @@ exports[`AIAgent with router toolChoice should return router result with streami
       "json": {
         "message": "Here is a beautiful T-shirt",
       },
-    },
-  },
-  {
-    "progress": {
-      "event": "message",
-      "message": [
-        {
-          "content": "Here is a beautiful T-shirt",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
     },
   },
 ]

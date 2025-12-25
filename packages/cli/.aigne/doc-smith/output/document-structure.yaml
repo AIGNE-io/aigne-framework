@@ -1,0 +1,105 @@
+project:
+  title: "AIGNE CLI"
+  description: "AIGNE 框架的命令行工具，提供便捷的开发、测试、部署和管理功能"
+
+documents:
+  - title: "概述"
+    description: "AIGNE CLI 简介、核心功能和特性介绍"
+    path: "/overview.md"
+    sourcePaths:
+      - "README.md"
+      - "package.json"
+    icon: "lucide:home"
+
+  - title: "安装指南"
+    description: "AIGNE CLI 的安装方法和环境要求"
+    path: "/installation.md"
+    sourcePaths:
+      - "README.md"
+      - "package.json"
+    icon: "lucide:download"
+
+  - title: "快速开始"
+    description: "快速创建和运行第一个 AIGNE 项目"
+    path: "/getting-started.md"
+    sourcePaths:
+      - "README.md"
+      - "src/commands/create.ts"
+      - "src/commands/run.ts"
+      - "templates/default"
+    icon: "lucide:rocket"
+
+  - title: "命令参考"
+    description: "所有可用命令的详细说明和使用示例"
+    path: "/commands.md"
+    sourcePaths:
+      - "src/commands"
+      - "src/utils/yargs.ts"
+    icon: "lucide:terminal"
+    children:
+      - title: "create - 创建项目"
+        description: "创建新的 AIGNE 项目，包含 Agent 配置文件"
+        path: "/commands/create.md"
+        sourcePaths:
+          - "src/commands/create.ts"
+          - "templates"
+
+      - title: "run - 运行 Agent"
+        description: "启动并与指定的 Agent 进行交互"
+        path: "/commands/run.md"
+        sourcePaths:
+          - "src/commands/run.ts"
+          - "src/commands/app"
+          - "src/utils/run-chat-loop.ts"
+          - "src/utils/run-with-aigne.ts"
+          - "src/utils/load-aigne.ts"
+
+      - title: "test - 运行测试"
+        description: "在指定的 Agent 目录中运行测试"
+        path: "/commands/test.md"
+        sourcePaths:
+          - "src/commands/test.ts"
+
+      - title: "eval - 评估 Agent"
+        description: "使用数据集评估 Agent 的性能"
+        path: "/commands/eval.md"
+        sourcePaths:
+          - "src/commands/eval.ts"
+          - "src/utils/evaluation"
+
+      - title: "serve-mcp - MCP 服务"
+        description: "将 Agent 作为 MCP 服务器启动"
+        path: "/commands/serve-mcp.md"
+        sourcePaths:
+          - "src/commands/serve-mcp.ts"
+          - "src/utils/serve-mcp.ts"
+
+      - title: "observe - 可观测性服务"
+        description: "启动可观测性服务器，用于监控数据"
+        path: "/commands/observe.md"
+        sourcePaths:
+          - "src/commands/observe.ts"
+
+      - title: "deploy - 部署应用"
+        description: "将 AIGNE 应用部署到指定端点"
+        path: "/commands/deploy.md"
+        sourcePaths:
+          - "src/commands/deploy.ts"
+
+      - title: "hub - Hub 管理"
+        description: "管理 AIGNE Hub 连接，包括连接、切换和查看状态"
+        path: "/commands/hub.md"
+        sourcePaths:
+          - "src/commands/hub.ts"
+          - "src/utils/aigne-hub"
+
+  - title: "配置说明"
+    description: "AIGNE CLI 的配置选项和环境变量"
+    path: "/configuration.md"
+    sourcePaths:
+      - "src/constants.ts"
+      - "src/utils/yargs.ts"
+      - "src/utils/load-aigne.ts"
+    icon: "lucide:settings"
+
+

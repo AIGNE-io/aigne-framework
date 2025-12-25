@@ -1,515 +1,391 @@
-# 配置
+# 配置说明
 
-> **前置条件**: [快速开始](./getting-started.md) - 了解基本安装和使用
-
-## 概述
-
-AIGNE CLI 通过环境变量、配置文件和命令行选项提供灵活的配置方式。本文档详细说明所有可用的配置选项。
-
-## 配置方式
-
-### 优先级
-
-配置的优先级（从高到低）：
-
-1. **命令行参数** - 直接传递给命令的参数
-2. **环境变量** - 系统或 `.env` 文件中设置的变量
-3. **配置文件** - `aigne.yaml` 或项目配置文件
-4. **默认值** - 内置的默认配置
-
-### 配置来源
-
-```bash
-# 1. 命令行参数（最高优先级）
-aigne run --model openai:gpt-4
-
-# 2. 环境变量
-export OPENAI_API_KEY=sk-...
-aigne run
-
-# 3. .env 文件
-# 在项目根目录创建 .env
-OPENAI_API_KEY=sk-...
-
-# 4. 配置文件
-# aigne.yaml 中的配置
-```
+本文档介绍 AIGNE CLI 的配置选项和环境变量，帮助您根据需求定制 CLI 行为。
 
 ## 环境变量
 
-### AI 模型 API 密钥
+AIGNE CLI 支持通过环境变量进行配置。可以在项目目录的 `.env` 文件中设置这些变量。
 
-#### OPENAI_API_KEY
+### 模型 API 配置
 
-OpenAI API 密钥，用于访问 GPT 系列模型。
+#### OpenAI
 
-```bash
-export OPENAI_API_KEY=sk-...
+```env
+# OpenAI API 配置
+OPENAI_API_KEY=your-openai-api-key
+OPENAI_BASE_URL=https://api.openai.com/v1  # 可选，自定义 API 端点
 ```
 
-获取方式：https://platform.openai.com/api-keys
+#### Anthropic Claude
 
-支持的模型：
-- `gpt-4`
-- `gpt-4-turbo`
-- `gpt-4o`
-- `gpt-4o-mini`
-- `gpt-3.5-turbo`
-
-#### ANTHROPIC_API_KEY
-
-Anthropic API 密钥，用于访问 Claude 系列模型。
-
-```bash
-export ANTHROPIC_API_KEY=sk-ant-...
+```env
+# Anthropic API 配置
+ANTHROPIC_API_KEY=your-anthropic-api-key
 ```
 
-获取方式：https://console.anthropic.com/
+#### XAI
 
-支持的模型：
-- `claude-3-opus-20240229`
-- `claude-3-sonnet-20240229`
-- `claude-3-haiku-20240307`
-- `claude-3-5-sonnet-20240620`
-
-#### XAI_API_KEY
-
-XAI API 密钥，用于访问 Grok 系列模型。
-
-```bash
-export XAI_API_KEY=xai-...
+```env
+# XAI API 配置
+XAI_API_KEY=your-xai-api-key
 ```
-
-支持的模型：
-- `grok-beta`
-- `grok-vision-beta`
 
 ### AIGNE Hub 配置
 
-#### AIGNE_HUB_API_URL
+```env
+# AIGNE Hub 服务 URL
+AIGNE_HUB_API_URL=https://hub.aigne.io/ai-kit
 
-AIGNE Hub 服务的 API 地址。
-
-```bash
-export AIGNE_HUB_API_URL=https://hub.aigne.io/ai-kit
-```
-
-默认值：https://hub.aigne.io/ai-kit
-
-#### AIGNE_HUB_API_KEY
-
-AIGNE Hub 的 API 密钥。
-
-```bash
-export AIGNE_HUB_API_KEY=your-hub-api-key
-```
-
-通过 `aigne hub connect` 命令连接后自动配置。
-
-### 模型配置
-
-#### MODEL
-
-默认使用的聊天模型。
-
-```bash
-export MODEL=openai:gpt-4
-```
-
-格式：`<provider>:<model-name>`
-
-示例：
-- `openai:gpt-4`
-- `anthropic:claude-3-sonnet-20240229`
-- `xai:grok-beta`
-
-#### IMAGE_MODEL
-
-默认使用的图像模型。
-
-```bash
-export IMAGE_MODEL=openai:dall-e-3
+# AIGNE Hub API 密钥（通过 hub connect 自动配置）
+AIGNE_HUB_API_KEY=your-hub-api-key
 ```
 
 ### 服务端口配置
 
-#### PORT
-
-MCP 服务器和可观测性服务器的默认端口。
-
-```bash
-export PORT=3000
-```
-
-影响的命令：
-- `aigne serve-mcp` - 默认端口为 3000
-- `aigne observe` - 默认端口为 7890
-
-### 其他环境变量
-
-#### INITIAL_CALL
-
-agent 启动时的初始调用消息。
-
-```bash
-export INITIAL_CALL="开始处理任务"
-aigne run
-```
-
-#### NODE_ENV
-
-Node.js 环境标识。
-
-```bash
-export NODE_ENV=production
-aigne run
-```
-
-常用值：
-- `development` - 开发环境
-- `production` - 生产环境
-- `test` - 测试环境
-
-#### CI
-
-持续集成环境标识。
-
-```bash
-export CI=true
-```
-
-在 CI 环境中会禁用某些交互式功能。
-
-## .env 文件
-
-### 基本用法
-
-在项目根目录创建 `.env` 文件：
-
-```bash
-# .env
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
-MODEL=openai:gpt-4
+```env
+# MCP 服务器端口
 PORT=3000
+
+# 可观测性服务器端口（默认 7890）
+# 注意：如果同时运行多个服务，需要使用不同端口
 ```
 
-### .env 文件类型
+### 代理配置
 
-AIGNE CLI 使用 `dotenv-flow`，支持多个环境文件：
+如果需要通过代理访问外部 API：
 
+```env
+# HTTP 代理
+HTTP_PROXY=http://proxy.example.com:8080
+
+# HTTPS 代理
+HTTPS_PROXY=https://proxy.example.com:8080
+
+# 不使用代理的主机列表
+NO_PROXY=localhost,127.0.0.1
 ```
-.env                # 所有环境的默认配置
-.env.local          # 本地覆盖（不应提交到 Git）
-.env.development    # 开发环境
-.env.production     # 生产环境
-.env.test           # 测试环境
+
+### 日志配置
+
+```env
+# 日志级别：debug, info, warn, error
+LOG_LEVEL=info
+
+# 在测试环境可以使用 debug 级别
+# LOG_LEVEL=debug
 ```
 
-### 加载顺序
+### 其他配置
 
-根据 `NODE_ENV` 加载不同的文件：
+```env
+# Node 环境
+NODE_ENV=production  # 或 development, test
+
+# 缓存目录（用于远程项目）
+CACHE_DIR=/custom/cache/path
+```
+
+## 命令行选项
+
+大部分配置都可以通过命令行选项覆盖环境变量。
+
+### 全局选项
+
+所有命令都支持：
 
 ```bash
-# 开发环境
-NODE_ENV=development aigne run
-# 加载: .env, .env.development, .env.local
-
-# 生产环境
-NODE_ENV=production aigne run
-# 加载: .env, .env.production, .env.local
+--help, -h          # 显示帮助信息
+--version, -v       # 显示版本号
 ```
 
-### 示例配置
-
-#### .env (基础配置)
+### 日志选项
 
 ```bash
-# API 密钥（可以为空，在 .env.local 中覆盖）
-OPENAI_API_KEY=
-ANTHROPIC_API_KEY=
-
-# 默认模型
-MODEL=openai:gpt-4o-mini
-
-# 服务端口
-PORT=3000
+--verbose           # 启用详细日志输出
+--log-level <level> # 设置日志级别（debug, info, warn, error）
 ```
 
-#### .env.local (本地配置)
+使用示例：
 
 ```bash
-# 本地 API 密钥
-OPENAI_API_KEY=sk-your-local-key
-ANTHROPIC_API_KEY=sk-ant-your-local-key
-
-# 本地 Hub 配置
-AIGNE_HUB_API_URL=http://localhost:8080
+aigne run --verbose
+aigne run --log-level debug
 ```
 
-#### .env.production (生产配置)
+### 模型选项
+
+以下选项可用于 `run` 和相关命令：
+
+#### 基本模型配置
 
 ```bash
-# 生产环境使用更强大的模型
-MODEL=openai:gpt-4
-
-# 生产端口
-PORT=8080
-
-# 生产 Hub
-AIGNE_HUB_API_URL=https://hub.aigne.io
+--model <provider[:model]>        # 指定 AI 模型
+--image-model <provider[:model]>  # 指定图像模型
 ```
 
-### .gitignore 配置
-
-确保敏感信息不被提交：
-
-```gitignore
-# .gitignore
-.env.local
-.env.*.local
-```
-
-保留示例文件：
+示例：
 
 ```bash
-# 提交 .env.example 作为模板
-.env.example
+# 使用 OpenAI GPT-4o
+aigne run --model openai:gpt-4o
+
+# 使用 Claude
+aigne run --model anthropic:claude-3-5-sonnet
+
+# 使用 XAI Grok
+aigne run --model xai:grok-beta
+```
+
+#### 高级模型参数
+
+```bash
+--temperature <number>           # 温度参数 (0.0-2.0)
+--top-p <number>                 # Top P 参数 (0.0-1.0)
+--presence-penalty <number>      # 存在惩罚 (-2.0 - 2.0)
+--frequency-penalty <number>     # 频率惩罚 (-2.0 - 2.0)
+```
+
+参数说明：
+
+- **temperature**：控制输出随机性
+  - 低值（0.0-0.3）：更确定、一致的输出
+  - 中值（0.7-0.9）：平衡的创造性
+  - 高值（1.0-2.0）：更多样、创造性的输出
+
+- **top-p**：核采样参数
+  - 控制输出的多样性
+  - 通常与 temperature 一起使用
+
+- **presence-penalty**：惩罚重复的 token
+  - 正值鼓励谈论新主题
+  - 负值鼓励保持主题
+
+- **frequency-penalty**：惩罚高频 token
+  - 正值减少重复
+  - 负值允许更多重复
+
+使用示例：
+
+```bash
+# 创造性写作（高 temperature）
+aigne run --model openai:gpt-4o --temperature 1.5
+
+# 精确回答（低 temperature）
+aigne run --model openai:gpt-4o --temperature 0.2
+
+# 组合使用多个参数
+aigne run \
+  --model openai:gpt-4o \
+  --temperature 0.8 \
+  --top-p 0.9 \
+  --presence-penalty 0.5
+```
+
+### 输入选项
+
+```bash
+--input <text>, -i <text>        # 命令行输入
+--input-file <file>              # 从文件读取输入
+```
+
+使用示例：
+
+```bash
+# 命令行输入
+aigne run myAgent --input "Hello, world!"
+
+# 从文件读取
+aigne run myAgent --input-file input.txt
+
+# 使用 @ 符号
+aigne run myAgent --input @input.txt
+
+# 多个输入
+aigne run myAgent --input "First input" --input "Second input"
 ```
 
 ## 配置文件
 
 ### aigne.yaml
 
-项目的主配置文件。
+项目的核心配置文件，定义 Agent 的行为。
+
+#### 基本结构
 
 ```yaml
-# aigne.yaml
-name: my-agent-project
-version: 1.0.0
+name: my-agent
+description: Agent 描述
 
-# 默认模型
-model: openai:gpt-4
+# 默认模型配置
+model:
+  provider: openai
+  name: gpt-4o-mini
+  temperature: 0.7
 
-# Agents 配置
+# Agent 定义
 agents:
-  - name: assistantAgent
-    description: 通用助手 agent
-    model: openai:gpt-4o-mini
-    temperature: 0.7
+  - name: chatbot
+    model:
+      provider: openai
+      name: gpt-4o
+    description: 聊天机器人
+    instructions: |
+      你是一个友好的助手。
+    tools:
+      - search
+      - calculator
 
-  - name: codeAgent
-    description: 代码生成 agent
-    model: anthropic:claude-3-sonnet-20240229
-    temperature: 0.2
-
-# 工具配置
+# 工具定义
 tools:
-  - calculator
-  - web-search
+  - name: search
+    description: 搜索工具
+    # ...
 
-# 内存配置
-memory:
-  type: default
-  ttl: 3600
-```
-
-### 配置项说明
-
-#### 项目信息
-
-```yaml
-name: my-project        # 项目名称
-version: 1.0.0          # 项目版本
-description: 项目描述   # 项目描述
+# CLI 专用 Agent
+cli:
+  chat:
+    agent: chatbot
 ```
 
 #### 模型配置
 
-```yaml
-model: openai:gpt-4     # 默认模型
-temperature: 0.7        # 温度参数 (0-2)
-topP: 1.0               # Top-P 采样
-frequencyPenalty: 0     # 频率惩罚
-presencePenalty: 0      # 存在惩罚
-```
-
-#### Agent 配置
+可以在不同级别配置模型：
 
 ```yaml
+# 全局默认模型
+model:
+  provider: openai
+  name: gpt-4o-mini
+
 agents:
-  - name: myAgent               # Agent 名称
-    description: Agent 描述     # Agent 描述
-    model: openai:gpt-4         # 使用的模型
-    temperature: 0.7            # 温度参数
-    tools:                      # 可用工具列表
-      - calculator
-      - web-search
-    prompt: |                   # 系统提示词
-      你是一个有帮助的助手...
+  # Agent 级别覆盖
+  - name: writer
+    model:
+      provider: anthropic
+      name: claude-3-5-sonnet
+      temperature: 1.2
+    
+  # 使用全局模型
+  - name: analyst
+    # 未指定 model，使用全局配置
 ```
 
-#### 工具配置
+#### 环境变量引用
+
+在 `aigne.yaml` 中引用环境变量：
 
 ```yaml
-tools:
-  - name: calculator            # 工具名称
-    enabled: true               # 是否启用
-
-  - name: web-search
-    config:                     # 工具配置
-      maxResults: 10
+model:
+  provider: openai
+  apiKey: ${OPENAI_API_KEY}
+  baseURL: ${OPENAI_BASE_URL}
 ```
 
-#### 内存配置
+### .env 文件
 
-```yaml
-memory:
-  type: default                 # 内存类型
-  ttl: 3600                     # 过期时间（秒）
-  maxSize: 1000                 # 最大条目数
+环境变量配置文件，存储敏感信息。
+
+#### 示例 .env
+
+```env
+# API 密钥
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Hub 配置
+AIGNE_HUB_API_URL=https://hub.aigne.io/ai-kit
+
+# 自定义配置
+MY_CUSTOM_VAR=value
 ```
 
-## 命令行参数
+#### .env 文件优先级
 
-### 全局参数
+AIGNE CLI 使用 `dotenv-flow`，支持多个 `.env` 文件：
 
-所有命令通用的参数：
-
-```bash
---help, -h          # 显示帮助
---version, -v       # 显示版本
+```
+.env                 # 默认配置
+.env.local           # 本地覆盖（不应提交到版本控制）
+.env.development     # 开发环境
+.env.test            # 测试环境
+.env.production      # 生产环境
 ```
 
-### run 命令参数
+加载顺序（后者覆盖前者）：
+1. `.env`
+2. `.env.<NODE_ENV>`
+3. `.env.local`
+4. `.env.<NODE_ENV>.local`
 
-```bash
---model <provider[:model]>      # 指定模型
---verbose                       # 详细日志
---log-level <level>             # 日志级别
---chat                          # 聊天模式
+#### .gitignore 配置
+
+建议在 `.gitignore` 中排除敏感文件：
+
+```gitignore
+# 环境变量
+.env.local
+.env.*.local
+
+# API 密钥
+*.key
+secrets/
 ```
+
+## 可用模型
+
+### 聊天模型
+
+AIGNE CLI 支持以下模型提供商：
+
+| 提供商 | 标识符 | 示例模型 |
+|--------|--------|----------|
+| OpenAI | `openai` | `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo` |
+| Anthropic | `anthropic` | `claude-3-5-sonnet`, `claude-3-opus` |
+| XAI | `xai` | `grok-beta` |
+| Google | `google` | `gemini-pro` |
+
+### 图像模型
+
+| 提供商 | 标识符 | 示例模型 |
+|--------|--------|----------|
+| OpenAI | `openai` | `dall-e-3`, `dall-e-2` |
+
+### 模型格式
+
+命令行指定模型的格式：
+
+```
+provider[:model]
+```
+
+- **provider**：必需，模型提供商
+- **model**：可选，具体模型名称
+  - 如果省略，使用提供商的默认模型
 
 示例：
 
 ```bash
-aigne run --model openai:gpt-4 --verbose
+# 使用 OpenAI 默认模型
+aigne run --model openai
+
+# 指定具体模型
+aigne run --model openai:gpt-4o
+
+# 使用 Anthropic
+aigne run --model anthropic:claude-3-5-sonnet
 ```
 
-### serve-mcp 命令参数
+## 配置最佳实践
 
-```bash
---host <host>                   # 主机地址
---port <port>                   # 端口
---pathname <pathname>           # 路径名
---aigne-hub-url <url>           # Hub URL
-```
+### 1. 安全管理
 
-示例：
-
-```bash
-aigne serve-mcp --host 0.0.0.0 --port 8080 --pathname /api
-```
-
-### observe 命令参数
-
-```bash
---host <host>                   # 主机地址
---port <port>                   # 端口
-```
-
-示例：
-
-```bash
-aigne observe --port 7890
-```
-
-### eval 命令参数
-
-```bash
---dataset <path>                # 数据集路径
---evaluator <name>              # 评估器名称
---concurrency <number>          # 并发数
---output, -o <path>             # 输出文件
-```
-
-示例：
-
-```bash
-aigne eval myAgent --dataset data.csv --concurrency 5 -o results.csv
-```
-
-## 模型参数详解
-
-### temperature
-
-控制输出的随机性。
-
-- **范围**: 0.0 - 2.0
-- **默认值**: 1.0
-- **用途**:
-  - 0.0: 最确定性的输出
-  - 0.7: 平衡创造性和一致性
-  - 1.5+: 更有创造性的输出
-
-```yaml
-agents:
-  - name: creativeAgent
-    temperature: 1.5    # 高温度，更有创造性
-
-  - name: preciseAgent
-    temperature: 0.2    # 低温度，更精确
-```
-
-### topP
-
-Top-P 采样（核采样）。
-
-- **范围**: 0.0 - 1.0
-- **默认值**: 1.0
-- **用途**: 控制输出的多样性
-
-```yaml
-topP: 0.9
-```
-
-### frequencyPenalty
-
-频率惩罚，减少重复内容。
-
-- **范围**: -2.0 - 2.0
-- **默认值**: 0.0
-
-```yaml
-frequencyPenalty: 0.5
-```
-
-### presencePenalty
-
-存在惩罚，鼓励讨论新话题。
-
-- **范围**: -2.0 - 2.0
-- **默认值**: 0.0
-
-```yaml
-presencePenalty: 0.6
-```
-
-## 最佳实践
-
-### 1. 安全管理 API 密钥
-
-```bash
-# ✓ 好：使用 .env.local
-echo "OPENAI_API_KEY=sk-..." > .env.local
-
-# ✗ 不好：硬编码在代码中
-# aigne.yaml
-model: openai:gpt-4
-apiKey: sk-...  # 不要这样做！
-```
+- **不要提交密钥**：API 密钥不应提交到版本控制
+- **使用 .env.local**：本地配置使用 `.env.local`
+- **权限控制**：限制配置文件的访问权限
 
 ### 2. 环境分离
+
+为不同环境使用不同配置：
 
 ```bash
 # 开发环境
@@ -519,95 +395,126 @@ NODE_ENV=development aigne run
 NODE_ENV=production aigne run
 ```
 
-### 3. 使用 .env.example
+### 3. 配置模板
 
-```bash
+提供配置模板而非实际配置：
+
+```env
 # .env.example
-OPENAI_API_KEY=your_openai_key_here
-ANTHROPIC_API_KEY=your_anthropic_key_here
-MODEL=openai:gpt-4o-mini
-PORT=3000
+OPENAI_API_KEY=your-key-here
+ANTHROPIC_API_KEY=your-key-here
+AIGNE_HUB_API_URL=https://hub.aigne.io/ai-kit
 ```
 
-团队成员可以复制并填写实际值：
+用户复制并填写实际值：
 
 ```bash
 cp .env.example .env
-# 然后编辑 .env 填写真实的 API 密钥
+# 编辑 .env 填写实际密钥
 ```
 
-### 4. 版本控制
+### 4. 文档化配置
 
-```.gitignore
-# 不要提交敏感信息
-.env
-.env.local
-.env.*.local
+在 README 中说明：
+- 需要哪些环境变量
+- 如何获取 API 密钥
+- 可选配置项
 
-# 提交配置模板
-!.env.example
+### 5. 验证配置
+
+在代码中验证必需的配置：
+
+```javascript
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error('OPENAI_API_KEY is required');
+}
 ```
 
-### 5. 成本控制
+## 配置调试
 
-```yaml
-# 开发环境使用较便宜的模型
-agents:
-  - name: devAgent
-    model: openai:gpt-4o-mini  # 更便宜
+### 查看加载的配置
 
-# 生产环境使用更强大的模型
-agents:
-  - name: prodAgent
-    model: openai:gpt-4        # 更强大
+使用 `--verbose` 选项查看配置加载过程：
+
+```bash
+aigne run --verbose
 ```
 
-## 故障排查
+### 测试不同配置
 
-### API 密钥未配置
+临时覆盖环境变量：
 
-**问题**：
+```bash
+# Linux/macOS
+OPENAI_API_KEY=test-key aigne run
+
+# Windows (PowerShell)
+$env:OPENAI_API_KEY="test-key"; aigne run
 ```
-Error: API key not configured
+
+### 配置验证
+
+创建测试脚本验证配置：
+
+```javascript
+// test-config.js
+import { loadAIGNE } from '@aigne/cli';
+
+const aigne = await loadAIGNE({ path: '.' });
+console.log('Model:', aigne.model);
+console.log('Agents:', aigne.agents.map(a => a.name));
 ```
 
-**解决方法**：
-1. 检查 `.env` 文件是否存在
-2. 确认环境变量名称正确
-3. 验证 API 密钥有效性
+## 常见配置问题
 
-### 环境变量未加载
+### API 密钥无效
 
-**问题**：
-环境变量设置了但未生效。
+**问题**：API 调用失败
 
-**解决方法**：
-1. 确认在正确的目录运行命令
-2. 检查 `.env` 文件格式
-3. 尝试直接导出环境变量：
-   ```bash
-   export OPENAI_API_KEY=sk-...
-   ```
+**检查**：
+- 确认密钥格式正确
+- 检查密钥是否过期
+- 验证密钥权限
 
-### 配置冲突
+### 模型不可用
 
-**问题**：
-多个配置来源导致行为不一致。
+**问题**：指定的模型无法使用
 
-**解决方法**：
-1. 理解配置优先级
-2. 使用 `--verbose` 查看实际配置
-3. 检查所有配置文件
+**检查**：
+- 确认模型名称正确
+- 检查 API 密钥权限
+- 查看提供商文档
 
-## 参考
+### 配置未生效
 
-### 相关文档
+**问题**：修改配置后没有变化
 
-- [快速开始](./getting-started.md#配置环境变量) - 基本配置步骤
-- [命令参考](./commands.md) - 各命令的参数说明
+**检查**：
+- 确认 `.env` 文件位置
+- 重启命令行工具
+- 检查配置优先级
 
-### 外部资源
+### 端口冲突
 
-- [OpenAI API 文档](https://platform.openai.com/docs)
-- [Anthropic API 文档](https://docs.anthropic.com)
-- [dotenv-flow 文档](https://github.com/kerimdzhanov/dotenv-flow)
+**问题**：服务无法启动，端口被占用
+
+**解决**：
+- 更改 `PORT` 环境变量
+- 使用 `--port` 选项
+- 停止占用端口的进程
+
+## 导航
+
+### 父主题
+
+- [概述](./overview.md) - 返回 AIGNE CLI 概述
+
+### 相关主题
+
+- [快速开始](./getting-started.md) - 快速配置和使用
+- [命令参考](./commands.md) - 查看所有命令选项
+
+### 下一步
+
+- [run 命令](./commands/run.md) - 使用配置运行 Agent
+- [hub 命令](./commands/hub.md) - 配置 Hub 连接

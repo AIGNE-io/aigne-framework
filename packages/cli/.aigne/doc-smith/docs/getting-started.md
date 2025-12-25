@@ -1,65 +1,33 @@
 # 快速开始
 
-> **前置条件**: [概述](./overview.md) - 了解 AIGNE CLI 的核心功能和特性
+本指南将帮助您快速创建并运行您的第一个 AIGNE 项目。
 
-本指南将帮助您快速安装 AIGNE CLI 并创建第一个 AI agent 项目。
+## 前置条件
 
-## 安装
+在开始之前，请确保您已：
 
-AIGNE CLI 可以通过多种包管理器全局安装：
+- [安装 AIGNE CLI](./installation.md)
+- 准备好模型 API 密钥（如 OpenAI API Key）
 
-### 使用 npm
+## 步骤 1：创建项目
 
-```bash
-npm install -g @aigne/cli
-```
-
-### 使用 yarn
-
-```bash
-yarn global add @aigne/cli
-```
-
-### 使用 pnpm
-
-```bash
-pnpm add -g @aigne/cli
-```
-
-## 验证安装
-
-安装完成后，运行以下命令验证安装是否成功：
-
-```bash
-aigne --version
-```
-
-您应该看到类似 `1.59.0-beta.3` 的版本号输出。
-
-查看帮助信息：
-
-```bash
-aigne --help
-```
-
-这将显示所有可用的命令和选项。
-
-## 创建第一个项目
-
-使用 `create` 命令创建新的 AIGNE 项目：
-
-### 在当前目录创建
+使用 `aigne create` 命令创建一个新项目：
 
 ```bash
 aigne create
 ```
 
-运行后会提示您输入项目名称：
+该命令会启动交互式创建流程，引导您完成项目初始化：
 
-```
-? Project name: my-first-agent
-? Select a template: default
-```
+1. **输入项目名称**：系统会提示您输入项目名称，默认为 `my-aigne-project`
+
+   ![创建项目交互界面](../../../assets/create/create-project-interactive-project-name-prompt.png)
+
+2. **选择项目模板**：目前支持默认模板，后续会添加更多模板选项
+
+3. **创建成功**：项目创建完成后，您会看到成功消息
+
+   ![创建成功消息](../../../assets/create/create-project-using-default-template-success-message.png)
 
 ### 指定项目路径
 
@@ -69,146 +37,115 @@ aigne create
 aigne create my-first-agent
 ```
 
-### 项目结构
+这将在当前目录下创建一个名为 `my-first-agent` 的项目文件夹。
 
-创建完成后，项目目录结构如下：
+## 步骤 2：查看项目结构
+
+创建的项目包含以下文件结构：
 
 ```
 my-first-agent/
-├── agents/           # Agent 定义目录
-│   └── example.yml   # 示例 agent 配置
-├── .env.example      # 环境变量模板
-├── package.json      # 项目配置
-└── README.md         # 项目说明
+├── aigne.yaml          # AIGNE 配置文件
+├── .env                # 环境变量配置
+└── ...                 # 其他项目文件
 ```
 
-## 配置环境变量
+主要文件说明：
 
-在运行 agent 之前，需要配置 AI 模型的 API 密钥。
+- **`aigne.yaml`**：定义 Agent 的配置、模型、工具和行为
+- **`.env`**：存储环境变量，如 API 密钥（不要提交到版本控制）
 
-1. 复制环境变量模板：
+## 步骤 3：配置环境变量
 
-```bash
-cd my-first-agent
-cp .env.example .env
+编辑项目目录下的 `.env` 文件，添加您的模型 API 密钥：
+
+```env
+# OpenAI API Key
+OPENAI_API_KEY=your-api-key-here
+
+# 或使用其他模型提供商
+# ANTHROPIC_API_KEY=your-key-here
+# XAI_API_KEY=your-key-here
 ```
 
-2. 编辑 `.env` 文件，添加您的 API 密钥：
+## 步骤 4：运行 Agent
 
-```bash
-# OpenAI
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Claude
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
-
-# XAI
-XAI_API_KEY=your_xai_api_key_here
-```
-
-根据您使用的模型提供商配置相应的 API 密钥。
-
-## 运行第一个 Agent
-
-配置完成后，运行 agent：
+进入项目目录并运行 Agent：
 
 ```bash
 cd my-first-agent
 aigne run
 ```
 
-这将启动交互式聊天界面，您可以与 agent 进行对话。
+这将启动交互式聊天界面，您可以与 Agent 进行对话：
 
-### 指定模型
+![运行聊天界面](../../../assets/run/run-default-template-project-in-chat-mode.png)
 
-默认情况下，AIGNE CLI 使用配置文件中指定的模型。您也可以通过命令行选项指定：
+### 指定 Agent 运行
 
-```bash
-# 使用 OpenAI GPT-4
-aigne run --model openai:gpt-4
+如果项目中定义了多个 Agent，您可以指定要运行的 Agent：
 
-# 使用 Claude 3
-aigne run --model anthropic:claude-3-sonnet-20240229
-```
-
-### 运行特定 Agent
-
-如果项目中有多个 agents，可以指定要运行的 agent：
-
-::: PATCH
-# Original
 ```bash
 aigne run --entry-agent myAgent
 ```
-或使用简化语法：
+
+### 指定模型
+
+您也可以在运行时指定使用的模型：
 
 ```bash
-aigne run myAgent
+aigne run --model openai:gpt-4o-mini
 ```
 
-# Revised
-```bash
-aigne run myAgent
-```
-:::
+模型格式为 `provider:model`，其中 `model` 是可选的。
 
-## 测试 Agent
+## 步骤 5：测试 Agent
 
-运行测试以验证 agent 的功能：
+如果项目中包含测试文件，您可以运行测试：
 
 ```bash
 aigne test
 ```
 
-这将执行 agent 目录中定义的所有测试用例。
+该命令会自动查找并运行项目目录中的测试文件。
 
-## 启动可观测性服务器
+## 快速开始流程图
 
-为了监控 agent 的运行状态，可以启动可观测性服务器：
-
-```bash
-aigne observe
-```
-
-服务器默认在 `http://localhost:7890` 启动，您可以通过浏览器访问监控界面。
-
-## 常见问题
-
-### API 密钥未配置
-
-如果运行时出现 API 密钥相关错误，请检查：
-
-1. `.env` 文件是否存在
-2. API 密钥是否正确配置
-3. 环境变量名称是否正确
-
-### 端口被占用
-
-如果可观测性服务器端口被占用，可以指定其他端口：
-
-```bash
-aigne observe --port 8080
-```
-
-### 模型不可用
-
-如果指定的模型不可用，请：
-
-1. 检查 API 密钥是否有效
-2. 确认您的账户是否有权限访问该模型
-3. 尝试使用其他模型
+<!-- afs:image id="img-002" key="getting-started-flow" desc="Getting started workflow flowchart: install CLI → create project → configure env → run agent → test agent" -->
 
 ## 下一步
 
-恭喜！您已经成功创建并运行了第一个 AIGNE agent。接下来可以：
+恭喜！您已经成功创建并运行了第一个 AIGNE 项目。接下来您可以：
 
-- [基本工作流程](./workflow.md) - 了解完整的开发工作流程
-- [命令参考](./commands.md) - 深入了解所有可用命令
-- [配置](./configuration.md) - 学习如何配置 AIGNE CLI
+- [查看命令参考](./commands.md) - 了解所有可用命令的详细信息
+- [配置说明](./configuration.md) - 深入了解配置选项
+- [运行 MCP 服务](./commands/serve-mcp.md) - 将 Agent 作为 MCP 服务器运行
+- [连接 AIGNE Hub](./commands/hub.md) - 管理 Hub 连接并查看信用额度
 
-## 相关命令
+## 常见问题
 
-- [`create`](./commands/create.md) - 详细的项目创建说明
-- [`run`](./commands/run.md) - Agent 运行选项和高级用法
-- [`test`](./commands/test.md) - 测试相关配置
-- [`observe`](./commands/observe.md) - 可观测性功能详解
+### Agent 无法启动
+
+- 检查 `.env` 文件中的 API 密钥是否正确
+- 确认网络连接正常
+- 使用 `--verbose` 选项查看详细日志：
+  ```bash
+  aigne run --verbose
+  ```
+
+### 找不到 Agent
+
+- 确认 `aigne.yaml` 文件格式正确
+- 检查 Agent 名称拼写
+- 使用 `aigne run --help` 查看可用选项
+
+## 导航
+
+### 前置条件
+
+- [安装指南](./installation.md) - 确保已安装 AIGNE CLI
+
+### 相关主题
+
+- [命令参考](./commands.md) - 查看所有可用命令
+- [配置说明](./configuration.md) - 了解配置选项

@@ -1,359 +1,257 @@
 # deploy - 部署应用
 
-> **前置条件**:
-> - [命令参考](../commands.md) - 了解所有可用命令
-> - [test](./test.md) - 确保应用已测试
+`aigne deploy` 命令用于将 AIGNE 应用部署到指定端点，支持 Blocklet 部署方式。
 
-## 概述
-
-`deploy` 命令用于将 AIGNE 应用部署到指定的 endpoint。当前实现基于 Blocklet 平台，将应用打包并部署到 Blocklet 服务器。
-
-## 语法
+## 命令格式
 
 ```bash
 aigne deploy --path <path> --endpoint <endpoint>
 ```
 
-## 选项
+## 参数说明
 
-### --path
+### 必需选项
 
-- **类型**: 字符串（必需）
-- **描述**: AIGNE 应用的路径
-
-必须包含 `aigne.yaml` 配置文件。
-
-### --endpoint
-
-- **类型**: 字符串（必需）
-- **描述**: 部署目标的 endpoint 地址
-
-格式：`http://username:access-key@hostname`
-
-示例：
-```
-http://admin:my-access-key@192.168.1.100
-https://user:key@my-server.com
-```
+- **`--path <path>`**：AIGNE 应用的路径
+  - 指向包含 `aigne.yaml` 的目录
+  
+- **`--endpoint <endpoint>`**：部署目标端点 URL
+  - Blocklet Server 的地址
+  - 示例：`https://my-server.com`
 
 ## 使用示例
 
-### 基本用法
+### 基本部署
 
-#### 部署当前项目
+部署到指定的 Blocklet Server：
 
 ```bash
-aigne deploy --path . --endpoint http://admin:key@192.168.1.100
+aigne deploy --path ./my-agent --endpoint https://server.example.com
 ```
 
-#### 部署指定路径的项目
+### 使用当前目录
+
+如果在项目目录中，可以使用相对路径：
 
 ```bash
-aigne deploy \
-  --path /path/to/my-agent \
-  --endpoint https://admin:access-key@my-server.example.com
-```
-
-### 完整工作流
-
-```bash
-# 1. 测试应用
-aigne test
-
-# 2. 部署应用
-aigne deploy --path . --endpoint http://admin:key@server.com
-
-# 3. 验证部署
-curl http://server.com/my-agent
+cd my-agent
+aigne deploy --path . --endpoint https://server.example.com
 ```
 
 ## 部署流程
 
+<!-- afs:image id="img-008" key="deploy-command-flow" desc="Deployment workflow diagram: prepare environment → install Blocklet CLI → configure Blocklet → bundle application → deploy to server" -->
+
+`aigne deploy` 命令执行以下步骤：
+
 ### 1. 准备部署环境
 
-- 检查 `aigne.yaml` 文件
-- 创建 `.deploy` 临时目录
+- 创建临时部署目录（`.deploy`）
 - 复制模板文件
+- 复制 Agent 文件到部署目录
 
 ### 2. 检查 Blocklet CLI
 
-- 验证 Blocklet CLI 是否已安装
-- 如未安装，提示安装
+- 检查是否安装了 Blocklet CLI
+- 如果未安装，提示用户安装
+- 验证 Blocklet CLI 版本
 
 ### 3. 配置 Blocklet
 
-- 生成 Blocklet DID
-- 配置 `blocklet.yml`
-- 设置应用名称和元数据
+- 生成或更新 `blocklet.yml` 配置
+- 设置 Blocklet 名称和 DID
+- 配置应用元数据
 
 ### 4. 打包应用
 
-- 运行 `blocklet bundle`
-- 创建发布包
+- 运行 `blocklet bundle` 打包应用
+- 创建部署包（`.blocklet/bundle`）
+- 验证打包结果
 
 ### 5. 部署到服务器
 
-- 上传应用包
-- 安装到目标服务器
-- 启动应用
+- 将打包的应用上传到指定端点
+- 在服务器上安装和启动应用
+- 清理临时文件
 
-### 6. 清理
+## Blocklet 配置
 
-- 删除临时文件
-- 显示部署结果
+### 自动生成配置
 
-## 部署输出
+首次部署时，系统会：
 
-### 成功示例
+1. **请求 Blocklet 名称**：
+   ```
+   ? Please input agent blocklet name: (my-agent)
+   ```
 
-```bash
-$ aigne deploy --path . --endpoint http://admin:key@192.168.1.100
+2. **生成 DID**：
+   自动创建唯一的 Blocklet DID
 
-✔ Prepare deploy environment
-  Preparing deploy environment...
-  Copying template files...
-  Running npm install...
+3. **保存配置**：
+   将配置保存到 `~/.aigne/deployed.yaml`
 
-✔ Check Blocklet CLI
-  Checking Blocklet CLI Version...
+### 配置存储
 
-✔ Configure Blocklet
-  Configuring Blocklet...
-  Blocklet name: my-aigne-agent, DID: z2E5...
-
-✔ Bundle Blocklet
-  Running blocklet bundle...
-
-Deploying to http://192.168.1.100...
-
-✅ Deploy completed: . -> http://192.168.1.100
-```
-
-### 失败示例
-
-```bash
-$ aigne deploy --path . --endpoint http://admin:wrong-key@192.168.1.100
-
-✔ Prepare deploy environment
-✔ Check Blocklet CLI
-✔ Configure Blocklet
-✔ Bundle Blocklet
-
-❌ Deploy failed: Authentication failed
-```
-
-## Blocklet 平台
-
-### 什么是 Blocklet
-
-Blocklet 是一个去中心化应用平台，提供：
-- 应用托管
-- 自动化部署
-- DID（去中心化标识符）
-- 应用市场
-
-### 安装 Blocklet CLI
-
-如果未安装 Blocklet CLI，部署时会提示安装：
-
-```bash
-? Install Blocklet CLI? yes
-Installing Blocklet CLI...
-```
-
-手动安装：
-
-```bash
-npm install -g @blocklet/cli
-```
-
-### Blocklet Server
-
-需要有一个运行中的 Blocklet Server：
-
-#### 本地安装
-
-```bash
-npm install -g @blocklet/cli
-blocklet server init
-blocklet server start
-```
-
-#### 云服务
-
-使用 Blocklet 云服务或自托管服务器。
-
-## 配置文件
-
-### aigne.yaml
-
-必须存在的配置文件：
-
-```yaml
-name: my-agent
-description: My AIGNE Agent
-version: 1.0.0
-agents:
-  - name: myAgent
-    model: openai:gpt-4
-```
-
-### blocklet.yml
-
-自动生成的 Blocklet 配置（在 `.deploy` 目录）：
-
-```yaml
-name: my-aigne-agent
-title: my-aigne-agent
-did: z2E5Ry7CpAoH...
-version: 1.0.0
-main: agent/aigne.yaml
-```
-
-### package.json
-
-如果项目有 `package.json`，会自动包含在部署包中。
-
-## DID 管理
-
-### 什么是 DID
-
-DID（Decentralized Identifier，去中心化标识符）是应用的唯一标识。
-
-### DID 存储
-
-首次部署时创建的 DID 会存储在：
-
+部署信息存储在：
 ```
 ~/.aigne/deployed.yaml
 ```
 
-格式：
-
+内容示例：
 ```yaml
-/path/to/project:
-  name: my-aigne-agent
-  did: z2E5Ry7CpAoH...
+/path/to/my-agent:
+  name: my-agent
+  did: z1qwertyuiopasdfghjklzxcvbnm
 ```
 
-### 重复部署
+### 再次部署
 
-相同路径的项目会使用相同的 DID，实现版本更新而非创建新应用。
+已部署过的应用会：
+- 重用之前的 Blocklet 名称和 DID
+- 自动更新到最新版本
+- 无需重新配置
 
-## 部署目标
+## Blocklet CLI
 
-### Endpoint 格式
+### 安装 Blocklet CLI
+
+如果未安装，系统会提示：
 
 ```
-<protocol>://<username>:<access-key>@<hostname>[:<port>]
+? Install Blocklet CLI? (Y/n)
 ```
 
-组成部分：
-- `protocol`: `http` 或 `https`
-- `username`: Blocklet Server 用户名
-- `access-key`: 访问密钥
-- `hostname`: 服务器地址
-- `port`: 端口（可选，默认 80/443）
+选择 `Yes` 将自动安装：
 
-### 获取访问密钥
+```bash
+npm install -g @blocklet/cli
+```
 
-在 Blocklet Server 管理界面：
+### 手动安装
 
-1. 登录 Blocklet Server
-2. 进入 Settings > Developer
-3. 创建或查看 Access Key
+您也可以手动安装 Blocklet CLI：
 
-## 部署环境
+```bash
+npm install -g @blocklet/cli
+```
 
-### 文件结构
+验证安装：
 
-部署时创建的 `.deploy` 目录：
+```bash
+blocklet --version
+```
+
+## 部署目录结构
+
+部署过程中创建的目录结构：
 
 ```
 .deploy/
-├── agent/              # 复制的 agent 文件
-├── blocklet.yml        # Blocklet 配置
-├── package.json        # 依赖配置（如有）
+├── blocklet.yml         # Blocklet 配置
+├── package.json         # 项目依赖
+├── agent/               # Agent 文件
+│   ├── aigne.yaml
+│   └── ...
 └── .blocklet/
-    └── bundle/         # 打包的发布文件
+    └── bundle/          # 打包后的文件
 ```
 
-### 排除文件
+## 部署输出
 
-以下文件/目录不会包含在部署包中：
-- `.deploy/`
-- `node_modules/`
-
-## 常见问题
-
-### path 参数必需
+### 成功部署
 
 ```
-Error: path is required
+✓ Prepare deploy environment
+✓ Check Blocklet CLI
+✓ Configure Blocklet
+  Blocklet name: my-agent, DID: z1qwertyuiopasdfghjklzxcvbnm
+✓ Bundle Blocklet
+
+Deploying to https://server.example.com...
+✓ Deploy completed: /path/to/my-agent -> https://server.example.com
 ```
 
-解决方法：
+### 失败处理
+
+如果部署失败，会显示错误信息：
+
+```
+✗ Deploy failed: Connection timeout
+```
+
+查看详细错误信息以排查问题。
+
+## 部署到不同环境
+
+### 开发环境
+
 ```bash
-aigne deploy --path . --endpoint http://...
+aigne deploy \
+  --path ./my-agent \
+  --endpoint https://dev.example.com
 ```
 
-### endpoint 参数必需
+### 测试环境
 
-```
-Error: endpoint is required
-```
-
-解决方法：
 ```bash
-aigne deploy --path . --endpoint http://admin:key@server.com
+aigne deploy \
+  --path ./my-agent \
+  --endpoint https://test.example.com
 ```
 
-### 入口文件未找到
+### 生产环境
 
-```
-Error: Entry file not found: aigne.yaml
-```
-
-解决方法：
-1. 确认在正确的目录
-2. 检查 `aigne.yaml` 文件存在
-3. 验证文件名拼写
-
-### Blocklet CLI 未安装
-
-```
-Error: Blocklet CLI not found
+```bash
+aigne deploy \
+  --path ./my-agent \
+  --endpoint https://prod.example.com
 ```
 
-解决方法：
-1. 允许自动安装
-2. 手动安装：`npm install -g @blocklet/cli`
+## 环境变量
 
-### 认证失败
+部署时会复制项目的配置文件：
 
+- `package.json`
+- `.env` 文件（需要在服务器上配置）
+- 其他配置文件
+
+**注意**：`.env` 文件不会自动部署，需要在服务器上单独配置。
+
+## 更新已部署的应用
+
+### 代码更新
+
+修改 Agent 代码后重新部署：
+
+```bash
+# 修改代码
+# ...
+
+# 重新部署
+aigne deploy --path ./my-agent --endpoint https://server.example.com
 ```
-Error: Authentication failed
+
+系统会：
+- 使用相同的 Blocklet 名称和 DID
+- 更新应用代码
+- 重启服务
+
+### 配置更新
+
+修改配置文件后重新部署：
+
+```bash
+# 修改 aigne.yaml
+# ...
+
+# 重新部署
+aigne deploy --path ./my-agent --endpoint https://server.example.com
 ```
 
-解决方法：
-1. 检查 access key 是否正确
-2. 验证用户名
-3. 确认服务器地址
+## CI/CD 集成
 
-### DID 创建失败
-
-```
-Error: DID not found
-```
-
-解决方法：
-1. 确认 Blocklet CLI 版本
-2. 检查网络连接
-3. 查看详细日志
-
-## 生产部署最佳实践
-
-### 1. 使用 CI/CD
+### GitHub Actions
 
 ```yaml
 # .github/workflows/deploy.yml
@@ -367,143 +265,158 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-      - run: npm install -g @aigne/cli
-      - run: |
+      - uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+      
+      - name: Install AIGNE CLI
+        run: npm install -g @aigne/cli
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Deploy to production
+        run: |
           aigne deploy \
             --path . \
             --endpoint ${{ secrets.DEPLOY_ENDPOINT }}
 ```
 
-### 2. 环境分离
+### GitLab CI
 
-```bash
-# 开发环境
-aigne deploy --path . --endpoint $DEV_ENDPOINT
-
-# 测试环境
-aigne deploy --path . --endpoint $STAGING_ENDPOINT
-
-# 生产环境
-aigne deploy --path . --endpoint $PROD_ENDPOINT
+```yaml
+# .gitlab-ci.yml
+deploy:
+  stage: deploy
+  script:
+    - npm install -g @aigne/cli
+    - npm install
+    - aigne deploy --path . --endpoint $DEPLOY_ENDPOINT
+  only:
+    - main
 ```
 
-### 3. 版本管理
+## 部署配置
 
-更新 `aigne.yaml` 中的版本号：
+### blocklet.yml
+
+部署时生成的 Blocklet 配置示例：
 
 ```yaml
 name: my-agent
-version: 1.0.1  # 递增版本号
+title: My Agent
+did: z1qwertyuiopasdfghjklzxcvbnm
+version: 1.0.0
+description: AIGNE Agent
+author: Your Name
+
+interfaces:
+  - type: web
+    name: agent
+    port: BLOCKLET_PORT
+    path: /
+
+environments:
+  - name: OPENAI_API_KEY
+    description: OpenAI API Key
+    required: true
 ```
 
-### 4. 部署前检查
+## 常见问题
 
-```bash
-# 运行测试
-aigne test
+### Blocklet CLI 未安装
 
-# 运行评估
-aigne eval myAgent --dataset data.csv
+**问题**：系统提示安装 Blocklet CLI
 
-# 确认无误后部署
-aigne deploy --path . --endpoint $ENDPOINT
-```
+**解决方案**：
+- 选择自动安装（推荐）
+- 手动安装：`npm install -g @blocklet/cli`
 
-## 监控和维护
+### 部署超时
 
-### 部署后验证
+**问题**：部署过程超时
 
-```bash
-# 检查应用状态
-curl http://server.com/my-agent/health
+**解决方案**：
+- 检查网络连接
+- 确认服务器地址正确
+- 检查服务器状态
+- 增加超时时间（需要修改代码）
 
-# 查看日志
-blocklet logs my-aigne-agent
-```
+### 权限错误
 
-### 更新应用
+**问题**：无权限部署到服务器
 
-重新运行 deploy 命令会更新现有应用：
+**解决方案**：
+- 确认服务器访问权限
+- 检查认证信息
+- 联系服务器管理员
 
-```bash
-# 修改代码后
-aigne deploy --path . --endpoint $ENDPOINT
-```
+### 配置冲突
 
-### 回滚
+**问题**：Blocklet 配置冲突
 
-如需回滚到之前的版本：
+**解决方案**：
+- 删除 `~/.aigne/deployed.yaml` 中的旧配置
+- 重新部署并使用新名称
 
-```bash
-blocklet rollback my-aigne-agent
-```
+### 打包失败
 
-## 技术细节
+**问题**：`blocklet bundle` 失败
 
-### 源码位置
+**解决方案**：
+- 检查项目结构
+- 确认 `package.json` 正确
+- 查看详细错误日志
+- 确保所有依赖已安装
 
-实现文件：`src/commands/deploy.ts:67`
+## 最佳实践
 
-关键函数：
-- `createDeployCommands()` - 创建命令
-- `deploy()` - 执行部署
-- `copyDir()` - 复制目录
+1. **版本管理**：使用 Git 标签管理部署版本
+2. **环境分离**：为不同环境使用不同的端点
+3. **自动化部署**：集成到 CI/CD 流程
+4. **配置管理**：使用环境变量管理敏感配置
+5. **回滚计划**：保留之前的部署版本以便回滚
+6. **监控部署**：部署后验证应用运行状态
 
-### 部署文件
+## 部署检查清单
 
-存储在：`~/.aigne/deployed.yaml`
+部署前检查：
 
-格式：
+- [ ] 代码已提交到版本控制
+- [ ] 所有测试通过
+- [ ] 配置文件正确
+- [ ] API 密钥已配置
+- [ ] 服务器地址正确
+- [ ] 有足够的部署权限
 
-```yaml
-/absolute/path/to/project:
-  name: blocklet-name
-  did: z2E5...
-```
+部署后验证：
 
-## 替代部署方式
+- [ ] 应用成功启动
+- [ ] 功能正常工作
+- [ ] 监控数据正常
+- [ ] 日志无错误
 
-### Docker 部署
+## 导航
 
-```dockerfile
-FROM node:18
-WORKDIR /app
-COPY . .
-RUN npm install -g @aigne/cli
-CMD ["aigne", "run"]
-```
-
-### 手动部署
-
-```bash
-# 打包
-tar -czf my-agent.tar.gz .
-
-# 上传
-scp my-agent.tar.gz user@server:/path/
-
-# 解压并运行
-ssh user@server "cd /path && tar -xzf my-agent.tar.gz && aigne run"
-```
-
-## 下一步
-
-部署完成后，可以：
-
-1. [observe](./observe.md) - 监控生产环境
-2. [hub](./hub.md) - 使用 Hub 管理部署
-3. [serve-mcp](./serve-mcp.md) - 作为 MCP 服务运行
-
-## 相关命令
-
-- [test](./test.md) - 部署前测试
-- [eval](./eval.md) - 部署前评估
-- [hub](./hub.md) - Hub 部署管理
-
-## 参考
+### 父主题
 
 - [命令参考](../commands.md) - 返回命令列表
-- [基本工作流程](../workflow.md#7-部署上线) - 部署在开发流程中的位置
-- [Blocklet 文档](https://www.blocklet.io/docs) - Blocklet 平台文档
+
+### 前置条件
+
+- [create 命令](./create.md) - 创建要部署的项目
+- [test 命令](./test.md) - 部署前进行测试
+
+### 相关主题
+
+- [serve-mcp 命令](./serve-mcp.md) - 本地运行服务
+- [observe 命令](./observe.md) - 监控部署后的应用
+- [配置说明](../configuration.md) - 配置部署环境
+
+### 下一步
+
+- [hub 命令](./hub.md) - 管理 AIGNE Hub 连接
+- [observe 命令](./observe.md) - 监控生产环境

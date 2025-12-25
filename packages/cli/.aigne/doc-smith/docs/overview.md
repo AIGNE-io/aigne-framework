@@ -1,114 +1,97 @@
 # AIGNE CLI 概述
 
-## 简介
+AIGNE CLI 是 [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) 的官方命令行工具，专为简化 AIGNE 应用的开发、测试和部署流程而设计。通过提供一系列实用命令，AIGNE CLI 帮助开发者快速创建项目、运行 Agent、测试代码并部署应用。
 
-AIGNE CLI 是 [AIGNE Framework](https://github.com/AIGNE-io/aigne-framework) 的官方命令行工具，旨在简化 AI agent 的开发、测试和部署流程。它为开发者提供了一套强大而直观的命令，帮助快速创建项目、运行 agents、执行测试并部署应用。
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/packages/cli/logo.svg" alt="AIGNE Logo" width="400" />
-</p>
+![AIGNE Logo](../../../logo.svg)
 
 ## 核心功能
 
-### 项目创建
-快速创建新的 AIGNE 项目，包含预定义的文件结构和配置。使用交互式界面选择项目模板，自动生成必要的配置文件。
+AIGNE CLI 提供以下核心功能：
 
-### Agent 运行
-轻松运行和测试 AIGNE agents。支持：
-- 本地 agent 运行
-- 从远程 URL 加载和运行 agent
-- 交互式聊天循环
-- 指定特定 agent 运行
+### 🚀 项目创建
+- 使用预定义的文件结构和配置快速创建新的 AIGNE 项目
+- 支持多种项目模板，帮助您快速启动开发
+- 交互式创建流程，引导您完成项目初始化
 
-### 测试支持
-内置测试命令，支持单元测试和集成测试。帮助确保 agent 的质量和可靠性。
+### 💻 Agent 运行
+- 轻松运行和测试 AIGNE Agent
+- 支持从本地路径或远程 URL 加载 Agent
+- 提供交互式聊天界面，方便与 Agent 进行对话
 
-### MCP 服务
-将 agents 作为 MCP (Model Context Protocol) 服务器提供，便于与外部系统集成。支持自定义端口和路径配置。
+### 🧪 测试支持
+- 内置测试命令，支持单元测试和集成测试
+- 自动运行 Agent 目录中的测试文件
+- 方便的测试工作流集成
 
-### 多模型支持
-支持多种 AI 模型提供商：
-- OpenAI (GPT-4, GPT-4o-mini 等)
-- Claude (Claude 3 系列)
-- XAI (Grok 系列)
-- 其他兼容 OpenAI API 的模型
+### 🔌 MCP 服务
+- 将 Agent 作为 MCP（Model Context Protocol）服务器启动
+- 支持与外部系统的集成
+- 灵活的服务配置和端口管理
 
-### 可观测性
-内置可观测性服务器，用于监控 agent 的运行数据、性能指标和调试信息。
+### 🌐 AIGNE Hub 连接
+- 管理与 AIGNE Hub 的连接
+- 支持多个 Hub 的切换和管理
+- 集成信用额度查询和支付功能
 
-### Hub 集成
-与 AIGNE Hub 集成，支持：
-- 连接到远程 Hub
-- 管理凭证
-- 使用远程 agents
-- 切换不同的 Hub 环境
+### 📦 部署能力
+- 将 AIGNE 应用部署到指定端点
+- 支持 Blocklet 部署方式
+- 自动化的部署流程
 
-### 部署管理
-提供部署命令，将 AIGNE 应用部署到指定的 endpoint，支持生产环境部署。
+### 🔍 可观测性
+- 内置可观测性服务器，监控 Agent 运行状态
+- 查看调用详情和性能数据
+- 便于调试和问题排查
 
-## 技术特性
+### 📊 Agent 评估
+- 使用数据集评估 Agent 的性能
+- 支持自定义评估器
+- 生成评估报告，帮助优化 Agent 表现
 
-### 交互式界面
-使用 Inquirer.js 提供美观的命令行交互界面，引导用户完成各种操作。
+### 🎨 交互式界面
+- 美观的命令行界面，提供直观的用户体验
+- 清晰的命令输出和错误提示
+- 支持详细日志模式，方便调试
 
-### 模板系统
-基于 Nunjucks 模板引擎，支持自定义项目模板和代码生成。
+### 🔧 多模型支持
+- 支持 OpenAI、Claude、XAI 等多种模型提供商
+- 灵活的模型配置选项
+- 支持自定义 AIGNE Hub 服务 URL
 
-### 热重载
-开发模式下支持代码热重载，提高开发效率。
+## 架构概览
 
-### 环境配置
-支持 dotenv-flow，可根据不同环境加载相应的配置文件。
+<!-- afs:image id="img-001" key="aigne-cli-architecture" desc="AIGNE CLI architecture diagram showing main components: CLI commands, agent runtime, MCP server, hub connector, deployment engine, and observability service" -->
 
-### 日志系统
-内置日志系统，支持多个日志级别，便于调试和问题排查。
+AIGNE CLI 采用模块化架构设计，主要包含以下组件：
 
-## 架构设计
-
-AIGNE CLI 采用模块化架构设计：
-
-```
-@aigne/cli
-├── commands/          # 命令实现
-│   ├── create.ts     # 项目创建
-│   ├── run.ts        # Agent 运行
-│   ├── test.ts       # 测试执行
-│   ├── serve-mcp.ts  # MCP 服务
-│   ├── eval.ts       # 性能评估
-│   ├── observe.ts    # 可观测性
-│   ├── hub.ts        # Hub 管理
-│   ├── deploy.ts     # 部署管理
-│   └── app/          # 应用管理
-├── utils/            # 工具函数
-├── templates/        # 项目模板
-└── constants.ts      # 常量定义
-```
+1. **命令行接口层**：处理用户命令输入，提供交互式界面
+2. **Agent 运行时**：加载和运行 AIGNE Agent，管理会话状态
+3. **MCP 服务器**：提供标准化的模型上下文协议接口
+4. **Hub 连接器**：管理与 AIGNE Hub 的通信和认证
+5. **部署引擎**：处理应用打包和部署流程
+6. **可观测性服务**：收集和展示运行时数据
 
 ## 适用场景
 
 AIGNE CLI 适用于以下场景：
 
-1. **快速原型开发**：快速创建和测试 AI agent 原型
-2. **生产环境部署**：将开发好的 agent 部署到生产环境
-3. **团队协作**：通过 AIGNE Hub 共享和管理 agents
-4. **持续集成**：集成到 CI/CD 流程中进行自动化测试
-5. **性能优化**：使用评估和可观测性工具优化 agent 性能
+- **Agent 开发**：快速创建和测试 AIGNE Agent
+- **本地调试**：在本地环境运行和调试 Agent
+- **集成开发**：通过 MCP 服务与其他系统集成
+- **性能评估**：使用数据集评估 Agent 性能
+- **生产部署**：将 Agent 部署到生产环境
+- **运维监控**：监控 Agent 运行状态和性能指标
 
 ## 版本信息
 
-- **当前版本**: 1.59.0-beta.3
-- **Node.js 要求**: 14.x 及以上
-- **许可证**: Elastic-2.0
+- **当前版本**：1.59.0-beta.6
+- **许可证**：Elastic-2.0
+- **仓库地址**：[GitHub](https://github.com/AIGNE-io/aigne-framework)
 
-## 下一步
+## 导航
 
-- [快速开始](./getting-started.md) - 安装 AIGNE CLI 并创建第一个项目
-- [基本工作流程](./workflow.md) - 了解使用 AIGNE CLI 的典型开发流程
+### 下一步
+
+- [安装指南](./installation.md) - 了解如何安装 AIGNE CLI
+- [快速开始](./getting-started.md) - 快速创建和运行您的第一个 AIGNE 项目
 - [命令参考](./commands.md) - 查看所有可用命令的详细说明
-
-## 相关资源
-
-- [AIGNE Framework 官网](https://www.aigne.io)
-- [GitHub 仓库](https://github.com/AIGNE-io/aigne-framework)
-- [NPM 包](https://www.npmjs.com/package/@aigne/cli)
-- [问题反馈](https://github.com/AIGNE-io/aigne-framework/issues)

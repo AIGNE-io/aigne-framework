@@ -1,77 +1,145 @@
 # 命令参考
 
-> **前置条件**:
-> - [概述](../overview.md) - 了解 AIGNE CLI 的核心功能
-> - [快速开始](../getting-started.md) - 安装并配置 AIGNE CLI
+AIGNE CLI 提供了一系列命令来帮助您开发、测试、部署和管理 AIGNE 应用。本文档提供所有可用命令的概览。
 
-AIGNE CLI 提供了一整套命令来支持 AI agent 的完整开发生命周期，从项目创建、开发测试到部署上线。
-
-## 命令概览
-
-```bash
-aigne <command> [options]
-```
+## 命令列表
 
 ### 核心命令
 
-| 命令 | 描述 | 快速示例 |
+| 命令 | 说明 | 详细文档 |
 |------|------|---------|
-| [`create`](./commands/create.md) | 创建新的 AIGNE 项目 | `aigne create my-project` |
-| [`run`](./commands/run.md) | 运行 AIGNE agent | `aigne run` |
-| [`test`](./commands/test.md) | 运行测试 | `aigne test` |
+| `create` | 创建新的 AIGNE 项目 | [详细说明](./commands/create.md) |
+| `run` | 运行 Agent 并启动聊天界面 | [详细说明](./commands/run.md) |
+| `test` | 运行项目中的测试 | [详细说明](./commands/test.md) |
 
 ### 服务命令
 
-| 命令 | 描述 | 快速示例 |
+| 命令 | 说明 | 详细文档 |
 |------|------|---------|
-| [`serve-mcp`](./commands/serve-mcp.md) | 启动 MCP 服务器 | `aigne serve-mcp --port 3000` |
-| [`observe`](./commands/observe.md) | 启动可观测性服务器 | `aigne observe` |
+| `serve-mcp` | 将 Agent 作为 MCP 服务器启动 | [详细说明](./commands/serve-mcp.md) |
+| `observe` | 启动可观测性服务器 | [详细说明](./commands/observe.md) |
 
-### 评估和管理
+### 部署与管理
 
-| 命令 | 描述 | 快速示例 |
+| 命令 | 说明 | 详细文档 |
 |------|------|---------|
-| [`eval`](./commands/eval.md) | 评估 agent 性能 | `aigne eval myAgent --dataset data.csv` |
-| [`hub`](./commands/hub.md) | 管理 AIGNE Hub 连接 | `aigne hub connect` |
-| [`deploy`](./commands/deploy.md) | 部署应用 | `aigne deploy --path . --endpoint https://...` |
-| [`app`](./commands/app.md) | 应用管理命令 | `aigne app agent` |
+| `deploy` | 部署 AIGNE 应用到指定端点 | [详细说明](./commands/deploy.md) |
+| `hub` | 管理 AIGNE Hub 连接 | [详细说明](./commands/hub.md) |
+
+### 高级命令
+
+| 命令 | 说明 | 详细文档 |
+|------|------|---------|
+| `eval` | 使用数据集评估 Agent 性能 | [详细说明](./commands/eval.md) |
+
+## 命令流程图
+
+<!-- afs:image id="img-003" key="commands-flow" desc="AIGNE CLI commands workflow diagram showing typical usage flow: create → run/test → serve-mcp/observe → deploy, with hub management as supporting function" -->
 
 ## 全局选项
 
 所有命令都支持以下全局选项：
 
-- `-h, --help` - 显示帮助信息
-- `-v, --version` - 显示版本号
+- `--help`, `-h`：显示命令帮助信息
+- `--version`, `-v`：显示 AIGNE CLI 版本号
 
-## 按功能分类
+某些命令还支持：
 
-### 项目生命周期
+- `--verbose`：启用详细日志输出，用于调试
+- `--log-level <level>`：设置日志级别（如 `debug`、`info`、`warn`、`error`）
 
-1. **创建项目**: [`create`](./commands/create.md)
-2. **开发调试**: [`run`](./commands/run.md)
-3. **测试验证**: [`test`](./commands/test.md)
-4. **性能评估**: [`eval`](./commands/eval.md)
-5. **部署上线**: [`deploy`](./commands/deploy.md)
+## 使用示例
 
-### 集成与服务
+### 基本工作流
 
-- **MCP 集成**: [`serve-mcp`](./commands/serve-mcp.md) - 将 agents 作为 MCP 服务提供
-- **可观测性**: [`observe`](./commands/observe.md) - 监控和调试工具
-- **Hub 管理**: [`hub`](./commands/hub.md) - 连接和管理远程 Hub
-
-### 应用管理
-
-- [`app`](./commands/app.md) - 应用程序管理相关命令集合
-
-## 使用帮助
-
-### 查看命令列表
+典型的开发工作流：
 
 ```bash
-aigne --help
+# 1. 创建项目
+aigne create my-agent
+
+# 2. 进入项目目录
+cd my-agent
+
+# 3. 运行 Agent
+aigne run
+
+# 4. 运行测试
+aigne test
+
+# 5. 部署应用
+aigne deploy --endpoint https://my-server.com
 ```
 
-### 查看特定命令帮助
+### 开发调试流程
+
+使用可观测性功能进行调试：
+
+```bash
+# 1. 启动可观测性服务器
+aigne observe
+
+# 2. 在另一个终端运行 Agent
+aigne run --verbose
+
+# 3. 在浏览器中查看运行数据
+# 访问 http://localhost:7890
+```
+
+### Hub 管理流程
+
+连接和管理 AIGNE Hub：
+
+```bash
+# 1. 连接到 Hub
+aigne hub connect
+
+# 2. 查看连接状态
+aigne hub status
+
+# 3. 列出所有 Hub
+aigne hub list
+
+# 4. 切换 Hub
+aigne hub use
+```
+
+## 命令分类
+
+### 按开发阶段分类
+
+**项目初始化**
+- [`create`](./commands/create.md)
+
+**开发与测试**
+- [`run`](./commands/run.md)
+- [`test`](./commands/test.md)
+- [`eval`](./commands/eval.md)
+- [`observe`](./commands/observe.md)
+
+**部署与运维**
+- [`serve-mcp`](./commands/serve-mcp.md)
+- [`deploy`](./commands/deploy.md)
+- [`hub`](./commands/hub.md)
+
+### 按功能分类
+
+**Agent 运行**
+- [`run`](./commands/run.md) - 交互式运行
+- [`serve-mcp`](./commands/serve-mcp.md) - 服务化运行
+
+**质量保证**
+- [`test`](./commands/test.md) - 单元测试
+- [`eval`](./commands/eval.md) - 性能评估
+- [`observe`](./commands/observe.md) - 运行监控
+
+**资源管理**
+- [`hub`](./commands/hub.md) - Hub 连接管理
+- [`deploy`](./commands/deploy.md) - 应用部署
+
+## 获取帮助
+
+对于任何命令，您都可以使用 `--help` 选项查看详细帮助：
 
 ```bash
 aigne <command> --help
@@ -81,87 +149,27 @@ aigne <command> --help
 
 ```bash
 aigne run --help
-aigne create --help
+aigne hub --help
 ```
 
-## 常用工作流
+## 导航
 
-### 快速开始流程
+### 父主题
 
-```bash
-# 1. 创建项目
-aigne create my-agent
+- [概述](./overview.md) - 返回 AIGNE CLI 概述
 
-# 2. 进入项目目录
-cd my-agent
+### 相关主题
 
-# 3. 运行 agent
-aigne run
-```
+- [快速开始](./getting-started.md) - 快速入门指南
+- [配置说明](./configuration.md) - 配置选项参考
 
-### 开发测试流程
+### 子文档
 
-```bash
-# 1. 启动可观测性服务器（可选）
-aigne observe &
-
-# 2. 运行 agent 进行开发测试
-aigne run --verbose
-
-# 3. 运行测试用例
-aigne test
-```
-
-### 评估部署流程
-
-```bash
-# 1. 评估 agent 性能
-aigne eval myAgent --dataset test-data.csv
-
-# 2. 连接到 Hub（如需要）
-aigne hub connect
-
-# 3. 部署应用
-aigne deploy --path . --endpoint https://my-endpoint.com
-```
-
-## 环境变量
-
-多数命令支持通过环境变量配置，详见 [配置文档](../configuration.md)。
-
-常用环境变量：
-
-- `OPENAI_API_KEY` - OpenAI API 密钥
-- `ANTHROPIC_API_KEY` - Anthropic API 密钥
-- `XAI_API_KEY` - XAI API 密钥
-- `AIGNE_HUB_API_URL` - AIGNE Hub URL
-- `AIGNE_HUB_API_KEY` - AIGNE Hub API 密钥
-
-## 命令详细文档
-
-点击以下链接查看每个命令的详细文档：
-
-### 核心命令
-- [create](./commands/create.md) - 创建新的 AIGNE 项目和 agent 配置文件
-- [run](./commands/run.md) - 运行指定路径的 AIGNE agent 并启动聊天循环
-- [test](./commands/test.md) - 在指定的 agents 目录中运行测试
-
-### 服务命令
-- [serve-mcp](./commands/serve-mcp.md) - 将 agents 作为 MCP 服务器提供
-- [observe](./commands/observe.md) - 启动可观测性服务器用于监控数据
-
-### 管理命令
-- [eval](./commands/eval.md) - 评估指定 agent 的性能和准确性
-- [hub](./commands/hub.md) - 管理 AIGNE Hub 连接
-- [deploy](./commands/deploy.md) - 将 AIGNE 应用部署到指定的 endpoint
-- [app](./commands/app.md) - 应用管理相关命令
-
-## 下一步
-
-- [配置](../configuration.md) - 了解 AIGNE CLI 的配置选项
-- [基本工作流程](../workflow.md) - 查看完整的开发工作流程
-
-## 相关资源
-
-- [快速开始](../getting-started.md) - 新手入门指南
-- [概述](../overview.md) - AIGNE CLI 功能概览
+- [create 命令](./commands/create.md) - 创建项目
+- [run 命令](./commands/run.md) - 运行 Agent
+- [test 命令](./commands/test.md) - 运行测试
+- [eval 命令](./commands/eval.md) - 评估 Agent
+- [serve-mcp 命令](./commands/serve-mcp.md) - MCP 服务
+- [observe 命令](./commands/observe.md) - 可观测性服务
+- [deploy 命令](./commands/deploy.md) - 部署应用
+- [hub 命令](./commands/hub.md) - Hub 管理

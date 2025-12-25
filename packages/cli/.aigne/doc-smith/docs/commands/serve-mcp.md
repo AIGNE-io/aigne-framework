@@ -1,456 +1,442 @@
-# serve-mcp - MCP 服务器
+# serve-mcp - MCP 服务
 
-> **前置条件**:
-> - [命令参考](../commands.md) - 了解所有可用命令
-> - [run](./run.md) - 了解如何运行 agent
+`aigne serve-mcp` 命令用于将 Agent 作为 MCP（Model Context Protocol）服务器启动,提供标准化的 HTTP 流式接口。
 
-## 概述
-
-`serve-mcp` 命令将 agents 作为 MCP (Model Context Protocol) 服务器提供，通过 Streamable HTTP 协议对外暴露服务。这使得 AIGNE agents 可以与支持 MCP 协议的外部系统集成。
-
-## 语法
+## 命令格式
 
 ```bash
 aigne serve-mcp [options]
 ```
 
-## 选项
+## 参数说明
 
-### --path, --url
+### 选项
 
-- **类型**: 字符串
-- **默认值**: `.` (当前目录)
-- **别名**: `--url`
-- **描述**: agents 目录的路径或 AIGNE 项目的 URL
-
-### --host
-
-- **类型**: 字符串
-- **默认值**: `localhost`
-- **描述**: MCP 服务器运行的主机地址
-
-使用 `0.0.0.0` 可公开暴露服务器，允许外部访问：
-
-```bash
-aigne serve-mcp --host 0.0.0.0
-```
-
-### --port
-
-- **类型**: 数字
-- **默认值**: 从环境变量 `PORT` 读取，如未设置则为 `3000`
-- **描述**: MCP 服务器运行的端口
-
-### --pathname
-
-- **类型**: 字符串
-- **默认值**: `/mcp`
-- **描述**: 服务的路径名
-
-完整的服务 URL 为：`http://<host>:<port><pathname>`
-
-### --aigne-hub-url
-
-- **类型**: 字符串
-- **描述**: 自定义 AIGNE Hub 服务 URL
-- **用途**: 用于获取远程 agent 定义或模型
+- **`--path <path>`**：Agent 目录路径或项目 URL
+  - 默认值：`.`（当前目录）
+  - 别名：`--url`
+  
+- **`--host <host>`**：服务器主机地址
+  - 默认值：`localhost`
+  - 使用 `0.0.0.0` 可公开暴露服务器
+  
+- **`--port <number>`**：服务器端口号
+  - 默认值：`3000`（或环境变量 `PORT`）
+  
+- **`--pathname <path>`**：服务路径名
+  - 默认值：`/mcp`
+  - 服务的 URL 路径前缀
+  
+- **`--aigne-hub-url <url>`**：自定义 AIGNE Hub 服务 URL
+  - 用于获取远程 Agent 定义或模型
 
 ## 使用示例
 
 ### 基本用法
 
-#### 启动默认 MCP 服务器
+在默认端口启动 MCP 服务器：
 
 ```bash
 aigne serve-mcp
 ```
 
-服务器将在 `http://localhost:3000/mcp` 启动。
+服务器将在以下地址运行：
+```
+http://localhost:3000/mcp
+```
 
-#### 指定端口
+### 指定端口
+
+使用自定义端口：
 
 ```bash
 aigne serve-mcp --port 8080
 ```
 
-服务器将在 `http://localhost:8080/mcp` 启动。
+### 公开暴露服务
 
-#### 指定主机和端口
-
-```bash
-aigne serve-mcp --host 0.0.0.0 --port 8080
-```
-
-服务器将在 `http://0.0.0.0:8080/mcp` 启动，可公开访问。
-
-### 高级用法
-
-#### 自定义路径名
+允许外部访问（不仅限于 localhost）：
 
 ```bash
-aigne serve-mcp --pathname /api/agents
+aigne serve-mcp --host 0.0.0.0 --port 3000
 ```
 
-服务器将在 `http://localhost:3000/api/agents` 启动。
+**警告**：公开暴露服务器可能存在安全风险，请确保适当的安全措施。
 
-#### 服务指定路径的 agents
+### 自定义路径
+
+更改服务的 URL 路径：
 
 ```bash
-aigne serve-mcp --path path/to/agents --port 3001
+aigne serve-mcp --pathname /api/agent
 ```
 
-#### 服务远程 agents
+服务将在 `http://localhost:3000/api/agent` 运行。
+
+### 指定 Agent 目录
+
+从特定目录加载 Agent：
 
 ```bash
-aigne serve-mcp --url https://example.com/aigne-project
+aigne serve-mcp --path ./my-agent --port 3001
 ```
 
-#### 组合多个选项
+### 组合使用
 
 ```bash
 aigne serve-mcp \
-  --path ./agents \
+  --path ./production-agent \
   --host 0.0.0.0 \
   --port 8080 \
-  --pathname /mcp/v1 \
-  --aigne-hub-url https://hub.aigne.io
+  --pathname /mcp/v1
 ```
 
 ## MCP 协议
 
 ### 什么是 MCP
 
-Model Context Protocol (MCP) 是一个标准化协议，用于：
-- 暴露 AI agents 为服务
+MCP（Model Context Protocol）是一个标准化协议，用于：
+- 在应用程序和 AI 模型之间传输上下文
 - 提供统一的接口规范
 - 支持流式响应
-- 实现系统间互操作
+- 实现跨平台集成
 
-### Streamable HTTP
+### 协议特性
 
-AIGNE 使用 Streamable HTTP 实现 MCP：
-- 支持长连接
-- 流式返回结果
-- 实时推送更新
+- **HTTP/HTTPS 传输**：基于标准 HTTP 协议
+- **流式响应**：支持服务器推送事件（SSE）
+- **工具调用**：支持 Agent 使用工具
+- **上下文管理**：维护会话状态
 
-## 服务器输出
+## 服务架构
 
-启动成功后会显示：
+<!-- afs:image id="img-007" key="mcp-service-architecture" desc="MCP service architecture diagram showing client requests → MCP server → AIGNE agent → model API, with tool execution and response streaming" -->
+
+MCP 服务器架构包括：
+
+1. **HTTP 服务器**：接收客户端请求
+2. **MCP 协议层**：处理 MCP 协议规范
+3. **AIGNE Agent**：执行实际的 Agent 逻辑
+4. **模型接口**：与 AI 模型通信
+5. **工具执行器**：运行 Agent 工具
+
+## 运行示例
+
+### 启动服务
 
 ```bash
-$ aigne serve-mcp --port 3000
+aigne serve-mcp --port 3000
+```
+
+输出：
+```
 MCP server is running on http://localhost:3000/mcp
 ```
 
-服务器将持续运行，直到手动停止（`Ctrl+C`）。
+![MCP 服务运行界面](../../../../assets/run-mcp-service.png)
 
-## API 端点
+### 服务状态
 
-### 健康检查
+服务启动后会持续运行，直到：
+- 用户按 `Ctrl+C` 停止
+- 进程被终止
+- 发生致命错误
 
-```bash
-GET http://localhost:3000/mcp/health
-```
+## 客户端集成
 
-### 调用 Agent
+### Claude Desktop 集成
 
-```bash
-POST http://localhost:3000/mcp/invoke
-Content-Type: application/json
+在 Claude Desktop 中使用 MCP 服务器：
 
+1. 打开 Claude Desktop 设置
+2. 添加 MCP 服务器配置：
+
+```json
 {
-  "agent": "myAgent",
-  "message": "Hello, world!"
-}
-```
-
-### 流式响应
-
-```bash
-POST http://localhost:3000/mcp/stream
-Content-Type: application/json
-
-{
-  "agent": "myAgent",
-  "message": "Generate a long response"
-}
-```
-
-## 集成示例
-
-### 使用 curl
-
-```bash
-# 调用 agent
-curl -X POST http://localhost:3000/mcp/invoke \
-  -H "Content-Type: application/json" \
-  -d '{"agent": "myAgent", "message": "Hello"}'
-```
-
-### 使用 JavaScript
-
-```javascript
-const response = await fetch('http://localhost:3000/mcp/invoke', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    agent: 'myAgent',
-    message: 'Hello, world!'
-  })
-});
-
-const result = await response.json();
-console.log(result);
-```
-
-### 使用 Python
-
-```python
-import requests
-
-response = requests.post(
-    'http://localhost:3000/mcp/invoke',
-    json={
-        'agent': 'myAgent',
-        'message': 'Hello, world!'
+  "mcpServers": {
+    "my-agent": {
+      "url": "http://localhost:3000/mcp"
     }
-)
-
-print(response.json())
-```
-
-## 部署建议
-
-### 生产环境
-
-在生产环境中运行时，建议：
-
-1. **使用进程管理器**：
-
-```bash
-# 使用 pm2
-pm2 start "aigne serve-mcp --port 3000" --name aigne-mcp
-
-# 使用 systemd
-sudo systemctl start aigne-mcp
-```
-
-2. **配置反向代理**：
-
-使用 Nginx 或 Caddy 作为反向代理：
-
-```nginx
-# nginx.conf
-server {
-  listen 80;
-  server_name api.example.com;
-
-  location /mcp {
-    proxy_pass http://localhost:3000/mcp;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection 'upgrade';
-    proxy_set_header Host $host;
-    proxy_cache_bypass $http_upgrade;
   }
 }
 ```
 
-3. **启用 HTTPS**：
+3. 重启 Claude Desktop
 
-使用 Let's Encrypt 或其他证书：
+### HTTP 客户端
 
-```bash
-certbot --nginx -d api.example.com
-```
-
-### Docker 部署
-
-```dockerfile
-FROM node:18
-
-WORKDIR /app
-
-COPY . .
-
-RUN npm install -g @aigne/cli
-
-EXPOSE 3000
-
-CMD ["aigne", "serve-mcp", "--host", "0.0.0.0", "--port", "3000"]
-```
-
-运行容器：
+使用标准 HTTP 客户端调用：
 
 ```bash
-docker build -t aigne-mcp .
-docker run -p 3000:3000 aigne-mcp
+curl -X POST http://localhost:3000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hello, Agent!"}'
 ```
 
-## 环境变量
-
-### PORT
-
-设置默认端口：
-
-```bash
-export PORT=8080
-aigne serve-mcp
-```
-
-服务器将在端口 8080 启动。
-
-### 其他环境变量
-
-- `OPENAI_API_KEY` - OpenAI API 密钥
-- `ANTHROPIC_API_KEY` - Anthropic API 密钥
-- `AIGNE_HUB_API_URL` - AIGNE Hub URL
-
-详见 [配置文档](../configuration.md)。
-
-## 安全考虑
-
-### 1. 访问控制
-
-在公开暴露服务器前，考虑添加认证：
+### JavaScript 客户端
 
 ```javascript
-// 自定义认证中间件
-app.use((req, res, next) => {
-  const token = req.headers.authorization;
-  if (token === 'Bearer YOUR_SECRET_TOKEN') {
-    next();
-  } else {
-    res.status(401).send('Unauthorized');
-  }
-});
-```
-
-### 2. 速率限制
-
-防止滥用：
-
-```javascript
-import rateLimit from 'express-rate-limit';
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 分钟
-  max: 100 // 最多 100 个请求
+const response = await fetch('http://localhost:3000/mcp', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ message: 'Hello, Agent!' })
 });
 
-app.use('/mcp', limiter);
+const reader = response.body.getReader();
+// 处理流式响应
 ```
 
-### 3. CORS 配置
+## 环境配置
 
-如需跨域访问，配置 CORS：
+### 环境变量
 
-```javascript
-import cors from 'cors';
+MCP 服务器会加载项目目录的 `.env` 文件：
 
-app.use(cors({
-  origin: 'https://your-frontend.com'
-}));
+```env
+# API 密钥
+OPENAI_API_KEY=your-key
+
+# 自定义端口
+PORT=3000
+
+# Hub 配置
+AIGNE_HUB_API_URL=https://hub.aigne.io
+```
+
+### 代理配置
+
+如果需要通过代理访问模型 API：
+
+```env
+HTTP_PROXY=http://proxy.example.com:8080
+HTTPS_PROXY=https://proxy.example.com:8080
 ```
 
 ## 监控和日志
 
-### 查看日志
-
-启动服务器时的输出会显示所有请求：
+### 启用详细日志
 
 ```bash
-$ aigne serve-mcp --verbose
-MCP server is running on http://localhost:3000/mcp
-[2024-01-01 10:00:00] POST /mcp/invoke - 200 - 123ms
-[2024-01-01 10:00:05] POST /mcp/stream - 200 - 456ms
+# 通过环境变量
+LOG_LEVEL=debug aigne serve-mcp
+
+# 或在 .env 文件中设置
+LOG_LEVEL=debug
 ```
 
-### 集成监控
+### 日志内容
 
-结合 [`observe`](./observe.md) 命令监控服务状态：
+- 请求接收
+- Agent 处理过程
+- 工具调用
+- 响应发送
+- 错误信息
+
+### 结合可观测性
+
+配合 `observe` 命令监控 MCP 服务：
 
 ```bash
-# 终端 1
+# 终端 1：启动可观测性服务
 aigne observe
 
-# 终端 2
+# 终端 2：启动 MCP 服务
 aigne serve-mcp
 ```
 
+然后在浏览器中访问 `http://localhost:7890` 查看实时数据。
+
+## 生产部署
+
+### 使用进程管理器
+
+使用 PM2 管理 MCP 服务：
+
+```bash
+# 安装 PM2
+npm install -g pm2
+
+# 启动服务
+pm2 start "aigne serve-mcp --port 3000" --name my-agent-mcp
+
+# 查看状态
+pm2 status
+
+# 查看日志
+pm2 logs my-agent-mcp
+
+# 重启服务
+pm2 restart my-agent-mcp
+```
+
+### 使用 Docker
+
+创建 Dockerfile：
+
+```dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 安装 AIGNE CLI
+RUN npm install -g @aigne/cli
+
+# 复制 Agent 文件
+COPY . .
+
+# 暴露端口
+EXPOSE 3000
+
+# 启动服务
+CMD ["aigne", "serve-mcp", "--host", "0.0.0.0", "--port", "3000"]
+```
+
+构建和运行：
+
+```bash
+docker build -t my-agent-mcp .
+docker run -p 3000:3000 -e OPENAI_API_KEY=your-key my-agent-mcp
+```
+
+### 反向代理
+
+使用 Nginx 作为反向代理：
+
+```nginx
+server {
+    listen 80;
+    server_name agent.example.com;
+
+    location /mcp {
+        proxy_pass http://localhost:3000/mcp;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+## 安全考虑
+
+### 认证
+
+MCP 服务器本身不提供认证，建议：
+
+1. **使用反向代理**：在 Nginx/Apache 层添加认证
+2. **API Gateway**：使用 API 网关管理访问
+3. **VPN**：仅在内网或 VPN 中暴露服务
+
+### 限流
+
+防止滥用：
+
+```nginx
+# Nginx 限流配置
+limit_req_zone $binary_remote_addr zone=mcp:10m rate=10r/s;
+
+location /mcp {
+    limit_req zone=mcp burst=20;
+    proxy_pass http://localhost:3000/mcp;
+}
+```
+
+### HTTPS
+
+在生产环境使用 HTTPS：
+
+```bash
+# 使用 Let's Encrypt 证书
+certbot --nginx -d agent.example.com
+```
+
+## 性能优化
+
+### 连接池
+
+配置模型 API 的连接池：
+
+```javascript
+// 在 Agent 配置中
+{
+  model: {
+    provider: 'openai',
+    maxConnections: 10
+  }
+}
+```
+
+### 缓存策略
+
+对于相同输入缓存响应：
+
+```javascript
+// 实现缓存中间件
+// (需要自定义代码)
+```
+
+### 负载均衡
+
+运行多个 MCP 服务实例：
+
+```bash
+# 实例 1
+aigne serve-mcp --port 3001
+
+# 实例 2
+aigne serve-mcp --port 3002
+
+# 实例 3
+aigne serve-mcp --port 3003
+```
+
+然后使用负载均衡器（如 Nginx）分发请求。
+
 ## 常见问题
 
-### 端口被占用
+### 端口已被占用
 
-```
-Error: Port 3000 is already in use
-```
+**问题**：`Error: Port 3000 is already in use`
 
-解决方法：
-1. 使用其他端口：`--port 3001`
-2. 停止占用端口的进程
-3. 检查 `PORT` 环境变量
+**解决方案**：
+- 使用不同端口：`--port 3001`
+- 停止占用端口的进程
+- 检查是否有其他 MCP 服务实例在运行
 
-### 无法公开访问
+### 无法访问服务
 
-确保：
-1. 使用 `--host 0.0.0.0`
-2. 防火墙允许相应端口
-3. 云服务器安全组配置正确
+**问题**：客户端无法连接到 MCP 服务器
 
-### Agent 未找到
+**解决方案**：
+- 检查防火墙设置
+- 确认服务器正在运行
+- 验证主机地址和端口
+- 检查网络连接
 
-```
-Error: Agent not found
-```
+### 流式响应中断
 
-解决方法：
-1. 确认 agent 配置文件存在
-2. 检查 `--path` 参数是否正确
-3. 验证 agent 名称拼写
+**问题**：响应流意外终止
 
-## 技术细节
+**解决方案**：
+- 检查 Agent 是否有错误
+- 查看服务器日志
+- 确认模型 API 连接稳定
+- 增加超时设置
 
-### 源码位置
+## 导航
 
-实现文件：`src/commands/serve-mcp.ts:28`
-
-关键函数：
-- `createServeMCPCommand()` - 创建命令
-- `serveMCPServerFromDir()` - 启动服务器
-
-### 默认端口逻辑
-
-```typescript
-const DEFAULT_PORT = () => {
-  const { PORT } = process.env;
-  if (!PORT) return 3000;
-  const port = Number.parseInt(PORT, 10);
-  if (!port || !Number.isInteger(port)) {
-    throw new Error(`Invalid PORT: ${PORT}`);
-  }
-  return port;
-};
-```
-
-## 下一步
-
-启动 MCP 服务器后，可以：
-
-1. [observe](./observe.md) - 启动监控查看服务状态
-2. [deploy](./deploy.md) - 部署到生产环境
-3. [hub](./hub.md) - 连接到 AIGNE Hub
-
-## 相关命令
-
-- [run](./run.md) - 本地运行 agent
-- [observe](./observe.md) - 监控服务
-- [deploy](./deploy.md) - 部署应用
-
-## 参考
+### 父主题
 
 - [命令参考](../commands.md) - 返回命令列表
-- [MCP 协议规范](https://modelcontextprotocol.io/) - MCP 协议文档
-- [配置](../configuration.md) - 环境变量配置
+
+### 相关主题
+
+- [run 命令](./run.md) - 交互式运行 Agent
+- [deploy 命令](./deploy.md) - 部署为生产服务
+- [observe 命令](./observe.md) - 监控 MCP 服务
+
+### 下一步
+
+- [observe 命令](./observe.md) - 监控服务运行状态
+- [配置说明](../configuration.md) - 配置生产环境

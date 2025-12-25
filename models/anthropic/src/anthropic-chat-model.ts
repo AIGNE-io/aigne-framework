@@ -401,7 +401,8 @@ async function convertMessages({
   const msgs: MessageParam[] = [];
 
   // Extract cache configuration with defaults
-  const { shouldCache, ttl, strategy, autoBreakpoints } = parseCacheConfig(modelOptions);
+  const { shouldCache, strategy, autoBreakpoints, ...cacheConfig } = parseCacheConfig(modelOptions);
+  const ttl = cacheConfig.ttl === "1h" ? "1h" : undefined;
 
   for (const msg of messages) {
     if (msg.role === "system") {
@@ -460,12 +461,31 @@ async function convertMessages({
   }
 
   // Apply cache_control to the last system block if auto strategy is enabled
-  if (shouldCache && strategy === "auto" && autoBreakpoints.system && systemBlocks.length > 0) {
-    const lastBlock = systemBlocks[systemBlocks.length - 1];
-    if (lastBlock) {
-      lastBlock.cache_control = { type: "ephemeral" };
-      if (ttl === "1h") {
-        lastBlock.cache_control = { type: "ephemeral", ttl: "1h" };
+  if (shouldCache && strategy === "auto") {
+    if (autoBreakpoints.system && systemBlocks.length > 0) {
+      const lastBlock = systemBlocks[systemBlocks.length - 1];
+      if (lastBlock) {
+        lastBlock.cache_control = { type: "ephemeral", ttl };
+      }
+    }
+
+    if (autoBreakpoints.lastMessage) {
+      const lastMsg = msgs[msgs.length - 1];
+      if (lastMsg) {
+        if (typeof lastMsg.content === "string") {
+          lastMsg.content = [
+            { type: "text", text: lastMsg.content, cache_control: { type: "ephemeral", ttl } },
+          ];
+        } else if (Array.isArray(lastMsg.content)) {
+          const lastBlock = lastMsg.content[lastMsg.content.length - 1];
+          if (
+            lastBlock &&
+            lastBlock.type !== "thinking" &&
+            lastBlock.type !== "redacted_thinking"
+          ) {
+            lastBlock.cache_control = { type: "ephemeral", ttl };
+          }
+        }
       }
     }
   }

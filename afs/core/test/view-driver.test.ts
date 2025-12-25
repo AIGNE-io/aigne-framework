@@ -31,8 +31,8 @@ class MockI18nDriver implements AFSDriver {
     module: AFSModule,
     path: string,
     view: View,
-    options: { sourceEntry: AFSEntry; metadata: any },
-  ): Promise<{ result: AFSEntry; message?: string }> {
+    options: { sourceEntry: AFSEntry; metadata: any; context: any },
+  ): Promise<{ data: AFSEntry; message?: string }> {
     const { sourceEntry } = options;
     const targetLang = view.language;
     if (!targetLang) {
@@ -56,7 +56,7 @@ class MockI18nDriver implements AFSDriver {
     await module.write?.(storagePath, { content: translated });
 
     return {
-      result: {
+      data: {
         ...sourceEntry,
         content: translated,
         path,
@@ -75,14 +75,14 @@ class MockFSModule implements AFSModule {
   readonly name = "mock-fs";
   private files = new Map<string, string>();
 
-  async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
+  async read(path: string): Promise<{ data?: AFSEntry; message?: string }> {
     const content = this.files.get(path);
     if (!content) {
-      return { result: undefined, message: "File not found" };
+      return { data: undefined, message: "File not found" };
     }
 
     return {
-      result: {
+      data: {
         id: path,
         path,
         content,
@@ -95,11 +95,11 @@ class MockFSModule implements AFSModule {
   async write(
     path: string,
     payload: { content: string },
-  ): Promise<{ result: AFSEntry; message?: string }> {
+  ): Promise<{ data: AFSEntry; message?: string }> {
     this.files.set(path, payload.content);
 
     return {
-      result: {
+      data: {
         id: path,
         path,
         content: payload.content,
@@ -146,8 +146,8 @@ test("View driver: should translate content with view", async () => {
     wait: "strict",
   });
 
-  expect(enResult.result?.content).toBe("Hello，World！这是一个Test。");
-  expect(enResult.result?.metadata?.view).toEqual({ language: "en" });
+  expect(enResult.data?.content).toBe("Hello，World！这是一个Test。");
+  expect(enResult.data?.metadata?.view).toEqual({ language: "en" });
 
   // Read Japanese version
   const jaResult = await afs.read("/modules/mock-fs/test.md", {
@@ -155,12 +155,12 @@ test("View driver: should translate content with view", async () => {
     wait: "strict",
   });
 
-  expect(jaResult.result?.content).toBe("こんにちは，世界！这是一个テスト。");
-  expect(jaResult.result?.metadata?.view).toEqual({ language: "ja" });
+  expect(jaResult.data?.content).toBe("こんにちは，世界！这是一个テスト。");
+  expect(jaResult.data?.metadata?.view).toEqual({ language: "ja" });
 
   // Read source (no view) should return original
   const sourceResult = await afs.read("/modules/mock-fs/test.md");
-  expect(sourceResult.result?.content).toBe("你好，世界！这是一个测试。");
+  expect(sourceResult.data?.content).toBe("你好，世界！这是一个测试。");
 });
 
 test("View driver: should use cached view on second read", async () => {
@@ -200,7 +200,7 @@ test("View driver: should use cached view on second read", async () => {
   });
 
   expect(processCallCount).toBe(1); // Still 1, not called again
-  expect(cachedResult.result?.content).toBe("Hello，World！");
+  expect(cachedResult.data?.content).toBe("Hello，World！");
 });
 
 test("View driver: should invalidate cache when source changes", async () => {
@@ -231,7 +231,7 @@ test("View driver: should invalidate cache when source changes", async () => {
     wait: "strict",
   });
 
-  expect(firstRead.result?.content).toBe("Hello");
+  expect(firstRead.data?.content).toBe("Hello");
   expect(processCallCount).toBe(1);
 
   // Update source content
@@ -245,7 +245,7 @@ test("View driver: should invalidate cache when source changes", async () => {
     wait: "strict",
   });
 
-  expect(secondRead.result?.content).toBe("Hello，World！");
+  expect(secondRead.data?.content).toBe("Hello，World！");
   expect(processCallCount).toBe(2); // Called again after source change
 });
 
@@ -280,7 +280,7 @@ test("View driver: fallback mode should return source immediately", async () => 
   });
 
   // Should get source content immediately
-  expect(fallbackResult.result?.content).toBe("你好，世界！");
+  expect(fallbackResult.data?.content).toBe("你好，世界！");
   expect(fallbackResult.message).toContain("being processed in background");
 
   // Wait a bit for background processing
@@ -292,7 +292,7 @@ test("View driver: fallback mode should return source immediately", async () => 
     wait: "strict",
   });
 
-  expect(strictResult.result?.content).toBe("Hello，World！");
+  expect(strictResult.data?.content).toBe("Hello，World！");
 });
 
 test("View driver: prefetch should batch generate views", async () => {
@@ -337,9 +337,9 @@ test("View driver: prefetch should batch generate views", async () => {
     view: { language: "en" },
   });
 
-  expect(result1.result?.content).toBe("Hello");
-  expect(result2.result?.content).toBe("World");
-  expect(result3.result?.content).toBe("Test");
+  expect(result1.data?.content).toBe("Hello");
+  expect(result2.data?.content).toBe("World");
+  expect(result3.data?.content).toBe("Test");
 
   // Process count should still be 3 (no additional calls)
   expect(processCallCount).toBe(3);

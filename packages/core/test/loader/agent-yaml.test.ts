@@ -363,7 +363,7 @@ test("loadAgentFromYaml should load AIAgent with AFS drivers correctly", async (
       description: "Mock i18n driver",
       capabilities: { dimensions: ["language" as const] },
       canHandle: (view: { language?: string }) => !!view.language,
-      process: async () => ({ result: { id: "test", path: "/test", content: "translated" } }),
+      process: async () => ({ data: { id: "test", path: "/test", content: "translated" } }),
     };
   };
 
@@ -371,8 +371,8 @@ test("loadAgentFromYaml should load AIAgent with AFS drivers correctly", async (
     join(import.meta.dirname, "../../test-agents/test-afs-driver.yaml"),
     {
       afs: {
-        availableModules: [{ module: "local-fs", create: createMockModule }],
-        availableDrivers: [{ driver: "i18n", create: createMockDriver }],
+        availableModules: [{ module: "local-fs", load: createMockModule }],
+        availableDrivers: [{ driver: "i18n", load: createMockDriver }],
       },
     },
   );
@@ -383,10 +383,15 @@ test("loadAgentFromYaml should load AIAgent with AFS drivers correctly", async (
   expect(agent.afs?.drivers[0]?.name).toBe("i18n");
 
   // Verify options are passed as-is from YAML (not camelized)
-  expect(moduleOptions).toEqual({ local_path: "./test-docs" });
+  expect(moduleOptions).toEqual({
+    filepath: expect.stringContaining("test-afs-driver.yaml"),
+    parsed: { local_path: "./test-docs" },
+  });
   expect(driverOptions).toEqual({
-    default_source_language: "zh",
-    supported_languages: ["en", "ja"],
+    parsed: {
+      default_source_language: "zh",
+      supported_languages: ["en", "ja"],
+    },
   });
 });
 
@@ -403,15 +408,15 @@ test("loadAgentFromYaml should load AIAgent with AFS storage config correctly", 
     description: "Mock i18n driver",
     capabilities: { dimensions: ["language" as const] },
     canHandle: (view: { language?: string }) => !!view.language,
-    process: async () => ({ result: { id: "test", path: "/test", content: "translated" } }),
+    process: async () => ({ data: { id: "test", path: "/test", content: "translated" } }),
   });
 
   const agent = await loadAgent(
     join(import.meta.dirname, "../../test-agents/test-afs-storage.yaml"),
     {
       afs: {
-        availableModules: [{ module: "local-fs", create: createMockModule }],
-        availableDrivers: [{ driver: "i18n", create: createMockDriver }],
+        availableModules: [{ module: "local-fs", load: createMockModule }],
+        availableDrivers: [{ driver: "i18n", load: createMockDriver }],
       },
     },
   );

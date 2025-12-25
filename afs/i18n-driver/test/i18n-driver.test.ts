@@ -22,14 +22,14 @@ class MockFSModule implements AFSModule {
 
   constructor(public options: { context: any }) {}
 
-  async read(path: string): Promise<{ result?: AFSEntry; message?: string }> {
+  async read(path: string): Promise<{ data?: AFSEntry; message?: string }> {
     const content = this.files.get(path);
     if (!content) {
-      return { result: undefined, message: "File not found" };
+      return { data: undefined, message: "File not found" };
     }
 
     return {
-      result: {
+      data: {
         id: path,
         path,
         content,
@@ -42,11 +42,11 @@ class MockFSModule implements AFSModule {
   async write(
     path: string,
     payload: { content: string },
-  ): Promise<{ result: AFSEntry; message?: string }> {
+  ): Promise<{ data: AFSEntry; message?: string }> {
     this.files.set(path, payload.content);
 
     return {
-      result: {
+      data: {
         id: path,
         path,
         content: payload.content,
@@ -152,7 +152,7 @@ test("I18nDriver should translate content using context", async () => {
 
   // Read source
   const source = await mockFS.read("/test.md");
-  assert(source.result, "source.result should be defined");
+  assert(source.data, "source.data should be defined");
 
   // Process translation (context is passed via options)
   const result = await driver.process(
@@ -160,15 +160,15 @@ test("I18nDriver should translate content using context", async () => {
     "/test.md",
     { language: "en" },
     {
-      sourceEntry: source.result,
+      sourceEntry: source.data,
       metadata: {},
       context,
     },
   );
 
-  expect(result.result.content).toBe("Hello，World！This is aTest。");
-  expect(result.result.metadata?.storagePath).toBe("/.i18n/en/test.md"); // root-level file
-  expect(result.result.metadata?.view).toEqual({ language: "en" });
+  expect(result.data.content).toBe("Hello，World！This is aTest。");
+  expect(result.data.metadata?.storagePath).toBe("/.i18n/en/test.md"); // root-level file
+  expect(result.data.metadata?.view).toEqual({ language: "en" });
 });
 
 test("I18nDriver should integrate with AFS", async () => {
@@ -201,8 +201,8 @@ test("I18nDriver should integrate with AFS", async () => {
     context,
   });
 
-  expect(enResult.result?.content).toBe("Hello，World！");
-  expect(enResult.result?.metadata?.view).toEqual({ language: "en" });
+  expect(enResult.data?.content).toBe("Hello，World！");
+  expect(enResult.data?.metadata?.view).toEqual({ language: "en" });
 
   // Read Japanese version
   const jaResult = await afs.read("/modules/mock-fs/doc.md", {
@@ -211,11 +211,11 @@ test("I18nDriver should integrate with AFS", async () => {
     context,
   });
 
-  expect(jaResult.result?.content).toBe("こんにちは，世界！");
+  expect(jaResult.data?.content).toBe("こんにちは，世界！");
 
   // Read source (no view) should return original
   const sourceResult = await afs.read("/modules/mock-fs/doc.md");
-  expect(sourceResult.result?.content).toBe("你好，世界！");
+  expect(sourceResult.data?.content).toBe("你好，世界！");
 });
 
 test("I18nDriver should throw error if language is missing", async () => {
@@ -231,7 +231,7 @@ test("I18nDriver should throw error if language is missing", async () => {
 
   await mockFS.write("/test.md", { content: "test content" });
   const source = await mockFS.read("/test.md");
-  assert(source.result, "source.result should be defined");
+  assert(source.data, "source.data should be defined");
 
   await expect(
     driver.process(
@@ -239,7 +239,7 @@ test("I18nDriver should throw error if language is missing", async () => {
       "/test.md",
       {},
       {
-        sourceEntry: source.result,
+        sourceEntry: source.data,
         metadata: {},
         context,
       },
@@ -260,7 +260,7 @@ test("I18nDriver should throw error if context is missing", async () => {
 
   await mockFS.write("/test.md", { content: "test content" });
   const source = await mockFS.read("/test.md");
-  assert(source.result, "source.result should be defined");
+  assert(source.data, "source.data should be defined");
 
   await expect(
     driver.process(
@@ -268,7 +268,7 @@ test("I18nDriver should throw error if context is missing", async () => {
       "/test.md",
       { language: "en" },
       {
-        sourceEntry: source.result,
+        sourceEntry: source.data,
         metadata: {},
         // no context provided
       },

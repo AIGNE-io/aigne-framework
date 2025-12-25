@@ -571,8 +571,24 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
   private disableEvents?: boolean;
 
   historyConfig?: {
-    disabled?: boolean;
-    mode?: "input_output" | "messages";
+    /**
+     * Whether to enable history recording and injection
+     * @default false
+     */
+    enabled?: boolean;
+
+    /**
+     * Whether to record history entries, default to enabled when history is enabled
+     */
+    record?: boolean;
+
+    /**
+     * Whether to inject history entries into the context, default to enabled when history is enabled
+     */
+    inject?: boolean;
+
+    useOldMemory?: boolean;
+
     maxTokens?: number;
     maxItems?: number;
   };
@@ -984,8 +1000,12 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     const o = await this.callHooks(["onSuccess", "onEnd"], { input, output: finalOutput }, options);
     if (o?.output) finalOutput = o.output as O;
 
-    if (this.historyConfig?.disabled !== true) {
+    if (
+      this.historyConfig?.record === true ||
+      (this.historyConfig?.record !== false && this.historyConfig?.enabled)
+    ) {
       this.afs?.emit("agentSucceed", {
+        agentId: this.name,
         userId: context.userContext.userId,
         sessionId: context.userContext.sessionId,
         input,

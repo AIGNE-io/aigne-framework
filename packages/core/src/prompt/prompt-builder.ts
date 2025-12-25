@@ -166,6 +166,8 @@ export class PromptBuilder {
 
   private async buildMessages(options: PromptBuildOptions): Promise<ChatModelInputMessage[]> {
     const { input } = options;
+    const agentId = options.agent?.name;
+    const userId = options.context?.userContext.userId;
     const sessionId = options.context?.userContext.sessionId;
 
     const inputKey = options.agent?.inputKey;
@@ -191,11 +193,17 @@ export class PromptBuilder {
     );
 
     const historyConfig = options.agent?.historyConfig;
-    if (historyConfig?.mode) {
-      const history = await this.getHistories({ ...options, sessionId });
-      messages.push(...history);
-    } else {
-      messages.push(...(await this.deprecatedMemories(message, options)));
+
+    const injectHistory =
+      historyConfig?.inject === true || (historyConfig?.inject !== false && historyConfig?.enabled);
+
+    if (injectHistory) {
+      if (historyConfig.useOldMemory) {
+        messages.push(...(await this.deprecatedMemories(message, options)));
+      } else {
+        const history = await this.getHistories({ ...options, agentId, userId, sessionId });
+        messages.push(...history);
+      }
     }
 
     // if the agent is using structured stream mode, add the instructions
@@ -242,7 +250,7 @@ export class PromptBuilder {
     return this.refineMessages(options, messages);
   }
 
-  private async deprecatedMemories(message: string | undefined, options: PromptBuildOptions) {
+  protected async deprecatedMemories(message: string | undefined, options: PromptBuildOptions) {
     const messages: ChatModelInputMessage[] = [];
 
     const memories: { content: unknown; description?: unknown }[] = [];
@@ -262,7 +270,7 @@ export class PromptBuilder {
 
     const afs = options.agent?.afs;
 
-    if (afs && options.agent?.historyConfig?.disabled !== true) {
+    if (afs && options.agent?.historyConfig?.enabled) {
       const historyModule = (await afs.listModules()).find((m) => m.module instanceof AFSHistory);
 
       if (historyModule) {
@@ -324,11 +332,13 @@ export class PromptBuilder {
   }
 
   async getHistories({
+    agentId,
+    userId,
     sessionId,
     ...options
-  }: PromptBuildOptions & { sessionId?: string }): Promise<ChatModelInputMessage[]> {
-    const historyMode = options.agent?.historyConfig?.mode || "input_output";
-
+  }: PromptBuildOptions & { agentId?: string; userId?: string; sessionId?: string }): Promise<
+    ChatModelInputMessage[]
+  > {
     const { agent } = options;
     const afs = agent?.afs;
     if (!afs) return [];
@@ -338,30 +348,18 @@ export class PromptBuilder {
 
     const history: AFSEntry[] = (
       await afs.list(historyModule.path, {
-        filter: { sessionId },
+        filter: { agentId, userId, sessionId },
         limit: agent.historyConfig?.maxItems || 10,
         orderBy: [["createdAt", "desc"]],
       })
     ).data.reverse();
 
-    if (historyMode === "messages") {
-      return history.flatMap((i) =>
-        Array.isArray(i.content?.messages) &&
-        i.content.messages.every((m: any) => roleSchema.parse(m?.role))
-          ? i.content.messages
-          : [],
-      );
-    }
-
-    return history.flatMap((i) => {
-      const { input, output } = i.content || {};
-      if (!input || !output) return [];
-
-      return [
-        { role: "user" as const, content: input },
-        { role: "agent" as const, content: output },
-      ];
-    });
+    return history.flatMap((i) =>
+      Array.isArray(i.content?.messages) &&
+      i.content.messages.every((m: any) => roleSchema.parse(m?.role))
+        ? i.content.messages
+        : [],
+    );
   }
 
   private refineMessages(

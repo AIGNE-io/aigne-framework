@@ -250,8 +250,10 @@ export const getAgentSchema = ({ filepath }: { filepath: string; options?: LoadO
       historyConfig: camelizeSchema(
         optionalize(
           z.object({
-            disabled: optionalize(z.boolean()),
-            mode: optionalize(z.union([z.literal("input_output"), z.literal("messages")])),
+            enabled: optionalize(z.boolean()),
+            record: optionalize(z.boolean()),
+            inject: optionalize(z.boolean()),
+            use_old_memory: optionalize(z.boolean()),
             maxTokens: optionalize(z.number().int().positive()),
             maxItems: optionalize(z.number().int().positive()),
           }),

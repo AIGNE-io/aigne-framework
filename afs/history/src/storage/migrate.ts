@@ -2,10 +2,11 @@ import type { AFSModule } from "@aigne/afs";
 import { type initDatabase, type SQL, sql } from "@aigne/sqlite";
 import { v7 } from "@aigne/uuid";
 import { init } from "./migrations/001-init.js";
+import { addAgentId } from "./migrations/002-add-agent-id.js";
 import type { AFSStorageMigrations } from "./type.js";
 
 export async function migrate(db: ReturnType<typeof initDatabase>, module: AFSModule) {
-  const migrations: AFSStorageMigrations[] = [init];
+  const migrations: AFSStorageMigrations[] = [init, addAgentId];
 
   const migrationsTable = "__drizzle_migrations";
   const migrationTableCreate = sql`

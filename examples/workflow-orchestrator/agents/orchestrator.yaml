@@ -35,6 +35,9 @@ state_management:
   max_tokens: 100000 # Optional: limit the total tokens used for state management
   keep_recent: 20 # Optional: keep only the most recent N states in memory
 
+history_config:
+  record: true
+
 afs:
   modules:
     - module: history

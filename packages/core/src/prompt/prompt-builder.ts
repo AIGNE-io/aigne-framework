@@ -354,12 +354,25 @@ export class PromptBuilder {
       })
     ).data.reverse();
 
-    return history.flatMap((i) =>
-      Array.isArray(i.content?.messages) &&
-      i.content.messages.every((m: any) => roleSchema.parse(m?.role))
-        ? i.content.messages
-        : [],
-    );
+    return (
+      await Promise.all(
+        history.map(async (i) => {
+          if (
+            Array.isArray(i.content?.messages) &&
+            i.content.messages.every((m: any) => roleSchema.parse(m?.role))
+          ) {
+            return i.content.messages;
+          }
+
+          const { input, output } = i.content || {};
+          if (input && output) {
+            return await this.convertMemoriesToMessages([{ content: { input, output } }], options);
+          }
+
+          return [];
+        }),
+      )
+    ).flat();
   }
 
   private refineMessages(

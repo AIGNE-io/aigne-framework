@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.91.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.7...aigne-framework-v1.91.0-beta.8) (2025-12-25)
+
+
+### Bug Fixes
+
+* **models:** support cache the last message for anthropic chat model ([#853](https://github.com/AIGNE-io/aigne-framework/issues/853)) ([bd08e44](https://github.com/AIGNE-io/aigne-framework/commit/bd08e44b28c46ac9a85234f0100d6dd144703c9d))
+
 ## [1.91.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.6...aigne-framework-v1.91.0-beta.7) (2025-12-25)
 
 

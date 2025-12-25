@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.10.16-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.16-beta.7...aigne-hub-v0.10.16-beta.8) (2025-12-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.16-beta.6
+
 ## [0.10.16-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.16-beta.6...aigne-hub-v0.10.16-beta.7) (2025-12-25)
 
 

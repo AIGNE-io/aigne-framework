@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.16-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.16-beta.5...anthropic-v0.14.16-beta.6) (2025-12-25)
+
+
+### Bug Fixes
+
+* **models:** support cache the last message for anthropic chat model ([#853](https://github.com/AIGNE-io/aigne-framework/issues/853)) ([bd08e44](https://github.com/AIGNE-io/aigne-framework/commit/bd08e44b28c46ac9a85234f0100d6dd144703c9d))
+
 ## [0.14.16-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.16-beta.4...anthropic-v0.14.16-beta.5) (2025-12-25)
 
 

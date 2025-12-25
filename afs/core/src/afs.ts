@@ -28,8 +28,8 @@ import {
   type AFSWriteEntryPayload,
   type AFSWriteOptions,
   type AFSWriteResult,
-  type View,
   afsEntrySchema,
+  type View,
 } from "./type.js";
 import { ViewProcessor } from "./view-processor.js";
 
@@ -174,7 +174,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     for (const { module, modulePath, subpath } of modules) {
       // If view is requested and we have a view processor, use it
       if (options?.view && this.viewProcessor) {
-        const res = await this.viewProcessor.handleRead(module, subpath, options);
+        const res = await this.viewProcessor.handleRead(module, subpath, options, options.context);
 
         if (res?.data) {
           return {
@@ -216,7 +216,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
     // Update metadata if view processor is available
     if (this.viewProcessor) {
-      await this.viewProcessor.handleWrite(module.subpath, res.data);
+      await this.viewProcessor.handleWrite(module.module.name, module.subpath, res.data);
     }
 
     return {
@@ -236,7 +236,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
     // Clean up metadata if view processor is available
     if (this.viewProcessor) {
-      await this.viewProcessor.handleDelete(module.subpath);
+      await this.viewProcessor.handleDelete(module.module.name, module.subpath);
     }
 
     return result;

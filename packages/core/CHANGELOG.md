@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.72.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.5...core-v1.72.0-beta.6) (2025-12-25)
+
+
+### Bug Fixes
+
+* **core:** passthrough model options in chat model ([#856](https://github.com/AIGNE-io/aigne-framework/issues/856)) ([41387bd](https://github.com/AIGNE-io/aigne-framework/commit/41387bde0a615080ea5d665e998afb0b9c32c5fd))
+
 ## [1.72.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.4...core-v1.72.0-beta.5) (2025-12-25)
 
 

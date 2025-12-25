@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.91.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.8...aigne-framework-v1.91.0-beta.9) (2025-12-25)
+
+
+### Bug Fixes
+
+* **core:** passthrough model options in chat model ([#856](https://github.com/AIGNE-io/aigne-framework/issues/856)) ([41387bd](https://github.com/AIGNE-io/aigne-framework/commit/41387bde0a615080ea5d665e998afb0b9c32c5fd))
+
 ## [1.91.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.7...aigne-framework-v1.91.0-beta.8) (2025-12-25)
 
 

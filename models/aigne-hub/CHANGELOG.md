@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.10.16-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.16-beta.6...aigne-hub-v0.10.16-beta.7) (2025-12-25)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/transport bumped to 0.15.25-beta.6
+
 ## [0.10.16-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.16-beta.5...aigne-hub-v0.10.16-beta.6) (2025-12-25)
 
 

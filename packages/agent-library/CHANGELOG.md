@@ -7,6 +7,13 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.24.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.5...agent-library-v1.24.0-beta.6) (2025-12-25)
+
+
+### Bug Fixes
+
+* **agent-library:** add header field and use object-based answers in AskUserQuestion ([#851](https://github.com/AIGNE-io/aigne-framework/issues/851)) ([095db95](https://github.com/AIGNE-io/aigne-framework/commit/095db95e43b5d39b35c638d90d6f0b99565e0dc4))
+
 ## [1.24.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.4...agent-library-v1.24.0-beta.5) (2025-12-25)
 
 

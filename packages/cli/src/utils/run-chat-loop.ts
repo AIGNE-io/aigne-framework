@@ -8,6 +8,7 @@ import { terminalInput } from "../ui/utils/terminal-input.js";
 export const DEFAULT_CHAT_INPUT_KEY = "message";
 
 export interface ChatLoopOptions {
+  sessionId?: string;
   initialCall?: Message | string;
   welcome?: string;
   defaultQuestion?: string;
@@ -37,6 +38,7 @@ export async function runChatLoopInTerminal(
     const question = await terminalInput({
       message: "💬",
       default: i === 0 ? options?.defaultQuestion : undefined,
+      clear: true,
     });
 
     if (!question?.trim()) continue;
@@ -109,6 +111,7 @@ async function callAgent(userAgent: UserAgent, input: Message | string, options:
     typeof input === "string"
       ? { ...options.input, [options.inputKey || DEFAULT_CHAT_INPUT_KEY]: input }
       : { ...options.input, ...input },
+    { userContext: { sessionId: options.sessionId } },
   );
 }
 

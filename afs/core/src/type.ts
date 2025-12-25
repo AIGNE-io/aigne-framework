@@ -117,7 +117,9 @@ export interface AFSModule {
 }
 
 export type AFSRootEvents = {
-  agentSucceed: [{ input: object; output: object }];
+  agentSucceed: [
+    { userId?: string; sessionId?: string; input: object; output: object; messages?: object[] },
+  ];
   historyCreated: [{ entry: AFSEntry }];
 };
 

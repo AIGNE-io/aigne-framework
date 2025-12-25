@@ -47,7 +47,7 @@ import {
   type PromiseOrValue,
   type XOr,
 } from "../utils/type-utils.js";
-import type { ChatModel } from "./chat-model.js";
+import type { ChatModel, ChatModelInputMessage } from "./chat-model.js";
 import type { GuideRailAgent, GuideRailAgentOutput } from "./guide-rail-agent.js";
 import type { ImageModel } from "./image-model.js";
 import {
@@ -572,6 +572,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
 
   historyConfig?: {
     disabled?: boolean;
+    mode?: "input_output" | "messages";
     maxTokens?: number;
     maxItems?: number;
   };
@@ -803,13 +804,19 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
               ? asyncGeneratorToReadableStream(response)
               : objectToAgentResponseStream(response);
 
+        const messages: ChatModelInputMessage[] = [];
+
         for await (const chunk of stream) {
           mergeAgentResponseChunk(output, chunk);
 
           yield chunk as AgentResponseChunk<O>;
+
+          if (isAgentResponseProgress(chunk) && chunk.progress.event === "message") {
+            messages.push(chunk.progress.message);
+          }
         }
 
-        let result = await this.processAgentOutput(input, output, options);
+        let result = await this.processAgentOutput(input, output, { ...options, messages });
 
         if (attempt > 0) {
           result = { ...result, $meta: { ...result.$meta, retries: attempt } };
@@ -952,7 +959,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
   protected async processAgentOutput(
     input: I,
     output: Exclude<AgentResponse<O>, AgentResponseStream<O>>,
-    options: AgentInvokeOptions,
+    { messages, ...options }: AgentInvokeOptions & { messages?: ChatModelInputMessage[] },
   ): Promise<O> {
     const { context } = options;
 
@@ -977,8 +984,15 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     const o = await this.callHooks(["onSuccess", "onEnd"], { input, output: finalOutput }, options);
     if (o?.output) finalOutput = o.output as O;
 
-    if (this.historyConfig?.disabled !== true)
-      this.afs?.emit("agentSucceed", { input, output: finalOutput });
+    if (this.historyConfig?.disabled !== true) {
+      this.afs?.emit("agentSucceed", {
+        userId: context.userContext.userId,
+        sessionId: context.userContext.sessionId,
+        input,
+        output: finalOutput,
+        messages,
+      });
+    }
 
     if (!this.disableEvents) context.emit("agentSucceed", { agent: this, output: finalOutput });
 
@@ -1523,19 +1537,16 @@ export interface AgentResponseProgress {
         event: "agentFailed";
         error: Error;
       }
-    | {
-        event: "message";
-        role: "user" | "agent";
-        message: (
-          | { type: "text"; content: string }
-          | { type: "thinking"; thoughts: string }
-          | { type: "tool_use"; toolUseId: string; name: string; input: unknown }
-          | { type: "tool_result"; toolUseId: string; content: unknown }
-        )[];
-      }
+    | { event: "message"; message: ChatModelInputMessage }
   ) &
     Omit<AgentEvent, "agent"> & { agent: { name: string } };
 }
+
+export type AgentResponseProgressMessageItem =
+  | { type: "text"; content: string }
+  | { type: "thinking"; thoughts: string }
+  | { type: "tool_use"; toolUseId: string; name: string; input: unknown }
+  | { type: "tool_result"; toolUseId: string; content: unknown };
 
 export function isAgentResponseProgress<T>(
   chunk: AgentResponseChunk<T>,

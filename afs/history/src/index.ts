@@ -34,11 +34,13 @@ export class AFSHistory implements AFSModule {
   readonly name: string = "history";
 
   onMount(afs: AFSRoot): void {
-    afs.on("agentSucceed", ({ input, output }) => {
+    afs.on("agentSucceed", ({ userId, sessionId, input, output, messages }) => {
       this.storage
         .create({
           path: joinURL("/", v7()),
-          content: { input, output },
+          userId,
+          sessionId,
+          content: { input, output, messages },
         })
         .then((entry) => {
           afs.emit("historyCreated", { entry });

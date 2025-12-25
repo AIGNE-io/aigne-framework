@@ -3,7 +3,7 @@ import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
-import type { AgentHooks, TaskRenderMode } from "../agents/agent.js";
+import type { Agent, AgentHooks, TaskRenderMode } from "../agents/agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import type { LoadOptions } from "./index.js";
 import {
@@ -87,6 +87,7 @@ export interface AgentSchema {
         context?: AFSContextSchema;
       });
   shareAFS?: boolean;
+  historyConfig?: Agent["historyConfig"];
   [key: string]: unknown;
 }
 
@@ -246,6 +247,16 @@ export const getAgentSchema = ({ filepath }: { filepath: string; options?: LoadO
         ]),
       ),
       shareAFS: optionalize(z.boolean()),
+      historyConfig: camelizeSchema(
+        optionalize(
+          z.object({
+            disabled: optionalize(z.boolean()),
+            mode: optionalize(z.union([z.literal("input_output"), z.literal("messages")])),
+            maxTokens: optionalize(z.number().int().positive()),
+            maxItems: optionalize(z.number().int().positive()),
+          }),
+        ),
+      ),
     });
 
     return camelizeSchema(baseAgentSchema.passthrough());

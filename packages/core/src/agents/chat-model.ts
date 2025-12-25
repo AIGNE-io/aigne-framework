@@ -500,6 +500,8 @@ export type TextContent = {
   type: "text";
   text: string;
 
+  isThinking?: boolean;
+
   /**
    * Cache control marker (only supported by Claude)
    *

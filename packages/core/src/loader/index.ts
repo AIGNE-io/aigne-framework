@@ -1,4 +1,10 @@
-import { AFS, type AFSContext, type AFSContextPreset, type AFSDriver, type AFSModule } from "@aigne/afs";
+import {
+  AFS,
+  type AFSContext,
+  type AFSContextPreset,
+  type AFSDriver,
+  type AFSModule,
+} from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
@@ -44,12 +50,12 @@ export interface LoadOptions {
     availableModules?: {
       module: string;
       alias?: string[];
-      create: (options?: Record<string, any>) => PromiseOrValue<AFSModule>;
+      load: (options: { filepath: string; parsed?: object }) => PromiseOrValue<AFSModule>;
     }[];
     availableDrivers?: {
       driver: string;
       alias?: string[];
-      create: (options?: Record<string, any>) => PromiseOrValue<AFSDriver>;
+      load: (options: { parsed?: object }) => PromiseOrValue<AFSDriver>;
     }[];
   };
   aigne?: z.infer<typeof aigneFileSchema>;
@@ -238,7 +244,11 @@ export async function parseAgent(
       );
       if (!mod) throw new Error(`AFS module not found: ${typeof m === "string" ? m : m.module}`);
 
-      const module = await mod.create(typeof m === "string" ? {} : m.options);
+      const module = await mod.load({
+        filepath: path,
+        parsed: typeof m === "string" ? {} : m.options,
+      });
+
       modules.push(module);
     }
 
@@ -252,7 +262,9 @@ export async function parseAgent(
       );
       if (!drv) throw new Error(`AFS driver not found: ${typeof d === "string" ? d : d.driver}`);
 
-      const driver = await drv.create(typeof d === "string" ? {} : d.options);
+      const driver = await drv.load({
+        parsed: typeof d === "string" ? {} : d.options,
+      });
       drivers.push(driver);
     }
 

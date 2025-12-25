@@ -101,8 +101,8 @@ export async function loadAIGNE({
         availableDrivers: [
           {
             driver: "i18n",
-            create: (options) =>
-              import("@aigne/afs-i18n-driver").then((m) => new m.I18nDriver(options)),
+            load: (options) =>
+              import("@aigne/afs-i18n-driver").then((m) => m.I18nDriver.load(options)),
           },
         ],
       },

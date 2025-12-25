@@ -1,5 +1,7 @@
 import type { AFSDriver, AFSEntry, AFSModule, View } from "@aigne/afs";
 import type { Agent, Context } from "@aigne/core";
+import { optionalize } from "@aigne/core/loader/schema.js";
+import { z } from "zod";
 import {
   createDefaultTranslationAgent,
   type TranslationInput,
@@ -23,6 +25,16 @@ export interface I18nDriverOptions {
   /** Storage path template (default: ".i18n/{language}/") */
   storagePath?: string;
 }
+const i18nDriverOptionsSchema = z.object({
+  defaultSourceLanguage: optionalize(z.string()),
+  supportedLanguages: optionalize(z.array(z.string())),
+  // translationAgent: optionalize(
+  //   z.custom<Agent<TranslationInput, TranslationOutput>>(
+  //     (value) => value instanceof Agent<TranslationInput, TranslationOutput>,
+  //   ),
+  // ),
+  storagePath: optionalize(z.string()),
+});
 
 /**
  * I18n Driver for AFS
@@ -37,6 +49,16 @@ export class I18nDriver implements AFSDriver {
   };
 
   private translationAgent: Agent<TranslationInput, TranslationOutput>;
+
+  static schema() {
+    return i18nDriverOptionsSchema;
+  }
+
+  static async load({ parsed }: { parsed?: object }) {
+    const valid = await I18nDriver.schema().passthrough().parseAsync(parsed);
+
+    return new I18nDriver(valid);
+  }
 
   constructor(private options: I18nDriverOptions = {}) {
     // Use custom agent or create default
@@ -72,7 +94,7 @@ export class I18nDriver implements AFSDriver {
       metadata: any;
       context?: Context;
     },
-  ): Promise<{ result: AFSEntry; message?: string }> {
+  ): Promise<{ data: AFSEntry; message?: string }> {
     const { language } = view;
     const { sourceEntry, context } = options;
 
@@ -99,7 +121,7 @@ export class I18nDriver implements AFSDriver {
 
     // Return translated entry
     return {
-      result: {
+      data: {
         ...sourceEntry,
         content: translatedContent,
         path,

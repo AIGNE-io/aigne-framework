@@ -31,6 +31,7 @@ import {
   afsEntrySchema,
   type View,
 } from "./type.js";
+import { normalizeViewKey } from "./view-key.js";
 import { ViewProcessor } from "./view-processor.js";
 
 const DEFAULT_MAX_DEPTH = 1;
@@ -481,6 +482,108 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     const metadataSuffix = metadataParts.length > 0 ? ` [${metadataParts.join(", ")}]` : "";
 
     return metadataSuffix;
+  }
+
+  /**
+   * Get slot metadata by owner path and slot ID
+   * @param ownerPath - Document path that declares the slot
+   * @param slotId - Slot ID
+   * @returns Slot metadata or null if not found
+   */
+  async getSlot(ownerPath: string, slotId: string) {
+    if (!this.metadataStore) {
+      throw new Error("MetadataStore not initialized. Drivers must be configured to use slots.");
+    }
+
+    const module = this.findModules(ownerPath, { exactMatch: true })[0];
+    if (!module) {
+      throw new Error(`No module found for path: ${ownerPath}`);
+    }
+
+    return await this.metadataStore.getSlot(module.module.name, module.subpath, slotId);
+  }
+
+  /**
+   * Read image by slot (convenience method)
+   * @param ownerPath - Document path that declares the slot
+   * @param slotId - Slot ID
+   * @param options - Read options with view specification
+   * @returns AFSReadResult with the image
+   */
+  async getImageBySlot(
+    ownerPath: string,
+    slotId: string,
+    options?: AFSReadOptions,
+  ): Promise<AFSReadResult> {
+    const slot = await this.getSlot(ownerPath, slotId);
+    if (!slot) {
+      throw new Error(`Slot "${slotId}" not found in document: ${ownerPath}`);
+    }
+
+    const module = this.findModules(ownerPath, { exactMatch: true })[0];
+    if (!module) {
+      throw new Error(`No module found for path: ${ownerPath}`);
+    }
+
+    // Construct full path for the image
+    const imagePath = joinURL(MODULES_ROOT_DIR, module.module.name, slot.assetPath);
+
+    return await this.read(imagePath, options);
+  }
+
+  /**
+   * Render slots in document content by replacing slot markers with image references
+   * @param ownerPath - Document path
+   * @param content - Document content with slot markers
+   * @param options - Rendering options
+   * @returns Content with slots replaced by image references
+   */
+  async renderSlots(
+    ownerPath: string,
+    content: string,
+    options?: {
+      view?: View;
+      format?: (slot: any, imagePath: string) => string;
+    },
+  ): Promise<string> {
+    if (!this.metadataStore) {
+      throw new Error("MetadataStore not initialized. Drivers must be configured to use slots.");
+    }
+
+    const module = this.findModules(ownerPath, { exactMatch: true })[0];
+    if (!module) {
+      throw new Error(`No module found for path: ${ownerPath}`);
+    }
+
+    // Get all slots for this document
+    const slots = await this.metadataStore.listSlots(module.module.name, module.subpath);
+
+    let rendered = content;
+
+    // Replace each slot marker with image reference
+    for (const slot of slots) {
+      // Construct image path based on view
+      let imagePath = slot.assetPath;
+      if (options?.view) {
+        const viewKey = normalizeViewKey(options.view);
+        const format = options.view.format || "png";
+        imagePath = `${slot.assetPath}/${viewKey}/${slot.slug}.${format}`;
+      }
+
+      // Use custom format function or default markdown image syntax
+      const replacement = options?.format
+        ? options.format(slot, imagePath)
+        : `![${slot.desc}](${imagePath})`;
+
+      // Replace slot marker with image reference
+      const slotPattern = new RegExp(
+        `<!--\\s*afs:image\\s+id="${slot.slotId}"(?:\\s+key="[^"]*")?\\s+desc="[^"]+"\\s*-->`,
+        "g",
+      );
+      rendered = rendered.replace(slotPattern, replacement);
+    }
+
+    return rendered;
   }
 
   /**

@@ -49,6 +49,7 @@ export interface SlotMetadata {
   desc: string; // prompt seed
   intentKey: string; // hash(normalize(desc)) or explicit key
   assetPath: string; // .afs/images/by-intent/<intentKey>
+  slug: string; // human-readable name for file storage
   updatedAt: Date;
 }
 

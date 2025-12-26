@@ -14,6 +14,7 @@ export const slotsMetadataTable = sqliteTable(
     desc: text("desc").notNull(), // prompt seed for image generation
     intentKey: text("intent_key").notNull(), // hash(normalize(desc)) or explicit key
     assetPath: text("asset_path").notNull(), // .afs/images/by-intent/<intentKey>
+    slug: text("slug").notNull(), // human-readable name for file storage
     updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
   },
   (table) => ({

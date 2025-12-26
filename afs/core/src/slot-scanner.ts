@@ -13,6 +13,24 @@ function normalizeDesc(desc: string): string {
 }
 
 /**
+ * Generate human-readable slug from description
+ * - Convert to lowercase
+ * - Remove non-alphanumeric characters (except spaces and hyphens)
+ * - Replace spaces with hyphens
+ * - Limit to 50 characters
+ */
+function generateSlug(desc: string): string {
+  return desc
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .substring(0, 50)
+    .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
+}
+
+/**
  * Compute intentKey from description or use explicit key
  */
 async function computeIntentKey(desc: string, key?: string): Promise<string> {
@@ -71,9 +89,10 @@ export class SlotScanner {
       }
       seenIds.add(id);
 
-      // Compute intentKey
+      // Compute intentKey and slug
       const intentKey = await computeIntentKey(desc, key);
-      const assetPath = `.afs/images/by-intent/${intentKey}`;
+      const slug = generateSlug(desc);
+      const assetPath = `/.afs/images/by-intent/${intentKey}`;
 
       slots.push({ id, desc, key, intentKey, assetPath });
 
@@ -86,6 +105,7 @@ export class SlotScanner {
         desc,
         intentKey,
         assetPath,
+        slug,
       });
 
       // Ensure image node exists in source_metadata

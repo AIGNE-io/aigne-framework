@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS afs_slots (
   desc TEXT NOT NULL,
   intent_key TEXT NOT NULL,
   asset_path TEXT NOT NULL,
+  slug TEXT NOT NULL,
   updated_at INTEGER NOT NULL,
   PRIMARY KEY (owner_path, slot_id)
 )`,

@@ -285,6 +285,7 @@ export interface AFSDriver {
       sourceEntry: AFSEntry;
       metadata: any;
       context: any;
+      metadataStore?: any; // MetadataStore instance (for drivers that need access to metadata)
     },
   ): Promise<{ data: AFSEntry; message?: string }>;
 

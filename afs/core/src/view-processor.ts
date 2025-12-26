@@ -118,10 +118,28 @@ export class ViewProcessor {
         derivedFrom: sourceMeta.sourceRevision,
       });
 
-      // 3. Read source
-      const sourceResult = await module.read?.(path);
-      if (!sourceResult?.data) {
-        throw new Error(`Source file not found: ${path}`);
+      // 3. Read source (skip for virtual nodes like images)
+      let sourceResult: { data?: AFSEntry } | undefined;
+
+      // For image nodes (kind="image"), source content is not needed
+      // The driver will fetch context from owner document via slot metadata
+      if (sourceMeta.kind === "image") {
+        // Create a placeholder entry for image nodes
+        sourceResult = {
+          data: {
+            id: path,
+            path,
+            content: "", // No actual content for virtual image nodes
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        };
+      } else {
+        // For regular documents, read the actual source
+        sourceResult = await module.read?.(path);
+        if (!sourceResult?.data) {
+          throw new Error(`Source file not found: ${path}`);
+        }
       }
 
       // 4. Find and call driver
@@ -130,10 +148,15 @@ export class ViewProcessor {
         throw new Error(`No driver found for view: ${JSON.stringify(view)}`);
       }
 
+      if (!sourceResult?.data) {
+        throw new Error(`Failed to get source entry for ${path}`);
+      }
+
       const result = await driver.process(module, path, view, {
         sourceEntry: sourceResult.data,
         metadata: { derivedFrom: sourceMeta.sourceRevision },
         context,
+        metadataStore: this.metadataStore,
       });
 
       // 5. Update to ready

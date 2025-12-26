@@ -419,6 +419,7 @@ export class SQLiteMetadataStore implements MetadataStore {
       desc: row.desc,
       intentKey: row.intentKey,
       assetPath: row.assetPath,
+      slug: row.slug,
       updatedAt: new Date(row.updatedAt),
     };
   }
@@ -440,6 +441,7 @@ export class SQLiteMetadataStore implements MetadataStore {
       desc: row.desc,
       intentKey: row.intentKey,
       assetPath: row.assetPath,
+      slug: row.slug,
       updatedAt: new Date(row.updatedAt),
     }));
   }
@@ -465,6 +467,7 @@ export class SQLiteMetadataStore implements MetadataStore {
       desc: row.desc,
       intentKey: row.intentKey,
       assetPath: row.assetPath,
+      slug: row.slug,
       updatedAt: new Date(row.updatedAt),
     };
   }
@@ -482,6 +485,7 @@ export class SQLiteMetadataStore implements MetadataStore {
         desc: slot.desc,
         intentKey: slot.intentKey,
         assetPath: slot.assetPath,
+        slug: slot.slug,
         updatedAt: now,
       })
       .where(
@@ -502,6 +506,7 @@ export class SQLiteMetadataStore implements MetadataStore {
           desc: slot.desc,
           intentKey: slot.intentKey,
           assetPath: slot.assetPath,
+          slug: slot.slug,
           updatedAt: now,
         })
         .execute();

@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.59.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.9...cli-v1.59.0-beta.10) (2025-12-26)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.24.0-beta.9
+    * @aigne/aigne-hub bumped to 0.10.16-beta.11
+
 ## [1.59.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.8...cli-v1.59.0-beta.9) (2025-12-26)
 
 

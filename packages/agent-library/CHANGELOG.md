@@ -7,6 +7,13 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.24.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.8...agent-library-v1.24.0-beta.9) (2025-12-26)
+
+
+### Bug Fixes
+
+* **agent-library:** set default instructions for agent skill manager ([#861](https://github.com/AIGNE-io/aigne-framework/issues/861)) ([ca01a05](https://github.com/AIGNE-io/aigne-framework/commit/ca01a056ff73ebed7094e1e07964bc06cd3d26d0))
+
 ## [1.24.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.7...agent-library-v1.24.0-beta.8) (2025-12-26)
 
 

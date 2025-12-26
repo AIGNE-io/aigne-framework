@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.91.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.10...aigne-framework-v1.91.0-beta.11) (2025-12-26)
+
+
+### Bug Fixes
+
+* **agent-library:** set default instructions for agent skill manager ([#861](https://github.com/AIGNE-io/aigne-framework/issues/861)) ([ca01a05](https://github.com/AIGNE-io/aigne-framework/commit/ca01a056ff73ebed7094e1e07964bc06cd3d26d0))
+
 ## [1.91.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.9...aigne-framework-v1.91.0-beta.10) (2025-12-26)
 
 

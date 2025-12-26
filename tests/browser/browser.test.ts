@@ -115,6 +115,10 @@ async function startServer() {
     memory: [],
     inputKey: "message",
     useMemoriesFromContext: true,
+    historyConfig: {
+      enabled: true,
+      useOldMemory: true,
+    },
   });
 
   const aigne = new AIGNE({

@@ -1,0 +1,13 @@
+type: ai
+afs:
+  modules:
+    - module: local-fs
+      options:
+        local_path: ./test-docs
+  drivers:
+    - driver: i18n
+      options:
+        default_source_language: zh
+        supported_languages:
+          - en
+          - ja

@@ -38,6 +38,13 @@ export type AFSModuleSchema =
       options?: Record<string, any>;
     };
 
+export type AFSDriverSchema =
+  | string
+  | {
+      driver: string;
+      options?: Record<string, any>;
+    };
+
 export interface AFSContextPresetSchema {
   view?: string;
   select?: {
@@ -82,8 +89,9 @@ export interface AgentSchema {
       };
   afs?:
     | boolean
-    | (Omit<AFSOptions, "modules" | "context"> & {
+    | (Omit<AFSOptions, "modules" | "drivers" | "context"> & {
         modules?: AFSModuleSchema[];
+        drivers?: AFSDriverSchema[];
         context?: AFSContextSchema;
       });
   shareAFS?: boolean;
@@ -234,6 +242,26 @@ export const getAgentSchema = ({ filepath }: { filepath: string; options?: LoadO
                       }),
                     ),
                   ]),
+                ),
+              ),
+              drivers: optionalize(
+                z.array(
+                  z.union([
+                    z.string(),
+                    camelizeSchema(
+                      z.object({
+                        driver: z.string(),
+                        options: optionalize(z.record(z.any())),
+                      }),
+                    ),
+                  ]),
+                ),
+              ),
+              storage: optionalize(
+                camelizeSchema(
+                  z.object({
+                    url: z.string(),
+                  }),
                 ),
               ),
               context: optionalize(

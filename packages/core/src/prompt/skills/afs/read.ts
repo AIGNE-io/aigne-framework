@@ -1,4 +1,4 @@
-import type { AFSEntry } from "@aigne/afs";
+import type { AFSEntry, View, ViewStatus, WaitStrategy } from "@aigne/afs";
 import { z } from "zod";
 import type { AgentInvokeOptions, AgentOptions, Message } from "../../../agents/agent.js";
 import { AFSSkillBase } from "./base.js";
@@ -10,6 +10,8 @@ export interface AFSReadInput extends Message {
   path: string;
   offset?: number;
   limit?: number;
+  view?: View;
+  wait?: WaitStrategy;
 }
 
 export interface AFSReadOutput extends Message {
@@ -22,6 +24,7 @@ export interface AFSReadOutput extends Message {
   returnedLines?: number;
   truncated?: boolean;
   offset?: number;
+  viewStatus?: ViewStatus;
 }
 
 export interface AFSReadAgentOptions extends AgentOptions<AFSReadInput, AFSReadOutput> {
@@ -36,12 +39,15 @@ export class AFSReadAgent extends AFSSkillBase<AFSReadInput, AFSReadOutput> {
 - Returns the content of a file at the specified AFS path
 - By default reads up to ${DEFAULT_LINE_LIMIT} lines, use offset/limit for large files
 - Lines longer than ${MAX_LINE_LENGTH} characters will be truncated
+- Supports optional view projection (e.g., translated version) when drivers are available
 
 Usage:
 - The path must be an absolute AFS path starting with "/" (e.g., "/docs/readme.md")
 - Use offset to start reading from a specific line (0-based)
 - Use limit to control number of lines returned (default: ${DEFAULT_LINE_LIMIT})
-- Check truncated field to know if file was partially returned`,
+- Check truncated field to know if file was partially returned
+- Use view parameter to request a specific projection (e.g., {language: "zh"} for Chinese translation)
+- Use wait parameter to control view generation behavior ("strict" waits for view, "fallback" returns source immediately)`,
       ...options,
       inputSchema: z.object({
         path: z
@@ -62,6 +68,20 @@ Usage:
           .max(DEFAULT_LINE_LIMIT)
           .optional()
           .describe(`Maximum number of lines to read (default: ${DEFAULT_LINE_LIMIT})`),
+        view: z
+          .object({
+            language: z.string().optional(),
+          })
+          .optional()
+          .describe(
+            "Optional view projection (e.g., {language: 'zh'} for Chinese translation). Requires configured drivers.",
+          ),
+        wait: z
+          .enum(["strict", "fallback"])
+          .optional()
+          .describe(
+            "Wait strategy for view generation: 'strict' waits for completion (default), 'fallback' returns source immediately",
+          ),
       }),
       outputSchema: z.object({
         status: z.string(),
@@ -73,6 +93,14 @@ Usage:
         returnedLines: z.number().optional(),
         truncated: z.boolean().optional(),
         offset: z.number().optional(),
+        viewStatus: z
+          .object({
+            fallback: z.boolean().optional(),
+          })
+          .optional()
+          .describe(
+            "View status indicating whether the requested view was returned or fell back to source",
+          ),
       }),
     });
   }
@@ -80,7 +108,11 @@ Usage:
   async process(input: AFSReadInput, _options: AgentInvokeOptions): Promise<AFSReadOutput> {
     if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
-    const result = await this.afs.read(input.path);
+    const result = await this.afs.read(input.path, {
+      view: input.view,
+      wait: input.wait,
+      context: _options.context,
+    });
 
     if (!result.data?.content || typeof result.data.content !== "string") {
       return {
@@ -126,6 +158,7 @@ Usage:
       truncated,
       offset,
       message,
+      viewStatus: result.viewStatus,
       ...result,
       data: {
         ...result.data,

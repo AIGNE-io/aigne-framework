@@ -389,6 +389,10 @@ test("Build first agent: setup memory for client agent", async () => {
     instructions: "You are a helpful assistant",
     inputKey: "message",
     useMemoriesFromContext: true,
+    historyConfig: {
+      enabled: true,
+      useOldMemory: true,
+    },
   });
 
   const aigne = new AIGNE({

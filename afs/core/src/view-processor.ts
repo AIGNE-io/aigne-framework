@@ -1,6 +1,6 @@
-import { createHash } from "node:crypto";
 import pLimit from "p-limit";
 import type { MetadataStore, ViewMetadata } from "./metadata/index.js";
+import { SlotScanner } from "./slot-scanner.js";
 import type {
   AFSDriver,
   AFSEntry,
@@ -9,16 +9,21 @@ import type {
   AFSReadResult,
   View,
 } from "./type.js";
+import { sha256Hash } from "./utils.js";
 
 /**
  * View processor for handling view generation and caching
  * V1 implementation: Simplified without job deduplication
  */
 export class ViewProcessor {
+  private slotScanner: SlotScanner;
+
   constructor(
     private metadataStore: MetadataStore,
     private drivers: AFSDriver[],
-  ) {}
+  ) {
+    this.slotScanner = new SlotScanner(metadataStore);
+  }
 
   /**
    * Find a driver that can handle the given view
@@ -44,9 +49,9 @@ export class ViewProcessor {
    * - For text content: SHA-256 hash
    * - For binary/other: mtime + size
    */
-  computeRevision(entry: AFSEntry): string {
+  async computeRevision(entry: AFSEntry): Promise<string> {
     if (typeof entry.content === "string") {
-      const hash = createHash("sha256").update(entry.content).digest("hex").substring(0, 16);
+      const hash = await sha256Hash(entry.content);
       return `hash:sha256:${hash}`;
     }
 
@@ -93,7 +98,7 @@ export class ViewProcessor {
           throw new Error(`Source file not found: ${path}`);
         }
 
-        const sourceRevision = this.computeRevision(sourceResult.data);
+        const sourceRevision = await this.computeRevision(sourceResult.data);
         await this.metadataStore.setSourceMetadata(module.name, path, {
           sourceRevision,
           updatedAt: new Date(),
@@ -222,14 +227,14 @@ export class ViewProcessor {
   /**
    * Update source metadata after write
    */
-  async handleWrite(module: string, path: string, entry: AFSEntry): Promise<void> {
-    const newRevision = this.computeRevision(entry);
+  async handleWrite(module: AFSModule, path: string, entry: AFSEntry): Promise<void> {
+    const newRevision = await this.computeRevision(entry);
 
     // Get old metadata
-    const oldMeta = await this.metadataStore.getSourceMetadata(module, path);
+    const oldMeta = await this.metadataStore.getSourceMetadata(module.name, path);
 
     // Update source metadata
-    await this.metadataStore.setSourceMetadata(module, path, {
+    await this.metadataStore.setSourceMetadata(module.name, path, {
       sourceRevision: newRevision,
       updatedAt: new Date(),
       driversHint: this.drivers.map((d) => d.name),
@@ -237,16 +242,50 @@ export class ViewProcessor {
 
     // If revision changed, mark all views as stale
     if (!oldMeta || oldMeta.sourceRevision !== newRevision) {
-      await this.metadataStore.markViewsAsStale(module, path);
+      await this.metadataStore.markViewsAsStale(module.name, path);
+
+      // Mark dependent views as stale (for images that depend on this document)
+      await this.markDependentViewsStale(module.name, path);
+    }
+
+    // Scan for image slots if content is text
+    if (typeof entry.content === "string") {
+      await this.slotScanner.scan(module, path, entry.content, newRevision);
+    }
+  }
+
+  /**
+   * Mark views that depend on the given input path as stale
+   * Used for dependency propagation (e.g., images depend on owner document context)
+   */
+  private async markDependentViewsStale(module: string, inPath: string): Promise<void> {
+    // Query all dependencies where this path is an input
+    const deps = await this.metadataStore.listDependenciesByInput(module, inPath);
+
+    // Mark each dependent view as stale
+    for (const dep of deps) {
+      // Parse viewKey back to View object
+      const view: View = {};
+      dep.outViewKey.split(";").forEach((pair) => {
+        const [key, value] = pair.split("=");
+        if (key && value) {
+          view[key as keyof View] = value;
+        }
+      });
+
+      await this.metadataStore.setViewMetadata(module, dep.outPath, view, {
+        state: "stale",
+      });
     }
   }
 
   /**
    * Clean up metadata after delete
    */
-  async handleDelete(module: string, path: string): Promise<void> {
-    await this.metadataStore.deleteViewMetadata(module, path);
-    await this.metadataStore.deleteSourceMetadata(module, path);
+  async handleDelete(module: AFSModule, path: string): Promise<void> {
+    await this.metadataStore.deleteViewMetadata(module.name, path);
+    await this.metadataStore.deleteSourceMetadata(module.name, path);
+    await this.metadataStore.deleteSlots(module.name, path);
   }
 
   /**

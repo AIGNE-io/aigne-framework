@@ -12,6 +12,8 @@ export const sourceMetadataTable = sqliteTable(
     sourceRevision: text("source_revision").notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
     driversHint: text("drivers_hint"), // JSON array stored as text
+    kind: text("kind"), // "doc" | "image" | "unknown" (hint for driver selection)
+    attrsJson: text("attrs_json"), // JSON object for extended attributes (mime, size, width/height, etc.)
     createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
   },
   (table) => ({

@@ -121,7 +121,6 @@ test("I18nDriver.canHandle should return true for language-only views", () => {
   expect(driver.canHandle({ language: "en" })).toBe(true);
   expect(driver.canHandle({ language: "ja" })).toBe(true);
   expect(driver.canHandle({})).toBe(false);
-  // @ts-expect-error - testing invalid view
   expect(driver.canHandle({ language: "en", format: "html" })).toBe(false);
 });
 

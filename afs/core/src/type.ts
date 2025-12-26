@@ -43,14 +43,14 @@ export interface AFSSearchResult {
 
 /**
  * View represents different projections of the same file
- * V1: Only language dimension is implemented
- * Future: format, policy, variant dimensions
+ * V1: language and format dimensions are implemented
+ * Future: policy, variant dimensions
  */
 export interface View {
   language?: string; // Target language for translation (e.g., "en", "zh", "ja")
-  // format?: string;     // Future: format conversion (e.g., "html", "pdf")
-  // policy?: string;     // Future: content style policy (e.g., "technical", "marketing")
-  // variant?: string;    // Future: content variant (e.g., "summary", "toc", "index")
+  format?: string; // Format conversion (e.g., "png", "webp", "html", "pdf")
+  variant?: string; // Content variant (e.g., "summary", "toc", "index")
+  policy?: string; // Content style policy (e.g., "technical", "marketing")
 }
 
 /**
@@ -66,6 +66,17 @@ export type WaitStrategy = "strict" | "fallback";
  */
 export interface ViewStatus {
   fallback?: boolean; // true = returned source content, view is being generated in background
+}
+
+/**
+ * Image slot parsed from document
+ */
+export interface ImageSlot {
+  id: string; // slot identifier (unique within owner)
+  desc: string; // original description (prompt seed)
+  key?: string; // optional explicit key for cross-document reuse
+  intentKey: string; // computed hash or explicit key
+  assetPath: string; // .afs/images/by-intent/<intentKey>
 }
 
 export interface AFSReadOptions {

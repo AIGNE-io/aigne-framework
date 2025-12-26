@@ -1,8 +1,21 @@
 import { and, eq, initDatabase } from "@aigne/sqlite";
 import type { View } from "../type.js";
+import { normalizeViewKey } from "../view-key.js";
 import { migrate } from "./migrate.js";
-import { sourceMetadataTable, viewMetadataTable } from "./models/index.js";
-import type { MetadataStore, SourceMetadata, ViewMetadata, ViewState } from "./type.js";
+import {
+  depsMetadataTable,
+  slotsMetadataTable,
+  sourceMetadataTable,
+  viewMetadataTable,
+} from "./models/index.js";
+import type {
+  DependencyMetadata,
+  MetadataStore,
+  SlotMetadata,
+  SourceMetadata,
+  ViewMetadata,
+  ViewState,
+} from "./type.js";
 
 export interface SQLiteMetadataStoreOptions {
   url?: string;
@@ -11,10 +24,27 @@ export interface SQLiteMetadataStoreOptions {
 /**
  * SQLite-based metadata store implementation
  */
+/**
+ * Parse normalized viewKey back to View object
+ * Format: "language=en;format=png" -> {language:"en", format:"png"}
+ */
+function parseViewKey(viewKey: string): View {
+  const view: View = {};
+  viewKey.split(";").forEach((pair) => {
+    const [key, value] = pair.split("=");
+    if (key && value) {
+      view[key as keyof View] = value;
+    }
+  });
+  return view;
+}
+
 export class SQLiteMetadataStore implements MetadataStore {
   private db: ReturnType<typeof initDatabase>;
   private sourceTable = sourceMetadataTable;
   private viewTable = viewMetadataTable;
+  private slotsTable = slotsMetadataTable;
+  private depsTable = depsMetadataTable;
 
   constructor(options?: SQLiteMetadataStoreOptions) {
     this.db = initDatabase({ url: options?.url }).then(async (db) => {
@@ -34,6 +64,8 @@ export class SQLiteMetadataStore implements MetadataStore {
         sourceRevision: this.sourceTable.sourceRevision,
         updatedAt: this.sourceTable.updatedAt,
         driversHint: this.sourceTable.driversHint,
+        kind: this.sourceTable.kind,
+        attrsJson: this.sourceTable.attrsJson,
       })
       .from(this.sourceTable)
       .where(and(eq(this.sourceTable.module, module), eq(this.sourceTable.path, path)))
@@ -49,6 +81,8 @@ export class SQLiteMetadataStore implements MetadataStore {
       sourceRevision: row.sourceRevision,
       updatedAt: row.updatedAt,
       driversHint: row.driversHint ? JSON.parse(row.driversHint) : undefined,
+      kind: row.kind as "doc" | "image" | "unknown" | undefined,
+      attrs: row.attrsJson ? JSON.parse(row.attrsJson) : undefined,
     };
   }
 
@@ -67,6 +101,8 @@ export class SQLiteMetadataStore implements MetadataStore {
         sourceRevision: metadata.sourceRevision,
         updatedAt: metadata.updatedAt,
         driversHint: metadata.driversHint ? JSON.stringify(metadata.driversHint) : null,
+        kind: metadata.kind,
+        attrsJson: metadata.attrs ? JSON.stringify(metadata.attrs) : null,
       })
       .where(and(eq(this.sourceTable.module, module), eq(this.sourceTable.path, path)))
       .returning({
@@ -84,6 +120,8 @@ export class SQLiteMetadataStore implements MetadataStore {
           sourceRevision: metadata.sourceRevision,
           updatedAt: metadata.updatedAt,
           driversHint: metadata.driversHint ? JSON.stringify(metadata.driversHint) : null,
+          kind: metadata.kind,
+          attrsJson: metadata.attrs ? JSON.stringify(metadata.attrs) : null,
           createdAt: now,
         })
         .execute();
@@ -101,7 +139,7 @@ export class SQLiteMetadataStore implements MetadataStore {
   // View metadata operations
   async getViewMetadata(module: string, path: string, view: View): Promise<ViewMetadata | null> {
     const db = await this.db;
-    const viewKey = JSON.stringify(view);
+    const viewKey = normalizeViewKey(view);
 
     const rows = await db
       .select({
@@ -131,7 +169,7 @@ export class SQLiteMetadataStore implements MetadataStore {
     return {
       module: row.module,
       path: row.path,
-      view: JSON.parse(row.view),
+      view: parseViewKey(row.view),
       state: row.state as ViewState,
       derivedFrom: row.derivedFrom,
       generatedAt: row.generatedAt || undefined,
@@ -147,7 +185,7 @@ export class SQLiteMetadataStore implements MetadataStore {
     metadata: Partial<ViewMetadata>,
   ): Promise<void> {
     const db = await this.db;
-    const viewKey = JSON.stringify(view);
+    const viewKey = normalizeViewKey(view);
     const now = new Date();
 
     // Get existing record
@@ -225,7 +263,7 @@ export class SQLiteMetadataStore implements MetadataStore {
     return rows.map((row) => ({
       module: row.module,
       path: row.path,
-      view: JSON.parse(row.view),
+      view: parseViewKey(row.view),
       state: row.state as ViewState,
       derivedFrom: row.derivedFrom,
       generatedAt: row.generatedAt || undefined,
@@ -238,7 +276,7 @@ export class SQLiteMetadataStore implements MetadataStore {
     const db = await this.db;
 
     if (view) {
-      const viewKey = JSON.stringify(view);
+      const viewKey = normalizeViewKey(view);
       await db
         .delete(this.viewTable)
         .where(
@@ -293,7 +331,7 @@ export class SQLiteMetadataStore implements MetadataStore {
     return rows.map((row) => ({
       module: row.module,
       path: row.path,
-      view: JSON.parse(row.view),
+      view: parseViewKey(row.view),
       state: row.state as ViewState,
       derivedFrom: row.derivedFrom,
       generatedAt: row.generatedAt || undefined,
@@ -323,7 +361,7 @@ export class SQLiteMetadataStore implements MetadataStore {
     return rows.map((row) => ({
       module: row.module,
       path: row.path,
-      view: JSON.parse(row.view),
+      view: parseViewKey(row.view),
       state: row.state as ViewState,
       derivedFrom: row.derivedFrom,
       generatedAt: row.generatedAt || undefined,
@@ -357,5 +395,220 @@ export class SQLiteMetadataStore implements MetadataStore {
     // For now, we delete all failed views regardless of age
 
     await db.delete(this.viewTable).where(eq(this.viewTable.state, "failed")).execute();
+  }
+
+  // Slot metadata operations
+  async getSlot(_module: string, ownerPath: string, slotId: string): Promise<SlotMetadata | null> {
+    const db = await this.db;
+
+    const rows = await db
+      .select()
+      .from(this.slotsTable)
+      .where(and(eq(this.slotsTable.ownerPath, ownerPath), eq(this.slotsTable.slotId, slotId)))
+      .limit(1)
+      .execute();
+
+    const row = rows[0];
+    if (!row) return null;
+
+    return {
+      ownerPath: row.ownerPath,
+      slotId: row.slotId,
+      ownerRevision: row.ownerRevision,
+      slotType: row.slotType as "image",
+      desc: row.desc,
+      intentKey: row.intentKey,
+      assetPath: row.assetPath,
+      updatedAt: new Date(row.updatedAt),
+    };
+  }
+
+  async listSlots(_module: string, ownerPath: string): Promise<SlotMetadata[]> {
+    const db = await this.db;
+
+    const rows = await db
+      .select()
+      .from(this.slotsTable)
+      .where(eq(this.slotsTable.ownerPath, ownerPath))
+      .execute();
+
+    return rows.map((row) => ({
+      ownerPath: row.ownerPath,
+      slotId: row.slotId,
+      ownerRevision: row.ownerRevision,
+      slotType: row.slotType as "image",
+      desc: row.desc,
+      intentKey: row.intentKey,
+      assetPath: row.assetPath,
+      updatedAt: new Date(row.updatedAt),
+    }));
+  }
+
+  async getSlotByAssetPath(_module: string, assetPath: string): Promise<SlotMetadata | null> {
+    const db = await this.db;
+
+    const rows = await db
+      .select()
+      .from(this.slotsTable)
+      .where(eq(this.slotsTable.assetPath, assetPath))
+      .limit(1)
+      .execute();
+
+    const row = rows[0];
+    if (!row) return null;
+
+    return {
+      ownerPath: row.ownerPath,
+      slotId: row.slotId,
+      ownerRevision: row.ownerRevision,
+      slotType: row.slotType as "image",
+      desc: row.desc,
+      intentKey: row.intentKey,
+      assetPath: row.assetPath,
+      updatedAt: new Date(row.updatedAt),
+    };
+  }
+
+  async upsertSlot(_module: string, slot: Omit<SlotMetadata, "updatedAt">): Promise<void> {
+    const db = await this.db;
+    const now = new Date();
+
+    // Try to update first
+    const updated = await db
+      .update(this.slotsTable)
+      .set({
+        ownerRevision: slot.ownerRevision,
+        slotType: slot.slotType,
+        desc: slot.desc,
+        intentKey: slot.intentKey,
+        assetPath: slot.assetPath,
+        updatedAt: now,
+      })
+      .where(
+        and(eq(this.slotsTable.ownerPath, slot.ownerPath), eq(this.slotsTable.slotId, slot.slotId)),
+      )
+      .returning({ ownerPath: this.slotsTable.ownerPath })
+      .execute();
+
+    // If no rows updated, insert new record
+    if (!updated.length) {
+      await db
+        .insert(this.slotsTable)
+        .values({
+          ownerPath: slot.ownerPath,
+          slotId: slot.slotId,
+          ownerRevision: slot.ownerRevision,
+          slotType: slot.slotType,
+          desc: slot.desc,
+          intentKey: slot.intentKey,
+          assetPath: slot.assetPath,
+          updatedAt: now,
+        })
+        .execute();
+    }
+  }
+
+  async deleteSlots(_module: string, ownerPath: string): Promise<void> {
+    const db = await this.db;
+
+    await db.delete(this.slotsTable).where(eq(this.slotsTable.ownerPath, ownerPath)).execute();
+  }
+
+  // Dependency metadata operations
+  async setDependency(_module: string, dep: Omit<DependencyMetadata, "updatedAt">): Promise<void> {
+    const db = await this.db;
+    const now = new Date();
+
+    // Try to update first
+    const updated = await db
+      .update(this.depsTable)
+      .set({
+        inRevision: dep.inRevision,
+        role: dep.role,
+        updatedAt: now,
+      })
+      .where(
+        and(
+          eq(this.depsTable.outPath, dep.outPath),
+          eq(this.depsTable.outViewKey, dep.outViewKey),
+          eq(this.depsTable.inPath, dep.inPath),
+        ),
+      )
+      .returning({ outPath: this.depsTable.outPath })
+      .execute();
+
+    // If no rows updated, insert new record
+    if (!updated.length) {
+      await db
+        .insert(this.depsTable)
+        .values({
+          outPath: dep.outPath,
+          outViewKey: dep.outViewKey,
+          inPath: dep.inPath,
+          inRevision: dep.inRevision,
+          role: dep.role,
+          updatedAt: now,
+        })
+        .execute();
+    }
+  }
+
+  async listDependenciesByInput(_module: string, inPath: string): Promise<DependencyMetadata[]> {
+    const db = await this.db;
+
+    const rows = await db
+      .select()
+      .from(this.depsTable)
+      .where(eq(this.depsTable.inPath, inPath))
+      .execute();
+
+    return rows.map((row) => ({
+      outPath: row.outPath,
+      outViewKey: row.outViewKey,
+      inPath: row.inPath,
+      inRevision: row.inRevision,
+      role: row.role as DependencyMetadata["role"],
+      updatedAt: new Date(row.updatedAt),
+    }));
+  }
+
+  async listDependenciesByOutput(
+    _module: string,
+    outPath: string,
+    outViewKey: string,
+  ): Promise<DependencyMetadata[]> {
+    const db = await this.db;
+
+    const rows = await db
+      .select()
+      .from(this.depsTable)
+      .where(and(eq(this.depsTable.outPath, outPath), eq(this.depsTable.outViewKey, outViewKey)))
+      .execute();
+
+    return rows.map((row) => ({
+      outPath: row.outPath,
+      outViewKey: row.outViewKey,
+      inPath: row.inPath,
+      inRevision: row.inRevision,
+      role: row.role as DependencyMetadata["role"],
+      updatedAt: new Date(row.updatedAt),
+    }));
+  }
+
+  async deleteDependenciesByOutput(
+    _module: string,
+    outPath: string,
+    outViewKey?: string,
+  ): Promise<void> {
+    const db = await this.db;
+
+    if (outViewKey) {
+      await db
+        .delete(this.depsTable)
+        .where(and(eq(this.depsTable.outPath, outPath), eq(this.depsTable.outViewKey, outViewKey)))
+        .execute();
+    } else {
+      await db.delete(this.depsTable).where(eq(this.depsTable.outPath, outPath)).execute();
+    }
   }
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.91.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.9...aigne-framework-v1.91.0-beta.10) (2025-12-26)
+
+
+### Features
+
+* **agent-library:** add agent skill manager agent ([#859](https://github.com/AIGNE-io/aigne-framework/issues/859)) ([d409bf5](https://github.com/AIGNE-io/aigne-framework/commit/d409bf5f44146c96c0d68cd93bc30b01ec5ae329))
+* **core:** add session history support ([#858](https://github.com/AIGNE-io/aigne-framework/issues/858)) ([28a070e](https://github.com/AIGNE-io/aigne-framework/commit/28a070ed33b821d1fd344b899706d817ca992b9f))
+
 ## [1.91.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.8...aigne-framework-v1.91.0-beta.9) (2025-12-25)
 
 

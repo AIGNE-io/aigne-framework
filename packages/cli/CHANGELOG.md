@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.59.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.8...cli-v1.59.0-beta.9) (2025-12-26)
+
+
+### Features
+
+* **core:** add session history support ([#858](https://github.com/AIGNE-io/aigne-framework/issues/858)) ([28a070e](https://github.com/AIGNE-io/aigne-framework/commit/28a070ed33b821d1fd344b899706d817ca992b9f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.4
+    * @aigne/afs-history bumped to 1.2.0-beta.4
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.7
+    * @aigne/agent-library bumped to 1.24.0-beta.8
+    * @aigne/agentic-memory bumped to 1.1.6-beta.7
+    * @aigne/aigne-hub bumped to 0.10.16-beta.10
+    * @aigne/core bumped to 1.72.0-beta.7
+    * @aigne/default-memory bumped to 1.4.0-beta.6
+    * @aigne/openai bumped to 0.16.16-beta.7
+    * @aigne/secrets bumped to 0.1.6-beta.7
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.7
+
 ## [1.59.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.7...cli-v1.59.0-beta.8) (2025-12-25)
 
 

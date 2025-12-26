@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.4.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.3.6-beta.6...default-memory-v1.4.0-beta.6) (2025-12-26)
+
+
+### Features
+
+* **core:** add session history support ([#858](https://github.com/AIGNE-io/aigne-framework/issues/858)) ([28a070e](https://github.com/AIGNE-io/aigne-framework/commit/28a070ed33b821d1fd344b899706d817ca992b9f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.7
+  * devDependencies
+    * @aigne/openai bumped to 0.16.16-beta.7
+
 ## [1.3.6-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.3.6-beta.5...default-memory-v1.3.6-beta.6) (2025-12-25)
 
 

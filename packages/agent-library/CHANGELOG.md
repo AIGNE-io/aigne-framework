@@ -7,6 +7,22 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.24.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.7...agent-library-v1.24.0-beta.8) (2025-12-26)
+
+
+### Features
+
+* **agent-library:** add agent skill manager agent ([#859](https://github.com/AIGNE-io/aigne-framework/issues/859)) ([d409bf5](https://github.com/AIGNE-io/aigne-framework/commit/d409bf5f44146c96c0d68cd93bc30b01ec5ae329))
+* **core:** add session history support ([#858](https://github.com/AIGNE-io/aigne-framework/issues/858)) ([28a070e](https://github.com/AIGNE-io/aigne-framework/commit/28a070ed33b821d1fd344b899706d817ca992b9f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.7
+    * @aigne/openai bumped to 0.16.16-beta.7
+
 ## [1.24.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.6...agent-library-v1.24.0-beta.7) (2025-12-25)
 
 

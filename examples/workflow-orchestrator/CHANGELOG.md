@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.15.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.14.1-beta.9...example-workflow-orchestrator-v1.15.0-beta.9) (2025-12-26)
+
+
+### Features
+
+* **core:** add session history support ([#858](https://github.com/AIGNE-io/aigne-framework/issues/858)) ([28a070e](https://github.com/AIGNE-io/aigne-framework/commit/28a070ed33b821d1fd344b899706d817ca992b9f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.24.0-beta.8
+    * @aigne/cli bumped to 1.59.0-beta.9
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.7
+
 ## [1.14.1-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.14.1-beta.8...example-workflow-orchestrator-v1.14.1-beta.9) (2025-12-25)
 
 

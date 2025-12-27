@@ -59,6 +59,7 @@
     "@aigne/afs": "workspace:^",
     "@aigne/core": "workspace:^",
     "@aigne/gemini": "workspace:^",
+    "@aigne/aigne-hub": "workspace:^",
     "zod": "^3.25.67"
   },
   "devDependencies": {

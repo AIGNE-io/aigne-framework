@@ -1969,6 +1969,9 @@ importers:
       '@aigne/afs-i18n-driver':
         specifier: workspace:^
         version: link:../../afs/i18n-driver
+      '@aigne/afs-image-driver':
+        specifier: workspace:^
+        version: link:../../afs/image-driver
       '@aigne/afs-local-fs':
         specifier: workspace:^
         version: link:../../afs/local-fs

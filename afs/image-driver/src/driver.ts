@@ -1,13 +1,12 @@
 import type { AFSDriver, AFSEntry, AFSModule, View } from "@aigne/afs";
 import { normalizeViewKey } from "@aigne/afs";
-import type { Context } from "@aigne/core";
+import type { Agent, Context } from "@aigne/core";
 import { optionalize } from "@aigne/core/loader/schema.js";
-import type { GeminiImageModel } from "@aigne/gemini";
 import { z } from "zod";
 import {
   createDefaultImageGenerationAgent,
-  generateImage,
   type ImageGenerationInput,
+  type ImageGenerationOutput,
 } from "./default-generation-agent.js";
 import { getStoragePath } from "./storage.js";
 
@@ -16,21 +15,13 @@ import { getStoragePath } from "./storage.js";
  */
 export interface ImageGenerateDriverOptions {
   /** Custom image generation agent (uses built-in agent if not provided) */
-  imageGenerationAgent?: GeminiImageModel;
-
-  /** Model to use for generation (default: "gemini-2.5-flash") */
-  model?: string;
-
-  /** API key for Gemini */
-  apiKey?: string;
+  imageGenerationAgent?: Agent<ImageGenerationInput, ImageGenerationOutput>;
 
   /** Maximum retries on failure (default: 3) */
   maxRetries?: number;
 }
 
 const imageGenerateDriverOptionsSchema = z.object({
-  model: optionalize(z.string()),
-  apiKey: optionalize(z.string()),
   maxRetries: optionalize(z.number()),
 });
 
@@ -46,7 +37,7 @@ export class ImageGenerateDriver implements AFSDriver {
     dimensions: ["format" as const],
   };
 
-  private imageGenerationAgent: GeminiImageModel;
+  private imageGenerationAgent: Agent<ImageGenerationInput, ImageGenerationOutput>;
   private maxRetries: number;
 
   static schema() {
@@ -60,12 +51,7 @@ export class ImageGenerateDriver implements AFSDriver {
 
   constructor(options: ImageGenerateDriverOptions = {}) {
     // Use custom agent or create default
-    this.imageGenerationAgent =
-      options.imageGenerationAgent ??
-      createDefaultImageGenerationAgent({
-        model: options.model,
-        apiKey: options.apiKey,
-      });
+    this.imageGenerationAgent = options.imageGenerationAgent ?? createDefaultImageGenerationAgent();
     this.maxRetries = options.maxRetries ?? 3;
   }
 
@@ -136,7 +122,7 @@ export class ImageGenerateDriver implements AFSDriver {
         desc: slot.desc,
         context: ownerContent,
       },
-      format,
+      context,
     );
 
     // Compute storage path using slug for readable filename
@@ -181,13 +167,24 @@ export class ImageGenerateDriver implements AFSDriver {
    */
   private async generateWithRetry(
     input: ImageGenerationInput,
-    format: string,
+    context: Context,
   ): Promise<{ imageData: string; mimeType?: string }> {
     let lastError: Error | undefined;
 
     for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
       try {
-        return await generateImage(this.imageGenerationAgent, input, format);
+        const result = await context.invoke(this.imageGenerationAgent, input);
+
+        // Extract first image from results
+        const firstImage = result.images[0];
+        if (!firstImage || firstImage.type !== "file") {
+          throw new Error("Failed to generate image: no image data returned");
+        }
+
+        return {
+          imageData: firstImage.data,
+          mimeType: firstImage.mimeType,
+        };
       } catch (error: any) {
         lastError = error;
         console.warn(
@@ -197,7 +194,7 @@ export class ImageGenerateDriver implements AFSDriver {
 
         // If still have retries left, wait with exponential backoff
         if (attempt < this.maxRetries) {
-          const delay = Math.pow(2, attempt - 1) * 1000; // 1s, 2s, 4s
+          const delay = 2 ** (attempt - 1) * 1000; // 1s, 2s, 4s
           await new Promise((resolve) => setTimeout(resolve, delay));
         }
       }

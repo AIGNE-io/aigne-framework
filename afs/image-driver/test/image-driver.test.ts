@@ -2,9 +2,15 @@ import { afterEach, expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { rmSync } from "node:fs";
 import { AFS, type AFSEntry, type AFSModule } from "@aigne/afs";
+import { ImageAgent } from "@aigne/core";
 import { GeminiImageModel } from "@aigne/gemini";
 import { AIGNE } from "@aigne/core";
-import { getStoragePath, ImageGenerateDriver } from "@aigne/afs-image-driver";
+import {
+  DEFAULT_IMAGE_GENERATION_INSTRUCTIONS,
+  getStoragePath,
+  ImageGenerateDriver,
+  imageGenerationInputSchema,
+} from "@aigne/afs-image-driver";
 
 // Cleanup test database after each test
 const testDbPath = ".afs-test";
@@ -65,13 +71,13 @@ class MockFSModule implements AFSModule {
 
 // Mock image generation agent
 function createMockImageGenerationAgent() {
-  const agent = new GeminiImageModel({
+  const imageModel = new GeminiImageModel({
     apiKey: "mock-api-key",
     model: "gemini-2.5-flash",
   });
 
-  // Mock the invoke method to return a fake base64 image
-  spyOn(agent, "invoke").mockResolvedValue({
+  // Mock the process method to return a fake base64 image
+  const processSpy = spyOn(imageModel, "process").mockResolvedValue({
     images: [
       {
         type: "file" as const,
@@ -86,7 +92,18 @@ function createMockImageGenerationAgent() {
     model: "gemini-2.5-flash",
   });
 
-  return agent;
+  const agent = ImageAgent.from({
+    name: "mock_image_generator",
+    description: "Mock image generation agent for testing",
+    instructions: DEFAULT_IMAGE_GENERATION_INSTRUCTIONS,
+    inputSchema: imageGenerationInputSchema,
+    outputFileType: "file",
+  });
+
+  // Set the image model
+  (agent as any).imageModel = imageModel;
+
+  return { agent, imageModel, processSpy };
 }
 
 test("getStoragePath should generate correct image storage path with slug", () => {
@@ -122,7 +139,7 @@ test("ImageGenerateDriver should generate image with mock agent", async () => {
   const context = aigne.newContext();
 
   const mockFS = new MockFSModule({ context });
-  const mockAgent = createMockImageGenerationAgent();
+  const { agent: mockAgent, processSpy } = createMockImageGenerationAgent();
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,
@@ -158,12 +175,13 @@ More content here.`,
   expect(imageResult.data?.metadata?.view).toEqual({ format: "png" });
   expect(imageResult.data?.metadata?.mimeType).toBe("image/png");
 
-  // Verify the mock agent was called with correct prompt
-  expect(mockAgent.invoke).toHaveBeenCalledWith(
+  // Verify the mock image model was called with correct prompt
+  expect(processSpy).toHaveBeenCalledWith(
     expect.objectContaining({
       prompt: expect.stringContaining("system architecture diagram"),
       outputFileType: "file",
     }),
+    expect.anything(),
   );
 });
 
@@ -172,7 +190,7 @@ test("ImageGenerateDriver should use owner document context", async () => {
   const context = aigne.newContext();
 
   const mockFS = new MockFSModule({ context });
-  const mockAgent = createMockImageGenerationAgent();
+  const { agent: mockAgent, processSpy } = createMockImageGenerationAgent();
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,
@@ -204,15 +222,16 @@ Key features include ML, NLP, and computer vision.`;
     context,
   });
 
-  // Verify the mock agent was called with both description and context
-  expect(mockAgent.invoke).toHaveBeenCalledWith(
+  // Verify the mock image model was called with both description and context
+  expect(processSpy).toHaveBeenCalledWith(
     expect.objectContaining({
       prompt: expect.stringContaining("company logo"),
     }),
+    expect.anything(),
   );
 
   // The prompt should contain owner document context
-  const callArgs = (mockAgent.invoke as any).mock.calls[0][0];
+  const callArgs = (processSpy as any).mock.calls[0][0];
   expect(callArgs.prompt).toContain("cloud-based AI platform");
 });
 
@@ -221,7 +240,7 @@ test("ImageGenerateDriver should record dependency on owner document", async () 
   const context = aigne.newContext();
 
   const mockFS = new MockFSModule({ context });
-  const mockAgent = createMockImageGenerationAgent();
+  const { agent: mockAgent } = createMockImageGenerationAgent();
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,
@@ -263,7 +282,7 @@ test("ImageGenerateDriver should throw error if slot not found", async () => {
   const context = aigne.newContext();
 
   const mockFS = new MockFSModule({ context });
-  const mockAgent = createMockImageGenerationAgent();
+  const { agent: mockAgent } = createMockImageGenerationAgent();
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,
@@ -288,7 +307,7 @@ test("ImageGenerateDriver should throw error if slot not found", async () => {
 
 test("ImageGenerateDriver should throw error if context is missing", async () => {
   const mockFS = new MockFSModule({ context: null });
-  const mockAgent = createMockImageGenerationAgent();
+  const { agent: mockAgent } = createMockImageGenerationAgent();
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,
@@ -317,7 +336,7 @@ test("SlotScanner should generate slug from description", async () => {
   const context = aigne.newContext();
 
   const mockFS = new MockFSModule({ context });
-  const mockAgent = createMockImageGenerationAgent();
+  const { agent: mockAgent } = createMockImageGenerationAgent();
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,
@@ -346,7 +365,7 @@ test("AFS helper methods should work correctly", async () => {
   const context = aigne.newContext();
 
   const mockFS = new MockFSModule({ context });
-  const mockAgent = createMockImageGenerationAgent();
+  const { agent: mockAgent } = createMockImageGenerationAgent();
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,

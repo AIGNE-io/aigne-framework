@@ -104,6 +104,11 @@ export async function loadAIGNE({
             load: (options) =>
               import("@aigne/afs-i18n-driver").then((m) => m.I18nDriver.load(options)),
           },
+          {
+            driver: "image-generate",
+            load: (options) =>
+              import("@aigne/afs-image-driver").then((m) => m.ImageGenerateDriver.load(options)),
+          },
         ],
       },
       metadata: { ...metadata, cliVersion: AIGNE_CLI_VERSION },

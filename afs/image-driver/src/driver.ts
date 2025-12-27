@@ -58,7 +58,7 @@ export class ImageGenerateDriver implements AFSDriver {
     return new ImageGenerateDriver(valid);
   }
 
-  constructor(private options: ImageGenerateDriverOptions = {}) {
+  constructor(options: ImageGenerateDriverOptions = {}) {
     // Use custom agent or create default
     this.imageGenerationAgent =
       options.imageGenerationAgent ??

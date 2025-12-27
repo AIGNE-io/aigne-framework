@@ -57,7 +57,7 @@ More text.
       expect(slot?.desc).toBe("A beautiful sunset over mountains");
       expect(slot?.key).toBeUndefined();
       expect(slot?.intentKey).toBeDefined();
-      expect(slot?.assetPath).toBe(`.afs/images/by-intent/${slot?.intentKey}`);
+      expect(slot?.assetPath).toBe(`/.afs/images/by-intent/${slot?.intentKey}`);
     });
 
     test("should parse multiple image slots", async () => {

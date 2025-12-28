@@ -187,6 +187,7 @@ describe("load aigne", () => {
       });
 
       const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      console.log(envs);
       const env = envs[new URL(url).host];
 
       expect(env).toBeDefined();

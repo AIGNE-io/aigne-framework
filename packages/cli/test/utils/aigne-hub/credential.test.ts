@@ -88,7 +88,7 @@ describe("credential", () => {
   describe("checkConnectionStatus", () => {
     test("should throw error when AIGNE_ENV_FILE does not exist", async () => {
       await expect(checkConnectionStatus("test-host")).rejects.toThrow(
-        "AIGNE_HUB_API_KEY file not found, need to login first",
+        "AIGNE_HUB_API_KEY key not found, need to login first",
       );
     });
 
@@ -111,7 +111,7 @@ describe("credential", () => {
       await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
       expect(checkConnectionStatus("test-host")).rejects.toThrow(
-        "AIGNE_HUB_API_KEY host not found, need to login first",
+        "AIGNE_HUB_API_KEY key not found, need to login first",
       );
     });
 

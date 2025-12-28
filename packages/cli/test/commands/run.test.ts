@@ -85,7 +85,7 @@ test("run command should download package and run correctly", async () => {
 
   const url = new URL(`https://www.aigne.io/${randomUUID()}/test-agents.tgz`);
 
-  process.argv = ["run", url.toString()];
+  process.argv = ["run", url.toString(), "chat"];
   await command.parseAsync(process.argv);
 
   const path = join(homedir(), ".aigne", url.hostname, url.pathname);
@@ -117,7 +117,7 @@ test("run command should convert package from v1 and run correctly", async () =>
 
   const url = new URL(`https://www.aigne.io/${randomUUID()}/test-agents.tgz`);
 
-  process.argv = ["run", url.toString()];
+  process.argv = ["run", url.toString(), "chat"];
   await command.parseAsync(process.argv);
 
   const path = join(homedir(), ".aigne", url.hostname, url.pathname);

@@ -1,16 +1,17 @@
 import { afterEach, expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
-import { rmSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { AFS, type AFSEntry, type AFSModule } from "@aigne/afs";
-import { ImageAgent } from "@aigne/core";
-import { GeminiImageModel } from "@aigne/gemini";
-import { AIGNE } from "@aigne/core";
 import {
   DEFAULT_IMAGE_GENERATION_INSTRUCTIONS,
   getStoragePath,
   ImageGenerateDriver,
   imageGenerationInputSchema,
 } from "@aigne/afs-image-driver";
+import { AIGNE, ImageAgent } from "@aigne/core";
+import { GeminiImageModel } from "@aigne/gemini";
 
 // Cleanup test database after each test
 const testDbPath = ".afs-test";
@@ -76,12 +77,22 @@ function createMockImageGenerationAgent() {
     model: "gemini-2.5-flash",
   });
 
-  // Mock the process method to return a fake base64 image
+  // Create a temporary directory for test image files
+  const tempDir = mkdtempSync(join(tmpdir(), "image-driver-test-"));
+  const tempImagePath = join(tempDir, "test-image.png");
+
+  // Write a 1x1 transparent PNG to the temp file
+  const base64Image =
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+  writeFileSync(tempImagePath, Buffer.from(base64Image, "base64"));
+
+  // Mock the process method to return base64 data like GeminiImageModel does
+  // The ImageModel will automatically convert it to local file based on outputFileType
   const processSpy = spyOn(imageModel, "process").mockResolvedValue({
     images: [
       {
         type: "file" as const,
-        data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", // 1x1 transparent PNG
+        data: base64Image, // Return base64 data like real GeminiImageModel
         mimeType: "image/png",
       },
     ],
@@ -103,7 +114,7 @@ function createMockImageGenerationAgent() {
   // Set the image model
   (agent as any).imageModel = imageModel;
 
-  return { agent, imageModel, processSpy };
+  return { agent, imageModel, processSpy, tempDir };
 }
 
 test("getStoragePath should generate correct image storage path with slug", () => {
@@ -112,19 +123,25 @@ test("getStoragePath should generate correct image storage path with slug", () =
   );
 
   expect(
-    getStoragePath(".afs/images/by-intent/xyz789", "format=webp;variant=thumbnail", "diagram", "webp"),
+    getStoragePath(
+      ".afs/images/by-intent/xyz789",
+      "format=webp;variant=thumbnail",
+      "diagram",
+      "webp",
+    ),
   ).toBe(".afs/images/by-intent/xyz789/format=webp;variant=thumbnail/diagram.webp");
 });
 
 test("ImageGenerateDriver.canHandle should return true for format-only views", () => {
   const driver = new ImageGenerateDriver();
 
-  // Should handle png format only
+  // Should handle png, jpg, jpeg formats
   expect(driver.canHandle({ format: "png" })).toBe(true);
+  expect(driver.canHandle({ format: "jpg" })).toBe(true);
+  expect(driver.canHandle({ format: "jpeg" })).toBe(true);
 
   // Should not handle other formats in Phase 2
   expect(driver.canHandle({ format: "webp" })).toBe(false);
-  expect(driver.canHandle({ format: "jpg" })).toBe(false);
 
   // Should not handle empty view
   expect(driver.canHandle({})).toBe(false);
@@ -139,7 +156,16 @@ test("ImageGenerateDriver should generate image with mock agent", async () => {
   const context = aigne.newContext();
 
   const mockFS = new MockFSModule({ context });
-  const { agent: mockAgent, processSpy } = createMockImageGenerationAgent();
+  const { agent: mockAgent, processSpy, tempDir } = createMockImageGenerationAgent();
+
+  // Cleanup temp directory after test
+  afterEach(() => {
+    try {
+      rmSync(tempDir, { recursive: true, force: true });
+    } catch (_error) {
+      // Ignore cleanup errors
+    }
+  });
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,
@@ -190,7 +216,16 @@ test("ImageGenerateDriver should use owner document context", async () => {
   const context = aigne.newContext();
 
   const mockFS = new MockFSModule({ context });
-  const { agent: mockAgent, processSpy } = createMockImageGenerationAgent();
+  const { agent: mockAgent, processSpy, tempDir } = createMockImageGenerationAgent();
+
+  // Cleanup temp directory after test
+  afterEach(() => {
+    try {
+      rmSync(tempDir, { recursive: true, force: true });
+    } catch (_error) {
+      // Ignore cleanup errors
+    }
+  });
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,
@@ -240,7 +275,16 @@ test("ImageGenerateDriver should record dependency on owner document", async () 
   const context = aigne.newContext();
 
   const mockFS = new MockFSModule({ context });
-  const { agent: mockAgent } = createMockImageGenerationAgent();
+  const { agent: mockAgent, tempDir } = createMockImageGenerationAgent();
+
+  // Cleanup temp directory after test
+  afterEach(() => {
+    try {
+      rmSync(tempDir, { recursive: true, force: true });
+    } catch (_error) {
+      // Ignore cleanup errors
+    }
+  });
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,
@@ -282,7 +326,16 @@ test("ImageGenerateDriver should throw error if slot not found", async () => {
   const context = aigne.newContext();
 
   const mockFS = new MockFSModule({ context });
-  const { agent: mockAgent } = createMockImageGenerationAgent();
+  const { agent: mockAgent, tempDir } = createMockImageGenerationAgent();
+
+  // Cleanup temp directory after test
+  afterEach(() => {
+    try {
+      rmSync(tempDir, { recursive: true, force: true });
+    } catch (_error) {
+      // Ignore cleanup errors
+    }
+  });
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,
@@ -307,7 +360,16 @@ test("ImageGenerateDriver should throw error if slot not found", async () => {
 
 test("ImageGenerateDriver should throw error if context is missing", async () => {
   const mockFS = new MockFSModule({ context: null });
-  const { agent: mockAgent } = createMockImageGenerationAgent();
+  const { agent: mockAgent, tempDir } = createMockImageGenerationAgent();
+
+  // Cleanup temp directory after test
+  afterEach(() => {
+    try {
+      rmSync(tempDir, { recursive: true, force: true });
+    } catch (_error) {
+      // Ignore cleanup errors
+    }
+  });
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,
@@ -336,7 +398,16 @@ test("SlotScanner should generate slug from description", async () => {
   const context = aigne.newContext();
 
   const mockFS = new MockFSModule({ context });
-  const { agent: mockAgent } = createMockImageGenerationAgent();
+  const { agent: mockAgent, tempDir } = createMockImageGenerationAgent();
+
+  // Cleanup temp directory after test
+  afterEach(() => {
+    try {
+      rmSync(tempDir, { recursive: true, force: true });
+    } catch (_error) {
+      // Ignore cleanup errors
+    }
+  });
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,
@@ -365,7 +436,16 @@ test("AFS helper methods should work correctly", async () => {
   const context = aigne.newContext();
 
   const mockFS = new MockFSModule({ context });
-  const { agent: mockAgent } = createMockImageGenerationAgent();
+  const { agent: mockAgent, tempDir } = createMockImageGenerationAgent();
+
+  // Cleanup temp directory after test
+  afterEach(() => {
+    try {
+      rmSync(tempDir, { recursive: true, force: true });
+    } catch (_error) {
+      // Ignore cleanup errors
+    }
+  });
 
   const driver = new ImageGenerateDriver({
     imageGenerationAgent: mockAgent,

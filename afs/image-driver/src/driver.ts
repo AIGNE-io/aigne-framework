@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import type { AFSDriver, AFSEntry, AFSModule, View } from "@aigne/afs";
 import { normalizeViewKey } from "@aigne/afs";
 import type { Agent, Context } from "@aigne/core";
@@ -68,7 +69,7 @@ export class ImageGenerateDriver implements AFSDriver {
     if (dimensions.length > 0) return false;
 
     // Only support png format in Phase 2
-    if (view.format !== "png") return false;
+    if (view.format !== "png" && view.format !== "jpg" && view.format !== "jpeg") return false;
 
     return true;
   }
@@ -129,8 +130,8 @@ export class ImageGenerateDriver implements AFSDriver {
     const viewKey = normalizeViewKey(view);
     const storagePath = getStoragePath(path, viewKey, slot.slug, format);
 
-    // Write image to storage
-    const imageBuffer = Buffer.from(result.imageData, "base64");
+    // Read image from temporary file path and write to storage
+    const imageBuffer = await readFile(result.imageFilePath);
     await module.write?.(storagePath, { content: imageBuffer });
 
     // Record dependency relationship (image depends on owner document)
@@ -168,7 +169,7 @@ export class ImageGenerateDriver implements AFSDriver {
   private async generateWithRetry(
     input: ImageGenerationInput,
     context: Context,
-  ): Promise<{ imageData: string; mimeType?: string }> {
+  ): Promise<{ imageFilePath: string; mimeType?: string }> {
     let lastError: Error | undefined;
 
     for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
@@ -177,12 +178,13 @@ export class ImageGenerateDriver implements AFSDriver {
 
         // Extract first image from results
         const firstImage = result.images[0];
-        if (!firstImage || firstImage.type !== "file") {
+        if (!firstImage || firstImage.type !== "local") {
           throw new Error("Failed to generate image: no image data returned");
         }
 
+        // The data field contains the temporary file path, not base64
         return {
-          imageData: firstImage.data,
+          imageFilePath: firstImage.path,
           mimeType: firstImage.mimeType,
         };
       } catch (error: any) {

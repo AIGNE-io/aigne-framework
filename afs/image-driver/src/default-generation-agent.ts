@@ -40,13 +40,10 @@ export function createDefaultImageGenerationAgent(): Agent<
   ImageGenerationOutput
 > {
   return new ImageAgent({
-    // imageModel: new AIGNEHubImageModel({
-    //   model: "gemini-3-pro-image-preview",
-    // }),
     name: "image_generator",
     description: "Built-in image generation agent for image-driver",
     instructions: DEFAULT_IMAGE_GENERATION_INSTRUCTIONS,
     inputSchema: imageGenerationInputSchema,
-    outputFileType: "file",
+    outputFileType: "local",
   });
 }

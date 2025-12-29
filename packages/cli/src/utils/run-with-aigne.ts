@@ -152,11 +152,13 @@ export async function runAgentWithAIGNE(
   aigne: AIGNE,
   agent: Agent,
   {
+    sessionId,
     outputKey,
     outputFileKey,
     chatLoopOptions,
     ...options
   }: {
+    sessionId?: string;
     outputKey?: string;
     outputFileKey?: string;
     chatLoopOptions?: ChatLoopOptions;
@@ -191,6 +193,7 @@ export async function runAgentWithAIGNE(
       outputKey,
       inputFileKey: agent instanceof AIAgent ? agent.inputFileKey : undefined,
       input: options.input,
+      sessionId,
     });
 
     return;

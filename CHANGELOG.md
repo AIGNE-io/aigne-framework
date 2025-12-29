@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.91.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.10...aigne-framework-v1.91.0-beta.11) (2025-12-26)
+
+
+### Bug Fixes
+
+* **agent-library:** set default instructions for agent skill manager ([#861](https://github.com/AIGNE-io/aigne-framework/issues/861)) ([ca01a05](https://github.com/AIGNE-io/aigne-framework/commit/ca01a056ff73ebed7094e1e07964bc06cd3d26d0))
+
+## [1.91.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.9...aigne-framework-v1.91.0-beta.10) (2025-12-26)
+
+
+### Features
+
+* **agent-library:** add agent skill manager agent ([#859](https://github.com/AIGNE-io/aigne-framework/issues/859)) ([d409bf5](https://github.com/AIGNE-io/aigne-framework/commit/d409bf5f44146c96c0d68cd93bc30b01ec5ae329))
+* **core:** add session history support ([#858](https://github.com/AIGNE-io/aigne-framework/issues/858)) ([28a070e](https://github.com/AIGNE-io/aigne-framework/commit/28a070ed33b821d1fd344b899706d817ca992b9f))
+
+## [1.91.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.8...aigne-framework-v1.91.0-beta.9) (2025-12-25)
+
+
+### Bug Fixes
+
+* **core:** passthrough model options in chat model ([#856](https://github.com/AIGNE-io/aigne-framework/issues/856)) ([41387bd](https://github.com/AIGNE-io/aigne-framework/commit/41387bde0a615080ea5d665e998afb0b9c32c5fd))
+
 ## [1.91.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.7...aigne-framework-v1.91.0-beta.8) (2025-12-25)
 
 

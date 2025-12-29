@@ -20,7 +20,14 @@ export function createAFSContext(agent?: Agent<any, any>, context?: AgentInvokeO
     },
     get histories(): Promise<{ role: "user" | "agent"; content: unknown }[]> {
       if (!agent) return Promise.resolve([]);
-      return getHistories(agent);
+      return getHistories({
+        agent,
+        filter: {
+          agentId: agent.name,
+          userId: context?.userContext.userId,
+          sessionId: context?.userContext.sessionId,
+        },
+      });
     },
     get skills() {
       const afs = agent?.afs;

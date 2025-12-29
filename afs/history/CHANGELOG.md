@@ -6,6 +6,20 @@
   * dependencies
     * @aigne/afs bumped to 1.2.0
 
+## [1.2.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.2.0-beta.3...afs-history-v1.2.0-beta.4) (2025-12-26)
+
+
+### Features
+
+* **core:** add session history support ([#858](https://github.com/AIGNE-io/aigne-framework/issues/858)) ([28a070e](https://github.com/AIGNE-io/aigne-framework/commit/28a070ed33b821d1fd344b899706d817ca992b9f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.4
+
 ## [1.2.0-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.2.0-beta.2...afs-history-v1.2.0-beta.3) (2025-12-24)
 
 

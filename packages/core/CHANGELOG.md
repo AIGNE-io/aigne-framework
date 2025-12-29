@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.72.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.6...core-v1.72.0-beta.7) (2025-12-26)
+
+
+### Features
+
+* **core:** add session history support ([#858](https://github.com/AIGNE-io/aigne-framework/issues/858)) ([28a070e](https://github.com/AIGNE-io/aigne-framework/commit/28a070ed33b821d1fd344b899706d817ca992b9f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.4
+    * @aigne/afs-history bumped to 1.2.0-beta.4
+
+## [1.72.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.5...core-v1.72.0-beta.6) (2025-12-25)
+
+
+### Bug Fixes
+
+* **core:** passthrough model options in chat model ([#856](https://github.com/AIGNE-io/aigne-framework/issues/856)) ([41387bd](https://github.com/AIGNE-io/aigne-framework/commit/41387bde0a615080ea5d665e998afb0b9c32c5fd))
+
 ## [1.72.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.4...core-v1.72.0-beta.5) (2025-12-25)
 
 

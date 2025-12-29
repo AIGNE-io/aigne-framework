@@ -5,6 +5,7 @@ export interface AFSStorageCreatePayload extends Omit<AFSEntry, "id"> {}
 
 export interface AFSStorageListOptions {
   filter?: {
+    agentId?: string;
     userId?: string;
     sessionId?: string;
   };

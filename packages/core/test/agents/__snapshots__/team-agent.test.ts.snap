@@ -5,13 +5,15 @@ exports[`TeamAgent should return streaming response with sequential process meth
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
-      "role": "user",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
     },
   },
   {
@@ -52,13 +54,15 @@ exports[`TeamAgent should return streaming response with sequential process meth
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "content": "Hello, world!",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
+      "message": {
+        "content": [
+          {
+            "text": "Hello, world!",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
     },
   },
   {
@@ -66,18 +70,6 @@ exports[`TeamAgent should return streaming response with sequential process meth
       "json": {
         "second": "Hello, world!",
       },
-    },
-  },
-  {
-    "progress": {
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello, world!",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
     },
   },
 ]
@@ -200,13 +192,15 @@ exports[`TeamAgent should return streaming response with sequential process meth
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "content": "Hello, world!",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
+      "message": {
+        "content": [
+          {
+            "text": "Hello, world!",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
     },
   },
   {
@@ -214,18 +208,6 @@ exports[`TeamAgent should return streaming response with sequential process meth
       "json": {
         "text": "Hello, world!",
       },
-    },
-  },
-  {
-    "progress": {
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello, world!",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
     },
   },
 ]
@@ -334,13 +316,15 @@ exports[`TeamAgent with sequential mode should yield output chunks correctly 1`]
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "content": "First Result, Second Result",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
+      "message": {
+        "content": [
+          {
+            "text": "First Result, Second Result",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
     },
   },
   {
@@ -348,18 +332,6 @@ exports[`TeamAgent with sequential mode should yield output chunks correctly 1`]
       "json": {
         "summary": "First Result, Second Result",
       },
-    },
-  },
-  {
-    "progress": {
-      "event": "message",
-      "message": [
-        {
-          "content": "First Result, Second Result",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
     },
   },
 ]

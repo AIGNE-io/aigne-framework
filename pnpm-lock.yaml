@@ -2008,6 +2008,9 @@ importers:
       '@aigne/secrets':
         specifier: workspace:^
         version: link:../secrets
+      '@aigne/uuid':
+        specifier: ^13.0.1
+        version: 13.0.1
       '@fast-csv/format':
         specifier: ^5.0.5
         version: 5.0.5

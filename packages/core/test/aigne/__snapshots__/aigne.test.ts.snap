@@ -44,13 +44,15 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
-      "role": "user",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
     },
   },
   {
@@ -172,32 +174,15 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "content": "Hello, How can I assist you today?",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
-    },
-  },
-  {
-    "delta": {
-      "json": {
-        "message": "Hello, How can I assist you today?",
+      "message": {
+        "content": [
+          {
+            "text": "Hello, How can I assist you today?",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
       },
-    },
-  },
-  {
-    "progress": {
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello, How can I assist you today?",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
     },
   },
   {
@@ -207,6 +192,13 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
       },
       "event": "agentSucceed",
       "output": {
+        "message": "Hello, How can I assist you today?",
+      },
+    },
+  },
+  {
+    "delta": {
+      "json": {
         "message": "Hello, How can I assist you today?",
       },
     },
@@ -258,13 +250,15 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "content": "hello",
-          "type": "text",
-        },
-      ],
-      "role": "user",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
     },
   },
   {
@@ -318,30 +312,29 @@ exports[`AIGNE.invoke should respond $metafield with usage metrics with {
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "input": {},
-          "name": "greet",
-          "toolUseId": "greet",
-          "type": "tool_use",
-        },
-      ],
-      "role": "agent",
+      "message": {
+        "role": "agent",
+        "toolCalls": [
+          {
+            "function": {
+              "arguments": {},
+              "name": "greet",
+            },
+            "id": "greet",
+            "type": "function",
+          },
+        ],
+      },
     },
   },
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "content": {
-            "message": "Hello world",
-          },
-          "toolUseId": "greet",
-          "type": "tool_result",
-        },
-      ],
-      "role": "agent",
+      "message": {
+        "content": "{"message":"Hello world"}",
+        "role": "tool",
+        "toolCallId": "greet",
+      },
     },
   },
   {
@@ -361,13 +354,15 @@ exports[`AIGNE.invoke should respond $metafield with usage metrics with {
   {
     "progress": {
       "event": "message",
-      "message": [
-        {
-          "content": "Hello world",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
+      "message": {
+        "content": [
+          {
+            "text": "Hello world",
+            "type": "text",
+          },
+        ],
+        "role": "agent",
+      },
     },
   },
   {
@@ -375,18 +370,6 @@ exports[`AIGNE.invoke should respond $metafield with usage metrics with {
       "json": {
         "message": "Hello world",
       },
-    },
-  },
-  {
-    "progress": {
-      "event": "message",
-      "message": [
-        {
-          "content": "Hello world",
-          "type": "text",
-        },
-      ],
-      "role": "agent",
     },
   },
   {

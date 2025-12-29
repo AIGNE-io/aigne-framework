@@ -2,7 +2,12 @@ import type { AFSEntry, AFSModule } from "@aigne/afs";
 import { and, asc, desc, eq, initDatabase, sql } from "@aigne/sqlite";
 import { migrate } from "./migrate.js";
 import { entriesTable } from "./models/entries.js";
-import type { AFSStorage, AFSStorageCreatePayload, AFSStorageListOptions } from "./type.js";
+import type {
+  AFSStorage,
+  AFSStorageCreatePayload,
+  AFSStorageListOptions,
+  AFSStorageReadOptions,
+} from "./type.js";
 
 export * from "./type.js";
 
@@ -64,14 +69,21 @@ export class AFSStorageWithModule implements AFSStorage {
     return { data };
   }
 
-  async read(path: string): Promise<AFSEntry | undefined> {
+  async read(id: string, options?: AFSStorageReadOptions): Promise<AFSEntry | undefined> {
     const db = await this.db;
     const table = await this.table;
 
     return db
       .select()
       .from(table)
-      .where(eq(table.path, path))
+      .where(
+        and(
+          eq(table.id, id),
+          options?.filter?.agentId ? eq(table.agentId, options.filter.agentId) : undefined,
+          options?.filter?.userId ? eq(table.userId, options.filter.userId) : undefined,
+          options?.filter?.sessionId ? eq(table.sessionId, options.filter.sessionId) : undefined,
+        ),
+      )
       .limit(1)
       .execute()
       .then((memory) => memory.at(0));
@@ -84,7 +96,7 @@ export class AFSStorageWithModule implements AFSStorage {
     let result = await db
       .update(table)
       .set(entry)
-      .where(eq(table.path, entry.path))
+      .where(eq(table.id, entry.id))
       .returning()
       .execute();
 

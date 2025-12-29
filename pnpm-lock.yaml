@@ -105,6 +105,9 @@ importers:
       '@aigne/uuid':
         specifier: ^13.0.1
         version: 13.0.1
+      radix3:
+        specifier: ^1.1.2
+        version: 1.1.2
       ufo:
         specifier: ^1.6.1
         version: 1.6.1
@@ -10565,6 +10568,9 @@ packages:
   rabin-wasm@0.1.5:
     resolution: {integrity: sha512-uWgQTo7pim1Rnj5TuWcCewRDTf0PEFTSlaUjWP4eY9EbLV9em08v89oCz/WO+wRxpYuO36XEHp4wgYQnAgOHzA==}
     hasBin: true
+
+  radix3@1.1.2:
+    resolution: {integrity: sha512-b484I/7b8rDEdSDKckSSBA8knMpcdsXudlE/LNL639wFoHKwLbEkQFZHWEYwDC0wa0FKUcCY+GAF73Z7wxNVFA==}
 
   raf@3.4.1:
     resolution: {integrity: sha512-Sq4CW4QhwOHE8ucn6J34MqtZCeWFP2aQSmrlroYgqAV1PjStIhJXxYuTgUIfkEk7zTLjmIjLmU5q+fbD1NnOJA==}
@@ -24024,6 +24030,8 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
+
+  radix3@1.1.2: {}
 
   raf@3.4.1:
     dependencies:

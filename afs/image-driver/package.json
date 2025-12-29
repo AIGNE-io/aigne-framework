@@ -1,7 +1,7 @@
 {
-  "name": "@aigne/afs",
-  "version": "1.4.0-beta.4",
-  "description": "Agentic File System (AFS) is a virtual file system that supports various storage backends and provides a unified API for file operations.",
+  "name": "@aigne/afs-image-driver",
+  "version": "0.0.1",
+  "description": "AIGNE AFS driver for AI image generation",
   "publishConfig": {
     "access": "public"
   },
@@ -56,10 +56,10 @@
     "postbuild": "node ../../scripts/post-build-lib.mjs"
   },
   "dependencies": {
-    "@aigne/sqlite": "workspace:^",
-    "p-limit": "^6.1.0",
-    "strict-event-emitter": "^0.5.1",
-    "ufo": "^1.6.1",
+    "@aigne/afs": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "@aigne/gemini": "workspace:^",
+    "@aigne/aigne-hub": "workspace:^",
     "zod": "^3.25.67"
   },
   "devDependencies": {

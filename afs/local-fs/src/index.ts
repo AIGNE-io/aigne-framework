@@ -246,13 +246,18 @@ export class LocalFS implements AFSModule {
 
     // Write content if provided
     if (entry.content !== undefined) {
-      let contentToWrite: string;
       if (typeof entry.content === "string") {
-        contentToWrite = entry.content;
+        await writeFile(fullPath, entry.content, { encoding: "utf8", flag: append ? "a" : "w" });
+      } else if (Buffer.isBuffer(entry.content)) {
+        // Handle binary content (e.g., images)
+        await writeFile(fullPath, entry.content, { flag: append ? "a" : "w" });
       } else {
-        contentToWrite = JSON.stringify(entry.content, null, 2);
+        // Handle objects by serializing to JSON
+        await writeFile(fullPath, JSON.stringify(entry.content, null, 2), {
+          encoding: "utf8",
+          flag: append ? "a" : "w",
+        });
       }
-      await writeFile(fullPath, contentToWrite, { encoding: "utf8", flag: append ? "a" : "w" });
     }
 
     // Get file stats after writing

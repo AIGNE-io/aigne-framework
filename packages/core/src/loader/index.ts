@@ -1,4 +1,10 @@
-import { AFS, type AFSContext, type AFSContextPreset, type AFSModule } from "@aigne/afs";
+import {
+  AFS,
+  type AFSContext,
+  type AFSContextPreset,
+  type AFSDriver,
+  type AFSModule,
+} from "@aigne/afs";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
@@ -45,6 +51,11 @@ export interface LoadOptions {
       module: string;
       alias?: string[];
       load: (options: { filepath: string; parsed?: object }) => PromiseOrValue<AFSModule>;
+    }[];
+    availableDrivers?: {
+      driver: string;
+      alias?: string[];
+      load: (options: { parsed?: object }) => PromiseOrValue<AFSDriver>;
     }[];
   };
   aigne?: z.infer<typeof aigneFileSchema>;
@@ -223,8 +234,48 @@ export async function parseAgent(
   } else if (agent.afs === true) {
     afs = new AFS();
   } else if (agent.afs) {
-    afs = new AFS({});
+    // Create modules
+    const modules: AFSModule[] = [];
+    for (const m of agent.afs.modules || []) {
+      const moduleName = typeof m === "string" ? m : m.module;
 
+      const mod = options?.afs?.availableModules?.find(
+        (mod) => mod.module === moduleName || mod.alias?.includes(moduleName),
+      );
+      if (!mod) throw new Error(`AFS module not found: ${typeof m === "string" ? m : m.module}`);
+
+      const module = await mod.load({
+        filepath: path,
+        parsed: typeof m === "string" ? {} : m.options,
+      });
+
+      modules.push(module);
+    }
+
+    // Create drivers
+    const drivers: AFSDriver[] = [];
+    for (const d of agent.afs.drivers || []) {
+      const driverName = typeof d === "string" ? d : d.driver;
+
+      const drv = options?.afs?.availableDrivers?.find(
+        (drv) => drv.driver === driverName || drv.alias?.includes(driverName),
+      );
+      if (!drv) throw new Error(`AFS driver not found: ${typeof d === "string" ? d : d.driver}`);
+
+      const driver = await drv.load({
+        parsed: typeof d === "string" ? {} : d.options,
+      });
+      drivers.push(driver);
+    }
+
+    // Create AFS with modules, drivers, and storage options
+    afs = new AFS({
+      modules,
+      drivers,
+      storage: agent.afs.storage,
+    });
+
+    // Load and configure AFSContext presets
     const loadAFSContextPresets = async (
       presets: Record<string, AFSContextPresetSchema>,
     ): Promise<Record<string, AFSContextPreset>> => {
@@ -261,22 +312,6 @@ export async function parseAgent(
     };
 
     afs.options.context = context;
-
-    for (const m of agent.afs.modules || []) {
-      const moduleName = typeof m === "string" ? m : m.module;
-
-      const mod = options?.afs?.availableModules?.find(
-        (mod) => mod.module === moduleName || mod.alias?.includes(moduleName),
-      );
-      if (!mod) throw new Error(`AFS module not found: ${typeof m === "string" ? m : m.module}`);
-
-      const module = await mod.load({
-        filepath: path,
-        parsed: typeof m === "string" ? {} : m.options,
-      });
-
-      afs.mount(module);
-    }
   }
 
   const skills =

@@ -42,13 +42,54 @@ export interface AFSSearchResult {
   message?: string;
 }
 
+/**
+ * View represents different projections of the same file
+ * V1: language and format dimensions are implemented
+ * Future: policy, variant dimensions
+ */
+export interface View {
+  language?: string; // Target language for translation (e.g., "en", "zh", "ja")
+  format?: string; // Format conversion (e.g., "png", "webp", "html", "pdf")
+  variant?: string; // Content variant (e.g., "summary", "toc", "index")
+  policy?: string; // Content style policy (e.g., "technical", "marketing")
+}
+
+/**
+ * Wait strategy for view processing
+ * - strict: Wait for view generation to complete before returning
+ * - fallback: Return source immediately and trigger background generation
+ */
+export type WaitStrategy = "strict" | "fallback";
+
+/**
+ * View status in read result
+ * Indicates whether the requested view was returned or fell back to source
+ */
+export interface ViewStatus {
+  fallback?: boolean; // true = returned source content, view is being generated in background
+}
+
+/**
+ * Image slot parsed from document
+ */
+export interface ImageSlot {
+  id: string; // slot identifier (unique within owner)
+  desc: string; // original description (prompt seed)
+  key?: string; // optional explicit key for cross-document reuse
+  intentKey: string; // computed hash or explicit key
+  assetPath: string; // .afs/images/by-intent/<intentKey>
+}
+
 export interface AFSReadOptions {
+  view?: View;
+  wait?: WaitStrategy;
   context?: any;
 }
 
 export interface AFSReadResult {
   data?: AFSEntry;
   message?: string;
+  viewStatus?: ViewStatus;
 }
 
 export interface AFSDeleteOptions {
@@ -223,4 +264,44 @@ export interface AFSContext {
   list?: {
     presets?: Record<string, AFSContextPreset>;
   };
+}
+
+/**
+ * AFSDriver interface for view transformation
+ */
+export interface AFSDriver {
+  readonly name: string;
+  readonly description?: string;
+
+  /**
+   * Declare which view dimensions this driver can handle
+   */
+  readonly capabilities: {
+    dimensions: (keyof View)[];
+  };
+
+  /**
+   * Check if this driver can handle the given view
+   */
+  canHandle(view: View): boolean;
+
+  /**
+   * Process and generate the view projection
+   */
+  process(
+    module: AFSModule,
+    path: string,
+    view: View,
+    options: {
+      sourceEntry: AFSEntry;
+      metadata: any;
+      context: any;
+      metadataStore?: any; // MetadataStore instance (for drivers that need access to metadata)
+    },
+  ): Promise<{ data: AFSEntry; message?: string }>;
+
+  /**
+   * Optional: Called when driver is mounted to AFS
+   */
+  onMount?(root: AFSRoot): void;
 }

@@ -71,6 +71,12 @@ importers:
 
   afs/core:
     dependencies:
+      '@aigne/sqlite':
+        specifier: workspace:^
+        version: link:../../packages/sqlite
+      p-limit:
+        specifier: ^6.1.0
+        version: 6.2.0
       strict-event-emitter:
         specifier: ^0.5.1
         version: 0.5.1
@@ -108,6 +114,59 @@ importers:
       ufo:
         specifier: ^1.6.1
         version: 1.6.1
+    devDependencies:
+      '@types/bun':
+        specifier: ^1.2.22
+        version: 1.2.22(@types/react@19.1.13)
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
+  afs/i18n-driver:
+    dependencies:
+      '@aigne/afs':
+        specifier: workspace:^
+        version: link:../core
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      zod:
+        specifier: ^3.25.67
+        version: 3.25.67
+    devDependencies:
+      '@types/bun':
+        specifier: ^1.2.22
+        version: 1.2.22(@types/react@19.1.13)
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
+  afs/image-driver:
+    dependencies:
+      '@aigne/afs':
+        specifier: workspace:^
+        version: link:../core
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/gemini':
+        specifier: workspace:^
+        version: link:../../models/gemini
+      zod:
+        specifier: ^3.25.67
+        version: 3.25.67
     devDependencies:
       '@types/bun':
         specifier: ^1.2.22
@@ -215,7 +274,7 @@ importers:
         version: 13.0.1
       '@arcblock/did-connect-react':
         specifier: ^3.2.11
-        version: 3.2.11(@arcblock/ux@3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.17.4-beta-20251206-111557-41b8d449)(@blocklet/theme@3.2.11)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 3.2.11(f02f5a02171cf12c3910ae36cc41250f)
       '@arcblock/ux':
         specifier: ^3.2.11
         version: 3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1)
@@ -1398,7 +1457,7 @@ importers:
         version: 13.0.1
       openai:
         specifier: ^6.14.0
-        version: 6.14.0(ws@8.18.2)(zod@3.25.67)
+        version: 6.15.0(ws@8.18.2)(zod@3.25.67)
       zod:
         specifier: ^3.25.67
         version: 3.25.67
@@ -1618,7 +1677,7 @@ importers:
         version: 13.0.1
       '@arcblock/did-connect-react':
         specifier: ^3.2.11
-        version: 3.2.11(@arcblock/ux@3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.17.4-beta-20251206-111557-41b8d449)(@blocklet/theme@3.2.11)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        version: 3.2.11(f02f5a02171cf12c3910ae36cc41250f)
       '@arcblock/ux':
         specifier: ^3.2.11
         version: 3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1)
@@ -1630,7 +1689,7 @@ importers:
         version: 3.2.11(7d1a0dd794c522f6cb5f063dad4f7347)
       '@blocklet/uploader-server':
         specifier: ^0.3.14
-        version: 0.3.14(@tus/file-store@1.0.0(@tus/server@1.0.0))(@tus/server@1.0.0)(@uppy/companion@4.15.1)(axios@1.12.2)
+        version: 0.3.14(@tus/file-store@1.0.0(@tus/server@1.0.0))(@tus/server@1.0.0)(@uppy/companion@4.15.1)(axios@1.12.2(debug@4.4.3))
       '@mui/material':
         specifier: ^7.3.2
         version: 7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -1907,6 +1966,12 @@ importers:
       '@aigne/afs-history':
         specifier: workspace:^
         version: link:../../afs/history
+      '@aigne/afs-i18n-driver':
+        specifier: workspace:^
+        version: link:../../afs/i18n-driver
+      '@aigne/afs-image-driver':
+        specifier: workspace:^
+        version: link:../../afs/image-driver
       '@aigne/afs-local-fs':
         specifier: workspace:^
         version: link:../../afs/local-fs
@@ -2026,7 +2091,7 @@ importers:
         version: 10.2.0
       openai:
         specifier: ^6.14.0
-        version: 6.14.0(ws@8.18.2)(zod@3.25.67)
+        version: 6.15.0(ws@8.18.2)(zod@3.25.67)
       p-wait-for:
         specifier: ^5.0.2
         version: 5.0.2
@@ -9452,10 +9517,6 @@ packages:
   minimalistic-crypto-utils@1.0.1:
     resolution: {integrity: sha512-JIYlbt6g8i5jKfJ3xz7rF0LXmv2TkDxBLUkiBeZ7bAx4GnnNMr8xFpGnOxn6GhTEHx3SjRrZEoU+j04prX1ktg==}
 
-  minimatch@10.0.3:
-    resolution: {integrity: sha512-IPZ167aShDZZUMdRk66cyQAW3qr0WzbHkPdMYa8bzZhlHhO3jALbKdxcaak7W9FfT2rZNpQuUu4Od7ILEpXSaw==}
-    engines: {node: 20 || >=22}
-
   minimatch@10.1.1:
     resolution: {integrity: sha512-enIvLvRAFZYXJzkCYG5RKmPfrFArdLv+R+lbQ53BmIMLIry74bjKzX6iHAm8WYamJkhSSEabrWN5D97XnKObjQ==}
     engines: {node: 20 || >=22}
@@ -9964,8 +10025,8 @@ packages:
     resolution: {integrity: sha512-YgBpdJHPyQ2UE5x+hlSXcnejzAvD0b22U2OuAP+8OnlJT+PjWPxtgmGqKKc+RgTM63U9gN0YzrYc71R2WT/hTA==}
     engines: {node: '>=18'}
 
-  openai@6.14.0:
-    resolution: {integrity: sha512-ZPD9MG5/sPpyGZ0idRoDK0P5MWEMuXe0Max/S55vuvoxqyEVkN94m9jSpE3YgNgz3WoESFvozs57dxWqAco31w==}
+  openai@6.15.0:
+    resolution: {integrity: sha512-F1Lvs5BoVvmZtzkUEVyh8mDQPPFolq4F+xdsx/DO8Hee8YF3IGAlZqUIsF+DVGhqf4aU0a3bTghsxB6OIsRy1g==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
@@ -10018,6 +10079,10 @@ packages:
   p-limit@3.1.0:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
+
+  p-limit@6.2.0:
+    resolution: {integrity: sha512-kuUqqHNUqoIWp/c467RI4X6mmyuojY5jGutNU0wVTmEOOfcuwLqyMVoAi9MKi2Ak+5i9+nhmrK4ufZE8069kHA==}
+    engines: {node: '>=18'}
 
   p-limit@7.1.0:
     resolution: {integrity: sha512-7LbrpOjbzBWFHFgRtVrIAwBwW1bB7c7n914Q2+CXr1TvOfbTrVHAEH1Ya9PwDwAoKLeiRrczymYWPwaHNOQ0vA==}
@@ -12892,7 +12957,7 @@ snapshots:
       '@ocap/wallet': 1.27.14
       archiver: 7.0.1
       axios: 1.12.2(debug@4.4.3)
-      axios-mock-adapter: 2.1.0(axios@1.12.2)
+      axios-mock-adapter: 2.1.0(axios@1.12.2(debug@4.4.3))
       axon: 2.0.3
       chalk: 4.1.2
       cookie: 1.0.2
@@ -13202,7 +13267,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@arcblock/did-connect-react@3.2.11(@arcblock/ux@3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.17.4-beta-20251206-111557-41b8d449)(@blocklet/theme@3.2.11)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+  '@arcblock/did-connect-react@3.2.11(f02f5a02171cf12c3910ae36cc41250f)':
     dependencies:
       '@arcblock/bridge': 3.2.11
       '@arcblock/did': 1.27.14
@@ -14695,10 +14760,10 @@ snapshots:
       - tedious
       - utf-8-validate
 
-  '@blocklet/did-space-react@1.2.3(6d4834af71c5d2b5f9227fe9faff3667)':
+  '@blocklet/did-space-react@1.2.3(17fc31b88bb3a5d6f638e9d08cbe5820)':
     dependencies:
       '@arcblock/did': 1.27.14
-      '@arcblock/did-connect-react': 3.2.11(@arcblock/ux@3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.17.4-beta-20251206-111557-41b8d449)(@blocklet/theme@3.2.11)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@arcblock/did-connect-react': 3.2.11(f02f5a02171cf12c3910ae36cc41250f)
       '@arcblock/ux': 3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1)
       '@blocklet/js-sdk': 1.17.4-beta-20251206-111557-41b8d449
       '@blocklet/sdk': 1.17.4-beta-20251206-111557-41b8d449
@@ -15139,13 +15204,13 @@ snapshots:
       '@abtnode/constant': 1.17.2
       '@abtnode/util': 1.17.2
       '@arcblock/bridge': 3.2.11
-      '@arcblock/did-connect-react': 3.2.11(@arcblock/ux@3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1))(@blocklet/js-sdk@1.17.4-beta-20251206-111557-41b8d449)(@blocklet/theme@3.2.11)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@arcblock/did-connect-react': 3.2.11(f02f5a02171cf12c3910ae36cc41250f)
       '@arcblock/icons': 3.2.11(react@19.1.1)
       '@arcblock/react-hooks': 3.2.11
       '@arcblock/ux': 3.2.11(39eb30f12e6f3867ab6d57ccfa0ed3e1)
       '@arcblock/ws': 1.27.12
       '@blocklet/constant': 1.17.2
-      '@blocklet/did-space-react': 1.2.3(6d4834af71c5d2b5f9227fe9faff3667)
+      '@blocklet/did-space-react': 1.2.3(17fc31b88bb3a5d6f638e9d08cbe5820)
       '@blocklet/js-sdk': 1.17.4-beta-20251206-111557-41b8d449
       '@emotion/react': 11.14.0(@types/react@19.1.13)(react@19.1.1)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1)
@@ -15190,7 +15255,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@blocklet/uploader-server@0.3.14(@tus/file-store@1.0.0(@tus/server@1.0.0))(@tus/server@1.0.0)(@uppy/companion@4.15.1)(axios@1.12.2)':
+  '@blocklet/uploader-server@0.3.14(@tus/file-store@1.0.0(@tus/server@1.0.0))(@tus/server@1.0.0)(@uppy/companion@4.15.1)(axios@1.12.2(debug@4.4.3))':
     dependencies:
       '@abtnode/cron': 1.17.3
       '@blocklet/constant': 1.17.3
@@ -15199,7 +15264,7 @@ snapshots:
       '@tus/file-store': 1.0.0(@tus/server@1.0.0)
       '@tus/server': 1.0.0
       '@uppy/companion': 4.15.1
-      axios: 1.12.2
+      axios: 1.12.2(debug@4.4.3)
       body-parser: 1.20.3
       exif-be-gone: 1.5.1
       express-session: 1.17.3
@@ -18041,7 +18106,7 @@ snapshots:
 
   '@ts-morph/common@0.28.0':
     dependencies:
-      minimatch: 10.0.3
+      minimatch: 10.1.1
       path-browserify: 1.0.1
       tinyglobby: 0.2.15
 
@@ -22872,10 +22937,6 @@ snapshots:
 
   minimalistic-crypto-utils@1.0.1: {}
 
-  minimatch@10.0.3:
-    dependencies:
-      '@isaacs/brace-expansion': 5.0.0
-
   minimatch@10.1.1:
     dependencies:
       '@isaacs/brace-expansion': 5.0.0
@@ -23385,7 +23446,7 @@ snapshots:
       is-inside-container: 1.0.0
       wsl-utils: 0.1.0
 
-  openai@6.14.0(ws@8.18.2)(zod@3.25.67):
+  openai@6.15.0(ws@8.18.2)(zod@3.25.67):
     optionalDependencies:
       ws: 8.18.2
       zod: 3.25.67
@@ -23430,6 +23491,10 @@ snapshots:
   p-limit@3.1.0:
     dependencies:
       yocto-queue: 0.1.0
+
+  p-limit@6.2.0:
+    dependencies:
+      yocto-queue: 1.2.1
 
   p-limit@7.1.0:
     dependencies:

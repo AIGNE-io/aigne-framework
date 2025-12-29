@@ -391,3 +391,109 @@ exports[`AIGNE.invoke should respond $metafield with usage metrics with {
   },
 ]
 `;
+
+exports[`AIGNE.invoke should respond $meta field with usage metrics with {
+  streaming: true,
+  returnMetadata: true,
+} 1`] = `
+[
+  {
+    "delta": {
+      "json": {
+        "message": "",
+      },
+    },
+  },
+  {
+    "progress": {
+      "event": "message",
+      "message": [
+        {
+          "input": {},
+          "name": "greet",
+          "toolUseId": "greet",
+          "type": "tool_use",
+        },
+      ],
+      "role": "agent",
+    },
+  },
+  {
+    "progress": {
+      "event": "message",
+      "message": [
+        {
+          "content": {
+            "message": "Hello world",
+          },
+          "toolUseId": "greet",
+          "type": "tool_result",
+        },
+      ],
+      "role": "agent",
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "message": "Hello",
+      },
+    },
+  },
+  {
+    "delta": {
+      "text": {
+        "message": " world",
+      },
+    },
+  },
+  {
+    "progress": {
+      "event": "message",
+      "message": [
+        {
+          "content": "Hello world",
+          "type": "text",
+        },
+      ],
+      "role": "agent",
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "message": "Hello world",
+      },
+    },
+  },
+  {
+    "progress": {
+      "event": "message",
+      "message": [
+        {
+          "content": "Hello world",
+          "type": "text",
+        },
+      ],
+      "role": "agent",
+    },
+  },
+  {
+    "delta": {
+      "json": {
+        "$meta": {
+          "usage": {
+            "agentCalls": 4,
+            "aigneHubCredits": 0,
+            "cacheCreationInputTokens": 0,
+            "cacheReadInputTokens": 0,
+            "inputTokens": 13,
+            "outputTokens": 24,
+          },
+        },
+        "message": "Hello world",
+      },
+    },
+  },
+]
+`;

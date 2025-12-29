@@ -1,11 +1,13 @@
 import { Emitter } from "strict-event-emitter";
 import { joinURL } from "ufo";
 import { z } from "zod";
+import { SQLiteMetadataStore } from "./metadata/index.js";
 import {
   type AFSContext,
   type AFSContextPreset,
   type AFSDeleteOptions,
   type AFSDeleteResult,
+  type AFSDriver,
   type AFSEntry,
   type AFSExecOptions,
   type AFSExecResult,
@@ -27,7 +29,10 @@ import {
   type AFSWriteOptions,
   type AFSWriteResult,
   afsEntrySchema,
+  type View,
 } from "./type.js";
+import { normalizeViewKey } from "./view-key.js";
+import { ViewProcessor } from "./view-processor.js";
 
 const DEFAULT_MAX_DEPTH = 1;
 
@@ -36,20 +41,48 @@ const MODULES_ROOT_DIR = "/modules";
 export interface AFSOptions {
   modules?: AFSModule[];
   context?: AFSContext;
+  drivers?: AFSDriver[];
+  storage?: {
+    url: string; // Storage path for AFS data, default: ".afs"
+  };
 }
 
 export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
   name: string = "AFSRoot";
 
+  private modules = new Map<string, AFSModule>();
+  private _drivers: AFSDriver[] = [];
+  private metadataStore?: SQLiteMetadataStore;
+  private viewProcessor?: ViewProcessor;
+
   constructor(public options: AFSOptions = {}) {
     super();
 
+    // Mount modules
     for (const module of options?.modules ?? []) {
       this.mount(module);
     }
+
+    // Initialize drivers
+    this._drivers = options?.drivers ?? [];
+
+    // Initialize metadata store and view processor if drivers are present
+    if (this._drivers.length > 0) {
+      const storageUrl = options?.storage?.url || ".afs";
+      const metadataPath = `file:${storageUrl}/metadata.db`;
+      this.metadataStore = new SQLiteMetadataStore({ url: metadataPath });
+      this.viewProcessor = new ViewProcessor(this.metadataStore, this._drivers);
+
+      // Mount drivers
+      for (const driver of this._drivers) {
+        driver.onMount?.(this);
+      }
+    }
   }
 
-  private modules = new Map<string, AFSModule>();
+  get drivers(): AFSDriver[] {
+    return this._drivers;
+  }
 
   mount(module: AFSModule): this {
     let path = joinURL("/", module.name);
@@ -136,20 +169,36 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     return { data: results };
   }
 
-  async read(path: string, _options?: AFSReadOptions): Promise<AFSReadResult> {
+  async read(path: string, options?: AFSReadOptions): Promise<AFSReadResult> {
     const modules = this.findModules(path, { exactMatch: true });
 
     for (const { module, modulePath, subpath } of modules) {
-      const res = await module.read?.(subpath);
+      // If view is requested and we have a view processor, use it
+      if (options?.view && this.viewProcessor) {
+        const res = await this.viewProcessor.handleRead(module, subpath, options, options.context);
 
-      if (res?.data) {
-        return {
-          ...res,
-          data: {
-            ...res.data,
-            path: joinURL(modulePath, res.data.path),
-          },
-        };
+        if (res?.data) {
+          return {
+            ...res,
+            data: {
+              ...res.data,
+              path: joinURL(modulePath, res.data.path),
+            },
+          };
+        }
+      } else {
+        // No view requested, read normally
+        const res = await module.read?.(subpath, options);
+
+        if (res?.data) {
+          return {
+            ...res,
+            data: {
+              ...res.data,
+              path: joinURL(modulePath, res.data.path),
+            },
+          };
+        }
       }
     }
 
@@ -166,6 +215,11 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
 
     const res = await module.module.write(module.subpath, content, options);
 
+    // Update metadata if view processor is available
+    if (this.viewProcessor) {
+      await this.viewProcessor.handleWrite(module.module, module.subpath, res.data);
+    }
+
     return {
       ...res,
       data: {
@@ -179,7 +233,14 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     const module = this.findModules(path, { exactMatch: true })[0];
     if (!module?.module.delete) throw new Error(`No module found for path: ${path}`);
 
-    return await module.module.delete(module.subpath, options);
+    const result = await module.module.delete(module.subpath, options);
+
+    // Clean up metadata if view processor is available
+    if (this.viewProcessor) {
+      await this.viewProcessor.handleDelete(module.module, module.subpath);
+    }
+
+    return result;
   }
 
   async rename(
@@ -421,5 +482,134 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     const metadataSuffix = metadataParts.length > 0 ? ` [${metadataParts.join(", ")}]` : "";
 
     return metadataSuffix;
+  }
+
+  /**
+   * Get slot metadata by owner path and slot ID
+   * @param ownerPath - Document path that declares the slot
+   * @param slotId - Slot ID
+   * @returns Slot metadata or null if not found
+   */
+  async getSlot(ownerPath: string, slotId: string) {
+    if (!this.metadataStore) {
+      throw new Error("MetadataStore not initialized. Drivers must be configured to use slots.");
+    }
+
+    const module = this.findModules(ownerPath, { exactMatch: true })[0];
+    if (!module) {
+      throw new Error(`No module found for path: ${ownerPath}`);
+    }
+
+    return await this.metadataStore.getSlot(module.module.name, module.subpath, slotId);
+  }
+
+  /**
+   * Read image by slot (convenience method)
+   * @param ownerPath - Document path that declares the slot
+   * @param slotId - Slot ID
+   * @param options - Read options with view specification
+   * @returns AFSReadResult with the image
+   */
+  async getImageBySlot(
+    ownerPath: string,
+    slotId: string,
+    options?: AFSReadOptions,
+  ): Promise<AFSReadResult> {
+    const slot = await this.getSlot(ownerPath, slotId);
+    if (!slot) {
+      throw new Error(`Slot "${slotId}" not found in document: ${ownerPath}`);
+    }
+
+    const module = this.findModules(ownerPath, { exactMatch: true })[0];
+    if (!module) {
+      throw new Error(`No module found for path: ${ownerPath}`);
+    }
+
+    // Construct full path for the image
+    const imagePath = joinURL(MODULES_ROOT_DIR, module.module.name, slot.assetPath);
+
+    return await this.read(imagePath, options);
+  }
+
+  /**
+   * Render slots in document content by replacing slot markers with image references
+   * @param ownerPath - Document path
+   * @param content - Document content with slot markers
+   * @param options - Rendering options
+   * @returns Content with slots replaced by image references
+   */
+  async renderSlots(
+    ownerPath: string,
+    content: string,
+    options?: {
+      view?: View;
+      format?: (slot: any, imagePath: string) => string;
+    },
+  ): Promise<string> {
+    if (!this.metadataStore) {
+      throw new Error("MetadataStore not initialized. Drivers must be configured to use slots.");
+    }
+
+    const module = this.findModules(ownerPath, { exactMatch: true })[0];
+    if (!module) {
+      throw new Error(`No module found for path: ${ownerPath}`);
+    }
+
+    // Get all slots for this document
+    const slots = await this.metadataStore.listSlots(module.module.name, module.subpath);
+
+    let rendered = content;
+
+    // Replace each slot marker with image reference
+    for (const slot of slots) {
+      // Construct image path based on view
+      let imagePath = slot.assetPath;
+      if (options?.view) {
+        const viewKey = normalizeViewKey(options.view);
+        const format = options.view.format || "png";
+        imagePath = `${slot.assetPath}/${viewKey}/${slot.slug}.${format}`;
+      }
+
+      // Use custom format function or default markdown image syntax
+      const replacement = options?.format
+        ? options.format(slot, imagePath)
+        : `![${slot.desc}](${imagePath})`;
+
+      // Replace slot marker with image reference
+      const slotPattern = new RegExp(
+        `<!--\\s*afs:image\\s+id="${slot.slotId}"(?:\\s+key="[^"]*")?\\s+desc="[^"]+"\\s*-->`,
+        "g",
+      );
+      rendered = rendered.replace(slotPattern, replacement);
+    }
+
+    return rendered;
+  }
+
+  /**
+   * Prefetch views for batch generation
+   * @param pathOrGlob - Single path or array of paths (glob support TBD)
+   * @param options - View options
+   */
+  async prefetch(
+    pathOrGlob: string | string[],
+    options: { view: View; concurrency?: number; context?: any },
+  ): Promise<void> {
+    if (!this.viewProcessor) {
+      throw new Error("Prefetch requires drivers to be configured");
+    }
+
+    const paths = Array.isArray(pathOrGlob) ? pathOrGlob : [pathOrGlob];
+
+    // For each path, find the module and prefetch
+    for (const path of paths) {
+      const module = this.findModules(path, { exactMatch: true })[0];
+      if (module) {
+        await this.viewProcessor.prefetch(module.module, [module.subpath], options.view, {
+          concurrency: options.concurrency,
+          context: options.context,
+        });
+      }
+    }
   }
 }

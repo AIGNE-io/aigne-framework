@@ -18,6 +18,7 @@ export const entriesTable = (module: AFSModule) =>
       .$defaultFn(() => new Date())
       .$onUpdateFn(() => new Date()),
     path: text("path").notNull(),
+    agentId: text("agentId"),
     userId: text("userId"),
     sessionId: text("sessionId"),
     summary: text("summary"),

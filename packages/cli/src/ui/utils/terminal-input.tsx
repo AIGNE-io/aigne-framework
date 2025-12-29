@@ -14,6 +14,7 @@ export async function terminalInput({
   required?: boolean;
   validate?: (input: string) => string | boolean | Promise<string | boolean>;
   render?: typeof render;
+  clear?: boolean;
 } = {}): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const handleSigInt = () => {
@@ -26,11 +27,13 @@ export async function terminalInput({
       <TerminalInput
         {...options}
         onSubmit={(value) => {
+          if (options.clear) app.clear();
           app.unmount();
           resolve(value);
           clean();
         }}
         onError={(error) => {
+          if (options.clear) app.clear();
           app.unmount();
           reject(error);
           clean();

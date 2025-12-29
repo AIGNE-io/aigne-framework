@@ -183,24 +183,34 @@ export class AIGNEListr extends Listr<
         mergeAgentResponseChunk(this.result, value);
 
         if (isAgentResponseProgress(value) && value.progress.event === "message") {
-          const { role, message } = value.progress;
+          const { message } = value.progress;
 
           const rendered: string[] = [];
 
-          for (const msg of message) {
-            if (msg.type === "text") {
-              rendered.push(this.marked.parse(msg.content, { async: false }).trim());
-            } else if (msg.type === "thinking") {
-              rendered.push(chalk.dim(chalk.grey(chalk.italic(`[Thinking] ${msg.thoughts}`))));
-            } else if (msg.type === "tool_use") {
-              rendered.push(
-                `${chalk.bold.gray(`[${msg.name}]`)} ${chalk.gray(`${JSON.stringify(msg.input).slice(0, 200)}...`)}`,
-              );
+          if (message.role === "user" || message.role === "agent") {
+            if (message.role === "agent" && message.toolCalls) {
+              for (const call of message.toolCalls) {
+                rendered.push(
+                  `${chalk.bold.gray(`[${call.function.name}]`)} ${chalk.gray(`${JSON.stringify(call.function.arguments).slice(0, 200)}...`)}`,
+                );
+              }
+            } else if (typeof message.content === "string") {
+              rendered.push(this.marked.parse(message.content, { async: false }).trim());
+            } else if (Array.isArray(message.content)) {
+              for (const msg of message.content) {
+                if (msg.type === "text") {
+                  if (msg.isThinking) {
+                    rendered.push(chalk.dim(chalk.grey(chalk.italic(`[Thinking] ${msg.text}`))));
+                  } else {
+                    rendered.push(this.marked.parse(msg.text, { async: false }).trim());
+                  }
+                }
+              }
             }
           }
 
           if (rendered.length) {
-            const prefix = role === "user" ? chalk.blue.bold(">") : chalk.green.bold("•");
+            const prefix = message.role === "user" ? chalk.blue.bold(">") : chalk.green.bold("•");
             console.log(`${prefix} ${rendered.join("\n")}\n`);
             this.needLogResult = false;
           }

@@ -500,6 +500,8 @@ export type TextContent = {
   type: "text";
   text: string;
 
+  isThinking?: boolean;
+
   /**
    * Cache control marker (only supported by Claude)
    *
@@ -842,25 +844,41 @@ const modelOptionsSchemaProperties = {
     z.literal("medium"),
     z.literal("high"),
   ]),
+  cacheConfig: z.object({
+    enabled: optionalize(z.boolean().default(true)),
+    ttl: optionalize(z.union([z.literal("5m"), z.literal("1h"), z.number()]).default("5m")),
+    strategy: optionalize(z.union([z.literal("auto"), z.literal("manual")]).default("auto")),
+    autoBreakpoints: optionalize(
+      z.object({
+        tools: optionalize(z.boolean().default(true)),
+        system: optionalize(z.boolean().default(true)),
+        lastMessage: optionalize(z.boolean().default(false)),
+      }),
+    ),
+  }),
 };
 
-const modelOptionsSchema = z.object(
-  Object.fromEntries(
-    Object.entries(modelOptionsSchemaProperties).map(([key, schema]) => [
-      key,
-      optionalize(schema as ZodType),
-    ]),
-  ),
-);
+const modelOptionsSchema = z
+  .object(
+    Object.fromEntries(
+      Object.entries(modelOptionsSchemaProperties).map(([key, schema]) => [
+        key,
+        optionalize(schema as ZodType),
+      ]),
+    ),
+  )
+  .passthrough();
 
-const modelOptionsWithGetterSchema = z.object(
-  Object.fromEntries(
-    Object.entries(modelOptionsSchemaProperties).map(([key, schema]) => [
-      key,
-      optionalize(getterSchema(schema)),
-    ]),
-  ),
-);
+const modelOptionsWithGetterSchema = z
+  .object(
+    Object.fromEntries(
+      Object.entries(modelOptionsSchemaProperties).map(([key, schema]) => [
+        key,
+        optionalize(getterSchema(schema)),
+      ]),
+    ),
+  )
+  .passthrough();
 
 const chatModelOptionsSchema = agentOptionsSchema.extend({
   model: optionalize(z.string()),

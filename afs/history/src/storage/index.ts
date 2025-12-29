@@ -48,6 +48,7 @@ export class AFSStorageWithModule implements AFSStorage {
       .from(table)
       .where(
         and(
+          filter?.agentId ? eq(table.agentId, filter.agentId) : undefined,
           filter?.userId ? eq(table.userId, filter.userId) : undefined,
           filter?.sessionId ? eq(table.sessionId, filter.sessionId) : undefined,
         ),

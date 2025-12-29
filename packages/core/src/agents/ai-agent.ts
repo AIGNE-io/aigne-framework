@@ -31,6 +31,7 @@ import type {
   ChatModelInputMessage,
   ChatModelOutput,
   ChatModelOutputToolCall,
+  UnionContent,
 } from "./chat-model.js";
 import type { GuideRailAgentOutput } from "./guide-rail-agent.js";
 import { type FileType, fileUnionContentsSchema } from "./model.js";
@@ -550,8 +551,10 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
       yield <AgentResponseProgress>{
         progress: {
           event: "message",
-          role: "user",
-          message: [{ type: "text", content: inputMessage }],
+          message: {
+            role: "user",
+            content: [{ type: "text", text: inputMessage }],
+          },
         },
       };
     }
@@ -597,15 +600,23 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
 
       const { toolCalls, json, text, thoughts, files } = modelOutput;
 
-      if (text) {
-        yield <AgentResponseProgress>{
-          progress: { event: "message", role: "agent", message: [{ type: "text", content: text }] },
-        };
-      }
-      if (thoughts) {
-        yield <AgentResponseProgress>{
-          progress: { event: "message", role: "agent", message: [{ type: "thinking", thoughts }] },
-        };
+      if (text || thoughts) {
+        const content: UnionContent[] = [];
+        if (thoughts) {
+          content.push({ type: "text", text: thoughts, isThinking: true });
+        }
+        if (text) {
+          content.push({ type: "text", text });
+        }
+
+        if (content.length) {
+          yield <AgentResponseProgress>{
+            progress: {
+              event: "message",
+              message: { role: "agent", content },
+            },
+          };
+        }
       }
 
       if (toolCalls?.length) {
@@ -652,25 +663,14 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
           this.toolCallsConcurrency || 1,
         );
 
+        yield <AgentResponseProgress>{
+          progress: { event: "message", message: { role: "agent", toolCalls } },
+        };
+
         // Execute tools
         for (const call of toolCalls) {
           const tool = toolsMap.get(call.function.name);
           if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
-
-          yield <AgentResponseProgress>{
-            progress: {
-              event: "message",
-              role: "agent",
-              message: [
-                {
-                  type: "tool_use",
-                  name: call.function.name,
-                  input: call.function.arguments,
-                  toolUseId: call.id,
-                },
-              ],
-            },
-          };
 
           queue.push({ tool, call });
         }
@@ -685,14 +685,11 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
             yield <AgentResponseProgress>{
               progress: {
                 event: "message",
-                role: "agent",
-                message: [
-                  {
-                    type: "tool_result",
-                    toolUseId: call.id,
-                    content: output,
-                  },
-                ],
+                message: {
+                  role: "tool",
+                  toolCallId: call.id,
+                  content: JSON.stringify(output),
+                },
               },
             };
           }
@@ -735,11 +732,6 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         yield { delta: { json: result } };
       }
 
-      if (text) {
-        yield <AgentResponseProgress>{
-          progress: { event: "message", role: "agent", message: [{ type: "text", content: text }] },
-        };
-      }
       return;
     }
   }

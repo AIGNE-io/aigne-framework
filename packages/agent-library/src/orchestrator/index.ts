@@ -83,9 +83,6 @@ const defaultPlannerOptions: AIAgentOptions<PlannerInput, PlannerOutput> = {
   instructions: TODO_PLANNER_PROMPT_TEMPLATE,
   inputSchema: plannerInputSchema,
   outputSchema: plannerOutputSchema,
-  historyConfig: {
-    disabled: true,
-  },
 };
 
 const defaultWorkerOptions: AIAgentOptions<WorkerInput, WorkerOutput> = {
@@ -94,18 +91,12 @@ const defaultWorkerOptions: AIAgentOptions<WorkerInput, WorkerOutput> = {
   instructions: TODO_WORKER_PROMPT_TEMPLATE,
   inputSchema: workerInputSchema,
   outputSchema: workerOutputSchema,
-  historyConfig: {
-    disabled: true,
-  },
 };
 
 const defaultCompleterOptions: AIAgentOptions<CompleterInput, any> = {
   name: "Completer",
   instructions: ORCHESTRATOR_COMPLETE_PROMPT,
   inputSchema: completerInputSchema,
-  historyConfig: {
-    disabled: true,
-  },
 };
 
 const DEFAULT_CONCURRENCY = 5;

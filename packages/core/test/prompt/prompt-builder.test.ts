@@ -55,6 +55,10 @@ userContext.name: {{userContext.name}}
   const agent = AIAgent.from({
     memory,
     inputKey: "message",
+    historyConfig: {
+      enabled: true,
+      useOldMemory: true,
+    },
   });
 
   const prompt1 = await builder.build({
@@ -476,6 +480,10 @@ test("PromptBuilder should build with afs correctly", async () => {
   const agent = AIAgent.from({
     inputKey: "message",
     afs,
+    historyConfig: {
+      enabled: true,
+      useOldMemory: true,
+    },
   });
 
   // Build without AFS history
@@ -1104,9 +1112,6 @@ ${"```"}
 
   const agent = AIAgent.from({
     afs,
-    historyConfig: {
-      disabled: true,
-    },
     skills: [
       FunctionAgent.from({
         name: "TestSkill1",

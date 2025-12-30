@@ -45,6 +45,10 @@ export const withRunAgentCommonOptions = (yargs: Argv) =>
       type: "boolean",
       default: false,
     })
+    .option("session-id", {
+      describe: "Session ID for chat-based agents to maintain context across interactions",
+      type: "string",
+    })
     .option("model", {
       group: MODEL_OPTIONS_GROUP_NAME,
       describe: `AI model to use in format 'provider[/model]' where model is optional. Examples: 'openai' or 'openai/gpt-4o-mini'. Available providers: ${formatModelsName(

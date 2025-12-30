@@ -141,7 +141,7 @@ export async function invokeAgent(options: {
       ...options.input,
       input,
       chat: options.input.chat,
-      sessionId: v7(),
+      sessionId: options.input.sessionId || v7(),
     });
   } finally {
     await aigne.shutdown();

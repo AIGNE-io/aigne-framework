@@ -406,14 +406,24 @@ async function convertMessages({
 
   for (const msg of messages) {
     if (msg.role === "system") {
-      if (typeof msg.content !== "string") throw new Error("System message must have content");
+      if (typeof msg.content === "string") {
+        const block: Anthropic.Messages.TextBlockParam = {
+          type: "text",
+          text: msg.content,
+        };
 
-      const block: Anthropic.Messages.TextBlockParam = {
-        type: "text",
-        text: msg.content,
-      };
-
-      systemBlocks.push(block);
+        systemBlocks.push(block);
+      } else if (Array.isArray(msg.content)) {
+        systemBlocks.push(
+          ...msg.content.map((item) => {
+            if (item.type !== "text")
+              throw new Error("System message only supports text content blocks");
+            return { type: "text" as const, text: item.text };
+          }),
+        );
+      } else {
+        throw new Error("System message must have string or array content");
+      }
     } else if (msg.role === "tool") {
       if (!msg.toolCallId) throw new Error("Tool message must have toolCallId");
       if (typeof msg.content !== "string") throw new Error("Tool message must have string content");

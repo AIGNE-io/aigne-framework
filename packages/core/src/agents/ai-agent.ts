@@ -8,11 +8,10 @@ import {
 } from "../loader/schema.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "../prompt/prompts/structured-stream-instructions.js";
-import { AgentMessageTemplate, ToolMessageTemplate } from "../prompt/template.js";
 import * as fastq from "../utils/queue.js";
 import { mergeAgentResponseChunk } from "../utils/stream-utils.js";
 import { ExtractMetadataTransform } from "../utils/structured-stream-extractor.js";
-import { checkArguments, isEmpty } from "../utils/type-utils.js";
+import { checkArguments, isEmpty, isNonNullable } from "../utils/type-utils.js";
 import {
   Agent,
   type AgentInvokeOptions,
@@ -528,7 +527,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     const model = this.model || options.model || options.context.model;
     if (!model) throw new Error("model is required to run AIAgent");
 
-    const { toolAgents, ...modelInput } = await this.instructions.build({
+    const { toolAgents, session, userMessage, ...modelInput } = await this.instructions.build({
       ...options,
       agent: this,
       input,
@@ -540,31 +539,27 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     const toolsMap = new Map<string, Agent>(toolAgents?.map((i) => [i.name, i]));
 
     if (this.toolChoice === "router") {
-      return yield* this._processRouter(input, model, modelInput, options, toolsMap);
+      return yield* this._processRouter(
+        input,
+        model,
+        { messages: await session.getMessages(), ...modelInput },
+        options,
+        toolsMap,
+      );
     }
 
-    const toolCallMessages: ChatModelInputMessage[] = [];
+    yield <AgentResponseProgress>{ progress: { event: "message", message: userMessage } };
+    await session.startMessage(input, userMessage);
+
+    // const toolCallMessages: ChatModelInputMessage[] = [];
     const outputKey = this.outputKey;
-
-    const inputMessage = this.inputKey ? input[this.inputKey] : undefined;
-    if (inputMessage) {
-      yield <AgentResponseProgress>{
-        progress: {
-          event: "message",
-          message: {
-            role: "user",
-            content: [{ type: "text", text: inputMessage }],
-          },
-        },
-      };
-    }
 
     for (;;) {
       const modelOutput: ChatModelOutput = {};
 
       let stream = await this.invokeChildAgent(
         model,
-        { ...modelInput, messages: modelInput.messages.concat(toolCallMessages) },
+        { messages: await session.getMessages(), ...modelInput },
         { ...options, streaming: true },
       );
 
@@ -610,12 +605,9 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         }
 
         if (content.length) {
-          yield <AgentResponseProgress>{
-            progress: {
-              event: "message",
-              message: { role: "agent", content },
-            },
-          };
+          const message: ChatModelInputMessage = { role: "agent", content };
+          yield <AgentResponseProgress>{ progress: { event: "message", message } };
+          await session.appendCurrentMessages(message);
         }
       }
 
@@ -663,9 +655,9 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
           this.toolCallsConcurrency || 1,
         );
 
-        yield <AgentResponseProgress>{
-          progress: { event: "message", message: { role: "agent", toolCalls } },
-        };
+        const message: ChatModelInputMessage = { role: "agent", toolCalls };
+        yield <AgentResponseProgress>{ progress: { event: "message", message } };
+        await session.appendCurrentMessages(message);
 
         // Execute tools
         for (const call of toolCalls) {
@@ -682,16 +674,13 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         // Continue LLM function calling loop if any tools were executed
         if (executedToolCalls.length) {
           for (const { call, output } of executedToolCalls) {
-            yield <AgentResponseProgress>{
-              progress: {
-                event: "message",
-                message: {
-                  role: "tool",
-                  toolCallId: call.id,
-                  content: JSON.stringify(output),
-                },
-              },
+            const message: ChatModelInputMessage = {
+              role: "tool",
+              toolCallId: call.id,
+              content: JSON.stringify(output),
             };
+            yield <AgentResponseProgress>{ progress: { event: "message", message: message } };
+            await session.appendCurrentMessages(message);
           }
 
           const transferOutput = executedToolCalls.find(
@@ -699,18 +688,6 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
               isTransferAgentOutput(i.output),
           )?.output;
           if (transferOutput) return transferOutput;
-
-          toolCallMessages.push(
-            await AgentMessageTemplate.from(
-              undefined,
-              executedToolCalls.map(({ call }) => call),
-            ).format(),
-            ...(await Promise.all(
-              executedToolCalls.map(({ call, output }) =>
-                ToolMessageTemplate.from(output, call.id).format(),
-              ),
-            )),
-          );
 
           continue;
         }
@@ -731,6 +708,17 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
       if (!isEmpty(result)) {
         yield { delta: { json: result } };
       }
+
+      const finalMessage: ChatModelInputMessage = {
+        role: "agent",
+        content: [
+          text ? { type: "text" as const, text } : undefined,
+          json ? { type: "text" as const, text: JSON.stringify(json) } : undefined,
+          ...(files ?? []),
+        ].filter(isNonNullable),
+      };
+
+      await session.endMessage(result, finalMessage);
 
       return;
     }

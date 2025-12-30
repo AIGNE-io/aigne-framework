@@ -512,13 +512,22 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
       return yield* this._processRouter(
         input,
         model,
-        { messages: await session.getMessages(), ...modelInput },
+        { messages: [...(await session.getMessages()), userMessage], ...modelInput },
         options,
         toolsMap,
       );
     }
 
-    yield <AgentResponseProgress>{ progress: { event: "message", message: userMessage } };
+    const inputMessage = this.inputKey ? input[this.inputKey] : undefined;
+    if (inputMessage) {
+      yield <AgentResponseProgress>{
+        progress: {
+          event: "message",
+          message: { role: "user", content: [{ type: "text", text: inputMessage }] },
+        },
+      };
+    }
+
     await session.startMessage(input, userMessage, options);
 
     // const toolCallMessages: ChatModelInputMessage[] = [];

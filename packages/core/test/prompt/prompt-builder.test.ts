@@ -37,28 +37,8 @@ name (from userContext): {{name}}
 userContext.name: {{userContext.name}}
 `);
 
-  const memory = new MockMemory({});
-  await memory.record(
-    {
-      content: [
-        {
-          input: { message: "Hello" },
-          output: { message: "Hello, How can I help you?" },
-          source: "TestAgent",
-        },
-      ],
-    },
-
-    context,
-  );
-
   const agent = AIAgent.from({
-    memory,
     inputKey: "message",
-    historyConfig: {
-      enabled: true,
-      useOldMemory: true,
-    },
   });
 
   const prompt1 = await builder.build({
@@ -67,60 +47,27 @@ userContext.name: {{userContext.name}}
     context,
   });
 
-  expect(prompt1.messages).toMatchInlineSnapshot(`
-    [
-      {
-        "content": 
-    "Test instructions
-
-    question: What is AI?
-
-    name (from userContext): Alice
-
-    userContext.name: Alice
-    "
-    ,
-        "role": "system",
-      },
-      {
-        "content": [
-          {
-            "text": "Hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
-      },
-      {
-        "content": [
-          {
-            "text": "Hello, How can I help you?",
-            "type": "text",
-          },
-        ],
-        "role": "agent",
-      },
-      {
-        "content": [
-          {
-            "text": "Hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
-      },
-    ]
+  expect(prompt1.userMessage).toMatchInlineSnapshot(`
+    {
+      "content": [
+        {
+          "text": "Hello",
+          "type": "text",
+        },
+      ],
+      "role": "user",
+    }
   `);
 
   const prompt2 = await builder.build({
     input: { name: "foo" },
     context,
   });
-  expect(prompt2.messages).toMatchInlineSnapshot(`
-    [
-      {
-        "cacheControl": undefined,
-        "content": 
+  expect(prompt2.userMessage).toMatchInlineSnapshot(`
+    {
+      "content": [
+        {
+          "text": 
     "Test instructions
 
     question: 
@@ -130,10 +77,11 @@ userContext.name: {{userContext.name}}
     userContext.name: Alice
     "
     ,
-        "name": undefined,
-        "role": "system",
-      },
-    ]
+          "type": "text",
+        },
+      ],
+      "role": "user",
+    }
   `);
 });
 
@@ -321,14 +269,17 @@ test("PromptBuilder from string", async () => {
 
   const prompt = await builder.build({ input: { agentName: "Alice" }, context });
 
-  expect(prompt).toEqual({
-    messages: [
-      {
-        role: "system",
-        content: "Hello, Alice!",
-      },
-    ],
-  });
+  expect(prompt.userMessage).toMatchInlineSnapshot(`
+    {
+      "content": [
+        {
+          "text": "Hello, Alice!",
+          "type": "text",
+        },
+      ],
+      "role": "user",
+    }
+  `);
 });
 
 test("PromptBuilder from MCP prompt result", async () => {
@@ -385,34 +336,33 @@ test("PromptBuilder from MCP prompt result", async () => {
   };
 
   const promptBuilder = PromptBuilder.from(prompt);
-  expect(await promptBuilder.build({ context })).toEqual(
-    expect.objectContaining({
-      messages: [
+  expect((await promptBuilder.build({ context })).userMessage).toMatchInlineSnapshot(`
+    {
+      "content": [
         {
-          role: "user",
-          content: "Hello",
+          "text": "Hello",
+          "type": "text",
         },
         {
-          role: "user",
-          content: "Resource echo: Hello",
+          "text": "Resource echo: Hello",
+          "type": "text",
         },
         {
-          role: "user",
-          content: [
-            { type: "url", url: Buffer.from("FAKE IMAGE FROM RESOURCE").toString("base64") },
-          ],
+          "type": "url",
+          "url": "RkFLRSBJTUFHRSBGUk9NIFJFU09VUkNF",
         },
         {
-          role: "user",
-          content: [{ type: "url", url: Buffer.from("FAKE IMAGE").toString("base64") }],
+          "type": "url",
+          "url": "RkFLRSBJTUFHRQ==",
         },
         {
-          role: "agent",
-          content: "How can I help you?",
+          "text": "How can I help you?",
+          "type": "text",
         },
       ],
-    }),
-  );
+      "role": "user",
+    }
+  `);
 });
 
 test("PromptBuilder from file", async () => {
@@ -427,7 +377,25 @@ test("PromptBuilder from file", async () => {
     context,
   });
 
-  expect(prompt).toMatchSnapshot();
+  expect(prompt.userMessage).toMatchInlineSnapshot(`
+    {
+      "content": [
+        {
+          "text": 
+    "## instructions
+
+    You are Alice, a professional customer service.
+
+    Output in English
+
+    "
+    ,
+          "type": "text",
+        },
+      ],
+      "role": "user",
+    }
+  `);
 });
 
 test("PromptBuilder should build image prompt correctly", async () => {

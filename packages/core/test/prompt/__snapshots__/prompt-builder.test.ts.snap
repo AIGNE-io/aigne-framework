@@ -2,10 +2,9 @@
 
 exports[`PromptBuilder from file 1`] = `
 {
-  "messages": [
+  "content": [
     {
-      "cacheControl": undefined,
-      "content": 
+      "text": 
 "## instructions
 
 You are Alice, a professional customer service.
@@ -14,15 +13,9 @@ Output in English
 
 "
 ,
-      "name": undefined,
-      "role": "system",
+      "type": "text",
     },
   ],
-  "modelOptions": undefined,
-  "outputFileType": undefined,
-  "responseFormat": undefined,
-  "toolAgents": undefined,
-  "toolChoice": undefined,
-  "tools": undefined,
+  "role": "user",
 }
 `;

@@ -17,7 +17,6 @@ import {
   readableStreamToArray,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
-import { stringify } from "yaml";
 import { z } from "zod";
 import { ClaudeChatModel, OpenAIChatModel } from "../_mocks/mock-models.js";
 import { createToolCallResponse } from "../_utils/openai-like-utils.js";
@@ -345,20 +344,61 @@ test("AIAgent with catchToolErrors enabled", async () => {
   const result = await agent.invoke({ message: "1 + 2 = ?" });
 
   expect(process).toHaveBeenCalledTimes(3);
-  expect(process).toHaveBeenLastCalledWith(
-    expect.objectContaining({
-      messages: expect.arrayContaining([
-        expect.objectContaining({
-          role: "tool",
-          content: stringify({
-            isError: true,
-            error: { message: "Invalid input: a or b is zero" },
-          }),
-        }),
-      ]),
-    }),
-    expect.anything(),
-  );
+  expect((process.mock.lastCall?.at(0) as any).messages).toMatchInlineSnapshot(`
+    [
+      {
+        "content": [
+          {
+            "text": "1 + 2 = ?",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+      {
+        "role": "agent",
+        "toolCalls": [
+          {
+            "function": {
+              "arguments": {
+                "a": 1,
+                "b": 0,
+              },
+              "name": "plus",
+            },
+            "id": "plus",
+            "type": "function",
+          },
+        ],
+      },
+      {
+        "content": "{"isError":true,"error":{"message":"Invalid input: a or b is zero"}}",
+        "role": "tool",
+        "toolCallId": "plus",
+      },
+      {
+        "role": "agent",
+        "toolCalls": [
+          {
+            "function": {
+              "arguments": {
+                "a": 1,
+                "b": 2,
+              },
+              "name": "plus",
+            },
+            "id": "plus",
+            "type": "function",
+          },
+        ],
+      },
+      {
+        "content": "{"sum":3}",
+        "role": "tool",
+        "toolCallId": "plus",
+      },
+    ]
+  `);
 
   expect(result).toEqual({ message: "1 + 2 = 3" });
 });
@@ -500,7 +540,11 @@ test.each([true, false])(
     const model = new OpenAIChatModel();
     const aigne = new AIGNE({ model });
 
-    const sales = AIAgent.from({ name: "sales", inputSchema: z.object({ indent: z.string() }) });
+    const sales = AIAgent.from({
+      name: "sales",
+      instructions: "You are a sales agent",
+      inputSchema: z.object({ indent: z.string() }),
+    });
 
     const agent = AIAgent.from({
       skills: [sales],
@@ -526,7 +570,7 @@ test.each([true, false])(
 
     if (streaming) {
       assert(result instanceof ReadableStream);
-      expect(readableStreamToArray(result)).resolves.toMatchSnapshot();
+      expect(await readableStreamToArray(result)).toMatchSnapshot();
     } else {
       expect(result).toMatchSnapshot();
     }
@@ -557,44 +601,6 @@ test("AIAgent should use self model first and then use model from context", asyn
 
   const result = await engine.invoke(agent, { message: "Hello" });
   expect(result).toEqual({ message: "Answer from claude model" });
-});
-
-test("AIAgent should pass memories from invocation options to the tools", async () => {
-  const model = new OpenAIChatModel();
-  const aigne = new AIGNE({ model });
-
-  const sales = AIAgent.from({ name: "sales", inputSchema: z.object({ indent: z.string() }) });
-
-  const agent = AIAgent.from({
-    skills: [sales],
-    toolChoice: AIAgentToolChoice.router,
-    inputKey: "message",
-  });
-
-  const salesInvoke = spyOn(sales, "invoke");
-
-  spyOn(model, "process")
-    .mockReturnValueOnce(
-      Promise.resolve({ toolCalls: [createToolCallResponse("sales", { indent: "T-shirt" })] }),
-    )
-    .mockReturnValueOnce(
-      Promise.resolve(stringToAgentResponseStream("Here is a beautiful T-shirt")),
-    );
-
-  await aigne.invoke(
-    agent,
-    { message: "Hello, I want to buy a T-shirt" },
-    { memories: [{ content: "I like cartoon styles" }] },
-  );
-
-  expect(salesInvoke).toHaveBeenLastCalledWith(
-    expect.anything(),
-    expect.objectContaining({
-      context: expect.objectContaining({
-        memories: [{ content: "I like cartoon styles" }],
-      }),
-    }),
-  );
 });
 
 test("AIAgent should respond with metadata in structuredStreamMode", async () => {

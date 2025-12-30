@@ -542,7 +542,9 @@ exports[`TeamAgent should process reflection mode correctly 1`] = `
   {
     "messages": [
       {
-        "content": 
+        "content": [
+          {
+            "text": 
 "Write a article about AIGNE in 2025
 
 <previous-content>
@@ -554,7 +556,10 @@ exports[`TeamAgent should process reflection mode correctly 1`] = `
 </feedback>
 "
 ,
-        "role": "system",
+            "type": "text",
+          },
+        ],
+        "role": "user",
       },
     ],
     "modelOptions": {},
@@ -565,7 +570,9 @@ exports[`TeamAgent should process reflection mode correctly 1`] = `
   {
     "messages": [
       {
-        "content": 
+        "content": [
+          {
+            "text": 
 "You are a reviewer. Please review the following article and provide feedback.
 
 topic: AIGNE in 2025
@@ -574,7 +581,10 @@ generated content:
 AIGNE in 2025 is a framework for building AI agents.
 "
 ,
-        "role": "system",
+            "type": "text",
+          },
+        ],
+        "role": "user",
       },
     ],
     "modelOptions": {},
@@ -607,7 +617,9 @@ AIGNE in 2025 is a framework for building AI agents.
   {
     "messages": [
       {
-        "content": 
+        "content": [
+          {
+            "text": 
 "Write a article about AIGNE in 2025
 
 <previous-content>
@@ -619,7 +631,10 @@ The article is well-written and informative. However, it could use more examples
 </feedback>
 "
 ,
-        "role": "system",
+            "type": "text",
+          },
+        ],
+        "role": "user",
       },
     ],
     "modelOptions": {},
@@ -630,7 +645,9 @@ The article is well-written and informative. However, it could use more examples
   {
     "messages": [
       {
-        "content": 
+        "content": [
+          {
+            "text": 
 "You are a reviewer. Please review the following article and provide feedback.
 
 topic: AIGNE in 2025
@@ -639,7 +656,10 @@ generated content:
 AIGNE in 2025 is a framework for building AI agents. For example, it allows developers to create agents that can interact with users in a natural way, using natural language processing and machine learning techniques.
 "
 ,
-        "role": "system",
+            "type": "text",
+          },
+        ],
+        "role": "user",
       },
     ],
     "modelOptions": {},

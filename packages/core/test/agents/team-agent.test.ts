@@ -129,10 +129,12 @@ test.each(processModes)(
     const aigne = new AIGNE({ model });
 
     const first = AIAgent.from({
+      instructions: "test",
       outputKey: "text",
     });
 
     const second = AIAgent.from({
+      instructions: "test",
       outputKey: "text",
     });
 

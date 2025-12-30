@@ -463,6 +463,7 @@ test("Agent can be intercepted by guide rails", async () => {
   });
 
   const agent = AIAgent.from({
+    instructions: "test",
     guideRails: [financial],
   });
 

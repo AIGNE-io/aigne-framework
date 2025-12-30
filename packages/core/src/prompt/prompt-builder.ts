@@ -136,6 +136,8 @@ export class PromptBuilder {
 
     const { systemMessage, userMessage } = await this.buildMessages(options);
 
+    console.log({ systemMessage, userMessage });
+
     if (systemMessage) await session.setSystemMessages(systemMessage);
 
     return {

@@ -6,8 +6,6 @@ exports[`loadAgentFromYaml should load AIAgent correctly 1`] = `
     "chat-bot",
     "bot",
   ],
-  "auto_merge_system_messages": true,
-  "auto_reorder_system_messages": true,
   "catch_tools_error": false,
   "description": "Chat agent",
   "includeInputInOutput": true,
@@ -73,14 +71,19 @@ exports[`loadAgentFromYaml should load AIAgent with prompt file correctly 2`] = 
 {
   "messages": [
     {
-      "content": 
+      "content": [
+        {
+          "text": 
 "You are a helper agent to answer everything about chat prompt in AIGNE.
 
 Output in English
 
 "
 ,
-      "role": "system",
+          "type": "text",
+        },
+      ],
+      "role": "user",
     },
   ],
 }

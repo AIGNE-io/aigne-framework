@@ -554,6 +554,7 @@ test.each<[InvokeOptions]>([
 
   const agent = AIAgent.from({
     name: "chat",
+    inputKey: "message",
     skills: [
       FunctionAgent.from({
         name: "greet",

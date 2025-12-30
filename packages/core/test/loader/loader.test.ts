@@ -258,12 +258,11 @@ test("loadAgent should support nested relative prompt paths", async () => {
 
   assert(agent instanceof AIAgent);
 
-  expect(await agent.instructions.build({})).toMatchInlineSnapshot(`
+  expect((await agent.instructions.build({})).userMessage).toMatchInlineSnapshot(`
     {
-      "messages": [
+      "content": [
         {
-          "cacheControl": undefined,
-          "content": 
+          "text": 
     "You are a professional chatbot.
 
     Please output in native English
@@ -275,16 +274,10 @@ test("loadAgent should support nested relative prompt paths", async () => {
 
     "
     ,
-          "name": undefined,
-          "role": "system",
+          "type": "text",
         },
       ],
-      "modelOptions": undefined,
-      "outputFileType": undefined,
-      "responseFormat": undefined,
-      "toolAgents": undefined,
-      "toolChoice": undefined,
-      "tools": undefined,
+      "role": "user",
     }
   `);
 });
@@ -297,16 +290,16 @@ test("loadAgent should load agent with multi roles instructions", async () => {
 
   assert(agent instanceof AIAgent);
 
-  expect(
-    await agent.instructions.build({
-      input: { topic: "AIGNE is the best framework to build AI applications." },
-    }),
-  ).toMatchInlineSnapshot(`
-    {
-      "messages": [
-        {
-          "cacheControl": undefined,
-          "content": 
+  const result = await agent.instructions.build({
+    input: { topic: "AIGNE is the best framework to build AI applications." },
+  });
+
+  expect([...(await result.session.getMessages()), result.userMessage]).toMatchInlineSnapshot(`
+    [
+      {
+        "content": [
+          {
+            "text": 
     "You are a smart agent that helps with code editing and understanding.
 
     <topic>
@@ -314,35 +307,28 @@ test("loadAgent should load agent with multi roles instructions", async () => {
     </topic>
     "
     ,
-          "name": undefined,
-          "role": "system",
-        },
-        {
-          "cacheControl": undefined,
-          "content": "This is a user instruction.",
-          "name": undefined,
-          "role": "user",
-        },
-        {
-          "cacheControl": undefined,
-          "content": "This is an agent instruction.",
-          "name": undefined,
-          "role": "agent",
-          "toolCalls": undefined,
-        },
-        {
-          "cacheControl": undefined,
-          "content": "Latest user instruction about AIGNE is the best framework to build AI applications.",
-          "name": undefined,
-          "role": "user",
-        },
-      ],
-      "modelOptions": undefined,
-      "outputFileType": undefined,
-      "responseFormat": undefined,
-      "toolAgents": undefined,
-      "toolChoice": undefined,
-      "tools": undefined,
-    }
+            "type": "text",
+          },
+        ],
+        "role": "system",
+      },
+      {
+        "content": [
+          {
+            "text": "This is a user instruction.",
+            "type": "text",
+          },
+          {
+            "text": "This is an agent instruction.",
+            "type": "text",
+          },
+          {
+            "text": "Latest user instruction about AIGNE is the best framework to build AI applications.",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+    ]
   `);
 });

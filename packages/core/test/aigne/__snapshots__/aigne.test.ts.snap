@@ -303,6 +303,20 @@ exports[`AIGNE.invoke should respond $metafield with usage metrics with {
 } 1`] = `
 [
   {
+    "progress": {
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+    },
+  },
+  {
     "delta": {
       "json": {
         "message": "",

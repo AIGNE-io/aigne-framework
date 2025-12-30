@@ -166,7 +166,6 @@ test("AIGNEContext.invoke should update userContext/memories/hooks correctly", a
     { message: "hello" },
     {
       userContext: { userId: "test_user_id" },
-      memories: [{ content: "test memory content" }],
       hooks: { onStart: () => {} },
     },
   );
@@ -176,7 +175,6 @@ test("AIGNEContext.invoke should update userContext/memories/hooks correctly", a
     expect.objectContaining({
       context: expect.objectContaining({
         userContext: { userId: "test_user_id" },
-        memories: [{ content: "test memory content" }],
         hooks: [expect.objectContaining({ onStart: expect.any(Function) })],
       }),
     }),

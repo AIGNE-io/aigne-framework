@@ -3,7 +3,7 @@ import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
-import type { Agent, AgentHooks, TaskRenderMode } from "../agents/agent.js";
+import type { AgentHooks, TaskRenderMode } from "../agents/agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import type { LoadOptions } from "./index.js";
 import {
@@ -74,12 +74,6 @@ export interface AgentSchema {
   includeInputInOutput?: boolean;
   skills?: NestAgentSchema[];
   hooks?: HooksSchema | HooksSchema[];
-  memory?:
-    | boolean
-    | {
-        provider: string;
-        subscribeTopic?: string[];
-      };
   afs?:
     | boolean
     | (Omit<AFSOptions, "modules" | "context"> & {
@@ -87,7 +81,6 @@ export interface AgentSchema {
         context?: AFSContextSchema;
       });
   shareAFS?: boolean;
-  historyConfig?: Agent["historyConfig"];
   [key: string]: unknown;
 }
 
@@ -207,17 +200,6 @@ export const getAgentSchema = ({ filepath }: { filepath: string; options?: LoadO
       includeInputInOutput: optionalize(z.boolean()),
       hooks: optionalize(z.union([hooksSchema, z.array(hooksSchema)])),
       skills: optionalize(z.array(nestAgentSchema)),
-      memory: optionalize(
-        z.union([
-          z.boolean(),
-          camelizeSchema(
-            z.object({
-              provider: z.string(),
-              subscribeTopic: optionalize(z.array(z.string())),
-            }),
-          ),
-        ]),
-      ),
       afs: optionalize(
         z.union([
           z.boolean(),
@@ -247,18 +229,6 @@ export const getAgentSchema = ({ filepath }: { filepath: string; options?: LoadO
         ]),
       ),
       shareAFS: optionalize(z.boolean()),
-      historyConfig: camelizeSchema(
-        optionalize(
-          z.object({
-            enabled: optionalize(z.boolean()),
-            record: optionalize(z.boolean()),
-            inject: optionalize(z.boolean()),
-            use_old_memory: optionalize(z.boolean()),
-            maxTokens: optionalize(z.number().int().positive()),
-            maxItems: optionalize(z.number().int().positive()),
-          }),
-        ),
-      ),
     });
 
     return camelizeSchema(baseAgentSchema.passthrough());

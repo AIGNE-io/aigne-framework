@@ -12,7 +12,6 @@ import {
   arrayToReadableStream,
   stringToAgentResponseStream,
 } from "@aigne/core/utils/stream-utils.js";
-import { DefaultMemory, DefaultMemoryStorage } from "@aigne/default-memory";
 import { agentResponseStreamToArraySnapshot } from "@aigne/test-utils/utils/agent-response.js";
 import {
   AIGNEHTTPClient,
@@ -303,55 +302,6 @@ test("AIGNEClient should support invoke chat model on the server side", async ()
   }
 });
 
-test("AIGNEClient should support custom memory for client agent", async () => {
-  const { url, close, aigne } = await createExpressServer();
-
-  try {
-    assert(aigne.model instanceof ChatModel);
-
-    const modelProcess = spyOn(aigne.model, "process").mockReturnValueOnce(
-      stringToAgentResponseStream("Hello Bob, How can I help you?"),
-    );
-
-    const client = new AIGNEHTTPClient({ url });
-
-    const clientAgent = await client.getAgent({
-      name: "chat",
-      memory: new DefaultMemory(),
-    });
-
-    expect(clientAgent.memories.length).toBe(1);
-    const memory = clientAgent.memories[0];
-    expect(memory).toBeInstanceOf(DefaultMemory);
-    assert(memory instanceof DefaultMemory);
-
-    const { storage } = memory;
-    assert(storage instanceof DefaultMemoryStorage);
-
-    const response = await clientAgent.invoke({ message: "Hello, I'm Bob!" });
-    expect(response).toEqual({ message: "Hello Bob, How can I help you?" });
-
-    const memories = await (await storage.db).all("SELECT * FROM Memories");
-    expect(memories).toMatchSnapshot(
-      memories.map(() => ({
-        id: expect.any(String),
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
-      })),
-    );
-
-    spyOn(aigne.model, "process").mockReturnValueOnce(
-      stringToAgentResponseStream("Your name is Bob."),
-    );
-
-    const response2 = await clientAgent.invoke({ message: "My name is?" });
-    expect(response2).toEqual({ message: "Your name is Bob." });
-    expect(modelProcess.mock.lastCall).toMatchSnapshot([{}, expect.anything()]);
-  } finally {
-    close();
-  }
-});
-
 test("AIGNEClient should pass userContext to server side agent", async () => {
   const { url, close, aigne } = await createExpressServer();
 
@@ -451,11 +401,6 @@ async function createAIGNE() {
   const chat = AIAgent.from({
     name: "chat",
     inputKey: "message",
-    useMemoriesFromContext: true,
-    historyConfig: {
-      enabled: true,
-      useOldMemory: true,
-    },
   });
 
   return new AIGNE({ model, agents: [chat] });

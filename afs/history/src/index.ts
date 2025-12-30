@@ -5,6 +5,7 @@ import type {
   AFSModule,
   AFSReadOptions,
   AFSReadResult,
+  AFSRoot,
   AFSWriteEntryPayload,
   AFSWriteResult,
 } from "@aigne/afs";
@@ -36,15 +37,18 @@ export class AFSHistory implements AFSModule {
 
   private storage: AFSStorage;
 
+  private afs?: AFSRoot;
+
   private router = createRouter<{
-    type: "root" | "list" | "detail" | "compact" | "compact-detail";
+    type: "root" | "list" | "detail" | "compact-list" | "compact-new" | "compact-detail";
     id: "new-history" | "by-session" | "by-user" | "by-agent";
   }>({
     routes: {
       "/new": { type: "root", id: "new-history" },
       "/by-session": { type: "root", id: "by-session" },
       "/by-session/:sessionId": { type: "list", id: "by-session" },
-      "/by-session/:sessionId/@metadata/compact": { type: "compact", id: "by-session" },
+      "/by-session/:sessionId/@metadata/compact": { type: "compact-list", id: "by-session" },
+      "/by-session/:sessionId/@metadata/compact/new": { type: "compact-new", id: "by-session" },
       "/by-session/:sessionId/@metadata/compact/:compactId": {
         type: "compact-detail",
         id: "by-session",
@@ -52,12 +56,14 @@ export class AFSHistory implements AFSModule {
       "/by-session/:sessionId/:entryId": { type: "detail", id: "by-session" },
       "/by-user": { type: "root", id: "by-user" },
       "/by-user/:userId": { type: "list", id: "by-user" },
-      "/by-user/:userId/@metadata/compact": { type: "compact", id: "by-user" },
+      "/by-user/:userId/@metadata/compact": { type: "compact-list", id: "by-user" },
+      "/by-user/:userId/@metadata/compact/new": { type: "compact-new", id: "by-user" },
       "/by-user/:userId/@metadata/compact/:compactId": { type: "compact-detail", id: "by-user" },
       "/by-user/:userId/:entryId": { type: "detail", id: "by-user" },
       "/by-agent": { type: "root", id: "by-agent" },
       "/by-agent/:agentId": { type: "list", id: "by-agent" },
-      "/by-agent/:agentId/@metadata/compact": { type: "compact", id: "by-agent" },
+      "/by-agent/:agentId/@metadata/compact": { type: "compact-list", id: "by-agent" },
+      "/by-agent/:agentId/@metadata/compact/new": { type: "compact-new", id: "by-agent" },
       "/by-agent/:agentId/@metadata/compact/:compactId": { type: "compact-detail", id: "by-agent" },
       "/by-agent/:agentId/:entryId": { type: "detail", id: "by-agent" },
     },
@@ -86,6 +92,10 @@ export class AFSHistory implements AFSModule {
       description: "Retrieve history entries by agent ID.",
     },
   ];
+
+  onMount(afs: AFSRoot): void {
+    this.afs = afs;
+  }
 
   async list(path: string, options?: AFSListOptions): Promise<AFSListResult> {
     if (path === "/") return { data: this.rootEntries };
@@ -133,7 +143,7 @@ export class AFSHistory implements AFSModule {
     }
 
     if (
-      match.type === "compact" &&
+      match.type === "compact-list" &&
       (matchId === "by-session" || matchId === "by-user" || matchId === "by-agent")
     ) {
       const compactType = this.getCompactType(matchId);
@@ -212,7 +222,7 @@ export class AFSHistory implements AFSModule {
 
     const match = this.router.lookup(path);
 
-    if (match?.type === "compact") {
+    if (match?.type === "compact-new") {
       const compactType = this.getCompactType(match.id);
       const entry = await this.storage.createCompact(compactType, {
         ...match.params,
@@ -224,7 +234,7 @@ export class AFSHistory implements AFSModule {
     }
 
     if (match?.id !== "new-history") {
-      throw new Error("Can only write to /new or @metadata/compact paths.");
+      throw new Error("Can only write to /new or @metadata/compact/new paths.");
     }
 
     if (!content.sessionId) throw new Error("sessionId is required to create a history entry.");
@@ -234,6 +244,8 @@ export class AFSHistory implements AFSModule {
       id,
       path: joinURL("/", id),
     });
+
+    this.afs?.emit("historyCreated", { entry });
 
     return {
       data: {

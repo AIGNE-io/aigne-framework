@@ -1,4 +1,6 @@
 import { type ZodObject, type ZodType, z } from "zod";
+import { getNestAgentSchema, type NestAgentSchema } from "../loader/agent-yaml.js";
+import type { AgentLoadOptions } from "../loader/index.js";
 import {
   camelizeSchema,
   getInstructionsSchema,
@@ -6,12 +8,13 @@ import {
   instructionsToPromptBuilder,
   optionalize,
 } from "../loader/schema.js";
+import type { CompactConfig } from "../prompt/agent-session.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "../prompt/prompts/structured-stream-instructions.js";
 import * as fastq from "../utils/queue.js";
 import { mergeAgentResponseChunk } from "../utils/stream-utils.js";
 import { ExtractMetadataTransform } from "../utils/structured-stream-extractor.js";
-import { checkArguments, isEmpty, isNonNullable } from "../utils/type-utils.js";
+import { checkArguments, isEmpty } from "../utils/type-utils.js";
 import {
   Agent,
   type AgentInvokeOptions,
@@ -57,10 +60,6 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
    * more complex prompt templates
    */
   instructions?: string | PromptBuilder;
-
-  autoReorderSystemMessages?: boolean;
-
-  autoMergeSystemMessages?: boolean;
 
   /**
    * Pick a message from input to use as the user's message
@@ -153,28 +152,19 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
     parse: (raw: string) => object;
   };
 
-  /**
-   * Whether to include memory agents as tools for the AI model
-   *
-   * When set to true, memory agents will be made available as tools
-   * that the model can call directly to retrieve or store information.
-   * This enables the agent to explicitly interact with its memories.
-   *
-   * @default false
-   */
-  memoryAgentsAsTools?: boolean;
+  compact?: CompactConfig;
+}
 
-  /**
-   * Custom prompt template for formatting memory content
-   *
-   * Allows customization of how memories are presented to the AI model.
-   * If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used.
-   *
-   * The template receives a {{memories}} variable containing serialized memory content.
-   */
-  memoryPromptTemplate?: string;
-
-  useMemoriesFromContext?: boolean;
+export interface AIAgentLoadSchema {
+  instructions?: Instructions;
+  inputKey?: string;
+  inputFileKey?: string;
+  outputKey?: string;
+  outputFileKey?: string;
+  toolChoice?: AIAgentToolChoice;
+  toolCallsConcurrency?: number;
+  keepTextInToolUses?: boolean;
+  compact?: Omit<CompactConfig, "compactor"> & { compactor?: NestAgentSchema };
 }
 
 /**
@@ -235,8 +225,6 @@ export const aiAgentOptionsSchema: ZodObject<{
   toolChoice: aiAgentToolChoiceSchema.optional(),
   toolCallsConcurrency: z.number().int().min(0).optional(),
   keepTextInToolUses: z.boolean().optional(),
-  memoryAgentsAsTools: z.boolean().optional(),
-  memoryPromptTemplate: z.string().optional(),
 }) as ZodObject<{
   [key in keyof AIAgentOptions]: ZodType<AIAgentOptions[key]>;
 }>;
@@ -266,12 +254,11 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
 
   static schema<T>({ filepath }: { filepath: string }): ZodType<T> {
     const instructionsSchema = getInstructionsSchema({ filepath });
+    const nestAgentSchema = getNestAgentSchema({ filepath });
 
     return camelizeSchema(
       z.object({
         instructions: optionalize(instructionsSchema),
-        autoReorderSystemMessages: optionalize(z.boolean()),
-        autoMergeSystemMessages: optionalize(z.boolean()),
         inputKey: optionalize(z.string()),
         outputKey: optionalize(z.string()),
         inputFileKey: optionalize(z.string()),
@@ -281,6 +268,17 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         keepTextInToolUses: optionalize(z.boolean()),
         catchToolsError: optionalize(z.boolean()),
         structuredStreamMode: optionalize(z.boolean()),
+        compact: camelizeSchema(
+          optionalize(
+            z.object({
+              mode: optionalize(z.enum(["auto", "disabled"])),
+              maxTokens: z.number().int().min(0).optional(),
+              keepRecentRatio: optionalize(z.number().min(0).max(1)),
+              async: optionalize(z.boolean()),
+              compactor: optionalize(nestAgentSchema),
+            }),
+          ),
+        ),
       }),
     ) as any;
   }
@@ -288,26 +286,25 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
   static override async load<I extends Message = any, O extends Message = any>(options: {
     filepath: string;
     parsed: object;
+    options?: AgentLoadOptions;
   }): Promise<Agent<I, O>> {
-    interface AIAgentLoadSchema {
-      instructions?: Instructions;
-      autoReorderSystemMessages?: boolean;
-      autoMergeSystemMessages?: boolean;
-      inputKey?: string;
-      inputFileKey?: string;
-      outputKey?: string;
-      outputFileKey?: string;
-      toolChoice?: AIAgentToolChoice;
-      toolCallsConcurrency?: number;
-      keepTextInToolUses?: boolean;
-    }
-
     const schema = AIAgent.schema<AIAgentLoadSchema>(options);
     const valid = await schema.parseAsync(options.parsed);
+
     return new AIAgent<I, O>({
       ...options.parsed,
       ...valid,
       instructions: valid.instructions && instructionsToPromptBuilder(valid.instructions),
+      compact: {
+        ...valid.compact,
+        compactor: valid.compact?.compactor
+          ? await options.options?.loadNestAgent(
+              options.filepath,
+              valid.compact.compactor,
+              options.options,
+            )
+          : undefined,
+      },
     });
   }
 
@@ -340,8 +337,6 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
       typeof options.instructions === "string"
         ? PromptBuilder.from(options.instructions)
         : (options.instructions ?? new PromptBuilder());
-    this.autoReorderSystemMessages = options.autoReorderSystemMessages ?? true;
-    this.autoMergeSystemMessages = options.autoMergeSystemMessages ?? true;
     this.inputKey = options.inputKey;
     this.inputFileKey = options.inputFileKey;
     this.outputKey = options.outputKey || DEFAULT_OUTPUT_KEY;
@@ -350,9 +345,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     this.toolChoice = options.toolChoice;
     this.toolCallsConcurrency = options.toolCallsConcurrency || 1;
     this.keepTextInToolUses = options.keepTextInToolUses;
-    this.memoryAgentsAsTools = options.memoryAgentsAsTools;
-    this.memoryPromptTemplate = options.memoryPromptTemplate;
-    this.useMemoriesFromContext = options.useMemoriesFromContext;
+    this.compact = options.compact;
 
     if (typeof options.catchToolsError === "boolean")
       this.catchToolsError = options.catchToolsError;
@@ -382,10 +375,6 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    * {@includeCode ../../test/agents/ai-agent.test.ts#example-ai-agent-prompt-builder}
    */
   instructions: PromptBuilder;
-
-  autoReorderSystemMessages?: boolean;
-
-  autoMergeSystemMessages?: boolean;
 
   /**
    * Pick a message from input to use as the user's message
@@ -433,27 +422,6 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
   keepTextInToolUses?: boolean;
 
   /**
-   * Whether to include memory agents as tools for the AI model
-   *
-   * When set to true, memory agents will be made available as tools
-   * that the model can call directly to retrieve or store information.
-   * This enables the agent to explicitly interact with its memories.
-   */
-  memoryAgentsAsTools?: boolean;
-
-  /**
-   * Custom prompt template for formatting memory content
-   *
-   * Allows customization of how memories are presented to the AI model.
-   * If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used.
-   *
-   * The template receives a {{memories}} variable containing serialized memory content.
-   */
-  memoryPromptTemplate?: string;
-
-  useMemoriesFromContext?: boolean;
-
-  /**
    * Whether to catch error from tool execution and continue processing.
    * If set to false, the agent will throw an error if a tool fails
    *
@@ -496,6 +464,8 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     metadataEnd: string;
     parse: (raw: string) => object;
   };
+
+  compact?: CompactConfig;
 
   override get inputSchema(): ZodType<I> {
     let schema = super.inputSchema as unknown as ZodObject<{ [key: string]: ZodType<any> }>;
@@ -549,7 +519,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     }
 
     yield <AgentResponseProgress>{ progress: { event: "message", message: userMessage } };
-    await session.startMessage(input, userMessage);
+    await session.startMessage(input, userMessage, options);
 
     // const toolCallMessages: ChatModelInputMessage[] = [];
     const outputKey = this.outputKey;
@@ -709,16 +679,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         yield { delta: { json: result } };
       }
 
-      const finalMessage: ChatModelInputMessage = {
-        role: "agent",
-        content: [
-          text ? { type: "text" as const, text } : undefined,
-          json ? { type: "text" as const, text: JSON.stringify(json) } : undefined,
-          ...(files ?? []),
-        ].filter(isNonNullable),
-      };
-
-      await session.endMessage(result, finalMessage);
+      await session.endMessage(result, options);
 
       return;
     }

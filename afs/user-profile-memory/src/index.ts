@@ -17,6 +17,7 @@ import {
 } from "@aigne/afs-history";
 import { AIAgent, type Context } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
+import { v7 } from "@aigne/uuid";
 import { applyPatch, type Operation } from "fast-json-patch";
 import type { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
@@ -97,13 +98,26 @@ export class UserProfileMemory implements AFSModule {
   }
 
   async read(path: string): Promise<AFSReadResult> {
-    const data = await this.storage.read(path);
+    if (path !== "/") return {};
+
+    const data = (
+      await this.storage.list({
+        orderBy: [["createdAt", "desc"]],
+        limit: 1,
+      })
+    ).data.at(0);
     if (data) data.description = this.description;
     return { data };
   }
 
   async write(path: string, entry: AFSWriteEntryPayload): Promise<AFSWriteResult> {
-    const data = await this.storage.create({ ...entry, path });
+    const { data: previous } = await this.read("/");
+    const data = await this.storage.create({
+      ...previous,
+      ...entry,
+      id: previous?.id || v7(),
+      path,
+    });
     if (data) data.description = this.description;
     return { data };
   }

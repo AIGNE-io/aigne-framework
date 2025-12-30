@@ -597,23 +597,26 @@ describe("Virtual Path Support", () => {
 });
 
 describe("Compact Routes", () => {
-  test("should write compact entry to @metadata/compact path", async () => {
+  test("should write compact entry to @metadata/compact/new path", async () => {
     const history = new AFSHistory({ storage: { url: ":memory:" } });
     const afs = new AFS().mount(history);
 
     const historyPath = (await afs.listModules()).find((i) => i.name === history.name)?.path;
     assert(historyPath);
 
-    const writeResult = await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
-      agentId: "assistant",
-      userId: "user-001",
-      content: {
-        summary: "This is a compressed summary of the conversation.",
+    const writeResult = await afs.write(
+      `${historyPath}/by-session/session-001/@metadata/compact/new`,
+      {
+        agentId: "assistant",
+        userId: "user-001",
+        content: {
+          summary: "This is a compressed summary of the conversation.",
+        },
+        metadata: {
+          latestEntryId: "entry-003",
+        },
       },
-      metadata: {
-        latestEntryId: "entry-003",
-      },
-    });
+    );
 
     expect(writeResult.data).toMatchInlineSnapshot(
       {
@@ -651,13 +654,13 @@ describe("Compact Routes", () => {
     assert(historyPath);
 
     // Write multiple compact entries
-    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact/new`, {
       agentId: "assistant",
       content: { summary: "First compact" },
       metadata: { latestEntryId: "entry-001" },
     });
 
-    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact/new`, {
       agentId: "assistant",
       content: { summary: "Second compact" },
       metadata: { latestEntryId: "entry-002" },
@@ -679,11 +682,14 @@ describe("Compact Routes", () => {
     assert(historyPath);
 
     // Write a compact entry
-    const writeResult = await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
-      agentId: "assistant",
-      content: { summary: "Test compact entry" },
-      metadata: { latestEntryId: "entry-001" },
-    });
+    const writeResult = await afs.write(
+      `${historyPath}/by-session/session-001/@metadata/compact/new`,
+      {
+        agentId: "assistant",
+        content: { summary: "Test compact entry" },
+        metadata: { latestEntryId: "entry-001" },
+      },
+    );
 
     const compactId = writeResult.data.id;
 
@@ -728,13 +734,13 @@ describe("Compact Routes", () => {
     assert(historyPath);
 
     // Write compact entries for different agents
-    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact/new`, {
       agentId: "assistant",
       content: { summary: "Assistant compact" },
       metadata: { latestEntryId: "entry-001" },
     });
 
-    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact/new`, {
       agentId: "coder",
       content: { summary: "Coder compact" },
       metadata: { latestEntryId: "entry-002" },
@@ -758,7 +764,7 @@ describe("Compact Routes", () => {
     assert(historyPath);
 
     // Write multiple compact entries
-    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact/new`, {
       agentId: "assistant",
       content: { summary: "First compact" },
       metadata: { latestEntryId: "entry-001" },
@@ -767,7 +773,7 @@ describe("Compact Routes", () => {
     // Small delay to ensure different timestamps
     await new Promise((resolve) => setTimeout(resolve, 10));
 
-    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact/new`, {
       agentId: "assistant",
       content: { summary: "Latest compact" },
       metadata: { latestEntryId: "entry-002" },
@@ -792,7 +798,7 @@ describe("Compact Routes", () => {
     assert(historyPath);
 
     // Write user compact
-    const userCompact = await afs.write(`${historyPath}/by-user/user-001/@metadata/compact`, {
+    const userCompact = await afs.write(`${historyPath}/by-user/user-001/@metadata/compact/new`, {
       content: { summary: "User long-term memory" },
     });
 
@@ -800,9 +806,12 @@ describe("Compact Routes", () => {
     expect(userCompact.data.userId).toBe("user-001");
 
     // Write agent compact
-    const agentCompact = await afs.write(`${historyPath}/by-agent/assistant/@metadata/compact`, {
-      content: { summary: "Agent knowledge" },
-    });
+    const agentCompact = await afs.write(
+      `${historyPath}/by-agent/assistant/@metadata/compact/new`,
+      {
+        content: { summary: "Agent knowledge" },
+      },
+    );
 
     expect(agentCompact.data.metadata?.type).toBe("agent");
     expect(agentCompact.data.agentId).toBe("assistant");

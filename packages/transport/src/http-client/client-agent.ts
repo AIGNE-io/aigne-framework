@@ -42,15 +42,9 @@ export class ClientAgent<I extends Message = Message, O extends Message = Messag
     input: I,
     options?: Partial<AgentInvokeOptions>,
   ): Promise<AgentResponse<O>> {
-    const memories = await this.retrieveMemories(
-      { search: input },
-      { ...options, context: this.client },
-    );
-
     const result = await this.client._invoke<I, O>(this.name, input, {
       ...options,
       returnActiveAgent: false,
-      memories,
     });
     if (!(result instanceof ReadableStream)) {
       await this.postprocess(input, result as O, {

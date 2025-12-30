@@ -18,10 +18,10 @@ export async function migrate(db: Awaited<ReturnType<typeof initDatabase>>, modu
     )
   `;
 
-  await (await db).run(migrationTableCreate).execute();
+  await db.run(migrationTableCreate).execute();
 
-  const dbMigrations = await (await db)
-    .values<[number, string]>(
+  const dbMigrations = await db
+    .values<[number, string, string]>(
       sql`SELECT "id", "moduleId", "hash" FROM ${sql.identifier(migrationsTable)} WHERE "moduleId" = ${sql.param(module.name)} ORDER BY id DESC LIMIT 1`,
     )
     .execute();
@@ -31,7 +31,7 @@ export async function migrate(db: Awaited<ReturnType<typeof initDatabase>>, modu
   const queriesToRun: SQL[] = [];
 
   for (const migration of migrations) {
-    if (!lastDbMigration || lastDbMigration[1] < migration.hash) {
+    if (!lastDbMigration || lastDbMigration[2] < migration.hash) {
       queriesToRun.push(
         ...migration.sql(module),
         sql`INSERT INTO ${sql.identifier(migrationsTable)} ("id", "moduleId", "hash") VALUES(${sql.param(v7())}, ${sql.param(module.name)}, ${sql.param(migration.hash)})`,
@@ -40,6 +40,6 @@ export async function migrate(db: Awaited<ReturnType<typeof initDatabase>>, modu
   }
 
   for (const query of queriesToRun) {
-    await (await db).run(query).execute();
+    await db.run(query).execute();
   }
 }

@@ -173,6 +173,9 @@ importers:
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@aigne/uuid':
+        specifier: ^13.0.1
+        version: 13.0.1
       fast-json-patch:
         specifier: ^3.1.1
         version: 3.1.1

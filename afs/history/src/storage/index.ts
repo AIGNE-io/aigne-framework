@@ -73,8 +73,8 @@ export class AFSStorageWithModule implements AFSStorage {
           filter?.agentId ? eq(entries.agentId, filter.agentId) : undefined,
           filter?.userId ? eq(entries.userId, filter.userId) : undefined,
           filter?.sessionId ? eq(entries.sessionId, filter.sessionId) : undefined,
-          filter?.before ? lt(entries.createdAt, filter.before) : undefined,
-          filter?.after ? gt(entries.createdAt, filter.after) : undefined,
+          filter?.before ? lt(entries.createdAt, new Date(filter.before)) : undefined,
+          filter?.after ? gt(entries.createdAt, new Date(filter.after)) : undefined,
         ),
       )
       .orderBy(
@@ -166,8 +166,8 @@ export class AFSStorageWithModule implements AFSStorage {
           filter?.agentId ? eq(compact.agentId, filter.agentId) : undefined,
           filter?.userId ? eq(compact.userId, filter.userId) : undefined,
           filter?.sessionId ? eq(compact.sessionId, filter.sessionId) : undefined,
-          filter?.before ? lt(compact.createdAt, filter.before) : undefined,
-          filter?.after ? gt(compact.createdAt, filter.after) : undefined,
+          filter?.before ? lt(compact.createdAt, new Date(filter.before)) : undefined,
+          filter?.after ? gt(compact.createdAt, new Date(filter.after)) : undefined,
         ),
       )
       .orderBy(

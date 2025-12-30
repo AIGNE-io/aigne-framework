@@ -13,6 +13,7 @@ export * from "./agents/user-agent.js";
 export * from "./agents/video-model.js";
 export * from "./aigne/index.js";
 export * from "./memory/index.js";
+export * from "./prompt/agent-session.js";
 export * from "./prompt/prompt-builder.js";
 export * from "./prompt/template.js";
 export * from "./utils/json-utils.js";

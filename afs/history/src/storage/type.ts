@@ -8,8 +8,8 @@ export interface AFSStorageListOptions {
     agentId?: string;
     userId?: string;
     sessionId?: string;
-    before?: Date;
-    after?: Date;
+    before?: Date | string;
+    after?: Date | string;
   };
   limit?: number;
   orderBy?: [string, "asc" | "desc"][];

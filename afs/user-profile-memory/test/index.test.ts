@@ -1,8 +1,10 @@
 import { expect, type Mock, spyOn, test } from "bun:test";
+import assert from "node:assert";
 import { AFS } from "@aigne/afs";
 import { AFSHistory } from "@aigne/afs-history";
 import { UserProfileMemory } from "@aigne/afs-user-profile-memory";
 import { AIGNE } from "@aigne/core";
+import { v7 } from "@aigne/uuid";
 
 test("UserProfileMemory should update memory based on conversation", async () => {
   const aigne = new AIGNE();
@@ -10,6 +12,9 @@ test("UserProfileMemory should update memory based on conversation", async () =>
   const userProfileMemory = new UserProfileMemory({ context: aigne.newContext() });
 
   const afs = new AFS().mount(new AFSHistory()).mount(userProfileMemory);
+
+  const historyModel = (await afs.listModules()).find((i) => i.module instanceof AFSHistory)?.path;
+  assert(historyModel, "History model not found");
 
   spyOn(userProfileMemory.extractor, "process").mockReturnValueOnce({
     ops: [
@@ -24,9 +29,13 @@ test("UserProfileMemory should update memory based on conversation", async () =>
       },
     ],
   });
+
   const updateProfileSpy = spyOn(userProfileMemory, "updateProfile");
 
-  afs.emit("agentSucceed", { input: { message: "I'm Bob" }, output: { text: "Hello Bob!" } });
+  await afs.write(`${historyModel}/new`, {
+    sessionId: v7(),
+    content: { input: { message: "I'm Bob" }, output: { text: "Hello Bob!" } },
+  });
 
   await waitMockCalled(updateProfileSpy);
 

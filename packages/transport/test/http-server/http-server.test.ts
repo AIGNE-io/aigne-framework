@@ -20,6 +20,7 @@ test("AIGNEServer example with expression", async () => {
 
   const chat = AIAgent.from({
     name: "chat",
+    inputKey: "message",
   });
 
   // AIGNE: Main execution engine of AIGNE Framework.
@@ -67,6 +68,7 @@ test("AIGNEServer example with hono", async () => {
 
   const chat = AIAgent.from({
     name: "chat",
+    inputKey: "message",
   });
 
   // AIGNE: Main execution engine of AIGNE Framework.

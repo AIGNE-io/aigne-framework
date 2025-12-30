@@ -19,7 +19,7 @@ export async function getHistories({
   const history: AFSEntry[] = (
     await afs.list(historyModule.path, {
       filter,
-      limit: agent.historyConfig?.maxItems || 10,
+      limit: 10,
       orderBy: [["createdAt", "desc"]],
     })
   ).data;

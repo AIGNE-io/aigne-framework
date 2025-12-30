@@ -131,6 +131,7 @@ export class PromptBuilder {
       userId,
       sessionId,
       afs,
+      compact: options.agent?.compact,
     });
 
     const { systemMessage, userMessage } = await this.buildMessages(options);
@@ -251,11 +252,22 @@ export class PromptBuilder {
       }
     }
 
+    let systemMessage: ChatModelInputMessage | undefined = this.mergeMessages(
+      systemMessages,
+      "system",
+    );
+    if (!systemMessage.content?.length) systemMessage = undefined;
+
+    let userMessage = this.mergeMessages(userMessages, "user");
+    if (!userMessage.content?.length) {
+      userMessage = { role: "user", content: systemMessage?.content };
+      systemMessage = undefined;
+    }
+    if (!userMessage.content?.length) throw new Error("User message cannot be empty.");
+
     return {
-      systemMessage: systemMessages.length
-        ? this.mergeMessages(systemMessages, "system")
-        : undefined,
-      userMessage: this.mergeMessages(userMessages, "user"),
+      systemMessage,
+      userMessage,
     };
   }
 
@@ -302,7 +314,6 @@ export class PromptBuilder {
     const toolAgents = unique(
       (options.context?.skills ?? [])
         .concat(options.agent?.skills ?? [])
-        .concat(options.agent?.memoryAgentsAsTools ? options.agent.memories : [])
         .flatMap((i) => (i.isInvokable ? i : i.skills)),
       (i) => i.name,
     );

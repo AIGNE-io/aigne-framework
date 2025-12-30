@@ -6,6 +6,8 @@ export interface AFSListOptions {
     agentId?: string;
     userId?: string;
     sessionId?: string;
+    before?: string;
+    after?: string;
   };
   maxDepth?: number;
   limit?: number;

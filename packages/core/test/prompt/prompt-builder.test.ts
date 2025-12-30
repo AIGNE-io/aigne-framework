@@ -18,7 +18,6 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { MockMemory } from "../_mocks/mock-memory.js";
 
 test("PromptBuilder should build messages correctly", async () => {
   const context = new AIGNE().newContext();
@@ -413,7 +412,9 @@ test("PromptBuilder should build image prompt correctly", async () => {
 test("PromptBuilder should build with afs correctly", async () => {
   const builder = new PromptBuilder({
     instructions: ChatMessagesTemplate.from([
-      SystemMessageTemplate.from("Test instructions"),
+      SystemMessageTemplate.from(
+        "Test instructions\n{{ $afs.description }}\n{{ $afs.modules | yaml.stringify }}",
+      ),
       UserMessageTemplate.from("User message is: {{message}}"),
     ]),
   });
@@ -448,10 +449,6 @@ test("PromptBuilder should build with afs correctly", async () => {
   const agent = AIAgent.from({
     inputKey: "message",
     afs,
-    historyConfig: {
-      enabled: true,
-      useOldMemory: true,
-    },
   });
 
   // Build without AFS history
@@ -460,509 +457,124 @@ test("PromptBuilder should build with afs correctly", async () => {
     input: { message: "Hello, I'm Bob, I'm from ArcBlock" },
   });
 
-  expect(result.messages).toMatchInlineSnapshot(`
+  expect([...(await result.session.getMessages()), result.userMessage]).toMatchInlineSnapshot(`
     [
       {
-        "content": 
+        "content": [
+          {
+            "text": 
     "Test instructions
-    <afs_executable_tools>
-    Here are the executable tools available in the AFS you can use:
+    AFS (Agentic File System) provides tools to interact with a virtual file system,
+    allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
+    You can use these tools to manage and retrieve files as needed.
 
-    - path: /modules/history/3
-      name: echo
-      inputSchema:
-        type: object
-        properties:
-          text:
-            type: string
-        required:
-          - text
-        additionalProperties: false
-        $schema: http://json-schema.org/draft-07/schema#
-
-    </afs_executable_tools>
-
-    <related-memories>
-    - content: Test file content 1
-    - content: Test file content 2
-
-    </related-memories>
+    - path: /modules/history
+      name: history
     "
     ,
+            "type": "text",
+          },
+        ],
         "role": "system",
       },
       {
-        "cacheControl": undefined,
-        "content": "User message is: Hello, I'm Bob, I'm from ArcBlock",
-        "name": undefined,
+        "content": [
+          {
+            "text": "User message is: Hello, I'm Bob, I'm from ArcBlock",
+            "type": "text",
+          },
+        ],
         "role": "user",
       },
     ]
   `);
 
-  const listSpy = spyOn(afs, "list").mockResolvedValueOnce({
-    data: [
-      {
-        id: "1",
-        path: "/history/1",
-        content: { input: { message: "I'm Bob" }, output: { message: "Hello, Bob!" } },
-      },
-      {
-        id: "1",
-        path: "/history/1",
-        content: { input: { message: "Hello" }, output: { message: "Hello, How can I help you?" } },
-      },
-    ],
-  });
+  spyOn(afs, "list")
+    .mockResolvedValueOnce({
+      // for compact query
+      data: [],
+    })
+    .mockResolvedValueOnce({
+      data: [
+        {
+          id: "1",
+          path: "/history/1",
+          content: {
+            input: { message: "I'm Bob" },
+            output: { message: "Hello, Bob!" },
+            messages: [
+              { role: "user", content: "I'm Bob" },
+              { role: "agent", content: "Hello, Bob!" },
+            ],
+          },
+        },
+        {
+          id: "1",
+          path: "/history/1",
+          content: {
+            input: { message: "Hello" },
+            output: { message: "Hello, How can I help you?" },
+            messages: [
+              { role: "user", content: "Hello" },
+              { role: "agent", content: "Hello, How can I help you?" },
+            ],
+          },
+        },
+      ],
+    });
 
   const result1 = await builder.build({
     agent,
     input: { message: "Hello, I'm Bob, I'm from ArcBlock" },
   });
 
-  expect(listSpy.mock.calls).toMatchInlineSnapshot(`
-    [
-      [
-        "/modules/history",
-        {
-          "limit": 10,
-          "orderBy": [
-            [
-              "createdAt",
-              "desc",
-            ],
-          ],
-        },
-      ],
-    ]
-  `);
-
-  expect(result1).toMatchInlineSnapshot(
-    { toolAgents: expect.anything() },
+  expect([...(await result1.session.getMessages()), result1.userMessage]).toMatchInlineSnapshot(
     `
-    {
-      "messages": [
-        {
-          "content": "Test instructions",
-          "role": "system",
-        },
-        {
-          "content": [
-            {
-              "text": "Hello",
-              "type": "text",
-            },
-          ],
-          "role": "user",
-        },
-        {
-          "content": [
-            {
-              "text": "Hello, How can I help you?",
-              "type": "text",
-            },
-          ],
-          "role": "agent",
-        },
-        {
-          "content": [
-            {
-              "text": "I'm Bob",
-              "type": "text",
-            },
-          ],
-          "role": "user",
-        },
-        {
-          "content": [
-            {
-              "text": "Hello, Bob!",
-              "type": "text",
-            },
-          ],
-          "role": "agent",
-        },
-        {
-          "cacheControl": undefined,
-          "content": "User message is: Hello, I'm Bob, I'm from ArcBlock",
-          "name": undefined,
-          "role": "user",
-        },
-      ],
-      "modelOptions": undefined,
-      "outputFileType": undefined,
-      "responseFormat": undefined,
-      "toolAgents": Anything,
-      "toolChoice": "auto",
-      "tools": [
-        {
-          "function": {
-            "description": 
-    "List contents within the Agentic File System (AFS)
-    - Returns files and directories at the specified AFS path
-    - Supports recursive listing with configurable depth
-    - Supports glob pattern filtering to match specific files
-    - By default respects .gitignore rules to filter out ignored files
-    - Use this tool when you need to explore AFS contents or understand file organization
+    [
+      {
+        "content": [
+          {
+            "text": 
+    "Test instructions
+    AFS (Agentic File System) provides tools to interact with a virtual file system,
+    allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
+    You can use these tools to manage and retrieve files as needed.
 
-    Usage:
-    - The path must be an absolute AFS path starting with "/" (e.g., "/", "/docs", "/memory/user")
-    - This is NOT a local system file path - it operates within the AFS virtual file system
-    - Use maxDepth to control recursion depth (default: 1, current directory only)
-    - Use pattern to filter entries by glob pattern:
-      - "*.ts" - match TypeScript files in current directory
-      - "**/*.js" - match all JavaScript files recursively
-      - "src/**/*.{ts,tsx}" - match TypeScript files in src directory
-    - Results are filtered by .gitignore by default; set disableGitignore to include ignored files"
+    - path: /modules/history
+      name: history
+    "
     ,
-            "name": "afs_list",
-            "parameters": {
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "additionalProperties": false,
-              "properties": {
-                "options": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "disableGitignore": {
-                      "description": "Set to true to include files normally ignored by .gitignore rules. Default: false (respects .gitignore)",
-                      "type": "boolean",
-                    },
-                    "maxChildren": {
-                      "description": "Maximum number of entries to return per directory. Useful for large directories to avoid overwhelming output",
-                      "type": "number",
-                    },
-                    "maxDepth": {
-                      "description": "Maximum depth of directory recursion. 1 = current directory only, 2 = include subdirectories, etc. Default: 1",
-                      "type": "number",
-                    },
-                    "pattern": {
-                      "description": "Glob pattern to filter entries by path",
-                      "type": "string",
-                    },
-                  },
-                  "required": [],
-                  "type": "object",
-                },
-                "path": {
-                  "description": "Absolute AFS path to list (e.g., '/', '/docs', '/memory/user'). Must start with '/'",
-                  "type": "string",
-                },
-              },
-              "required": [
-                "path",
-              ],
-              "type": "object",
-            },
+            "type": "text",
           },
-          "type": "function",
-        },
-        {
-          "function": {
-            "description": 
-    "Search file contents within the Agentic File System (AFS)
-    - Searches for files containing specific text, keywords, or patterns
-    - Returns matching entries with their content and metadata
-    - Supports case-sensitive and case-insensitive search modes
-    - Use this tool when you need to find files by their content
-
-    Usage:
-    - The path must be an absolute AFS path starting with "/" (e.g., "/", "/docs", "/memory")
-    - This is NOT a local system file path - it operates within the AFS virtual file system
-    - The query can be keywords, phrases, or text patterns to search for
-    - Use limit to control the number of results returned
-    - Search is case-insensitive by default; set caseSensitive to true for exact case matching"
-    ,
-            "name": "afs_search",
-            "parameters": {
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "additionalProperties": false,
-              "properties": {
-                "options": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "caseSensitive": {
-                      "description": "Set to true for case-sensitive matching. Default: false (case-insensitive)",
-                      "type": "boolean",
-                    },
-                    "limit": {
-                      "description": "Maximum number of results to return. Useful for limiting output size",
-                      "type": "number",
-                    },
-                  },
-                  "required": [],
-                  "type": "object",
-                },
-                "path": {
-                  "description": "Absolute AFS path to search in (e.g., '/', '/docs', '/memory'). Must start with '/'",
-                  "type": "string",
-                },
-                "query": {
-                  "description": "Text, keywords, or patterns to search for in file contents",
-                  "type": "string",
-                },
-              },
-              "required": [
-                "path",
-                "query",
-              ],
-              "type": "object",
-            },
+        ],
+        "role": "system",
+      },
+      {
+        "content": "Hello",
+        "role": "user",
+      },
+      {
+        "content": "Hello, How can I help you?",
+        "role": "agent",
+      },
+      {
+        "content": "I'm Bob",
+        "role": "user",
+      },
+      {
+        "content": "Hello, Bob!",
+        "role": "agent",
+      },
+      {
+        "content": [
+          {
+            "text": "User message is: Hello, I'm Bob, I'm from ArcBlock",
+            "type": "text",
           },
-          "type": "function",
-        },
-        {
-          "function": {
-            "description": 
-    "Read file contents from the Agentic File System (AFS)
-    - Returns the content of a file at the specified AFS path
-    - By default reads up to 2000 lines, use offset/limit for large files
-    - Lines longer than 2000 characters will be truncated
-
-    Usage:
-    - The path must be an absolute AFS path starting with "/" (e.g., "/docs/readme.md")
-    - Use offset to start reading from a specific line (0-based)
-    - Use limit to control number of lines returned (default: 2000)
-    - Check truncated field to know if file was partially returned"
-    ,
-            "name": "afs_read",
-            "parameters": {
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "additionalProperties": false,
-              "properties": {
-                "limit": {
-                  "description": "Maximum number of lines to read (default: 2000)",
-                  "maximum": 2000,
-                  "minimum": 1,
-                  "type": "integer",
-                },
-                "offset": {
-                  "description": "Line number to start reading from (0-based, default: 0)",
-                  "minimum": 0,
-                  "type": "integer",
-                },
-                "path": {
-                  "description": "Absolute AFS path to the file to read (e.g., '/docs/readme.md'). Must start with '/'",
-                  "type": "string",
-                },
-              },
-              "required": [
-                "path",
-              ],
-              "type": "object",
-            },
-          },
-          "type": "function",
-        },
-        {
-          "function": {
-            "description": 
-    "Write or create files in the Agentic File System (AFS)
-    - Creates a new file or overwrites an existing file with the provided content
-    - Supports append mode to add content to the end of existing files
-    - Use this tool when creating new files or completely replacing file contents
-
-    Usage:
-    - The path must be an absolute AFS path starting with "/" (e.g., "/docs/new-file.md", "/memory/user/notes")
-    - This is NOT a local system file path - it operates within the AFS virtual file system
-    - By default, this tool overwrites the entire file content
-    - Use append mode to add content to the end of an existing file without replacing it
-    - For partial edits to existing files, prefer using afs_edit instead"
-    ,
-            "name": "afs_write",
-            "parameters": {
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "additionalProperties": false,
-              "properties": {
-                "append": {
-                  "default": false,
-                  "description": "Set to true to append content to the end of an existing file. Default: false (overwrites entire file)",
-                  "type": "boolean",
-                },
-                "content": {
-                  "description": "The content to write to the file. In overwrite mode, this replaces the entire file",
-                  "type": "string",
-                },
-                "path": {
-                  "description": "Absolute AFS path for the file to write (e.g., '/docs/new-file.md'). Must start with '/'",
-                  "type": "string",
-                },
-              },
-              "required": [
-                "path",
-                "content",
-              ],
-              "type": "object",
-            },
-          },
-          "type": "function",
-        },
-        {
-          "function": {
-            "description": 
-    "Performs exact string replacements in files within the Agentic File System (AFS).
-
-    Usage:
-    - You must use afs_read at least once before editing to understand the file content
-    - The path must be an absolute AFS path starting with "/" (e.g., "/docs/readme.md")
-    - Preserve exact indentation (tabs/spaces) as it appears in the file
-    - The edit will FAIL if oldString is not found in the file
-    - The edit will FAIL if oldString appears multiple times (unless replaceAll is true)
-    - Use replaceAll to replace/rename strings across the entire file"
-    ,
-            "name": "afs_edit",
-            "parameters": {
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "additionalProperties": false,
-              "properties": {
-                "newString": {
-                  "description": "The text to replace it with (must be different from oldString)",
-                  "type": "string",
-                },
-                "oldString": {
-                  "description": "The exact text to replace. Must match file content exactly including whitespace",
-                  "type": "string",
-                },
-                "path": {
-                  "description": "Absolute AFS path to the file to edit (e.g., '/docs/readme.md'). Must start with '/'",
-                  "type": "string",
-                },
-                "replaceAll": {
-                  "default": false,
-                  "description": "Replace all occurrences of oldString (default: false)",
-                  "type": "boolean",
-                },
-              },
-              "required": [
-                "path",
-                "oldString",
-                "newString",
-              ],
-              "type": "object",
-            },
-          },
-          "type": "function",
-        },
-        {
-          "function": {
-            "description": 
-    "Permanently delete files or directories from the Agentic File System (AFS)
-    - Removes files or directories at the specified AFS path
-    - Supports recursive deletion for directories with contents
-    - Use with caution as deletion is permanent
-
-    Usage:
-    - The path must be an absolute AFS path starting with "/" (e.g., "/docs/old-file.md", "/temp")
-    - This is NOT a local system file path - it operates within the AFS virtual file system
-    - To delete a directory, you MUST set recursive=true
-    - Deleting a non-empty directory without recursive=true will fail
-    - This operation cannot be undone"
-    ,
-            "name": "afs_delete",
-            "parameters": {
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "additionalProperties": false,
-              "properties": {
-                "path": {
-                  "description": "Absolute AFS path to delete (e.g., '/docs/old-file.md', '/temp'). Must start with '/'",
-                  "type": "string",
-                },
-                "recursive": {
-                  "default": false,
-                  "description": "MUST be set to true to delete directories. Default: false (files only)",
-                  "type": "boolean",
-                },
-              },
-              "required": [
-                "path",
-              ],
-              "type": "object",
-            },
-          },
-          "type": "function",
-        },
-        {
-          "function": {
-            "description": 
-    "Rename or move files and directories within the Agentic File System (AFS)
-    - Renames a file or directory to a new name
-    - Can also move files/directories to a different location
-    - Optionally overwrites existing files at the destination
-
-    Usage:
-    - Both paths must be absolute AFS paths starting with "/" (e.g., "/docs/old-name.md" -> "/docs/new-name.md")
-    - This is NOT a local system file path - it operates within the AFS virtual file system
-    - To move a file, specify a different directory in newPath (e.g., "/docs/file.md" -> "/archive/file.md")
-    - If newPath already exists, the operation will fail unless overwrite=true
-    - Moving directories moves all contents recursively"
-    ,
-            "name": "afs_rename",
-            "parameters": {
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "additionalProperties": false,
-              "properties": {
-                "newPath": {
-                  "description": "New absolute AFS path (e.g., '/docs/new-name.md'). Must start with '/'",
-                  "type": "string",
-                },
-                "oldPath": {
-                  "description": "Current absolute AFS path (e.g., '/docs/old-name.md'). Must start with '/'",
-                  "type": "string",
-                },
-                "overwrite": {
-                  "default": false,
-                  "description": "Set to true to overwrite if destination already exists. Default: false (fails if exists)",
-                  "type": "boolean",
-                },
-              },
-              "required": [
-                "oldPath",
-                "newPath",
-              ],
-              "type": "object",
-            },
-          },
-          "type": "function",
-        },
-        {
-          "function": {
-            "description": 
-    "Execute files marked as executable in the Agentic File System (AFS)
-    - Runs executable entries (functions, agents, skills) registered at a given AFS path
-    - Passes arguments to the executable and returns its output
-    - Use this to invoke dynamic functionality stored in AFS
-
-    Usage:
-    - The path must be an absolute AFS path to an executable entry (e.g., "/skills/summarize", "/agents/translator")
-    - This is NOT a local system file path - it operates within the AFS virtual file system
-    - Use afs_list to discover available executables (look for entries with execute metadata)
-    - Arguments must be a valid JSON string matching the executable's input schema
-    - The executable's input/output schema can be found in its metadata"
-    ,
-            "name": "afs_exec",
-            "parameters": {
-              "$schema": "http://json-schema.org/draft-07/schema#",
-              "additionalProperties": false,
-              "properties": {
-                "args": {
-                  "description": "JSON string of arguments matching the executable's input schema (e.g., '{"text": "hello"}')",
-                  "type": "string",
-                },
-                "path": {
-                  "description": "Absolute AFS path to the executable (e.g., '/skills/summarize'). Must start with '/'",
-                  "type": "string",
-                },
-              },
-              "required": [
-                "path",
-                "args",
-              ],
-              "type": "object",
-            },
-          },
-          "type": "function",
-        },
-      ],
-    }
+        ],
+        "role": "user",
+      },
+    ]
   `,
   );
 });
@@ -1026,257 +638,262 @@ ${"```"}
     ],
   });
 
-  expect((await builder.build({ agent })).messages).toMatchInlineSnapshot(`
-    [
+  expect(await (await builder.build({ agent })).userMessage).toMatchInlineSnapshot(
+    `
       {
-        "content": 
-    "
-    ## AFS
+        "content": [
+          {
+            "text": 
+      "
+      ## AFS
 
-    AFS (Agentic File System) provides tools to interact with a virtual file system,
-    allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
-    You can use these tools to manage and retrieve files as needed.
+      AFS (Agentic File System) provides tools to interact with a virtual file system,
+      allowing you to list, search, read, and write files, or execute a useful tool from the available modules.
+      You can use these tools to manage and retrieve files as needed.
 
 
-    \`\`\`yaml alt="$afs.histories"
-    - role: user
-      content:
-        message: hello
-    - role: agent
-      content:
-        message: Hello, How can I assist you today?
+      \`\`\`yaml alt="$afs.histories"
+      - role: user
+        content:
+          message: hello
+      - role: agent
+        content:
+          message: Hello, How can I assist you today?
 
-    \`\`\`
+      \`\`\`
 
-    \`\`\`yaml alt="$afs.modules"
-    - path: /modules/history
-      name: history
+      \`\`\`yaml alt="$afs.modules"
+      - path: /modules/history
+        name: history
 
-    \`\`\`
+      \`\`\`
 
-    \`\`\`yaml alt="$afs.skills"
-    - name: afs_list
-      description: >-
-        List contents within the Agentic File System (AFS)
+      \`\`\`yaml alt="$afs.skills"
+      - name: afs_list
+        description: >-
+          List contents within the Agentic File System (AFS)
 
-        - Returns files and directories at the specified AFS path
+          - Returns files and directories at the specified AFS path
 
-        - Supports recursive listing with configurable depth
+          - Supports recursive listing with configurable depth
 
-        - Supports glob pattern filtering to match specific files
+          - Supports glob pattern filtering to match specific files
 
-        - By default respects .gitignore rules to filter out ignored files
+          - By default respects .gitignore rules to filter out ignored files
 
-        - Use this tool when you need to explore AFS contents or understand file
-        organization
+          - Use this tool when you need to explore AFS contents or understand file
+          organization
 
 
-        Usage:
+          Usage:
 
-        - The path must be an absolute AFS path starting with "/" (e.g., "/",
-        "/docs", "/memory/user")
+          - The path must be an absolute AFS path starting with "/" (e.g., "/",
+          "/docs", "/memory/user")
 
-        - This is NOT a local system file path - it operates within the AFS virtual
-        file system
+          - This is NOT a local system file path - it operates within the AFS virtual
+          file system
 
-        - Use maxDepth to control recursion depth (default: 1, current directory
-        only)
+          - Use maxDepth to control recursion depth (default: 1, current directory
+          only)
 
-        - Use pattern to filter entries by glob pattern:
-          - "*.ts" - match TypeScript files in current directory
-          - "**/*.js" - match all JavaScript files recursively
-          - "src/**/*.{ts,tsx}" - match TypeScript files in src directory
-        - Results are filtered by .gitignore by default; set disableGitignore to
-        include ignored files
-    - name: afs_search
-      description: >-
-        Search file contents within the Agentic File System (AFS)
+          - Use pattern to filter entries by glob pattern:
+            - "*.ts" - match TypeScript files in current directory
+            - "**/*.js" - match all JavaScript files recursively
+            - "src/**/*.{ts,tsx}" - match TypeScript files in src directory
+          - Results are filtered by .gitignore by default; set disableGitignore to
+          include ignored files
+      - name: afs_search
+        description: >-
+          Search file contents within the Agentic File System (AFS)
 
-        - Searches for files containing specific text, keywords, or patterns
+          - Searches for files containing specific text, keywords, or patterns
 
-        - Returns matching entries with their content and metadata
+          - Returns matching entries with their content and metadata
 
-        - Supports case-sensitive and case-insensitive search modes
+          - Supports case-sensitive and case-insensitive search modes
 
-        - Use this tool when you need to find files by their content
+          - Use this tool when you need to find files by their content
 
 
-        Usage:
+          Usage:
 
-        - The path must be an absolute AFS path starting with "/" (e.g., "/",
-        "/docs", "/memory")
+          - The path must be an absolute AFS path starting with "/" (e.g., "/",
+          "/docs", "/memory")
 
-        - This is NOT a local system file path - it operates within the AFS virtual
-        file system
+          - This is NOT a local system file path - it operates within the AFS virtual
+          file system
 
-        - The query can be keywords, phrases, or text patterns to search for
+          - The query can be keywords, phrases, or text patterns to search for
 
-        - Use limit to control the number of results returned
+          - Use limit to control the number of results returned
 
-        - Search is case-insensitive by default; set caseSensitive to true for exact
-        case matching
-    - name: afs_read
-      description: >-
-        Read file contents from the Agentic File System (AFS)
+          - Search is case-insensitive by default; set caseSensitive to true for exact
+          case matching
+      - name: afs_read
+        description: >-
+          Read file contents from the Agentic File System (AFS)
 
-        - Returns the content of a file at the specified AFS path
+          - Returns the content of a file at the specified AFS path
 
-        - By default reads up to 2000 lines, use offset/limit for large files
+          - By default reads up to 2000 lines, use offset/limit for large files
 
-        - Lines longer than 2000 characters will be truncated
+          - Lines longer than 2000 characters will be truncated
 
 
-        Usage:
+          Usage:
 
-        - The path must be an absolute AFS path starting with "/" (e.g.,
-        "/docs/readme.md")
+          - The path must be an absolute AFS path starting with "/" (e.g.,
+          "/docs/readme.md")
 
-        - Use offset to start reading from a specific line (0-based)
+          - Use offset to start reading from a specific line (0-based)
 
-        - Use limit to control number of lines returned (default: 2000)
+          - Use limit to control number of lines returned (default: 2000)
 
-        - Check truncated field to know if file was partially returned
-    - name: afs_write
-      description: >-
-        Write or create files in the Agentic File System (AFS)
+          - Check truncated field to know if file was partially returned
+      - name: afs_write
+        description: >-
+          Write or create files in the Agentic File System (AFS)
 
-        - Creates a new file or overwrites an existing file with the provided
-        content
+          - Creates a new file or overwrites an existing file with the provided
+          content
 
-        - Supports append mode to add content to the end of existing files
+          - Supports append mode to add content to the end of existing files
 
-        - Use this tool when creating new files or completely replacing file
-        contents
+          - Use this tool when creating new files or completely replacing file
+          contents
 
 
-        Usage:
+          Usage:
 
-        - The path must be an absolute AFS path starting with "/" (e.g.,
-        "/docs/new-file.md", "/memory/user/notes")
+          - The path must be an absolute AFS path starting with "/" (e.g.,
+          "/docs/new-file.md", "/memory/user/notes")
 
-        - This is NOT a local system file path - it operates within the AFS virtual
-        file system
+          - This is NOT a local system file path - it operates within the AFS virtual
+          file system
 
-        - By default, this tool overwrites the entire file content
+          - By default, this tool overwrites the entire file content
 
-        - Use append mode to add content to the end of an existing file without
-        replacing it
+          - Use append mode to add content to the end of an existing file without
+          replacing it
 
-        - For partial edits to existing files, prefer using afs_edit instead
-    - name: afs_edit
-      description: >-
-        Performs exact string replacements in files within the Agentic File System
-        (AFS).
+          - For partial edits to existing files, prefer using afs_edit instead
+      - name: afs_edit
+        description: >-
+          Performs exact string replacements in files within the Agentic File System
+          (AFS).
 
 
-        Usage:
+          Usage:
 
-        - You must use afs_read at least once before editing to understand the file
-        content
+          - You must use afs_read at least once before editing to understand the file
+          content
 
-        - The path must be an absolute AFS path starting with "/" (e.g.,
-        "/docs/readme.md")
+          - The path must be an absolute AFS path starting with "/" (e.g.,
+          "/docs/readme.md")
 
-        - Preserve exact indentation (tabs/spaces) as it appears in the file
+          - Preserve exact indentation (tabs/spaces) as it appears in the file
 
-        - The edit will FAIL if oldString is not found in the file
+          - The edit will FAIL if oldString is not found in the file
 
-        - The edit will FAIL if oldString appears multiple times (unless replaceAll
-        is true)
+          - The edit will FAIL if oldString appears multiple times (unless replaceAll
+          is true)
 
-        - Use replaceAll to replace/rename strings across the entire file
-    - name: afs_delete
-      description: >-
-        Permanently delete files or directories from the Agentic File System (AFS)
+          - Use replaceAll to replace/rename strings across the entire file
+      - name: afs_delete
+        description: >-
+          Permanently delete files or directories from the Agentic File System (AFS)
 
-        - Removes files or directories at the specified AFS path
+          - Removes files or directories at the specified AFS path
 
-        - Supports recursive deletion for directories with contents
+          - Supports recursive deletion for directories with contents
 
-        - Use with caution as deletion is permanent
+          - Use with caution as deletion is permanent
 
 
-        Usage:
+          Usage:
 
-        - The path must be an absolute AFS path starting with "/" (e.g.,
-        "/docs/old-file.md", "/temp")
+          - The path must be an absolute AFS path starting with "/" (e.g.,
+          "/docs/old-file.md", "/temp")
 
-        - This is NOT a local system file path - it operates within the AFS virtual
-        file system
+          - This is NOT a local system file path - it operates within the AFS virtual
+          file system
 
-        - To delete a directory, you MUST set recursive=true
+          - To delete a directory, you MUST set recursive=true
 
-        - Deleting a non-empty directory without recursive=true will fail
+          - Deleting a non-empty directory without recursive=true will fail
 
-        - This operation cannot be undone
-    - name: afs_rename
-      description: >-
-        Rename or move files and directories within the Agentic File System (AFS)
+          - This operation cannot be undone
+      - name: afs_rename
+        description: >-
+          Rename or move files and directories within the Agentic File System (AFS)
 
-        - Renames a file or directory to a new name
+          - Renames a file or directory to a new name
 
-        - Can also move files/directories to a different location
+          - Can also move files/directories to a different location
 
-        - Optionally overwrites existing files at the destination
+          - Optionally overwrites existing files at the destination
 
 
-        Usage:
+          Usage:
 
-        - Both paths must be absolute AFS paths starting with "/" (e.g.,
-        "/docs/old-name.md" -> "/docs/new-name.md")
+          - Both paths must be absolute AFS paths starting with "/" (e.g.,
+          "/docs/old-name.md" -> "/docs/new-name.md")
 
-        - This is NOT a local system file path - it operates within the AFS virtual
-        file system
+          - This is NOT a local system file path - it operates within the AFS virtual
+          file system
 
-        - To move a file, specify a different directory in newPath (e.g.,
-        "/docs/file.md" -> "/archive/file.md")
+          - To move a file, specify a different directory in newPath (e.g.,
+          "/docs/file.md" -> "/archive/file.md")
 
-        - If newPath already exists, the operation will fail unless overwrite=true
+          - If newPath already exists, the operation will fail unless overwrite=true
 
-        - Moving directories moves all contents recursively
-    - name: afs_exec
-      description: >-
-        Execute files marked as executable in the Agentic File System (AFS)
+          - Moving directories moves all contents recursively
+      - name: afs_exec
+        description: >-
+          Execute files marked as executable in the Agentic File System (AFS)
 
-        - Runs executable entries (functions, agents, skills) registered at a given
-        AFS path
+          - Runs executable entries (functions, agents, skills) registered at a given
+          AFS path
 
-        - Passes arguments to the executable and returns its output
+          - Passes arguments to the executable and returns its output
 
-        - Use this to invoke dynamic functionality stored in AFS
+          - Use this to invoke dynamic functionality stored in AFS
 
 
-        Usage:
+          Usage:
 
-        - The path must be an absolute AFS path to an executable entry (e.g.,
-        "/skills/summarize", "/agents/translator")
+          - The path must be an absolute AFS path to an executable entry (e.g.,
+          "/skills/summarize", "/agents/translator")
 
-        - This is NOT a local system file path - it operates within the AFS virtual
-        file system
+          - This is NOT a local system file path - it operates within the AFS virtual
+          file system
 
-        - Use afs_list to discover available executables (look for entries with
-        execute metadata)
+          - Use afs_list to discover available executables (look for entries with
+          execute metadata)
 
-        - Arguments must be a valid JSON string matching the executable's input
-        schema
+          - Arguments must be a valid JSON string matching the executable's input
+          schema
 
-        - The executable's input/output schema can be found in its metadata
+          - The executable's input/output schema can be found in its metadata
 
-    \`\`\`
+      \`\`\`
 
 
-    ## Agent Skills
-    \`\`\`yaml alt="$agent.skills"
-    - name: TestSkill1
-      description: Test skill 1 description
-    - name: TestSkill2
-      description: Test skill 2 description
+      ## Agent Skills
+      \`\`\`yaml alt="$agent.skills"
+      - name: TestSkill1
+        description: Test skill 1 description
+      - name: TestSkill2
+        description: Test skill 2 description
 
-    \`\`\`
-    "
-    ,
-        "role": "system",
-      },
-    ]
-  `);
+      \`\`\`
+      "
+      ,
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      }
+    `,
+  );
 });

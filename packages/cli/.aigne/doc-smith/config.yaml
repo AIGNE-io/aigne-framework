@@ -1,27 +1,22 @@
 # Project information for documentation publishing
-projectName: AIGNE CLI skill test with aigne
-projectDesc: "@aigne/cli is the official command-line tool for AIGNE Framework, designed to simplify the development, testing, and deployment processes for AIGNE applications. It provides a series of useful commands to help developers quickly create projects, run agents, test code, and deploy applications."
+projectName: aigne-framework
+projectDesc: The functional, composable, and typescript-first AI Agent framework
+  for real-world LLM Apps.
 projectLogo: https://avatars.githubusercontent.com/u/143965177?v=4
 
-# =============================================================================
-# Documentation Configuration
-# =============================================================================
+# Language settings
+locale: en
+# translateLanguages:  # A list of languages to translate the documentation to.
+#   - zh  # Example: Chinese translation
+#   - en  # Example: English translation
 
-# Custom Rules: Define specific documentation generation rules and requirements
-rules: ""
-  
-
-# Target Audience: Describe your specific target audience and their characteristics
-targetAudience: |
-  
-
-locale: zh
-docsDir: .aigne/doc-smith/docs  # Directory to save generated documentation
-sourcesPath:  # Source code paths to analyze
+# Documentation directory and source paths
+docsDir: .aigne/doc-smith/docs  # The directory where the generated documentation will be saved.
+sourcesPath:  # The source code paths to analyze.
   - ./
-lastGitHead: 0e78e6bd2f5602448e8558f363e6b68d6a873108
-appUrl: https://staging.docsmith.aigne.io
-boardId: aigne-cli-skill-test-with-aigne-3
+
+appUrl: https://bbqa6fhpf6d34dhv6aadz5fqwz7bs6t6kkvv3lhmok4.did.abtnet.io
+boardId: aigne-framework
 # Checkout ID for document deployment service
 checkoutId: ""
 # Should sync branding for documentation

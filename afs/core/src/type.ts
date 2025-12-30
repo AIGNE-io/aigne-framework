@@ -43,6 +43,7 @@ export interface AFSSearchResult {
 }
 
 export interface AFSReadOptions {
+  filter?: AFSListOptions["filter"];
   context?: any;
 }
 

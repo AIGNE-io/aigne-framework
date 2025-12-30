@@ -595,3 +595,226 @@ describe("Virtual Path Support", () => {
     expect(readResult.data?.path).toBe(writeResult.data.path);
   });
 });
+
+describe("Compact Routes", () => {
+  test("should write compact entry to @metadata/compact path", async () => {
+    const history = new AFSHistory({ storage: { url: ":memory:" } });
+    const afs = new AFS().mount(history);
+
+    const historyPath = (await afs.listModules()).find((i) => i.name === history.name)?.path;
+    assert(historyPath);
+
+    const writeResult = await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+      agentId: "assistant",
+      userId: "user-001",
+      content: {
+        summary: "This is a compressed summary of the conversation.",
+      },
+      metadata: {
+        latestEntryId: "entry-003",
+      },
+    });
+
+    expect(writeResult.data).toMatchInlineSnapshot(
+      {
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        id: expect.any(String),
+        path: expect.any(String),
+      },
+      `
+      {
+        "agentId": "assistant",
+        "content": {
+          "summary": "This is a compressed summary of the conversation.",
+        },
+        "createdAt": Any<Date>,
+        "id": Any<String>,
+        "metadata": {
+          "latestEntryId": "entry-003",
+          "type": "session",
+        },
+        "path": Any<String>,
+        "sessionId": "session-001",
+        "updatedAt": Any<Date>,
+        "userId": "user-001",
+      }
+    `,
+    );
+  });
+
+  test("should list compact entries", async () => {
+    const history = new AFSHistory({ storage: { url: ":memory:" } });
+    const afs = new AFS().mount(history);
+
+    const historyPath = (await afs.listModules()).find((i) => i.name === history.name)?.path;
+    assert(historyPath);
+
+    // Write multiple compact entries
+    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+      agentId: "assistant",
+      content: { summary: "First compact" },
+      metadata: { latestEntryId: "entry-001" },
+    });
+
+    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+      agentId: "assistant",
+      content: { summary: "Second compact" },
+      metadata: { latestEntryId: "entry-002" },
+    });
+
+    // List compact entries
+    const listResult = await afs.list(`${historyPath}/by-session/session-001/@metadata/compact`);
+
+    expect(listResult.data).toHaveLength(2);
+    expect(listResult.data[0]?.content.summary).toBe("First compact");
+    expect(listResult.data[1]?.content.summary).toBe("Second compact");
+  });
+
+  test("should read compact entry by ID", async () => {
+    const history = new AFSHistory({ storage: { url: ":memory:" } });
+    const afs = new AFS().mount(history);
+
+    const historyPath = (await afs.listModules()).find((i) => i.name === history.name)?.path;
+    assert(historyPath);
+
+    // Write a compact entry
+    const writeResult = await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+      agentId: "assistant",
+      content: { summary: "Test compact entry" },
+      metadata: { latestEntryId: "entry-001" },
+    });
+
+    const compactId = writeResult.data.id;
+
+    // Read by ID
+    const readResult = await afs.read(
+      `${historyPath}/by-session/session-001/@metadata/compact/${compactId}`,
+    );
+
+    expect(readResult.data).toMatchInlineSnapshot(
+      {
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        id: expect.any(String),
+        path: expect.any(String),
+      },
+      `
+      {
+        "agentId": "assistant",
+        "content": {
+          "summary": "Test compact entry",
+        },
+        "createdAt": Any<Date>,
+        "id": Any<String>,
+        "metadata": {
+          "latestEntryId": "entry-001",
+          "type": "session",
+        },
+        "path": Any<String>,
+        "sessionId": "session-001",
+        "updatedAt": Any<Date>,
+        "userId": null,
+      }
+    `,
+    );
+  });
+
+  test("should filter compact entries by agentId", async () => {
+    const history = new AFSHistory({ storage: { url: ":memory:" } });
+    const afs = new AFS().mount(history);
+
+    const historyPath = (await afs.listModules()).find((i) => i.name === history.name)?.path;
+    assert(historyPath);
+
+    // Write compact entries for different agents
+    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+      agentId: "assistant",
+      content: { summary: "Assistant compact" },
+      metadata: { latestEntryId: "entry-001" },
+    });
+
+    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+      agentId: "coder",
+      content: { summary: "Coder compact" },
+      metadata: { latestEntryId: "entry-002" },
+    });
+
+    // Filter by agentId
+    const listResult = await afs.list(`${historyPath}/by-session/session-001/@metadata/compact`, {
+      filter: { agentId: "assistant" },
+    });
+
+    expect(listResult.data).toHaveLength(1);
+    expect(listResult.data[0]?.agentId).toBe("assistant");
+    expect(listResult.data[0]?.content.summary).toBe("Assistant compact");
+  });
+
+  test("should get latest compact entry using orderBy and limit", async () => {
+    const history = new AFSHistory({ storage: { url: ":memory:" } });
+    const afs = new AFS().mount(history);
+
+    const historyPath = (await afs.listModules()).find((i) => i.name === history.name)?.path;
+    assert(historyPath);
+
+    // Write multiple compact entries
+    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+      agentId: "assistant",
+      content: { summary: "First compact" },
+      metadata: { latestEntryId: "entry-001" },
+    });
+
+    // Small delay to ensure different timestamps
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    await afs.write(`${historyPath}/by-session/session-001/@metadata/compact`, {
+      agentId: "assistant",
+      content: { summary: "Latest compact" },
+      metadata: { latestEntryId: "entry-002" },
+    });
+
+    // Get latest using orderBy and limit
+    const listResult = await afs.list(`${historyPath}/by-session/session-001/@metadata/compact`, {
+      filter: { agentId: "assistant" },
+      orderBy: [["createdAt", "desc"]],
+      limit: 1,
+    });
+
+    expect(listResult.data).toHaveLength(1);
+    expect(listResult.data[0]?.content.summary).toBe("Latest compact");
+  });
+
+  test("should support compact for user and agent paths", async () => {
+    const history = new AFSHistory({ storage: { url: ":memory:" } });
+    const afs = new AFS().mount(history);
+
+    const historyPath = (await afs.listModules()).find((i) => i.name === history.name)?.path;
+    assert(historyPath);
+
+    // Write user compact
+    const userCompact = await afs.write(`${historyPath}/by-user/user-001/@metadata/compact`, {
+      content: { summary: "User long-term memory" },
+    });
+
+    expect(userCompact.data.metadata?.type).toBe("user");
+    expect(userCompact.data.userId).toBe("user-001");
+
+    // Write agent compact
+    const agentCompact = await afs.write(`${historyPath}/by-agent/assistant/@metadata/compact`, {
+      content: { summary: "Agent knowledge" },
+    });
+
+    expect(agentCompact.data.metadata?.type).toBe("agent");
+    expect(agentCompact.data.agentId).toBe("assistant");
+
+    // List user compacts
+    const userList = await afs.list(`${historyPath}/by-user/user-001/@metadata/compact`);
+    expect(userList.data).toHaveLength(1);
+    expect(userList.data[0]?.content.summary).toBe("User long-term memory");
+
+    // List agent compacts
+    const agentList = await afs.list(`${historyPath}/by-agent/assistant/@metadata/compact`);
+    expect(agentList.data).toHaveLength(1);
+    expect(agentList.data[0]?.content.summary).toBe("Agent knowledge");
+  });
+});

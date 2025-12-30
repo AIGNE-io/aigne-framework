@@ -8,6 +8,8 @@ export interface AFSStorageListOptions {
     agentId?: string;
     userId?: string;
     sessionId?: string;
+    before?: Date;
+    after?: Date;
   };
   limit?: number;
   orderBy?: [string, "asc" | "desc"][];
@@ -21,12 +23,24 @@ export interface AFSStorageReadOptions {
   };
 }
 
+export type CompactType = "session" | "user" | "agent";
+
 export interface AFSStorage {
   create(entry: AFSStorageCreatePayload): Promise<AFSEntry>;
 
   list(options?: AFSStorageListOptions): Promise<{ data: AFSEntry[] }>;
 
   read(id: string, options?: AFSStorageReadOptions): Promise<AFSEntry | undefined>;
+
+  createCompact(type: CompactType, entry: AFSStorageCreatePayload): Promise<AFSEntry>;
+
+  listCompact(type: CompactType, options?: AFSStorageListOptions): Promise<{ data: AFSEntry[] }>;
+
+  readCompact(
+    type: CompactType,
+    id: string,
+    options?: AFSStorageReadOptions,
+  ): Promise<AFSEntry | undefined>;
 }
 
 export type AFSStorageMigrations = { hash: string; sql: (module: AFSModule) => SQL[] };

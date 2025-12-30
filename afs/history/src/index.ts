@@ -3,6 +3,7 @@ import type {
   AFSListOptions,
   AFSListResult,
   AFSModule,
+  AFSReadOptions,
   AFSReadResult,
   AFSWriteEntryPayload,
   AFSWriteResult,
@@ -12,6 +13,7 @@ import { createRouter } from "radix3";
 import { joinURL } from "ufo";
 import {
   type AFSStorage,
+  type CompactType,
   SharedAFSStorage,
   type SharedAFSStorageOptions,
 } from "./storage/index.js";
@@ -35,19 +37,28 @@ export class AFSHistory implements AFSModule {
   private storage: AFSStorage;
 
   private router = createRouter<{
-    type: "root" | "list" | "detail";
+    type: "root" | "list" | "detail" | "compact" | "compact-detail";
     id: "new-history" | "by-session" | "by-user" | "by-agent";
   }>({
     routes: {
       "/new": { type: "root", id: "new-history" },
       "/by-session": { type: "root", id: "by-session" },
       "/by-session/:sessionId": { type: "list", id: "by-session" },
+      "/by-session/:sessionId/@metadata/compact": { type: "compact", id: "by-session" },
+      "/by-session/:sessionId/@metadata/compact/:compactId": {
+        type: "compact-detail",
+        id: "by-session",
+      },
       "/by-session/:sessionId/:entryId": { type: "detail", id: "by-session" },
       "/by-user": { type: "root", id: "by-user" },
       "/by-user/:userId": { type: "list", id: "by-user" },
+      "/by-user/:userId/@metadata/compact": { type: "compact", id: "by-user" },
+      "/by-user/:userId/@metadata/compact/:compactId": { type: "compact-detail", id: "by-user" },
       "/by-user/:userId/:entryId": { type: "detail", id: "by-user" },
       "/by-agent": { type: "root", id: "by-agent" },
       "/by-agent/:agentId": { type: "list", id: "by-agent" },
+      "/by-agent/:agentId/@metadata/compact": { type: "compact", id: "by-agent" },
+      "/by-agent/:agentId/@metadata/compact/:compactId": { type: "compact-detail", id: "by-agent" },
       "/by-agent/:agentId/:entryId": { type: "detail", id: "by-agent" },
     },
   });
@@ -121,10 +132,28 @@ export class AFSHistory implements AFSModule {
       };
     }
 
+    if (
+      match.type === "compact" &&
+      (matchId === "by-session" || matchId === "by-user" || matchId === "by-agent")
+    ) {
+      const compactType = this.getCompactType(matchId);
+      const mergedFilter = {
+        ...options?.filter,
+        ...match.params,
+      };
+
+      const result = await this.storage.listCompact(compactType, {
+        ...options,
+        filter: mergedFilter,
+      });
+
+      return { data: result.data };
+    }
+
     return { data: [] };
   }
 
-  async read(path: string): Promise<AFSReadResult> {
+  async read(path: string, options?: AFSReadOptions): Promise<AFSReadResult> {
     // Parse virtual path and extract filter conditions
     const match = this.router.lookup(path);
     if (!match) return {};
@@ -155,18 +184,50 @@ export class AFSHistory implements AFSModule {
       };
     }
 
+    if (
+      match.type === "compact-detail" &&
+      (match.id === "by-session" || match.id === "by-user" || match.id === "by-agent")
+    ) {
+      const compactId = match.params?.compactId;
+      if (!compactId) throw new Error("Compact ID is required in the path to read compact detail.");
+
+      const compactType = this.getCompactType(match.id);
+      const mergedFilter = {
+        ...options?.filter,
+        ...match.params,
+      };
+
+      const data = await this.storage.readCompact(compactType, compactId, {
+        filter: mergedFilter,
+      });
+
+      return { data };
+    }
+
     return {};
   }
 
   async write(path: string, content: AFSWriteEntryPayload): Promise<AFSWriteResult> {
+    const id = v7();
+
     const match = this.router.lookup(path);
+
+    if (match?.type === "compact") {
+      const compactType = this.getCompactType(match.id);
+      const entry = await this.storage.createCompact(compactType, {
+        ...match.params,
+        ...content,
+        id,
+        path: joinURL("/", compactType, id),
+      });
+      return { data: entry };
+    }
+
     if (match?.id !== "new-history") {
-      throw new Error("Can only write to /new to create a new history entry.");
+      throw new Error("Can only write to /new or @metadata/compact paths.");
     }
 
     if (!content.sessionId) throw new Error("sessionId is required to create a history entry.");
-
-    const id = v7();
 
     const entry = await this.storage.create({
       ...content,
@@ -180,6 +241,19 @@ export class AFSHistory implements AFSModule {
         path: this.normalizePath(entry, "by-session"),
       },
     };
+  }
+
+  private getCompactType(id: "by-session" | "by-user" | "by-agent" | "new-history"): CompactType {
+    const mapping: Record<string, CompactType> = {
+      "by-session": "session",
+      "by-user": "user",
+      "by-agent": "agent",
+    };
+
+    const type = mapping[id];
+    if (!type) throw new Error(`Invalid compact type for id: ${id}`);
+
+    return type;
   }
 
   private normalizePath(entry: AFSEntry, type: "by-session" | "by-user" | "by-agent"): string {

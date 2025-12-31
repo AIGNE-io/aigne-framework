@@ -33,9 +33,9 @@ Positionals:
   entry-agent  Name of the agent to run (defaults to the entry agent if not specified)  [string]
 
 Options:
-      --help     Show help
-  -v, --version  Show version number  [boolean]
-      --chat     Run chat loop in terminal  [boolean] [default: false]"
+      --help         Show help
+  -v, --version      Show version number  [boolean]
+      --interactive  Run in interactive chat mode  [boolean] [default: false]"
 ,
   ],
 ]

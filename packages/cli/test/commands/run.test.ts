@@ -248,6 +248,8 @@ test("run command should register commands correctly", async () => {
 
     Options:
           --chat        Run chat loop in terminal         [boolean] [default: false]
+          --session-id  Session ID for chat-based agents to maintain context across
+                        interactions                                        [string]
       -i, --input       Input to the agent, use @<file> to read from a file  [array]
           --input-file  Input files to the agent                             [array]
           --format      Input format for the agent (available: text, json, yaml

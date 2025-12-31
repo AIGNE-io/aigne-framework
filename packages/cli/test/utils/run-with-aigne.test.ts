@@ -58,7 +58,7 @@ test("runWithAIGNE should run agent correctly", async () => {
   );
 });
 
-test("runWithAIGNE should exit with error code when run --chat in non-tty environment", async () => {
+test("runWithAIGNE should exit with error code when run --interactive in non-tty environment", async () => {
   const error = spyOn(console, "error").mockReturnValueOnce(undefined as never);
   const exit = spyOn(process, "exit").mockReturnValueOnce(undefined as never);
   spyOn(process, "exit").mockReturnValueOnce(undefined as never);
@@ -74,11 +74,11 @@ test("runWithAIGNE should exit with error code when run --chat in non-tty enviro
       return agent;
     },
     {
-      argv: ["aigne", "run", "--chat"],
+      argv: ["aigne", "run", "--interactive"],
     },
   );
 
-  expect(error.mock.lastCall?.[0]).toMatch("--chat mode requires a TTY");
+  expect(error.mock.lastCall?.[0]).toMatch("--interactive mode requires a TTY");
 
   expect(exit).toHaveBeenCalledWith(1);
   expect(exit).toHaveBeenLastCalledWith(1);
@@ -149,7 +149,7 @@ test("runWithAIGNE should run chat loop correctly", async () => {
       return agent;
     },
     {
-      argv: ["", "", "--chat"],
+      argv: ["", "", "--interactive"],
     },
   );
 

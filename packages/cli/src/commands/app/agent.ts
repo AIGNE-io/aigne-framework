@@ -140,7 +140,7 @@ export async function invokeAgent(options: {
     await runAgentWithAIGNE(aigne, agent, {
       ...options.input,
       input,
-      chat: options.input.chat,
+      interactive: options.input.interactive,
       sessionId: options.input.sessionId || v7(),
     });
   } finally {

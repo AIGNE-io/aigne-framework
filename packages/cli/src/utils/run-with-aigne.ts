@@ -181,9 +181,9 @@ export async function runAgentWithAIGNE(
     await writeFile(outputPath, "", "utf8");
   }
 
-  if (options.chat) {
+  if (options.interactive) {
     if (!isatty(process.stdout.fd)) {
-      throw new Error("--chat mode requires a TTY terminal");
+      throw new Error("--interactive mode requires a TTY terminal");
     }
 
     const userAgent = agent instanceof UserAgent ? agent : aigne.invoke(agent);

@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.59.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.10...cli-v1.59.0-beta.11) (2025-12-31)
+
+
+### Features
+
+* add session compact support for AIAgent ([#863](https://github.com/AIGNE-io/aigne-framework/issues/863)) ([9010918](https://github.com/AIGNE-io/aigne-framework/commit/9010918cd3f18b02b5c60ddc9ed5c34b568d0b28))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.5
+    * @aigne/afs-history bumped to 1.2.0-beta.5
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.8
+    * @aigne/agent-library bumped to 1.24.0-beta.10
+    * @aigne/agentic-memory bumped to 1.1.6-beta.8
+    * @aigne/aigne-hub bumped to 0.10.16-beta.12
+    * @aigne/core bumped to 1.72.0-beta.8
+    * @aigne/default-memory bumped to 1.4.0-beta.7
+    * @aigne/openai bumped to 0.16.16-beta.8
+    * @aigne/secrets bumped to 0.1.6-beta.8
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.8
+
 ## [1.59.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.9...cli-v1.59.0-beta.10) (2025-12-26)
 
 

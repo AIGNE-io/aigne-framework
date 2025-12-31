@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.16-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.16-beta.8...anthropic-v0.14.16-beta.9) (2025-12-31)
+
+
+### Features
+
+* add session compact support for AIAgent ([#863](https://github.com/AIGNE-io/aigne-framework/issues/863)) ([9010918](https://github.com/AIGNE-io/aigne-framework/commit/9010918cd3f18b02b5c60ddc9ed5c34b568d0b28))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.8
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.8
+
 ## [0.14.16-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.16-beta.7...anthropic-v0.14.16-beta.8) (2025-12-26)
 
 

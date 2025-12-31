@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.15.25-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.15.25-beta.9...transport-v0.15.25-beta.10) (2025-12-31)
+
+
+### Features
+
+* add session compact support for AIAgent ([#863](https://github.com/AIGNE-io/aigne-framework/issues/863)) ([9010918](https://github.com/AIGNE-io/aigne-framework/commit/9010918cd3f18b02b5c60ddc9ed5c34b568d0b28))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.16-beta.8
+  * devDependencies
+    * @aigne/agent-library bumped to 1.24.0-beta.10
+    * @aigne/core bumped to 1.72.0-beta.8
+    * @aigne/default-memory bumped to 1.4.0-beta.7
+    * @aigne/test-utils bumped to 0.5.69-beta.8
+
 ## [0.15.25-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.15.25-beta.8...transport-v0.15.25-beta.9) (2025-12-26)
 
 

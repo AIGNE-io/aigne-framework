@@ -7,6 +7,21 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.24.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.9...agent-library-v1.24.0-beta.10) (2025-12-31)
+
+
+### Features
+
+* add session compact support for AIAgent ([#863](https://github.com/AIGNE-io/aigne-framework/issues/863)) ([9010918](https://github.com/AIGNE-io/aigne-framework/commit/9010918cd3f18b02b5c60ddc9ed5c34b568d0b28))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.8
+    * @aigne/openai bumped to 0.16.16-beta.8
+
 ## [1.24.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.8...agent-library-v1.24.0-beta.9) (2025-12-26)
 
 

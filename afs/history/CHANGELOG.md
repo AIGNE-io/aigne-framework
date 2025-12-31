@@ -6,6 +6,20 @@
   * dependencies
     * @aigne/afs bumped to 1.2.0
 
+## [1.2.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.2.0-beta.4...afs-history-v1.2.0-beta.5) (2025-12-31)
+
+
+### Features
+
+* add session compact support for AIAgent ([#863](https://github.com/AIGNE-io/aigne-framework/issues/863)) ([9010918](https://github.com/AIGNE-io/aigne-framework/commit/9010918cd3f18b02b5c60ddc9ed5c34b568d0b28))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.5
+
 ## [1.2.0-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.2.0-beta.3...afs-history-v1.2.0-beta.4) (2025-12-26)
 
 

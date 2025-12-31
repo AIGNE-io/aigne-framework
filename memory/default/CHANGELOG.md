@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.4.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.4.0-beta.6...default-memory-v1.4.0-beta.7) (2025-12-31)
+
+
+### Features
+
+* add session compact support for AIAgent ([#863](https://github.com/AIGNE-io/aigne-framework/issues/863)) ([9010918](https://github.com/AIGNE-io/aigne-framework/commit/9010918cd3f18b02b5c60ddc9ed5c34b568d0b28))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.8
+  * devDependencies
+    * @aigne/openai bumped to 0.16.16-beta.8
+
 ## [1.4.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/default-memory-v1.3.6-beta.6...default-memory-v1.4.0-beta.6) (2025-12-26)
 
 

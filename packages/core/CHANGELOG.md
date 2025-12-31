@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.72.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.7...core-v1.72.0-beta.8) (2025-12-31)
+
+
+### Features
+
+* add session compact support for AIAgent ([#863](https://github.com/AIGNE-io/aigne-framework/issues/863)) ([9010918](https://github.com/AIGNE-io/aigne-framework/commit/9010918cd3f18b02b5c60ddc9ed5c34b568d0b28))
+
+
+### Bug Fixes
+
+* **core:** ensure data consistency in async compact mode and load all history entries ([25c7840](https://github.com/AIGNE-io/aigne-framework/commit/25c78406b48f8789a19d59b6d2c82ff859f0113b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.5
+    * @aigne/afs-history bumped to 1.2.0-beta.5
+
 ## [1.72.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.6...core-v1.72.0-beta.7) (2025-12-26)
 
 

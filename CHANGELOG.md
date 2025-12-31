@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.91.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.11...aigne-framework-v1.91.0-beta.12) (2025-12-31)
+
+
+### Features
+
+* add session compact support for AIAgent ([#863](https://github.com/AIGNE-io/aigne-framework/issues/863)) ([9010918](https://github.com/AIGNE-io/aigne-framework/commit/9010918cd3f18b02b5c60ddc9ed5c34b568d0b28))
+
+
+### Bug Fixes
+
+* **core:** ensure data consistency in async compact mode and load all history entries ([25c7840](https://github.com/AIGNE-io/aigne-framework/commit/25c78406b48f8789a19d59b6d2c82ff859f0113b))
+
 ## [1.91.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.10...aigne-framework-v1.91.0-beta.11) (2025-12-26)
 
 

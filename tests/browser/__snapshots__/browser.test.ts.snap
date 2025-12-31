@@ -10,17 +10,12 @@ exports[`AIGNE HTTP Client should work with client memory in browser 1`] = `
             "text": "Hello, AIGNE!",
             "type": "text",
           },
-        ],
-        "role": "user",
-      },
-      {
-        "content": [
           {
             "text": "Hello, How can I help you?",
             "type": "text",
           },
         ],
-        "role": "agent",
+        "role": "system",
       },
       {
         "content": [

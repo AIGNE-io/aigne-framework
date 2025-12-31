@@ -21,6 +21,9 @@ import type { AgentEvent, Context, UserContext } from "../aigne/context.js";
 import type { MessagePayload, Unsubscribe } from "../aigne/message-queue.js";
 import type { ContextUsage } from "../aigne/usage.js";
 import { codeToFunctionAgentFn } from "../loader/function-agent.js";
+import type { Memory, MemoryAgent } from "../memory/memory.js";
+import type { MemoryRecorderInput } from "../memory/recorder.js";
+import type { MemoryRetrieverInput } from "../memory/retriever.js";
 import { sortHooks } from "../utils/agent-utils.js";
 import { getZodObjectKeys, isZodSchema } from "../utils/json-schema.js";
 import { logger } from "../utils/logger.js";
@@ -47,7 +50,12 @@ import {
 import type { ChatModel, ChatModelInputMessage } from "./chat-model.js";
 import type { GuideRailAgent, GuideRailAgentOutput } from "./guide-rail-agent.js";
 import type { ImageModel } from "./image-model.js";
-import { type GetterSchema, type TransferAgentOutput, transferToAgentOutput } from "./types.js";
+import {
+  type GetterSchema,
+  replaceTransferAgentToName,
+  type TransferAgentOutput,
+  transferToAgentOutput,
+} from "./types.js";
 
 export * from "./types.js";
 
@@ -183,7 +191,19 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    */
   disableEvents?: boolean;
 
+  /**
+   * One or more memory agents this agent can use
+   */
+  memory?: MemoryAgent | MemoryAgent[];
+
   afs?: true | AFSOptions | AFS | ((afs: AFS) => AFS);
+
+  asyncMemoryRecord?: boolean;
+
+  /**
+   * Maximum number of memory items to retrieve
+   */
+  maxRetrieveMemoryCount?: number;
 
   hooks?: AgentHooks<I, O> | AgentHooks<I, O>[];
 
@@ -213,6 +233,9 @@ export const agentOptionsSchema: ZodObject<{
   includeInputInOutput: z.boolean().optional(),
   skills: z.array(z.union([z.custom<Agent>(), z.custom<FunctionAgentFn>()])).optional(),
   disableEvents: z.boolean().optional(),
+  memory: z.union([z.custom<MemoryAgent>(), z.array(z.custom<MemoryAgent>())]).optional(),
+  asyncMemoryRecord: z.boolean().optional(),
+  maxRetrieveMemoryCount: z.number().optional(),
   hooks: z.union([z.array(hooksSchema), hooksSchema]).optional(),
   guideRails: z.array(z.custom<GuideRailAgent>()).optional(),
   retryOnError: z
@@ -285,6 +308,7 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
  * - Validate data formats using schemas
  * - Communicate between agents through contexts
  * - Support streaming or non-streaming responses
+ * - Maintain memory of past interactions
  * - Output in multiple formats (JSON/text)
  * - Forward tasks to other agents
  *
@@ -327,6 +351,11 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     if (options.skills?.length) this.skills.push(...options.skills.map(functionToAgent));
     this.disableEvents = options.disableEvents;
 
+    if (Array.isArray(options.memory)) {
+      this.memories.push(...options.memory);
+    } else if (options.memory) {
+      this.memories.push(options.memory);
+    }
     this.afs = !options.afs
       ? undefined
       : options.afs === true
@@ -336,6 +365,9 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
           : options.afs instanceof AFS
             ? options.afs
             : new AFS(options.afs);
+    this.asyncMemoryRecord = options.asyncMemoryRecord;
+
+    this.maxRetrieveMemoryCount = options.maxRetrieveMemoryCount;
 
     this.hooks = flat(options.hooks);
     this.retryOnError =
@@ -350,6 +382,20 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
   afs?: AFS;
 
   tag?: string;
+
+  /**
+   * List of memories this agent can use
+   *
+   * @deprecated use afs instead
+   */
+  readonly memories: MemoryAgent[] = [];
+
+  asyncMemoryRecord?: boolean;
+
+  /**
+   * Maximum number of memory items to retrieve
+   */
+  maxRetrieveMemoryCount?: number;
 
   /**
    * Lifecycle hooks for agent processing.
@@ -526,6 +572,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
   /**
    * Attach agent to context:
    * - Subscribe to topics and invoke process method when messages are received
+   * - Subscribe to memory topics if memory is enabled
    *
    * Agents can receive messages and respond through the topic subscription system,
    * enabling inter-agent communication.
@@ -533,6 +580,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
    * @param context Context to attach to
    */
   attach(context: Pick<Context, "subscribe">) {
+    for (const memory of this.memories) {
+      memory.attach(context);
+    }
+
     this.subscribeToTopics(context);
   }
 
@@ -588,6 +639,36 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
 
   private async newDefaultContext() {
     return import("../aigne/context.js").then((m) => new m.AIGNEContext());
+  }
+
+  async retrieveMemories(
+    input: Pick<MemoryRetrieverInput, "limit"> & { search?: Message | string },
+    options: Pick<AgentInvokeOptions, "context">,
+  ) {
+    const memories: Pick<Memory, "content">[] = [];
+
+    for (const memory of this.memories) {
+      const ms = (
+        await memory.retrieve(
+          {
+            ...input,
+            limit: input.limit ?? this.maxRetrieveMemoryCount,
+          },
+          options.context,
+        )
+      ).memories;
+      memories.push(...ms);
+    }
+
+    return memories;
+  }
+
+  async recordMemories(input: MemoryRecorderInput, options: Pick<AgentInvokeOptions, "context">) {
+    for (const memory of this.memories) {
+      if (memory.autoUpdate) {
+        await memory.record(input, options.context);
+      }
+    }
   }
 
   /**
@@ -1030,15 +1111,24 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
    *
    * Operations performed after the agent produces output, including:
    * - Checking context status
+   * - Adding interaction records to memory
    *
    * @param input Input message
    * @param output Output message
    * @param options Options for agent invocation
    */
-  protected async postprocess(_input: I, output: O, options: AgentInvokeOptions): Promise<void> {
+  protected async postprocess(input: I, output: O, options: AgentInvokeOptions): Promise<void> {
     this.checkContextStatus(options);
 
     this.publishToTopics(output, options);
+
+    const memory = this.recordMemories(
+      { content: [{ input, output: replaceTransferAgentToName(output), source: this.name }] },
+      options,
+    ).catch((error) => {
+      logger.error(`Agent ${this.name} failed to record memories:`, error);
+    });
+    if (!this.asyncMemoryRecord) await memory;
   }
 
   protected async publishToTopics(output: Message, options: AgentInvokeOptions) {
@@ -1098,7 +1188,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
   /**
    * Shut down the agent and clean up resources
    *
-   * Primarily used to clean up other resources to prevent memory leaks
+   * Primarily used to clean up memory and other resources to prevent memory leaks
    *
    * @example
    * Here's an example of shutting down an agent:
@@ -1113,6 +1203,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
       sub();
     }
     this.subscriptions = [];
+
+    for (const m of this.memories) {
+      m.shutdown();
+    }
   }
 
   /**

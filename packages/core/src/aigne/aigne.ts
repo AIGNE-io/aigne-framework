@@ -232,11 +232,10 @@ export class AIGNE<U extends UserContext = UserContext> {
    *
    * @returns A new AIGNEContext instance bound to this AIGNE.
    */
-  newContext(options?: Partial<Pick<Context, "userContext" | "memories">>) {
+  newContext(options?: Partial<Pick<Context, "userContext">>) {
     const context = new AIGNEContext(this);
 
     if (options?.userContext) context.userContext = options.userContext;
-    if (options?.memories) context.memories = options.memories;
 
     return context;
   }

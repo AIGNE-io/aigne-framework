@@ -66,7 +66,7 @@ export interface AIGNEHTTPServerOptions {
 }
 
 export interface AIGNEHTTPServerInvokeOptions<U extends UserContext = UserContext>
-  extends Pick<InvokeOptions<U>, "returnProgressChunks" | "userContext" | "hooks"> {}
+  extends Pick<InvokeOptions<U>, "returnProgressChunks" | "userContext" | "memories" | "hooks"> {}
 
 /**
  * AIGNEHTTPServer provides HTTP API access to AIGNE capabilities.
@@ -143,6 +143,7 @@ export class AIGNEHTTPServer {
 
     const result = await this._invoke(request, {
       userContext: opts?.userContext,
+      memories: opts?.memories,
       hooks: opts?.hooks,
     });
 
@@ -188,6 +189,7 @@ export class AIGNEHTTPServer {
       const mergedOptions: InvokeOptions = {
         returnProgressChunks: opts.returnProgressChunks,
         userContext: { ...opts.userContext, ...options.userContext },
+        memories: [...(opts.memories ?? []), ...(options.memories ?? [])],
         hooks: options.hooks,
       };
 

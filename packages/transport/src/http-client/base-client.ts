@@ -127,8 +127,9 @@ export class BaseClient {
           {
             ...options,
             userContext: { ...options.userContext },
+            memories: [...(options.memories ?? [])],
           },
-          ["returnProgressChunks", "userContext", "streaming"],
+          ["returnProgressChunks", "userContext", "memories", "streaming"],
         ),
     };
 

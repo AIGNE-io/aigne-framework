@@ -7,6 +7,7 @@ import type { ChatModel } from "../agents/chat-model.js";
 import type { ImageModel } from "../agents/image-model.js";
 import type { AIGNEOptions } from "../aigne/aigne.js";
 import type { AIGNECLIAgent } from "../aigne/type.js";
+import type { MemoryAgent, MemoryAgentOptions } from "../memory/memory.js";
 import { isAgent } from "../utils/agent-utils.js";
 import {
   flat,
@@ -29,6 +30,7 @@ import { camelizeSchema, chatModelSchema, imageModelSchema, optionalize } from "
 const AIGNE_FILE_NAME = ["aigne.yaml", "aigne.yml"];
 
 export interface LoadOptions {
+  memories?: { new (parameters?: MemoryAgentOptions): MemoryAgent }[];
   model?:
     | ChatModel
     | ((model?: z.infer<typeof aigneFileSchema>["model"]) => PromiseOrValue<ChatModel | undefined>);
@@ -206,6 +208,15 @@ export async function parseAgent(
 ): Promise<Agent> {
   if (isAgent(agent)) return agent;
 
+  const memory =
+    "memory" in agent && options?.memories?.length
+      ? await loadMemory(
+          options.memories,
+          typeof agent.memory === "object" ? agent.memory.provider : undefined,
+          typeof agent.memory === "object" ? agent.memory : {},
+        )
+      : undefined;
+
   let afs: AFS | undefined;
   if (agent.afs !== false && (!agent.afs || agent.afs === true) && options?.afs?.sharedAFS) {
     afs = options.afs.sharedAFS;
@@ -293,6 +304,7 @@ export async function parseAgent(
     ...agent,
     model,
     imageModel,
+    memory,
     hooks: [
       ...((await parseHooks(path, agent.hooks, options)) ?? []),
       ...[agentOptions?.hooks].flat().filter(isNonNullable),
@@ -325,6 +337,19 @@ export async function parseAgent(
     parsed: baseOptions,
     options: { ...options, loadNestAgent },
   });
+}
+
+async function loadMemory(
+  memories: NonNullable<LoadOptions["memories"]>,
+  provider?: string,
+  options?: MemoryAgentOptions,
+) {
+  const M = !provider
+    ? memories[0]
+    : memories.find((i) => i.name.toLowerCase().includes(provider.toLowerCase()));
+  if (!M) throw new Error(`Unsupported memory: ${provider}`);
+
+  return new M(options);
 }
 
 type CliAgent =

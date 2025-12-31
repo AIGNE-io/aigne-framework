@@ -74,6 +74,12 @@ export interface AgentSchema {
   includeInputInOutput?: boolean;
   skills?: NestAgentSchema[];
   hooks?: HooksSchema | HooksSchema[];
+  memory?:
+    | boolean
+    | {
+        provider: string;
+        subscribeTopic?: string[];
+      };
   afs?:
     | boolean
     | (Omit<AFSOptions, "modules" | "context"> & {
@@ -200,6 +206,17 @@ export const getAgentSchema = ({ filepath }: { filepath: string; options?: LoadO
       includeInputInOutput: optionalize(z.boolean()),
       hooks: optionalize(z.union([hooksSchema, z.array(hooksSchema)])),
       skills: optionalize(z.array(nestAgentSchema)),
+      memory: optionalize(
+        z.union([
+          z.boolean(),
+          camelizeSchema(
+            z.object({
+              provider: z.string(),
+              subscribeTopic: optionalize(z.array(z.string())),
+            }),
+          ),
+        ]),
+      ),
       afs: optionalize(
         z.union([
           z.boolean(),

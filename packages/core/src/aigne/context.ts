@@ -25,6 +25,7 @@ import {
   transferAgentOutputKey,
 } from "../agents/types.js";
 import { UserAgent } from "../agents/user-agent.js";
+import type { Memory } from "../memory/memory.js";
 import { AgentResponseProgressStream } from "../utils/event-stream.js";
 import { logger } from "../utils/logger.js";
 import { promiseWithResolvers } from "../utils/promise.js";
@@ -102,6 +103,8 @@ export interface InvokeOptions<U extends UserContext = UserContext>
   newContext?: boolean;
 
   userContext?: U;
+
+  memories?: Pick<Memory, "content">[];
 }
 
 /**
@@ -146,6 +149,8 @@ export interface Context<U extends UserContext = UserContext>
   userContext: U;
 
   hooks?: AgentHooks[];
+
+  memories: Pick<Memory, "content">[];
 
   /**
    * Create a user agent to consistently invoke an agent
@@ -319,6 +324,13 @@ export class AIGNEContext implements Context {
     this.internal.userContext = userContext;
   }
 
+  get memories() {
+    return this.internal.memories;
+  }
+  set memories(memories: Context["memories"]) {
+    this.internal.memories = memories;
+  }
+
   get hooks() {
     return this.internal.hooks;
   }
@@ -420,6 +432,10 @@ export class AIGNEContext implements Context {
       Object.assign(this.userContext, options.userContext);
       options.userContext = undefined;
     }
+    if (options?.memories?.length) {
+      this.memories.push(...options.memories);
+      options.memories = undefined;
+    }
     if (options?.hooks) {
       this.hooks.push(...flat(options.hooks));
       options.hooks = undefined;
@@ -496,6 +512,7 @@ export class AIGNEContext implements Context {
           await this.observer?.flush(span);
           await this.observer?.update(this.id, {
             input,
+            memories: this.memories,
             userContext: this.userContext,
           });
 
@@ -598,6 +615,8 @@ class AIGNEContextShared {
   contextIds: Set<string>;
 
   userContext: Context["userContext"] = {};
+
+  memories: Context["memories"] = [];
 
   hooks: AgentHooks[] = [];
 

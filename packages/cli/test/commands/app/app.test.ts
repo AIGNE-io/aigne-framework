@@ -134,7 +134,11 @@ test("app command should register doc-smith to yargs", async () => {
   });
 
   expect(runWithAIGNESpy.mock.lastCall).toMatchInlineSnapshot(
-    [expect.anything(), expect.objectContaining({ name: "generate" }), {}],
+    [
+      expect.anything(),
+      expect.objectContaining({ name: "generate" }),
+      { sessionId: expect.any(String) },
+    ],
     `
     [
       Anything,
@@ -156,7 +160,7 @@ test("app command should register doc-smith to yargs", async () => {
         "logLevel": "silent",
         "output-key": "message",
         "outputKey": "message",
-        "sessionId": "019b71e8-6dec-7129-ae2b-5897d0c269b5",
+        "sessionId": Any<String>,
         "title": "test title to generate",
         "topic": "test topic to generate",
       },

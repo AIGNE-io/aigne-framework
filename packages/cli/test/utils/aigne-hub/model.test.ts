@@ -300,6 +300,7 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should return undefined for grok models without API keys", () => {
+      process.env.XAI_API_KEY = undefined;
       const result = findConfiguredProvider("aignehub", "grok-1");
       expect(result).toBeUndefined();
     });
@@ -316,6 +317,7 @@ describe("findConfiguredProvider", () => {
     });
 
     test("should return undefined for doubao models without API key", () => {
+      process.env.DOUBAO_API_KEY = undefined;
       const result = findConfiguredProvider("aignehub", "doubao-pro");
       expect(result).toBeUndefined();
     });

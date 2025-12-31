@@ -74,6 +74,7 @@ export function createRunCommand({
 
       const path = aigneFilePath || options.path || ".";
       if (
+        !isUrl(path) &&
         !(await findAIGNEFile(path).catch((error) => {
           if (options._[0] !== "run") {
             yargsInstance?.showHelp();

@@ -214,15 +214,9 @@ export class AgentSession {
 
     for (let i = historyEntries.length - 1; i >= 0; i--) {
       const entry = historyEntries[i];
-      const messages = entry?.content?.messages ?? [];
+      if (!entry) continue;
 
-      // Estimate tokens for this entry
-      let entryTokens = 0;
-      for (const msg of messages) {
-        const content =
-          typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content ?? "");
-        entryTokens += estimateTokens(content);
-      }
+      const entryTokens = this.estimateMessagesTokens(entry.content?.messages ?? []);
 
       // Check if adding this entry would exceed token budget
       if (accumulatedTokens + entryTokens > keepTokenBudget) {
@@ -248,13 +242,18 @@ export class AgentSession {
     const latestCompactedEntry = entriesToCompact.at(-1);
     if (!latestCompactedEntry) return;
 
-    // Generate summary using the compactor agent
-    const result = await options.context.invoke(compactor, {
-      previousSummary: [this.runtimeState.compactSummary].filter(isNonNullable),
-      messages: entriesToCompact.flatMap((e) => e.content?.messages ?? []).filter(isNonNullable),
-    });
+    // Split into batches to avoid context overflow
+    const batches = this.splitIntoBatches(entriesToCompact, maxTokens);
 
-    const summary = result.summary;
+    // Process batches incrementally, each summary becomes input for the next
+    let currentSummary = this.runtimeState.compactSummary;
+    for (const batch of batches) {
+      const result = await options.context.invoke(compactor, {
+        previousSummary: [currentSummary].filter(isNonNullable),
+        messages: batch.flatMap((e) => e.content?.messages ?? []).filter(isNonNullable),
+      });
+      currentSummary = result.summary;
+    }
 
     // Write compact entry to AFS
     if (this.afs && this.historyModulePath) {
@@ -263,7 +262,7 @@ export class AgentSession {
         {
           userId: this.userId,
           agentId: this.agentId,
-          content: { summary },
+          content: { summary: currentSummary },
           metadata: {
             latestEntryId: latestCompactedEntry.id,
           },
@@ -272,7 +271,7 @@ export class AgentSession {
     }
 
     // Update runtime state: keep the summary and recent entries
-    this.runtimeState.compactSummary = summary;
+    this.runtimeState.compactSummary = currentSummary;
     this.runtimeState.historyEntries = entriesToKeep;
   }
 
@@ -290,7 +289,7 @@ export class AgentSession {
 
     if (!compactor) return;
 
-    const currentTokens = await this.estimateMessagesTokens();
+    const currentTokens = this.estimateMessagesTokens(await this.getMessages());
 
     if (currentTokens >= maxTokens) {
       this.compact(options);
@@ -301,15 +300,49 @@ export class AgentSession {
     }
   }
 
-  private async estimateMessagesTokens(): Promise<number> {
-    // Use getMessages to ensure consistency (already filters thinking)
-    const messages = await this.getMessages();
-
+  /**
+   * Estimate token count for an array of messages
+   */
+  private estimateMessagesTokens(messages: ChatModelInputMessage[]): number {
     return messages.reduce((sum, msg) => {
       const content =
         typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content ?? "");
       return sum + estimateTokens(content);
     }, 0);
+  }
+
+  /**
+   * Split entries into batches based on token limit
+   * Each batch will not exceed the specified maxTokens
+   */
+  private splitIntoBatches(
+    entries: AFSEntry<EntryContent>[],
+    maxTokens: number,
+  ): AFSEntry<EntryContent>[][] {
+    const batches: AFSEntry<EntryContent>[][] = [];
+    let currentBatch: AFSEntry<EntryContent>[] = [];
+    let currentTokens = 0;
+
+    for (const entry of entries) {
+      const entryTokens = this.estimateMessagesTokens(entry.content?.messages ?? []);
+
+      // If adding this entry exceeds limit and we have entries in current batch, start new batch
+      if (currentTokens + entryTokens > maxTokens && currentBatch.length > 0) {
+        batches.push(currentBatch);
+        currentBatch = [entry];
+        currentTokens = entryTokens;
+      } else {
+        currentBatch.push(entry);
+        currentTokens += entryTokens;
+      }
+    }
+
+    // Add remaining entries
+    if (currentBatch.length > 0) {
+      batches.push(currentBatch);
+    }
+
+    return batches;
   }
 
   async appendCurrentMessages(...messages: ChatModelInputMessage[]): Promise<void> {

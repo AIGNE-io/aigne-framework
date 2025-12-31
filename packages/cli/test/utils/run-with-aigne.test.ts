@@ -43,7 +43,9 @@ test("runWithAIGNE should run agent correctly", async () => {
         text: "hello, this is a test response message",
       });
 
-      const agent = AIAgent.from({});
+      const agent = AIAgent.from({
+        inputKey: "message",
+      });
 
       return agent;
     },

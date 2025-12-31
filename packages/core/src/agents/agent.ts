@@ -261,7 +261,7 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
    * - Inter-agent communication and message passing
    * - Resource usage tracking and limits enforcement
    * - Timeout and status management
-   * - State management across agent invocations
+   * - Memory and state management across agent invocations
    *
    * Each agent invocation requires a context to coordinate with the broader
    * agent system and maintain proper isolation and resource control.

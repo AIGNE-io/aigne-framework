@@ -3,10 +3,15 @@
 exports[`DefaultMemory should remember memories for AIAgent correctly 1`] = `
 [
   {
-    "content": 
+    "content": [
+      {
+        "text": 
 "You are a helpful assistant.
 Please answer in zh."
 ,
+        "type": "text",
+      },
+    ],
     "role": "system",
   },
   {
@@ -24,29 +29,24 @@ Please answer in zh."
 exports[`DefaultMemory should remember memories for AIAgent correctly 2`] = `
 [
   {
-    "content": 
+    "content": [
+      {
+        "text": 
 "You are a helpful assistant.
 Please answer in zh."
 ,
-    "role": "system",
-  },
-  {
-    "content": [
+        "type": "text",
+      },
       {
         "text": "I like blue color",
         "type": "text",
       },
-    ],
-    "role": "user",
-  },
-  {
-    "content": [
       {
         "text": "Great, the blue color is nice!",
         "type": "text",
       },
     ],
-    "role": "agent",
+    "role": "system",
   },
   {
     "content": [

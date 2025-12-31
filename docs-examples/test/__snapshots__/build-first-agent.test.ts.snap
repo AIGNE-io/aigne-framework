@@ -5,26 +5,21 @@ exports[`Build first agent: setup memory for client agent 1`] = `
   {
     "messages": [
       {
-        "content": "You are a helpful assistant",
-        "role": "system",
-      },
-      {
         "content": [
+          {
+            "text": "You are a helpful assistant",
+            "type": "text",
+          },
           {
             "text": "What is the crypto price of ABT/USD on coinbase?",
             "type": "text",
           },
-        ],
-        "role": "user",
-      },
-      {
-        "content": [
           {
             "text": "The current price of ABT/USD on Coinbase is $0.9684.",
             "type": "text",
           },
         ],
-        "role": "agent",
+        "role": "system",
       },
       {
         "content": [

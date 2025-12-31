@@ -101,6 +101,8 @@ test("app command should register doc-smith to yargs", async () => {
 
     Options:
           --chat        Run chat loop in terminal         [boolean] [default: false]
+          --session-id  Session ID for chat-based agents to maintain context across
+                        interactions                                        [string]
       -i, --input       Input to the agent, use @<file> to read from a file  [array]
           --input-file  Input files to the agent                             [array]
           --format      Input format for the agent (available: text, json, yaml
@@ -154,6 +156,7 @@ test("app command should register doc-smith to yargs", async () => {
         "logLevel": "silent",
         "output-key": "message",
         "outputKey": "message",
+        "sessionId": "019b71e8-6dec-7129-ae2b-5897d0c269b5",
         "title": "test title to generate",
         "topic": "test topic to generate",
       },

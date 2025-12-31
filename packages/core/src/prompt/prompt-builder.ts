@@ -1,10 +1,11 @@
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { v7 } from "@aigne/uuid";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
+import { stringify } from "yaml";
 import { ZodObject, type ZodType } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { Agent, type Message } from "../agents/agent.js";
-import type { AIAgent } from "../agents/ai-agent.js";
+import { type AIAgent, DEFAULT_OUTPUT_FILE_KEY, DEFAULT_OUTPUT_KEY } from "../agents/ai-agent.js";
 import type {
   ChatModel,
   ChatModelInput,
@@ -21,14 +22,16 @@ import { type FileUnionContent, fileUnionContentsSchema } from "../agents/model.
 import type { Context } from "../aigne/context.js";
 import { optionalize } from "../loader/schema.js";
 import { outputSchemaToResponseFormatSchema } from "../utils/json-schema.js";
-import { checkArguments, flat, partition, unique } from "../utils/type-utils.js";
+import { checkArguments, flat, isRecord, partition, unique } from "../utils/type-utils.js";
 import { AgentSession } from "./agent-session.js";
 import { createPromptBuilderContext } from "./context/index.js";
+import { MEMORY_MESSAGE_TEMPLATE } from "./prompts/memory-message-template.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "./prompts/structured-stream-instructions.js";
 import { getAFSSkills } from "./skills/afs/index.js";
 import {
   AgentMessageTemplate,
   ChatMessagesTemplate,
+  PromptTemplate,
   SystemMessageTemplate,
   UserMessageTemplate,
 } from "./template.js";
@@ -212,6 +215,11 @@ export class PromptBuilder {
         : null,
     );
 
+    if (options.agent?.memories.length || options.context?.memories.length) {
+      const deprecatedMemories = await this.deprecatedMemories(message, options);
+      if (deprecatedMemories.length) systemMessages.push(...deprecatedMemories);
+    }
+
     // if the agent is using structured stream mode, add the instructions
     const { structuredStreamMode, outputSchema } = options.agent || {};
     if (structuredStreamMode && outputSchema) {
@@ -289,6 +297,136 @@ export class PromptBuilder {
     return { role, content };
   }
 
+  protected async deprecatedMemories(message: string | undefined, options: PromptBuildOptions) {
+    const messages: ChatModelInputMessage[] = [];
+
+    const memories: { content: unknown; description?: unknown }[] = [];
+
+    if (options.agent && options.context) {
+      memories.push(
+        ...(await options.agent.retrieveMemories(
+          { search: message },
+          { context: options.context },
+        )),
+      );
+    }
+
+    if (options.agent?.useMemoriesFromContext && options.context?.memories?.length) {
+      memories.push(...options.context.memories);
+    }
+
+    if (memories.length)
+      messages.push(...(await this.convertMemoriesToMessages(memories, options)));
+
+    return messages;
+  }
+
+  private async convertMemoriesToMessages(
+    memories: { content: unknown; description?: unknown }[],
+    options: PromptBuildOptions,
+  ): Promise<ChatModelInputMessage[]> {
+    const messages: ChatModelInputMessage[] = [];
+    const other: unknown[] = [];
+
+    const inputKey = options.agent?.inputKey;
+    const inputFileKey = options.agent?.inputFileKey;
+
+    const outputKey = options.agent?.outputKey || DEFAULT_OUTPUT_KEY;
+    const outputFileKey = options.agent?.outputFileKey || DEFAULT_OUTPUT_FILE_KEY;
+
+    const stringOrStringify = (value: unknown) =>
+      typeof value === "string" ? value : stringify(value);
+
+    const convertMemoryToMessage = async (content: {
+      input?: unknown;
+      output?: unknown;
+    }): Promise<ChatModelInputMessage[]> => {
+      const { input, output } = content;
+      if (!input || !output) return [];
+
+      const result: ChatModelInputMessage[] = [];
+
+      const userMessageContent: ChatModelInputMessageContent = [];
+      if (typeof input === "object") {
+        const inputMessage: unknown = inputKey ? Reflect.get(input, inputKey) : undefined;
+        const inputFiles: unknown = inputFileKey ? Reflect.get(input, inputFileKey) : undefined;
+
+        if (inputMessage) {
+          userMessageContent.push({ type: "text", text: stringOrStringify(inputMessage) });
+        }
+        if (inputFiles) {
+          userMessageContent.push(
+            ...flat(
+              checkArguments(
+                "Check memory input files",
+                optionalize(fileUnionContentsSchema),
+                inputFiles,
+              ),
+            ),
+          );
+        }
+      }
+      if (!userMessageContent.length) {
+        userMessageContent.push({ type: "text", text: stringOrStringify(input) });
+      }
+      result.push({ role: "user", content: userMessageContent });
+
+      const agentMessageContent: ChatModelInputMessageContent = [];
+      if (typeof output === "object") {
+        const outputMessage: unknown = Reflect.get(output, outputKey);
+        const outputFiles: unknown = Reflect.get(output, outputFileKey);
+        if (outputMessage) {
+          agentMessageContent.push({ type: "text", text: stringOrStringify(outputMessage) });
+        }
+        if (outputFiles) {
+          agentMessageContent.push(
+            ...flat(
+              checkArguments(
+                "Check memory output files",
+                optionalize(fileUnionContentsSchema),
+                outputFiles,
+              ),
+            ),
+          );
+        }
+      }
+      if (!agentMessageContent.length) {
+        agentMessageContent.push({ type: "text", text: stringOrStringify(output) });
+      }
+
+      result.push({ role: "agent", content: agentMessageContent });
+
+      return result;
+    };
+
+    for (const memory of memories) {
+      const { content } = memory;
+
+      if (
+        isRecord(content) &&
+        "input" in content &&
+        content.input &&
+        "output" in content &&
+        content.output
+      ) {
+        messages.push(...(await convertMemoryToMessage(content)));
+      } else {
+        other.push(memory);
+      }
+    }
+
+    if (other.length) {
+      messages.unshift({
+        role: "system",
+        content: await PromptTemplate.from(
+          options.agent?.memoryPromptTemplate || MEMORY_MESSAGE_TEMPLATE,
+        ).format({ memories: stringify(other) }),
+      });
+    }
+
+    return messages;
+  }
+
   private buildResponseFormat(
     options: PromptBuildOptions,
   ): ChatModelInputResponseFormat | undefined {
@@ -316,6 +454,7 @@ export class PromptBuilder {
     const toolAgents = unique(
       (options.context?.skills ?? [])
         .concat(options.agent?.skills ?? [])
+        .concat(options.agent?.memoryAgentsAsTools ? options.agent.memories : [])
         .flatMap((i) => (i.isInvokable ? i : i.skills)),
       (i) => i.name,
     );

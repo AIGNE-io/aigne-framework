@@ -152,6 +152,29 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
     parse: (raw: string) => object;
   };
 
+  /**
+   * Whether to include memory agents as tools for the AI model
+   *
+   * When set to true, memory agents will be made available as tools
+   * that the model can call directly to retrieve or store information.
+   * This enables the agent to explicitly interact with its memories.
+   *
+   * @default false
+   */
+  memoryAgentsAsTools?: boolean;
+
+  /**
+   * Custom prompt template for formatting memory content
+   *
+   * Allows customization of how memories are presented to the AI model.
+   * If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used.
+   *
+   * The template receives a {{memories}} variable containing serialized memory content.
+   */
+  memoryPromptTemplate?: string;
+
+  useMemoriesFromContext?: boolean;
+
   compact?: CompactConfig;
 }
 
@@ -225,6 +248,8 @@ export const aiAgentOptionsSchema: ZodObject<{
   toolChoice: aiAgentToolChoiceSchema.optional(),
   toolCallsConcurrency: z.number().int().min(0).optional(),
   keepTextInToolUses: z.boolean().optional(),
+  memoryAgentsAsTools: z.boolean().optional(),
+  memoryPromptTemplate: z.string().optional(),
 }) as ZodObject<{
   [key in keyof AIAgentOptions]: ZodType<AIAgentOptions[key]>;
 }>;
@@ -290,7 +315,6 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
   }): Promise<Agent<I, O>> {
     const schema = AIAgent.schema<AIAgentLoadSchema>(options);
     const valid = await schema.parseAsync(options.parsed);
-
     return new AIAgent<I, O>({
       ...options.parsed,
       ...valid,
@@ -345,6 +369,9 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     this.toolChoice = options.toolChoice;
     this.toolCallsConcurrency = options.toolCallsConcurrency || 1;
     this.keepTextInToolUses = options.keepTextInToolUses;
+    this.memoryAgentsAsTools = options.memoryAgentsAsTools;
+    this.memoryPromptTemplate = options.memoryPromptTemplate;
+    this.useMemoriesFromContext = options.useMemoriesFromContext;
     this.compact = options.compact;
 
     if (typeof options.catchToolsError === "boolean")
@@ -420,6 +447,27 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
    * Whether to preserve text generated during tool usage in the final output
    */
   keepTextInToolUses?: boolean;
+
+  /**
+   * Whether to include memory agents as tools for the AI model
+   *
+   * When set to true, memory agents will be made available as tools
+   * that the model can call directly to retrieve or store information.
+   * This enables the agent to explicitly interact with its memories.
+   */
+  memoryAgentsAsTools?: boolean;
+
+  /**
+   * Custom prompt template for formatting memory content
+   *
+   * Allows customization of how memories are presented to the AI model.
+   * If not provided, the default template from MEMORY_MESSAGE_TEMPLATE will be used.
+   *
+   * The template receives a {{memories}} variable containing serialized memory content.
+   */
+  memoryPromptTemplate?: string;
+
+  useMemoriesFromContext?: boolean;
 
   /**
    * Whether to catch error from tool execution and continue processing.

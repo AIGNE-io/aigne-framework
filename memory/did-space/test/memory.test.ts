@@ -30,6 +30,7 @@ test("DIDSpacesMemory simple example", async () => {
   });
 
   const agent = AIAgent.from({
+    inputKey: "message",
     memory,
   });
 

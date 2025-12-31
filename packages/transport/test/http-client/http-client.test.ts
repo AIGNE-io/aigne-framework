@@ -452,10 +452,6 @@ async function createAIGNE() {
     name: "chat",
     inputKey: "message",
     useMemoriesFromContext: true,
-    historyConfig: {
-      enabled: true,
-      useOldMemory: true,
-    },
   });
 
   return new AIGNE({ model, agents: [chat] });

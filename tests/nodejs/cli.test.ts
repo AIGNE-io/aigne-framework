@@ -21,7 +21,7 @@ test("runAgentWithAIGNE should work in Node.js", async () => {
   });
 
   const result = await runAgentWithAIGNE(aigne, agent, {
-    chat: false,
+    interactive: false,
     input: { message: "Hello, What is your name?" },
   });
 

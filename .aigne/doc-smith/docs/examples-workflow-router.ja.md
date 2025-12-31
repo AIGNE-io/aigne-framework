@@ -69,10 +69,10 @@ Specialized-Agents.other -> User: "応答"
     ```
 
 2.  **インタラクティブチャットモード**
-    `--chat`フラグを使用すると、複数のメッセージを送信できるインタラクティブセッションが開始されます。
+    `--interactive`フラグを使用すると、複数のメッセージを送信できるインタラクティブセッションが開始されます。
 
     ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-router --chat
+    npx -y @aigne/example-workflow-router --interactive
     ```
 
 3.  **パイプラインモード**
@@ -217,7 +217,7 @@ console.log(result3);
 
 | パラメータ | 説明 | デフォルト |
 |---|---|---|
-| `--chat` | ワンショットではなく、インタラクティブなチャットモードで実行します。 | 無効 |
+| `--interactive` | ワンショットではなく、インタラクティブなチャットモードで実行します。 | 無効 |
 | `--model <provider[:model]>` | 使用するAIモデルを指定します（例：`openai`または`openai:gpt-4o-mini`）。 | `openai` |
 | `--temperature <value>` | モデル生成のtemperatureを設定します。 | プロバイダーのデフォルト |
 | `--top-p <value>` | top-pサンプリング値を設定します。 | プロバイダーのデフォルト |
@@ -229,7 +229,7 @@ console.log(result3);
 #### 例
 
 ```bash インタラクティブモードで実行 icon=lucide:terminal
-npx -y @aigne/example-workflow-router --chat
+npx -y @aigne/example-workflow-router --interactive
 ```
 
 ```bash 特定のモデルとtemperatureを設定 icon=lucide:terminal

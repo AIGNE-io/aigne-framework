@@ -57,7 +57,7 @@ npx -y @aigne/example-workflow-sequential
 
 To run in an interactive chat mode:
 ```bash icon=lucide:terminal
-npx -y @aigne/example-workflow-sequential --chat
+npx -y @aigne/example-workflow-sequential --interactive
 ```
 
 You can also pipe input directly into the command:
@@ -132,7 +132,7 @@ pnpm start
 
 Run in interactive chat mode (note the `--` before the argument):
 ```bash icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 Use pipeline input:
@@ -146,7 +146,7 @@ The example supports several command-line arguments for customization:
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--chat` | Run in interactive chat mode. | Disabled |
+| `--interactive` | Run in interactive chat mode. | Disabled |
 | `--model <provider[:model]>` | Specify the AI model to use (e.g., `openai` or `openai:gpt-4o-mini`). | `openai` |
 | `--temperature <value>` | Set the temperature for model generation. | Provider default |
 | `--top-p <value>` | Set the top-p sampling value. | Provider default |

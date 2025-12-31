@@ -50,7 +50,7 @@ documentationDepth: comprehensive
 # Custom Rules: Define specific documentation generation rules and requirements
 rules: |
   - 运行内置应用示例，运行 DocSmith: `aigne doc generate`
-  - 以聊天模式运行 agent 需要使用 --chat 参数: `aigne run --chat`
+  - 以聊天模式运行 agent 需要使用 --interactive 参数: `aigne run --interactive`
   - 不允许在文档中使用  raw.githubusercontent.com 域名下的图片
   
 

@@ -38,7 +38,7 @@ export BLOCKLET_APP_URL="https://xxx.xxxx.xxx"
 *   **互動式聊天模式**：啟動一個連續的聊天會話。
 
     ```bash icon=lucide:terminal
-    npx -y @aigne/example-mcp-blocklet --chat
+    npx -y @aigne/example-mcp-blocklet --interactive
     ```
 
 *   **管線輸入**：使用管道輸入作為提示。
@@ -134,7 +134,7 @@ pnpm start https://your-blocklet-app-url
 
 | 參數 | 說明 | 預設值 |
 | :--- | :--- | :--- |
-| `--chat` | 啟用互動式聊天模式。 | 停用 |
+| `--interactive` | 啟用互動式聊天模式。 | 停用 |
 | `--model <provider[:model]>` | 指定要使用的 AI 模型。格式為 `provider[:model]`。範例：`openai` 或 `openai:gpt-4o-mini`。 | `openai` |
 | `--temperature <value>` | 設定模型生成的溫度。 | 供應商預設值 |
 | `--top-p <value>` | 設定 top-p 取樣值。 | 供應商預設值 |
@@ -148,7 +148,7 @@ pnpm start https://your-blocklet-app-url
 **範例：**
 
 ```bash 在互動式聊天模式下執行 icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash 將日誌記錄等級設定為 DEBUG icon=lucide:terminal

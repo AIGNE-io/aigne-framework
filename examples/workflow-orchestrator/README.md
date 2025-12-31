@@ -102,7 +102,7 @@ cd /path/to/your/project
 npx -y @aigne/example-workflow-orchestrator
 
 # Run with chat mode for interactive instructions
-npx -y @aigne/example-workflow-orchestrator --chat
+npx -y @aigne/example-workflow-orchestrator --interactive
 
 # Run with custom message
 npx -y @aigne/example-workflow-orchestrator --message "Analyze the project dependencies and security issues"
@@ -165,7 +165,7 @@ npx -y @aigne/example-workflow-orchestrator --message "Analyze this repository a
 
 ### Connect to an AI Model
 
-As an example, running `npx -y @aigne/example-workflow-orchestrator --chat` requires an AI model. If this is your first run, you need to connect one.
+As an example, running `npx -y @aigne/example-workflow-orchestrator --interactive` requires an AI model. If this is your first run, you need to connect one.
 
 ![run example](./run-example.png)
 

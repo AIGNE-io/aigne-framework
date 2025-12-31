@@ -96,7 +96,7 @@ aigne run ./greeter.js --input '{"name": "AIGNE Developer"}'
 スキルの真価は、メインの AI Agent が動的にそれらを使用することを決定できるときに発揮されます。これを実際に確認するには、プロジェクトを対話型のチャットモードで実行します:
 
 ```bash icon=mdi:console
-aigne run --chat
+aigne run --interactive
 ```
 
 チャットセッションが開始されたら、AI に新しいツールを使用するように依頼します。例:

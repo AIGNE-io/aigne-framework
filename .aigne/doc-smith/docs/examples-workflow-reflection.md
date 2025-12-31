@@ -47,9 +47,9 @@ To run in the default one-shot mode, which processes a single request and exits:
 npx -y @aigne/example-workflow-reflection
 ```
 
-To engage in an interactive session, use the `--chat` flag:
+To engage in an interactive session, use the `--interactive` flag:
 ```bash npx command icon=lucide:terminal
-npx -y @aigne/example-workflow-reflection --chat
+npx -y @aigne/example-workflow-reflection --interactive
 ```
 
 You can also pipe input directly into the command:
@@ -144,10 +144,10 @@ Execute the script using the `pnpm start` command.
 pnpm start
 ```
 
-To run in interactive chat mode, append the `--chat` flag. The extra `--` is required to pass the flag to the script rather than to `pnpm` itself.
+To run in interactive chat mode, append the `--interactive` flag. The extra `--` is required to pass the flag to the script rather than to `pnpm` itself.
 
 ```bash Run in interactive mode icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 To provide input via a pipeline:

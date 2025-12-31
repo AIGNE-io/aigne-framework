@@ -11,7 +11,7 @@ descriptions:
   7259ac6078e7393b41080a0b0e47f2c9c45847404c534a8bdc822f96e2d5d346:
     path: ../assets/run/run-default-template-project-in-chat-mode.png
     description: This screenshot depicts a terminal output showcasing the successful
-      initialization of the AIGNE agent via the `aigne run --chat` command. It
+      initialization of the AIGNE agent via the `aigne run --interactive` command. It
       highlights the agent's version (v1.38.0), its configuration with an OpenAI
       `gpt-4o-mini` model, and a detailed list of its capabilities, such as
       answering questions, code evaluation, and file management. This image

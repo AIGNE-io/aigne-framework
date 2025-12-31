@@ -85,7 +85,7 @@ npx -y @aigne/example-workflow-orchestrator
 
 ```bash 対話型チャットモードで実行 icon=lucide:terminal
 # 対話型チャットモードで実行
-npx -y @aigne/example-workflow-orchestrator --chat
+npx -y @aigne/example-workflow-orchestrator --interactive
 ```
 
 ```bash パイプライン入力を使用 icon=lucide:terminal
@@ -163,7 +163,7 @@ pnpm start
 
 ```bash 対話型チャットモードで実行 icon=lucide:terminal
 # 対話型チャットモードで実行
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash パイプライン入力を使用 icon=lucide:terminal
@@ -177,7 +177,7 @@ echo "Research ArcBlock and compile a report about their products and architectu
 
 | パラメータ | 説明 | デフォルト |
 | --- | --- | --- |
-| `--chat` | 対話型チャットモードで実行します。 | 無効 |
+| `--interactive` | 対話型チャットモードで実行します。 | 無効 |
 | `--model <provider[:model]>` | 使用する AI モデルを指定します (例: `openai` または `openai:gpt-4o-mini`)。 | `openai` |
 | `--temperature <value>` | モデル生成の temperature を設定します。 | プロバイダーのデフォルト |
 | `--top-p <value>` | top-p サンプリングの値を設定します。 | プロバイダーのデフォルト |
@@ -190,7 +190,7 @@ echo "Research ArcBlock and compile a report about their products and architectu
 
 ```bash 対話型チャットモードで実行 icon=lucide:terminal
 # チャットモードで実行
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash 異なるログレベルを設定 icon=lucide:terminal

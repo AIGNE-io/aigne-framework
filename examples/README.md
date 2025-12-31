@@ -43,8 +43,8 @@ export OPENAI_API_KEY=YOUR_OPENAI_API_KEY # Set your OpenAI API key
 # Run in one-shot mode
 npx -y @aigne/example-chat-bot
 
-# Or add `--chat` parameter to enter interactive chat mode
-npx -y @aigne/example-chat-bot --chat
+# Or add `--interactive` parameter to enter interactive chat mode
+npx -y @aigne/example-chat-bot --interactive
 ```
 
 ### Using Different Large Language Models
@@ -141,5 +141,5 @@ export LM_STUDIO_API_KEY=lmstudio # Set your LMStudio API key
 By setting the `DEBUG` environment variable, you can output debug logs to help you understand the model's call and response details.
 
 ```bash
-DEBUG=* npx -y @aigne/example-chat-bot --chat
+DEBUG=* npx -y @aigne/example-chat-bot --interactive
 ```

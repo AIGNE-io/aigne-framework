@@ -151,7 +151,7 @@ pnpm start
 このサンプルは対話型のチャットモードもサポートしており、他のコマンドからのパイプ入力を受け付けることもできます。
 
 ```bash 対話型チャットモードで実行する icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash パイプライン入力を使用する icon=lucide:terminal
@@ -164,7 +164,7 @@ echo "Search for repositories related to 'modelcontextprotocol'" | pnpm start
 
 | パラメータ | 説明 | デフォルト |
 | --- | --- | --- |
-| `--chat` | 対話型チャットモードで実行します。 | 無効 |
+| `--interactive` | 対話型チャットモードで実行します。 | 無効 |
 | `--model <provider[:model]>` | 使用する AI モデルを指定します (例: `openai` または `openai:gpt-4o-mini`)。 | `openai` |
 | `--temperature <value>` | モデル生成の temperature を設定します。 | プロバイダーのデフォルト |
 | `--top-p <value>` | top-p サンプリングの値を設定します。 | プロバイダーのデフォルト |

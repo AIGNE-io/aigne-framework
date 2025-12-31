@@ -30,9 +30,9 @@
 npx -y @aigne/example-chat-bot
 ```
 
-使用 `--chat` 旗標在互動式聊天模式下執行：
+使用 `--interactive` 旗標在互動式聊天模式下執行：
 ```bash npx command icon=lucide:terminal
-npx -y @aigne/example-chat-bot --chat
+npx -y @aigne/example-chat-bot --interactive
 ```
 
 使用管道輸入直接提供提示：
@@ -150,7 +150,7 @@ pnpm start
 
 在互動式聊天模式下執行：
 ```bash pnpm command icon=lucide:terminal
-pnpm start --chat
+pnpm start --interactive
 ```
 
 使用管道輸入：
@@ -164,7 +164,7 @@ echo "Tell me about AIGNE Framework" | pnpm start
 
 | 參數 | 說明 | 預設值 |
 |---|---|---|
-| `--chat` | 以互動式聊天模式執行。若省略，則以單次模式執行。 | `Disabled` |
+| `--interactive` | 以互動式聊天模式執行。若省略，則以單次模式執行。 | `Disabled` |
 | `--model <provider[:model]>` | 指定要使用的 AI 模型。格式為 `provider[:model]`。範例：`openai` 或 `openai:gpt-4o-mini`。 | `openai` |
 | `--temperature <value>` | 設定模型生成的溫度，控制隨機性。 | 提供商預設值 |
 | `--top-p <value>` | 設定模型生成的 top-p（核心取樣）值。 | 提供商預設值 |

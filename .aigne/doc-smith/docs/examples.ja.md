@@ -30,10 +30,10 @@ AIGNEフレームワークのさまざまな機能とワークフローパター
     ```
 
 3.  **インタラクティブモードで実行する:**
-    `--chat` フラグを使用すると、Agentと会話できるインタラクティブセッションが開始されます。
+    `--interactive` フラグを使用すると、Agentと会話できるインタラクティブセッションが開始されます。
 
     ```sh icon=lucide:terminal
-    npx -y @aigne/example-chat-bot --chat
+    npx -y @aigne/example-chat-bot --interactive
     ```
 
 ### 異なるLLMの使用
@@ -131,7 +131,7 @@ Agentの実行に関する洞察を得るために、デバッグログを有効
 `DEBUG` 環境変数を `*` に設定すると、モデルの呼び出しや応答を含む詳細なログが出力されます。
 
 ```sh icon=lucide:terminal
-DEBUG=* npx -y @aigne/example-chat-bot --chat
+DEBUG=* npx -y @aigne/example-chat-bot --interactive
 ```
 
 ### 観測サーバーの使用

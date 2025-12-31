@@ -38,7 +38,7 @@ You can execute the example in several modes:
 *   **Interactive Chat Mode**: Starts a continuous chat session.
 
     ```bash icon=lucide:terminal
-    npx -y @aigne/example-mcp-blocklet --chat
+    npx -y @aigne/example-mcp-blocklet --interactive
     ```
 
 *   **Pipeline Input**: Uses piped input as the prompt.
@@ -134,7 +134,7 @@ The application supports several command-line parameters for customization.
 
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
-| `--chat` | Enables interactive chat mode. | Disabled |
+| `--interactive` | Enables interactive chat mode. | Disabled |
 | `--model <provider[:model]>` | Specifies the AI model to use. Format is `provider[:model]`. Examples: `openai` or `openai:gpt-4o-mini`. | `openai` |
 | `--temperature <value>` | Sets the temperature for model generation. | Provider default |
 | `--top-p <value>` | Sets the top-p sampling value. | Provider default |
@@ -148,7 +148,7 @@ When running from source using `pnpm`, you must use `--` to pass arguments to th
 **Examples:**
 
 ```bash Run in interactive chat mode icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash Set the logging level to DEBUG icon=lucide:terminal

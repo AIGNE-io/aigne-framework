@@ -21,10 +21,10 @@
 npx -y @aigne/example-nano-banana --input 'Draw an image of a lovely cat'
 ```
 
-若要啟動一個互動式會話，讓您可以與聊天機器人進行對話，請使用 `--chat` 旗標。
+若要啟動一個互動式會話，讓您可以與聊天機器人進行對話，請使用 `--interactive` 旗標。
 
 ```bash 以互動模式執行 icon=lucide:terminal
-npx -y @aigne/example-nano-banana --chat
+npx -y @aigne/example-nano-banana --interactive
 ```
 
 ### 連接到 AI 模型

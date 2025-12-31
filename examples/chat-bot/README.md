@@ -24,7 +24,7 @@ This example demonstrates how to create and run an agent-based chatbot using the
 npx -y @aigne/example-chat-bot
 
 # Run in interactive chat mode
-npx -y @aigne/example-chat-bot --chat
+npx -y @aigne/example-chat-bot --interactive
 
 # Use pipeline input
 echo "Tell me about AIGNE Framework" | npx -y @aigne/example-chat-bot
@@ -32,7 +32,7 @@ echo "Tell me about AIGNE Framework" | npx -y @aigne/example-chat-bot
 
 ### Connect to an AI Model
 
-As an example, running `npx -y @aigne/example-chat-bot --chat` requires an AI model. If this is your first run, you need to connect one.
+As an example, running `npx -y @aigne/example-chat-bot --interactive` requires an AI model. If this is your first run, you need to connect one.
 
 ![run example](./run-example.png)
 
@@ -93,7 +93,7 @@ cd aigne-framework/examples/chat-bot
 pnpm start # Run in one-shot mode (default)
 
 # Run in interactive chat mode
-pnpm start --chat
+pnpm start --interactive
 
 # Use pipeline input
 echo "Tell me about AIGNE Framework" | pnpm start
@@ -105,7 +105,7 @@ The example supports the following command-line parameters:
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
+| `--interactive` | Run in interactive chat mode | Disabled (one-shot mode) |
 | `--model <provider[:model]>` | AI model to use in format 'provider\[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
 | `--temperature <value>` | Temperature for model generation | Provider default |
 | `--top-p <value>` | Top-p sampling value | Provider default |

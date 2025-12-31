@@ -79,10 +79,10 @@ echo 'Calculate 15!' | npx -y @aigne/example-workflow-code-execution
 
 #### インタラクティブチャットモード
 
-`--chat` フラグを使用して永続的なセッションを開始し、Agent と会話することができます。
+`--interactive` フラグを使用して永続的なセッションを開始し、Agent と会話することができます。
 
 ```bash icon=lucide:terminal
-npx -y @aigne/example-workflow-code-execution --chat
+npx -y @aigne/example-workflow-code-execution --interactive
 ```
 
 ### AI モデルに接続する
@@ -166,7 +166,7 @@ pnpm install
 pnpm start
 
 # インタラクティブチャットモードで実行
-pnpm start -- --chat
+pnpm start -- --interactive
 
 # パイプライン入力を使用
 echo "Calculate 15!" | pnpm start
@@ -178,7 +178,7 @@ echo "Calculate 15!" | pnpm start
 
 | パラメータ | 説明 | デフォルト |
 | --------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------- |
-| `--chat` | インタラクティブチャットモードで実行します。 | 無効 |
+| `--interactive` | インタラクティブチャットモードで実行します。 | 無効 |
 | `--model <provider[:model]>` | 使用する AI モデルを指定します。例: `openai` または `openai:gpt-4o-mini`。 | `openai` |
 | `--temperature <value>` | モデル生成の temperature を設定します。 | プロバイダーのデフォルト |
 | `--top-p <value>` | top-p サンプリング値を設定します。 | プロバイダーのデフォルト |
@@ -192,7 +192,7 @@ echo "Calculate 15!" | pnpm start
 このコマンドは、`DEBUG` ログレベルでインタラクティブモードでワークフローを実行します。
 
 ```bash icon=lucide:terminal
-pnpm start -- --chat --log-level DEBUG
+pnpm start -- --interactive --log-level DEBUG
 ```
 
 ## コードの実装

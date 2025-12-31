@@ -70,6 +70,6 @@ export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
 # Run in one-shot mode
 npx -y @aigne/example-chat-bot
 
-# Or add `--chat` parameter to enter interactive chat mode
-npx -y @aigne/example-chat-bot --chat
+# Or add `--interactive` parameter to enter interactive chat mode
+npx -y @aigne/example-chat-bot --interactive
 ```

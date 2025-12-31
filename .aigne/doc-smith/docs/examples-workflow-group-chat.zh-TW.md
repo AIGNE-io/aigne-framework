@@ -75,7 +75,7 @@ npx -y @aigne/example-workflow-group-chat
 
 若要啟動互動式聊天會話：
 ```bash 在互動模式下執行 icon=lucide:terminal
-npx -y @aigne/example-workflow-group-chat --chat
+npx -y @aigne/example-workflow-group-chat --interactive
 ```
 
 您也可以透過管線直接提供輸入：
@@ -156,7 +156,7 @@ pnpm start
 
 若要在互動式聊天模式下執行：
 ```bash 在互動模式下執行 icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 若要使用管線輸入：
@@ -170,7 +170,7 @@ echo "Write a short story about space exploration" | pnpm start
 
 | 參數 | 說明 | 預設值 |
 |-----------|-------------|---------|
-| `--chat` | 以互動式聊天模式執行 | 禁用（單次執行模式） |
+| `--interactive` | 以互動式聊天模式執行 | 禁用（單次執行模式） |
 | `--model <provider[:model]>` | 要使用的 AI 模型，格式為 'provider\[:model]'，其中 model 是可選的。範例：'openai' 或 'openai:gpt-4o-mini' | openai |
 | `--temperature <value>` | 模型生成的溫度值 | 提供者預設值 |
 | `--top-p <value>` | Top-p 取樣值 | 提供者預設值 |

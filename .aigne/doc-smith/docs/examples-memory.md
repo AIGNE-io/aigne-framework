@@ -15,7 +15,7 @@ You can run this example directly using `npx`. This command will download the ne
 To start the chatbot in interactive mode, execute the following command in your terminal:
 
 ```sh
-npx -y @aigne/example-memory --chat
+npx -y @aigne/example-memory --interactive
 ```
 
 If you have not configured your LLM API keys, you will be prompted to connect to the AIGNE Hub, which provides a simple way to get started.
@@ -52,7 +52,7 @@ program(
     description: 'Chat with the bot',
     options: [
       option({
-        name: '--chat',
+        name: '--interactive',
         description: 'Chat with the bot',
       }),
     ],

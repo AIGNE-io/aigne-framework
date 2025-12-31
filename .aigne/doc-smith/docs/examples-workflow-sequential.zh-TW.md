@@ -57,7 +57,7 @@ npx -y @aigne/example-workflow-sequential
 
 以互動式聊天模式執行：
 ```bash icon=lucide:terminal
-npx -y @aigne/example-workflow-sequential --chat
+npx -y @aigne/example-workflow-sequential --interactive
 ```
 
 您也可以將輸入直接透過管道傳遞給指令：
@@ -132,7 +132,7 @@ pnpm start
 
 以互動式聊天模式執行（注意參數前的 `--`）：
 ```bash icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 使用管道輸入：
@@ -146,7 +146,7 @@ echo "Create marketing content for our new AI-powered fitness app" | pnpm start
 
 | 參數 | 說明 | 預設值 |
 |-----------|-------------|---------|
-| `--chat` | 以互動式聊天模式執行。 | 停用 |
+| `--interactive` | 以互動式聊天模式執行。 | 停用 |
 | `--model <provider[:model]>` | 指定要使用的 AI 模型（例如 `openai` 或 `openai:gpt-4o-mini`）。 | `openai` |
 | `--temperature <value>` | 設定模型生成的溫度。 | 提供者預設值 |
 | `--top-p <value>` | 設定 top-p 取樣值。 | 提供者預設值 |

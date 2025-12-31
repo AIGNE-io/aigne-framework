@@ -21,10 +21,10 @@
 npx -y @aigne/example-nano-banana --input 'Draw an image of a lovely cat'
 ```
 
-チャットボットと対話できるインタラクティブセッションを開始するには、`--chat` フラグを使用します。
+チャットボットと対話できるインタラクティブセッションを開始するには、`--interactive` フラグを使用します。
 
 ```bash インタラクティブモードで実行 icon=lucide:terminal
-npx -y @aigne/example-nano-banana --chat
+npx -y @aigne/example-nano-banana --interactive
 ```
 
 ### AI モデルへの接続

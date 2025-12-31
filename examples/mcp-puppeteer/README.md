@@ -77,7 +77,7 @@ AI ->> User: The content is as follows: ...
 npx -y @aigne/example-mcp-puppeteer
 
 # Run in interactive chat mode
-npx -y @aigne/example-mcp-puppeteer --chat
+npx -y @aigne/example-mcp-puppeteer --interactive
 
 # Use pipeline input
 echo "extract content from https://www.arcblock.io" | npx -y @aigne/example-mcp-puppeteer
@@ -85,7 +85,7 @@ echo "extract content from https://www.arcblock.io" | npx -y @aigne/example-mcp-
 
 ### Connect to an AI Model
 
-As an example, running `npx -y @aigne/example-mcp-puppeteer --chat` requires an AI model. If this is your first run, you need to connect one.
+As an example, running `npx -y @aigne/example-mcp-puppeteer --interactive` requires an AI model. If this is your first run, you need to connect one.
 
 ![run example](./run-example.png)
 
@@ -152,7 +152,7 @@ The example supports the following command-line parameters:
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
+| `--interactive` | Run in interactive chat mode | Disabled (one-shot mode) |
 | `--model <provider[:model]>` | AI model to use in format 'provider\[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
 | `--temperature <value>` | Temperature for model generation | Provider default |
 | `--top-p <value>` | Top-p sampling value | Provider default |
@@ -165,7 +165,7 @@ The example supports the following command-line parameters:
 
 ```bash
 # Run in chat mode (interactive)
-pnpm start -- --chat
+pnpm start -- --interactive
 
 # Set logging level
 pnpm start -- --log-level DEBUG

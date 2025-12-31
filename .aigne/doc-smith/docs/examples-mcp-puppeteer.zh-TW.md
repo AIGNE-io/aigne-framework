@@ -94,7 +94,7 @@ npx -y @aigne/example-mcp-puppeteer
 
 ```sh 在互動式聊天模式下執行 icon=lucide:terminal
 # 在互動式聊天模式下執行
-npx -y @aigne/example-mcp-puppeteer --chat
+npx -y @aigne/example-mcp-puppeteer --interactive
 ```
 
 ```sh 使用管道輸入 icon=lucide:terminal
@@ -156,7 +156,7 @@ pnpm start
 若要將命令列參數傳遞給腳本，請使用 `--` 將它們分開。
 
 ```sh 從原始碼以聊天模式執行 icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ## 程式碼範例
@@ -217,7 +217,7 @@ await aigne.shutdown();
 
 | 參數 | 說明 | 預設值 |
 |-----------|-------------|---------|
-| `--chat` | 以互動式聊天模式執行。 | 已停用 |
+| `--interactive` | 以互動式聊天模式執行。 | 已停用 |
 | `--model <provider[:model]>` | 指定 AI 模型。範例：`openai`、`openai:gpt-4o-mini`。 | `openai` |
 | `--temperature <value>` | 設定模型生成的溫度。 | 提供者預設值 |
 | `--top-p <value>` | 設定 top-p 取樣值。 | 提供者預設值 |

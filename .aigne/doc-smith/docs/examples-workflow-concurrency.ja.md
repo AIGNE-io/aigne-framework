@@ -74,7 +74,7 @@ Aggregator -> Result
 *   **インタラクティブチャットモード**: 複数の入力を提供できるチャットセッションを開始します。
 
     ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-concurrency --chat
+    npx -y @aigne/example-workflow-concurrency --interactive
     ```
 
 *   **パイプラインモード**: 別のコマンドからパイプされた入力を使用します。
@@ -109,7 +109,7 @@ Aggregator -> Result
 
     ```bash icon=lucide:terminal
     export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
-    npx -y @aigne/example-workflow-concurrency --chat
+    npx -y @aigne/example-workflow-concurrency --interactive
     ```
 
 ## ソースからのインストール
@@ -144,7 +144,7 @@ pnpm install
 *   **インタラクティブチャットモードで実行:**
 
     ```bash icon=lucide:terminal
-    pnpm start -- --chat
+    pnpm start -- --interactive
     ```
 
 *   **パイプライン入力を使用:**
@@ -159,7 +159,7 @@ pnpm install
 
 | パラメータ | 説明 | デフォルト |
 |-----------|-------------|---------|
-| `--chat` | インタラクティブチャットモードで実行します。 | 無効 (ワンショットモード) |
+| `--interactive` | インタラクティブチャットモードで実行します。 | 無効 (ワンショットモード) |
 | `--model <provider[:model]>` | 使用する AI モデルを指定します (例: `openai` または `openai:gpt-4o-mini`)。 | `openai` |
 | `--temperature <value>` | モデル生成の temperature を設定します。 | プロバイダーのデフォルト |
 | `--top-p <value>` | top-p サンプリング値を設定します。 | プロバイダーのデフォルト |

@@ -40,7 +40,7 @@ npx -y @aigne/example-afs-memory --input "Tell me all info about me you known"
 #   * Interests / favorite color: blue
 
 # Run in interactive chat mode
-npx -y @aigne/example-afs-memory --chat
+npx -y @aigne/example-afs-memory --interactive
 ```
 
 ### Connect to an AI Model

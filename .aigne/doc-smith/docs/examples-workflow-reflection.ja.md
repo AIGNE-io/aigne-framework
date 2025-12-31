@@ -46,9 +46,9 @@ class reviewer processing
 npx -y @aigne/example-workflow-reflection
 ```
 
-インタラクティブセッションに参加するには、`--chat` フラグを使用します：
+インタラクティブセッションに参加するには、`--interactive` フラグを使用します：
 ```bash npx command icon=lucide:terminal
-npx -y @aigne/example-workflow-reflection --chat
+npx -y @aigne/example-workflow-reflection --interactive
 ```
 
 コマンドに直接入力をパイプすることもできます：
@@ -143,10 +143,10 @@ pnpm install
 pnpm start
 ```
 
-インタラクティブなチャットモードで実行するには、`--chat` フラグを追加します。追加の `--` は、フラグを `pnpm` 自身ではなくスクリプトに渡すために必要です。
+インタラクティブなチャットモードで実行するには、`--interactive` フラグを追加します。追加の `--` は、フラグを `pnpm` 自身ではなくスクリプトに渡すために必要です。
 
 ```bash インタラクティブモードで実行 icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 パイプライン経由で入力を提供するには：

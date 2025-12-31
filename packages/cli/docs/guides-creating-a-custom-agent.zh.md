@@ -96,7 +96,7 @@ aigne run ./greeter.js --input '{"name": "AIGNE Developer"}'
 当主 AI agent 能够动态决定使用技能时，技能的真正威力才得以释放。要查看实际效果，请在交互式聊天模式下运行您的项目：
 
 ```bash icon=mdi:console
-aigne run --chat
+aigne run --interactive
 ```
 
 聊天会话开始后，请求 AI 使用您的新工具。例如：

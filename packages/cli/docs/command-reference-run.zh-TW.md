@@ -100,12 +100,12 @@ aigne run https://github.com/AIGNE-io/aigne-framework/tree/main/examples/default
 
 ### 在互動式聊天模式下執行
 
-對於對話式 agent，請使用 `--chat` 旗標來啟動一個互動式終端機對話。
+對於對話式 agent，請使用 `--interactive` 旗標來啟動一個互動式終端機對話。
 
 ![在聊天模式下執行 agent](../assets/run/run-default-template-project-in-chat-mode.png)
 
 ```bash 啟動聊天對話 icon=lucide:messages-square
-aigne run --chat
+aigne run --interactive
 ```
 
 在聊天循環中，您可以使用像 `/exit` 這樣的指令來退出，或使用 `/help` 尋求幫助。您也可以透過在路徑前加上 `@` 字首，將本機檔案附加到您的訊息中。
@@ -164,7 +164,7 @@ aigne run image-describer --input-file cat.png --input "What is in this image?"
 
 | 選項 | 說明 |
 |---|---|
-| `--chat` | 在終端機中以互動式聊天循環執行 agent。 |
+| `--interactive` | 在終端機中以互動式聊天循環執行 agent。 |
 | `--log-level <level>` | 設定日誌記錄層級。可用層級：`debug`、`info`、`warn`、`error`、`silent`。預設：`silent`。 |
 
 ### 模型選項

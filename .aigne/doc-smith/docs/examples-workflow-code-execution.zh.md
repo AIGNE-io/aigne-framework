@@ -79,10 +79,10 @@ echo 'Calculate 15!' | npx -y @aigne/example-workflow-code-execution
 
 #### 交互式聊天模式
 
-使用 `--chat` 标志启动一个持久会话，您可以与 Agent 进行对话。
+使用 `--interactive` 标志启动一个持久会话，您可以与 Agent 进行对话。
 
 ```bash icon=lucude:terminal
-npx -y @aigne/example-workflow-code-execution --chat
+npx -y @aigne/example-workflow-code-execution --interactive
 ```
 
 ### 连接到 AI 模型
@@ -166,7 +166,7 @@ pnpm install
 pnpm start
 
 # 以交互式聊天模式运行
-pnpm start -- --chat
+pnpm start -- --interactive
 
 # 使用管道输入
 echo "Calculate 15!" | pnpm start
@@ -178,7 +178,7 @@ echo "Calculate 15!" | pnpm start
 
 | 参数 | 描述 | 默认值 |
 | --------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------- |
-| `--chat` | 以交互式聊天模式运行。 | 禁用 |
+| `--interactive` | 以交互式聊天模式运行。 | 禁用 |
 | `--model <provider[:model]>` | 指定要使用的 AI 模型，例如 `openai` 或 `openai:gpt-4o-mini`。 | `openai` |
 | `--temperature <value>` | 设置模型生成的温度。 | 提供商默认值 |
 | `--top-p <value>` | 设置 top-p 采样值。 | 提供商默认值 |
@@ -192,7 +192,7 @@ echo "Calculate 15!" | pnpm start
 此命令以 `DEBUG` 日志级别在交互模式下运行工作流。
 
 ```bash icon=lucude:terminal
-pnpm start -- --chat --log-level DEBUG
+pnpm start -- --interactive --log-level DEBUG
 ```
 
 ## 代码实现

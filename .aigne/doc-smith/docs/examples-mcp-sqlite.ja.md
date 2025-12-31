@@ -88,7 +88,7 @@ npx -y @aigne/example-mcp-sqlite
 ```
 
 ```bash title="対話型チャットモードで実行" icon=lucide:terminal
-npx -y @aigne/example-mcp-sqlite --chat
+npx -y @aigne/example-mcp-sqlite --interactive
 ```
 
 ```bash title="パイプライン入力を使用" icon=lucide:terminal
@@ -163,7 +163,7 @@ pnpm start
 対話モードで実行したり、パイプライン入力を使用したりするには、`--` 区切り文字の後に目的のフラグを追加します。
 
 ```bash title="対話型チャットモードで実行" icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash title="パイプライン入力を使用" icon=lucide:terminal
@@ -176,7 +176,7 @@ echo "create a product table with columns name description and createdAt" | pnpm
 
 | パラメータ | 説明 | デフォルト |
 | :--- | :--- | :--- |
-| `--chat` | 対話型チャットモードを有効にします。 | 無効 (ワンショット) |
+| `--interactive` | 対話型チャットモードを有効にします。 | 無効 (ワンショット) |
 | `--model <provider[:model]>` | AI モデルを指定します。フォーマット: `'provider[:model]'`。 | `openai` |
 | `--temperature <value>` | 生成のためのモデルの temperature を設定します。 | プロバイダーのデフォルト |
 | `--top-p <value>` | モデルの top-p サンプリング値を設定します。 | プロバイダーのデフォルト |

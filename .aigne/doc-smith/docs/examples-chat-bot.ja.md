@@ -30,9 +30,9 @@
 npx -y @aigne/example-chat-bot
 ```
 
-`--chat`フラグを使用してインタラクティブなチャットモードで実行：
+`--interactive`フラグを使用してインタラクティブなチャットモードで実行：
 ```bash npx command icon=lucide:terminal
-npx -y @aigne/example-chat-bot --chat
+npx -y @aigne/example-chat-bot --interactive
 ```
 
 パイプライン入力を使用してプロンプトを直接提供：
@@ -150,7 +150,7 @@ pnpm start
 
 インタラクティブなチャットモードで実行：
 ```bash pnpm command icon=lucide:terminal
-pnpm start --chat
+pnpm start --interactive
 ```
 
 パイプライン入力を使用：
@@ -164,7 +164,7 @@ echo "Tell me about AIGNE Framework" | pnpm start
 
 | パラメータ | 説明 | デフォルト |
 |---|---|---|
-| `--chat` | インタラクティブなチャットモードで実行します。省略した場合、ワンショットモードで実行されます。 | `無効` |
+| `--interactive` | インタラクティブなチャットモードで実行します。省略した場合、ワンショットモードで実行されます。 | `無効` |
 | `--model <provider[:model]>` | 使用するAIモデルを指定します。形式は`provider[:model]`です。例：`openai`または`openai:gpt-4o-mini`。 | `openai` |
 | `--temperature <value>` | モデル生成の温度を設定し、ランダム性を制御します。 | プロバイダーのデフォルト |
 | `--top-p <value>` | モデル生成のためのtop-p（nucleus sampling）値を設定します。 | プロバイダーのデフォルト |

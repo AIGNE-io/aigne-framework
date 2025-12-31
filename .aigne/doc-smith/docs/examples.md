@@ -30,10 +30,10 @@ Execute the following commands in your terminal to run a basic chatbot.
     ```
 
 3.  **Run in interactive mode:**
-    Use the `--chat` flag to start an interactive session where you can have a conversation with the agent.
+    Use the `--interactive` flag to start an interactive session where you can have a conversation with the agent.
 
     ```sh icon=lucide:terminal
-    npx -y @aigne/example-chat-bot --chat
+    npx -y @aigne/example-chat-bot --interactive
     ```
 
 ### Using Different LLMs
@@ -131,7 +131,7 @@ To gain insight into an agent's execution, you can enable debug logs or use the 
 Set the `DEBUG` environment variable to `*` to output detailed logs, which include model calls and responses.
 
 ```sh icon=lucide:terminal
-DEBUG=* npx -y @aigne/example-chat-bot --chat
+DEBUG=* npx -y @aigne/example-chat-bot --interactive
 ```
 
 ### Use the Observation Server

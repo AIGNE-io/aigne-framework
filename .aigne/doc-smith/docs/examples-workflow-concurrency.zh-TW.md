@@ -74,7 +74,7 @@ Aggregator -> Result
 *   **互動式聊天模式**：啟動一個聊天會話，您可以在其中提供多個輸入。
 
     ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-concurrency --chat
+    npx -y @aigne/example-workflow-concurrency --interactive
     ```
 
 *   **管道模式**：使用來自另一個指令的管道輸入。
@@ -109,7 +109,7 @@ Aggregator -> Result
 
     ```bash icon=lucide:terminal
     export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
-    npx -y @aigne/example-workflow-concurrency --chat
+    npx -y @aigne/example-workflow-concurrency --interactive
     ```
 
 ## 從原始碼安裝
@@ -144,7 +144,7 @@ pnpm install
 *   **以互動式聊天模式執行：**
 
     ```bash icon=lucide:terminal
-    pnpm start -- --chat
+    pnpm start -- --interactive
     ```
 
 *   **使用管道輸入：**
@@ -159,7 +159,7 @@ pnpm install
 
 | 參數 | 說明 | 預設值 |
 |-----------|-------------|---------|
-| `--chat` | 以互動式聊天模式執行。 | 停用 (單次執行模式) |
+| `--interactive` | 以互動式聊天模式執行。 | 停用 (單次執行模式) |
 | `--model <provider[:model]>` | 指定要使用的 AI 模型 (例如 `openai` 或 `openai:gpt-4o-mini`)。 | `openai` |
 | `--temperature <value>` | 設定模型生成的溫度。 | 提供商預設值 |
 | `--top-p <value>` | 設定 top-p 取樣值。 | 提供商預設值 |

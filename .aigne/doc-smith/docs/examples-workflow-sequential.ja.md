@@ -57,7 +57,7 @@ npx -y @aigne/example-workflow-sequential
 
 対話型のチャットモードで実行する場合:
 ```bash icon=lucide:terminal
-npx -y @aigne/example-workflow-sequential --chat
+npx -y @aigne/example-workflow-sequential --interactive
 ```
 
 コマンドに直接入力をパイプすることもできます:
@@ -132,7 +132,7 @@ pnpm start
 
 対話型のチャットモードで実行する場合 (引数の前に `--` があることに注意してください):
 ```bash icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 パイプライン入力を使用する場合:
@@ -146,7 +146,7 @@ echo "Create marketing content for our new AI-powered fitness app" | pnpm start
 
 | パラメータ | 説明 | デフォルト |
 |-----------|-------------|---------|
-| `--chat` | 対話型のチャットモードで実行します。 | 無効 |
+| `--interactive` | 対話型のチャットモードで実行します。 | 無効 |
 | `--model <provider[:model]>` | 使用する AI モデルを指定します (例: `openai` または `openai:gpt-4o-mini`)。 | `openai` |
 | `--temperature <value>` | モデル生成の temperature を設定します。 | プロバイダーのデフォルト |
 | `--top-p <value>` | top-p サンプリングの値を設定します。 | プロバイダーのデフォルト |

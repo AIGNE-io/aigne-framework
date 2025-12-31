@@ -85,7 +85,7 @@ npx -y @aigne/example-workflow-orchestrator
 
 ```bash 在交互式聊天模式下运行 icon=lucide:terminal
 # 在交互式聊天模式下运行
-npx -y @aigne/example-workflow-orchestrator --chat
+npx -y @aigne/example-workflow-orchestrator --interactive
 ```
 
 ```bash 使用管道输入 icon=lucide:terminal
@@ -163,7 +163,7 @@ pnpm start
 
 ```bash 在交互式聊天模式下运行 icon=lucide:terminal
 # 在交互式聊天模式下运行
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash 使用管道输入 icon=lucide:terminal
@@ -177,7 +177,7 @@ echo "Research ArcBlock and compile a report about their products and architectu
 
 | 参数 | 描述 | 默认值 |
 | ------------------------- | ------------------------------------------------------------------------------ | ------------------ |
-| `--chat` | 以交互式聊天模式运行。 | 禁用 |
+| `--interactive` | 以交互式聊天模式运行。 | 禁用 |
 | `--model <provider[:model]>` | 指定要使用的 AI 模型（例如，`openai` 或 `openai:gpt-4o-mini`）。 | `openai` |
 | `--temperature <value>` | 设置模型生成的温度。 | 提供商默认值 |
 | `--top-p <value>` | 设置 top-p 采样值。 | 提供商默认值 |
@@ -190,7 +190,7 @@ echo "Research ArcBlock and compile a report about their products and architectu
 
 ```bash 在交互式聊天模式下运行 icon=lucide:terminal
 # 以聊天模式运行
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash 设置不同的日志级别 icon=lucide:terminal

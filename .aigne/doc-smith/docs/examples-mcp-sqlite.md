@@ -88,7 +88,7 @@ npx -y @aigne/example-mcp-sqlite
 ```
 
 ```bash title="Run in interactive chat mode" icon=lucide:terminal
-npx -y @aigne/example-mcp-sqlite --chat
+npx -y @aigne/example-mcp-sqlite --interactive
 ```
 
 ```bash title="Use pipeline input" icon=lucide:terminal
@@ -163,7 +163,7 @@ pnpm start
 To run in interactive mode or use pipeline input, append the desired flags after a `--` separator.
 
 ```bash title="Run in interactive chat mode" icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash title="Use pipeline input" icon=lucide:terminal
@@ -176,7 +176,7 @@ The application supports several command-line arguments to customize its behavio
 
 | Parameter | Description | Default |
 | :--- | :--- | :--- |
-| `--chat` | Enables interactive chat mode. | Disabled (one-shot) |
+| `--interactive` | Enables interactive chat mode. | Disabled (one-shot) |
 | `--model <provider[:model]>` | Specifies the AI model. Format: `'provider[:model]'`. | `openai` |
 | `--temperature <value>` | Sets the model's temperature for generation. | Provider default |
 | `--top-p <value>` | Sets the model's top-p sampling value. | Provider default |

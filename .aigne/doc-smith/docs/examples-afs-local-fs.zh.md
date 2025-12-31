@@ -36,7 +36,7 @@ AIGNE 文件系统 (AFS) 提供了一个虚拟文件系统层，为 AI Agent 访
     git clone https://github.com/AIGNE-io/aigne-framework
     
     # 以交互模式启动聊天机器人，并指向文档目录
-    npx -y @aigne/example-afs-local-fs --path ./aigne-framework --chat
+    npx -y @aigne/example-afs-local-fs --path ./aigne-framework --interactive
     ```
 
     或者，您也可以只问一个具体的、单一的问题：
@@ -181,7 +181,7 @@ const agent = AIAgent.from({
     pnpm start --path ~/Documents --description "My Documents"
 
     # 以交互式聊天模式运行
-    pnpm start --path . --chat
+    pnpm start --path . --interactive
     ```
 
 ## 使用场景

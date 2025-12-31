@@ -60,14 +60,14 @@ AIGNE-Framework -> User: "12. Agent B の応答を表示"
 
 ### ステップ1：例を実行する
 
-ターミナルを開き、以下のいずれかのコマンドを実行します。`--chat` フラグを使用すると、継続的な会話ができる対話型セッションが有効になります。
+ターミナルを開き、以下のいずれかのコマンドを実行します。`--interactive` フラグを使用すると、継続的な会話ができる対話型セッションが有効になります。
 
 ```bash ワンショットモードで実行 icon=lucide:terminal
 npx -y @aigne/example-workflow-handoff
 ```
 
 ```bash 対話型チャットモードで実行 icon=lucide:terminal
-npx -y @aigne/example-workflow-handoff --chat
+npx -y @aigne/example-workflow-handoff --interactive
 ```
 
 コマンドに直接入力をパイプすることもできます。
@@ -192,14 +192,14 @@ pnpm install
 
 ### 3. 例を実行する
 
-`pnpm start` コマンドを使用します。`--chat` のような追加の引数を渡すには、その前に `--` を追加します。
+`pnpm start` コマンドを使用します。`--interactive` のような追加の引数を渡すには、その前に `--` を追加します。
 
 ```bash ワンショットモードで実行 icon=lucide:terminal
 pnpm start
 ```
 
 ```bash 対話型チャットモードで実行 icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ## コマンドラインオプション
@@ -208,7 +208,7 @@ pnpm start -- --chat
 
 | パラメータ | 説明 | デフォルト |
 |---|---|---|
-| `--chat` | 対話型のチャットモードで実行します。 | 無効 |
+| `--interactive` | 対話型のチャットモードで実行します。 | 無効 |
 | `--model <provider[:model]>` | 使用する AI モデル（例：`openai` または `openai:gpt-4o-mini`）。 | `openai` |
 | `--temperature <value>` | モデル生成時の Temperature。 | プロバイダーのデフォルト |
 | `--top-p <value>` | Top-p サンプリングの値。 | プロバイダーのデフォルト |

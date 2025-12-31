@@ -30,10 +30,10 @@
     ```
 
 3.  **以互動模式執行：**
-    使用 `--chat` 旗標來啟動一個互動式會話，您可以在其中與 Agent 進行對話。
+    使用 `--interactive` 旗標來啟動一個互動式會話，您可以在其中與 Agent 進行對話。
 
     ```sh icon=lucide:terminal
-    npx -y @aigne/example-chat-bot --chat
+    npx -y @aigne/example-chat-bot --interactive
     ```
 
 ### 使用不同的 LLM
@@ -131,7 +131,7 @@
 將 `DEBUG` 環境變數設定為 `*` 以輸出詳細日誌，其中包含模型呼叫和回應。
 
 ```sh icon=lucide:terminal
-DEBUG=* npx -y @aigne/example-chat-bot --chat
+DEBUG=* npx -y @aigne/example-chat-bot --interactive
 ```
 
 ### 使用觀察伺服器

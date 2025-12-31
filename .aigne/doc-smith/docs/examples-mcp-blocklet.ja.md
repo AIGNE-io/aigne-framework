@@ -38,7 +38,7 @@ export BLOCKLET_APP_URL="https://xxx.xxxx.xxx"
 *   **インタラクティブチャットモード**: 継続的なチャットセッションを開始します。
 
     ```bash icon=lucide:terminal
-    npx -y @aigne/example-mcp-blocklet --chat
+    npx -y @aigne/example-mcp-blocklet --interactive
     ```
 
 *   **パイプライン入力**: パイプからの入力をプロンプトとして使用します。
@@ -134,7 +134,7 @@ pnpm start https://your-blocklet-app-url
 
 | パラメータ | 説明 | デフォルト |
 | :--- | :--- | :--- |
-| `--chat` | インタラクティブチャットモードを有効にします。 | 無効 |
+| `--interactive` | インタラクティブチャットモードを有効にします。 | 無効 |
 | `--model <provider[:model]>` | 使用する AI モデルを指定します。フォーマットは `provider[:model]` です。例: `openai` または `openai:gpt-4o-mini`。 | `openai` |
 | `--temperature <value>` | モデル生成の temperature を設定します。 | プロバイダーのデフォルト |
 | `--top-p <value>` | top-p サンプリングの値を設定します。 | プロバイダーのデフォルト |
@@ -148,7 +148,7 @@ pnpm start https://your-blocklet-app-url
 **例:**
 
 ```bash インタラクティブチャットモードで実行 icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash ログレベルを DEBUG に設定 icon=lucide:terminal

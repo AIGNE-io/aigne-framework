@@ -85,7 +85,7 @@ npx -y @aigne/example-workflow-orchestrator
 
 ```bash Run in interactive chat mode icon=lucide:terminal
 # Run in interactive chat mode
-npx -y @aigne/example-workflow-orchestrator --chat
+npx -y @aigne/example-workflow-orchestrator --interactive
 ```
 
 ```bash Use pipeline input icon=lucide:terminal
@@ -163,7 +163,7 @@ pnpm start
 
 ```bash Run in interactive chat mode icon=lucide:terminal
 # Run in interactive chat mode
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash Use pipeline input icon=lucide:terminal
@@ -177,7 +177,7 @@ The script accepts several command-line parameters to customize its behavior.
 
 | Parameter                 | Description                                                                    | Default            |
 | ------------------------- | ------------------------------------------------------------------------------ | ------------------ |
-| `--chat`                  | Run in interactive chat mode.                                                  | Disabled           |
+| `--interactive`                  | Run in interactive chat mode.                                                  | Disabled           |
 | `--model <provider[:model]>` | Specify the AI model to use (e.g., `openai` or `openai:gpt-4o-mini`).          | `openai`           |
 | `--temperature <value>`   | Set the temperature for model generation.                                      | Provider default   |
 | `--top-p <value>`         | Set the top-p sampling value.                                                  | Provider default   |
@@ -190,7 +190,7 @@ The script accepts several command-line parameters to customize its behavior.
 
 ```bash Run in interactive chat mode icon=lucide:terminal
 # Run in chat mode
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash Set a different logging level icon=lucide:terminal

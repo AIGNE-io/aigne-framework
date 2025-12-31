@@ -88,7 +88,7 @@ npx -y @aigne/example-mcp-sqlite
 ```
 
 ```bash title="以交互式聊天模式运行" icon=lucide:terminal
-npx -y @aigne/example-mcp-sqlite --chat
+npx -y @aigne/example-mcp-sqlite --interactive
 ```
 
 ```bash title="使用管道输入" icon=lucide:terminal
@@ -163,7 +163,7 @@ pnpm start
 要在交互模式下运行或使用管道输入，请在 `--` 分隔符后附加所需的标志。
 
 ```bash title="以交互式聊天模式运行" icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash title="使用管道输入" icon=lucide:terminal
@@ -176,7 +176,7 @@ echo "create a product table with columns name description and createdAt" | pnpm
 
 | 参数 | 描述 | 默认值 |
 | :--- | :--- | :--- |
-| `--chat` | 启用交互式聊天模式。 | 禁用（一次性） |
+| `--interactive` | 启用交互式聊天模式。 | 禁用（一次性） |
 | `--model <provider[:model]>` | 指定 AI 模型。格式：`'provider[:model]'`。 | `openai` |
 | `--temperature <value>` | 设置模型的生成温度。 | 提供商默认值 |
 | `--top-p <value>` | 设置模型的 top-p 采样值。 | 提供商默认值 |

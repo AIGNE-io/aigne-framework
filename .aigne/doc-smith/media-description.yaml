@@ -21,7 +21,7 @@ descriptions:
   d3dc01907bf69a64fd7edbc311157986a13a02b1f2872cfc20100ddb766ec622:
     path: ../../../examples/workflow-router/run-example.png
     description: This screenshot displays a terminal interface showing the output of
-      an `npx` command, `npx -y @aigne/example-workflow-router --chat`. After
+      an `npx` command, `npx -y @aigne/example-workflow-router --interactive`. After
       several npm deprecation warnings, an interactive prompt appears, asking
       the user how to proceed due to missing LLM API Keys or AIGNE Hub
       connections. The first option, "Connect to the Archblock official AIGNE

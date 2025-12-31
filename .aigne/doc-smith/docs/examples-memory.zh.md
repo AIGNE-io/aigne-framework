@@ -15,7 +15,7 @@
 要在交互模式下启动聊天机器人，请在终端中执行以下命令：
 
 ```sh
-npx -y @aigne/example-memory --chat
+npx -y @aigne/example-memory --interactive
 ```
 
 如果你尚未配置你的 LLM API 密钥，系统将提示你连接到 AIGNE Hub，该中心提供了一种简单的入门方式。
@@ -52,7 +52,7 @@ program(
     description: 'Chat with the bot',
     options: [
       option({
-        name: '--chat',
+        name: '--interactive',
         description: 'Chat with the bot',
       }),
     ],

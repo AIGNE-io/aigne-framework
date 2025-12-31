@@ -41,10 +41,10 @@ export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
 
 # Mount AIGNE framework docs (clone first)
 git clone https://github.com/AIGNE-io/aigne-framework
-npx -y @aigne/example-afs-local-fs --path ./aigne-framework --chat
+npx -y @aigne/example-afs-local-fs --path ./aigne-framework --interactive
 
 # Or mount any directory
-npx -y @aigne/example-afs-local-fs --path ~/Documents --description "My Documents" --chat
+npx -y @aigne/example-afs-local-fs --path ~/Documents --description "My Documents" --interactive
 
 # Ask a specific question
 npx -y @aigne/example-afs-local-fs --path . --input "What is AIGNE?"
@@ -154,7 +154,7 @@ pnpm start --path .
 pnpm start --path ~/Documents --description "My Documents"
 
 # Run in interactive chat mode
-pnpm start --path . --chat
+pnpm start --path . --interactive
 ```
 
 ## How It Works: 3 Simple Steps
@@ -218,7 +218,7 @@ npx -y @aigne/example-afs-local-fs --path ./aigne-framework --input "How does AF
 npx -y @aigne/example-afs-local-fs --path . --input "Find all TypeScript files with TODO comments"
 
 # Interactive mode - ask follow-up questions
-npx -y @aigne/example-afs-local-fs --path ~/Documents --chat
+npx -y @aigne/example-afs-local-fs --path ~/Documents --interactive
 ```
 
 **In chat mode, try:**

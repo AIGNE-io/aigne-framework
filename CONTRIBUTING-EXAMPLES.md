@@ -49,7 +49,7 @@ Your README must include comprehensive documentation following the standard form
 #### CLI Support
 
 * Implement command-line argument parsing
-* Support `--chat` flag for interactive mode
+* Support `--interactive` flag for interactive mode
 * Support `--model` for different AI providers
 * Support pipeline input (stdin)
 

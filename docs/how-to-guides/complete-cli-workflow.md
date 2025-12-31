@@ -163,7 +163,7 @@ aigne run
 aigne run --entry-agent poem
 
 # Enable chat mode for interaction
-aigne run --chat
+aigne run --interactive
 ```
 
 ### Single Query Mode
@@ -190,7 +190,7 @@ aigne run --temperature 0.2 --entry-agent poem --topic "Autumn" --style "Classic
 
 ```bash
 # Enable verbose logging
-aigne run --log-level debug --chat
+aigne run --log-level debug --interactive
 ```
 
 ## Start Monitoring Service

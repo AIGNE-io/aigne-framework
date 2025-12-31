@@ -15,7 +15,7 @@
 対話モードでチャットボットを開始するには、ターミナルで次のコマンドを実行してください。
 
 ```sh
-npx -y @aigne/example-memory --chat
+npx -y @aigne/example-memory --interactive
 ```
 
 LLM API キーを設定していない場合は、簡単に始められる方法を提供する AIGNE Hub への接続を促すプロンプトが表示されます。
@@ -52,7 +52,7 @@ program(
     description: 'Chat with the bot',
     options: [
       option({
-        name: '--chat',
+        name: '--interactive',
         description: 'Chat with the bot',
       }),
     ],

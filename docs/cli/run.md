@@ -15,7 +15,7 @@ aigne run [options]
 * `--path <path>`: Path to the agent directory (defaults to current directory `.`) or URL pointing to a project in AIGNE Studio
 * `--entry-agent <agent>`: Name of the agent to run (defaults to the first agent found)
 * `--cache-dir <directory>`: Directory for downloaded packages (when using URL), defaults to `~/.aigne/xxx`
-* `--chat`: Run chat loop in terminal (defaults to false, i.e., one-shot mode)
+* `--interactive`: Run chat loop in terminal (defaults to false, i.e., one-shot mode)
 * `--input -i <input>`: Input for the agent
 * `--model <provider[:model]>`: AI model to use, format 'provider\[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini'. Available providers: openai, anthropic, bedrock, deepseek, gemini, ollama, openrouter, xai (defaults to openai)
 * `--temperature <temperature>`: Model temperature parameter (controls randomness, higher values produce more random output). Range: 0.0-2.0, 0.0 for most deterministic output.
@@ -48,7 +48,7 @@ aigne run --entry-agent myAgent
 #### Run agent in chat mode
 
 ```bash
-aigne run --chat
+aigne run --interactive
 ```
 
 #### Run agent with specific input

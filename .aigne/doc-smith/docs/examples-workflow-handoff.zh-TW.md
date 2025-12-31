@@ -60,14 +60,14 @@ AIGNE-Framework -> User: "12. 顯示 Agent B 的回應"
 
 ### 步驟 1：執行範例
 
-開啟您的終端機並執行以下指令之一。`--chat` 旗標會啟用一個互動式會話，您可以在其中進行連續對話。
+開啟您的終端機並執行以下指令之一。`--interactive` 旗標會啟用一個互動式會話，您可以在其中進行連續對話。
 
 ```bash 以單次模式執行 icon=lucide:terminal
 npx -y @aigne/example-workflow-handoff
 ```
 
 ```bash 以互動式聊天模式執行 icon=lucide:terminal
-npx -y @aigne/example-workflow-handoff --chat
+npx -y @aigne/example-workflow-handoff --interactive
 ```
 
 您也可以直接將輸入透過管道傳送至指令：
@@ -192,14 +192,14 @@ pnpm install
 
 ### 3. 執行範例
 
-使用 `pnpm start` 指令。要傳遞額外的參數（如 `--chat`），請在它們前面加上一個額外的 `--`。
+使用 `pnpm start` 指令。要傳遞額外的參數（如 `--interactive`），請在它們前面加上一個額外的 `--`。
 
 ```bash 以單次模式執行 icon=lucide:terminal
 pnpm start
 ```
 
 ```bash 以互動式聊天模式執行 icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ## 命令列選項
@@ -208,7 +208,7 @@ pnpm start -- --chat
 
 | 參數 | 說明 | 預設值 |
 |-----------|-------------|---------|
-| `--chat` | 以互動式聊天模式執行。 | 停用 |
+| `--interactive` | 以互動式聊天模式執行。 | 停用 |
 | `--model <provider[:model]>` | 要使用的 AI 模型（例如 `openai` 或 `openai:gpt-4o-mini`）。 | `openai` |
 | `--temperature <value>` | 模型生成的溫度值。 | 提供商預設值 |
 | `--top-p <value>` | Top-p 取樣值。 | 提供商預設值 |

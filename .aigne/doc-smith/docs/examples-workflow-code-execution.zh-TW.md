@@ -79,10 +79,10 @@ echo 'Calculate 15!' | npx -y @aigne/example-workflow-code-execution
 
 #### 互動式聊天模式
 
-使用 `--chat` 旗標來啟動一個持續的對話，您可以在其中與 Agent 進行交談。
+使用 `--interactive` 旗標來啟動一個持續的對話，您可以在其中與 Agent 進行交談。
 
 ```bash icon=lucide:terminal
-npx -y @aigne/example-workflow-code-execution --chat
+npx -y @aigne/example-workflow-code-execution --interactive
 ```
 
 ### 連接到 AI 模型
@@ -166,7 +166,7 @@ pnpm install
 pnpm start
 
 # 以互動式聊天模式執行
-pnpm start -- --chat
+pnpm start -- --interactive
 
 # 使用管道輸入
 echo "Calculate 15!" | pnpm start
@@ -178,7 +178,7 @@ echo "Calculate 15!" | pnpm start
 
 | 參數 | 說明 | 預設值 |
 | --------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------- |
-| `--chat` | 以互動式聊天模式執行。 | 停用 |
+| `--interactive` | 以互動式聊天模式執行。 | 停用 |
 | `--model <provider[:model]>` | 指定要使用的 AI 模型，例如 `openai` 或 `openai:gpt-4o-mini`。 | `openai` |
 | `--temperature <value>` | 設定模型生成的溫度。 | 提供商預設值 |
 | `--top-p <value>` | 設定 top-p 取樣值。 | 提供商預設值 |
@@ -192,7 +192,7 @@ echo "Calculate 15!" | pnpm start
 此指令以 `DEBUG` 記錄層級在互動模式下執行工作流程。
 
 ```bash icon=lucide:terminal
-pnpm start -- --chat --log-level DEBUG
+pnpm start -- --interactive --log-level DEBUG
 ```
 
 ## 程式碼實作

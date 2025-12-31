@@ -152,7 +152,7 @@ pnpm start
 The example also supports interactive chat mode and can accept input piped from other commands.
 
 ```bash Run in interactive chat mode icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash Use pipeline input icon=lucide:terminal
@@ -165,7 +165,7 @@ You can customize the execution with the following command-line parameters:
 
 | Parameter                 | Description                                                                                             | Default            |
 | ------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------ |
-| `--chat`                  | Run in interactive chat mode.                                                                           | Disabled           |
+| `--interactive`                  | Run in interactive chat mode.                                                                           | Disabled           |
 | `--model <provider[:model]>` | Specify the AI model to use (e.g., `openai` or `openai:gpt-4o-mini`).                                     | `openai`           |
 | `--temperature <value>`   | Set the temperature for model generation.                                                               | Provider default   |
 | `--top-p <value>`         | Set the top-p sampling value.                                                                           | Provider default   |

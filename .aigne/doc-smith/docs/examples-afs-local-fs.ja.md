@@ -36,7 +36,7 @@ AIGNE File System (AFS) は、AI Agent がさまざまなストレージシス�
     git clone https://github.com/AIGNE-io/aigne-framework
     
     # 対話モードでチャットボットを起動し、ドキュメントを指す
-    npx -y @aigne/example-afs-local-fs --path ./aigne-framework --chat
+    npx -y @aigne/example-afs-local-fs --path ./aigne-framework --interactive
     ```
 
     または、特定の質問を 1 つだけすることもできます。
@@ -183,7 +183,7 @@ Agent を AFS に接続することで、マウントされたディレクトリ
     pnpm start --path ~/Documents --description "My Documents"
 
     # 対話型チャットモードで実行する
-    pnpm start --path . --chat
+    pnpm start --path . --interactive
     ```
 
 ## ユースケース

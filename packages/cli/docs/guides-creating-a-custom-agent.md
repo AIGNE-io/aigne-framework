@@ -96,7 +96,7 @@ This command executes your `greeter.js` script and passes the JSON string from t
 The real power of skills is unlocked when the main AI agent can decide to use them dynamically. To see this in action, run your project in interactive chat mode:
 
 ```bash icon=mdi:console
-aigne run --chat
+aigne run --interactive
 ```
 
 Once the chat session starts, ask the AI to use your new tool. For example:

@@ -69,10 +69,10 @@ The example can be executed in several modes.
     ```
 
 2.  **Interactive Chat Mode**
-    Use the `--chat` flag to start an interactive session where you can send multiple messages.
+    Use the `--interactive` flag to start an interactive session where you can send multiple messages.
 
     ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-router --chat
+    npx -y @aigne/example-workflow-router --interactive
     ```
 
 3.  **Pipeline Mode**
@@ -217,7 +217,7 @@ The example script accepts several command-line arguments to customize its behav
 
 | Parameter | Description | Default |
 |---|---|---|
-| `--chat` | Run in interactive chat mode instead of one-shot. | Disabled |
+| `--interactive` | Run in interactive chat mode instead of one-shot. | Disabled |
 | `--model <provider[:model]>` | Specify the AI model to use (e.g., `openai` or `openai:gpt-4o-mini`). | `openai` |
 | `--temperature <value>` | Set the temperature for model generation. | Provider default |
 | `--top-p <value>` | Set the top-p sampling value. | Provider default |
@@ -229,7 +229,7 @@ The example script accepts several command-line arguments to customize its behav
 #### Examples
 
 ```bash Run in interactive mode icon=lucide:terminal
-npx -y @aigne/example-workflow-router --chat
+npx -y @aigne/example-workflow-router --interactive
 ```
 
 ```bash Set a specific model and temperature icon=lucide:terminal

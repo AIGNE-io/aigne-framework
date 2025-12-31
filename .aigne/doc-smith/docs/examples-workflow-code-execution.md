@@ -79,10 +79,10 @@ echo 'Calculate 15!' | npx -y @aigne/example-workflow-code-execution
 
 #### Interactive Chat Mode
 
-Use the `--chat` flag to start a persistent session where you can have a conversation with the agent.
+Use the `--interactive` flag to start a persistent session where you can have a conversation with the agent.
 
 ```bash icon=lucide:terminal
-npx -y @aigne/example-workflow-code-execution --chat
+npx -y @aigne/example-workflow-code-execution --interactive
 ```
 
 ### Connect to an AI Model
@@ -166,7 +166,7 @@ Use the `pnpm start` command to execute the workflow.
 pnpm start
 
 # Run in interactive chat mode
-pnpm start -- --chat
+pnpm start -- --interactive
 
 # Use pipeline input
 echo "Calculate 15!" | pnpm start
@@ -178,7 +178,7 @@ The script accepts several command-line arguments to customize its behavior.
 
 | Parameter                   | Description                                                                                              | Default          |
 | --------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------- |
-| `--chat`                    | Run in interactive chat mode.                                                                            | Disabled         |
+| `--interactive`                    | Run in interactive chat mode.                                                                            | Disabled         |
 | `--model <provider[:model]>` | Specify the AI model to use, e.g., `openai` or `openai:gpt-4o-mini`.                                     | `openai`         |
 | `--temperature <value>`     | Set the temperature for model generation.                                                                | Provider default |
 | `--top-p <value>`           | Set the top-p sampling value.                                                                            | Provider default |
@@ -192,7 +192,7 @@ The script accepts several command-line arguments to customize its behavior.
 This command runs the workflow in interactive mode with the `DEBUG` log level.
 
 ```bash icon=lucide:terminal
-pnpm start -- --chat --log-level DEBUG
+pnpm start -- --interactive --log-level DEBUG
 ```
 
 ## Code Implementation

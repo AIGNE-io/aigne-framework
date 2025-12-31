@@ -94,7 +94,7 @@ npx -y @aigne/example-mcp-puppeteer
 
 ```sh Run in interactive chat mode icon=lucide:terminal
 # Run in interactive chat mode
-npx -y @aigne/example-mcp-puppeteer --chat
+npx -y @aigne/example-mcp-puppeteer --interactive
 ```
 
 ```sh Use pipeline input icon=lucide:terminal
@@ -156,7 +156,7 @@ pnpm start
 To pass command-line arguments to the script, separate them with `--`.
 
 ```sh Run in chat mode from source icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ## Code Example
@@ -217,7 +217,7 @@ The application supports several command-line arguments to customize its behavio
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--chat` | Run in interactive chat mode. | Disabled |
+| `--interactive` | Run in interactive chat mode. | Disabled |
 | `--model <provider[:model]>` | Specify the AI model. Examples: `openai`, `openai:gpt-4o-mini`. | `openai` |
 | `--temperature <value>` | Set the temperature for model generation. | Provider default |
 | `--top-p <value>` | Set the top-p sampling value. | Provider default |

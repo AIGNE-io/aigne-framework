@@ -75,7 +75,7 @@ npx -y @aigne/example-workflow-group-chat
 
 インタラクティブなチャットセッションを開始するには：
 ```bash インタラクティブモードで実行 icon=lucide:terminal
-npx -y @aigne/example-workflow-group-chat --chat
+npx -y @aigne/example-workflow-group-chat --interactive
 ```
 
 パイプライン経由で直接入力を提供することもできます：
@@ -156,7 +156,7 @@ pnpm start
 
 インタラクティブチャットモードで実行するには：
 ```bash インタラクティブモードで実行 icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 パイプライン入力を使用するには：
@@ -170,7 +170,7 @@ echo "Write a short story about space exploration" | pnpm start
 
 | パラメータ | 説明 | デフォルト |
 |-----------|-------------|---------|
-| `--chat` | インタラクティブチャットモードで実行 | 無効 (ワンショットモード) |
+| `--interactive` | インタラクティブチャットモードで実行 | 無効 (ワンショットモード) |
 | `--model <provider[:model]>` | 使用するAIモデルを 'provider\[:model]' の形式で指定します。model はオプションです。例: 'openai' または 'openai:gpt-4o-mini' | openai |
 | `--temperature <value>` | モデル生成の温度 | プロバイダーのデフォルト |
 | `--top-p <value>` | Top-p サンプリング値 | プロバイダーのデフォルト |

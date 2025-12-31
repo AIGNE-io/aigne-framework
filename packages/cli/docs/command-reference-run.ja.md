@@ -100,12 +100,12 @@ aigne run https://github.com/AIGNE-io/aigne-framework/tree/main/examples/default
 
 ### インタラクティブチャットモードでの実行
 
-対話型 agent の場合、`--chat` フラグを使用してインタラクティブなターミナルセッションを開始します。
+対話型 agent の場合、`--interactive` フラグを使用してインタラクティブなターミナルセッションを開始します。
 
 ![チャットモードで agent を実行中](../assets/run/run-default-template-project-in-chat-mode.png)
 
 ```bash チャットセッションを開始 icon=lucide:messages-square
-aigne run --chat
+aigne run --interactive
 ```
 
 チャットループ内では、`/exit` のようなコマンドで終了したり、`/help` でヘルプを表示したりできます。また、パスの前に `@` を付けることで、ローカルファイルをメッセージに添付することもできます。
@@ -164,7 +164,7 @@ aigne run image-describer --input-file cat.png --input "What is in this image?"
 
 | オプション | 説明 |
 |---|---|
-| `--chat` | agent をターミナル内のインタラクティブなチャットループで実行します。 |
+| `--interactive` | agent をターミナル内のインタラクティブなチャットループで実行します。 |
 | `--log-level <level>` | ログレベルを設定します。利用可能なレベル: `debug`、`info`、`warn`、`error`、`silent`。デフォルト: `silent`。 |
 
 ### モデルオプション

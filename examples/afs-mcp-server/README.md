@@ -41,7 +41,7 @@ export GITHUB_PERSONAL_ACCESS_TOKEN=your_github_token_here
 export OPENAI_API_KEY=your_openai_api_key_here
 
 # Run in interactive chat mode
-npx -y @aigne/example-afs-mcp-server --chat
+npx -y @aigne/example-afs-mcp-server --interactive
 
 # Ask a specific question
 npx -y @aigne/example-afs-mcp-server --input "Search for a repo named aigne"
@@ -116,7 +116,7 @@ For detailed configuration examples, please refer to the `.env.local.example` fi
 
 ```bash
 # Run in interactive chat mode
-pnpm start --chat
+pnpm start --interactive
 
 # Run with a single message
 pnpm start --input "What are the recent issues in the AIGNE repository?"
@@ -177,7 +177,7 @@ npx -y @aigne/example-afs-mcp-server --input "Tell me about the AIGNE-io/aigne-f
 npx -y @aigne/example-afs-mcp-server --input "What are the recent open issues in AIGNE-io/aigne-framework?"
 
 # Interactive mode - ask follow-up questions naturally
-npx -y @aigne/example-afs-mcp-server --chat
+npx -y @aigne/example-afs-mcp-server --interactive
 ```
 
 **In chat mode, try:**

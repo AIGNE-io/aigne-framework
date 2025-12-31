@@ -26,7 +26,7 @@ This example demonstrates how to create a chatbot with image capabilities using 
 npx -y @aigne/example-nano-banana --input 'Draw an image of a lovely cat'
 
 # Run in interactive chat mode
-npx -y @aigne/example-nano-banana --chat
+npx -y @aigne/example-nano-banana --interactive
 ```
 
 ### Connect to an AI Model

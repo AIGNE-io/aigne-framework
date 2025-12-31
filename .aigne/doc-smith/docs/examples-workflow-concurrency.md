@@ -74,7 +74,7 @@ Execute the following commands in your terminal to run the workflow in different
 *   **Interactive Chat Mode**: Starts a chat session where you can provide multiple inputs.
 
     ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-concurrency --chat
+    npx -y @aigne/example-workflow-concurrency --interactive
     ```
 
 *   **Pipeline Mode**: Uses input piped from another command.
@@ -109,7 +109,7 @@ You have several options to proceed:
 
     ```bash icon=lucide:terminal
     export OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
-    npx -y @aigne/example-workflow-concurrency --chat
+    npx -y @aigne/example-workflow-concurrency --interactive
     ```
 
 ## Installation from Source
@@ -144,7 +144,7 @@ Use the `pnpm start` command to execute the workflow. Command-line arguments mus
 *   **Run in interactive chat mode:**
 
     ```bash icon=lucide:terminal
-    pnpm start -- --chat
+    pnpm start -- --interactive
     ```
 
 *   **Use pipeline input:**
@@ -159,7 +159,7 @@ The application supports several command-line parameters for customization:
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--chat` | Run in interactive chat mode. | Disabled (one-shot mode) |
+| `--interactive` | Run in interactive chat mode. | Disabled (one-shot mode) |
 | `--model <provider[:model]>` | Specify the AI model to use (e.g., `openai` or `openai:gpt-4o-mini`). | `openai` |
 | `--temperature <value>` | Set the temperature for model generation. | Provider default |
 | `--top-p <value>` | Set the top-p sampling value. | Provider default |

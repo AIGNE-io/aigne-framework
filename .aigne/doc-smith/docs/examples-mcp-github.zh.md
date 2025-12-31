@@ -151,7 +151,7 @@ pnpm start
 该示例还支持交互式聊天模式，并可以接受来自其他命令的管道输入。
 
 ```bash 以交互式聊天模式运行 icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ```bash 使用管道输入 icon=lucide:terminal
@@ -164,7 +164,7 @@ echo "Search for repositories related to 'modelcontextprotocol'" | pnpm start
 
 | 参数 | 描述 | 默认值 |
 | ------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------ |
-| `--chat` | 以交互式聊天模式运行。 | 已禁用 |
+| `--interactive` | 以交互式聊天模式运行。 | 已禁用 |
 | `--model <provider[:model]>` | 指定要使用的 AI 模型（例如 `openai` 或 `openai:gpt-4o-mini`）。 | `openai` |
 | `--temperature <value>` | 设置模型生成的温度。 | 提供商默认值 |
 | `--top-p <value>` | 设置 top-p 采样值。 | 提供商默认值 |

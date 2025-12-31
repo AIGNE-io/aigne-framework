@@ -60,14 +60,14 @@ You can run this example directly without cloning the repository using `npx`.
 
 ### Step 1: Run the Example
 
-Open your terminal and execute one of the following commands. The `--chat` flag enables an interactive session where you can have a continuous conversation.
+Open your terminal and execute one of the following commands. The `--interactive` flag enables an interactive session where you can have a continuous conversation.
 
 ```bash Run in one-shot mode icon=lucide:terminal
 npx -y @aigne/example-workflow-handoff
 ```
 
 ```bash Run in interactive chat mode icon=lucide:terminal
-npx -y @aigne/example-workflow-handoff --chat
+npx -y @aigne/example-workflow-handoff --interactive
 ```
 
 You can also pipe input directly into the command:
@@ -192,14 +192,14 @@ pnpm install
 
 ### 3. Run the Example
 
-Use the `pnpm start` command. To pass additional arguments like `--chat`, add an extra `--` before them.
+Use the `pnpm start` command. To pass additional arguments like `--interactive`, add an extra `--` before them.
 
 ```bash Run in one-shot mode icon=lucide:terminal
 pnpm start
 ```
 
 ```bash Run in interactive chat mode icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ## Command-Line Options
@@ -208,7 +208,7 @@ The example script accepts several command-line arguments to customize its behav
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--chat` | Run in interactive chat mode. | Disabled |
+| `--interactive` | Run in interactive chat mode. | Disabled |
 | `--model <provider[:model]>` | AI model to use (e.g., `openai` or `openai:gpt-4o-mini`). | `openai` |
 | `--temperature <value>` | Temperature for model generation. | Provider default |
 | `--top-p <value>` | Top-p sampling value. | Provider default |

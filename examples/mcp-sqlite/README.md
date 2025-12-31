@@ -83,7 +83,7 @@ AI ->> User: There are 10 products in the database.
 npx -y @aigne/example-mcp-sqlite
 
 # Run in interactive chat mode
-npx -y @aigne/example-mcp-sqlite --chat
+npx -y @aigne/example-mcp-sqlite --interactive
 
 # Use pipeline input
 echo "create a product table with columns name description and createdAt" | npx -y @aigne/example-mcp-sqlite
@@ -91,7 +91,7 @@ echo "create a product table with columns name description and createdAt" | npx 
 
 ### Connect to an AI Model
 
-As an example, running `npx -y @aigne/example-mcp-sqlite --chat"` requires an AI model. If this is your first run, you need to connect one.
+As an example, running `npx -y @aigne/example-mcp-sqlite --interactive"` requires an AI model. If this is your first run, you need to connect one.
 
 ![run example](./run-example.png)
 
@@ -152,7 +152,7 @@ pnpm install
 pnpm start # Run in one-shot mode (default)
 
 # Run in interactive chat mode
-pnpm start -- --chat
+pnpm start -- --interactive
 
 # Use pipeline input
 echo "create a product table with columns name description and createdAt" | pnpm start
@@ -164,7 +164,7 @@ The example supports the following command-line parameters:
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--chat` | Run in interactive chat mode | Disabled (one-shot mode) |
+| `--interactive` | Run in interactive chat mode | Disabled (one-shot mode) |
 | `--model <provider[:model]>` | AI model to use in format 'provider\[:model]' where model is optional. Examples: 'openai' or 'openai:gpt-4o-mini' | openai |
 | `--temperature <value>` | Temperature for model generation | Provider default |
 | `--top-p <value>` | Top-p sampling value | Provider default |
@@ -177,7 +177,7 @@ The example supports the following command-line parameters:
 
 ```bash
 # Run in chat mode (interactive)
-pnpm start -- --chat
+pnpm start -- --interactive
 
 # Set logging level
 pnpm start -- --log-level DEBUG

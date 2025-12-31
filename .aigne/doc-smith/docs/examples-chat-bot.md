@@ -30,9 +30,9 @@ Run in default one-shot mode:
 npx -y @aigne/example-chat-bot
 ```
 
-Run in interactive chat mode using the `--chat` flag:
+Run in interactive chat mode using the `--interactive` flag:
 ```bash npx command icon=lucide:terminal
-npx -y @aigne/example-chat-bot --chat
+npx -y @aigne/example-chat-bot --interactive
 ```
 
 Use pipeline input to provide a prompt directly:
@@ -150,7 +150,7 @@ pnpm start
 
 Run in interactive chat mode:
 ```bash pnpm command icon=lucide:terminal
-pnpm start --chat
+pnpm start --interactive
 ```
 
 Use pipeline input:
@@ -164,7 +164,7 @@ The chatbot script accepts several command-line arguments to customize its behav
 
 | Parameter | Description | Default |
 |---|---|---|
-| `--chat` | Run in interactive chat mode. If omitted, runs in one-shot mode. | `Disabled` |
+| `--interactive` | Run in interactive chat mode. If omitted, runs in one-shot mode. | `Disabled` |
 | `--model <provider[:model]>` | Specifies the AI model to use. The format is `provider[:model]`. Examples: `openai` or `openai:gpt-4o-mini`. | `openai` |
 | `--temperature <value>` | Sets the temperature for model generation, controlling randomness. | Provider default |
 | `--top-p <value>` | Sets the top-p (nucleus sampling) value for model generation. | Provider default |

@@ -34,9 +34,9 @@ You can run this example directly without a local installation using `npx`.
     ```bash icon=lucide:terminal
     # Clone the repository to use its docs
     git clone https://github.com/AIGNE-io/aigne-framework
-    
+
     # Start the chatbot in interactive mode, pointing to the docs
-    npx -y @aigne/example-afs-local-fs --path ./aigne-framework --chat
+    npx -y @aigne/example-afs-local-fs --path ./aigne-framework --interactive
     ```
 
     Alternatively, you can ask a single, specific question:
@@ -183,7 +183,7 @@ If you prefer to run the example from the source code, follow these steps.
     pnpm start --path ~/Documents --description "My Documents"
 
     # Run in interactive chat mode
-    pnpm start --path . --chat
+    pnpm start --path . --interactive
     ```
 
 ## Use Cases

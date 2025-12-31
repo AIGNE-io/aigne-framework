@@ -21,10 +21,10 @@ Execute the following command in your terminal to run the chatbot with a single 
 npx -y @aigne/example-nano-banana --input 'Draw an image of a lovely cat'
 ```
 
-To start an interactive session where you can have a conversation with the chatbot, use the `--chat` flag.
+To start an interactive session where you can have a conversation with the chatbot, use the `--interactive` flag.
 
 ```bash Run in interactive mode icon=lucide:terminal
-npx -y @aigne/example-nano-banana --chat
+npx -y @aigne/example-nano-banana --interactive
 ```
 
 ### Connect to an AI Model

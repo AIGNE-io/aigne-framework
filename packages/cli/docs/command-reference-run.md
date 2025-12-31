@@ -100,12 +100,12 @@ aigne run https://github.com/AIGNE-io/aigne-framework/tree/main/examples/default
 
 ### Running in Interactive Chat Mode
 
-For conversational agents, use the `--chat` flag to start an interactive terminal session.
+For conversational agents, use the `--interactive` flag to start an interactive terminal session.
 
 ![Running an agent in chat mode](../assets/run/run-default-template-project-in-chat-mode.png)
 
 ```bash Start a chat session icon=lucide:messages-square
-aigne run --chat
+aigne run --interactive
 ```
 
 Inside the chat loop, you can use commands like `/exit` to quit and `/help` for assistance. You can also attach local files to your message by prefixing the path with `@`.
@@ -164,7 +164,7 @@ aigne run image-describer --input-file cat.png --input "What is in this image?"
 
 | Option | Description |
 |---|---|
-| `--chat` | Run the agent in an interactive chat loop in the terminal. |
+| `--interactive` | Run the agent in an interactive chat loop in the terminal. |
 | `--log-level <level>` | Set the logging level. Available levels: `debug`, `info`, `warn`, `error`, `silent`. Default: `silent`. |
 
 ### Model Options

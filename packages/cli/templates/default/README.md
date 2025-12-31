@@ -42,7 +42,7 @@ echo "Hello, what can you help me with?" | aigne run
 use the following command to start an interactive chat session:
 
 ```bash
-aigne run --chat
+aigne run --interactive
 ```
 
 help:

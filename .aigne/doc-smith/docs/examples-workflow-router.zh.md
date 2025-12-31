@@ -69,10 +69,10 @@ Specialized-Agents.other -> User: "响应"
     ```
 
 2.  **交互式聊天模式**
-    使用 `--chat` 标志启动一个交互式会话，您可以在其中发送多条消息。
+    使用 `--interactive` 标志启动一个交互式会话，您可以在其中发送多条消息。
 
     ```bash icon=lucide:terminal
-    npx -y @aigne/example-workflow-router --chat
+    npx -y @aigne/example-workflow-router --interactive
     ```
 
 3.  **管道模式**
@@ -217,7 +217,7 @@ console.log(result3);
 
 | 参数 | 描述 | 默认值 |
 |---|---|---|
-| `--chat` | 以交互式聊天模式运行，而非单次模式。 | 禁用 |
+| `--interactive` | 以交互式聊天模式运行，而非单次模式。 | 禁用 |
 | `--model <provider[:model]>` | 指定要使用的 AI 模型（例如 `openai` 或 `openai:gpt-4o-mini`）。 | `openai` |
 | `--temperature <value>` | 设置模型生成的温度。 | 提供商默认值 |
 | `--top-p <value>` | 设置 top-p 抽样值。 | 提供商默认值 |
@@ -229,7 +229,7 @@ console.log(result3);
 #### 示例
 
 ```bash 以交互模式运行 icon=lucide:terminal
-npx -y @aigne/example-workflow-router --chat
+npx -y @aigne/example-workflow-router --interactive
 ```
 
 ```bash 设置特定模型和温度 icon=lucide:terminal

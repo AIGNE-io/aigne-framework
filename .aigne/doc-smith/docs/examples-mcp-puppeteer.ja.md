@@ -94,7 +94,7 @@ npx -y @aigne/example-mcp-puppeteer
 
 ```sh 対話型チャットモードで実行 icon=lucide:terminal
 # 対話型チャットモードで実行
-npx -y @aigne/example-mcp-puppeteer --chat
+npx -y @aigne/example-mcp-puppeteer --interactive
 ```
 
 ```sh パイプライン入力を使用 icon=lucide:terminal
@@ -156,7 +156,7 @@ pnpm start
 コマンドライン引数をスクリプトに渡すには、`--` で区切ります。
 
 ```sh ソースからチャットモードで実行 icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 ## コード例
@@ -217,7 +217,7 @@ await aigne.shutdown();
 
 | パラメーター | 説明 | デフォルト |
 |-----------|-------------|---------|
-| `--chat` | 対話型チャットモードで実行します。 | 無効 |
+| `--interactive` | 対話型チャットモードで実行します。 | 無効 |
 | `--model <provider[:model]>` | AI モデルを指定します。例: `openai`、`openai:gpt-4o-mini`。 | `openai` |
 | `--temperature <value>` | モデル生成の temperature を設定します。 | プロバイダーのデフォルト |
 | `--top-p <value>` | top-p サンプリング値を設定します。 | プロバイダーのデフォルト |

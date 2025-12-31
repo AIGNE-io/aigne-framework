@@ -46,9 +46,9 @@ class reviewer processing
 npx -y @aigne/example-workflow-reflection
 ```
 
-若要进行交互式会话，请使用 `--chat` 标志：
+若要进行交互式会话，请使用 `--interactive` 标志：
 ```bash npx command icon=lucide:terminal
-npx -y @aigne/example-workflow-reflection --chat
+npx -y @aigne/example-workflow-reflection --interactive
 ```
 
 您也可以将输入直接通过管道传递给命令：
@@ -143,10 +143,10 @@ pnpm install
 pnpm start
 ```
 
-要在交互式聊天模式下运行，请附加 `--chat` 标志。需要额外的 `--` 将标志传递给脚本而不是 `pnpm` 本身。
+要在交互式聊天模式下运行，请附加 `--interactive` 标志。需要额外的 `--` 将标志传递给脚本而不是 `pnpm` 本身。
 
 ```bash 以交互模式运行 icon=lucide:terminal
-pnpm start -- --chat
+pnpm start -- --interactive
 ```
 
 通过管道提供输入：

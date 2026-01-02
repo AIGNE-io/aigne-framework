@@ -18,6 +18,7 @@ aigne <command> [options]
 
 Commands:
   aigne run [path] [entry-agent]  Run AIGNE for the specified path  [default]
+  aigne run-skill                 Run Agent Skill for the specified path
   aigne eval [path] [agent]       Evaluate AIGNE for the specified path
   aigne test                      Run tests in the specified agents directory
   aigne create [path]             Create a new aigne project with agent config files

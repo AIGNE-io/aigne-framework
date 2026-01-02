@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.2.6-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-local-fs-v1.2.6-beta.12...example-afs-local-fs-v1.2.6-beta.13) (2026-01-02)
+
+
+### Bug Fixes
+
+* **cli:** rename cmd option --chat to --interactive ([#865](https://github.com/AIGNE-io/aigne-framework/issues/865)) ([480eca4](https://github.com/AIGNE-io/aigne-framework/commit/480eca49a7381a330024f1f0026bbc5f89b57bbb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.9
+    * @aigne/cli bumped to 1.59.0-beta.12
+    * @aigne/core bumped to 1.72.0-beta.9
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.9
+
 ## [1.2.6-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-local-fs-v1.2.6-beta.11...example-afs-local-fs-v1.2.6-beta.12) (2025-12-31)
 
 

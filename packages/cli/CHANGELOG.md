@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.59.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.11...cli-v1.59.0-beta.12) (2026-01-02)
+
+
+### Features
+
+* **cli:** add run-skill command ([#868](https://github.com/AIGNE-io/aigne-framework/issues/868)) ([f62ffe2](https://github.com/AIGNE-io/aigne-framework/commit/f62ffe21acc49ec1a68349fbb35a13d0fadd239a))
+
+
+### Bug Fixes
+
+* **cli:** add chat aliases for interactive option ([#867](https://github.com/AIGNE-io/aigne-framework/issues/867)) ([91f27fd](https://github.com/AIGNE-io/aigne-framework/commit/91f27fd874b8c4b2ded2d7cd46e2821f70943c69))
+* **cli:** rename cmd option --chat to --interactive ([#865](https://github.com/AIGNE-io/aigne-framework/issues/865)) ([480eca4](https://github.com/AIGNE-io/aigne-framework/commit/480eca49a7381a330024f1f0026bbc5f89b57bbb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.9
+    * @aigne/agent-library bumped to 1.24.0-beta.11
+    * @aigne/agentic-memory bumped to 1.1.6-beta.9
+    * @aigne/aigne-hub bumped to 0.10.16-beta.13
+    * @aigne/core bumped to 1.72.0-beta.9
+    * @aigne/default-memory bumped to 1.4.0-beta.8
+    * @aigne/openai bumped to 0.16.16-beta.9
+    * @aigne/secrets bumped to 0.1.6-beta.9
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.9
+
 ## [1.59.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.10...cli-v1.59.0-beta.11) (2025-12-31)
 
 

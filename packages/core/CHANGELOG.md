@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.72.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.8...core-v1.72.0-beta.9) (2026-01-02)
+
+
+### Features
+
+* **cli:** add run-skill command ([#868](https://github.com/AIGNE-io/aigne-framework/issues/868)) ([f62ffe2](https://github.com/AIGNE-io/aigne-framework/commit/f62ffe21acc49ec1a68349fbb35a13d0fadd239a))
+
 ## [1.72.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.7...core-v1.72.0-beta.8) (2025-12-31)
 
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.15.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.15.0-beta.11...example-workflow-orchestrator-v1.15.0-beta.12) (2026-01-02)
+
+
+### Bug Fixes
+
+* **cli:** rename cmd option --chat to --interactive ([#865](https://github.com/AIGNE-io/aigne-framework/issues/865)) ([480eca4](https://github.com/AIGNE-io/aigne-framework/commit/480eca49a7381a330024f1f0026bbc5f89b57bbb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.24.0-beta.11
+    * @aigne/cli bumped to 1.59.0-beta.12
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.9
+
 ## [1.15.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.15.0-beta.10...example-workflow-orchestrator-v1.15.0-beta.11) (2025-12-31)
 
 

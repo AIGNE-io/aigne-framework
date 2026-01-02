@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.91.0-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.12...aigne-framework-v1.91.0-beta.13) (2026-01-02)
+
+
+### Features
+
+* **cli:** add run-skill command ([#868](https://github.com/AIGNE-io/aigne-framework/issues/868)) ([f62ffe2](https://github.com/AIGNE-io/aigne-framework/commit/f62ffe21acc49ec1a68349fbb35a13d0fadd239a))
+
+
+### Bug Fixes
+
+* **cli:** add chat aliases for interactive option ([#867](https://github.com/AIGNE-io/aigne-framework/issues/867)) ([91f27fd](https://github.com/AIGNE-io/aigne-framework/commit/91f27fd874b8c4b2ded2d7cd46e2821f70943c69))
+* **cli:** rename cmd option --chat to --interactive ([#865](https://github.com/AIGNE-io/aigne-framework/issues/865)) ([480eca4](https://github.com/AIGNE-io/aigne-framework/commit/480eca49a7381a330024f1f0026bbc5f89b57bbb))
+
 ## [1.91.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.11...aigne-framework-v1.91.0-beta.12) (2025-12-31)
 
 

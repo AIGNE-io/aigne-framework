@@ -7,6 +7,21 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.24.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.10...agent-library-v1.24.0-beta.11) (2026-01-02)
+
+
+### Features
+
+* **cli:** add run-skill command ([#868](https://github.com/AIGNE-io/aigne-framework/issues/868)) ([f62ffe2](https://github.com/AIGNE-io/aigne-framework/commit/f62ffe21acc49ec1a68349fbb35a13d0fadd239a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.9
+    * @aigne/openai bumped to 0.16.16-beta.9
+
 ## [1.24.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.9...agent-library-v1.24.0-beta.10) (2025-12-31)
 
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.15.91-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.15.91-beta.12...example-chat-bot-v1.15.91-beta.13) (2026-01-02)
+
+
+### Bug Fixes
+
+* **cli:** rename cmd option --chat to --interactive ([#865](https://github.com/AIGNE-io/aigne-framework/issues/865)) ([480eca4](https://github.com/AIGNE-io/aigne-framework/commit/480eca49a7381a330024f1f0026bbc5f89b57bbb))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.59.0-beta.12
+
 ## [1.15.91-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/example-chat-bot-v1.15.91-beta.11...example-chat-bot-v1.15.91-beta.12) (2025-12-31)
 
 

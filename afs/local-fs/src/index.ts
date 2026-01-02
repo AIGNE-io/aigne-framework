@@ -30,6 +30,7 @@ export interface LocalFSOptions {
   localPath: string;
   description?: string;
   ignore?: string[];
+  [key: string]: unknown;
 }
 
 const localFSOptionsSchema = z.object({

@@ -30,4 +30,11 @@ export default class AgentSkillManagerAgent<
       },
     });
   }
+
+  constructor(options: AgentSkillManagerOptions<I, O>) {
+    super({
+      ...options,
+      instructions: options.instructions || AgentSkillManagerSystemPrompt,
+    });
+  }
 }

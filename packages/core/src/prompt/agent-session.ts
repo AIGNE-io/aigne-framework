@@ -88,14 +88,17 @@ export class AgentSession {
     ];
 
     // Filter out thinking messages from content
-    return messages.map((msg) => {
-      if (!msg.content || typeof msg.content === "string") {
-        return msg;
-      }
-      // Filter out thinking from UnionContent[]
-      const filteredContent = msg.content.filter((c) => !(c.type === "text" && c.isThinking));
-      return { ...msg, content: filteredContent.length > 0 ? filteredContent : undefined };
-    });
+    return messages
+      .map((msg) => {
+        if (!msg.content || typeof msg.content === "string") {
+          return msg;
+        }
+        // Filter out thinking from UnionContent[]
+        const filteredContent = msg.content.filter((c) => !(c.type === "text" && c.isThinking));
+        if (filteredContent.length === 0) return null;
+        return { ...msg, content: filteredContent };
+      })
+      .filter(isNonNullable);
   }
 
   async startMessage(

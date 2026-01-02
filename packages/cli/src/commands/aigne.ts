@@ -8,6 +8,7 @@ import { createEvalCommand } from "./eval.js";
 import { createHubCommand } from "./hub.js";
 import { createObservabilityCommand } from "./observe.js";
 import { createRunCommand } from "./run.js";
+import { createRunSkillCommand } from "./run-skill.js";
 import { createServeMCPCommand } from "./serve-mcp.js";
 import { createTestCommand } from "./test.js";
 
@@ -19,6 +20,7 @@ export function createAIGNECommand(options?: { argv?: string[]; aigneFilePath?: 
       .version(AIGNE_CLI_VERSION)
       // default command: when user runs `aigne` without subcommand, behave like `aigne run`
       .command(createRunCommand(options))
+      .command(createRunSkillCommand())
       .command(createEvalCommand(options))
       .command(createTestCommand(options))
       .command(createCreateCommand())

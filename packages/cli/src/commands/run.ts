@@ -53,6 +53,7 @@ export function createRunCommand({
           describe: "Run in interactive chat mode",
           type: "boolean",
           default: false,
+          alias: ["chat"],
         })
         .help(false)
         .version(false)

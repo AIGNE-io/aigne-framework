@@ -100,24 +100,28 @@ test("app command should register doc-smith to yargs", async () => {
                                agent definitions or models.                 [string]
 
     Options:
-          --interactive  Run in interactive chat mode     [boolean] [default: false]
-          --session-id   Session ID for chat-based agents to maintain context across
-                         interactions                                       [string]
-      -i, --input        Input to the agent, use @<file> to read from a file [array]
-          --input-file   Input files to the agent                            [array]
-          --format       Input format for the agent (available: text, json, yaml
-                         default: text)   [string] [choices: "text", "json", "yaml"]
-      -o, --output       Output file to save the result (default: stdout)   [string]
-          --output-key   Key in the result to save to the output file
-                                                       [string] [default: "message"]
-          --force        Truncate the output file if it exists, and create directory
-                         if the output path does not exists
+          --interactive, --chat  Run in interactive chat mode
                                                           [boolean] [default: false]
-          --log-level    Log level for detailed debugging information. Values:
-                         silent, error, warn, info, debug
+          --session-id           Session ID for chat-based agents to maintain
+                                 context across interactions                [string]
+      -i, --input                Input to the agent, use @<file> to read from a file
+                                                                             [array]
+          --input-file           Input files to the agent                    [array]
+          --format               Input format for the agent (available: text, json,
+                                 yaml default: text)
+                                          [string] [choices: "text", "json", "yaml"]
+      -o, --output               Output file to save the result (default: stdout)
+                                                                            [string]
+          --output-key           Key in the result to save to the output file
+                                                       [string] [default: "message"]
+          --force                Truncate the output file if it exists, and create
+                                 directory if the output path does not exists
+                                                          [boolean] [default: false]
+          --log-level            Log level for detailed debugging information.
+                                 Values: silent, error, warn, info, debug
                                                         [string] [default: "silent"]
-      -v, --version      Show version number                               [boolean]
-      -h, --help         Show help                                         [boolean]"
+      -v, --version              Show version number                       [boolean]
+      -h, --help                 Show help                                 [boolean]"
   `);
 
   const runWithAIGNESpy = spyOn(runWithAIGNE, "runAgentWithAIGNE").mockReturnValueOnce(
@@ -152,6 +156,7 @@ test("app command should register doc-smith to yargs", async () => {
         "_": [
           "generate",
         ],
+        "chat": false,
         "force": false,
         "input": {
           "title": "test title to generate",

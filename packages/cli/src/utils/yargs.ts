@@ -44,6 +44,7 @@ export const withRunAgentCommonOptions = (yargs: Argv) =>
       describe: "Run in interactive chat mode",
       type: "boolean",
       default: false,
+      alias: ["chat"],
     })
     .option("session-id", {
       describe: "Session ID for chat-based agents to maintain context across interactions",

@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.6-beta.14](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-local-fs-v1.2.6-beta.13...example-afs-local-fs-v1.2.6-beta.14) (2026-01-04)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.59.0-beta.13
+
 ## [1.2.6-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-local-fs-v1.2.6-beta.12...example-afs-local-fs-v1.2.6-beta.13) (2026-01-02)
 
 

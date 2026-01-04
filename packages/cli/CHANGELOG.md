@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.59.0-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.12...cli-v1.59.0-beta.13) (2026-01-04)
+
+
+### Bug Fixes
+
+* **cli:** add askUserQuestion for run-skill command ([9c621e7](https://github.com/AIGNE-io/aigne-framework/commit/9c621e7c55501d129e71966da79514717a4579ab))
+
 ## [1.59.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.11...cli-v1.59.0-beta.12) (2026-01-02)
 
 

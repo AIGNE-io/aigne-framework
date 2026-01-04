@@ -502,6 +502,8 @@ export type TextContent = {
 
   isThinking?: boolean;
 
+  isAgentSkill?: boolean;
+
   /**
    * Cache control marker (only supported by Claude)
    *

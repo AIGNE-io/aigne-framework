@@ -35,6 +35,10 @@ interface RuntimeState {
   compactSummary?: string;
   historyEntries: AFSEntry<EntryContent>[];
   currentEntry: EntryContent | null;
+  currentEntryCompression?: {
+    summary: string;
+    compressedCount: number;
+  };
 }
 
 export class AgentSession {
@@ -71,7 +75,37 @@ export class AgentSession {
   async getMessages(): Promise<ChatModelInputMessage[]> {
     await this.ensureInitialized();
 
-    const { systemMessages, compactSummary, historyEntries, currentEntry } = this.runtimeState;
+    const {
+      systemMessages,
+      compactSummary,
+      historyEntries,
+      currentEntry,
+      currentEntryCompression,
+    } = this.runtimeState;
+
+    let currentMessages: ChatModelInputMessage[] = [];
+    if (currentEntry?.messages?.length) {
+      if (currentEntryCompression) {
+        const { compressedCount, summary } = currentEntryCompression;
+
+        const firstMsg = currentEntry.messages[0];
+        const hasSkill =
+          firstMsg?.role === "user" &&
+          Array.isArray(firstMsg.content) &&
+          firstMsg.content.some((block) => block.type === "text" && block.isAgentSkill === true);
+
+        const skillMessage = hasSkill ? [firstMsg] : [];
+        const summaryMessage = {
+          role: "user" as const,
+          content: `[Earlier messages in this conversation (${compressedCount} messages compressed)]\n${summary}`,
+        };
+        const remainingMessages = currentEntry.messages.slice(compressedCount);
+
+        currentMessages = [...skillMessage, summaryMessage, ...remainingMessages];
+      } else {
+        currentMessages = currentEntry.messages;
+      }
+    }
 
     const messages = [
       ...(systemMessages ?? []),
@@ -84,10 +118,10 @@ export class AgentSession {
           ]
         : []),
       ...historyEntries.flatMap((entry) => entry.content?.messages ?? []),
-      ...(currentEntry?.messages ?? []),
+      ...currentMessages,
     ];
 
-    // Filter out thinking messages from content
+    // Filter out thinking messages and truncate large messages
     return messages
       .map((msg) => {
         if (!msg.content || typeof msg.content === "string") {
@@ -98,7 +132,8 @@ export class AgentSession {
         if (filteredContent.length === 0) return null;
         return { ...msg, content: filteredContent };
       })
-      .filter(isNonNullable);
+      .filter(isNonNullable)
+      .map((msg) => this.truncateLargeMessage(msg));
   }
 
   async startMessage(
@@ -114,10 +149,15 @@ export class AgentSession {
     // This ensures data consistency even in async compact mode
     if (this.compactionPromise) await this.compactionPromise;
 
+    this.runtimeState.currentEntryCompression = undefined;
     this.runtimeState.currentEntry = { input, messages: [message] };
   }
 
-  async endMessage(output: unknown, options: AgentInvokeOptions): Promise<void> {
+  async endMessage(
+    output: unknown,
+    message: ChatModelInputMessage | undefined,
+    options: AgentInvokeOptions,
+  ): Promise<void> {
     await this.ensureInitialized();
 
     if (
@@ -127,6 +167,7 @@ export class AgentSession {
       throw new Error("No current entry to end. Call startMessage() first.");
     }
 
+    if (message) this.runtimeState.currentEntry.messages.push(message);
     this.runtimeState.currentEntry.output = output;
 
     let newEntry: AFSEntry<EntryContent>;
@@ -155,6 +196,7 @@ export class AgentSession {
 
     this.runtimeState.historyEntries.push(newEntry);
     this.runtimeState.currentEntry = null;
+    this.runtimeState.currentEntryCompression = undefined;
 
     // Check if auto-compact should be triggered
     await this.maybeAutoCompact(options);
@@ -183,7 +225,7 @@ export class AgentSession {
    * Internal method that performs the actual compaction
    */
   private async doCompact(options: AgentInvokeOptions): Promise<void> {
-    const { compactor, keepRecentRatio } = this.compactConfig ?? {};
+    const { compactor } = this.compactConfig ?? {};
     if (!compactor) {
       throw new Error("Cannot compact without a compactor agent configured.");
     }
@@ -191,10 +233,8 @@ export class AgentSession {
     const historyEntries = this.runtimeState.historyEntries;
     if (historyEntries.length === 0) return;
 
-    // Calculate token budget for keeping recent messages
-    const ratio = keepRecentRatio ?? DEFAULT_KEEP_RECENT_RATIO;
-    const maxTokens = this.compactConfig?.maxTokens ?? DEFAULT_MAX_TOKENS;
-    let keepTokenBudget = Math.floor(maxTokens * ratio);
+    const maxTokens = this.maxTokens;
+    let keepTokenBudget = this.keepTokenBudget;
 
     // Calculate tokens for system messages
     const systemTokens = (this.runtimeState.systemMessages ?? []).reduce((sum, msg) => {
@@ -255,9 +295,14 @@ export class AgentSession {
     // Process batches incrementally, each summary becomes input for the next
     let currentSummary = this.runtimeState.compactSummary;
     for (const batch of batches) {
+      const messages = batch
+        .flatMap((e) => e.content?.messages ?? [])
+        .filter(isNonNullable)
+        .map((msg) => this.truncateLargeMessage(msg));
+
       const result = await options.context.invoke(compactor, {
         previousSummary: [currentSummary].filter(isNonNullable),
-        messages: batch.flatMap((e) => e.content?.messages ?? []).filter(isNonNullable),
+        messages,
       });
       currentSummary = result.summary;
     }
@@ -282,21 +327,118 @@ export class AgentSession {
     this.runtimeState.historyEntries = entriesToKeep;
   }
 
+  private async compactCurrentEntry(options: AgentInvokeOptions): Promise<void> {
+    const { compactor } = this.compactConfig ?? {};
+    if (!compactor) return;
+
+    const currentEntry = this.runtimeState.currentEntry;
+    if (!currentEntry?.messages?.length) return;
+
+    const alreadyCompressedCount = this.runtimeState.currentEntryCompression?.compressedCount ?? 0;
+    const uncompressedMessages = currentEntry.messages.slice(alreadyCompressedCount);
+
+    if (uncompressedMessages.length === 0) return;
+
+    const keepTokenBudget = this.keepTokenBudget;
+    const singleMessageLimit = this.singleMessageLimit;
+
+    let splitIndex = uncompressedMessages.length;
+    let accumulatedTokens = 0;
+
+    for (let i = uncompressedMessages.length - 1; i >= 0; i--) {
+      const msg = uncompressedMessages[i];
+      if (!msg) continue;
+
+      const content =
+        typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content ?? "");
+      const msgTokens = estimateTokens(content);
+
+      const effectiveTokens = msgTokens > singleMessageLimit ? singleMessageLimit : msgTokens;
+
+      if (accumulatedTokens + effectiveTokens > keepTokenBudget) {
+        splitIndex = i + 1;
+        break;
+      }
+
+      accumulatedTokens += effectiveTokens;
+      splitIndex = i;
+    }
+
+    const keptMessages = uncompressedMessages.slice(splitIndex);
+    const requiredToolCallIds = new Set<string>();
+
+    for (const msg of keptMessages) {
+      if (msg.role === "tool" && msg.toolCallId) {
+        requiredToolCallIds.add(msg.toolCallId);
+      }
+    }
+
+    if (requiredToolCallIds.size > 0) {
+      for (let i = splitIndex - 1; i >= 0; i--) {
+        const msg = uncompressedMessages[i];
+        if (!msg?.toolCalls) continue;
+
+        for (const toolCall of msg.toolCalls) {
+          if (requiredToolCallIds.has(toolCall.id)) {
+            splitIndex = i;
+            break;
+          }
+        }
+      }
+    }
+
+    const messagesToCompact = uncompressedMessages
+      .slice(0, splitIndex)
+      .map((msg) => this.truncateLargeMessage(msg));
+
+    if (messagesToCompact.length === 0) return;
+
+    const result = await options.context.invoke(compactor, {
+      previousSummary: this.runtimeState.currentEntryCompression?.summary
+        ? [this.runtimeState.currentEntryCompression.summary]
+        : undefined,
+      messages: messagesToCompact,
+    });
+
+    this.runtimeState.currentEntryCompression = {
+      summary: result.summary,
+      compressedCount: alreadyCompressedCount + messagesToCompact.length,
+    };
+  }
+
+  private async maybeCompactCurrentEntry(options: AgentInvokeOptions): Promise<void> {
+    const currentEntry = this.runtimeState.currentEntry;
+    if (!currentEntry?.messages?.length) return;
+
+    const compressedCount = this.runtimeState.currentEntryCompression?.compressedCount ?? 0;
+    const uncompressedMessages = currentEntry.messages.slice(compressedCount);
+
+    const threshold = this.keepTokenBudget;
+    const currentTokens = this.estimateMessagesTokens(
+      uncompressedMessages,
+      this.singleMessageLimit,
+    );
+
+    if (currentTokens > threshold) {
+      await this.compactCurrentEntry(options);
+    }
+  }
+
   private async maybeAutoCompact(options: AgentInvokeOptions): Promise<void> {
     if (this.compactionPromise) await this.compactionPromise;
 
     if (!this.compactConfig) return;
 
-    // Check if compaction is disabled
     const mode = this.compactConfig.mode ?? DEFAULT_COMPACT_MODE;
     if (mode === "disabled") return;
 
     const { compactor } = this.compactConfig;
-    const maxTokens = this.compactConfig.maxTokens ?? DEFAULT_MAX_TOKENS;
-
     if (!compactor) return;
 
-    const currentTokens = this.estimateMessagesTokens(await this.getMessages());
+    const maxTokens = this.maxTokens;
+
+    const messages = await this.getMessages();
+    const currentTokens = this.estimateMessagesTokens(messages);
 
     if (currentTokens >= maxTokens) {
       this.compact(options);
@@ -310,11 +452,20 @@ export class AgentSession {
   /**
    * Estimate token count for an array of messages
    */
-  private estimateMessagesTokens(messages: ChatModelInputMessage[]): number {
+  private estimateMessagesTokens(
+    messages: ChatModelInputMessage[],
+    singleMessageLimit?: number,
+  ): number {
     return messages.reduce((sum, msg) => {
       const content =
         typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content ?? "");
-      return sum + estimateTokens(content);
+      const tokens = estimateTokens(content);
+
+      if (singleMessageLimit && tokens > singleMessageLimit) {
+        return sum + singleMessageLimit;
+      }
+
+      return sum + tokens;
     }, 0);
   }
 
@@ -352,14 +503,44 @@ export class AgentSession {
     return batches;
   }
 
-  async appendCurrentMessages(...messages: ChatModelInputMessage[]): Promise<void> {
+  async appendCurrentMessages(
+    messages: ChatModelInputMessage | ChatModelInputMessage[],
+    options: AgentInvokeOptions,
+  ): Promise<void> {
     await this.ensureInitialized();
 
     if (!this.runtimeState.currentEntry || !this.runtimeState.currentEntry.messages?.length) {
       throw new Error("No current entry to append messages. Call startMessage() first.");
     }
 
-    this.runtimeState.currentEntry.messages.push(...messages);
+    this.runtimeState.currentEntry.messages.push(...[messages].flat());
+
+    await this.maybeCompactCurrentEntry(options);
+  }
+
+  private truncateLargeMessage(msg: ChatModelInputMessage): ChatModelInputMessage {
+    const content = typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content);
+    const tokens = estimateTokens(content);
+    const singleMessageLimit = this.singleMessageLimit;
+
+    if (tokens <= singleMessageLimit) return msg;
+
+    const keepRatio = (singleMessageLimit / tokens) * 0.9;
+    const keepLength = Math.floor(content.length * keepRatio);
+
+    const headLength = Math.floor(keepLength * 0.7);
+    const tailLength = Math.floor(keepLength * 0.3);
+
+    const truncated =
+      content.slice(0, headLength) +
+      `\n\n[... Content too large, truncated ${tokens - singleMessageLimit} tokens ...]\n\n` +
+      content.slice(-tailLength);
+
+    if (typeof msg.content === "string") {
+      return { ...msg, content: truncated };
+    }
+
+    return msg;
   }
 
   private async ensureInitialized(): Promise<void> {
@@ -427,5 +608,21 @@ export class AgentSession {
     this.compactConfig.compactor ??= await import("./compact/compactor.js").then(
       (m) => new m.AISessionCompactor(),
     );
+  }
+
+  private get maxTokens(): number {
+    return this.compactConfig?.maxTokens ?? DEFAULT_MAX_TOKENS;
+  }
+
+  private get keepRecentRatio(): number {
+    return this.compactConfig?.keepRecentRatio ?? DEFAULT_KEEP_RECENT_RATIO;
+  }
+
+  private get keepTokenBudget(): number {
+    return Math.floor(this.maxTokens * this.keepRecentRatio);
+  }
+
+  private get singleMessageLimit(): number {
+    return this.keepTokenBudget * 0.5;
   }
 }

@@ -242,9 +242,11 @@ When to use:
           });
 
           let stderr = "";
+          let stdout = "";
 
           child.stdout.on("data", (chunk) => {
             controller.enqueue({ delta: { text: { stdout: chunk.toString() } } });
+            stdout += chunk.toString();
           });
 
           child.stderr.on("data", (chunk) => {
@@ -261,7 +263,9 @@ When to use:
             if (signal) {
               const timeoutHint = signal === "SIGTERM" ? ` (likely timeout ${timeout})` : "";
               controller.error(
-                new Error(`Bash script killed by signal ${signal}${timeoutHint}: ${stderr}`),
+                new Error(
+                  `Bash script killed by signal ${signal}${timeoutHint}:\n stdout: ${stdout}\n stderr: ${stderr}`,
+                ),
               );
               return;
             }
@@ -272,11 +276,19 @@ When to use:
                 controller.enqueue({ delta: { json: { exitCode: code } } });
                 controller.close();
               } else {
-                controller.error(new Error(`Bash script exited with code ${code}: ${stderr}`));
+                controller.error(
+                  new Error(
+                    `Bash script exited with code ${code}:\n stdout: ${stdout}\n stderr: ${stderr}`,
+                  ),
+                );
               }
             } else {
               // Unexpected case: no code and no signal
-              controller.error(new Error(`Bash script closed unexpectedly: ${stderr}`));
+              controller.error(
+                new Error(
+                  `Bash script closed unexpectedly:\n stdout: ${stdout}\n stderr: ${stderr}`,
+                ),
+              );
             }
           });
         } catch (error) {

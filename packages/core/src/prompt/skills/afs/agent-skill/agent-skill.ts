@@ -21,6 +21,13 @@ export interface SkillToolOptions extends AgentOptions<SkillToolInput, SkillTool
 }
 
 export class AgentSkill extends Agent<SkillToolInput, SkillToolOutput> {
+  static formatOutput(output: SkillToolOutput | Message): string {
+    if (!("result" in output) || typeof output.result !== "string") {
+      throw new Error("Invalid SkillToolOutput: missing 'result' field");
+    }
+    return output.result;
+  }
+
   constructor(options: SkillToolOptions) {
     super({
       name: "Skill",

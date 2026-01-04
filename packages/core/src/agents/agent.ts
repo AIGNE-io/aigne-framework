@@ -183,6 +183,8 @@ export interface AgentOptions<I extends Message = Message, O extends Message = M
    */
   skills?: (Agent | FunctionAgentFn)[];
 
+  roleInToolUse?: Agent["roleInToolUse"];
+
   /**
    * Whether to disable emitting events for agent actions
    *
@@ -232,6 +234,7 @@ export const agentOptionsSchema: ZodObject<{
   outputSchema: z.custom<AgentInputOutputSchema>().optional(),
   includeInputInOutput: z.boolean().optional(),
   skills: z.array(z.union([z.custom<Agent>(), z.custom<FunctionAgentFn>()])).optional(),
+  roleInToolUse: z.union([z.undefined(), z.literal("user")]).optional(),
   disableEvents: z.boolean().optional(),
   memory: z.union([z.custom<MemoryAgent>(), z.array(z.custom<MemoryAgent>())]).optional(),
   asyncMemoryRecord: z.boolean().optional(),
@@ -349,6 +352,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     this.subscribeTopic = options.subscribeTopic;
     this.publishTopic = options.publishTopic as PublishTopic<Message>;
     if (options.skills?.length) this.skills.push(...options.skills.map(functionToAgent));
+    this.roleInToolUse = options.roleInToolUse;
     this.disableEvents = options.disableEvents;
 
     if (Array.isArray(options.memory)) {
@@ -558,6 +562,8 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
    * the agent to delegate tasks to specialized sub-agents
    */
   readonly skills = createAccessorArray<Agent>([], (arr, name) => arr.find((t) => t.name === name));
+
+  roleInToolUse?: "user";
 
   /**
    * Whether to disable emitting events for agent actions

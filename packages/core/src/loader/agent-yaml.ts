@@ -3,7 +3,7 @@ import { jsonSchemaToZod } from "@aigne/json-schema-to-zod";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { parse } from "yaml";
 import { type ZodType, z } from "zod";
-import type { AgentHooks, TaskRenderMode } from "../agents/agent.js";
+import type { AgentHooks, AgentOptions, TaskRenderMode } from "../agents/agent.js";
 import { tryOrThrow } from "../utils/type-utils.js";
 import type { LoadOptions } from "./index.js";
 import {
@@ -73,6 +73,7 @@ export interface AgentSchema {
   outputSchema?: ZodType<Record<string, any>>;
   includeInputInOutput?: boolean;
   skills?: NestAgentSchema[];
+  roleInToolUse?: AgentOptions["roleInToolUse"];
   hooks?: HooksSchema | HooksSchema[];
   memory?:
     | boolean
@@ -206,6 +207,7 @@ export const getAgentSchema = ({ filepath }: { filepath: string; options?: LoadO
       includeInputInOutput: optionalize(z.boolean()),
       hooks: optionalize(z.union([hooksSchema, z.array(hooksSchema)])),
       skills: optionalize(z.array(nestAgentSchema)),
+      roleInToolUse: optionalize(z.union([z.undefined(), z.literal("user")])),
       memory: optionalize(
         z.union([
           z.boolean(),

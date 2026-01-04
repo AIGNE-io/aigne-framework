@@ -645,6 +645,30 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
           yield { delta: { text: { [outputKey]: "\n\n" } } };
         }
 
+        const firstToolCall = toolCalls[0];
+        if (toolCalls.length === 1 && firstToolCall) {
+          const tool = toolsMap.get(firstToolCall.function.name);
+          if (tool?.roleInToolUse === "user") {
+            await session.endMessage({}, { role: "agent", toolCalls }, options);
+
+            const toolResult = await this.invokeSkill(
+              tool,
+              { ...input, ...firstToolCall.function.arguments },
+              options,
+            );
+            await session.startMessage(
+              input,
+              { role: "user", content: JSON.stringify(toolResult) },
+              options,
+            );
+            continue;
+          }
+        }
+
+        const message: ChatModelInputMessage = { role: "agent", toolCalls };
+        yield <AgentResponseProgress>{ progress: { event: "message", message } };
+        await session.appendCurrentMessages(message);
+
         const executedToolCalls: {
           call: ChatModelOutputToolCall;
           output: Message;
@@ -681,10 +705,6 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
           },
           this.toolCallsConcurrency || 1,
         );
-
-        const message: ChatModelInputMessage = { role: "agent", toolCalls };
-        yield <AgentResponseProgress>{ progress: { event: "message", message } };
-        await session.appendCurrentMessages(message);
 
         // Execute tools
         for (const call of toolCalls) {
@@ -736,7 +756,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         yield { delta: { json: result } };
       }
 
-      await session.endMessage(result, options);
+      await session.endMessage(result, undefined, options);
 
       return;
     }

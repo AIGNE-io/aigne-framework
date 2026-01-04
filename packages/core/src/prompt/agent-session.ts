@@ -103,7 +103,7 @@ export class AgentSession {
 
   async startMessage(
     input: unknown,
-    message: ChatModelInputMessage,
+    message: ChatModelInputMessage | undefined,
     options: AgentInvokeOptions,
   ): Promise<void> {
     await this.ensureInitialized();
@@ -114,19 +114,21 @@ export class AgentSession {
     // This ensures data consistency even in async compact mode
     if (this.compactionPromise) await this.compactionPromise;
 
-    this.runtimeState.currentEntry = { input, messages: [message] };
+    this.runtimeState.currentEntry = { input, messages: message ? [message] : [] };
   }
 
-  async endMessage(output: unknown, options: AgentInvokeOptions): Promise<void> {
+  async endMessage(
+    output: unknown,
+    message: ChatModelInputMessage | undefined,
+    options: AgentInvokeOptions,
+  ): Promise<void> {
     await this.ensureInitialized();
 
-    if (
-      !this.runtimeState.currentEntry?.input ||
-      !this.runtimeState.currentEntry.messages?.length
-    ) {
+    if (!this.runtimeState.currentEntry?.input || !this.runtimeState.currentEntry.messages) {
       throw new Error("No current entry to end. Call startMessage() first.");
     }
 
+    if (message) this.runtimeState.currentEntry.messages.push(message);
     this.runtimeState.currentEntry.output = output;
 
     let newEntry: AFSEntry<EntryContent>;

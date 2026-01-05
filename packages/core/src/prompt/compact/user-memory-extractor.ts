@@ -26,18 +26,24 @@ ${"```"}
    - Aggregate patterns observed across multiple sessions
    - Verify consistency with existing user memory
 
-2. **User memory should focus on**:
-   - **Preferences**: Lasting tool/framework/language preferences
-   - **Skills**: Confirmed technical expertise and proficiency levels
-   - **Working style**: Communication preferences, workflow patterns, coding standards
-   - **Context**: Stable personal context (timezone, team structure, role)
-   - **Project context**: Long-term project characteristics, not temporary issues
+2. **User memory should focus on USER characteristics**:
+   - **Preferences**: Lasting tool/framework/language preferences the user likes to use
+   - **Skills**: Confirmed technical expertise and proficiency levels of the user
+   - **Working style**: User's communication preferences, workflow patterns, coding standards
+   - **Personal context**: Stable personal context (timezone, team structure, role, work hours)
+   - **Project basic info**: What projects the user is working on and their role in them
+     - Example: "User is building an AI Agent framework called aigne-framework"
+     - Example: "User is the tech lead on a React e-commerce project"
+     - DO NOT include project technical details, architecture, or implementation specifics
 
 3. **DO NOT include in user memory**:
    - Session-specific tasks or temporary goals
    - Bugs or issues being debugged in a specific session
    - One-time decisions or experimental choices
    - Unverified assumptions or single-instance observations
+   - **Project technical details**: architecture decisions, tech stack specifics, implementation details
+   - **Project problems**: current bugs, issues, technical debt, or temporary blockers
+   - Information about the codebase structure or specific files/modules
 
 4. **Label uniqueness (CRITICAL)**:
    - Each label in user memory must be unique

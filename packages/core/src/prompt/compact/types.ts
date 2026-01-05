@@ -178,7 +178,12 @@ export interface MemoryFact {
  */
 export interface MemoryExtractorInput extends Message {
   /**
-   * Existing memory facts (for context and deduplication)
+   * User memory facts (long-term, cross-session) to avoid duplication
+   */
+  existingUserFacts?: MemoryFact[];
+
+  /**
+   * Existing session memory facts (for context and deduplication)
    */
   existingFacts?: MemoryFact[];
 
@@ -193,9 +198,11 @@ export interface MemoryExtractorInput extends Message {
  */
 export interface MemoryExtractorOutput extends Message {
   /**
-   * Newly learned facts from the conversation
+   * New or updated facts from the conversation
+   * Only include facts that need to be added or updated
+   * Do not include unchanged facts that already exist
    */
-  facts: MemoryFact[];
+  newFacts: MemoryFact[];
 
   /**
    * Fact labels to remove from existing memory
@@ -269,10 +276,12 @@ export interface UserMemoryExtractorInput extends Message {
  */
 export interface UserMemoryExtractorOutput extends Message {
   /**
-   * Consolidated facts for user memory
+   * New or updated facts for user memory
+   * Only include facts that need to be added or updated
+   * Do not include unchanged facts that already exist
    * Each label should be unique - these will replace old facts with same labels
    */
-  facts: MemoryFact[];
+  newFacts: MemoryFact[];
 
   /**
    * Fact labels to remove from user memory
@@ -325,7 +334,7 @@ export interface UserMemoryConfig {
   /**
    * Agent that extracts user memory facts from session memory
    * Input: { sessionFacts: MemoryFact[], existingUserFacts?: MemoryFact[] }
-   * Output: { facts: MemoryFact[], removeFacts?: string[] }
+   * Output: { newFacts: MemoryFact[], removeFacts?: string[] }
    */
   extractor?: UserMemoryExtractor;
 }
@@ -368,8 +377,8 @@ export interface SessionMemoryConfig {
 
   /**
    * Agent that extracts facts from conversation messages
-   * Input: { existingFacts?: MemoryFact[], messages: ChatModelInputMessage[] }
-   * Output: { facts: MemoryFact[] }
+   * Input: { existingUserFacts?: MemoryFact[], existingFacts?: MemoryFact[], messages: ChatModelInputMessage[] }
+   * Output: { newFacts: MemoryFact[], removeFacts?: string[] }
    */
   extractor?: MemoryExtractor;
 }

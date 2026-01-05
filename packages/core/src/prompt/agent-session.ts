@@ -942,18 +942,23 @@ export class AgentSession {
 
     if (recentMessages.length === 0) return;
 
-    // Get existing facts for context
+    // Get existing session memory facts for context
     const existingFacts =
       this.runtimeState.sessionMemory?.map((entry) => entry.content).filter(isNonNullable) ?? [];
 
+    // Get user memory facts to avoid duplication
+    const existingUserFacts =
+      this.runtimeState.userMemory?.map((entry) => entry.content).filter(isNonNullable) ?? [];
+
     // Extract new facts from conversation
     const result = await options.context.invoke(extractor, {
+      existingUserFacts,
       existingFacts,
       messages: recentMessages,
     });
 
     // If no changes, nothing to do
-    if (!result.facts.length && !result.removeFacts?.length) {
+    if (!result.newFacts.length && !result.removeFacts?.length) {
       return;
     }
 
@@ -991,7 +996,7 @@ export class AgentSession {
       }
 
       // Handle new facts
-      if (result.facts.length) {
+      if (result.newFacts.length) {
         const sessionMemoryPath = joinURL(
           this.historyModulePath,
           "by-session",
@@ -999,7 +1004,7 @@ export class AgentSession {
           "@metadata/memory/new",
         );
 
-        for (const fact of result.facts) {
+        for (const fact of result.newFacts) {
           const newEntry = await this.afs.write(sessionMemoryPath, {
             userId: this.userId,
             sessionId: this.sessionId,
@@ -1063,7 +1068,7 @@ export class AgentSession {
     });
 
     // If no changes, nothing to do
-    if (!result.facts.length && !result.removeFacts?.length) {
+    if (!result.newFacts.length && !result.removeFacts?.length) {
       return;
     }
 
@@ -1097,7 +1102,7 @@ export class AgentSession {
 
       // Handle new/updated facts
       // For user memory, labels are unique - replace existing facts with same label
-      if (result.facts.length) {
+      if (result.newFacts.length) {
         const userMemoryPath = joinURL(
           this.historyModulePath,
           "by-user",
@@ -1105,7 +1110,7 @@ export class AgentSession {
           "@metadata/memory/new",
         );
 
-        for (const fact of result.facts) {
+        for (const fact of result.newFacts) {
           // Check if fact with same label already exists
           const existingEntry = this.runtimeState.userMemory?.find(
             (e) => e.content?.label === fact.label,

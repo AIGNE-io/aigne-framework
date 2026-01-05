@@ -45,19 +45,22 @@ ${"```"}
    - **Project problems**: current bugs, issues, technical debt, or temporary blockers
    - Information about the codebase structure or specific files/modules
 
-4. **Label uniqueness (CRITICAL)**:
-   - Each label in user memory must be unique
-   - When extracting, if a label already exists in user memory:
-     - Either update it with new consolidated information
-     - Or leave it unchanged if the session fact doesn't provide new insights
+4. **Output only changes (CRITICAL)**:
+   - Only output facts that need to be added or updated
+   - DO NOT output facts that already exist and don't need changes
+   - Each label in newFacts must be unique
+   - When a label already exists in user memory:
+     - Include it in newFacts ONLY if session provides new information to update it
+     - Omit it from newFacts if it doesn't need changes
    - Use the same label format as session memory: "pref-*", "skill-*", "proj-*", "ctx-*"
 
-5. **Update existing user facts** when:
-   - Session facts provide confirmed updates to existing preferences or skills
-   - Multiple sessions show a pattern that refines existing facts
-   - New information supersedes old information with high confidence
+5. **When to output a fact in newFacts**:
+   - **New fact**: Extracting a brand new user characteristic not in existing user memory
+   - **Updated fact**: Session provides new information that enhances an existing fact
+   - **Refined fact**: Multiple sessions show patterns that refine existing facts
+   - DO NOT output if: The fact already exists and session doesn't add new information
 
-6. **Remove user memory facts** by including their labels in removeFacts when:
+6. **When to remove facts** (add labels to removeFacts):
    - Facts are proven to be outdated or incorrect
    - User explicitly changed their approach permanently
    - Facts are redundant with newer, better facts
@@ -111,7 +114,7 @@ export class AIUserMemoryExtractor extends AIAgent<
         ),
       }),
       outputSchema: z.object({
-        facts: z
+        newFacts: z
           .array(
             z.object({
               label: z.string().describe("Short, semantic label for the fact (must be unique)"),
@@ -120,7 +123,9 @@ export class AIUserMemoryExtractor extends AIAgent<
               tags: optional(z.array(z.string()).describe("Classification tags")),
             }),
           )
-          .describe("Extracted user memory facts (each label must be unique)"),
+          .describe(
+            "Facts to add or update in user memory. Only include facts that are new or need updates. Do not include unchanged facts.",
+          ),
         removeFacts: optional(
           z.array(z.string()).describe("Labels of facts to remove from user memory"),
         ),

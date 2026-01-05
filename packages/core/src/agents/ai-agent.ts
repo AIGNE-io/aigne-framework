@@ -8,7 +8,11 @@ import {
   instructionsToPromptBuilder,
   optionalize,
 } from "../loader/schema.js";
-import type { CompactConfig } from "../prompt/agent-session.js";
+import type {
+  CompactConfig,
+  SessionMemoryConfig,
+  UserMemoryConfig,
+} from "../prompt/agent-session.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "../prompt/prompts/structured-stream-instructions.js";
 import * as fastq from "../utils/queue.js";
@@ -175,7 +179,36 @@ export interface AIAgentOptions<I extends Message = Message, O extends Message =
 
   useMemoriesFromContext?: boolean;
 
-  compact?: CompactConfig;
+  /**
+   * Agent session configuration
+   *
+   * Controls history recording, memory extraction, and conversation compaction.
+   * By default, mode is "auto" (enabled). Set `{ mode: "disabled" }` to disable
+   * for internal utility agents (extractors, compactors, etc.).
+   *
+   * @example
+   * ```typescript
+   * // Default behavior - session features enabled
+   * new AIAgent({
+   *   session: {
+   *     compact: { mode: "auto" },
+   *     sessionMemory: { mode: "auto" },
+   *     userMemory: { mode: "auto" }
+   *   }
+   * })
+   *
+   * // Disable for internal utility agents
+   * new AIAgent({
+   *   session: { mode: "disabled" }
+   * })
+   * ```
+   */
+  session?: Partial<
+    Omit<
+      import("../prompt/agent-session.js").AgentSessionOptions,
+      "sessionId" | "userId" | "agentId" | "afs"
+    >
+  >;
 }
 
 export interface AIAgentLoadSchema {
@@ -187,7 +220,12 @@ export interface AIAgentLoadSchema {
   toolChoice?: AIAgentToolChoice;
   toolCallsConcurrency?: number;
   keepTextInToolUses?: boolean;
-  compact?: Omit<CompactConfig, "compactor"> & { compactor?: NestAgentSchema };
+  session?: {
+    mode?: "auto" | "disabled";
+    compact?: Omit<CompactConfig, "compactor"> & { compactor?: NestAgentSchema };
+    sessionMemory?: Omit<SessionMemoryConfig, "extractor"> & { extractor?: NestAgentSchema };
+    userMemory?: Omit<UserMemoryConfig, "extractor"> & { extractor?: NestAgentSchema };
+  };
 }
 
 /**
@@ -315,20 +353,62 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
   }): Promise<Agent<I, O>> {
     const schema = AIAgent.schema<AIAgentLoadSchema>(options);
     const valid = await schema.parseAsync(options.parsed);
+
+    // Load nested agents from session config if present
+    const sessionCompactor = valid.session?.compact?.compactor
+      ? await options.options?.loadNestAgent(
+          options.filepath,
+          valid.session.compact.compactor,
+          options.options,
+        )
+      : undefined;
+
+    const sessionMemoryExtractor = valid.session?.sessionMemory?.extractor
+      ? await options.options?.loadNestAgent(
+          options.filepath,
+          valid.session.sessionMemory.extractor,
+          options.options,
+        )
+      : undefined;
+
+    const userMemoryExtractor = valid.session?.userMemory?.extractor
+      ? await options.options?.loadNestAgent(
+          options.filepath,
+          valid.session.userMemory.extractor,
+          options.options,
+        )
+      : undefined;
+
+    // Build session configuration with loaded agents
+    const sessionConfig = valid.session
+      ? {
+          ...valid.session,
+          compact: valid.session.compact
+            ? {
+                ...valid.session.compact,
+                compactor: sessionCompactor,
+              }
+            : undefined,
+          sessionMemory: valid.session.sessionMemory
+            ? {
+                ...valid.session.sessionMemory,
+                extractor: sessionMemoryExtractor,
+              }
+            : undefined,
+          userMemory: valid.session.userMemory
+            ? {
+                ...valid.session.userMemory,
+                extractor: userMemoryExtractor,
+              }
+            : undefined,
+        }
+      : undefined;
+
     return new AIAgent<I, O>({
       ...options.parsed,
       ...valid,
       instructions: valid.instructions && instructionsToPromptBuilder(valid.instructions),
-      compact: {
-        ...valid.compact,
-        compactor: valid.compact?.compactor
-          ? await options.options?.loadNestAgent(
-              options.filepath,
-              valid.compact.compactor,
-              options.options,
-            )
-          : undefined,
-      },
+      session: sessionConfig,
     });
   }
 
@@ -372,7 +452,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     this.memoryAgentsAsTools = options.memoryAgentsAsTools;
     this.memoryPromptTemplate = options.memoryPromptTemplate;
     this.useMemoriesFromContext = options.useMemoriesFromContext;
-    this.compact = options.compact;
+    this.session = options.session;
 
     if (typeof options.catchToolsError === "boolean")
       this.catchToolsError = options.catchToolsError;
@@ -513,7 +593,15 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     parse: (raw: string) => object;
   };
 
-  compact?: CompactConfig;
+  /**
+   * Agent session configuration
+   */
+  session?: Partial<
+    Omit<
+      import("../prompt/agent-session.js").AgentSessionOptions,
+      "sessionId" | "userId" | "agentId" | "afs"
+    >
+  >;
 
   override get inputSchema(): ZodType<I> {
     let schema = super.inputSchema as unknown as ZodObject<{ [key: string]: ZodType<any> }>;

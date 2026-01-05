@@ -8,6 +8,7 @@ import { terminalInput } from "../ui/utils/terminal-input.js";
 export const DEFAULT_CHAT_INPUT_KEY = "message";
 
 export interface ChatLoopOptions {
+  userId?: string;
   sessionId?: string;
   initialCall?: Message | string;
   welcome?: string;
@@ -111,7 +112,7 @@ async function callAgent(userAgent: UserAgent, input: Message | string, options:
     typeof input === "string"
       ? { ...options.input, [options.inputKey || DEFAULT_CHAT_INPUT_KEY]: input }
       : { ...options.input, ...input },
-    { userContext: { sessionId: options.sessionId } },
+    { userContext: { sessionId: options.sessionId, userId: options.userId } },
   );
 }
 

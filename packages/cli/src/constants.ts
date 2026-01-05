@@ -22,3 +22,5 @@ export const CHAT_MODEL_OPTIONS = [
   "preferInputFileType",
   "reasoningEffort",
 ];
+
+export const DEFAULT_USER_ID = "cli-user";

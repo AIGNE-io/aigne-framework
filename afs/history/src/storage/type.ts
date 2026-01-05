@@ -3,7 +3,12 @@ import type { SQL } from "@aigne/sqlite";
 
 export interface AFSStorageCreatePayload extends AFSEntry {}
 
-export interface AFSStorageListOptions {
+export interface AFSStorageTypeOptions {
+  type?: EntryType;
+  scope?: Scope;
+}
+
+export interface AFSStorageListOptions extends AFSStorageTypeOptions {
   filter?: {
     agentId?: string;
     userId?: string;
@@ -15,7 +20,7 @@ export interface AFSStorageListOptions {
   orderBy?: [string, "asc" | "desc"][];
 }
 
-export interface AFSStorageReadOptions {
+export interface AFSStorageReadOptions extends AFSStorageTypeOptions {
   filter?: {
     agentId?: string;
     userId?: string;
@@ -23,24 +28,28 @@ export interface AFSStorageReadOptions {
   };
 }
 
-export type CompactType = "session" | "user" | "agent";
+export interface AFSStorageDeleteOptions extends AFSStorageTypeOptions {
+  filter?: {
+    agentId?: string;
+    userId?: string;
+    sessionId?: string;
+  };
+}
+
+export type EntryType = "history" | "compact" | "memory";
+
+export type Scope = "session" | "user" | "agent";
+
+export interface AFSStorageCreateOptions extends AFSStorageTypeOptions {}
 
 export interface AFSStorage {
-  create(entry: AFSStorageCreatePayload): Promise<AFSEntry>;
+  create(entry: AFSStorageCreatePayload, options?: AFSStorageCreateOptions): Promise<AFSEntry>;
 
   list(options?: AFSStorageListOptions): Promise<{ data: AFSEntry[] }>;
 
   read(id: string, options?: AFSStorageReadOptions): Promise<AFSEntry | undefined>;
 
-  createCompact(type: CompactType, entry: AFSStorageCreatePayload): Promise<AFSEntry>;
-
-  listCompact(type: CompactType, options?: AFSStorageListOptions): Promise<{ data: AFSEntry[] }>;
-
-  readCompact(
-    type: CompactType,
-    id: string,
-    options?: AFSStorageReadOptions,
-  ): Promise<AFSEntry | undefined>;
+  delete(id: string, options?: AFSStorageDeleteOptions): Promise<{ deletedCount: number }>;
 }
 
 export type AFSStorageMigrations = { hash: string; sql: (module: AFSModule) => SQL[] };

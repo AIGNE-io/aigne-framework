@@ -134,7 +134,7 @@ export class PromptBuilder {
       userId,
       sessionId,
       afs,
-      compact: options.agent?.compact,
+      ...options.agent?.session,
     });
 
     const { systemMessage, userMessage } = await this.buildMessages(options);

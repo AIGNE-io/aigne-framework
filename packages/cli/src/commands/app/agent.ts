@@ -1,4 +1,5 @@
 import assert from "node:assert";
+import { DEFAULT_USER_ID } from "@aigne/cli/constants.js";
 import type { Agent, AIGNE, Message } from "@aigne/core";
 import type { CLIAgent } from "@aigne/core/utils/agent-utils.js";
 import { logger } from "@aigne/core/utils/logger.js";
@@ -142,6 +143,7 @@ export async function invokeAgent(options: {
       input,
       interactive: options.input.interactive,
       sessionId: options.input.sessionId || v7(),
+      userId: DEFAULT_USER_ID,
     });
   } finally {
     await aigne.shutdown();

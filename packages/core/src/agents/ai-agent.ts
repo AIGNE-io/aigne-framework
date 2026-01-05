@@ -11,6 +11,7 @@ import {
 import type { CompactConfig } from "../prompt/agent-session.js";
 import { PromptBuilder } from "../prompt/prompt-builder.js";
 import { STRUCTURED_STREAM_INSTRUCTIONS } from "../prompt/prompts/structured-stream-instructions.js";
+import { AgentSkill } from "../prompt/skills/afs/agent-skill/agent-skill.js";
 import * as fastq from "../utils/queue.js";
 import { mergeAgentResponseChunk } from "../utils/stream-utils.js";
 import { ExtractMetadataTransform } from "../utils/structured-stream-extractor.js";
@@ -634,19 +635,63 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         if (content.length) {
           const message: ChatModelInputMessage = { role: "agent", content };
           yield <AgentResponseProgress>{ progress: { event: "message", message } };
-          await session.appendCurrentMessages(message);
+          await session.appendCurrentMessages(message, options);
         }
       }
 
-      if (toolCalls?.length) {
+      const toolCallsWithTools = toolCalls?.map((call) => {
+        const tool = toolsMap.get(call.function.name);
+        if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
+        return {
+          ...call,
+          tool,
+        };
+      });
+
+      if (toolCallsWithTools?.length) {
         if (this.keepTextInToolUses !== true) {
           yield { delta: { json: { [outputKey]: "" } as Partial<O> } };
         } else {
           yield { delta: { text: { [outputKey]: "\n\n" } } };
         }
 
+        const message: ChatModelInputMessage = { role: "agent", toolCalls };
+        yield <AgentResponseProgress>{ progress: { event: "message", message } };
+
+        const skillToolUse = toolCallsWithTools.find((i) => i.tool instanceof AgentSkill);
+        if (skillToolUse) {
+          await session.endMessage(
+            skillToolUse.function,
+            {
+              role: "agent",
+              content: JSON.stringify({ ...skillToolUse.function }),
+            },
+            options,
+          );
+          const skillResult = await this.invokeSkill(
+            skillToolUse.tool,
+            { ...input, ...skillToolUse.function.arguments },
+            options,
+          );
+          await session.startMessage(
+            skillToolUse.function.arguments,
+            {
+              role: "user",
+              content: [
+                { type: "text", text: AgentSkill.formatOutput(skillResult), isAgentSkill: true },
+              ],
+            },
+            options,
+          );
+
+          continue;
+        }
+
+        await session.appendCurrentMessages(message, options);
+
         const executedToolCalls: {
           call: ChatModelOutputToolCall;
+          tool: Agent;
           output: Message;
         }[] = [];
 
@@ -673,7 +718,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
                 };
               });
 
-              executedToolCalls.push({ call, output });
+              executedToolCalls.push({ call, tool, output });
             } catch (e) {
               error = e;
               queue.killAndDrain();
@@ -682,16 +727,9 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
           this.toolCallsConcurrency || 1,
         );
 
-        const message: ChatModelInputMessage = { role: "agent", toolCalls };
-        yield <AgentResponseProgress>{ progress: { event: "message", message } };
-        await session.appendCurrentMessages(message);
-
         // Execute tools
-        for (const call of toolCalls) {
-          const tool = toolsMap.get(call.function.name);
-          if (!tool) throw new Error(`Tool not found: ${call.function.name}`);
-
-          queue.push({ tool, call });
+        for (const call of toolCallsWithTools) {
+          queue.push({ tool: call.tool, call });
         }
 
         await queue.drained();
@@ -707,11 +745,11 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
               content: JSON.stringify(output),
             };
             yield <AgentResponseProgress>{ progress: { event: "message", message: message } };
-            await session.appendCurrentMessages(message);
+            await session.appendCurrentMessages(message, options);
           }
 
           const transferOutput = executedToolCalls.find(
-            (i): i is { call: ChatModelOutputToolCall; output: TransferAgentOutput } =>
+            (i): i is { call: ChatModelOutputToolCall; tool: Agent; output: TransferAgentOutput } =>
               isTransferAgentOutput(i.output),
           )?.output;
           if (transferOutput) return transferOutput;
@@ -736,7 +774,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         yield { delta: { json: result } };
       }
 
-      await session.endMessage(result, options);
+      await session.endMessage(result, undefined, options);
 
       return;
     }

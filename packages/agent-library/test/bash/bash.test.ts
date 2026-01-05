@@ -149,7 +149,10 @@ echo "This is an error message" >&2
 exit 1`;
 
   expect(bashAgent.invoke({ script: errorScript })).rejects.toThrowErrorMatchingInlineSnapshot(`
-    "Bash script exited with code 1: This is an error message
+    "Bash script exited with code 1:
+     stdout: Hello, World!
+
+     stderr: This is an error message
     "
   `);
 });
@@ -392,7 +395,10 @@ sleep 1
 exit 0`;
 
   expect(bashAgent.invoke({ script })).rejects.toThrowErrorMatchingInlineSnapshot(`
-    "Bash script killed by signal SIGTERM (likely timeout 100): This is an error message
+    "Bash script killed by signal SIGTERM (likely timeout 100):
+     stdout: Hello, World!
+
+     stderr: This is an error message
     "
   `);
 });

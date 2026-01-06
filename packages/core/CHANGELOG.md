@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.72.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.10...core-v1.72.0-beta.11) (2026-01-06)
+
+
+### Bug Fixes
+
+* **core:** preserve Agent Skill in session compact and support complex tool result content ([#876](https://github.com/AIGNE-io/aigne-framework/issues/876)) ([edb86ae](https://github.com/AIGNE-io/aigne-framework/commit/edb86ae2b9cfe56a8f08b276f843606e310566cf))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.6
+    * @aigne/afs-history bumped to 1.2.0-beta.7
+
 ## [1.72.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.9...core-v1.72.0-beta.10) (2026-01-06)
 
 

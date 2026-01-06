@@ -7,6 +7,21 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.24.0-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.12...agent-library-v1.24.0-beta.13) (2026-01-06)
+
+
+### Bug Fixes
+
+* **core:** preserve Agent Skill in session compact and support complex tool result content ([#876](https://github.com/AIGNE-io/aigne-framework/issues/876)) ([edb86ae](https://github.com/AIGNE-io/aigne-framework/commit/edb86ae2b9cfe56a8f08b276f843606e310566cf))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.11
+    * @aigne/openai bumped to 0.16.16-beta.11
+
 ## [1.24.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.11...agent-library-v1.24.0-beta.12) (2026-01-06)
 
 

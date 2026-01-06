@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.91.0-beta.15](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.14...aigne-framework-v1.91.0-beta.15) (2026-01-06)
+
+
+### Bug Fixes
+
+* **afs:** throw errors instead of logging in AFS module operations ([#874](https://github.com/AIGNE-io/aigne-framework/issues/874)) ([f0cc1c4](https://github.com/AIGNE-io/aigne-framework/commit/f0cc1c4056f8b95b631d595892bb12eb75da4b9f))
+* **core:** preserve Agent Skill in session compact and support complex tool result content ([#876](https://github.com/AIGNE-io/aigne-framework/issues/876)) ([edb86ae](https://github.com/AIGNE-io/aigne-framework/commit/edb86ae2b9cfe56a8f08b276f843606e310566cf))
+
 ## [1.91.0-beta.14](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.13...aigne-framework-v1.91.0-beta.14) (2026-01-06)
 
 

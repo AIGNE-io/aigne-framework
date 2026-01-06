@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.10.21-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.21-beta.10...bedrock-v0.10.21-beta.11) (2026-01-06)
+
+
+### Bug Fixes
+
+* **core:** preserve Agent Skill in session compact and support complex tool result content ([#876](https://github.com/AIGNE-io/aigne-framework/issues/876)) ([edb86ae](https://github.com/AIGNE-io/aigne-framework/commit/edb86ae2b9cfe56a8f08b276f843606e310566cf))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.11
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.11
+
 ## [0.10.21-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.21-beta.9...bedrock-v0.10.21-beta.10) (2026-01-06)
 
 

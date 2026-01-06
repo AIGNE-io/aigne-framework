@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.5...afs-v1.4.0-beta.6) (2026-01-06)
+
+
+### Bug Fixes
+
+* **afs:** throw errors instead of logging in AFS module operations ([#874](https://github.com/AIGNE-io/aigne-framework/issues/874)) ([f0cc1c4](https://github.com/AIGNE-io/aigne-framework/commit/f0cc1c4056f8b95b631d595892bb12eb75da4b9f))
+
 ## [1.4.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.4...afs-v1.4.0-beta.5) (2025-12-31)
 
 

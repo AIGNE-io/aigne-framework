@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/afs-user-profile-memory-v1.3.0-beta.10...afs-user-profile-memory-v1.3.0-beta.11) (2026-01-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.6
+    * @aigne/afs-history bumped to 1.2.0-beta.7
+    * @aigne/core bumped to 1.72.0-beta.11
+
 ## [1.3.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/afs-user-profile-memory-v1.3.0-beta.9...afs-user-profile-memory-v1.3.0-beta.10) (2026-01-06)
 
 

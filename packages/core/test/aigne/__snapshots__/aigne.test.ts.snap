@@ -345,7 +345,13 @@ exports[`AIGNE.invoke should respond $metafield with usage metrics with {
     "progress": {
       "event": "message",
       "message": {
-        "content": "{"message":"Hello world"}",
+        "content": [
+          {
+            "isAgentSkill": undefined,
+            "text": "{"message":"Hello world"}",
+            "type": "text",
+          },
+        ],
         "role": "tool",
         "toolCallId": "greet",
       },

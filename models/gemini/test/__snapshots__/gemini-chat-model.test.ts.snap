@@ -96,11 +96,7 @@ exports[`GeminiChatModel.invoke should use tool result correctly 1`] = `
               "id": "get_weather",
               "name": "get_weather",
               "response": {
-                "output": {
-                  "temperature": 20,
-                },
-                "status": "success",
-                "tool": "get_weather",
+                "temperature": 20,
               },
             },
           },

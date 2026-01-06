@@ -23,9 +23,12 @@ import {
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
 import Anthropic, { type ClientOptions } from "@anthropic-ai/sdk";
-import type { Base64ImageSource } from "@anthropic-ai/sdk/resources";
 import type {
-  ContentBlockParam,
+  Base64ImageSource,
+  ImageBlockParam,
+  TextBlockParam,
+} from "@anthropic-ai/sdk/resources";
+import type {
   MessageParam,
   Tool,
   ToolChoice,
@@ -426,7 +429,7 @@ async function convertMessages({
       }
     } else if (msg.role === "tool") {
       if (!msg.toolCallId) throw new Error("Tool message must have toolCallId");
-      if (typeof msg.content !== "string") throw new Error("Tool message must have string content");
+      if (!msg.content) throw new Error("Tool message must have content");
 
       msgs.push({
         role: "user",
@@ -434,7 +437,7 @@ async function convertMessages({
           {
             type: "tool_result",
             tool_use_id: msg.toolCallId,
-            content: msg.content,
+            content: await convertContent(msg.content),
           },
         ],
       });
@@ -532,12 +535,12 @@ async function convertMessages({
 
 async function convertContent(
   content: ChatModelInputMessageContent,
-): Promise<string | ContentBlockParam[]> {
+): Promise<string | (TextBlockParam | ImageBlockParam)[]> {
   if (typeof content === "string") return content;
 
   if (Array.isArray(content)) {
     return Promise.all(
-      content.map<Promise<ContentBlockParam>>(async (item) => {
+      content.map<Promise<TextBlockParam | ImageBlockParam>>(async (item) => {
         if (item.type === "text") return { type: "text", text: item.text };
 
         const media_type = (await ChatModel.getMimeType(

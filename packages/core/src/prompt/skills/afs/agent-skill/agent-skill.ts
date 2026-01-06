@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Agent, type AgentOptions, type Message } from "../../../../agents/agent.js";
+import type { PromiseOrValue } from "../../../../utils/type-utils.js";
 import type { Skill } from "./skill-loader.js";
 
 export interface SkillToolInput extends Message {
@@ -21,11 +22,11 @@ export interface SkillToolOptions extends AgentOptions<SkillToolInput, SkillTool
 }
 
 export class AgentSkill extends Agent<SkillToolInput, SkillToolOutput> {
-  static formatOutput(output: SkillToolOutput | Message): string {
-    if (!("result" in output) || typeof output.result !== "string") {
-      throw new Error("Invalid SkillToolOutput: missing 'result' field");
+  override formatOutput(output: SkillToolOutput | Message): PromiseOrValue<string> {
+    if ("result" in output && typeof output.result === "string") {
+      return output.result;
     }
-    return output.result;
+    return super.formatOutput(output as SkillToolOutput);
   }
 
   constructor(options: SkillToolOptions) {

@@ -35,7 +35,6 @@ import {
   type ToolConfiguration,
   type ToolInputSchema,
 } from "@aws-sdk/client-bedrock-runtime";
-import { parse } from "yaml";
 import { z } from "zod";
 
 /**
@@ -314,14 +313,14 @@ const getRunMessages = ({
 
   for (const msg of msgs) {
     if (msg.role === "system") {
-      if (typeof msg.content !== "string") throw new Error("System message must have content");
-      system.push({ text: msg.content });
+      if (!msg.content) throw new Error("System message must have content");
+      system.push(...convertContent(msg.content));
     } else if (msg.role === "tool") {
       if (!msg.toolCallId) throw new Error("Tool message must have toolCallId");
-      if (typeof msg.content !== "string") throw new Error("Tool message must have string content");
+      if (!msg.content) throw new Error("Tool message must have content");
       if (messages.at(-1)?.role === "user") {
         messages.at(-1)?.content?.push({
-          toolResult: { toolUseId: msg.toolCallId, content: [{ json: parse(msg.content) }] },
+          toolResult: { toolUseId: msg.toolCallId, content: convertContent(msg.content) },
         });
       } else {
         messages.push({
@@ -330,7 +329,7 @@ const getRunMessages = ({
             {
               toolResult: {
                 toolUseId: msg.toolCallId,
-                content: [{ json: parse(msg.content) }],
+                content: convertContent(msg.content),
               },
             },
           ],
@@ -370,11 +369,11 @@ const getRunMessages = ({
   return { messages, system };
 };
 
-function convertContent(content: ChatModelInputMessageContent): ContentBlock[] {
+function convertContent(content: ChatModelInputMessageContent): ContentBlock.TextMember[] {
   if (typeof content === "string") return [{ text: content }];
 
   if (Array.isArray(content)) {
-    const blocks: ContentBlock[] = [];
+    const blocks: ContentBlock.TextMember[] = [];
     for (const item of content) {
       if (item.type === "text") blocks.push({ text: item.text });
     }

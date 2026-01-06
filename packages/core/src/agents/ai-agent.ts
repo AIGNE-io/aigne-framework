@@ -745,36 +745,6 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
 
         const message: ChatModelInputMessage = { role: "agent", toolCalls };
         yield <AgentResponseProgress>{ progress: { event: "message", message } };
-
-        const skillToolUse = toolCallsWithTools.find((i) => i.tool instanceof AgentSkill);
-        if (skillToolUse) {
-          await session.endMessage(
-            skillToolUse.function,
-            {
-              role: "agent",
-              content: JSON.stringify({ ...skillToolUse.function }),
-            },
-            options,
-          );
-          const skillResult = await this.invokeSkill(
-            skillToolUse.tool,
-            { ...input, ...skillToolUse.function.arguments },
-            options,
-          );
-          await session.startMessage(
-            skillToolUse.function.arguments,
-            {
-              role: "user",
-              content: [
-                { type: "text", text: AgentSkill.formatOutput(skillResult), isAgentSkill: true },
-              ],
-            },
-            options,
-          );
-
-          continue;
-        }
-
         await session.appendCurrentMessages(message, options);
 
         const executedToolCalls: {
@@ -826,11 +796,14 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
 
         // Continue LLM function calling loop if any tools were executed
         if (executedToolCalls.length) {
-          for (const { call, output } of executedToolCalls) {
+          for (const { call, tool, output } of executedToolCalls) {
+            const isAgentSkill = !output.isError && tool instanceof AgentSkill ? true : undefined;
+            const text = await tool.formatOutput(output);
+
             const message: ChatModelInputMessage = {
               role: "tool",
               toolCallId: call.id,
-              content: JSON.stringify(output),
+              content: [{ type: "text", text, isAgentSkill }],
             };
             yield <AgentResponseProgress>{ progress: { event: "message", message: message } };
             await session.appendCurrentMessages(message, options);

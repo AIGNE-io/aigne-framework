@@ -68,11 +68,10 @@ interface RuntimeState {
   systemMessages?: ChatModelInputMessage[];
   sessionMemory?: AFSEntry<MemoryFact>[];
   userMemory?: AFSEntry<MemoryFact>[];
-  compactSummary?: string;
+  historyCompact?: CompactContent;
   historyEntries: AFSEntry<EntryContent>[];
   currentEntry: EntryContent | null;
-  currentEntryCompression?: {
-    summary: string;
+  currentEntryCompact?: CompactContent & {
     compressedCount: number;
   };
 }
@@ -131,35 +130,43 @@ export class AgentSession {
       systemMessages,
       userMemory,
       sessionMemory,
-      compactSummary,
+      historyCompact,
       historyEntries,
       currentEntry,
-      currentEntryCompression,
+      currentEntryCompact,
     } = this.runtimeState;
 
     let currentMessages: ChatModelInputMessage[] = [];
     if (currentEntry?.messages?.length) {
-      if (currentEntryCompression) {
-        const { compressedCount, summary } = currentEntryCompression;
+      if (currentEntryCompact) {
+        const { compressedCount, summary } = currentEntryCompact;
 
-        const firstMsg = currentEntry.messages[0];
-        const hasSkill =
-          firstMsg?.role === "user" &&
-          Array.isArray(firstMsg.content) &&
-          firstMsg.content.some((block) => block.type === "text" && block.isAgentSkill === true);
-
-        const skillMessage = hasSkill ? [firstMsg] : [];
         const summaryMessage = {
           role: "user" as const,
           content: `[Earlier messages in this conversation (${compressedCount} messages compressed)]\n${summary}`,
         };
         const remainingMessages = currentEntry.messages.slice(compressedCount);
 
-        currentMessages = [...skillMessage, summaryMessage, ...remainingMessages];
+        currentMessages = [summaryMessage, ...remainingMessages];
       } else {
         currentMessages = currentEntry.messages;
       }
     }
+
+    // Flatten history entries messages once
+    const historyMessages = historyEntries.flatMap((entry) => entry.content?.messages ?? []);
+
+    // Check if there's an Agent Skill in current uncompressed messages
+    const hasSkillInCurrentMessages = [...historyMessages, ...currentMessages].some(
+      (msg) =>
+        msg.role === "user" &&
+        Array.isArray(msg.content) &&
+        msg.content.some((block) => block.type === "text" && block.isAgentSkill === true),
+    );
+
+    // Prefer currentEntryCompact's lastAgentSkill over historyCompact's (newer takes priority)
+    const lastAgentSkillToInject =
+      currentEntryCompact?.lastAgentSkill ?? historyCompact?.lastAgentSkill;
 
     const messages = [
       ...(systemMessages ?? []),
@@ -167,15 +174,29 @@ export class AgentSession {
       ...(sessionMemory && sessionMemory.length > 0
         ? [this.formatSessionMemory(sessionMemory)]
         : []),
-      ...(compactSummary
+      ...(historyCompact?.summary
         ? [
             {
               role: "system" as const,
-              content: `Previous conversation summary:\n${compactSummary}`,
+              content: `Previous conversation summary:\n${historyCompact.summary}`,
             },
           ]
         : []),
-      ...historyEntries.flatMap((entry) => entry.content?.messages ?? []),
+      // Only inject lastAgentSkill if there's no skill in current messages
+      ...(lastAgentSkillToInject && !hasSkillInCurrentMessages
+        ? [
+            {
+              role: "user" as const,
+              content: [
+                {
+                  type: "text" as const,
+                  text: lastAgentSkillToInject.content,
+                },
+              ],
+            },
+          ]
+        : []),
+      ...historyMessages,
       ...currentMessages,
     ];
 
@@ -290,7 +311,7 @@ ${"```"}
       if (this.compactionPromise) await this.compactionPromise;
     }
 
-    this.runtimeState.currentEntryCompression = undefined;
+    this.runtimeState.currentEntryCompact = undefined;
     this.runtimeState.currentEntry = { input, messages: [message] };
   }
 
@@ -339,7 +360,7 @@ ${"```"}
 
     this.runtimeState.historyEntries.push(newEntry);
     this.runtimeState.currentEntry = null;
-    this.runtimeState.currentEntryCompression = undefined;
+    this.runtimeState.currentEntryCompact = undefined;
 
     // Only run compact and memory extraction if mode is not disabled
     if (this.mode !== "disabled") {
@@ -443,7 +464,7 @@ ${"```"}
     const batches = this.splitIntoBatches(entriesToCompact, maxTokens);
 
     // Process batches incrementally, each summary becomes input for the next
-    let currentSummary = this.runtimeState.compactSummary;
+    let currentSummary = this.runtimeState.historyCompact?.summary;
     for (const batch of batches) {
       const messages = batch
         .flatMap((e) => e.content?.messages ?? [])
@@ -457,6 +478,20 @@ ${"```"}
       currentSummary = result.summary;
     }
 
+    // Extract last Agent Skill from entries to compact
+    let lastAgentSkill = this.findLastAgentSkill(entriesToCompact);
+
+    // If no skill found in entries to compact, inherit from previous compact
+    if (!lastAgentSkill && this.runtimeState.historyCompact?.lastAgentSkill) {
+      lastAgentSkill = this.runtimeState.historyCompact.lastAgentSkill;
+    }
+
+    // Create compact content
+    const historyCompact: CompactContent = {
+      summary: currentSummary ?? "",
+      lastAgentSkill,
+    };
+
     // Write compact entry to AFS
     if (this.afs && this.historyModulePath) {
       await this.afs.write(
@@ -464,7 +499,7 @@ ${"```"}
         {
           userId: this.userId,
           agentId: this.agentId,
-          content: { summary: currentSummary },
+          content: historyCompact,
           metadata: {
             latestEntryId: latestCompactedEntry.id,
           },
@@ -473,7 +508,7 @@ ${"```"}
     }
 
     // Update runtime state: keep the summary and recent entries
-    this.runtimeState.compactSummary = currentSummary;
+    this.runtimeState.historyCompact = historyCompact;
     this.runtimeState.historyEntries = entriesToKeep;
   }
 
@@ -484,7 +519,7 @@ ${"```"}
     const currentEntry = this.runtimeState.currentEntry;
     if (!currentEntry?.messages?.length) return;
 
-    const alreadyCompressedCount = this.runtimeState.currentEntryCompression?.compressedCount ?? 0;
+    const alreadyCompressedCount = this.runtimeState.currentEntryCompact?.compressedCount ?? 0;
     const uncompressedMessages = currentEntry.messages.slice(alreadyCompressedCount);
 
     if (uncompressedMessages.length === 0) return;
@@ -544,14 +579,20 @@ ${"```"}
     if (messagesToCompact.length === 0) return;
 
     const result = await options.context.invoke(compactor, {
-      previousSummary: this.runtimeState.currentEntryCompression?.summary
-        ? [this.runtimeState.currentEntryCompression.summary]
+      previousSummary: this.runtimeState.currentEntryCompact?.summary
+        ? [this.runtimeState.currentEntryCompact.summary]
         : undefined,
       messages: messagesToCompact,
     });
 
-    this.runtimeState.currentEntryCompression = {
+    // Find last Agent Skill from messages being compacted
+    const lastAgentSkill =
+      this.findLastAgentSkillFromMessages(messagesToCompact) ??
+      this.runtimeState.currentEntryCompact?.lastAgentSkill;
+
+    this.runtimeState.currentEntryCompact = {
       summary: result.summary,
+      lastAgentSkill,
       compressedCount: alreadyCompressedCount + messagesToCompact.length,
     };
   }
@@ -560,7 +601,7 @@ ${"```"}
     const currentEntry = this.runtimeState.currentEntry;
     if (!currentEntry?.messages?.length) return;
 
-    const compressedCount = this.runtimeState.currentEntryCompression?.compressedCount ?? 0;
+    const compressedCount = this.runtimeState.currentEntryCompact?.compressedCount ?? 0;
     const uncompressedMessages = currentEntry.messages.slice(compressedCount);
 
     const threshold = this.keepTokenBudget;
@@ -722,7 +763,7 @@ ${"```"}
       // Update runtime state with loaded data
       this.runtimeState.userMemory = userMemory;
       this.runtimeState.sessionMemory = sessionMemory;
-      this.runtimeState.compactSummary = sessionHistory.compactSummary;
+      this.runtimeState.historyCompact = sessionHistory.historyCompact;
       this.runtimeState.historyEntries = sessionHistory.historyEntries;
     }
   }
@@ -796,11 +837,11 @@ ${"```"}
   }
 
   /**
-   * Load session history including compact summary and history entries
-   * @returns Object containing compact summary and history entries
+   * Load session history including compact content and history entries
+   * @returns Object containing history compact and history entries
    */
   private async loadSessionHistory(): Promise<{
-    compactSummary?: string;
+    historyCompact?: CompactContent;
     historyEntries: AFSEntry<EntryContent>[];
   }> {
     if (!this.afs || !this.historyModulePath) {
@@ -825,7 +866,7 @@ ${"```"}
       | (AFSEntry & { content?: CompactContent; metadata?: { latestEntryId?: string } })
       | undefined;
 
-    const compactSummary = latestCompact?.content?.summary;
+    const historyCompact = latestCompact?.content;
 
     // Load history entries (after compact point if exists)
     const afsEntries: AFSEntry[] = (
@@ -846,7 +887,7 @@ ${"```"}
     const historyEntries = afsEntries.reverse().filter((entry) => isNonNullable(entry.content));
 
     return {
-      compactSummary,
+      historyCompact,
       historyEntries,
     };
   }
@@ -1158,6 +1199,61 @@ ${"```"}
         }
       }
     }
+  }
+
+  /**
+   * Find Agent Skill content from a single message
+   * @param msg - Message to search in
+   * @returns The skill content text if found, undefined otherwise
+   */
+  private findSkillContentInMessage(msg: ChatModelInputMessage): string | undefined {
+    if (msg.role === "user" && Array.isArray(msg.content)) {
+      const skillBlock = msg.content.find(
+        (block) => block.type === "text" && block.isAgentSkill === true,
+      );
+
+      if (skillBlock && skillBlock.type === "text") {
+        return skillBlock.text;
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * Find the last Agent Skill from a list of messages
+   * @param messages - Messages to search through
+   * @returns The last Agent Skill found, or undefined if none found
+   */
+  private findLastAgentSkillFromMessages(
+    messages: ChatModelInputMessage[],
+  ): CompactContent["lastAgentSkill"] | undefined {
+    // Search backwards through messages to find the last Agent Skill
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const msg = messages[i];
+      if (!msg) continue;
+
+      const skillContent = this.findSkillContentInMessage(msg);
+      if (skillContent) {
+        return {
+          content: skillContent,
+        };
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Find the last Agent Skill from a list of history entries
+   * @param entries - History entries to search through
+   * @returns The last Agent Skill found, or undefined if none found
+   */
+  private findLastAgentSkill(
+    entries: AFSEntry<EntryContent>[],
+  ): CompactContent["lastAgentSkill"] | undefined {
+    // Flatten all messages from entries
+    const allMessages = entries.flatMap((entry) => entry.content?.messages ?? []);
+    return this.findLastAgentSkillFromMessages(allMessages);
   }
 
   private async initializeDefaultCompactor() {

@@ -5,6 +5,7 @@ import {
   agentProcessResultToObject,
   ChatModel,
   type ChatModelInput,
+  type ChatModelInputMessageContent,
   type ChatModelInputOptions,
   type ChatModelOptions,
   type ChatModelOutput,
@@ -16,7 +17,7 @@ import {
 } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
 import { mergeUsage } from "@aigne/core/utils/model-utils.js";
-import { isNonNullable, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
+import { isNonNullable, isRecord, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { v7 } from "@aigne/uuid";
 import {
@@ -25,6 +26,7 @@ import {
   createUserContent,
   type FunctionCallingConfig,
   FunctionCallingConfigMode,
+  type FunctionResponse,
   type GenerateContentConfig,
   type GenerateContentParameters,
   GoogleGenAI,
@@ -571,60 +573,43 @@ export class GeminiChatModel extends ChatModel {
               .flatMap((i) => i.toolCalls)
               .find((c) => c?.id === msg.toolCallId);
             if (!call) throw new Error(`Tool call not found: ${msg.toolCallId}`);
+            if (!msg.content) throw new Error("Tool call must have content");
 
-            const output = parse(msg.content as string);
+            // parse tool result as a record
+            let toolResult: Record<string, unknown> | undefined;
+            {
+              let text: string | undefined;
+              if (typeof msg.content === "string") text = msg.content;
+              else if (msg.content?.length === 1) {
+                const first = msg.content[0];
+                if (first?.type === "text") text = first.text;
+              }
 
-            const isError = "error" in output && Boolean(input.error);
-
-            const response: Record<string, any> = {
-              tool: call.function.name,
-            };
-
-            // NOTE: base on the documentation of gemini api, the content should include `output` field for successful result or `error` field for failed result,
-            // and base on the actual test, add a tool field presenting the tool name can improve the LLM understanding that which tool is called.
-            if (isError) {
-              Object.assign(response, { status: "error" }, output);
-            } else {
-              Object.assign(response, { status: "success" });
-              if ("output" in output) {
-                Object.assign(response, output);
-              } else {
-                Object.assign(response, { output });
+              if (text) {
+                try {
+                  const obj = parse(text);
+                  if (isRecord(obj)) toolResult = obj;
+                } catch {
+                  // ignore
+                }
+                if (!toolResult) toolResult = { result: text };
               }
             }
 
-            content.parts = [
-              {
-                functionResponse: {
-                  id: msg.toolCallId,
-                  name: call.function.name,
-                  response,
-                },
-              },
-            ];
-          } else if (typeof msg.content === "string") {
-            content.parts = [{ text: msg.content }];
-          } else if (Array.isArray(msg.content)) {
-            content.parts = await Promise.all(
-              msg.content.map<Promise<Part>>(async (item) => {
-                switch (item.type) {
-                  case "text":
-                    return { text: item.text };
-                  case "url":
-                    return { fileData: { fileUri: item.url, mimeType: item.mimeType } };
-                  case "file": {
-                    const part = await this.buildVideoContentParts(item, options);
-                    if (part) return part;
+            const functionResponse: FunctionResponse = {
+              id: msg.toolCallId,
+              name: call.function.name,
+            };
 
-                    return { inlineData: { data: item.data, mimeType: item.mimeType } };
-                  }
-                  case "local":
-                    throw new Error(
-                      `Unsupported local file: ${item.path}, it should be converted to base64 at ChatModel`,
-                    );
-                }
-              }),
-            );
+            if (toolResult) {
+              functionResponse.response = toolResult;
+            } else {
+              functionResponse.parts = await this.contentToParts(msg.content, options);
+            }
+
+            content.parts = [{ functionResponse }];
+          } else if (msg.content) {
+            content.parts = await this.contentToParts(msg.content, options);
           }
 
           return content;
@@ -640,6 +625,34 @@ export class GeminiChatModel extends ChatModel {
     }
 
     return result;
+  }
+
+  private async contentToParts(
+    content: ChatModelInputMessageContent,
+    options: AgentInvokeOptions,
+  ): Promise<Part[]> {
+    if (typeof content === "string") return [{ text: content }];
+
+    return Promise.all(
+      content.map<Promise<Part>>(async (item) => {
+        switch (item.type) {
+          case "text":
+            return { text: item.text };
+          case "url":
+            return { fileData: { fileUri: item.url, mimeType: item.mimeType } };
+          case "file": {
+            const part = await this.buildVideoContentParts(item, options);
+            if (part) return part;
+
+            return { inlineData: { data: item.data, mimeType: item.mimeType } };
+          }
+          case "local":
+            throw new Error(
+              `Unsupported local file: ${item.path}, it should be converted to base64 at ChatModel`,
+            );
+        }
+      }),
+    );
   }
 
   private ensureMessagesHasUserMessage(systems: Part[], contents: Content[]) {

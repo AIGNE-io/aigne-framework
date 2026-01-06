@@ -1,4 +1,4 @@
-import { basename } from "node:path";
+import { basename, resolve } from "node:path";
 import { AFSHistory } from "@aigne/afs-history";
 import { LocalFS } from "@aigne/afs-local-fs";
 import AgentSkillManager from "@aigne/agent-library/agent-skill-manager";
@@ -102,7 +102,7 @@ Note: Bash is already running in this directory, so do NOT use 'cd /modules/work
             ...options.skill.map(
               (path) =>
                 new LocalFS({
-                  name: basename(path),
+                  name: basename(resolve(path)),
                   localPath: path,
                   description:
                     "Contains Agent Skills. Use 'Skill' tool to invoke skills from this module.",

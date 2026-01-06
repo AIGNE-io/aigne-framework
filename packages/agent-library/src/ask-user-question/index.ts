@@ -1,4 +1,10 @@
-import { Agent, type AgentInvokeOptions, type AgentProcessResult, type Message } from "@aigne/core";
+import {
+  Agent,
+  type AgentInvokeOptions,
+  type AgentOptions,
+  type AgentProcessResult,
+  type Message,
+} from "@aigne/core";
 import { optionalize } from "@aigne/core/loader/schema.js";
 import { z } from "zod";
 
@@ -68,6 +74,15 @@ export default class AskUserQuestionAgent extends Agent<
       ...options.parsed,
       inputSchema: askUserQuestionAgentInputSchema,
     }) as unknown as Agent<I, O>;
+  }
+
+  constructor(options?: AgentOptions<AskUserQuestionAgentInput, AskUserQuestionAgentOutput>) {
+    super({
+      ...options,
+      name: options?.name || defaultName,
+      description: options?.description || defaultDescription,
+      inputSchema: options?.inputSchema || askUserQuestionAgentInputSchema,
+    });
   }
 
   override async process(

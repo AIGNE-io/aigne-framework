@@ -45,6 +45,13 @@ export interface EntryContent {
  */
 export interface CompactContent extends Message {
   summary: string;
+  /**
+   * Last Agent Skill content in the session
+   * Preserved across compactions to maintain skill instructions
+   */
+  lastAgentSkill?: {
+    content: string;
+  };
 }
 
 /**

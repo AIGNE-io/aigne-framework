@@ -372,7 +372,12 @@ test("AIAgent with catchToolErrors enabled", async () => {
         ],
       },
       {
-        "content": "{"isError":true,"error":{"message":"Invalid input: a or b is zero"}}",
+        "content": [
+          {
+            "text": "{"isError":true,"error":{"message":"Invalid input: a or b is zero"}}",
+            "type": "text",
+          },
+        ],
         "role": "tool",
         "toolCallId": "plus",
       },
@@ -393,7 +398,12 @@ test("AIAgent with catchToolErrors enabled", async () => {
         ],
       },
       {
-        "content": "{"sum":3}",
+        "content": [
+          {
+            "text": "{"sum":3}",
+            "type": "text",
+          },
+        ],
         "role": "tool",
         "toolCallId": "plus",
       },

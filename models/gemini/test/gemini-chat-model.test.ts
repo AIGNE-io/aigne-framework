@@ -235,13 +235,9 @@ test("GeminiChatModel should reset last message role from system to user", async
               "id": "123",
               "name": "get_current_weather",
               "response": {
-                "output": {
-                  "description": "Sunny",
-                  "temperature": 20,
-                  "unit": "celsius",
-                },
-                "status": "success",
-                "tool": "get_current_weather",
+                "description": "Sunny",
+                "temperature": 20,
+                "unit": "celsius",
               },
             },
           },

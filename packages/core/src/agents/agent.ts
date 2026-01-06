@@ -1153,6 +1153,10 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
     }
   }
 
+  formatOutput(output: O): PromiseOrValue<string> {
+    return JSON.stringify(output);
+  }
+
   /**
    * Core processing method of the agent, must be implemented in subclasses
    *

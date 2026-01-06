@@ -21,6 +21,6 @@ export const memoryTable = (module: AFSModule) =>
     userId: text("userId"),
     sessionId: text("sessionId"),
     agentId: text("agentId"),
-    metadata: json<{ type?: string } & Record<string, unknown>>("metadata"),
+    metadata: json<{ scope?: string } & Record<string, unknown>>("metadata"),
     content: json<unknown>("content"),
   });

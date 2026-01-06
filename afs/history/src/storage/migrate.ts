@@ -5,10 +5,17 @@ import { init } from "./migrations/001-init.js";
 import { addAgentId } from "./migrations/002-add-agent-id.js";
 import { addCompactTable } from "./migrations/003-add-compact-table.js";
 import { addMemoryTable } from "./migrations/004-add-memory-table.js";
+import { addIndexes } from "./migrations/005-add-indexes.js";
 import type { AFSStorageMigrations } from "./type.js";
 
 export async function migrate(db: Awaited<ReturnType<typeof initDatabase>>, module: AFSModule) {
-  const migrations: AFSStorageMigrations[] = [init, addAgentId, addCompactTable, addMemoryTable];
+  const migrations: AFSStorageMigrations[] = [
+    init,
+    addAgentId,
+    addCompactTable,
+    addMemoryTable,
+    addIndexes,
+  ];
 
   const migrationsTable = "__drizzle_migrations";
   const migrationTableCreate = sql`

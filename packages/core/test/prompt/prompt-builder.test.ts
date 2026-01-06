@@ -579,17 +579,27 @@ test("PromptBuilder should build with afs correctly", async () => {
       },
       {
         "content": 
-    "[User Memory]
+    "[User Memory Facts]
+
+    \`\`\`yaml
+    - User is from ArcBlock
     - User is Bob
-    - User is from ArcBlock"
+
+    \`\`\`
+    "
     ,
         "role": "system",
       },
       {
         "content": 
-    "[Session Memory]
+    "[Session Memory Facts]
+
+    \`\`\`yaml
+    - Session location is unknown
     - Session ID is session-001
-    - Session location is unknown"
+
+    \`\`\`
+    "
     ,
         "role": "system",
       },

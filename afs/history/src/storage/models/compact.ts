@@ -21,6 +21,8 @@ export const compactTable = (module: AFSModule) =>
     userId: text("userId"),
     sessionId: text("sessionId"),
     agentId: text("agentId"),
-    metadata: json<{ type?: string; latestEntryId?: string } & Record<string, unknown>>("metadata"),
+    metadata: json<{ scope?: string; latestEntryId?: string } & Record<string, unknown>>(
+      "metadata",
+    ),
     content: json<unknown>("content"),
   });

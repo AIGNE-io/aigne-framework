@@ -2,6 +2,7 @@ import type { AFS, AFSEntry } from "@aigne/afs";
 import { AFSHistory } from "@aigne/afs-history";
 import { v7 } from "@aigne/uuid";
 import { joinURL } from "ufo";
+import { stringify } from "yaml";
 import type { AgentInvokeOptions } from "../agents/agent.js";
 import type { ChatModelInputMessage } from "../agents/chat-model.js";
 import { estimateTokens } from "../utils/token-estimator.js";
@@ -202,7 +203,7 @@ export class AgentSession {
     const maxTokens = Math.floor(
       (this.compactConfig.maxTokens ?? DEFAULT_MAX_TOKENS) * memoryRatio,
     );
-    const header = "[User Memory]\n";
+    const header = "[User Memory Facts]";
     let currentTokens = estimateTokens(header);
 
     const facts: string[] = [];
@@ -211,21 +212,20 @@ export class AgentSession {
       const fact = entry.content?.fact;
       if (!fact) continue;
 
-      const factLine = `- ${fact}`;
-      const factTokens = estimateTokens(factLine);
+      const factTokens = estimateTokens(fact);
 
       // Check if adding this fact would exceed token budget
       if (currentTokens + factTokens > maxTokens) {
         break; // Stop adding facts
       }
 
-      facts.push(factLine);
+      facts.push(fact);
       currentTokens += factTokens;
     }
 
     return {
       role: "system",
-      content: header + facts.join("\n"),
+      content: this.formatMemoryTemplate({ header, data: facts }),
     };
   }
 
@@ -238,7 +238,7 @@ export class AgentSession {
     const maxTokens = Math.floor(
       (this.compactConfig.maxTokens ?? DEFAULT_MAX_TOKENS) * memoryRatio,
     );
-    const header = "[Session Memory]\n";
+    const header = "[Session Memory Facts]";
     let currentTokens = estimateTokens(header);
 
     const facts: string[] = [];
@@ -247,22 +247,31 @@ export class AgentSession {
       const fact = entry.content?.fact;
       if (!fact) continue;
 
-      const factLine = `- ${fact}`;
-      const factTokens = estimateTokens(factLine);
+      const factTokens = estimateTokens(fact);
 
       // Check if adding this fact would exceed token budget
       if (currentTokens + factTokens > maxTokens) {
         break; // Stop adding facts
       }
 
-      facts.push(factLine);
+      facts.push(fact);
       currentTokens += factTokens;
     }
 
     return {
       role: "system",
-      content: header + facts.join("\n"),
+      content: this.formatMemoryTemplate({ header, data: facts }),
     };
+  }
+
+  private formatMemoryTemplate({ header, data }: { header: string; data: unknown }): string {
+    return `\
+${header}
+
+${"```yaml"}
+${stringify(data)}
+${"```"}
+`;
   }
 
   async startMessage(
@@ -745,9 +754,9 @@ export class AgentSession {
     });
 
     // Filter out entries without content
-    const facts = memoryResult.data.filter((entry: AFSEntry) =>
-      isNonNullable(entry.content),
-    ) as AFSEntry<MemoryFact>[];
+    const facts = memoryResult.data
+      .reverse()
+      .filter((entry: AFSEntry) => isNonNullable(entry.content)) as AFSEntry<MemoryFact>[];
 
     return facts;
   }
@@ -779,9 +788,9 @@ export class AgentSession {
     });
 
     // Filter out entries without content
-    const facts = memoryResult.data.filter((entry: AFSEntry) =>
-      isNonNullable(entry.content),
-    ) as AFSEntry<MemoryFact>[];
+    const facts = memoryResult.data
+      .reverse()
+      .filter((entry: AFSEntry) => isNonNullable(entry.content)) as AFSEntry<MemoryFact>[];
 
     return facts;
   }
@@ -917,7 +926,7 @@ export class AgentSession {
 
     // Get latestEntryId from the most recent memory entry's metadata
     // This tells us which history entries have already been processed
-    const latestEntryId = this.runtimeState.sessionMemory?.[0]?.metadata?.latestEntryId as
+    const latestEntryId = this.runtimeState.sessionMemory?.at(-1)?.metadata?.latestEntryId as
       | string
       | undefined;
 

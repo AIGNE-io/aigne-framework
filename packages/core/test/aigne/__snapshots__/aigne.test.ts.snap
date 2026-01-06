@@ -16,6 +16,20 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
   },
   {
     "progress": {
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+    },
+  },
+  {
+    "progress": {
       "agent": {
         "name": "OpenAIChatModel",
       },
@@ -39,20 +53,6 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
         "tools": undefined,
       },
       "taskTitle": undefined,
-    },
-  },
-  {
-    "progress": {
-      "event": "message",
-      "message": {
-        "content": [
-          {
-            "text": "hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
-      },
     },
   },
   {
@@ -222,6 +222,20 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
   },
   {
     "progress": {
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+    },
+  },
+  {
+    "progress": {
       "agent": {
         "name": "OpenAIChatModel",
       },
@@ -245,20 +259,6 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
         "tools": undefined,
       },
       "taskTitle": undefined,
-    },
-  },
-  {
-    "progress": {
-      "event": "message",
-      "message": {
-        "content": [
-          {
-            "text": "hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
-      },
     },
   },
   {

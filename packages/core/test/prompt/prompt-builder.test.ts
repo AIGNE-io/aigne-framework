@@ -17,7 +17,6 @@ import {
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import type { GetPromptResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
 
 test("PromptBuilder should build messages correctly", async () => {
   const context = new AIGNE().newContext();
@@ -410,6 +409,10 @@ test("PromptBuilder should build image prompt correctly", async () => {
 });
 
 test("PromptBuilder should build with afs correctly", async () => {
+  const context = new AIGNE().newContext({
+    userContext: { sessionId: "session-001", userId: "user-001" },
+  });
+
   const builder = new PromptBuilder({
     instructions: ChatMessagesTemplate.from([
       SystemMessageTemplate.from(
@@ -421,31 +424,6 @@ test("PromptBuilder should build with afs correctly", async () => {
 
   const afs = new AFS().mount(new AFSHistory());
 
-  spyOn(afs, "search").mockResolvedValueOnce({
-    data: [
-      {
-        id: "1",
-        path: "/modules/history/1",
-        content: `Test file content 1`,
-      },
-      {
-        id: "2",
-        path: "/modules/history/2",
-        content: `Test file content 2`,
-      },
-      {
-        id: "3",
-        path: "/modules/history/3",
-        metadata: {
-          execute: {
-            name: "echo",
-            inputSchema: zodToJsonSchema(z.object({ text: z.string() })),
-          },
-        },
-      },
-    ],
-  });
-
   const agent = AIAgent.from({
     inputKey: "message",
     afs,
@@ -455,6 +433,7 @@ test("PromptBuilder should build with afs correctly", async () => {
   const result = await builder.build({
     agent,
     input: { message: "Hello, I'm Bob, I'm from ArcBlock" },
+    context,
   });
 
   expect([...(await result.session.getMessages()), result.userMessage]).toMatchInlineSnapshot(`
@@ -489,43 +468,92 @@ test("PromptBuilder should build with afs correctly", async () => {
     ]
   `);
 
-  spyOn(afs, "list")
-    .mockResolvedValueOnce({
-      // for compact query
-      data: [],
-    })
-    .mockResolvedValueOnce({
-      data: [
-        {
-          id: "1",
-          path: "/history/1",
-          content: {
-            input: { message: "I'm Bob" },
-            output: { message: "Hello, Bob!" },
-            messages: [
-              { role: "user", content: "I'm Bob" },
-              { role: "agent", content: "Hello, Bob!" },
-            ],
+  spyOn(afs, "list").mockImplementation(async (path) => {
+    if (/by-user\/.*\/memory/.test(path)) {
+      return {
+        data: [
+          { id: "1", path: "/memory/user/1", content: { label: "user_name", fact: "User is Bob" } },
+          {
+            id: "2",
+            path: "/memory/user/2",
+            content: { label: "user_location", fact: "User is from ArcBlock" },
           },
-        },
-        {
-          id: "1",
-          path: "/history/1",
-          content: {
-            input: { message: "Hello" },
-            output: { message: "Hello, How can I help you?" },
-            messages: [
-              { role: "user", content: "Hello" },
-              { role: "agent", content: "Hello, How can I help you?" },
-            ],
+        ],
+      };
+    }
+    if (/by-session\/.*\/memory/.test(path)) {
+      return {
+        data: [
+          {
+            id: "1",
+            path: "/memory/session/1",
+            content: {
+              label: "session_id",
+              fact: "Session ID is session-001",
+            },
           },
-        },
-      ],
-    });
+          {
+            id: "2",
+            path: "/memory/session/2",
+            content: {
+              label: "session_location",
+              fact: "Session location is unknown",
+            },
+          },
+        ],
+      };
+    }
+    if (/by-session\/.*\/compact/.test(path)) {
+      return {
+        data: [
+          {
+            id: "1",
+            path: "/compact/session/1",
+            content: {
+              summary: "This is a compacted summary of the session.",
+            },
+          },
+        ],
+      };
+    }
+    if (/by-session\/.*/.test(path)) {
+      return {
+        data: [
+          {
+            id: "1",
+            path: "/history/1",
+            content: {
+              input: { message: "I'm Bob" },
+              output: { message: "Hello, Bob!" },
+              messages: [
+                { role: "user", content: "I'm Bob" },
+                { role: "agent", content: "Hello, Bob!" },
+              ],
+            },
+          },
+          {
+            id: "1",
+            path: "/history/1",
+            content: {
+              input: { message: "Hello" },
+              output: { message: "Hello, How can I help you?" },
+              messages: [
+                { role: "user", content: "Hello" },
+                { role: "agent", content: "Hello, How can I help you?" },
+              ],
+            },
+          },
+        ],
+      };
+    }
+
+    return { data: [] };
+  });
 
   const result1 = await builder.build({
     agent,
     input: { message: "Hello, I'm Bob, I'm from ArcBlock" },
+    context,
   });
 
   expect([...(await result1.session.getMessages()), result1.userMessage]).toMatchInlineSnapshot(
@@ -547,6 +575,29 @@ test("PromptBuilder should build with afs correctly", async () => {
             "type": "text",
           },
         ],
+        "role": "system",
+      },
+      {
+        "content": 
+    "[User Memory]
+    - User is Bob
+    - User is from ArcBlock"
+    ,
+        "role": "system",
+      },
+      {
+        "content": 
+    "[Session Memory]
+    - Session ID is session-001
+    - Session location is unknown"
+    ,
+        "role": "system",
+      },
+      {
+        "content": 
+    "Previous conversation summary:
+    This is a compacted summary of the session."
+    ,
         "role": "system",
       },
       {

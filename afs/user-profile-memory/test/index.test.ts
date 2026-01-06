@@ -32,7 +32,7 @@ test("UserProfileMemory should update memory based on conversation", async () =>
 
   const updateProfileSpy = spyOn(userProfileMemory, "updateProfile");
 
-  await afs.write(`${historyModel}/new`, {
+  await afs.write(`${historyModel}/by-session/session-001/new`, {
     sessionId: v7(),
     content: { input: { message: "I'm Bob" }, output: { text: "Hello Bob!" } },
   });

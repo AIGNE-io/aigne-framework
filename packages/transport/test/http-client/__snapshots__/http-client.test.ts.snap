@@ -109,6 +109,23 @@ exports[`AIGNEClient should return correct process options {
   },
   {
     "progress": {
+      "contextId": "TEST_CONTEXT_ID",
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+      "parentContextId": "TEST_PARENT_CONTEXT_ID",
+      "timestamp": 123456,
+    },
+  },
+  {
+    "progress": {
       "agent": {
         "name": "OpenAIChatModel",
       },
@@ -127,23 +144,6 @@ exports[`AIGNEClient should return correct process options {
           },
         ],
         "modelOptions": {},
-      },
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": {
-        "content": [
-          {
-            "text": "hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -361,6 +361,23 @@ exports[`AIGNEClient should return correct process options {
   },
   {
     "progress": {
+      "contextId": "TEST_CONTEXT_ID",
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+      "parentContextId": "TEST_PARENT_CONTEXT_ID",
+      "timestamp": 123456,
+    },
+  },
+  {
+    "progress": {
       "agent": {
         "name": "OpenAIChatModel",
       },
@@ -379,23 +396,6 @@ exports[`AIGNEClient should return correct process options {
           },
         ],
         "modelOptions": {},
-      },
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": {
-        "content": [
-          {
-            "text": "hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -613,6 +613,23 @@ exports[`AIGNEClient should return correct process options {
   },
   {
     "progress": {
+      "contextId": "TEST_CONTEXT_ID",
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+      "parentContextId": "TEST_PARENT_CONTEXT_ID",
+      "timestamp": 123456,
+    },
+  },
+  {
+    "progress": {
       "agent": {
         "name": "OpenAIChatModel",
       },
@@ -631,23 +648,6 @@ exports[`AIGNEClient should return correct process options {
           },
         ],
         "modelOptions": {},
-      },
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": {
-        "content": [
-          {
-            "text": "hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -865,6 +865,23 @@ exports[`AIGNEClient should return correct process options {
   },
   {
     "progress": {
+      "contextId": "TEST_CONTEXT_ID",
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+      "parentContextId": "TEST_PARENT_CONTEXT_ID",
+      "timestamp": 123456,
+    },
+  },
+  {
+    "progress": {
       "agent": {
         "name": "OpenAIChatModel",
       },
@@ -883,23 +900,6 @@ exports[`AIGNEClient should return correct process options {
           },
         ],
         "modelOptions": {},
-      },
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": {
-        "content": [
-          {
-            "text": "hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1117,6 +1117,23 @@ exports[`AIGNEClient should return correct process options {
   },
   {
     "progress": {
+      "contextId": "TEST_CONTEXT_ID",
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+      "parentContextId": "TEST_PARENT_CONTEXT_ID",
+      "timestamp": 123456,
+    },
+  },
+  {
+    "progress": {
       "agent": {
         "name": "OpenAIChatModel",
       },
@@ -1135,23 +1152,6 @@ exports[`AIGNEClient should return correct process options {
           },
         ],
         "modelOptions": {},
-      },
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": {
-        "content": [
-          {
-            "text": "hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1326,6 +1326,23 @@ exports[`AIGNEClient should return error with options {
   },
   {
     "progress": {
+      "contextId": "TEST_CONTEXT_ID",
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+      "parentContextId": "TEST_PARENT_CONTEXT_ID",
+      "timestamp": 123456,
+    },
+  },
+  {
+    "progress": {
       "agent": {
         "name": "OpenAIChatModel",
       },
@@ -1344,23 +1361,6 @@ exports[`AIGNEClient should return error with options {
           },
         ],
         "modelOptions": {},
-      },
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": {
-        "content": [
-          {
-            "text": "hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1480,6 +1480,23 @@ exports[`AIGNEClient should return error with options {
   },
   {
     "progress": {
+      "contextId": "TEST_CONTEXT_ID",
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+      "parentContextId": "TEST_PARENT_CONTEXT_ID",
+      "timestamp": 123456,
+    },
+  },
+  {
+    "progress": {
       "agent": {
         "name": "OpenAIChatModel",
       },
@@ -1498,23 +1515,6 @@ exports[`AIGNEClient should return error with options {
           },
         ],
         "modelOptions": {},
-      },
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": {
-        "content": [
-          {
-            "text": "hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1634,6 +1634,23 @@ exports[`AIGNEClient should return error with options {
   },
   {
     "progress": {
+      "contextId": "TEST_CONTEXT_ID",
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+      "parentContextId": "TEST_PARENT_CONTEXT_ID",
+      "timestamp": 123456,
+    },
+  },
+  {
+    "progress": {
       "agent": {
         "name": "OpenAIChatModel",
       },
@@ -1652,23 +1669,6 @@ exports[`AIGNEClient should return error with options {
           },
         ],
         "modelOptions": {},
-      },
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": {
-        "content": [
-          {
-            "text": "hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1788,6 +1788,23 @@ exports[`AIGNEClient should return error with options {
   },
   {
     "progress": {
+      "contextId": "TEST_CONTEXT_ID",
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+      "parentContextId": "TEST_PARENT_CONTEXT_ID",
+      "timestamp": 123456,
+    },
+  },
+  {
+    "progress": {
       "agent": {
         "name": "OpenAIChatModel",
       },
@@ -1806,23 +1823,6 @@ exports[`AIGNEClient should return error with options {
           },
         ],
         "modelOptions": {},
-      },
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": {
-        "content": [
-          {
-            "text": "hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1942,6 +1942,23 @@ exports[`AIGNEClient should return error with options {
   },
   {
     "progress": {
+      "contextId": "TEST_CONTEXT_ID",
+      "event": "message",
+      "message": {
+        "content": [
+          {
+            "text": "hello",
+            "type": "text",
+          },
+        ],
+        "role": "user",
+      },
+      "parentContextId": "TEST_PARENT_CONTEXT_ID",
+      "timestamp": 123456,
+    },
+  },
+  {
+    "progress": {
       "agent": {
         "name": "OpenAIChatModel",
       },
@@ -1960,23 +1977,6 @@ exports[`AIGNEClient should return error with options {
           },
         ],
         "modelOptions": {},
-      },
-      "parentContextId": "TEST_PARENT_CONTEXT_ID",
-      "timestamp": 123456,
-    },
-  },
-  {
-    "progress": {
-      "contextId": "TEST_CONTEXT_ID",
-      "event": "message",
-      "message": {
-        "content": [
-          {
-            "text": "hello",
-            "type": "text",
-          },
-        ],
-        "role": "user",
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,

@@ -10,8 +10,8 @@ test("AFS should record history correctly", async () => {
   const historyPath = (await afs.listModules()).find((i) => i.name === history.name)?.path;
   assert(historyPath);
 
-  // Write a history entry to /new
-  const writeResult = await afs.write(`${historyPath}/new`, {
+  // Write a history entry to /by-session/session-001/new
+  const writeResult = await afs.write(`${historyPath}/by-session/session-001/new`, {
     agentId: "assistant",
     userId: "user-001",
     sessionId: "session-001",
@@ -42,7 +42,9 @@ test("AFS should record history correctly", async () => {
       "createdAt": Any<Date>,
       "id": Any<String>,
       "linkTo": null,
-      "metadata": null,
+      "metadata": {
+        "scope": "session",
+      },
       "path": StringMatching /^\\/modules\\/history\\/by-session\\/session-001\\/[0-9a-f-]{36}$/,
       "sessionId": "session-001",
       "summary": null,
@@ -57,11 +59,6 @@ test("AFS should record history correctly", async () => {
 
   expect(rootEntries).toMatchInlineSnapshot(`
     [
-      {
-        "description": "Write to this path to create a new history entry, generating a UUID-based path.",
-        "id": "new-history",
-        "path": "/modules/history/new",
-      },
       {
         "description": "Retrieve history entries by session ID.",
         "id": "by-session",
@@ -95,7 +92,7 @@ describe("Virtual Path Support", () => {
     assert(historyPath);
 
     // Write multiple history entries with different sessions
-    await afs.write(`${historyPath}/new`, {
+    await afs.write(`${historyPath}/by-session/session-001/new`, {
       sessionId: "session-001",
       userId: "user-001",
       agentId: "assistant",
@@ -105,7 +102,7 @@ describe("Virtual Path Support", () => {
       },
     });
 
-    await afs.write(`${historyPath}/new`, {
+    await afs.write(`${historyPath}/by-session/session-002/new`, {
       sessionId: "session-002",
       userId: "user-001",
       agentId: "assistant",
@@ -143,7 +140,9 @@ describe("Virtual Path Support", () => {
           "createdAt": Any<Date>,
           "id": Any<String>,
           "linkTo": null,
-          "metadata": null,
+          "metadata": {
+            "scope": "session",
+          },
           "path": Any<String>,
           "sessionId": "session-001",
           "summary": null,
@@ -162,7 +161,7 @@ describe("Virtual Path Support", () => {
     const historyPath = (await afs.listModules()).find((i) => i.name === history.name)?.path;
     assert(historyPath);
 
-    await afs.write(`${historyPath}/new`, {
+    await afs.write(`${historyPath}/by-user/user-001/new`, {
       sessionId: "session-001",
       userId: "user-001",
       agentId: "assistant",
@@ -172,7 +171,7 @@ describe("Virtual Path Support", () => {
       },
     });
 
-    await afs.write(`${historyPath}/new`, {
+    await afs.write(`${historyPath}/by-user/user-002/new`, {
       sessionId: "session-001",
       userId: "user-002",
       agentId: "assistant",
@@ -209,7 +208,9 @@ describe("Virtual Path Support", () => {
           "createdAt": Any<Date>,
           "id": Any<String>,
           "linkTo": null,
-          "metadata": null,
+          "metadata": {
+            "scope": "user",
+          },
           "path": Any<String>,
           "sessionId": "session-001",
           "summary": null,
@@ -228,7 +229,7 @@ describe("Virtual Path Support", () => {
     const historyPath = (await afs.listModules()).find((i) => i.name === history.name)?.path;
     assert(historyPath);
 
-    await afs.write(`${historyPath}/new`, {
+    await afs.write(`${historyPath}/by-agent/assistant/new`, {
       sessionId: "session-001",
       userId: "user-001",
       agentId: "assistant",
@@ -238,7 +239,7 @@ describe("Virtual Path Support", () => {
       },
     });
 
-    await afs.write(`${historyPath}/new`, {
+    await afs.write(`${historyPath}/by-agent/coder/new`, {
       sessionId: "session-001",
       userId: "user-001",
       agentId: "coder",
@@ -275,7 +276,9 @@ describe("Virtual Path Support", () => {
           "createdAt": Any<Date>,
           "id": Any<String>,
           "linkTo": null,
-          "metadata": null,
+          "metadata": {
+            "scope": "agent",
+          },
           "path": Any<String>,
           "sessionId": "session-001",
           "summary": null,
@@ -295,7 +298,7 @@ describe("Virtual Path Support", () => {
     assert(historyPath);
 
     // Create entries with different combinations
-    await afs.write(`${historyPath}/new`, {
+    await afs.write(`${historyPath}/by-session/session-001/new`, {
       sessionId: "session-001",
       userId: "user-001",
       agentId: "assistant",
@@ -305,7 +308,10 @@ describe("Virtual Path Support", () => {
       },
     });
 
-    await afs.write(`${historyPath}/new`, {
+    // Small delay to ensure different timestamps
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    await afs.write(`${historyPath}/by-session/session-001/new`, {
       sessionId: "session-001",
       userId: "user-001",
       agentId: "coder",
@@ -315,7 +321,7 @@ describe("Virtual Path Support", () => {
       },
     });
 
-    await afs.write(`${historyPath}/new`, {
+    await afs.write(`${historyPath}/by-session/session-002/new`, {
       sessionId: "session-002",
       userId: "user-001",
       agentId: "assistant",
@@ -356,7 +362,9 @@ describe("Virtual Path Support", () => {
           "createdAt": Any<Date>,
           "id": Any<String>,
           "linkTo": null,
-          "metadata": null,
+          "metadata": {
+            "scope": "session",
+          },
           "path": Any<String>,
           "sessionId": "session-001",
           "summary": null,
@@ -392,26 +400,6 @@ describe("Virtual Path Support", () => {
       `
       [
         {
-          "agentId": "assistant",
-          "content": {
-            "input": {
-              "message": "msg1",
-            },
-            "output": {
-              "message": "resp1",
-            },
-          },
-          "createdAt": Any<Date>,
-          "id": Any<String>,
-          "linkTo": null,
-          "metadata": null,
-          "path": Any<String>,
-          "sessionId": "session-001",
-          "summary": null,
-          "updatedAt": Any<Date>,
-          "userId": "user-001",
-        },
-        {
           "agentId": "coder",
           "content": {
             "input": {
@@ -424,7 +412,31 @@ describe("Virtual Path Support", () => {
           "createdAt": Any<Date>,
           "id": Any<String>,
           "linkTo": null,
-          "metadata": null,
+          "metadata": {
+            "scope": "session",
+          },
+          "path": Any<String>,
+          "sessionId": "session-001",
+          "summary": null,
+          "updatedAt": Any<Date>,
+          "userId": "user-001",
+        },
+        {
+          "agentId": "assistant",
+          "content": {
+            "input": {
+              "message": "msg1",
+            },
+            "output": {
+              "message": "resp1",
+            },
+          },
+          "createdAt": Any<Date>,
+          "id": Any<String>,
+          "linkTo": null,
+          "metadata": {
+            "scope": "session",
+          },
           "path": Any<String>,
           "sessionId": "session-001",
           "summary": null,
@@ -466,7 +478,9 @@ describe("Virtual Path Support", () => {
           "createdAt": Any<Date>,
           "id": Any<String>,
           "linkTo": null,
-          "metadata": null,
+          "metadata": {
+            "scope": "session",
+          },
           "path": Any<String>,
           "sessionId": "session-001",
           "summary": null,
@@ -485,7 +499,7 @@ describe("Virtual Path Support", () => {
     const historyPath = (await afs.listModules()).find((i) => i.name === history.name)?.path;
     assert(historyPath);
 
-    await afs.write(`${historyPath}/new`, {
+    await afs.write(`${historyPath}/by-session/session-001/new`, {
       sessionId: "session-001",
       userId: "user-001",
       agentId: "assistant",
@@ -526,7 +540,9 @@ describe("Virtual Path Support", () => {
           "createdAt": Any<Date>,
           "id": Any<String>,
           "linkTo": null,
-          "metadata": null,
+          "metadata": {
+            "scope": "session",
+          },
           "path": Any<String>,
           "sessionId": "session-001",
           "summary": null,
@@ -546,7 +562,7 @@ describe("Virtual Path Support", () => {
     assert(historyPath);
 
     // Write a test entry
-    await afs.write(`${historyPath}/new`, {
+    await afs.write(`${historyPath}/by-session/session-test/new`, {
       sessionId: "session-test",
       userId: "user-test",
       agentId: "test",
@@ -571,8 +587,8 @@ describe("Virtual Path Support", () => {
     const historyPath = (await afs.listModules()).find((i) => i.name === history.name)?.path;
     assert(historyPath);
 
-    // Write to /new should auto-generate UUID path
-    const writeResult = await afs.write(`${historyPath}/new`, {
+    // Write to /by-session/{sessionId}/new should auto-generate UUID path
+    const writeResult = await afs.write(`${historyPath}/by-session/auto-session/new`, {
       sessionId: "auto-session",
       userId: "auto-user",
       agentId: "auto-agent",
@@ -635,7 +651,7 @@ describe("Compact Routes", () => {
         "id": Any<String>,
         "metadata": {
           "latestEntryId": "entry-003",
-          "type": "session",
+          "scope": "session",
         },
         "path": Any<String>,
         "sessionId": "session-001",
@@ -660,18 +676,21 @@ describe("Compact Routes", () => {
       metadata: { latestEntryId: "entry-001" },
     });
 
+    // Small delay to ensure different timestamps
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
     await afs.write(`${historyPath}/by-session/session-001/@metadata/compact/new`, {
       agentId: "assistant",
       content: { summary: "Second compact" },
       metadata: { latestEntryId: "entry-002" },
     });
 
-    // List compact entries
+    // List compact entries (default order is createdAt desc, so latest first)
     const listResult = await afs.list(`${historyPath}/by-session/session-001/@metadata/compact`);
 
     expect(listResult.data).toHaveLength(2);
-    expect(listResult.data[0]?.content.summary).toBe("First compact");
-    expect(listResult.data[1]?.content.summary).toBe("Second compact");
+    expect(listResult.data[0]?.content.summary).toBe("Second compact");
+    expect(listResult.data[1]?.content.summary).toBe("First compact");
   });
 
   test("should read compact entry by ID", async () => {
@@ -715,7 +734,7 @@ describe("Compact Routes", () => {
         "id": Any<String>,
         "metadata": {
           "latestEntryId": "entry-001",
-          "type": "session",
+          "scope": "session",
         },
         "path": Any<String>,
         "sessionId": "session-001",
@@ -802,7 +821,7 @@ describe("Compact Routes", () => {
       content: { summary: "User long-term memory" },
     });
 
-    expect(userCompact.data.metadata?.type).toBe("user");
+    expect(userCompact.data.metadata?.scope).toBe("user");
     expect(userCompact.data.userId).toBe("user-001");
 
     // Write agent compact
@@ -813,7 +832,7 @@ describe("Compact Routes", () => {
       },
     );
 
-    expect(agentCompact.data.metadata?.type).toBe("agent");
+    expect(agentCompact.data.metadata?.scope).toBe("agent");
     expect(agentCompact.data.agentId).toBe("assistant");
 
     // List user compacts

@@ -170,6 +170,7 @@ test("app command should register doc-smith to yargs", async () => {
         "sessionId": Any<String>,
         "title": "test title to generate",
         "topic": "test topic to generate",
+        "userId": "cli-user",
       },
     ]
   `,

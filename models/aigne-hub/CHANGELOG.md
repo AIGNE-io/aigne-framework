@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.10.16-beta.14](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.16-beta.13...aigne-hub-v0.10.16-beta.14) (2026-01-06)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/anthropic bumped to 0.14.16-beta.11
+    * @aigne/bedrock bumped to 0.10.21-beta.10
+    * @aigne/core bumped to 1.72.0-beta.10
+    * @aigne/deepseek bumped to 0.7.62-beta.10
+    * @aigne/doubao bumped to 1.3.0-beta.9
+    * @aigne/gemini bumped to 0.14.16-beta.11
+    * @aigne/ideogram bumped to 0.4.16-beta.10
+    * @aigne/ollama bumped to 0.7.62-beta.10
+    * @aigne/open-router bumped to 0.7.62-beta.10
+    * @aigne/openai bumped to 0.16.16-beta.10
+    * @aigne/poe bumped to 1.1.6-beta.10
+    * @aigne/transport bumped to 0.15.25-beta.12
+    * @aigne/xai bumped to 0.7.62-beta.10
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.10
+
 ## [0.10.16-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.16-beta.12...aigne-hub-v0.10.16-beta.13) (2026-01-02)
 
 

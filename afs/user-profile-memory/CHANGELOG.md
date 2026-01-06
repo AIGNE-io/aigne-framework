@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/afs-user-profile-memory-v1.3.0-beta.9...afs-user-profile-memory-v1.3.0-beta.10) (2026-01-06)
+
+
+### Features
+
+* **core:** add cross session user memory support ([#873](https://github.com/AIGNE-io/aigne-framework/issues/873)) ([f377aa1](https://github.com/AIGNE-io/aigne-framework/commit/f377aa17f2cf8004fd3225ade4a37fd90af1292f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-history bumped to 1.2.0-beta.6
+    * @aigne/core bumped to 1.72.0-beta.10
+
 ## [1.3.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/afs-user-profile-memory-v1.3.0-beta.8...afs-user-profile-memory-v1.3.0-beta.9) (2026-01-02)
 
 

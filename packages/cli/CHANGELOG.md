@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.59.0-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.12...cli-v1.59.0-beta.13) (2026-01-06)
+
+
+### Features
+
+* **core:** add cross session user memory support ([#873](https://github.com/AIGNE-io/aigne-framework/issues/873)) ([f377aa1](https://github.com/AIGNE-io/aigne-framework/commit/f377aa17f2cf8004fd3225ade4a37fd90af1292f))
+
+
+### Bug Fixes
+
+* **cli:** add askUserQuestion for run-skill command ([9c621e7](https://github.com/AIGNE-io/aigne-framework/commit/9c621e7c55501d129e71966da79514717a4579ab))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-history bumped to 1.2.0-beta.6
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.10
+    * @aigne/agent-library bumped to 1.24.0-beta.12
+    * @aigne/agentic-memory bumped to 1.1.6-beta.10
+    * @aigne/aigne-hub bumped to 0.10.16-beta.14
+    * @aigne/core bumped to 1.72.0-beta.10
+    * @aigne/default-memory bumped to 1.4.0-beta.9
+    * @aigne/openai bumped to 0.16.16-beta.10
+    * @aigne/secrets bumped to 0.1.6-beta.10
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.10
+
 ## [1.59.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.11...cli-v1.59.0-beta.12) (2026-01-02)
 
 

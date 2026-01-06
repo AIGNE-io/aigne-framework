@@ -7,6 +7,21 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.24.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.11...agent-library-v1.24.0-beta.12) (2026-01-06)
+
+
+### Bug Fixes
+
+* **agent-library:** include stdout in the error message ([#872](https://github.com/AIGNE-io/aigne-framework/issues/872)) ([4627428](https://github.com/AIGNE-io/aigne-framework/commit/4627428ade3de38a94491670216372ab2e2f2396))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.10
+    * @aigne/openai bumped to 0.16.16-beta.10
+
 ## [1.24.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.10...agent-library-v1.24.0-beta.11) (2026-01-02)
 
 

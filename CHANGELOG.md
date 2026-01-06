@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.91.0-beta.14](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.13...aigne-framework-v1.91.0-beta.14) (2026-01-06)
+
+
+### Features
+
+* **core:** add cross session user memory support ([#873](https://github.com/AIGNE-io/aigne-framework/issues/873)) ([f377aa1](https://github.com/AIGNE-io/aigne-framework/commit/f377aa17f2cf8004fd3225ade4a37fd90af1292f))
+
+
+### Bug Fixes
+
+* **agent-library:** include stdout in the error message ([#872](https://github.com/AIGNE-io/aigne-framework/issues/872)) ([4627428](https://github.com/AIGNE-io/aigne-framework/commit/4627428ade3de38a94491670216372ab2e2f2396))
+* **cli:** add askUserQuestion for run-skill command ([9c621e7](https://github.com/AIGNE-io/aigne-framework/commit/9c621e7c55501d129e71966da79514717a4579ab))
+* **core:** compact current turn messages ([#871](https://github.com/AIGNE-io/aigne-framework/issues/871)) ([08c19d7](https://github.com/AIGNE-io/aigne-framework/commit/08c19d7651fb0ff0a0f7faa347746cf62b34f1f5))
+
 ## [1.91.0-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.12...aigne-framework-v1.91.0-beta.13) (2026-01-02)
 
 

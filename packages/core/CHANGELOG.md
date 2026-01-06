@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.72.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.9...core-v1.72.0-beta.10) (2026-01-06)
+
+
+### Features
+
+* **core:** add cross session user memory support ([#873](https://github.com/AIGNE-io/aigne-framework/issues/873)) ([f377aa1](https://github.com/AIGNE-io/aigne-framework/commit/f377aa17f2cf8004fd3225ade4a37fd90af1292f))
+
+
+### Bug Fixes
+
+* **core:** compact current turn messages ([#871](https://github.com/AIGNE-io/aigne-framework/issues/871)) ([08c19d7](https://github.com/AIGNE-io/aigne-framework/commit/08c19d7651fb0ff0a0f7faa347746cf62b34f1f5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-history bumped to 1.2.0-beta.6
+
 ## [1.72.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.8...core-v1.72.0-beta.9) (2026-01-02)
 
 

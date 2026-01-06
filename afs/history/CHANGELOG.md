@@ -6,6 +6,13 @@
   * dependencies
     * @aigne/afs bumped to 1.2.0
 
+## [1.2.0-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.2.0-beta.5...afs-history-v1.2.0-beta.6) (2026-01-06)
+
+
+### Features
+
+* **core:** add cross session user memory support ([#873](https://github.com/AIGNE-io/aigne-framework/issues/873)) ([f377aa1](https://github.com/AIGNE-io/aigne-framework/commit/f377aa17f2cf8004fd3225ade4a37fd90af1292f))
+
 ## [1.2.0-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/afs-history-v1.2.0-beta.4...afs-history-v1.2.0-beta.5) (2025-12-31)
 
 

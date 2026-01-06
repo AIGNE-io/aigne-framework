@@ -129,7 +129,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
           results.push(moduleEntry);
         }
       } catch (error) {
-        console.error(`Error listing from module at ${matched.modulePath}`, error);
+        throw new Error(`Error listing from module at ${matched.modulePath}: ${error.message}`);
       }
     }
 
@@ -297,7 +297,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
         );
         if (message) messages.push(message);
       } catch (error) {
-        console.error(`Error searching in module at ${modulePath}`, error);
+        throw new Error(`Error searching in module at ${modulePath}: ${error.message}`);
       }
     }
 

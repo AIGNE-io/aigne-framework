@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.72.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.11...core-v1.72.0-beta.12) (2026-01-07)
+
+
+### Bug Fixes
+
+* **afs:** support `~` in the local path for local-fs & add agent-skill example ([#877](https://github.com/AIGNE-io/aigne-framework/issues/877)) ([c86293f](https://github.com/AIGNE-io/aigne-framework/commit/c86293f3d70447974395d02e238305a42b256b66))
+
 ## [1.72.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.10...core-v1.72.0-beta.11) (2026-01-06)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.91.0-beta.16](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.15...aigne-framework-v1.91.0-beta.16) (2026-01-07)
+
+
+### Bug Fixes
+
+* **afs:** support `~` in the local path for local-fs & add agent-skill example ([#877](https://github.com/AIGNE-io/aigne-framework/issues/877)) ([c86293f](https://github.com/AIGNE-io/aigne-framework/commit/c86293f3d70447974395d02e238305a42b256b66))
+
 ## [1.91.0-beta.15](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.14...aigne-framework-v1.91.0-beta.15) (2026-01-06)
 
 

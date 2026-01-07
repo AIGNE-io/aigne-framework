@@ -1,0 +1,22 @@
+{
+  "name": "@aigne/example-agent-skill",
+  "version": "0.0.0",
+  "description": "A demonstration of using AIGNE Framework to run an agent with custom skills",
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/agent-skill",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "type": "module",
+  "bin": "aigne.yaml",
+  "scripts": {
+    "start": "aigne run",
+    "test": "aigne test",
+    "test:llm": "exit 0"
+  },
+  "dependencies": {
+    "@aigne/cli": "workspace:^"
+  }
+}

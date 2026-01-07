@@ -38,6 +38,7 @@
   "examples/afs-memory": "0.10.79-beta.15",
   "examples/afs-local-fs": "1.2.6-beta.15",
   "examples/afs-mcp-server": "1.1.6-beta.15",
+  "examples/agent-skill": "0.0.0",
   "memory/agentic": "1.1.6-beta.11",
   "memory/default": "1.4.0-beta.10",
   "memory/did-space": "1.4.0-beta.10",

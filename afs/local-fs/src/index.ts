@@ -55,6 +55,9 @@ export class LocalFS implements AFSModule {
     } else {
       // biome-ignore lint/suspicious/noTemplateCurlyInString: explicitly replace ${CWD}
       localPath = valid.localPath.replaceAll("${CWD}", process.cwd());
+      if (localPath.startsWith("~/")) {
+        localPath = join(process.env.HOME || "", localPath.slice(2));
+      }
       if (!isAbsolute(localPath)) localPath = join(dirname(filepath), localPath);
     }
 

@@ -154,6 +154,9 @@
     "examples/afs-mcp-server": {
       "prerelease-type": "beta"
     },
+    "examples/agent-skill": {
+      "prerelease-type": "beta"
+    },
     "blocklets/agent-runtime": {
       "prerelease-type": "beta",
       "package-name": "agent-runtime",

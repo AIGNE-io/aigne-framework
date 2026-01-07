@@ -1,0 +1,55 @@
+type: "@aigne/agent-library/agent-skill-manager"
+name: agent-skill
+description: A demonstration of using AIGNE Framework to run an agent with custom skills
+task_render_mode: collapse
+input_key: message
+
+model:
+  cache_config:
+    autoBreakpoints:
+      lastMessage: true
+
+skills:
+  - type: "@aigne/agent-library/ask-user-question"
+  - type: "@aigne/agent-library/bash"
+    sandbox: false
+    permissions:
+      default_mode: ask
+      guard:
+        type: function
+        process: |
+          const approved = await options.prompts.confirm({ message: `Run command ${input.script}?` });
+
+          return {
+            approved,
+            reason: approved ? undefined : 'User denied the command.',
+          };
+
+afs:
+  modules:
+    - module: history
+      options:
+        storage:
+          url: file:./.aigne/history.db
+
+    - module: local-fs
+      options:
+        name: workspace
+        localPath: ${CWD}
+        description: |
+          Current working directory. All temporary files should be written here using absolute AFS paths (e.g., /modules/workspace/temp.py).
+          Note: Bash is already running in this directory, so do NOT use 'cd /modules/workspace' in scripts. Use relative paths directly (e.g., python temp.py).`,
+    - module: local-fs
+      options:
+        agentSkills: true
+        name: custom-skills
+        localPath: ./skills
+        description: |
+          Contains custom Agent Skills for this example.
+    - module: local-fs
+      options:
+        agentSkills: true
+        name: skills
+        localPath: ~/.claude/plugins/marketplaces/anthropic-agent-skills/skills
+        description: |
+          Contains Claude's official Agent Skills.

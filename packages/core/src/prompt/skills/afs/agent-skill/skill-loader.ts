@@ -58,10 +58,12 @@ export async function loadAgentSkillFromAFS({
 
   for (const module of filtered) {
     const data: AFSEntry[] = (
-      await afs.list(module.path, {
-        pattern: "**/SKILL.md",
-        maxDepth: 10,
-      })
+      await afs
+        .list(module.path, {
+          pattern: "**/SKILL.md",
+          maxDepth: 10,
+        })
+        .catch(() => ({ data: [] }))
     ).data;
 
     for (const entry of data) {

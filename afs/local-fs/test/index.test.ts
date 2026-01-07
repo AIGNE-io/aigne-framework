@@ -1253,3 +1253,182 @@ test("LocalFS should match all files under a specific directory", async () => {
     ]
   `);
 });
+
+test("LocalFS should handle complex gitignore scenarios with root, subdirectories, and submodules", async () => {
+  // Create workspace directory (parent git repo)
+  const workspaceDir = join(tmpdir(), `workspace-complex-test-${Date.now()}`);
+  await mkdir(workspaceDir, { recursive: true });
+  await mkdir(join(workspaceDir, ".git"), { recursive: true });
+
+  // Workspace .gitignore: ignore *.local and build/ directories
+  await writeFile(join(workspaceDir, ".gitignore"), "*.local\nbuild\n");
+
+  // Create files in workspace root
+  await writeFile(join(workspaceDir, "app.js"), "main app");
+  await writeFile(join(workspaceDir, "config.local"), "local config"); // should be ignored
+  await writeFile(join(workspaceDir, "README.md"), "readme");
+
+  // Create build directory (should be ignored by workspace .gitignore)
+  await mkdir(join(workspaceDir, "build"), { recursive: true });
+  await writeFile(join(workspaceDir, "build", "output.js"), "built file");
+
+  // Create regular subdirectory (not a git repo, inherits parent gitignore)
+  const srcDir = join(workspaceDir, "src");
+  await mkdir(srcDir, { recursive: true });
+  await writeFile(join(srcDir, ".gitignore"), "*.tmp\ndist\n"); // additional rules
+  await writeFile(join(srcDir, "index.js"), "source");
+  await writeFile(join(srcDir, "test.local"), "local test"); // ignored by parent
+  await writeFile(join(srcDir, "cache.tmp"), "temp file"); // ignored by src/.gitignore
+
+  // Create src/dist directory (should be ignored by src/.gitignore)
+  await mkdir(join(srcDir, "dist"), { recursive: true });
+  await writeFile(join(srcDir, "dist", "bundle.js"), "bundled");
+
+  // Create src/utils (nested directory, inherits both workspace and src gitignore)
+  await mkdir(join(srcDir, "utils"), { recursive: true });
+  await writeFile(join(srcDir, "utils", "helper.js"), "helper");
+  await writeFile(join(srcDir, "utils", "debug.tmp"), "debug"); // ignored by src/.gitignore
+  await writeFile(join(srcDir, "utils", "settings.local"), "settings"); // ignored by workspace
+
+  // Create a submodule (has its own .git, should NOT inherit parent gitignore)
+  const submoduleDir = join(workspaceDir, "modules", "plugin");
+  await mkdir(submoduleDir, { recursive: true });
+  await mkdir(join(submoduleDir, ".git"), { recursive: true });
+
+  // Submodule .gitignore: ignore *.log and node_modules
+  await writeFile(join(submoduleDir, ".gitignore"), "*.log\nnode_modules\n");
+  await writeFile(join(submoduleDir, "plugin.js"), "plugin code");
+  await writeFile(join(submoduleDir, "config.local"), "submodule config"); // NOT ignored (submodule doesn't inherit)
+  await writeFile(join(submoduleDir, "debug.log"), "log"); // ignored by submodule's gitignore
+
+  // Create submodule/lib directory with nested files
+  await mkdir(join(submoduleDir, "lib"), { recursive: true });
+  await writeFile(join(submoduleDir, "lib", "core.js"), "core lib");
+  await writeFile(join(submoduleDir, "lib", "error.log"), "errors"); // ignored by submodule's *.log
+  await writeFile(join(submoduleDir, "lib", "settings.local"), "lib settings"); // NOT ignored (doesn't inherit)
+
+  // Create submodule/node_modules (should be ignored)
+  await mkdir(join(submoduleDir, "node_modules"), { recursive: true });
+  await writeFile(join(submoduleDir, "node_modules", "package.json"), "{}");
+
+  // Create submodule/build directory (NOT ignored - build rule is only in workspace, not submodule)
+  await mkdir(join(submoduleDir, "build"), { recursive: true });
+  await writeFile(join(submoduleDir, "build", "compiled.js"), "compiled");
+
+  const workspaceFS = new LocalFS({ localPath: workspaceDir });
+
+  // Test 1: List workspace root with maxDepth 10
+  const rootResult = await workspaceFS.list("/", { maxDepth: 10 });
+  const rootPaths = rootResult.data.map((entry) => entry.path).sort();
+
+  expect(rootPaths).toMatchInlineSnapshot(`
+    [
+      "/",
+      "/.gitignore",
+      "/README.md",
+      "/app.js",
+      "/modules",
+      "/modules/plugin",
+      "/modules/plugin/.gitignore",
+      "/modules/plugin/build",
+      "/modules/plugin/build/compiled.js",
+      "/modules/plugin/config.local",
+      "/modules/plugin/lib",
+      "/modules/plugin/lib/core.js",
+      "/modules/plugin/lib/settings.local",
+      "/modules/plugin/plugin.js",
+      "/src",
+      "/src/.gitignore",
+      "/src/index.js",
+      "/src/utils",
+      "/src/utils/helper.js",
+    ]
+  `);
+
+  // Verify workspace-level filtering
+  expect(rootPaths.includes("/config.local")).toBe(false); // *.local at workspace level
+  expect(rootPaths.includes("/build")).toBe(false); // build/ at workspace level
+  expect(rootPaths.includes("/src/test.local")).toBe(false); // inherited *.local
+  expect(rootPaths.includes("/src/cache.tmp")).toBe(false); // src/.gitignore
+  expect(rootPaths.includes("/src/dist")).toBe(false); // src/.gitignore
+  expect(rootPaths.includes("/src/utils/debug.tmp")).toBe(false); // inherited from src
+  expect(rootPaths.includes("/src/utils/settings.local")).toBe(false); // inherited from workspace
+
+  // Verify submodule does NOT inherit parent gitignore
+  expect(rootPaths.includes("/modules/plugin/config.local")).toBe(true); // NOT ignored
+  expect(rootPaths.includes("/modules/plugin/build")).toBe(true); // NOT ignored
+  expect(rootPaths.includes("/modules/plugin/lib/settings.local")).toBe(true); // NOT ignored
+
+  // Verify submodule's own gitignore is applied
+  expect(rootPaths.includes("/modules/plugin/debug.log")).toBe(false); // submodule's *.log
+  expect(rootPaths.includes("/modules/plugin/lib/error.log")).toBe(false); // submodule's *.log in nested dir
+  expect(rootPaths.includes("/modules/plugin/node_modules")).toBe(false); // submodule's gitignore
+
+  // Test 2: List src directory specifically
+  const srcResult = await workspaceFS.list("/src", { maxDepth: 10 });
+  const srcPaths = srcResult.data.map((entry) => entry.path).sort();
+
+  expect(srcPaths).toMatchInlineSnapshot(`
+    [
+      "/src",
+      "/src/.gitignore",
+      "/src/index.js",
+      "/src/utils",
+      "/src/utils/helper.js",
+    ]
+  `);
+
+  // Verify src filtering
+  expect(srcPaths.includes("/src/test.local")).toBe(false); // workspace *.local
+  expect(srcPaths.includes("/src/cache.tmp")).toBe(false); // src *.tmp
+  expect(srcPaths.includes("/src/dist")).toBe(false); // src dist rule
+  expect(srcPaths.includes("/src/utils/debug.tmp")).toBe(false); // inherited *.tmp
+  expect(srcPaths.includes("/src/utils/settings.local")).toBe(false); // inherited *.local
+
+  // Test 3: List submodule specifically
+  const submoduleResult = await workspaceFS.list("/modules/plugin", { maxDepth: 10 });
+  const submodulePaths = submoduleResult.data.map((entry) => entry.path).sort();
+
+  expect(submodulePaths).toMatchInlineSnapshot(`
+    [
+      "/modules/plugin",
+      "/modules/plugin/.gitignore",
+      "/modules/plugin/build",
+      "/modules/plugin/build/compiled.js",
+      "/modules/plugin/config.local",
+      "/modules/plugin/lib",
+      "/modules/plugin/lib/core.js",
+      "/modules/plugin/lib/settings.local",
+      "/modules/plugin/plugin.js",
+    ]
+  `);
+
+  // Verify submodule isolation from parent rules
+  expect(submodulePaths.includes("/modules/plugin/config.local")).toBe(true); // NOT ignored
+  expect(submodulePaths.includes("/modules/plugin/build")).toBe(true); // NOT ignored
+  expect(submodulePaths.includes("/modules/plugin/lib/settings.local")).toBe(true); // NOT ignored
+
+  // Verify submodule's own rules are applied
+  expect(submodulePaths.includes("/modules/plugin/debug.log")).toBe(false); // *.log
+  expect(submodulePaths.includes("/modules/plugin/lib/error.log")).toBe(false); // *.log in nested
+  expect(submodulePaths.includes("/modules/plugin/node_modules")).toBe(false); // node_modules
+
+  // Test 4: List submodule/lib specifically (nested directory within submodule)
+  const libResult = await workspaceFS.list("/modules/plugin/lib", { maxDepth: 10 });
+  const libPaths = libResult.data.map((entry) => entry.path).sort();
+
+  expect(libPaths).toMatchInlineSnapshot(`
+    [
+      "/modules/plugin/lib",
+      "/modules/plugin/lib/core.js",
+      "/modules/plugin/lib/settings.local",
+    ]
+  `);
+
+  // Verify nested directory inherits submodule's rules, not workspace rules
+  expect(libPaths.includes("/modules/plugin/lib/settings.local")).toBe(true); // NOT ignored
+  expect(libPaths.includes("/modules/plugin/lib/error.log")).toBe(false); // submodule's *.log
+
+  // Cleanup
+  await rm(workspaceDir, { recursive: true, force: true });
+});

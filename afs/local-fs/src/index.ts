@@ -1,5 +1,5 @@
 import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
-import { dirname, isAbsolute, join, relative, resolve } from "node:path";
+import { dirname, isAbsolute, join, relative } from "node:path";
 import type {
   AFSDeleteOptions,
   AFSDeleteResult,
@@ -88,6 +88,7 @@ export class LocalFS implements AFSModule {
     const disableGitignore = options?.disableGitignore ?? false;
     const pattern = options?.pattern;
     const basePath = join(this.options.localPath, path);
+    const mountRoot = this.options.localPath;
 
     // Validate maxChildren
     if (typeof maxChildren === "number" && maxChildren <= 0) {
@@ -125,11 +126,11 @@ export class LocalFS implements AFSModule {
 
         // Load .gitignore rules for this directory if not disabled
         let ig: ReturnType<typeof ignore> | null = null;
-        let gitRootForPath: string | null = null;
+        let ignoreBase: string = mountRoot;
         if (!disableGitignore) {
-          const result = await this.loadIgnoreRules(fullPath);
+          const result = await this.loadIgnoreRules(fullPath, mountRoot);
           ig = result?.ig || null;
-          gitRootForPath = result?.gitRoot || null;
+          ignoreBase = result?.ignoreBase || mountRoot;
         }
 
         // Filter items based on gitignore rules
@@ -137,9 +138,8 @@ export class LocalFS implements AFSModule {
           ? items
           : items.filter((item) => {
               const itemFullPath = join(fullPath, item);
-              // Calculate path relative to git root (or basePath if no git root)
-              const rootForIgnore = gitRootForPath || basePath;
-              const itemRelativePath = relative(rootForIgnore, itemFullPath);
+              // Calculate path relative to ignoreBase (git root or mountRoot) for gitignore matching
+              const itemRelativePath = relative(ignoreBase, itemFullPath);
               // Check both the file and directory (with trailing slash) patterns
               const isIgnored = ig.ignores(itemRelativePath);
               const isDirIgnored = ig.ignores(`${itemRelativePath}/`);
@@ -386,79 +386,112 @@ export class LocalFS implements AFSModule {
   }
 
   /**
-   * Load gitignore rules from the given directory up to git root.
+   * Load gitignore rules from mountRoot down to checkPath.
+   * Accumulates rules from parent to child for proper inheritance.
+   * Stops at .git boundaries (submodules are independent repos).
    * @param checkPath - The directory whose files we're checking
-   * @returns An object with ignore instance and git root, or null if no rules found
+   * @param mountRoot - The mounted local filesystem root (stop point for walking up)
+   * @returns An object with ignore instance and the base path for matching
    */
   private async loadIgnoreRules(
     checkPath: string,
-  ): Promise<{ ig: ReturnType<typeof ignore>; gitRoot: string | null } | null> {
+    mountRoot: string,
+  ): Promise<{ ig: ReturnType<typeof ignore>; ignoreBase: string } | null> {
     const ig = ignore();
 
-    // Find git root by searching upwards
-    let gitRoot: string | null = null;
-    let currentPath = resolve(checkPath);
-
-    while (true) {
-      try {
-        const gitDirPath = join(currentPath, ".git");
-        const gitStats = await stat(gitDirPath);
-        if (gitStats.isDirectory()) {
-          gitRoot = currentPath;
-          break;
-        }
-      } catch {
-        // .git doesn't exist at this level
-      }
-
-      // Move up one directory
-      const parentPath = dirname(currentPath);
-      // Check if we've reached the filesystem root
-      if (parentPath === currentPath) {
-        break;
-      }
-      currentPath = parentPath;
-    }
-
-    // Determine the root to search up to
-    // If git root found, search up to git root
-    // Otherwise, search up to filesystem root
-    const searchRoot = gitRoot;
-
-    // Collect all directories from checkPath up to searchRoot (or filesystem root)
+    // Collect directories from mountRoot down to checkPath
     const dirsToCheck: string[] = [];
-    currentPath = resolve(checkPath);
+    let currentPath = checkPath;
+    let gitBoundary: string | null = null;
 
+    // Walk up from checkPath to mountRoot, checking for .git boundaries
     while (true) {
-      dirsToCheck.unshift(currentPath); // Add to beginning for correct order
+      dirsToCheck.unshift(currentPath);
 
-      // If we have a search root and reached it, stop
-      if (searchRoot && currentPath === searchRoot) {
+      // Check if this directory has a .git (it's a git repo boundary)
+      if (gitBoundary === null) {
+        try {
+          const gitPath = join(currentPath, ".git");
+          await stat(gitPath);
+          // Found .git, this is a git boundary
+          gitBoundary = currentPath;
+        } catch {
+          // No .git at this level
+        }
+      }
+
+      // Stop when we reach mountRoot
+      if (currentPath === mountRoot) {
         break;
       }
 
       const parentPath = dirname(currentPath);
-      // Stop if we've reached filesystem root
-      if (parentPath === currentPath) {
+      // Safety check: stop if we go outside mountRoot or hit filesystem root
+      if (!currentPath.startsWith(mountRoot) || parentPath === currentPath) {
         break;
       }
       currentPath = parentPath;
     }
 
-    // Load .gitignore files from root to checkPath (parent to child order)
-    for (const dirPath of dirsToCheck) {
+    // If we found a git boundary, only load rules from that boundary down
+    // Otherwise load from mountRoot down
+    const effectiveStart = gitBoundary || mountRoot;
+    const filteredDirs = dirsToCheck.filter((dir) => dir >= effectiveStart);
+
+    // Load .gitignore files from effectiveStart down to checkPath (parent to child order)
+    // This respects git boundaries - submodules don't inherit parent repo's rules
+    for (const dirPath of filteredDirs) {
       try {
         const gitignorePath = join(dirPath, ".gitignore");
         const gitignoreContent = await readFile(gitignorePath, "utf8");
-        ig.add(gitignoreContent);
+
+        // Calculate the effective base for this .gitignore file
+        // If there's a git boundary, paths are relative to that boundary when within it
+        // Otherwise, paths are relative to mountRoot
+        const effectiveBase = gitBoundary && dirPath >= gitBoundary ? gitBoundary : mountRoot;
+
+        // If this is a subdirectory of the effective base, we need to prefix the rules
+        // so they match correctly relative to effectiveBase
+        if (dirPath !== effectiveBase) {
+          const prefix = relative(effectiveBase, dirPath);
+          // Split rules into lines and add prefix to each non-empty, non-comment line
+          const lines = gitignoreContent.split("\n");
+          const prefixedLines = lines.map((line) => {
+            const trimmed = line.trim();
+            // Skip empty lines and comments
+            if (!trimmed || trimmed.startsWith("#")) {
+              return line;
+            }
+            // Skip negation patterns for now (would need special handling)
+            if (trimmed.startsWith("!")) {
+              return line;
+            }
+            // Add prefix to the pattern
+            // If pattern starts with /, it's relative to git root
+            if (trimmed.startsWith("/")) {
+              return `/${prefix}${trimmed}`;
+            }
+            // If pattern contains /, it's a path pattern, prefix it directly
+            if (trimmed.includes("/")) {
+              return `${prefix}/${trimmed}`;
+            }
+            // If it's a simple wildcard pattern like *.log or foo
+            // Use **/ to match at any depth within the prefixed directory
+            return `${prefix}/**/${trimmed}`;
+          });
+          ig.add(prefixedLines.join("\n"));
+        } else {
+          // This is effectiveBase's own .gitignore, use as-is
+          ig.add(gitignoreContent);
+        }
       } catch {
-        // .gitignore doesn't exist at this level, continue
+        // .gitignore doesn't exist at this level
       }
     }
 
     ig.add(".git");
     ig.add(this.options.ignore || []);
 
-    return { ig, gitRoot };
+    return { ig, ignoreBase: effectiveStart };
   }
 }

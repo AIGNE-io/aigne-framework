@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/example-agent-skill-v1.0.0...example-agent-skill-v1.0.1-beta) (2026-01-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.59.0-beta.16
+
 ## 1.0.0 (2026-01-07)
 
 

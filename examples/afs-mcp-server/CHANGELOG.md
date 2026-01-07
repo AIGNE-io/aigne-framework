@@ -12,6 +12,16 @@
   * devDependencies
     * @aigne/test-utils bumped to 0.5.60
 
+## [1.1.6-beta.17](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-mcp-server-v1.1.6-beta.16...example-afs-mcp-server-v1.1.6-beta.17) (2026-01-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.13
+    * @aigne/cli bumped to 1.59.0-beta.16
+
 ## [1.1.6-beta.16](https://github.com/AIGNE-io/aigne-framework/compare/example-afs-mcp-server-v1.1.6-beta.15...example-afs-mcp-server-v1.1.6-beta.16) (2026-01-07)
 
 

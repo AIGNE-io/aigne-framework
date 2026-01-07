@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.91.0-beta.17](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.16...aigne-framework-v1.91.0-beta.17) (2026-01-07)
+
+
+### Bug Fixes
+
+* **afs:** support gitignore inheritance and submodule isolation in local-fs ([#879](https://github.com/AIGNE-io/aigne-framework/issues/879)) ([46b794d](https://github.com/AIGNE-io/aigne-framework/commit/46b794d79892017538b300f17d9cc9165e1e6499))
+
 ## [1.91.0-beta.16](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.15...aigne-framework-v1.91.0-beta.16) (2026-01-07)
 
 

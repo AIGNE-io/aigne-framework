@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.4.0-beta.12...afs-local-fs-v1.4.0-beta.13) (2026-01-07)
+
+
+### Bug Fixes
+
+* **afs:** support gitignore inheritance and submodule isolation in local-fs ([#879](https://github.com/AIGNE-io/aigne-framework/issues/879)) ([46b794d](https://github.com/AIGNE-io/aigne-framework/commit/46b794d79892017538b300f17d9cc9165e1e6499))
+
 ## [1.4.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.4.0-beta.11...afs-local-fs-v1.4.0-beta.12) (2026-01-07)
 
 

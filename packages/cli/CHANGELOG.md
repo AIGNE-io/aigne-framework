@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.59.0-beta.16](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.15...cli-v1.59.0-beta.16) (2026-01-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.13
+
 ## [1.59.0-beta.15](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.14...cli-v1.59.0-beta.15) (2026-01-07)
 
 

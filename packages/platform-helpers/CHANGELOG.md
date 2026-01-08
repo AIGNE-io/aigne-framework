@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.7-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.6.7-beta...platform-helpers-v0.6.7-beta.1) (2026-01-08)
+
+
+### Bug Fixes
+
+* bump version ([696560f](https://github.com/AIGNE-io/aigne-framework/commit/696560fa2673eddcb4d00ac0523fbbbde7273cb3))
+
 ## [0.6.7-beta](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.6.6...platform-helpers-v0.6.7-beta) (2025-12-17)
 
 

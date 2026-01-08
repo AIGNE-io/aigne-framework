@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.10.21-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.21-beta.12...bedrock-v0.10.21-beta.13) (2026-01-08)
+
+
+### Bug Fixes
+
+* bump version ([696560f](https://github.com/AIGNE-io/aigne-framework/commit/696560fa2673eddcb4d00ac0523fbbbde7273cb3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.13
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.13
+
 ## [0.10.21-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/bedrock-v0.10.21-beta.11...bedrock-v0.10.21-beta.12) (2026-01-07)
 
 

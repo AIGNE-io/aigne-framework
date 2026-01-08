@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.72.0-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.12...core-v1.72.0-beta.13) (2026-01-08)
+
+
+### Features
+
+* **afs,bash:** add physical path mapping for AFS modules in bash execution ([#881](https://github.com/AIGNE-io/aigne-framework/issues/881)) ([50dbda2](https://github.com/AIGNE-io/aigne-framework/commit/50dbda224bd666d951494d2449779830d8db57fc))
+
+
+### Bug Fixes
+
+* bump version ([696560f](https://github.com/AIGNE-io/aigne-framework/commit/696560fa2673eddcb4d00ac0523fbbbde7273cb3))
+* **core:** disable session manger for compactor and memory extractor ([#882](https://github.com/AIGNE-io/aigne-framework/issues/882)) ([0ef8702](https://github.com/AIGNE-io/aigne-framework/commit/0ef8702b785b78859131ed45b4e71ab4064f3635))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.7
+    * @aigne/afs-history bumped to 1.2.0-beta.8
+    * @aigne/observability-api bumped to 0.11.14-beta.2
+    * @aigne/platform-helpers bumped to 0.6.7-beta.1
+
 ## [1.72.0-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.11...core-v1.72.0-beta.12) (2026-01-07)
 
 

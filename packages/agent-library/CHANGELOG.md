@@ -7,6 +7,27 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.24.0-beta.15](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.14...agent-library-v1.24.0-beta.15) (2026-01-08)
+
+
+### Features
+
+* **afs,bash:** add physical path mapping for AFS modules in bash execution ([#881](https://github.com/AIGNE-io/aigne-framework/issues/881)) ([50dbda2](https://github.com/AIGNE-io/aigne-framework/commit/50dbda224bd666d951494d2449779830d8db57fc))
+
+
+### Bug Fixes
+
+* bump version ([696560f](https://github.com/AIGNE-io/aigne-framework/commit/696560fa2673eddcb4d00ac0523fbbbde7273cb3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.13
+    * @aigne/openai bumped to 0.16.16-beta.13
+    * @aigne/sqlite bumped to 0.4.9-beta.1
+
 ## [1.24.0-beta.14](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.13...agent-library-v1.24.0-beta.14) (2026-01-07)
 
 

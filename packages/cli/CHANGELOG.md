@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.59.0-beta.17](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.16...cli-v1.59.0-beta.17) (2026-01-08)
+
+
+### Features
+
+* **afs,bash:** add physical path mapping for AFS modules in bash execution ([#881](https://github.com/AIGNE-io/aigne-framework/issues/881)) ([50dbda2](https://github.com/AIGNE-io/aigne-framework/commit/50dbda224bd666d951494d2449779830d8db57fc))
+
+
+### Bug Fixes
+
+* bump version ([696560f](https://github.com/AIGNE-io/aigne-framework/commit/696560fa2673eddcb4d00ac0523fbbbde7273cb3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.7
+    * @aigne/afs-history bumped to 1.2.0-beta.8
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.14
+    * @aigne/agent-library bumped to 1.24.0-beta.15
+    * @aigne/agentic-memory bumped to 1.1.6-beta.13
+    * @aigne/aigne-hub bumped to 0.10.16-beta.17
+    * @aigne/core bumped to 1.72.0-beta.13
+    * @aigne/default-memory bumped to 1.4.0-beta.12
+    * @aigne/observability-api bumped to 0.11.14-beta.2
+    * @aigne/openai bumped to 0.16.16-beta.13
+    * @aigne/secrets bumped to 0.1.6-beta.13
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.13
+
 ## [1.59.0-beta.16](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.15...cli-v1.59.0-beta.16) (2026-01-07)
 
 

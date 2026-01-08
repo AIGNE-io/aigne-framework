@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.16.16-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.16-beta.12...openai-v0.16.16-beta.13) (2026-01-08)
+
+
+### Bug Fixes
+
+* bump version ([696560f](https://github.com/AIGNE-io/aigne-framework/commit/696560fa2673eddcb4d00ac0523fbbbde7273cb3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.13
+    * @aigne/platform-helpers bumped to 0.6.7-beta.1
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.13
+
 ## [0.16.16-beta.12](https://github.com/AIGNE-io/aigne-framework/compare/openai-v0.16.16-beta.11...openai-v0.16.16-beta.12) (2026-01-07)
 
 

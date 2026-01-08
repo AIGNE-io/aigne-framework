@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.15.0-beta.17](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.15.0-beta.16...example-workflow-orchestrator-v1.15.0-beta.17) (2026-01-08)
+
+
+### Bug Fixes
+
+* bump version ([696560f](https://github.com/AIGNE-io/aigne-framework/commit/696560fa2673eddcb4d00ac0523fbbbde7273cb3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.24.0-beta.15
+    * @aigne/cli bumped to 1.59.0-beta.17
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.13
+
 ## [1.15.0-beta.16](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-orchestrator-v1.15.0-beta.15...example-workflow-orchestrator-v1.15.0-beta.16) (2026-01-07)
 
 

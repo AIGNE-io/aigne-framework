@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rename, rm, stat, symlink, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join, relative } from "node:path";
 import type {
   AFSDeleteOptions,
@@ -48,23 +48,10 @@ export class LocalFS implements AFSModule {
   static async load({ filepath, parsed }: { filepath: string; parsed?: object }) {
     const valid = await LocalFS.schema().passthrough().parseAsync(parsed);
 
-    let localPath: string;
-
-    if (valid.localPath === ".") {
-      localPath = process.cwd();
-    } else {
-      // biome-ignore lint/suspicious/noTemplateCurlyInString: explicitly replace ${CWD}
-      localPath = valid.localPath.replaceAll("${CWD}", process.cwd());
-      if (localPath.startsWith("~/")) {
-        localPath = join(process.env.HOME || "", localPath.slice(2));
-      }
-      if (!isAbsolute(localPath)) localPath = join(dirname(filepath), localPath);
-    }
-
-    return new LocalFS({ ...valid, localPath });
+    return new LocalFS({ ...valid, cwd: dirname(filepath) });
   }
 
-  constructor(public options: LocalFSOptions) {
+  constructor(public options: LocalFSOptions & { cwd?: string }) {
     checkArguments("LocalFS", localFSOptionsSchema, {
       ...options,
       localPath: options.localPath || (options as any).path, // compatible with 'path' option
@@ -72,11 +59,38 @@ export class LocalFS implements AFSModule {
 
     this.name = options.name || "local-fs";
     this.description = options.description;
+
+    let localPath: string;
+
+    if (options.localPath === ".") {
+      localPath = process.cwd();
+    } else {
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: explicitly replace ${CWD}
+      localPath = options.localPath.replaceAll("${CWD}", process.cwd());
+      if (localPath.startsWith("~/")) {
+        localPath = join(process.env.HOME || "", localPath.slice(2));
+      }
+      if (!isAbsolute(localPath)) localPath = join(options.cwd || process.cwd(), localPath);
+    }
+
+    this.options.localPath = localPath;
   }
 
   name: string;
 
   description?: string;
+
+  private get localPathExists() {
+    return stat(this.options.localPath)
+      .then(() => true)
+      .catch(() => false);
+  }
+
+  async symlinkToPhysical(path: string): Promise<void> {
+    if (await this.localPathExists) {
+      await symlink(this.options.localPath, path);
+    }
+  }
 
   async list(path: string, options?: AFSListOptions): Promise<AFSListResult> {
     path = join("/", path); // Ensure leading slash

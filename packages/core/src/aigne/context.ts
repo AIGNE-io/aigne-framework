@@ -42,6 +42,7 @@ import {
   isNil,
   type OmitPropertiesFromArrayFirstElement,
   omit,
+  pick,
 } from "../utils/type-utils.js";
 import type { Args, Listener, TypedEventEmitter } from "../utils/typed-event-emitter.js";
 import {
@@ -684,11 +685,9 @@ class AIGNEContextShared {
         }
 
         const stream = await activeAgent.invoke(input, {
-          hooks: options.hooks,
+          ...pick(options, "hooks", "model", "imageModel", "caller"),
           context,
           streaming: true,
-          model: options.model,
-          imageModel: options.imageModel,
         });
         for await (const value of stream) {
           if (isAgentResponseDelta(value)) {

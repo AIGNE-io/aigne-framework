@@ -100,6 +100,8 @@ export interface AFSModule {
 
   onMount?(root: AFSRoot): void;
 
+  symlinkToPhysical?(path: string): Promise<void>;
+
   list?(path: string, options?: AFSListOptions): Promise<AFSListResult>;
 
   read?(path: string, options?: AFSReadOptions): Promise<AFSReadResult>;
@@ -154,6 +156,10 @@ export interface AFSRoot extends Emitter<AFSRootEvents>, AFSModule {
   list(path: string, options?: AFSRootListOptions): Promise<AFSRootListResult>;
 
   search(path: string, query: string, options: AFSRootSearchOptions): Promise<AFSRootSearchResult>;
+
+  initializePhysicalPath(): Promise<string>;
+
+  cleanupPhysicalPath(): Promise<void>;
 }
 
 export interface AFSEntryMetadata extends Record<string, any> {

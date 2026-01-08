@@ -1,3 +1,5 @@
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
+import { v7 } from "@aigne/uuid";
 import { Emitter } from "strict-event-emitter";
 import { joinURL } from "ufo";
 import { z } from "zod";
@@ -421,5 +423,31 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     const metadataSuffix = metadataParts.length > 0 ? ` [${metadataParts.join(", ")}]` : "";
 
     return metadataSuffix;
+  }
+
+  private physicalPath?: Promise<string>;
+
+  async initializePhysicalPath(): Promise<string> {
+    this.physicalPath ??= (async () => {
+      const rootDir = nodejs.path.join(nodejs.os.tmpdir(), v7());
+      await nodejs.fs.mkdir(rootDir, { recursive: true });
+
+      for (const [modulePath, module] of this.modules) {
+        const physicalModulePath = nodejs.path.join(rootDir, modulePath);
+        await nodejs.fs.mkdir(nodejs.path.dirname(physicalModulePath), { recursive: true });
+        await module.symlinkToPhysical?.(physicalModulePath);
+      }
+
+      return rootDir;
+    })();
+
+    return this.physicalPath;
+  }
+
+  async cleanupPhysicalPath(): Promise<void> {
+    if (this.physicalPath) {
+      await nodejs.fs.rm(await this.physicalPath, { recursive: true, force: true });
+      this.physicalPath = undefined;
+    }
   }
 }

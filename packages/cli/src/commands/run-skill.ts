@@ -57,21 +57,6 @@ export function createRunSkillCommand(): CommandModule<
         taskRenderMode: "collapse",
         skills: [
           new BashAgent({
-            description: `\
-Execute bash scripts and return stdout and stderr output.
-
-When to use:
-- Running system commands (git, curl, etc.)
-- Executing build tools (npm, pip, make, etc.)
-- Running code scripts (python, node, etc.)
-
-Important:
-- Do NOT use bash for file operations. Use AFS tools instead (afs_list, afs_read, afs_write, afs_edit, afs_search).
-- Do NOT use 'cd'. The working directory is already set to workspace. Use relative paths directly.
-- Do NOT use 'npm i -g' or 'pip install --user'. Install dependencies locally in workspace:
-  - For Node.js: Use 'npm install <pkg>' (local) or 'npx <pkg>' (one-time run without install).
-  - For Python: Use 'pip install <pkg> -t .' or 'python -m venv .venv && source .venv/bin/activate && pip install <pkg>'.
-`,
             sandbox: false,
             permissions: {
               defaultMode: "ask",

@@ -295,6 +295,11 @@ export interface AgentInvokeOptions<U extends UserContext = UserContext> {
    * This property only exists in the CLI context by command `aigne run`
    */
   prompts?: typeof prompts;
+
+  /**
+   * The caller agent that invoked this agent
+   */
+  caller?: Agent;
 }
 
 /**
@@ -933,6 +938,7 @@ export abstract class Agent<I extends Message = any, O extends Message = any> im
       ...options,
       model: this.model || options.model,
       imageModel: this.imageModel || options.imageModel,
+      caller: this,
     });
   }) as Context["invoke"];
 

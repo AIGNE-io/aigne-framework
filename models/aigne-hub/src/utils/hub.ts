@@ -14,8 +14,8 @@ const modelsSchema = z.array(
     model: z.string(),
     type: z.string(),
     provider: z.string(),
-    input_credits_per_token: z.number(),
-    output_credits_per_token: z.number(),
+    input_credits_per_token: z.string(),
+    output_credits_per_token: z.string(),
     modelMetadata: z.record(z.unknown()).nullish(),
     providerDisplayName: z.string(),
     status: z

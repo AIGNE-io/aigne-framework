@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.59.0-beta.18](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.17...cli-v1.59.0-beta.18) (2026-01-08)
+
+
+### Bug Fixes
+
+* **cli:** ask user retry when model request respond error ([#884](https://github.com/AIGNE-io/aigne-framework/issues/884)) ([60aabbb](https://github.com/AIGNE-io/aigne-framework/commit/60aabbb34be6104f25f0383c2279f7f089268631))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.16-beta.18
+
 ## [1.59.0-beta.17](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.16...cli-v1.59.0-beta.17) (2026-01-08)
 
 

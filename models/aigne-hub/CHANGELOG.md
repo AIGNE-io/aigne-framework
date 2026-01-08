@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.16-beta.18](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.16-beta.17...aigne-hub-v0.10.16-beta.18) (2026-01-08)
+
+
+### Bug Fixes
+
+* **models:** correct aigne-hub model list schema ([#886](https://github.com/AIGNE-io/aigne-framework/issues/886)) ([b626c7a](https://github.com/AIGNE-io/aigne-framework/commit/b626c7ae99aa948dd310df93dd55139b06157d77))
+
 ## [0.10.16-beta.17](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.16-beta.16...aigne-hub-v0.10.16-beta.17) (2026-01-08)
 
 

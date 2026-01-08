@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.91.0-beta.19](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.18...aigne-framework-v1.91.0-beta.19) (2026-01-08)
+
+
+### Bug Fixes
+
+* **cli:** ask user retry when model request respond error ([#884](https://github.com/AIGNE-io/aigne-framework/issues/884)) ([60aabbb](https://github.com/AIGNE-io/aigne-framework/commit/60aabbb34be6104f25f0383c2279f7f089268631))
+* **models:** correct aigne-hub model list schema ([#886](https://github.com/AIGNE-io/aigne-framework/issues/886)) ([b626c7a](https://github.com/AIGNE-io/aigne-framework/commit/b626c7ae99aa948dd310df93dd55139b06157d77))
+
 ## [1.91.0-beta.18](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.17...aigne-framework-v1.91.0-beta.18) (2026-01-08)
 
 

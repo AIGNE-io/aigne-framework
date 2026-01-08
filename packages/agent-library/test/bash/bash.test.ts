@@ -107,7 +107,7 @@ test("BashAgent should support disable sandbox", async () => {
     }),
   );
 
-  expect(spawnSpy.mock.lastCall).toMatchInlineSnapshot(`
+  expect(spawnSpy.mock.lastCall?.slice(0, 2)).toMatchInlineSnapshot(`
       [
         "bash",
         [
@@ -190,12 +190,13 @@ exit 0`;
   `);
 
   expect(spawnSpy.mock.lastCall).toMatchInlineSnapshot(
-    [expect.stringContaining("sandbox-exec -p"), undefined, {}],
+    [expect.stringContaining("sandbox-exec -p"), undefined, { env: expect.objectContaining({}) }],
     `
     [
       StringContaining "sandbox-exec -p",
       undefined,
       {
+        "env": ObjectContaining {},
         "shell": true,
       },
     ]
@@ -264,12 +265,13 @@ test("BashAgent should resolve curl with authorized domains", async () => {
   );
 
   expect(spawnSpy.mock.lastCall).toMatchInlineSnapshot(
-    [expect.stringContaining("sandbox-exec -p"), undefined, {}],
+    [expect.stringContaining("sandbox-exec -p"), undefined, { env: expect.objectContaining({}) }],
     `
     [
       StringContaining "sandbox-exec -p",
       undefined,
       {
+        "env": ObjectContaining {},
         "shell": true,
       },
     ]
@@ -341,12 +343,13 @@ test("BashAgent should reject curl with unauthorized domains", async () => {
   `);
 
   expect(spawnSpy.mock.lastCall).toMatchInlineSnapshot(
-    [expect.stringContaining("sandbox-exec -p"), undefined, {}],
+    [expect.stringContaining("sandbox-exec -p"), undefined, { env: expect.objectContaining({}) }],
     `
       [
         StringContaining "sandbox-exec -p",
         undefined,
         {
+          "env": ObjectContaining {},
           "shell": true,
         },
       ]

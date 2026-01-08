@@ -210,6 +210,8 @@ export class TerminalTracer {
       task.resolve();
     };
 
+    let retryPromptPromise: Promise<{ retry?: boolean }> | undefined;
+
     const onError: AgentHooks["onError"] = async ({ context, agent, error, ...event }) => {
       if ("type" in error && error.type === AIGNE_HUB_CREDITS_NOT_ENOUGH_ERROR_TYPE) {
         if (!Object.hasOwn(error, CREDITS_ERROR_PROCESSED_FLAG)) {
@@ -226,6 +228,24 @@ export class TerminalTracer {
             return { retry: true };
           }
         }
+      }
+
+      if (agent instanceof ChatModel) {
+        retryPromptPromise ??= this.proxiedPrompts
+          .select({
+            message: chalk.red(`Error: ${error.message}`),
+            choices: [
+              { value: "retry", name: "Retry" },
+              { value: "exit", name: "Exit" },
+            ],
+          })
+          .then((result) => ({ retry: result === "retry" }))
+          .finally(() => {
+            retryPromptPromise = undefined;
+          });
+
+        const { retry } = await retryPromptPromise;
+        if (retry) return { retry: true };
       }
 
       const contextId = context.id;

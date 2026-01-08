@@ -132,6 +132,9 @@ export class AIUserMemoryExtractor extends AIAgent<
       }),
       instructions: EXTRACTOR_INSTRUCTIONS,
       ...omitBy(options ?? {}, (v) => isNil(v)),
+      session: {
+        mode: "disabled",
+      },
     });
   }
 }

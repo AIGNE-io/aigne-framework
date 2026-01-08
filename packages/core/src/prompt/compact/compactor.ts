@@ -46,6 +46,9 @@ export class AISessionCompactor extends AIAgent<CompactorInput, CompactContent> 
       }),
       instructions: COMPACTOR_INSTRUCTIONS,
       ...omitBy(options ?? {}, (v) => isNil(v)),
+      session: {
+        mode: "disabled",
+      },
     });
   }
 }

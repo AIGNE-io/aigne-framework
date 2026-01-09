@@ -27,7 +27,13 @@ exports[`AIGNE HTTP Client should work with client memory in browser 1`] = `
         "role": "user",
       },
     ],
-    "modelOptions": {},
+    "modelOptions": {
+      "cacheConfig": {
+        "autoBreakpoints": {
+          "lastMessage": true,
+        },
+      },
+    },
     "responseFormat": undefined,
     "toolChoice": undefined,
     "tools": undefined,

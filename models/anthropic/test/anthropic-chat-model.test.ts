@@ -170,20 +170,46 @@ test("AnthropicChatModel.invoke should pass system and messages to claude correc
     ],
   });
 
-  expect(stream.mock.calls).toEqual([
+  expect(stream.mock.calls).toMatchInlineSnapshot(`
     [
-      expect.objectContaining({
-        system: [
-          {
-            type: "text",
-            text: "You are a chatbot",
-            cache_control: { type: "ephemeral" },
-          },
-        ],
-        messages: [{ role: "user", content: "hello" }],
-      }),
-    ],
-  ]);
+      [
+        {
+          "max_tokens": 64000,
+          "messages": [
+            {
+              "content": [
+                {
+                  "cache_control": {
+                    "ttl": undefined,
+                    "type": "ephemeral",
+                  },
+                  "text": "hello",
+                  "type": "text",
+                },
+              ],
+              "role": "user",
+            },
+          ],
+          "model": "claude-3-7-sonnet-latest",
+          "stream": true,
+          "system": [
+            {
+              "cache_control": {
+                "ttl": undefined,
+                "type": "ephemeral",
+              },
+              "text": "You are a chatbot",
+              "type": "text",
+            },
+          ],
+          "temperature": undefined,
+          "tool_choice": undefined,
+          "tools": undefined,
+          "top_p": undefined,
+        },
+      ],
+    ]
+  `);
 });
 
 test("AnthropicChatModel.invoke should use system message as user message if messages is empty", async () => {

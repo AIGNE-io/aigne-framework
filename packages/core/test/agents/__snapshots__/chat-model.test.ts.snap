@@ -19,7 +19,13 @@ exports[`ChatModel should auto convert image url to base64 image data {} 1`] = `
       "role": "user",
     },
   ],
-  "modelOptions": {},
+  "modelOptions": {
+    "cacheConfig": {
+      "autoBreakpoints": {
+        "lastMessage": true,
+      },
+    },
+  },
 }
 `;
 
@@ -45,6 +51,11 @@ exports[`ChatModel should auto convert image url to base64 image data {
     },
   ],
   "modelOptions": {
+    "cacheConfig": {
+      "autoBreakpoints": {
+        "lastMessage": true,
+      },
+    },
     "preferInputFileType": "file",
   },
 }
@@ -70,6 +81,11 @@ exports[`ChatModel should auto convert image url to base64 image data {
     },
   ],
   "modelOptions": {
+    "cacheConfig": {
+      "autoBreakpoints": {
+        "lastMessage": true,
+      },
+    },
     "preferInputFileType": "url",
   },
 }

@@ -288,7 +288,13 @@ test("AIGNEClient should support invoke chat model on the server side", async ()
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
       }
     `);
     expect(modelProcess.mock.lastCall?.[1]).toEqual(

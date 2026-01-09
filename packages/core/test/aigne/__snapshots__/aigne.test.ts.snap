@@ -46,7 +46,13 @@ exports[`AIGNE.invoke should respond progressing chunks correctly 1`] = `
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
         "outputFileType": undefined,
         "responseFormat": undefined,
         "toolChoice": undefined,
@@ -252,7 +258,13 @@ exports[`AIGNE.invoke should respond progressing chunks (with failed chunks) cor
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
         "outputFileType": undefined,
         "responseFormat": undefined,
         "toolChoice": undefined,

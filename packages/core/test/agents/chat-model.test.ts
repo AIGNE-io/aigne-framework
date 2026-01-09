@@ -652,18 +652,28 @@ test("ChatModel getModelOptions should support nested getter pattern", async () 
     { context },
   );
 
-  expect(resolvedOptions).toEqual({
-    temperature: 0.5,
-    topP: 0.9,
-    customConfig: {
-      nestedValue: "resolved-from-context",
-      staticValue: "unchanged",
-      deepNested: {
-        level2: 42,
-        array: ["resolved-array-item", "static"],
+  expect(resolvedOptions).toMatchInlineSnapshot(`
+    {
+      "cacheConfig": {
+        "autoBreakpoints": {
+          "lastMessage": true,
+        },
       },
-    },
-  });
+      "customConfig": {
+        "deepNested": {
+          "array": [
+            "resolved-array-item",
+            "static",
+          ],
+          "level2": 42,
+        },
+        "nestedValue": "resolved-from-context",
+        "staticValue": "unchanged",
+      },
+      "temperature": 0.5,
+      "topP": 0.9,
+    }
+  `);
 });
 
 test("ChatModel getModelOptions should resolve nested getter from input properties", async () => {
@@ -691,9 +701,16 @@ test("ChatModel getModelOptions should resolve nested getter from input properti
     { context },
   );
 
-  expect(resolvedOptions).toEqual({
-    config: {
-      value: "from-input-property",
-    },
-  });
+  expect(resolvedOptions).toMatchInlineSnapshot(`
+    {
+      "cacheConfig": {
+        "autoBreakpoints": {
+          "lastMessage": true,
+        },
+      },
+      "config": {
+        "value": "from-input-property",
+      },
+    }
+  `);
 });

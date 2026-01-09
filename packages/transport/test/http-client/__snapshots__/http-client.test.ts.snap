@@ -143,7 +143,13 @@ exports[`AIGNEClient should return correct process options {
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -395,7 +401,13 @@ exports[`AIGNEClient should return correct process options {
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -647,7 +659,13 @@ exports[`AIGNEClient should return correct process options {
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -899,7 +917,13 @@ exports[`AIGNEClient should return correct process options {
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1151,7 +1175,13 @@ exports[`AIGNEClient should return correct process options {
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1360,7 +1390,13 @@ exports[`AIGNEClient should return error with options {
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1514,7 +1550,13 @@ exports[`AIGNEClient should return error with options {
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1668,7 +1710,13 @@ exports[`AIGNEClient should return error with options {
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1822,7 +1870,13 @@ exports[`AIGNEClient should return error with options {
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -1976,7 +2030,13 @@ exports[`AIGNEClient should return error with options {
             "role": "user",
           },
         ],
-        "modelOptions": {},
+        "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
+        },
       },
       "parentContextId": "TEST_PARENT_CONTEXT_ID",
       "timestamp": 123456,
@@ -2069,7 +2129,13 @@ exports[`AIGNEClient should support custom memory for client agent 2`] = `
         "role": "user",
       },
     ],
-    "modelOptions": {},
+    "modelOptions": {
+      "cacheConfig": {
+        "autoBreakpoints": {
+          "lastMessage": true,
+        },
+      },
+    },
     "responseFormat": undefined,
     "toolChoice": undefined,
     "tools": undefined,

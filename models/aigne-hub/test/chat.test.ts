@@ -159,6 +159,11 @@ describe("AIGNEHubChatModel", async () => {
           },
         ],
         "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
           "model": "openai/gpt-4o-mini",
         },
         "outputFileType": "url",
@@ -192,6 +197,11 @@ describe("AIGNEHubChatModel", async () => {
           },
         ],
         "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
           "model": "openai/gpt-4o-mini",
           "reasoningEffort": "minimal",
         },
@@ -214,6 +224,11 @@ describe("AIGNEHubChatModel", async () => {
           },
         ],
         "modelOptions": {
+          "cacheConfig": {
+            "autoBreakpoints": {
+              "lastMessage": true,
+            },
+          },
           "model": "openai/gpt-4o-mini",
           "reasoningEffort": "high",
         },

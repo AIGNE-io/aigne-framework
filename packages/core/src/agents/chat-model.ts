@@ -121,6 +121,23 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
     };
   }
 
+  override async getModelOptions(
+    input: Message,
+    options: AgentInvokeOptions,
+  ): Promise<ChatModelInputOptions> {
+    const modelOptions = (await super.getModelOptions(input, options)) as ChatModelInputOptions;
+    return {
+      ...modelOptions,
+      cacheConfig: {
+        ...modelOptions.cacheConfig,
+        autoBreakpoints: {
+          ...modelOptions.cacheConfig?.autoBreakpoints,
+          lastMessage: modelOptions.cacheConfig?.autoBreakpoints?.lastMessage ?? true,
+        },
+      },
+    };
+  }
+
   private validateToolNames(tools?: ChatModelInputTool[]) {
     for (const tool of tools ?? []) {
       if (!/^[a-zA-Z0-9_]+$/.test(tool.function.name)) {

@@ -1,6 +1,6 @@
 {
   "name": "@aigne/core",
-  "version": "1.72.0-beta.13",
+  "version": "1.72.0-beta.14",
   "description": "The functional core of agentic AI",
   "publishConfig": {
     "access": "public"

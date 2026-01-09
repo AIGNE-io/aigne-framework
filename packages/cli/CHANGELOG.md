@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.59.0-beta.19](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.18...cli-v1.59.0-beta.19) (2026-01-09)
+
+
+### Bug Fixes
+
+* **cli:** cache approved commands in run-skill to avoid redundant prompts ([d07fe6d](https://github.com/AIGNE-io/aigne-framework/commit/d07fe6d049cd063e750e5b3fe231c74dae26bc9d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.15
+    * @aigne/agent-library bumped to 1.24.0-beta.16
+    * @aigne/agentic-memory bumped to 1.1.6-beta.14
+    * @aigne/aigne-hub bumped to 0.10.16-beta.19
+    * @aigne/core bumped to 1.72.0-beta.14
+    * @aigne/default-memory bumped to 1.4.0-beta.13
+    * @aigne/openai bumped to 0.16.16-beta.14
+    * @aigne/secrets bumped to 0.1.6-beta.14
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.14
+
 ## [1.59.0-beta.18](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.17...cli-v1.59.0-beta.18) (2026-01-08)
 
 

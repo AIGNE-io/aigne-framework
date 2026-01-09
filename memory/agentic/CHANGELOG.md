@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.6-beta.14](https://github.com/AIGNE-io/aigne-framework/compare/agentic-memory-v1.1.6-beta.13...agentic-memory-v1.1.6-beta.14) (2026-01-09)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.14
+    * @aigne/default-memory bumped to 1.4.0-beta.13
+    * @aigne/openai bumped to 0.16.16-beta.14
+
 ## [1.1.6-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/agentic-memory-v1.1.6-beta.12...agentic-memory-v1.1.6-beta.13) (2026-01-08)
 
 

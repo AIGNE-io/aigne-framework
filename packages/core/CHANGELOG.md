@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.72.0-beta.14](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.13...core-v1.72.0-beta.14) (2026-01-09)
+
+
+### Bug Fixes
+
+* **core:** correct session schema for AIAgent ([30b1deb](https://github.com/AIGNE-io/aigne-framework/commit/30b1deb54ac20287580e0a85ef150b95010f8201))
+* **core:** default enable auto breakpoints for chat model ([d4a6b83](https://github.com/AIGNE-io/aigne-framework/commit/d4a6b8323d6c83be45669885b32febb545bdf797))
+
 ## [1.72.0-beta.13](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.12...core-v1.72.0-beta.13) (2026-01-08)
 
 

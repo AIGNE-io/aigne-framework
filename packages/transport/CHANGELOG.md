@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.15.25-beta.16](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.15.25-beta.15...transport-v0.15.25-beta.16) (2026-01-09)
+
+
+### Bug Fixes
+
+* **core:** default enable auto breakpoints for chat model ([d4a6b83](https://github.com/AIGNE-io/aigne-framework/commit/d4a6b8323d6c83be45669885b32febb545bdf797))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.16-beta.14
+  * devDependencies
+    * @aigne/agent-library bumped to 1.24.0-beta.16
+    * @aigne/core bumped to 1.72.0-beta.14
+    * @aigne/default-memory bumped to 1.4.0-beta.13
+    * @aigne/test-utils bumped to 0.5.69-beta.14
+
 ## [0.15.25-beta.15](https://github.com/AIGNE-io/aigne-framework/compare/transport-v0.15.25-beta.14...transport-v0.15.25-beta.15) (2026-01-08)
 
 

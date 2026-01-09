@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.91.0-beta.20](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.19...aigne-framework-v1.91.0-beta.20) (2026-01-09)
+
+
+### Bug Fixes
+
+* **cli:** cache approved commands in run-skill to avoid redundant prompts ([d07fe6d](https://github.com/AIGNE-io/aigne-framework/commit/d07fe6d049cd063e750e5b3fe231c74dae26bc9d))
+* **core:** correct session schema for AIAgent ([30b1deb](https://github.com/AIGNE-io/aigne-framework/commit/30b1deb54ac20287580e0a85ef150b95010f8201))
+* **core:** default enable auto breakpoints for chat model ([d4a6b83](https://github.com/AIGNE-io/aigne-framework/commit/d4a6b8323d6c83be45669885b32febb545bdf797))
+
 ## [1.91.0-beta.19](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.18...aigne-framework-v1.91.0-beta.19) (2026-01-08)
 
 

@@ -52,6 +52,8 @@ export function createRunSkillCommand(): CommandModule<
 
       const aigne = new AIGNE({ model });
 
+      const approvedCmds = new Set<string>();
+
       const agent = new AgentSkillManager({
         inputKey: "message",
         taskRenderMode: "collapse",
@@ -61,10 +63,20 @@ export function createRunSkillCommand(): CommandModule<
             permissions: {
               defaultMode: "ask",
               guard: FunctionAgent.from(async (input, options) => {
+                if (approvedCmds.has(input.script || "")) {
+                  return {
+                    approved: true,
+                  };
+                }
+
                 const confirm = options.prompts?.confirm;
                 if (!confirm) throw new Error("No confirm prompt available for permission guard.");
 
                 const approved = await confirm({ message: `Run command ${input.script}?` });
+
+                if (approved && input.script) {
+                  approvedCmds.add(input.script);
+                }
 
                 return {
                   approved,

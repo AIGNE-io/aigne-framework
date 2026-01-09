@@ -320,7 +320,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
     const instructionsSchema = getInstructionsSchema({ filepath });
     const nestAgentSchema = getNestAgentSchema({ filepath });
 
-    return camelizeSchema(
+    const schema: ZodType<AIAgentLoadSchema> = camelizeSchema(
       z.object({
         instructions: optionalize(instructionsSchema),
         inputKey: optionalize(z.string()),
@@ -332,19 +332,50 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
         keepTextInToolUses: optionalize(z.boolean()),
         catchToolsError: optionalize(z.boolean()),
         structuredStreamMode: optionalize(z.boolean()),
-        compact: camelizeSchema(
-          optionalize(
+        session: optionalize(
+          camelizeSchema(
             z.object({
               mode: optionalize(z.enum(["auto", "disabled"])),
-              maxTokens: z.number().int().min(0).optional(),
-              keepRecentRatio: optionalize(z.number().min(0).max(1)),
-              async: optionalize(z.boolean()),
-              compactor: optionalize(nestAgentSchema),
+              sessionMemory: optionalize(
+                camelizeSchema(
+                  z.object({
+                    mode: optionalize(z.enum(["auto", "disabled"])),
+                    memoryRatio: optionalize(z.number().min(0).max(1)),
+                    queryLimit: optionalize(z.number().int().min(0)),
+                    async: optionalize(z.boolean()),
+                    extractor: optionalize(nestAgentSchema),
+                  }),
+                ),
+              ),
+              userMemory: optionalize(
+                camelizeSchema(
+                  z.object({
+                    mode: optionalize(z.enum(["auto", "disabled"])),
+                    memoryRatio: optionalize(z.number().min(0).max(1)),
+                    queryLimit: optionalize(z.number().int().min(0)),
+                    async: optionalize(z.boolean()),
+                    extractor: optionalize(nestAgentSchema),
+                  }),
+                ),
+              ),
+              compact: optionalize(
+                camelizeSchema(
+                  z.object({
+                    mode: optionalize(z.enum(["auto", "disabled"])),
+                    maxTokens: z.number().int().min(0).optional(),
+                    keepRecentRatio: optionalize(z.number().min(0).max(1)),
+                    async: optionalize(z.boolean()),
+                    compactor: optionalize(nestAgentSchema),
+                  }),
+                ),
+              ),
             }),
           ),
         ),
       }),
-    ) as any;
+    );
+
+    return schema as ZodType<T>;
   }
 
   static override async load<I extends Message = any, O extends Message = any>(options: {

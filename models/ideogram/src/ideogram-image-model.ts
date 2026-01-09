@@ -83,7 +83,7 @@ export class IdeogramImageModel extends ImageModel<
    */
   override async process(
     input: IdeogramImageModelInput,
-    options: AgentInvokeOptions,
+    _options: AgentInvokeOptions,
   ): Promise<ImageModelOutput> {
     const model = input.model || this.credential.model;
     const formData = new FormData();
@@ -125,7 +125,7 @@ export class IdeogramImageModel extends ImageModel<
       if (inputImages.length > 1) {
         throw new Error(`${this.name} only support one image for editing`);
       }
-      const { data } = await this.transformFileType("file", image, options);
+      const { data } = await this.transformFileType("file", image);
       formData.append("image", new Blob([Buffer.from(data, "base64")]));
     }
 

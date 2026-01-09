@@ -166,7 +166,7 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
 
   override async process(
     input: OpenAIVideoModelInput,
-    options: AgentInvokeOptions,
+    _options: AgentInvokeOptions,
   ): Promise<OpenAIVideoModelOutput> {
     const model = input.model ?? input.modelOptions?.model ?? this.credential.model;
 
@@ -178,11 +178,7 @@ export class OpenAIVideoModel extends VideoModel<OpenAIVideoModelInput, OpenAIVi
     if (input.seconds) createParams.seconds = input.seconds;
     if (input.size) createParams.size = input.size;
     if (input.image) {
-      createParams.input_reference = await this.transformFileType(
-        "file",
-        input.image,
-        options,
-      ).then(
+      createParams.input_reference = await this.transformFileType("file", input.image).then(
         (file) =>
           new File([Buffer.from(file.data, "base64")], file.filename || "image.png", {
             type: file.mimeType,

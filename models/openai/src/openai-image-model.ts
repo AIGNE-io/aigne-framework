@@ -144,7 +144,7 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
    */
   override async process(
     input: OpenAIImageModelInput,
-    options: AgentInvokeOptions,
+    _options: AgentInvokeOptions,
   ): Promise<OpenAIImageModelOutput> {
     const model = input.modelOptions?.model || this.credential.model;
 
@@ -168,7 +168,7 @@ export class OpenAIImageModel extends ImageModel<OpenAIImageModelInput, OpenAIIm
             ...(body as OpenAI.ImageEditParams),
             image: await Promise.all(
               input.image.map((image) =>
-                this.transformFileType("file", image, options).then(
+                this.transformFileType("file", image).then(
                   (file) =>
                     new File([Buffer.from(file.data, "base64")], file.filename || "image.png", {
                       type: file.mimeType,

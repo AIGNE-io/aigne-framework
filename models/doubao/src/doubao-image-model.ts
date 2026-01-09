@@ -100,7 +100,7 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
 
   override async process(
     input: DoubaoImageModelInput,
-    options: AgentInvokeOptions,
+    _options: AgentInvokeOptions,
   ): Promise<ImageModelOutput> {
     const model = input.modelOptions?.model || this.credential.model;
     const { url, apiKey } = this.credential;
@@ -154,7 +154,7 @@ export class DoubaoImageModel extends ImageModel<DoubaoImageModelInput, DoubaoIm
 
     const image = await Promise.all(
       flat(input.image).map((image) =>
-        this.transformFileType("file", image, options).then(
+        this.transformFileType("file", image).then(
           (file) => `data:${file.mimeType || "image/png"};base64,${file.data}`,
         ),
       ),

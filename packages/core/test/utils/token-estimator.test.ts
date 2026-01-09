@@ -36,9 +36,10 @@ test("estimateTokens - English sentence", () => {
   const text = "The quick brown fox jumps over the lazy dog.";
   const tokens = estimateTokens(text);
 
-  // 9 words * 0.75 = 6.75, spaces and punctuation add more
-  expect(tokens).toBeGreaterThan(5);
-  expect(tokens).toBeLessThan(15);
+  // 9 words * 0.75 = 6.75, 8 spaces + 1 punctuation = 9
+  // Total ~15.75, ceil to 16
+  expect(tokens).toBeGreaterThan(10);
+  expect(tokens).toBeLessThan(20);
 });
 
 test("estimateTokens - Chinese sentence", () => {
@@ -84,9 +85,9 @@ test("estimateTokens - long English text", () => {
     "The estimation should be reasonably accurate for practical use.";
   const tokens = estimateTokens(text);
 
-  // Rough estimate: ~30 words * 0.75 = 22.5, plus spaces/punctuation
-  expect(tokens).toBeGreaterThan(15);
-  expect(tokens).toBeLessThan(40);
+  // Rough estimate: ~30 words * 0.75 = 22.5, plus spaces/punctuation (each char = 1 token)
+  expect(tokens).toBeGreaterThan(40);
+  expect(tokens).toBeLessThan(80);
 });
 
 test("estimateTokens - JSON object", () => {
@@ -107,18 +108,18 @@ test("estimateTokens - special characters", () => {
   const text = "!@#$%^&*()_+-=[]{}|;':\",./<>?";
   const tokens = estimateTokens(text);
 
-  // All special characters, treated as "other" (4 chars per token)
-  // 29 chars / 4 = 7.25, ceil to 8
-  expect(tokens).toBe(8);
+  // All special characters, treated as remaining chars (1 char = 1 token)
+  // 29 chars = 29 tokens
+  expect(tokens).toBe(29);
 });
 
 test("estimateTokens - whitespace only", () => {
   const text = "   \n\t  ";
   const tokens = estimateTokens(text);
 
-  // Whitespace treated as "other" (4 chars per token)
-  // 7 chars / 4 = 1.75, ceil to 2
-  expect(tokens).toBe(2);
+  // Whitespace treated as remaining chars (1 char = 1 token)
+  // 7 chars = 7 tokens
+  expect(tokens).toBe(7);
 });
 
 test("estimateTokens - mixed content paragraph", () => {

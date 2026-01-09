@@ -17,11 +17,17 @@ import {
 } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
 import { mergeUsage } from "@aigne/core/utils/model-utils.js";
-import { isNonNullable, isRecord, type PromiseOrValue } from "@aigne/core/utils/type-utils.js";
+import {
+  isNil,
+  isNonNullable,
+  isRecord,
+  type PromiseOrValue,
+} from "@aigne/core/utils/type-utils.js";
 import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
 import { v7 } from "@aigne/uuid";
 import {
   type Content,
+  type ContentUnion,
   createPartFromUri,
   createUserContent,
   type FunctionCallingConfig,
@@ -116,6 +122,45 @@ export class GeminiChatModel extends ChatModel {
     return this.options?.modelOptions;
   }
 
+  override async countTokens(input: ChatModelInput): Promise<number> {
+    const { model, ...request } = await this.getParameters(input);
+
+    const contents: Content[] = [];
+
+    const { systemInstruction, tools } = request.config ?? {};
+
+    if (systemInstruction) contents.push(this.contentUnionToContent(systemInstruction));
+    if (tools?.length) contents.push({ role: "system", parts: [{ text: JSON.stringify(tools) }] });
+
+    contents.push(...[request.contents].flat().map(this.contentUnionToContent));
+
+    const tokens = (
+      await this.googleClient.models.countTokens({
+        model,
+        contents,
+      })
+    ).totalTokens;
+
+    if (!isNil(tokens)) return tokens;
+
+    return super.countTokens(input);
+  }
+
+  private contentUnionToContent(content: ContentUnion): Content {
+    if (typeof content === "object" && "parts" in content) {
+      return { role: "system", parts: content.parts };
+    } else if (typeof content === "string") {
+      return { role: "system", parts: [{ text: content }] };
+    } else if (Array.isArray(content)) {
+      return {
+        role: "system",
+        parts: content.map((i) => (typeof i === "string" ? { text: i } : i)),
+      };
+    } else {
+      return { role: "system", parts: [content as Part] };
+    }
+  }
+
   override process(
     input: ChatModelInput,
     options: AgentInvokeOptions,
@@ -204,14 +249,11 @@ export class GeminiChatModel extends ChatModel {
     return { support: true, budget };
   }
 
-  private async *processInput(
-    input: ChatModelInput,
-    options: AgentInvokeOptions,
-  ): AgentProcessAsyncGenerator<ChatModelOutput> {
+  private async getParameters(input: ChatModelInput): Promise<GenerateContentParameters> {
     const { modelOptions = {} } = input;
 
     const model = modelOptions.model || this.credential.model;
-    const { contents, config } = await this.buildContents(input, options);
+    const { contents, config } = await this.buildContents(input);
 
     const thinkingBudget = this.getThinkingBudget(model, modelOptions.reasoningEffort);
 
@@ -235,6 +277,15 @@ export class GeminiChatModel extends ChatModel {
         ...(await this.buildConfig(input)),
       },
     };
+
+    return parameters;
+  }
+
+  private async *processInput(
+    input: ChatModelInput,
+    options: AgentInvokeOptions,
+  ): AgentProcessAsyncGenerator<ChatModelOutput> {
+    const parameters = await this.getParameters(input);
 
     const response = await this.googleClient.models.generateContentStream(parameters);
 
@@ -291,7 +342,7 @@ export class GeminiChatModel extends ChatModel {
                 };
 
                 // Preserve thought_signature for 3.x models
-                if (part.thoughtSignature && model.includes("gemini-3")) {
+                if (part.thoughtSignature && parameters.model.includes("gemini-3")) {
                   toolCall.metadata = {
                     thoughtSignature: part.thoughtSignature,
                   };
@@ -472,15 +523,8 @@ export class GeminiChatModel extends ChatModel {
     return { tools, toolConfig: { functionCallingConfig } };
   }
 
-  private async buildVideoContentParts(
-    media: FileUnionContent,
-    options: AgentInvokeOptions,
-  ): Promise<Part | undefined> {
-    const { path: filePath, mimeType: fileMimeType } = await this.transformFileType(
-      "local",
-      media,
-      options,
-    );
+  private async buildVideoContentParts(media: FileUnionContent): Promise<Part | undefined> {
+    const { path: filePath, mimeType: fileMimeType } = await this.transformFileType("local", media);
 
     if (filePath) {
       const stats = await nodejs.fs.stat(filePath);
@@ -521,7 +565,6 @@ export class GeminiChatModel extends ChatModel {
 
   private async buildContents(
     input: ChatModelInput,
-    options: AgentInvokeOptions,
   ): Promise<Omit<GenerateContentParameters, "model">> {
     const result: Omit<GenerateContentParameters, "model"> = {
       contents: [],
@@ -604,12 +647,12 @@ export class GeminiChatModel extends ChatModel {
             if (toolResult) {
               functionResponse.response = toolResult;
             } else {
-              functionResponse.parts = await this.contentToParts(msg.content, options);
+              functionResponse.parts = await this.contentToParts(msg.content);
             }
 
             content.parts = [{ functionResponse }];
           } else if (msg.content) {
-            content.parts = await this.contentToParts(msg.content, options);
+            content.parts = await this.contentToParts(msg.content);
           }
 
           return content;
@@ -627,10 +670,7 @@ export class GeminiChatModel extends ChatModel {
     return result;
   }
 
-  private async contentToParts(
-    content: ChatModelInputMessageContent,
-    options: AgentInvokeOptions,
-  ): Promise<Part[]> {
+  private async contentToParts(content: ChatModelInputMessageContent): Promise<Part[]> {
     if (typeof content === "string") return [{ text: content }];
 
     return Promise.all(
@@ -641,7 +681,7 @@ export class GeminiChatModel extends ChatModel {
           case "url":
             return { fileData: { fileUri: item.url, mimeType: item.mimeType } };
           case "file": {
-            const part = await this.buildVideoContentParts(item, options);
+            const part = await this.buildVideoContentParts(item);
             if (part) return part;
 
             return { inlineData: { data: item.data, mimeType: item.mimeType } };

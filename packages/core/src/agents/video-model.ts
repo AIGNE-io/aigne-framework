@@ -88,7 +88,7 @@ export abstract class VideoModel<
       output = {
         ...output,
         videos: await Promise.all(
-          videos.map((video) => this.transformFileType(input.outputFileType, video, options)),
+          videos.map((video) => this.transformFileType(input.outputFileType, video)),
         ),
       };
     }

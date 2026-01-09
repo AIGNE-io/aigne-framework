@@ -125,7 +125,7 @@ export abstract class ImageModel<
       output = {
         ...output,
         images: await Promise.all(
-          images.map((image) => this.transformFileType(input.outputFileType, image, options)),
+          images.map((image) => this.transformFileType(input.outputFileType, image)),
         ),
       };
     }

@@ -92,7 +92,7 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
    */
   override async process(
     input: GeminiImageModelInput,
-    options: AgentInvokeOptions,
+    _options: AgentInvokeOptions,
   ): Promise<ImageModelOutput> {
     const model = input.modelOptions?.model || this.credential.model;
     const responseFormat = input.responseFormat || "base64";
@@ -104,7 +104,7 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
       return this.generateImageByImagenModel(input);
     }
 
-    return this.generateImageByGeminiModel(input, options);
+    return this.generateImageByGeminiModel(input);
   }
 
   private async generateImageByImagenModel(
@@ -156,7 +156,6 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
 
   private async generateImageByGeminiModel(
     input: GeminiImageModelInput,
-    options: AgentInvokeOptions,
   ): Promise<ImageModelOutput> {
     const model = input.modelOptions?.model || this.credential.model;
 
@@ -196,7 +195,7 @@ export class GeminiImageModel extends ImageModel<GeminiImageModelInput, GeminiIm
 
     const images = await Promise.all(
       flat(input.image).map<Promise<PartUnion>>(async (image) => {
-        const { data, mimeType } = await this.transformFileType("file", image, options);
+        const { data, mimeType } = await this.transformFileType("file", image);
         return { inlineData: { data, mimeType } };
       }),
     );

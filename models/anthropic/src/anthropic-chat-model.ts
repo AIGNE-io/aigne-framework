@@ -20,6 +20,7 @@ import {
   checkArguments,
   isEmpty,
   isNonNullable,
+  omit,
   type PromiseOrValue,
 } from "@aigne/core/utils/type-utils.js";
 import Anthropic, { type ClientOptions } from "@anthropic-ai/sdk";
@@ -134,6 +135,11 @@ export class AnthropicChatModel extends ChatModel {
     };
   }
 
+  override async countTokens(input: ChatModelInput): Promise<number> {
+    const request = await this.getMessageCreateParams(input);
+    return (await this.client.messages.countTokens(omit(request, "max_tokens"))).input_tokens;
+  }
+
   private getMaxTokens(model: string): number {
     const matchers = [
       [/claude-opus-4-/, 32000],
@@ -164,12 +170,10 @@ export class AnthropicChatModel extends ChatModel {
     return this._process(input, options);
   }
 
-  private async _process(
+  private async getMessageCreateParams(
     input: ChatModelInput,
-    _options: AgentInvokeOptions,
-  ): Promise<AgentResponse<ChatModelOutput>> {
+  ): Promise<Anthropic.Messages.MessageCreateParams> {
     const { modelOptions = {} } = input;
-
     const model = modelOptions.model || this.credential.model;
 
     const disableParallelToolUse = modelOptions.parallelToolCalls === false;
@@ -178,11 +182,19 @@ export class AnthropicChatModel extends ChatModel {
       model,
       temperature: modelOptions.temperature,
       top_p: modelOptions.topP,
-      // TODO: make dynamic based on model https://docs.anthropic.com/en/docs/about-claude/models/all-models
       max_tokens: this.getMaxTokens(model),
       ...(await convertMessages(input)),
       ...convertTools({ ...input, disableParallelToolUse }),
     };
+
+    return body;
+  }
+
+  private async _process(
+    input: ChatModelInput,
+    _options: AgentInvokeOptions,
+  ): Promise<AgentResponse<ChatModelOutput>> {
+    const body = await this.getMessageCreateParams(input);
 
     // Claude does not support json_schema response and tool calls in the same request,
     // so we need to handle the case where tools are not used and responseFormat is json
@@ -632,5 +644,3 @@ function convertTools({
     tool_choice: choice,
   };
 }
-
-// safeParseJSON is now imported from @aigne/core

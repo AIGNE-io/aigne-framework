@@ -214,7 +214,7 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
     if (mergedInput.seconds) config.durationSeconds = parseInt(mergedInput.seconds, 10);
     if (mergedInput.personGeneration) config.personGeneration = mergedInput.personGeneration;
     if (mergedInput.lastFrame) {
-      config.lastFrame = await this.transformFileType("file", mergedInput.lastFrame, options).then(
+      config.lastFrame = await this.transformFileType("file", mergedInput.lastFrame).then(
         (file) => {
           return {
             imageBytes: file.data,
@@ -227,7 +227,7 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
     if (mergedInput.referenceImages) {
       config.referenceImages = await Promise.all(
         mergedInput.referenceImages.map(async (image) => {
-          return await this.transformFileType("file", image, options).then((file) => {
+          return await this.transformFileType("file", image).then((file) => {
             return {
               image: {
                 imageBytes: file.data,
@@ -246,14 +246,12 @@ export class GeminiVideoModel extends VideoModel<GeminiVideoModelInput, GeminiVi
     };
 
     if (mergedInput.image) {
-      params.image = await this.transformFileType("file", mergedInput.image, options).then(
-        (file) => {
-          return {
-            imageBytes: file.data,
-            mimeType: file.mimeType,
-          };
-        },
-      );
+      params.image = await this.transformFileType("file", mergedInput.image).then((file) => {
+        return {
+          imageBytes: file.data,
+          mimeType: file.mimeType,
+        };
+      });
     }
 
     // Start video generation

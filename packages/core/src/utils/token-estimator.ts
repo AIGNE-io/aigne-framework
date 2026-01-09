@@ -5,7 +5,6 @@
 const CHAR_TYPE_RATIOS = {
   chinese: 1.5, // Chinese characters: ~1.5 characters per token
   word: 0.75, // English words: ~0.75 tokens per word (accounting for subword tokenization)
-  other: 4, // Other characters (punctuation, numbers, etc.): ~4 characters per token
 };
 
 /**
@@ -62,7 +61,7 @@ export function estimateTokens(text: string): number {
   // Count remaining characters (punctuation, numbers, whitespace, etc.)
   const remainingChars = text.length - processedIndices.size;
   if (remainingChars > 0) {
-    tokens += remainingChars / CHAR_TYPE_RATIOS.other;
+    tokens += remainingChars;
   }
 
   return Math.ceil(tokens);

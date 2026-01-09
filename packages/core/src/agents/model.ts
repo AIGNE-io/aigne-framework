@@ -71,25 +71,18 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
     return super.preprocess(input, options);
   }
 
-  async transformFileType(
-    fileType: "file",
-    data: FileUnionContent,
-    options: AgentInvokeOptions,
-  ): Promise<FileContent>;
+  async transformFileType(fileType: "file", data: FileUnionContent): Promise<FileContent>;
   async transformFileType(
     fileType: "local" | undefined,
     data: FileUnionContent,
-    options: AgentInvokeOptions,
   ): Promise<LocalContent>;
   async transformFileType(
     fileType: FileType | undefined,
     data: FileUnionContent,
-    options: AgentInvokeOptions,
   ): Promise<FileUnionContent>;
   async transformFileType(
     fileType: FileType | undefined = "local",
     data: FileUnionContent,
-    options: AgentInvokeOptions,
   ): Promise<FileUnionContent> {
     if (fileType === data.type) return data;
 
@@ -97,7 +90,7 @@ export abstract class Model<I extends Message = any, O extends Message = any> ex
 
     switch (fileType) {
       case "local": {
-        const dir = nodejs.path.join(nodejs.os.tmpdir(), options.context.id);
+        const dir = nodejs.path.join(nodejs.os.tmpdir(), v7());
         await nodejs.fs.mkdir(dir, { recursive: true });
 
         const ext = await Model.getFileExtension(data.mimeType || data.filename || "");

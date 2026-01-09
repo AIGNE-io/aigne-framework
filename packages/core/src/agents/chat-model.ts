@@ -4,6 +4,7 @@ import { convertJsonSchemaToZod, type JSONSchema } from "zod-from-json-schema";
 import { optionalize } from "../loader/schema.js";
 import { wrapAutoParseJsonSchema } from "../utils/json-schema.js";
 import { logger } from "../utils/logger.js";
+import { estimateTokens } from "../utils/token-estimator.js";
 import { checkArguments, isNil, omitByDeep, type PromiseOrValue } from "../utils/type-utils.js";
 import {
   type Agent,
@@ -146,6 +147,10 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
         );
       }
     }
+  }
+
+  async countTokens(input: ChatModelInput): Promise<number> {
+    return estimateTokens(JSON.stringify(input));
   }
 
   /**
@@ -321,7 +326,7 @@ export abstract class ChatModel extends Model<ChatModelInput, ChatModelOutput> {
       output = {
         ...output,
         files: await Promise.all(
-          files.map((file) => this.transformFileType(input.outputFileType, file, options)),
+          files.map((file) => this.transformFileType(input.outputFileType, file)),
         ),
       };
     }

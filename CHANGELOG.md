@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.91.0-beta.21](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.20...aigne-framework-v1.91.0-beta.21) (2026-01-10)
+
+
+### Bug Fixes
+
+* **core:** simplify token-estimator logic for remaining characters ([45d43cc](https://github.com/AIGNE-io/aigne-framework/commit/45d43ccd3afd636cfb459eea2e6551e8f9c53765))
+
 ## [1.91.0-beta.20](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.19...aigne-framework-v1.91.0-beta.20) (2026-01-09)
 
 

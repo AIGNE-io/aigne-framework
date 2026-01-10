@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.14.16-beta.16](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.16-beta.15...gemini-v0.14.16-beta.16) (2026-01-10)
+
+
+### Bug Fixes
+
+* **core:** simplify token-estimator logic for remaining characters ([45d43cc](https://github.com/AIGNE-io/aigne-framework/commit/45d43ccd3afd636cfb459eea2e6551e8f9c53765))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.15
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.15
+
 ## [0.14.16-beta.15](https://github.com/AIGNE-io/aigne-framework/compare/gemini-v0.14.16-beta.14...gemini-v0.14.16-beta.15) (2026-01-09)
 
 

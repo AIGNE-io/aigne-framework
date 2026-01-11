@@ -1,0 +1,29 @@
+{
+  "name": "@aigne/example-ui-cli-demo",
+  "version": "0.1.0",
+  "description": "Demo of AIGNE generative UI with CLI components",
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "license": "MIT",
+  "type": "module",
+  "bin": "index.ts",
+  "scripts": {
+    "start": "bun run index.ts",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aigne/afs": "workspace:^",
+    "@aigne/afs-history": "workspace:^",
+    "@aigne/cli": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "@aigne/openai": "workspace:^",
+    "@aigne/ui": "workspace:^",
+    "@aigne/ui-cli": "workspace:^",
+    "ink": "^5.1.0",
+    "react": "^18.3.1",
+    "yargs": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.22",
+    "@types/react": "^18.3.18"
+  }
+}

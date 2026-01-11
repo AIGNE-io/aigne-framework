@@ -3,6 +3,12 @@ import type { Context } from "@aigne/core";
 import type { ZodType } from "zod";
 
 /**
+ * UI component tool name prefix
+ * Following Tambo's convention for clarity
+ */
+export const UI_TOOL_NAME_PREFIX = "show_component_";
+
+/**
  * Environment where the component runs
  */
 export type ComponentEnvironment = "cli" | "web" | "universal";

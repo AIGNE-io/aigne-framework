@@ -2,7 +2,7 @@ import type { AFS } from "@aigne/afs";
 import { type Agent, FunctionAgent } from "@aigne/core";
 import { z } from "zod";
 import type { ComponentContext, ComponentEnvironment, UIComponent } from "./types.js";
-import { ComponentState } from "./types.js";
+import { ComponentState, UI_TOOL_NAME_PREFIX } from "./types.js";
 
 /**
  * Component registry
@@ -50,7 +50,7 @@ export class ComponentRegistry {
 
   /**
    * Convert a single component to an AIGNE Agent
-   * ✅ CORRECTED: Pass AFS via parameter, capture in closure for agent process
+   * ✅ Uses 'show_component_' prefix like Tambo for clarity
    */
   private componentToAgent(component: UIComponent, afs: AFS): Agent {
     // Define the process function with proper typing
@@ -132,7 +132,7 @@ export class ComponentRegistry {
     };
 
     return new FunctionAgent({
-      name: `ui_${component.name}`,
+      name: `${UI_TOOL_NAME_PREFIX}${component.name}`,
       description: component.description,
       inputSchema: component.propsSchema,
       outputSchema: z.object({

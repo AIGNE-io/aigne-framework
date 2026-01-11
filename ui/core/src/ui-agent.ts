@@ -17,33 +17,55 @@ export interface UIAgentOptions extends AIAgentOptions {
   /** AFS for state persistence (required) */
   afs: AFS;
 
-  /** Optional UI-specific instructions */
-  uiInstructions?: string;
-
   /** Other skills (non-UI) - overrides the skills from AIAgentOptions */
   skills?: Agent[];
 }
 
 /**
  * Default UI instructions for LLM
+ * Inspired by Tambo's decision-loop-prompts pattern
  */
 const DEFAULT_UI_INSTRUCTIONS = `
-You have access to UI components that you can render for the user.
-These are special agents with names prefixed with "ui_".
+## Tool Categories
 
-When the user requests visualization, dashboards, forms, or any interactive UI:
-1. Select the appropriate UI component agent
-2. Provide all required props according to the schema
-3. The component will be rendered automatically
+Your tools are divided into two categories:
 
-Available UI components are listed in your available agents/tools.
-Each ui_* agent corresponds to a renderable component.
+1. **UI Component Tools** (prefixed with 'show_component_'):
+   - These tools display UI components on the user's screen
+   - Examples: 'show_component_chart', 'show_component_table', 'show_component_form'
+   - You may call multiple UI tools in sequence if it makes sense to show multiple components to the user
+   - Each UI tool call will display a component, and you can continue to call more UI tools after seeing the tool response
 
-Guidelines:
-- Use UI components for data visualization, forms, tables, dashboards
-- Provide clear, complete props - the component needs all required fields
-- For complex UIs, you can invoke multiple components sequentially
+2. **Informational Tools** (all other tools):
+   - These tools request data or perform an action
+   - Examples: 'get_weather', 'search_documents', 'calculate'
+   - All non-UI tools are informational tools
+
+## Tool Calling Pattern
+
+**Sequential, Not Parallel**: You should call tools one at a time, in sequence. Do not attempt to call multiple tools in parallel.
+
+**Common Pattern**:
+1. Call informational tools to gather required data
+2. Call UI component tools to display the data to the user
+3. Respond with a brief confirmation
+
+**Example Flow**:
+\`\`\`
+User: "Show me the sales data"
+→ Step 1: Call 'get_sales' tool (gather data)
+→ Step 2: Call 'show_component_chart' tool (display UI component)
+→ Step 3: Respond: "I've displayed your sales data as a chart."
+\`\`\`
+
+It is **not required** to call a UI tool after calling an informational tool, but you should call a UI tool if it makes sense to visualize or present the data.
+
+## UI Component Guidelines
+
+- Each 'show_component_*' tool corresponds to a specific renderable component
+- Provide all required props according to the component's schema
 - Component state is automatically persisted between interactions
+- For complex UIs, you can invoke multiple components sequentially
 `.trim();
 
 /**
@@ -91,7 +113,7 @@ export class UIAgent extends AIAgent {
     // Add UI-specific system instructions
     const enhancedInstructions = [
       options.instructions,
-      options.uiInstructions || DEFAULT_UI_INSTRUCTIONS,
+      DEFAULT_UI_INSTRUCTIONS,
     ]
       .filter(Boolean)
       .join("\n\n");

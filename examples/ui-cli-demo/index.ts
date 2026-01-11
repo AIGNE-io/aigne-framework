@@ -4,7 +4,7 @@ import { AFS } from "@aigne/afs";
 import { AFSHistory } from "@aigne/afs-history";
 import { loadAIGNEWithCmdOptions, runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgentToolChoice } from "@aigne/core";
-import { SimpleChart } from "@aigne/ui-cli";
+import { Chart, Table } from "@aigne/ui-cli";
 import { UIAgent, UI_TOOL_NAME_PREFIX } from "@aigne/ui";
 import { render } from "ink";
 
@@ -18,13 +18,14 @@ const afs = new AFS().mount(
   })
 );
 
-// Create UIAgent with SimpleChart component
+// Create UIAgent with Chart and Table components
 const agent = UIAgent.forCLI({
-  name: "chart-assistant",
+  name: "ui-assistant",
   instructions: `You are a friendly assistant that helps the user interact with an application.
 Your goal is to use a combination of tools and UI components to help the user accomplish their goal.`,
+  inputKey: "message",
 
-  components: [SimpleChart],
+  components: [Chart, Table],
   afs,
   model: aigne.chatModel,
 
@@ -34,121 +35,34 @@ Your goal is to use a combination of tools and UI components to help the user ac
   // Don't catch tool errors - let them propagate for debugging
   catchToolsError: false,
 
-  // ✅ CORRECT: Hooks must be passed inside a 'hooks' object, not as top-level properties
   hooks: {
-    // Hook into skill completion (handles both success and error)
-    onSkillEnd: (event) => {
-    // Check if this was an error
-    if ('error' in event && event.error) {
-      console.error("\n❌ Skill error:", event.skill.name);
-      console.error("Error:", event.error);
-      return;
-    }
-
-    // It's a success - check if it's a UI component
-    if (!event.skill.name.startsWith(UI_TOOL_NAME_PREFIX)) {
-      return; // Not a UI skill, ignore
-    }
-
-    console.log("\n" + "=".repeat(60));
-    console.log("✅ UI Component Skill Completed!");
-    console.log("Skill:", event.skill.name);
-
-    const result = event.output as any;
-
-    console.log("Result:", {
-      hasElement: !!result?.element,
-      componentName: result?.componentName,
-      instanceId: result?.instanceId,
-    });
-
-    // Render chart as plain text (Ink's render() conflicts with AIGNE CLI spinner)
-    if (result?.element) {
-      console.log("\n🎨 Chart Visualization:\n");
-
-      try {
-        // Extract props from the Ink element to render as plain text
-        const props = result.element.props;
-        const { data, title, height = 10 } = props;
-
-        // Render ASCII chart manually
-        const lines: string[] = [];
-
-        if (title) {
-          lines.push(`\n${title}\n`);
-        }
-
-        const maxValue = Math.max(...data, 1);
-        const barWidth = 3;
-
-        // Chart rows
-        for (let row = 0; row < height; row++) {
-          const threshold = maxValue * (1 - row / height);
-          let line = threshold.toFixed(0).padStart(6) + " │ ";
-
-          for (const value of data) {
-            const filled = value >= threshold;
-            line += filled ? "█".repeat(barWidth) : " ".repeat(barWidth);
-          }
-
-          lines.push(line);
-        }
-
-        // X-axis
-        lines.push("       └" + "─".repeat(data.length * barWidth));
-
-        // Labels
-        let labelLine = "        ";
-        for (const value of data) {
-          labelLine += value.toString().padEnd(barWidth);
-        }
-        lines.push(labelLine);
-
-        // Print the chart
-        console.log(lines.join("\n"));
-        console.log("\n" + "=".repeat(60));
-        console.log("✅ Chart rendered successfully");
-        console.log("=".repeat(60) + "\n");
-      } catch (renderError) {
-        console.error("❌ Render error:", renderError);
-        console.error("Stack:", renderError.stack);
+    onSkillEnd: async (event) => {
+      // Handle errors
+      if ('error' in event && event.error) {
+        console.error("\n❌ Error:", event.error);
+        return;
       }
-    } else {
-      console.log("⚠️ No element in result to render");
-      console.log("=".repeat(60) + "\n");
-    }
+
+      // Only render UI components
+      if (!event.skill.name.startsWith(UI_TOOL_NAME_PREFIX)) {
+        return;
+      }
+
+      const result = event.output as any;
+      if (result?.element) {
+        try {
+          console.log(); // Empty line for spacing
+          const { unmount } = render(result.element);
+          await new Promise(resolve => setTimeout(resolve, 100));
+          unmount();
+          console.log(); // Empty line for spacing
+        } catch (error) {
+          console.error("❌ Render error:", error);
+        }
+      }
     },
   },
 });
-
-// Debug: Check what skills are registered
-console.log("\n🔍 Registered skills:");
-if (agent.skills) {
-  for (const skill of agent.skills) {
-    console.log(`  - ${skill.name}: ${skill.description || '(no description)'}`);
-  }
-}
-
-// Debug: Check if hooks are set (hooks are stored in agent.hooks object, not as direct properties)
-console.log("\n🔍 Hooks configured:");
-console.log(`  - agent.hooks exists: ${!!agent.hooks}`);
-if (agent.hooks) {
-  console.log(`  - agent.hooks type: ${Array.isArray(agent.hooks) ? 'array' : typeof agent.hooks}`);
-  const hooksObj = Array.isArray(agent.hooks) ? agent.hooks[0] : agent.hooks;
-  if (hooksObj) {
-    console.log(`  - onStart: ${typeof hooksObj.onStart}`);
-    console.log(`  - onEnd: ${typeof hooksObj.onEnd}`);
-    console.log(`  - onSuccess: ${typeof hooksObj.onSuccess}`);
-    console.log(`  - onError: ${typeof hooksObj.onError}`);
-    console.log(`  - onSkillStart: ${typeof hooksObj.onSkillStart}`);
-    console.log(`  - onSkillEnd: ${typeof hooksObj.onSkillEnd}`);
-  }
-}
-
-console.log("\n🎨 AIGNE UI CLI Demo");
-console.log("\nType a message with numbers to visualize:");
-console.log('  Example: "Show me a chart of 5, 10, 15, 20"');
-console.log('  Example: "Visualize: 3, 7, 2, 9, 5"\n');
 
 // Run the agent
 await runWithAIGNE(agent, {

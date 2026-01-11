@@ -17,12 +17,15 @@
   },
   "dependencies": {
     "@aigne/ui": "workspace:^",
-    "ink": "^5.1.0",
-    "react": "^18.3.1",
+    "@pppp606/ink-chart": "^0.2.4",
+    "chalk": "^5.4.1",
+    "ink": "^6.6.0",
+    "ink-table": "^3.1.0",
+    "react": "^19.0.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@types/react": "^18.3.18",
+    "@types/react": "^19.0.0",
     "typescript": "^5.7.3"
   },
   "peerDependencies": {

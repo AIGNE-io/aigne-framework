@@ -92,7 +92,7 @@
     "glob": "^11.0.3",
     "gradient-string": "^3.0.0",
     "https-proxy-agent": "^7.0.6",
-    "ink": "^6.3.1",
+    "ink": "^6.6.0",
     "inquirer": "^12.9.6",
     "log-update": "^7.0.0",
     "marked": "^16.3.0",

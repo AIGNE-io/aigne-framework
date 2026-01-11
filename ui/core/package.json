@@ -1,0 +1,36 @@
+{
+  "name": "@aigne/ui",
+  "version": "0.1.0",
+  "description": "Core UI component system for AIGNE generative UI",
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf lib",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@aigne/afs": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "partial-json": "^0.1.7",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "vitest": "^3.0.0"
+  },
+  "keywords": [
+    "aigne",
+    "ui",
+    "generative-ui",
+    "ai"
+  ],
+  "license": "Elastic-2.0"
+}

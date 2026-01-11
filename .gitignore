@@ -65,3 +65,4 @@ lerna-debug.log*
 
 # Breaking changes documentation
 BREAKING_CHANGE.MD
+lib

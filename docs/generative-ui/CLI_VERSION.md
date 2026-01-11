@@ -41,6 +41,42 @@ CLI Components (All Ink.js-based)
      └── Menu (ink-select-input)
 ```
 
+### Component Rendering Strategy
+
+**✅ CORRECTED**: For proper state persistence and serialization, CLI components should return serializable representations rather than JSX elements directly.
+
+**Recommended Approach**:
+
+```typescript
+// ✅ GOOD: Return serializable representation
+async render(props, context) {
+  return {
+    element: {
+      type: 'dashboard',    // Component type identifier
+      props: {              // Serializable props
+        title: props.title,
+        panels: props.panels,
+        layout: props.layout
+      }
+    }
+  };
+}
+
+// Then in CLI renderer:
+const componentMap = {
+  'dashboard': DashboardInkComponent,
+  'chart': ChartInkComponent,
+  'table': TableInkComponent,
+};
+
+function renderComponent(element) {
+  const Component = componentMap[element.type];
+  return <Component {...element.props} />;
+}
+```
+
+**Alternative for MVP**: The examples below show JSX elements for clarity. In production, use the serializable approach above.
+
 ## Component Examples
 
 ### 1. Dashboard Component

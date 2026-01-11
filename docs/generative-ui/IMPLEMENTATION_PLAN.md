@@ -154,6 +154,8 @@ Build essential features for production use.
 - Implement message-based state persistence
 - Integrate with AIGNE's conversation system
 
+**🔴 CRITICAL**: Use AFSHistory's actual path pattern (`/modules/history/by-session/:sessionId/new`) instead of custom paths. See DESIGN_REVIEW.md for corrected implementation.
+
 **Deliverables**:
 
 ```
@@ -196,6 +198,8 @@ context.state.set('count', value + 1);
 
 - Implement progressive rendering
 - Create UIAgent class
+
+**✅ CORRECTED**: UIAgent must store AFS reference and pass it to `componentRegistry.toAgents(afs)` via closure. See DESIGN_REVIEW.md for details.
 
 **Deliverables**:
 
@@ -473,6 +477,7 @@ aigne-framework/
   "dependencies": {
     "@aigne/core": "workspace:^",
     "zod": "^3.25.67",
+    "partial-json": "^0.1.7",
     "typescript": "^5.9.0"
   }
 }

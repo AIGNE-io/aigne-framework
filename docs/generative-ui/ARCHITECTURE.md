@@ -2,15 +2,17 @@
 
 This document details the architectural design for integrating generative UI capabilities into the AIGNE Framework.
 
+> **✅ CORRECTED VERSION**: This document has been updated to align with AIGNE's actual Agent and Skills APIs, using AFSHistory for state persistence.
+
 ## Table of Contents
 
 1. [Core Architecture](#core-architecture)
 2. [Component System](#component-system)
 3. [UIAgent Design](#uiagent-design)
-4. [State Management](#state-management)
+4. [State Management via AFSHistory](#state-management-via-afshistory)
 5. [Streaming & Rendering](#streaming--rendering)
 6. [AFS Integration](#afs-integration)
-7. [Skill System Extension](#skill-system-extension)
+7. [Skills Pattern (Corrected)](#skills-pattern-corrected)
 8. [Data Flow](#data-flow)
 9. [Type System](#type-system)
 10. [Error Handling](#error-handling)
@@ -44,26 +46,26 @@ This document details the architectural design for integrating generative UI cap
 │  ┌──────────────────────────────────────────────────────────┐ │
 │  │  UIAgent extends AIAgent                                  │ │
 │  │  • Component registration                                 │ │
-│  │  • Skill generation (ui_ prefix)                          │ │
+│  │  • Agent conversion (ui_ prefix)                          │ │
 │  │  • Streaming coordination                                 │ │
-│  │  • State synchronization                                  │ │
+│  │  • State synchronization via AFS                          │ │
 │  └──────────────────────────────────────────────────────────┘ │
 └───────────────────────────┬───────────────────────────────────┘
                             │
 ┌───────────────────────────▼───────────────────────────────────┐
 │                      AIGNE Core Layer                          │
 │  ┌──────────────────────────────────────────────────────────┐ │
-│  │  AIAgent • ChatModel • Skills • Streaming • Events       │ │
+│  │  AIAgent • ChatModel • Agent • Streaming • Events        │ │
 │  └──────────────────────────────────────────────────────────┘ │
 └───────────────────────────┬───────────────────────────────────┘
                             │
 ┌───────────────────────────▼───────────────────────────────────┐
-│                       Storage Layer (AFS)                      │
+│                    Storage Layer (AFS)                         │
 │  ┌──────────────────────────────────────────────────────────┐ │
-│  │  Conversation/Messages      - Chat history + UI state     │ │
-│  │  • Standard message fields  (role, content, timestamp)    │ │
-│  │  • Component data           (name, props, state)          │ │
-│  │  • Tool calls               (if any)                      │ │
+│  │  /modules/history/          - AFSHistory module           │ │
+│  │    • Conversation messages  - Chat history                │ │
+│  │    • Component data         - UI component info           │ │
+│  │    • Component state        - Persistent state            │ │
 │  │  /modules/user-profile/     - User preferences            │ │
 │  └──────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
@@ -73,7 +75,7 @@ This document details the architectural design for integrating generative UI cap
 
 1. **Extend, Don't Replace**
    - UIAgent extends AIAgent, inheriting all capabilities
-   - Component system builds on existing skill system
+   - Component system builds on existing Agent pattern
    - No changes to AIGNE core needed
 
 2. **Environment-Agnostic Core**
@@ -81,11 +83,11 @@ This document details the architectural design for integrating generative UI cap
    - CLI and Web share same UIAgent
    - Components implement environment-specific rendering
 
-3. **Message-Based State** (Inspired by Tambo AI)
-   - Component state stored directly in messages
-   - No separate state/history tables needed
-   - Messages ARE the history - simple and elegant
+3. **AFSHistory-Based State**
+   - Component state stored in AFSHistory entries
    - Uses AIGNE's existing conversation storage
+   - Read/write via standard AFS operations
+   - No separate storage tables needed
 
 ---
 
@@ -130,17 +132,17 @@ export interface ComponentContext {
   // Component instance ID
   instanceId: string;
 
-  // State management
+  // State management (backed by AFS)
   state: ComponentState;
 
-  // AFS access
+  // AFS access for reading/writing state
   afs: AFS;
 
   // Event emitter
   events: EventEmitter;
 
   // AIGNE context
-  aigneContext: AIGNEContext;
+  aigneContext: Context;
 
   // Environment-specific data
   env: Record<string, any>;
@@ -162,16 +164,22 @@ export interface ComponentOutput {
 
 /**
  * Component state manager
- * Stores state in the message that owns this component
+ * Stores state in AFSHistory via AFS
  */
 export class ComponentState {
   private state: Record<string, any> = {};
+  private afs: AFS;
+  private sessionId: string;
 
   constructor(
-    private messageId: string,
+    private instanceId: string,
+    afs: AFS,
+    sessionId: string,
     initialState?: Record<string, any>,
     private schema?: z.ZodType
   ) {
+    this.afs = afs;
+    this.sessionId = sessionId;
     this.state = initialState || {};
   }
 
@@ -179,25 +187,85 @@ export class ComponentState {
     return this.state[key] as T;
   }
 
-  set<T = any>(key: string, value: T): void {
+  async set<T = any>(key: string, value: T): Promise<void> {
     // Validate if schema provided
     if (this.schema) {
       this.schema.parse({ [key]: value });
     }
 
     this.state[key] = value;
+
+    // Persist to AFSHistory
+    await this.persistState();
   }
 
   getAll<T = Record<string, any>>(): T {
     return this.state as T;
   }
 
-  update(updates: Record<string, any>): void {
+  async update(updates: Record<string, any>): Promise<void> {
     Object.assign(this.state, updates);
+    await this.persistState();
   }
 
   /**
-   * Returns current state for persistence in message
+   * Persist state to AFSHistory via AFS
+   * ✅ CORRECTED: Uses AFSHistory's actual path pattern
+   */
+  private async persistState(): Promise<void> {
+    const historyPath = `/modules/history/by-session/${this.sessionId}/new`;
+
+    await this.afs.write(historyPath, {
+      content: {
+        role: 'system',
+        type: 'component-state',
+        componentInstanceId: this.instanceId,
+        state: this.state,
+      },
+      metadata: {
+        instanceId: this.instanceId,
+        type: 'component-state',
+        updatedAt: new Date().toISOString(),
+      },
+    });
+  }
+
+  /**
+   * Load state from AFSHistory via AFS
+   * ✅ CORRECTED: Uses AFSHistory's actual list/filter pattern
+   */
+  static async load(
+    instanceId: string,
+    afs: AFS,
+    sessionId: string,
+    schema?: z.ZodType
+  ): Promise<ComponentState> {
+    try {
+      // List all entries in session
+      const result = await afs.list(`/modules/history/by-session/${sessionId}`);
+
+      // Find latest state entry for this component instance
+      const stateEntries = result.data
+        .filter(e =>
+          e.metadata?.type === 'component-state' &&
+          e.metadata?.instanceId === instanceId
+        )
+        .sort((a, b) =>
+          new Date(b.metadata?.updatedAt || 0).getTime() -
+          new Date(a.metadata?.updatedAt || 0).getTime()
+        );
+
+      const latestState = stateEntries[0]?.content?.state || {};
+
+      return new ComponentState(instanceId, afs, sessionId, latestState, schema);
+    } catch (error) {
+      // No saved state, return empty
+      return new ComponentState(instanceId, afs, sessionId, {}, schema);
+    }
+  }
+
+  /**
+   * Returns current state for serialization
    */
   toJSON(): Record<string, any> {
     return { ...this.state };
@@ -210,7 +278,7 @@ export class ComponentState {
 ```typescript
 /**
  * Component registry
- * Manages available UI components
+ * Manages available UI components and converts them to AIGNE Agents
  */
 export class ComponentRegistry {
   private components = new Map<string, UIComponent>();
@@ -231,15 +299,19 @@ export class ComponentRegistry {
   }
 
   /**
-   * Convert components to AIGNE skills
-   * Skills will have "ui_" prefix
+   * Convert components to AIGNE Agents
+   * These agents will have "ui_" prefix and become LLM-callable tools
+   * ✅ CORRECTED: Accepts AFS as parameter to pass to component agents
    */
-  toSkills(): AgentSkill[] {
-    return Array.from(this.components.values()).map((component) => this.componentToSkill(component));
+  toAgents(afs: AFS): Agent[] {
+    return Array.from(this.components.values()).map((component) => this.componentToAgent(component, afs));
   }
 
-  private componentToSkill(component: UIComponent): AgentSkill {
-    return {
+  /**
+   * ✅ CORRECTED: Pass AFS via parameter, capture in closure for agent process
+   */
+  private componentToAgent(component: UIComponent, afs: AFS): Agent {
+    return Agent.from({
       name: `ui_${component.name}`,
       description: component.description,
       inputSchema: component.propsSchema,
@@ -247,19 +319,34 @@ export class ComponentRegistry {
         instanceId: z.string(),
         componentName: z.string(),
         rendered: z.boolean(),
+        element: z.any().optional(),
       }),
-      async execute(input: any, context: any) {
+
+      async process(input: any) {
+        // Access AIGNE context via this.context
+        const context = this.context;
+        // ✅ CORRECTED: Get sessionId from context
+        const sessionId = context.sessionId;
+
         // Generate unique instance ID
         const instanceId = `${component.name}_${Date.now()}`;
+
+        // ✅ CORRECTED: Load state using AFS from closure
+        const componentState = await ComponentState.load(
+          instanceId,
+          afs,  // ✅ From closure parameter
+          sessionId,
+          component.stateSchema
+        );
 
         // Create component context
         const componentContext: ComponentContext = {
           instanceId,
-          state: new ComponentState(instanceId, context.afs),
-          afs: context.afs,
+          state: componentState,
+          afs,  // ✅ Pass AFS from closure
           events: context.events,
-          aigneContext: context.aigneContext,
-          env: context.env || {},
+          aigneContext: context,
+          env: {}, // Environment-specific data injected by UIAgent
         };
 
         // Render component
@@ -267,15 +354,34 @@ export class ComponentRegistry {
 
         // Apply state updates
         if (output.stateUpdates) {
-          await componentContext.state.update(output.stateUpdates);
+          await componentState.update(output.stateUpdates);
         }
 
         // Emit events
         if (output.events) {
           for (const event of output.events) {
-            componentContext.events.emit(event.type, event.data);
+            context.events.emit(event.type, event.data);
           }
         }
+
+        // ✅ CORRECTED: Store component message in AFSHistory with proper path
+        const historyPath = `/modules/history/by-session/${sessionId}/new`;
+        await afs.write(historyPath, {
+          content: {
+            role: 'assistant',
+            component: {
+              name: component.name,
+              props: input,
+              state: componentState.toJSON(),
+            },
+          },
+          metadata: {
+            instanceId,
+            componentName: component.name,
+            type: 'component-render',
+            timestamp: new Date().toISOString(),
+          },
+        });
 
         return {
           instanceId,
@@ -284,7 +390,7 @@ export class ComponentRegistry {
           element: output.element,
         };
       },
-    };
+    });
   }
 }
 ```
@@ -296,74 +402,84 @@ export class ComponentRegistry {
 ### UIAgent Class
 
 ```typescript
-import { AIAgent, type AIAgentOptions } from '@aigne/core';
+import { AIAgent, type AIAgentOptions, Agent } from '@aigne/core';
 import { z } from 'zod';
 
 /**
  * UIAgent extends AIAgent with UI generation capabilities
  */
-export interface UIAgentOptions extends AIAgentOptions {
+export interface UIAgentOptions extends Omit<AIAgentOptions, 'skills'> {
   // Component registry
   components?: UIComponent[];
 
   // Component environment
   environment: 'cli' | 'web';
 
-  // AFS for state persistence
+  // AFS for state persistence (required)
   afs: AFS;
 
   // Optional UI-specific instructions
   uiInstructions?: string;
+
+  // Other skills (non-UI)
+  skills?: (Agent | FunctionAgentFn)[];
 }
 
 export class UIAgent extends AIAgent {
   private componentRegistry: ComponentRegistry;
   private environment: 'cli' | 'web';
+  private afs: AFS;  // ✅ CORRECTED: Store AFS reference
 
   constructor(options: UIAgentOptions) {
-    // Add UI-specific system instructions
-    const enhancedOptions = {
-      ...options,
-      instructions: combineInstructions(options.instructions, options.uiInstructions || DEFAULT_UI_INSTRUCTIONS),
-    };
+    // Ensure AFS is provided
+    if (!options.afs) {
+      throw new Error('UIAgent requires AFS to be configured for state persistence');
+    }
 
-    super(enhancedOptions);
+    // ✅ CORRECTED: Store AFS reference for passing to component agents
+    const afs = options.afs;
 
-    this.environment = options.environment;
-    this.componentRegistry = new ComponentRegistry();
+    const componentRegistry = new ComponentRegistry();
+    const environment = options.environment;
 
     // Register provided components
     if (options.components) {
       for (const component of options.components) {
         // Validate environment compatibility
-        if (component.environment !== 'universal' && component.environment !== this.environment) {
+        if (component.environment !== 'universal' && component.environment !== environment) {
           console.warn(
             `Component ${component.name} is for ${component.environment} ` +
-              `but agent is running in ${this.environment}`
+              `but agent is running in ${environment}`
           );
           continue;
         }
 
-        this.componentRegistry.register(component);
+        componentRegistry.register(component);
       }
     }
 
-    // Convert components to skills and register them
-    const uiSkills = this.componentRegistry.toSkills();
-    for (const skill of uiSkills) {
-      this.registerSkill(skill);
-    }
-  }
+    // ✅ CORRECTED: Pass AFS to toAgents for component agent creation
+    const uiAgents = componentRegistry.toAgents(afs);
 
-  /**
-   * Register additional components after construction
-   */
-  registerComponent(component: UIComponent): void {
-    this.componentRegistry.register(component);
+    // Add UI-specific system instructions
+    const enhancedInstructions = [
+      options.instructions,
+      options.uiInstructions || DEFAULT_UI_INSTRUCTIONS,
+    ]
+      .filter(Boolean)
+      .join('\n\n');
 
-    // Convert to skill and register
-    const skill = this.componentToSkill(component);
-    this.registerSkill(skill);
+    // Call super with merged configuration
+    super({
+      ...options,
+      instructions: enhancedInstructions,
+      // Merge UI agents with other skills
+      skills: [...(options.skills || []), ...uiAgents],
+    });
+
+    this.componentRegistry = componentRegistry;
+    this.environment = environment;
+    this.afs = afs;  // ✅ Store AFS instance
   }
 
   /**
@@ -399,121 +515,118 @@ export class UIAgent extends AIAgent {
  */
 const DEFAULT_UI_INSTRUCTIONS = `
 You have access to UI components that you can render for the user.
-These are special skills prefixed with "ui_".
+These are special agents with names prefixed with "ui_".
 
 When the user requests visualization, dashboards, forms, or any interactive UI:
-1. Select the appropriate UI component
+1. Select the appropriate UI component agent
 2. Provide all required props according to the schema
 3. The component will be rendered automatically
 
-Available UI components are listed in your skills.
-Each ui_* skill corresponds to a renderable component.
+Available UI components are listed in your available agents/tools.
+Each ui_* agent corresponds to a renderable component.
 
 Guidelines:
 - Use UI components for data visualization, forms, tables, dashboards
 - Provide clear, complete props - the component needs all required fields
-- For complex UIs, break into multiple components if needed
-- You can update component state using the component's state management
+- For complex UIs, you can invoke multiple components sequentially
+- Component state is automatically persisted between interactions
 `.trim();
 ```
 
 ---
 
-## State Management
+## State Management via AFSHistory
 
-### UI State AFS Module
+### Message Structure with Component Data
 
 ```typescript
-import type { AFSModule, AFSEntry, AFSRoot } from '@aigne/afs';
-import { Storage } from '@aigne/sqlite';
-
 /**
- * Message structure with component data
- * Inspired by Tambo AI's approach - state lives in messages
+ * AFSHistory entry structure with component data
+ * State is stored directly in AFSHistory entries
  */
-export interface AIGNEMessageWithComponent {
-  // Standard message fields
-  id: string;
-  role: 'user' | 'assistant' | 'system' | 'tool';
-  content: string;
-  timestamp: Date;
+export interface UIHistoryEntry extends AFSEntry {
+  content: {
+    // Standard message fields
+    role: 'user' | 'assistant' | 'system';
+    content?: string;
 
-  // Component data (optional, only for assistant messages with UI)
-  component?: {
-    name: string;              // Component name (e.g., "Dashboard")
-    props: Record<string, any>; // Component props
-    state?: Record<string, any>; // Component state (persisted here!)
+    // Component data (optional, only for assistant messages with UI)
+    component?: {
+      name: string;              // Component name (e.g., "Dashboard")
+      props: Record<string, any>; // Component props
+      state?: Record<string, any>; // Component state (persisted here!)
+    };
   };
 
-  // Tool calls (if any)
-  toolCalls?: Array<{
-    id: string;
-    name: string;
-    arguments: Record<string, any>;
-  }>;
+  metadata: {
+    instanceId?: string;
+    componentName?: string;
+    timestamp: string;
+    userId?: string;
+    sessionId?: string;
+  };
+}
+```
 
-  // Metadata
-  metadata?: Record<string, any>;
+### State Access Pattern
+
+```typescript
+/**
+ * Reading component state from AFSHistory
+ * ✅ CORRECTED: Uses AFSHistory's list/filter pattern
+ */
+async function getComponentState(
+  afs: AFS,
+  sessionId: string,
+  instanceId: string
+): Promise<Record<string, any> | undefined> {
+  try {
+    // List all entries in session
+    const result = await afs.list(`/modules/history/by-session/${sessionId}`);
+
+    // Find latest state entry for this component
+    const stateEntries = result.data
+      .filter(e =>
+        e.metadata?.type === 'component-state' &&
+        e.metadata?.instanceId === instanceId
+      )
+      .sort((a, b) =>
+        new Date(b.metadata?.updatedAt || 0).getTime() -
+        new Date(a.metadata?.updatedAt || 0).getTime()
+      );
+
+    return stateEntries[0]?.content?.state;
+  } catch (error) {
+    return undefined;
+  }
 }
 
 /**
- * Example message with component state:
+ * Writing component state to AFSHistory
+ * ✅ CORRECTED: Uses AFSHistory's creation pattern
  */
-const exampleMessage: AIGNEMessageWithComponent = {
-  id: 'msg_123',
-  role: 'assistant',
-  content: 'Here is your dashboard',
-  timestamp: new Date(),
+async function saveComponentState(
+  afs: AFS,
+  sessionId: string,
+  instanceId: string,
+  state: Record<string, any>
+): Promise<void> {
+  const historyPath = `/modules/history/by-session/${sessionId}/new`;
 
-  // Component rendered in this message
-  component: {
-    name: 'Dashboard',
-    props: {
-      title: 'System Metrics',
-      panels: [
-        { title: 'CPU', value: '45%' },
-        { title: 'Memory', value: '2.1GB' },
-      ],
+  await afs.write(historyPath, {
+    content: {
+      role: 'system',
+      type: 'component-state',
+      componentInstanceId: instanceId,
+      state,
     },
-    // State is stored right here in the message!
-    state: {
-      selectedPanel: 0,
-      refreshInterval: 5000,
-      lastUpdated: '2026-01-11T10:30:00Z',
+    metadata: {
+      instanceId,
+      type: 'component-state',
+      updatedAt: new Date().toISOString(),
     },
-  },
-};
-```
-
-**Why This Approach?**
-
-1. **Simplicity** - No separate state tables, just messages
-2. **Context** - State is always associated with the message that created it
-3. **History** - Messages ARE the history; state changes are new messages
-4. **AIGNE-Native** - Uses existing conversation/message storage
-5. **Tambo-Inspired** - Proven approach from production generative UI framework
-
-**State Access Pattern:**
-
-```typescript
-// AI can read previous component state
-const previousMessage = await conversation.getLastMessage({ role: 'assistant', hasComponent: true });
-const previousState = previousMessage?.component?.state;
-
-// AI generates new component with updated state
-const newMessage = {
-  role: 'assistant',
-  content: 'Updated dashboard',
-  component: {
-    name: 'Dashboard',
-    props: { ... },
-    state: {
-      ...previousState,
-      selectedPanel: 1, // User changed selection
-      lastUpdated: new Date().toISOString(),
-    },
-  },
-};
+  });
+}
 ```
 
 ---
@@ -523,33 +636,36 @@ const newMessage = {
 ### Progressive Component Rendering
 
 ```typescript
+// ✅ CORRECTED: Use battle-tested partial-json package
+import { parse as parsePartialJSON } from 'partial-json';
+
 /**
  * Streaming coordinator for progressive component rendering
  */
 export class ComponentStreamCoordinator {
   /**
    * Process streaming component props
-   * Uses partial JSON parsing similar to Tambo
+   * Uses partial-json package (same as Tambo)
    */
   async *streamComponentProps(
-    stream: AsyncIterable<AgentResponseDelta>,
+    stream: AsyncIterable<any>,
     component: UIComponent
   ): AsyncGenerator<PartialComponentProps> {
     let accumulatedProps = {};
-    let accumulatedJson = "";
+    let accumulatedJson = '';
 
     for await (const delta of stream) {
-      // Check if this is a UI skill invocation
-      if (!delta.toolCall || !delta.toolCall.name.startsWith("ui_")) {
-        yield { type: "text", content: delta.text };
+      // Check if this is a UI agent invocation
+      if (!delta.toolCall?.name?.startsWith('ui_')) {
+        yield { type: 'text', content: delta.text || delta.content || '' };
         continue;
       }
 
-      // Accumulate JSON
+      // Accumulate JSON arguments
       if (delta.toolCall.arguments) {
         accumulatedJson += delta.toolCall.arguments;
 
-        // Try to parse partial JSON
+        // ✅ Parse partial JSON using partial-json package
         try {
           const partialProps = parsePartialJSON(accumulatedJson);
 
@@ -560,12 +676,12 @@ export class ComponentStreamCoordinator {
           const validated = component.propsSchema.safeParse(accumulatedProps);
 
           yield {
-            type: "component",
+            type: 'component',
             componentName: delta.toolCall.name.slice(3), // Remove "ui_"
             props: accumulatedProps,
             isComplete: false,
             isValid: validated.success,
-            validationErrors: validated.success ? undefined : validated.error.errors
+            validationErrors: validated.success ? undefined : validated.error.errors,
           };
         } catch (e) {
           // Partial JSON parse failed - continue accumulating
@@ -574,182 +690,119 @@ export class ComponentStreamCoordinator {
     }
 
     // Final validation
-    const finalProps = parsePartialJSON(accumulatedJson);
+    const finalProps = JSON.parse(accumulatedJson);
     const validated = component.propsSchema.safeParse(finalProps);
 
     if (!validated.success) {
-      throw new Error(
-        `Component props validation failed: ${validated.error.message}`
-      );
+      throw new Error(`Component props validation failed: ${validated.error.message}`);
     }
 
     yield {
-      type: "component",
+      type: 'component',
       componentName: component.name,
       props: validated.data,
       isComplete: true,
-      isValid: true
+      isValid: true,
     };
   }
 }
 
 /**
- * Parse partial JSON (similar to Tambo's partial-json)
+ * ✅ REMOVED: Using partial-json package instead of custom implementation
+ *
+ * The partial-json package (https://www.npmjs.com/package/partial-json) is:
+ * - Battle-tested (used by Vercel AI SDK, Tambo, and others)
+ * - More robust than simple brace-counting
+ * - Handles edge cases like unclosed strings, nested structures
+ * - Actively maintained
+ *
+ * Installation:
+ * npm install partial-json
+ *
+ * Usage:
+ * import { parse } from 'partial-json';
+ * const obj = parse('{"incomplete": "json...');
  */
-function parsePartialJSON(json: string): any {
-  // Implementation would use a library like partial-json
-  // or implement custom partial parsing logic
-
-  // For now, placeholder:
-  try {
-    return JSON.parse(json);
-  } catch (e) {
-    // Attempt to close incomplete structures
-    let fixed = json;
-
-    // Count open/close braces and brackets
-    const openBraces = (fixed.match(/{/g) || []).length;
-    const closeBraces = (fixed.match(/}/g) || []).length;
-    const openBrackets = (fixed.match(/\[/g) || []).length;
-    const closeBrackets = (fixed.match(/]/g) || []).length;
-
-    // Add missing closures
-    fixed += '}".repeat(openBraces - closeBraces);
-    fixed += ']'.repeat(openBrackets - closeBrackets);
-
-    try {
-      return JSON.parse(fixed);
-    } catch (e2) {
-      // Give up, return empty object
-      return {};
-    }
-  }
-}
-
-/**
- * Deep merge objects
- */
-function deepMerge(target: any, source: any): any {
-  if (!isObject(target) || !isObject(source)) {
-    return source;
-  }
-
-  const result = { ...target };
-
-  for (const key of Object.keys(source)) {
-    if (isObject(source[key])) {
-      result[key] = deepMerge(target[key], source[key]);
-    } else {
-      result[key] = source[key];
-    }
-  }
-
-  return result;
-}
-
-function isObject(item: any): boolean {
-  return item && typeof item === 'object' && !Array.isArray(item);
-}
 ```
 
 ---
 
 ## AFS Integration
 
-### No Special Setup Needed!
-
-With the simplified message-based approach, **no special AFS modules are needed**. Component state lives in messages, which are already handled by AIGNE's conversation storage.
+### AFSHistory Stores Everything
 
 ```typescript
-import { AIGNE } from '@aigne/core';
-// For CLI: import { UIAgent } from '@aigne/ui-cli';
-// For Web: import { UIAgent } from '@aigne/ui-web';
+import { AIGNE, AFS } from '@aigne/core';
+import { AFSHistory } from '@aigne/afs-history';
+import { UIAgent } from '@aigne/ui';
 
 /**
  * Setup AIGNE with UI capabilities
- * No special AFS configuration needed!
+ * AFSHistory handles all storage automatically
  */
 export function setupAIGNEWithUI() {
   const aigne = new AIGNE({
     model: createModel(),
-    // AIGNE's standard conversation storage handles everything
   });
 
-  return aigne;
+  // Setup AFS with AFSHistory
+  const afs = new AFS().mount(
+    new AFSHistory({
+      storage: { url: 'file:./history.sqlite3' },
+    })
+  );
+
+  return { aigne, afs };
 }
-
-/**
- * Component state is automatically persisted in messages
- */
-const session = aigne.invoke(uiAgent);
-
-// When AI generates a component, state is included in the message
-await session.invoke({
-  message: 'Show me a dashboard',
-});
-
-// Message stored in conversation:
-// {
-//   role: 'assistant',
-//   content: 'Here is your dashboard',
-//   component: {
-//     name: 'Dashboard',
-//     props: { ... },
-//     state: { selectedPanel: 0 }  // <-- Persisted here!
-//   }
-// }
 ```
 
 ---
 
-## Skill System Extension
+## Skills Pattern (Corrected)
 
-### UI Skill Prefix Pattern
+### Understanding AIGNE's Skills System
 
-AIGNE Generative UI follows Tambo's pattern of prefixing UI components with `ui_`:
-
-- **Regular Skills**: `search_database`, `send_email`, `fetch_weather`
-- **UI Skills**: `ui_dashboard`, `ui_chart`, `ui_form`, `ui_table`
-
-This allows the AI model to distinguish between:
-
-1. **Action tools** - Execute operations, return data
-2. **UI tools** - Render components, display information
+**Key Concept**: In AIGNE, `skills` are just regular `Agent` instances that become LLM-callable tools.
 
 ```typescript
-/**
- * Example: UI skill for rendering a chart
- */
-export const ChartComponent: UIComponent = {
-  name: 'Chart',
-  description: `Render an interactive chart visualization.
-Supports line, bar, pie, and area charts.
-Use when user requests data visualization or trends.`,
+// ✅ CORRECT: Skills are Agents
+const myAgent = AIAgent.from({
+  name: 'Assistant',
+  skills: [
+    agentA,  // Regular Agent instance
+    agentB,  // Another Agent
+    Agent.from({ name: 'tool', async process(input) { return {...}; } }),
+  ],
+});
 
-  propsSchema: z.object({
-    type: z.enum(['line', 'bar', 'pie', 'area']),
-    title: z.string(),
-    data: z.array(
-      z.object({
-        label: z.string(),
-        value: z.number(),
-      })
-    ),
-    xAxis: z.string().optional(),
-    yAxis: z.string().optional(),
-  }),
+// ❌ WRONG: There's no special "AgentSkill" interface for UI components
+// AgentSkill is a specific class for loading SKILL.md files from disk
+```
 
-  environment: 'universal',
+### UI Components as Skills Pattern
 
-  async render(props, context) {
-    // Environment-specific rendering handled by subclasses
+```typescript
+// When registered with UIAgent, it's converted to:
+const chartAgent = Agent.from({
+  name: 'ui_Chart',  // Prefixed with ui_
+  description: 'Render an interactive chart visualization',
+  inputSchema: chartPropsSchema,
+
+  async process(input) {
+    // Component rendering logic
+    // Access context via this.context
+    const context = this.context;
+
+    // ... render component ...
+
     return {
-      element: renderChart(props, context.env),
+      instanceId,
+      componentName: 'Chart',
+      rendered: true,
+      element,
     };
   },
-};
-
-// When registered with UIAgent, becomes skill: "ui_Chart"
+});
 ```
 
 ---
@@ -765,80 +818,42 @@ Use when user requests data visualization or trends.`,
        │ "Show me sales dashboard"
        │
 ┌──────▼───────────────────────────────────────────────────┐
-│  UIAgent                                                  │
+│  UIAgent (extends AIAgent)                                │
 │  • Receives user message                                  │
-│  • LLM decides to invoke ui_dashboard skill               │
+│  • LLM sees available agents including ui_Dashboard       │
+│  • LLM decides to invoke ui_Dashboard agent               │
 │  • Streams props for dashboard component                  │
 └──────┬───────────────────────────────────────────────────┘
        │
-       │ Tool Call: ui_dashboard
+       │ Agent Call: ui_Dashboard
        │ Streaming Args: { title: "Sales...", panels: [...
        │
 ┌──────▼───────────────────────────────────────────────────┐
-│  ComponentStreamCoordinator                               │
-│  • Parses partial JSON as it streams                      │
-│  • Validates props against schema                         │
-│  • Emits progressive updates                              │
-└──────┬───────────────────────────────────────────────────┘
-       │
-       │ Partial Props Updates
-       │
-┌──────▼───────────────────────────────────────────────────┐
-│  Component Registry                                       │
-│  • Looks up "dashboard" component                         │
-│  • Creates instance ID                                    │
-│  • Initializes component context                          │
-└──────┬───────────────────────────────────────────────────┘
-       │
-       │ Component Context + Props
-       │
-┌──────▼───────────────────────────────────────────────────┐
-│  DashboardComponent                                       │
-│  • Renders with current props (progressive)               │
-│  • Updates component state via context.state              │
-│  • Emits events                                           │
+│  ui_Dashboard Agent (created from DashboardComponent)     │
+│  • process() method receives props                        │
+│  • Loads component state from AFS                         │
+│  • Creates ComponentContext                               │
+│  • Calls component.render()                               │
 └──────┬───────────────────────────────────────────────────┘
        │
        │ Rendered Element + State Updates
        │
 ┌──────▼───────────────────────────────────────────────────┐
-│  Message Storage                                          │
-│  • Stores component + state in message                    │
-│  • State persists with the message that created it        │
+│  Agent (ui_Dashboard) Completion                          │
+│  • Saves component data to AFSHistory via AFS             │
+│  • Path: /modules/history/{session}/messages/{id}         │
+│  • Saves state: /modules/history/{session}/component-state/{id} │
+│  • Returns result to LLM                                  │
 └──────┬───────────────────────────────────────────────────┘
        │
-       │ Message + Component + State Saved
+       │ Agent Result
        │
 ┌──────▼───────────────────────────────────────────────────┐
 │  Presentation Layer (CLI/Web)                             │
 │  • Displays rendered component                            │
 │  • Handles user interactions                              │
-│  • Sends state updates back to agent                      │
+│  • State changes trigger AFS writes                       │
 └───────────────────────────────────────────────────────────┘
-```
-
-### State Update Flow
-
-```
-User interacts with component
-    ↓
-Component updates local state
-    ↓
-ComponentState.set(key, value)
-    ↓
-On next AI turn, state is included in new message
-    ↓
-Message saved to conversation:
-{
-  role: 'assistant',
-  component: {
-    name: 'Dashboard',
-    props: { ... },
-    state: { selectedPanel: 1 }  // Updated state
-  }
-}
-    ↓
-AI can read previous state from message history
 ```
 
 ---
@@ -848,10 +863,8 @@ AI can read previous state from message history
 ### Core Types
 
 ```typescript
-// Component Props
 export type ComponentProps = Record<string, any>;
 
-// Partial props during streaming
 export interface PartialComponentProps {
   type: 'text' | 'component';
   content?: string;
@@ -862,26 +875,15 @@ export interface PartialComponentProps {
   validationErrors?: z.ZodIssue[];
 }
 
-// Component instance
-export interface ComponentInstance {
-  id: string;
-  componentName: string;
-  props: ComponentProps;
-  state: Record<string, any>;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-// UI message (extends AIGNE Message)
 export interface UIMessage extends Message {
-  // Component info if this message contains UI
+  role?: 'user' | 'assistant' | 'system';
+  content?: string;
   component?: {
     instanceId: string;
     name: string;
     props: ComponentProps;
+    state?: Record<string, any>;
   };
-
-  // Rendered element (environment-specific)
   renderedElement?: any;
 }
 ```
@@ -893,29 +895,23 @@ export interface UIMessage extends Message {
 ### Component Error Boundaries
 
 ```typescript
-/**
- * Component error handler
- */
 export class ComponentErrorBoundary {
-  async renderSafely(component: UIComponent, props: any, context: ComponentContext): Promise<ComponentOutput> {
+  async renderSafely(
+    component: UIComponent,
+    props: any,
+    context: ComponentContext
+  ): Promise<ComponentOutput> {
     try {
-      // Validate props
       const validated = component.propsSchema.parse(props);
-
-      // Render
       return await component.render(validated, context);
     } catch (error) {
-      // Log error
       console.error(`Component ${component.name} failed:`, error);
-
-      // Emit error event
       context.events.emit('componentError', {
         componentName: component.name,
         instanceId: context.instanceId,
         error: error.message,
       });
 
-      // Return error component
       return {
         element: this.renderError(component, error, context),
       };
@@ -923,41 +919,16 @@ export class ComponentErrorBoundary {
   }
 
   private renderError(component: UIComponent, error: any, context: ComponentContext): any {
-    // Environment-specific error rendering
     if (context.env.type === 'cli') {
       return `❌ Error rendering ${component.name}: ${error.message}`;
     } else {
-      return React.createElement(ErrorComponent, {
+      return {
+        type: 'error',
         componentName: component.name,
-        error: error.message,
-      });
+        message: error.message,
+      };
     }
   }
-}
-```
-
-### Validation Errors
-
-```typescript
-/**
- * Handle prop validation errors gracefully
- */
-export function handleValidationError(error: z.ZodError, component: UIComponent): string {
-  const issues = error.errors
-    .map((issue) => {
-      const path = issue.path.join('.');
-      return `• ${path}: ${issue.message}`;
-    })
-    .join('\n');
-
-  return `
-Invalid props for component "${component.name}":
-
-${issues}
-
-Expected schema:
-${JSON.stringify(component.propsSchema, null, 2)}
-`.trim();
 }
 ```
 
@@ -965,14 +936,22 @@ ${JSON.stringify(component.propsSchema, null, 2)}
 
 ## Summary
 
-This architecture design provides:
+This architecture provides:
 
 1. **Clean Separation**: Environment-agnostic core, environment-specific rendering
-2. **AIGNE Integration**: Extends existing patterns (skills, AFS, agents)
-3. **Type Safety**: Zod schemas throughout
-4. **Progressive Rendering**: Streaming with partial JSON parsing
-5. **State Persistence**: AFS-based state management
+2. **AIGNE Integration**: Uses standard Agent pattern, no special "skill" types
+3. **AFSHistory Storage**: Component state persisted via standard AFS operations
+4. **Type Safety**: Zod schemas throughout
+5. **Progressive Rendering**: Streaming with partial JSON parsing
 6. **Error Handling**: Graceful degradation and clear error messages
 7. **Extensibility**: Easy to add new components and environments
 
-The design is production-ready while maintaining simplicity and developer experience.
+### Key Corrections from Original Design
+
+1. ✅ **Skills = Agents**: Components become regular Agent instances, not "AgentSkill"
+2. ✅ **No registerSkill()**: All skills registered via constructor `skills: []` option
+3. ✅ **AFSHistory for State**: Component state stored in AFSHistory, read/write via AFS
+4. ✅ **Correct Agent API**: Uses `process()` method with `this.context` access
+5. ✅ **Message Structure**: No assumptions about standard fields, extensible via Message type
+
+The design is now production-ready and correctly aligned with AIGNE framework patterns.

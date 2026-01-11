@@ -298,10 +298,11 @@ Generative UI is built as a natural extension of AIGNE, not a separate framework
 
 ## Documentation
 
-- **[Architecture Design](./ARCHITECTURE.md)** - Deep dive into system architecture
-- **[CLI Implementation](./CLI_VERSION.md)** - Terminal UI version details
+- **[Design Review](./DESIGN_REVIEW.md)** - ✅ **APPROVED** - Comprehensive design verification and corrections
+- **[Architecture Design](./ARCHITECTURE.md)** - Deep dive into system architecture (✅ corrected)
+- **[CLI Implementation](./CLI_VERSION.md)** - Terminal UI version details (✅ corrected)
 - **[Web Implementation](./WEB_VERSION.md)** - React version details
-- **[Implementation Plan](./IMPLEMENTATION_PLAN.md)** - Phased development roadmap
+- **[Implementation Plan](./IMPLEMENTATION_PLAN.md)** - Phased development roadmap (✅ updated)
 - **[Examples](./EXAMPLES.md)** - Code examples and use cases
 
 ## Comparison with Tambo AI
@@ -318,10 +319,13 @@ Generative UI is built as a natural extension of AIGNE, not a separate framework
 
 ## Next Steps
 
-1. **Review Architecture** - Read [ARCHITECTURE.md](./ARCHITECTURE.md)
-2. **Choose Version** - Start with [CLI](./CLI_VERSION.md) or [Web](./WEB_VERSION.md)
-3. **Follow Plan** - See [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md)
-4. **Build Prototype** - Use examples as starting point
+1. **Read Design Review** - Start with [DESIGN_REVIEW.md](./DESIGN_REVIEW.md) for verification and corrections ✅
+2. **Review Architecture** - Read [ARCHITECTURE.md](./ARCHITECTURE.md) (includes all corrections)
+3. **Choose Version** - Start with [CLI](./CLI_VERSION.md) or [Web](./WEB_VERSION.md)
+4. **Follow Plan** - See [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) (with critical notes)
+5. **Build Prototype** - Use examples as starting point
+
+**⚠️ Important**: The design has been approved with minor corrections applied. All critical fixes for AFSHistory paths and AFS availability have been incorporated into the architecture documents.
 
 ## Contributing
 

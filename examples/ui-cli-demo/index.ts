@@ -5,7 +5,7 @@ import { AFSHistory } from "@aigne/afs-history";
 import { loadAIGNEWithCmdOptions, runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
 import { AIAgentToolChoice } from "@aigne/core";
 import { SimpleChart } from "@aigne/ui-cli";
-import { UIAgent } from "@aigne/ui";
+import { UIAgent, UI_TOOL_NAME_PREFIX } from "@aigne/ui";
 import { render } from "ink";
 
 // Load AIGNE with OpenAI configuration
@@ -21,32 +21,15 @@ const afs = new AFS().mount(
 // Create UIAgent with SimpleChart component
 const agent = UIAgent.forCLI({
   name: "chart-assistant",
-  instructions: `You are a chart visualization assistant.
-
-CRITICAL RULE: Whenever the user provides numeric data or requests visualization, you MUST immediately call the ui_chart tool with that data. Do NOT respond with explanatory text.
-
-Pattern matching:
-- If message contains numbers AND words like "show", "chart", "visualize", "plot", "graph" → Call ui_chart
-- Extract the numbers from the message and pass as data array
-- Look for optional title in the message
-
-Examples:
-- "Show me a chart of 5, 10, 15, 20" → ui_chart({data: [5, 10, 15, 20]})
-- "Visualize: 3, 7, 2, 9" → ui_chart({data: [3, 7, 2, 9]})
-- "Chart sales 100, 150, 200" → ui_chart({data: [100, 150, 200], title: "Sales"})
-- "Plot these: 1 2 3 5 8" → ui_chart({data: [1, 2, 3, 5, 8]})
-
-Only respond with text if:
-- User asks a question about charts (not requesting actual visualization)
-- User provides no data`,
+  instructions: `You are a friendly assistant that helps the user interact with an application.
+Your goal is to use a combination of tools and UI components to help the user accomplish their goal.`,
 
   components: [SimpleChart],
   afs,
   model: aigne.chatModel,
 
-  // TEMPORARY: Force tool usage to test if rendering works
-  // Change back to 'auto' once we verify the tool is working
-  toolChoice: AIAgentToolChoice.required,
+  // Use 'auto' to allow the model to choose when to call tools vs respond with text
+  toolChoice: AIAgentToolChoice.auto,
 
   // Don't catch tool errors - let them propagate for debugging
   catchToolsError: false,
@@ -63,7 +46,7 @@ Only respond with text if:
     }
 
     // It's a success - check if it's a UI component
-    if (!event.skill.name.startsWith("ui_")) {
+    if (!event.skill.name.startsWith(UI_TOOL_NAME_PREFIX)) {
       return; // Not a UI skill, ignore
     }
 
@@ -162,7 +145,7 @@ if (agent.hooks) {
   }
 }
 
-console.log("\n🎨 AIGNE Chart Visualization Demo");
+console.log("\n🎨 AIGNE UI CLI Demo");
 console.log("\nType a message with numbers to visualize:");
 console.log('  Example: "Show me a chart of 5, 10, 15, 20"');
 console.log('  Example: "Visualize: 3, 7, 2, 9, 5"\n');
@@ -170,7 +153,4 @@ console.log('  Example: "Visualize: 3, 7, 2, 9, 5"\n');
 // Run the agent
 await runWithAIGNE(agent, {
   aigne,
-  chatLoopOptions: {
-    // No welcome message to avoid triggering an initial agent response
-  },
 });

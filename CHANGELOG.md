@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.91.0-beta.23](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.22...aigne-framework-v1.91.0-beta.23) (2026-01-12)
+
+
+### Bug Fixes
+
+* **core:** optimize session compaction to reduce compression frequency ([#894](https://github.com/AIGNE-io/aigne-framework/issues/894)) ([bed53dc](https://github.com/AIGNE-io/aigne-framework/commit/bed53dc0311c69acd2c257fe93416d10ac1120e1))
+
 ## [1.91.0-beta.22](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.21...aigne-framework-v1.91.0-beta.22) (2026-01-12)
 
 

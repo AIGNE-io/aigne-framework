@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.62-beta.17](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.62-beta.16...xai-v0.7.62-beta.17) (2026-01-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/openai bumped to 0.16.16-beta.17
+  * devDependencies
+    * @aigne/core bumped to 1.72.0-beta.17
+    * @aigne/test-utils bumped to 0.5.69-beta.17
+
 ## [0.7.62-beta.16](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.62-beta.15...xai-v0.7.62-beta.16) (2026-01-12)
 
 

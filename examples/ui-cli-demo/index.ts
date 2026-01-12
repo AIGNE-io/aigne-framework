@@ -1,5 +1,6 @@
 #!/usr/bin/env npx -y bun
 
+import os from 'os';
 import { AFS } from "@aigne/afs";
 import { AFSHistory } from "@aigne/afs-history";
 import { loadAIGNEWithCmdOptions, runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
@@ -20,20 +21,13 @@ const afs = new AFS().mount(
 
 // Create UIAgent with Chart and Table components
 const agent = UIAgent.forCLI({
-  name: "ui-assistant",
+  name: "GenerativeUIDemo",
   instructions: `You are a friendly assistant that helps the user interact with an application.
 Your goal is to use a combination of tools and UI components to help the user accomplish their goal.`,
   inputKey: "message",
 
   components: [Chart, Table],
   afs,
-  model: aigne.chatModel,
-
-  // Use 'auto' to allow the model to choose when to call tools vs respond with text
-  toolChoice: AIAgentToolChoice.auto,
-
-  // Don't catch tool errors - let them propagate for debugging
-  catchToolsError: false,
 
   hooks: {
     onSkillEnd: async (event) => {
@@ -62,6 +56,34 @@ Your goal is to use a combination of tools and UI components to help the user ac
       }
     },
   },
+
+  // skills: [
+  //   {
+  //     name: 'get_system_metrics',
+  //     description: 'Get current system resource usage',
+  //     inputSchema: z.object({}),
+  //     process: async function (this: any, input: any, options: any) {
+  //       const cpus = os.cpus();
+  //       const totalMem = os.totalmem();
+  //       const freeMem = os.freemem();
+  //       const usedMem = totalMem - freeMem;
+
+  //       return {
+  //         cpu: {
+  //           count: cpus.length,
+  //           usage: Math.random() * 100, // Simplified
+  //         },
+  //         memory: {
+  //           total: totalMem,
+  //           used: usedMem,
+  //           free: freeMem,
+  //           usagePercent: (usedMem / totalMem) * 100,
+  //         },
+  //         uptime: os.uptime(),
+  //       };
+  //     },
+  //   },
+  // ],
 });
 
 // Run the agent

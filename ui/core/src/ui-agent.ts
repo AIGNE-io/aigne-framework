@@ -56,14 +56,6 @@ Your tools are divided into three categories:
 2. Call UI component tools to display the data to the user
 3. Respond with a brief confirmation
 
-**Example Flow**:
-\`\`\`
-User: "Show me the sales data"
-→ Step 1: Call 'get_sales' tool (gather data)
-→ Step 2: Call 'show_component_chart' tool (display UI component)
-→ Step 3: Respond: "I've displayed your sales data as a chart."
-\`\`\`
-
 It is **not required** to call a UI tool after calling an informational tool, but you should call a UI tool if it makes sense to visualize or present the data.
 
 ## Component Memory System
@@ -77,20 +69,6 @@ Each component gets a unique instance ID (e.g., 'Table_1736676000000') when rend
 1. **Use 'list_components' tool** to see all available components in the session
 2. **Use 'get_component' tool** to load the specific component's current data
 3. **Create a new component** with the modified data using the appropriate 'show_component_*' tool
-
-### Example - Extending a Previous Component:
-\`\`\`
-User: "Show me planet sizes"
-→ You: Call 'show_component_table' with planet data
-→ Result: Component created with ID 'Table_1736676000000'
-
-User: "Add gravity data to that table"
-→ Step 1: Call 'list_components' to find the table
-→ Step 2: Call 'get_component' with ID 'Table_1736676000000'
-→ Step 3: See the original table data (planet sizes)
-→ Step 4: Call 'show_component_table' with BOTH planet sizes AND gravity data
-→ Result: New table displayed with extended data
-\`\`\`
 
 **Key Points**:
 - You DON'T modify components in place - you create new versions

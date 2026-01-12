@@ -140,12 +140,13 @@ export class ComponentState {
 
   /**
    * Persist state to AFSHistory via AFS
-   * ✅ Uses correct AFSHistory path pattern
+   * ✅ Uses correct AFSHistory path pattern and stable ID for upsert
    */
   private async persistState(): Promise<void> {
     const historyPath = `/modules/history/by-component/${this.componentId}/new`;
 
     await this.afs.write(historyPath, {
+      id: this.componentId, // ← Use componentId as stable ID for upsert behavior
       content: {
         role: "system" as const,
         type: "component-state",
@@ -167,7 +168,7 @@ export class ComponentState {
 
   /**
    * Load state from AFSHistory via AFS
-   * ✅ Uses correct list/filter pattern
+   * ✅ Simplified to read single record using stable componentId
    */
   static async load(
     componentId: string,
@@ -176,26 +177,17 @@ export class ComponentState {
     schema?: ZodType,
   ): Promise<ComponentState> {
     try {
-      // List all component entries for this componentId, filtered by sessionId
+      // Since we use componentId as stable ID, there's only one record per component
       const result = await afs.list(`/modules/history/by-component/${componentId}`, {
         filter: { sessionId },
+        limit: 1,
       });
 
-      // Find latest state entry for this component instance
-      const stateEntries = result.data
-        .filter(
-          (e: any) =>
-            e.metadata?.type === "component-state" && e.metadata?.componentId === componentId,
-        )
-        .sort(
-          (a: any, b: any) =>
-            new Date(b.metadata?.updatedAt || 0).getTime() -
-            new Date(a.metadata?.updatedAt || 0).getTime(),
-        );
+      // Get state from the single record (if it exists)
+      const entry = result.data[0] as any;
+      const savedState = entry?.state || entry?.content?.state || {};
 
-      const latestState = stateEntries[0]?.content?.state || {};
-
-      return new ComponentState(componentId, afs, sessionId, latestState, schema);
+      return new ComponentState(componentId, afs, sessionId, savedState, schema);
     } catch (error) {
       // No saved state, return empty
       return new ComponentState(componentId, afs, sessionId, {}, schema);

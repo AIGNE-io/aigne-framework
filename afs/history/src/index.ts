@@ -216,7 +216,8 @@ export class AFSHistory implements AFSModule {
   }
 
   async write(path: string, content: AFSWriteEntryPayload): Promise<AFSWriteResult> {
-    const id = v7();
+    // Use provided id for updates, or generate new one for creates
+    const id = (content as any).id || v7();
     const match = this.router.lookup(path);
 
     if (!match || match.action !== "create") {

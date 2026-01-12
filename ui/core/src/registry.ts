@@ -120,9 +120,11 @@ export class ComponentRegistry {
       }
 
       // ✅ CORRECTED: Store component message in AFSHistory with proper path
+      // Use componentId as stable ID so updates replace the record instead of creating new ones
       const historyPath = `/modules/history/by-component/${componentId}/new`;
       logger.debug(`[ComponentRegistry] Writing to AFS history at path: ${historyPath}`);
       await afs.write(historyPath, {
+        id: componentId, // ← Stable ID for upsert behavior
         content: {
           role: "assistant" as const,
           component: {

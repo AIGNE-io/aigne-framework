@@ -178,3 +178,47 @@ test("AFS'skill read should truncate long lines", async () => {
   expect(lines[1]?.length).toBeLessThan(2100); // 2000 + "... [truncated]"
   expect(lines[2]).toBe("another short");
 });
+
+test("AFS'skill read formatOutput should return pure text content when data.content is string", async () => {
+  const afs = new AFS();
+  const skills = await getAFSSkills(afs);
+  const read = skills.find((i) => i.name === "afs_read");
+
+  assert(read);
+
+  const output = {
+    status: "success",
+    tool: "afs_read",
+    path: "/test/file.txt",
+    data: {
+      id: "test-id",
+      path: "/test/file.txt",
+      content: "Hello World\nThis is a test file",
+    },
+    totalLines: 2,
+    returnedLines: 2,
+    offset: 0,
+    truncated: false,
+  };
+
+  const formatted = await read.formatOutput(output);
+  expect(formatted).toBe("Hello World\nThis is a test file");
+});
+
+test("AFS'skill read formatOutput should return JSON when data is undefined", async () => {
+  const afs = new AFS();
+  const skills = await getAFSSkills(afs);
+  const read = skills.find((i) => i.name === "afs_read");
+
+  assert(read);
+
+  const output = {
+    status: "success",
+    tool: "afs_read",
+    path: "/nonexistent.txt",
+    data: undefined,
+  };
+
+  const formatted = await read.formatOutput(output);
+  expect(formatted).toBe(JSON.stringify(output));
+});

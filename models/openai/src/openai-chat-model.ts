@@ -15,7 +15,6 @@ import {
   STANDARD_ROLE_MAP,
   safeParseJSON,
 } from "@aigne/core";
-import { logger } from "./utils/logger.js";
 import { mergeUsage } from "@aigne/core/utils/model-utils.js";
 import { getJsonOutputPrompt } from "@aigne/core/utils/prompts.js";
 import { agentResponseStreamToObject } from "@aigne/core/utils/stream-utils.js";
@@ -35,6 +34,7 @@ import type {
 import type { Stream } from "openai/streaming.js";
 import { z } from "zod";
 import { CustomOpenAI } from "./openai.js";
+import { logger } from "./utils/logger.js";
 
 const CHAT_MODEL_OPENAI_DEFAULT_MODEL = "gpt-4o-mini";
 

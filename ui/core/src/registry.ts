@@ -54,7 +54,9 @@ export class ComponentRegistry {
   private componentToAgent(component: UIComponent, afs: AFS): Agent {
     // Define the process function with proper typing
     const processFunction = async function (this: any, input: any, options: any) {
-      logger.debug(`[ComponentRegistry] processFunction START - component: ${component.name}`, { input });
+      logger.debug(`[ComponentRegistry] processFunction START - component: ${component.name}`, {
+        input,
+      });
 
       // Access AIGNE context from options
       const context = options.context;
@@ -108,7 +110,10 @@ export class ComponentRegistry {
       // Apply state updates
       if (output.stateUpdates) {
         await componentState.update(output.stateUpdates);
-        logger.debug(`[ComponentRegistry] State updates applied for ${component.name}`, output.stateUpdates);
+        logger.debug(
+          `[ComponentRegistry] State updates applied for ${component.name}`,
+          output.stateUpdates,
+        );
       }
 
       // Emit events

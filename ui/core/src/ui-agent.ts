@@ -1,7 +1,7 @@
 import type { AFS } from "@aigne/afs";
 import { type Agent, AIAgent, type AIAgentOptions } from "@aigne/core";
-import { createComponentSkills } from "./skill.js";
 import { ComponentRegistry } from "./registry.js";
+import { createComponentSkills } from "./skill.js";
 import type { ComponentEnvironment, UIComponent } from "./types.js";
 
 /**

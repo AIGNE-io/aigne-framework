@@ -6,12 +6,12 @@ import {
   type VideoModelOutput,
   videoModelInputSchema,
 } from "@aigne/core";
-import { logger } from "./utils/logger.js";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import type OpenAI from "openai";
 import type { ClientOptions } from "openai";
 import { type ZodType, z } from "zod";
 import { CustomOpenAI } from "./openai.js";
+import { logger } from "./utils/logger.js";
 
 const DEFAULT_MODEL = "sora-2";
 const DEFAULT_SECONDS = 4;

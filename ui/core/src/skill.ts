@@ -36,9 +36,8 @@ export function createComponentSkills(afs: AFS) {
       message: z.string().optional(),
     }),
 
-    async process(input, options) {
+    async process(input, _options) {
       const { componentId } = input;
-      const context = options.context;
 
       logger.debug(`[get_component] START - componentId: ${componentId}`);
 
@@ -49,7 +48,7 @@ export function createComponentSkills(afs: AFS) {
         const result = await afs.read(afsPath);
         logger.debug(`[get_component] AFS read result:`, {
           hasData: !!result.data,
-          dataKeys: result.data ? Object.keys(result.data) : []
+          dataKeys: result.data ? Object.keys(result.data) : [],
         });
 
         if (!result.data) {
@@ -77,7 +76,7 @@ export function createComponentSkills(afs: AFS) {
           componentName,
           hasProps: Object.keys(props).length > 0,
           hasState: Object.keys(state).length > 0,
-          sessionId: entry.sessionId
+          sessionId: entry.sessionId,
         });
 
         return {
@@ -155,18 +154,25 @@ export function createComponentSkills(afs: AFS) {
       try {
         // List all components in this session
         const afsPath = `/modules/history/by-component`;
-        logger.debug(`[list_components] Listing from AFS path: ${afsPath} with filter:`, { sessionId, limit });
+        logger.debug(`[list_components] Listing from AFS path: ${afsPath} with filter:`, {
+          sessionId,
+          limit,
+        });
         const result = await afs.list(afsPath, {
           filter: { sessionId },
           limit,
         });
-        logger.debug(`[list_components] AFS list result - total entries: ${result.data?.length || 0}`);
+        logger.debug(
+          `[list_components] AFS list result - total entries: ${result.data?.length || 0}`,
+        );
 
         // Filter to only component-render entries (not component-state updates)
         const componentEntries = result.data.filter(
           (e: any) => e.metadata?.type === "component-render",
         );
-        logger.debug(`[list_components] Filtered to component-render entries: ${componentEntries.length}`);
+        logger.debug(
+          `[list_components] Filtered to component-render entries: ${componentEntries.length}`,
+        );
 
         const components = componentEntries.map((entry: any) => {
           const comp = {

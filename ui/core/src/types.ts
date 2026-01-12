@@ -1,6 +1,7 @@
 import type { AFS } from "@aigne/afs";
 import type { Context } from "@aigne/core";
 import type { ZodType } from "zod";
+import { logger } from "./utils/logger.js";
 
 /**
  * UI component tool name prefix
@@ -189,6 +190,7 @@ export class ComponentState {
 
       return new ComponentState(componentId, afs, sessionId, savedState, schema);
     } catch (error) {
+      logger.error(`[ComponentState] Error loading state:`, error);
       // No saved state, return empty
       return new ComponentState(componentId, afs, sessionId, {}, schema);
     }

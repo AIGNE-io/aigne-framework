@@ -13,7 +13,6 @@ import {
   safeParseJSON,
 } from "@aigne/core";
 import { parseJSON } from "@aigne/core/utils/json-schema.js";
-import { logger } from "./utils/logger.js";
 import { mergeUsage } from "@aigne/core/utils/model-utils.js";
 import { agentResponseStreamToObject } from "@aigne/core/utils/stream-utils.js";
 import {
@@ -37,6 +36,7 @@ import type {
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources/index.js";
 import { z } from "zod";
+import { logger } from "./utils/logger.js";
 
 const CHAT_MODEL_CLAUDE_DEFAULT_MODEL = "claude-3-7-sonnet-latest";
 

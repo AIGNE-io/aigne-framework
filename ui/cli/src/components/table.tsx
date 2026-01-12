@@ -5,12 +5,14 @@ import type { UIComponent } from "@aigne/ui";
 
 /**
  * Props schema for Table component
+ * Using z.any() for items to allow LLM flexibility in creating table rows
  */
 const TablePropsSchema = z.object({
   data: z
-    .array(z.record(z.union([z.string(), z.number()])))
+    .array(z.any())
     .describe(
       'Array of row objects where each object represents a row with key-value pairs. ' +
+      'Each row MUST be an object with properties. ' +
       'Example: [{"name": "John", "age": 30, "city": "NYC"}, {"name": "Jane", "age": 25, "city": "LA"}]'
     ),
   columns: z
@@ -205,11 +207,11 @@ export function TableComponent({
 export const Table: UIComponent<TableProps> = {
   name: "table",
   description: `Display tabular data in the terminal with professional box-drawing borders.
-Best for displaying structured data with multiple rows and columns.
 
-IMPORTANT: Each row must be an object with key-value pairs. Keys become column headers.
+CRITICAL: The "data" field MUST contain an array of objects. Each object represents a table row.
+DO NOT send empty objects like [{}]. Each object MUST have properties with actual values.
 
-Example usage:
+Example - Product Inventory:
 {
   "data": [
     {"product": "Laptop", "price": 999, "quantity": 5},
@@ -219,19 +221,20 @@ Example usage:
   "title": "Product Inventory"
 }
 
-This will display:
-┌──────────┬───────┬──────────┐
-│ product  │ price │ quantity │
-├──────────┼───────┼──────────┤
-│ Laptop   │ 999   │ 5        │
-├──────────┼───────┼──────────┤
-│ Mouse    │ 25    │ 50       │
-├──────────┼───────┼──────────┤
-│ Keyboard │ 75    │ 20       │
-└──────────┴───────┴──────────┘
+Example - Country Data:
+{
+  "data": [
+    {"country": "Brazil", "gdp_growth": 3.2, "population": 215},
+    {"country": "Russia", "gdp_growth": 2.1, "population": 144},
+    {"country": "India", "gdp_growth": 7.8, "population": 1417},
+    {"country": "China", "gdp_growth": 5.2, "population": 1425},
+    {"country": "South Africa", "gdp_growth": 1.9, "population": 60}
+  ],
+  "title": "BRICS Nations"
+}
 
-Supports both string and numeric values in cells.
-Automatically calculates column widths based on content.`,
+The keys in each object become column headers. Values can be strings or numbers.
+Automatically calculates column widths and formats the table with box-drawing characters.`,
 
   propsSchema: TablePropsSchema as any,
 

@@ -1,4 +1,4 @@
-import { Box, Text } from "ink";
+import { Box, Text, useStdout } from "ink";
 import React from "react";
 import { z } from "zod";
 import type { UIComponent } from "@aigne/ui";
@@ -45,6 +45,11 @@ export function ChartComponent({
   color = "cyan",
   labels,
 }: ChartProps) {
+  // Get terminal width and calculate half
+  const { stdout } = useStdout();
+  const terminalWidth = stdout?.columns || 80; // Default to 80 if not available
+  const halfWidth = Math.floor(terminalWidth / 2);
+
   // Transform data for BarChart - needs {label, value, color} format
   const barChartData = data.map((value, index) => ({
     label: labels?.[index] || `${index + 1}`,
@@ -74,18 +79,18 @@ export function ChartComponent({
         <LineGraph
           data={lineGraphData}
           xLabels={labels}
-          width="full"
+          width={halfWidth}
           height={height}
         />
       )}
 
       {type === "bar" && (
-        <BarChart data={barChartData} showValue="right" width="full"  />
+        <BarChart data={barChartData} showValue="right" width={halfWidth} />
       )}
 
       {type === "sparkline" && (
         <Box flexDirection="column">
-          <Sparkline data={data} width={data.length * 8} />
+          <Sparkline data={data} width={Math.min(data.length * 8, halfWidth)} />
           <Box marginTop={1}>
             <Text dimColor>
               Min: {Math.min(...data).toFixed(2)}

@@ -545,7 +545,7 @@ test("LocalFS should throw error when renaming non-existent file", async () => {
 });
 
 // Gitignore tests
-test("LocalFS should respect .gitignore when listing files", async () => {
+test("LocalFS should mark gitignored files and not recurse into gitignored directories", async () => {
   // Create a test directory with git structure
   const gitTestDir = join(tmpdir(), `gitignore-test-${Date.now()}`);
   await mkdir(gitTestDir, { recursive: true });
@@ -563,26 +563,50 @@ test("LocalFS should respect .gitignore when listing files", async () => {
 
   const gitFS = new LocalFS({ localPath: gitTestDir });
 
-  // Should NOT include ignored files
-  expect(
-    (await gitFS.list("", { maxDepth: 2 })).data.map((i) => i.path).sort(),
-  ).toMatchInlineSnapshot(`
+  // Should include ignored files but mark them as gitignored
+  // Should NOT recurse into gitignored directories (node_modules)
+  const result = await gitFS.list("", { maxDepth: 2 });
+  const paths = result.data.map((i) => i.path).sort();
+
+  expect(paths).toMatchInlineSnapshot(`
     [
       "/",
+      "/.env",
+      "/.git",
       "/.gitignore",
+      "/debug.log",
       "/index.js",
+      "/node_modules",
     ]
   `);
+
+  // Check gitignored metadata
+  const gitIgnoredEntries = result.data.filter((e) => e.metadata?.gitignored);
+  expect(gitIgnoredEntries.map((e) => e.path).sort()).toMatchInlineSnapshot(`
+    [
+      "/.env",
+      "/.git",
+      "/debug.log",
+      "/node_modules",
+    ]
+  `);
+
+  // node_modules should not have children listed (not recursed into)
+  const nodeModulesEntry = result.data.find((e) => e.path === "/node_modules");
+  expect(nodeModulesEntry?.metadata?.childrenCount).toBeUndefined();
 
   // Now test with custom ignore patterns
   gitFS.options.ignore = [".gitignore"];
 
-  expect(
-    (await gitFS.list("", { maxDepth: 2 })).data.map((i) => i.path).sort(),
-  ).toMatchInlineSnapshot(`
+  const result2 = await gitFS.list("", { maxDepth: 2 });
+  const gitIgnoredEntries2 = result2.data.filter((e) => e.metadata?.gitignored);
+  expect(gitIgnoredEntries2.map((e) => e.path).sort()).toMatchInlineSnapshot(`
     [
-      "/",
-      "/index.js",
+      "/.env",
+      "/.git",
+      "/.gitignore",
+      "/debug.log",
+      "/node_modules",
     ]
   `);
 
@@ -620,6 +644,10 @@ test("LocalFS should allow disabling gitignore", async () => {
     ]
   `);
 
+  // When disableGitignore is true, no entries should have gitignored metadata
+  const gitIgnoredEntries = result.data.filter((e) => e.metadata?.gitignored);
+  expect(gitIgnoredEntries).toEqual([]);
+
   // Cleanup
   await rm(gitTestDir, { recursive: true, force: true });
 });
@@ -650,15 +678,30 @@ test("LocalFS should handle nested .gitignore files", async () => {
   const rootResult = await gitFS.list("", { maxDepth: 2 });
   const rootPaths = rootResult.data.map((entry) => entry.path);
 
-  // Root .gitignore should filter *.log
+  // Should include all files, with gitignored ones marked
   expect(rootPaths.sort()).toMatchInlineSnapshot(`
     [
       "/",
+      "/.git",
       "/.gitignore",
       "/root.js",
+      "/root.log",
       "/src",
       "/src/.gitignore",
       "/src/sub.js",
+      "/src/sub.log",
+      "/src/sub.tmp",
+    ]
+  `);
+
+  // Check gitignored entries
+  const gitIgnoredEntries = rootResult.data.filter((e) => e.metadata?.gitignored);
+  expect(gitIgnoredEntries.map((e) => e.path).sort()).toMatchInlineSnapshot(`
+    [
+      "/.git",
+      "/root.log",
+      "/src/sub.log",
+      "/src/sub.tmp",
     ]
   `);
 
@@ -692,13 +735,25 @@ test("LocalFS should stop at .git directory when searching for .gitignore", asyn
   const result = await innerFS.list("");
   const paths = result.data.map((entry) => entry.path);
 
-  // Should only apply inner .gitignore, not outer
+  // Should include all files, with gitignored ones marked
+  // Only inner.txt should be marked as gitignored (outer.txt is not in inner's .gitignore)
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
+      "/.git",
       "/.gitignore",
+      "/inner.txt",
       "/normal.txt",
       "/outer.txt",
+    ]
+  `);
+
+  // Check gitignored entries
+  const gitIgnoredEntries = result.data.filter((e) => e.metadata?.gitignored);
+  expect(gitIgnoredEntries.map((e) => e.path).sort()).toMatchInlineSnapshot(`
+    [
+      "/.git",
+      "/inner.txt",
     ]
   `);
 
@@ -728,15 +783,33 @@ test("LocalFS should handle directory patterns in .gitignore", async () => {
   const result = await gitFS.list("", { maxDepth: 2 });
   const paths = result.data.map((entry) => entry.path);
 
-  // Should filter out build directory and .tmp files
+  // Should include all files, with gitignored ones marked
+  // build directory is shown but not recursed into
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
+      "/.git",
       "/.gitignore",
+      "/build",
       "/src",
       "/src/index.js",
+      "/temp.tmp",
     ]
   `);
+
+  // Check gitignored entries
+  const gitIgnoredEntries = result.data.filter((e) => e.metadata?.gitignored);
+  expect(gitIgnoredEntries.map((e) => e.path).sort()).toMatchInlineSnapshot(`
+    [
+      "/.git",
+      "/build",
+      "/temp.tmp",
+    ]
+  `);
+
+  // build directory should not have children listed (not recursed into)
+  const buildEntry = result.data.find((e) => e.path === "/build");
+  expect(buildEntry?.metadata?.childrenCount).toBeUndefined();
 
   // Cleanup
   await rm(gitTestDir, { recursive: true, force: true });
@@ -758,14 +831,19 @@ test("LocalFS should work without any .gitignore file", async () => {
   const result = await gitFS.list("");
   const paths = result.data.map((entry) => entry.path);
 
-  // Should include all files when no .gitignore exists
+  // Should include all files, with .git marked as gitignored (default behavior)
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
+      "/.git",
       "/file1.js",
       "/file2.log",
     ]
   `);
+
+  // .git should still be marked as gitignored by default
+  const gitIgnoredEntries = result.data.filter((e) => e.metadata?.gitignored);
+  expect(gitIgnoredEntries.map((e) => e.path)).toEqual(["/.git"]);
 
   // Cleanup
   await rm(gitTestDir, { recursive: true, force: true });
@@ -785,18 +863,23 @@ test("LocalFS should work without .git directory", async () => {
 
   const nonGitFS = new LocalFS({ localPath: nonGitDir });
 
-  // Test listing - should still apply .gitignore rules
+  // Test listing - should include all files with gitignored ones marked
   const result = await nonGitFS.list("");
   const paths = result.data.map((entry) => entry.path);
 
-  // Should still filter based on .gitignore
+  // Should include all files
   expect(paths.sort()).toMatchInlineSnapshot(`
     [
       "/",
       "/.gitignore",
       "/file.js",
+      "/file.log",
     ]
   `);
+
+  // file.log should be marked as gitignored
+  const gitIgnoredEntries = result.data.filter((e) => e.metadata?.gitignored);
+  expect(gitIgnoredEntries.map((e) => e.path)).toEqual(["/file.log"]);
 
   // Cleanup
   await rm(nonGitDir, { recursive: true, force: true });
@@ -977,7 +1060,7 @@ test("LocalFS should combine maxChildren with gitignore", async () => {
   await rm(maxChildrenDir, { recursive: true, force: true });
 });
 
-test("LocalFS should use custom ignore patterns and default ignore .git when no .gitignore file exists", async () => {
+test("LocalFS should use custom ignore patterns and mark files as gitignored", async () => {
   // Create a test directory without .gitignore file
   const noGitignoreDir = join(tmpdir(), `no-gitignore-custom-ignore-test-${Date.now()}`);
   await mkdir(noGitignoreDir, { recursive: true });
@@ -990,7 +1073,7 @@ test("LocalFS should use custom ignore patterns and default ignore .git when no 
   await writeFile(join(noGitignoreDir, "index.js"), "console.log('test')");
   await writeFile(join(noGitignoreDir, "debug.log"), "debug info");
 
-  // Test with default ignore (.git should be ignored by default)
+  // Test with default ignore (.git should be marked as gitignored)
   const defaultIgnoreFS = new LocalFS({
     localPath: noGitignoreDir,
     ignore: [".git"],
@@ -999,16 +1082,21 @@ test("LocalFS should use custom ignore patterns and default ignore .git when no 
   const defaultResult = await defaultIgnoreFS.list("", { maxDepth: 2 });
   const defaultPaths = defaultResult.data.map((entry) => entry.path);
 
-  // .git should be ignored by default
+  // All files should be listed, .git is shown but not recursed into
   expect(defaultPaths.sort()).toMatchInlineSnapshot(`
     [
       "/",
+      "/.git",
       "/debug.log",
       "/index.js",
       "/node_modules",
       "/node_modules/package.json",
     ]
   `);
+
+  // .git should be marked as gitignored
+  const gitIgnored1 = defaultResult.data.filter((e) => e.metadata?.gitignored);
+  expect(gitIgnored1.map((e) => e.path)).toEqual(["/.git"]);
 
   // Test with custom ignore patterns (ignore both .git and node_modules)
   const customIgnoreFS = new LocalFS({
@@ -1019,14 +1107,20 @@ test("LocalFS should use custom ignore patterns and default ignore .git when no 
   const customResult = await customIgnoreFS.list("", { maxDepth: 2 });
   const customPaths = customResult.data.map((entry) => entry.path);
 
-  // Both .git and node_modules should be ignored
+  // All files listed, .git and node_modules shown but not recursed into
   expect(customPaths.sort()).toMatchInlineSnapshot(`
     [
       "/",
+      "/.git",
       "/debug.log",
       "/index.js",
+      "/node_modules",
     ]
   `);
+
+  // Both .git and node_modules should be marked as gitignored
+  const gitIgnored2 = customResult.data.filter((e) => e.metadata?.gitignored);
+  expect(gitIgnored2.map((e) => e.path).sort()).toEqual(["/.git", "/node_modules"]);
 
   // Test with custom ignore patterns (ignore .git, node_modules and *.log)
   const customIgnoreFS2 = new LocalFS({
@@ -1037,13 +1131,20 @@ test("LocalFS should use custom ignore patterns and default ignore .git when no 
   const customResult2 = await customIgnoreFS2.list("", { maxDepth: 2 });
   const customPaths2 = customResult2.data.map((entry) => entry.path);
 
-  // .git, node_modules and *.log should all be ignored
+  // All files listed
   expect(customPaths2.sort()).toMatchInlineSnapshot(`
     [
       "/",
+      "/.git",
+      "/debug.log",
       "/index.js",
+      "/node_modules",
     ]
   `);
+
+  // .git, node_modules and *.log should all be marked as gitignored
+  const gitIgnored3 = customResult2.data.filter((e) => e.metadata?.gitignored);
+  expect(gitIgnored3.map((e) => e.path).sort()).toEqual(["/.git", "/debug.log", "/node_modules"]);
 
   // Cleanup
   await rm(noGitignoreDir, { recursive: true, force: true });
@@ -1210,12 +1311,17 @@ test("LocalFS should combine pattern with gitignore", async () => {
   const result = await patternFS.list("", { pattern: "*.ts" });
   const paths = result.data.map((e) => e.path);
 
-  // Should match .ts files but respect gitignore
-  expect(paths).toMatchInlineSnapshot(`
+  // Should match all .ts files (including gitignored ones)
+  expect(paths.sort()).toMatchInlineSnapshot(`
     [
+      "/ignored.ts",
       "/included.ts",
     ]
   `);
+
+  // ignored.ts should be marked as gitignored
+  const gitIgnoredEntries = result.data.filter((e) => e.metadata?.gitignored);
+  expect(gitIgnoredEntries.map((e) => e.path)).toEqual(["/ignored.ts"]);
 
   // Cleanup
   await rm(patternDir, { recursive: true, force: true });
@@ -1318,51 +1424,80 @@ test("LocalFS should handle complex gitignore scenarios with root, subdirectorie
   const workspaceFS = new LocalFS({ localPath: workspaceDir });
 
   // Test 1: List workspace root with maxDepth 10
+  // New behavior: all files are listed, gitignored ones are marked but gitignored directories are not recursed
   const rootResult = await workspaceFS.list("/", { maxDepth: 10 });
   const rootPaths = rootResult.data.map((entry) => entry.path).sort();
 
   expect(rootPaths).toMatchInlineSnapshot(`
     [
       "/",
+      "/.git",
       "/.gitignore",
       "/README.md",
       "/app.js",
+      "/build",
+      "/config.local",
       "/modules",
       "/modules/plugin",
+      "/modules/plugin/.git",
       "/modules/plugin/.gitignore",
       "/modules/plugin/build",
       "/modules/plugin/build/compiled.js",
       "/modules/plugin/config.local",
+      "/modules/plugin/debug.log",
       "/modules/plugin/lib",
       "/modules/plugin/lib/core.js",
+      "/modules/plugin/lib/error.log",
       "/modules/plugin/lib/settings.local",
+      "/modules/plugin/node_modules",
       "/modules/plugin/plugin.js",
       "/src",
       "/src/.gitignore",
+      "/src/cache.tmp",
+      "/src/dist",
       "/src/index.js",
+      "/src/test.local",
       "/src/utils",
+      "/src/utils/debug.tmp",
       "/src/utils/helper.js",
+      "/src/utils/settings.local",
     ]
   `);
 
-  // Verify workspace-level filtering
-  expect(rootPaths.includes("/config.local")).toBe(false); // *.local at workspace level
-  expect(rootPaths.includes("/build")).toBe(false); // build/ at workspace level
-  expect(rootPaths.includes("/src/test.local")).toBe(false); // inherited *.local
-  expect(rootPaths.includes("/src/cache.tmp")).toBe(false); // src/.gitignore
-  expect(rootPaths.includes("/src/dist")).toBe(false); // src/.gitignore
-  expect(rootPaths.includes("/src/utils/debug.tmp")).toBe(false); // inherited from src
-  expect(rootPaths.includes("/src/utils/settings.local")).toBe(false); // inherited from workspace
+  // Verify gitignored entries are marked correctly
+  const rootGitignored = rootResult.data.filter((e) => e.metadata?.gitignored).map((e) => e.path);
+  expect(rootGitignored.sort()).toMatchInlineSnapshot(`
+    [
+      "/.git",
+      "/build",
+      "/config.local",
+      "/modules/plugin/.git",
+      "/modules/plugin/debug.log",
+      "/modules/plugin/lib/error.log",
+      "/modules/plugin/node_modules",
+      "/src/cache.tmp",
+      "/src/dist",
+      "/src/test.local",
+      "/src/utils/debug.tmp",
+      "/src/utils/settings.local",
+    ]
+  `);
 
-  // Verify submodule does NOT inherit parent gitignore
-  expect(rootPaths.includes("/modules/plugin/config.local")).toBe(true); // NOT ignored
-  expect(rootPaths.includes("/modules/plugin/build")).toBe(true); // NOT ignored
-  expect(rootPaths.includes("/modules/plugin/lib/settings.local")).toBe(true); // NOT ignored
+  // Verify gitignored directories are not recursed into
+  expect(rootPaths.includes("/build")).toBe(true); // listed but...
+  expect(rootPaths.some((p) => p.startsWith("/build/"))).toBe(false); // ...not recursed
 
-  // Verify submodule's own gitignore is applied
-  expect(rootPaths.includes("/modules/plugin/debug.log")).toBe(false); // submodule's *.log
-  expect(rootPaths.includes("/modules/plugin/lib/error.log")).toBe(false); // submodule's *.log in nested dir
-  expect(rootPaths.includes("/modules/plugin/node_modules")).toBe(false); // submodule's gitignore
+  // Verify submodule's .git directory is not recursed into
+  expect(rootPaths.includes("/modules/plugin/.git")).toBe(true);
+  expect(rootPaths.some((p) => p.startsWith("/modules/plugin/.git/"))).toBe(false);
+
+  // Verify submodule's node_modules is not recursed into
+  expect(rootPaths.includes("/modules/plugin/node_modules")).toBe(true);
+  expect(rootPaths.some((p) => p.startsWith("/modules/plugin/node_modules/"))).toBe(false);
+
+  // Verify submodule does NOT inherit parent gitignore (config.local is in submodule but NOT marked gitignored)
+  const pluginConfigLocal = rootResult.data.find((e) => e.path === "/modules/plugin/config.local");
+  expect(pluginConfigLocal?.metadata?.gitignored).toBeFalsy(); // NOT ignored
 
   // Test 2: List src directory specifically
   const srcResult = await workspaceFS.list("/src", { maxDepth: 10 });
@@ -1372,18 +1507,30 @@ test("LocalFS should handle complex gitignore scenarios with root, subdirectorie
     [
       "/src",
       "/src/.gitignore",
+      "/src/cache.tmp",
+      "/src/dist",
       "/src/index.js",
+      "/src/test.local",
       "/src/utils",
+      "/src/utils/debug.tmp",
       "/src/utils/helper.js",
+      "/src/utils/settings.local",
     ]
   `);
 
-  // Verify src filtering
-  expect(srcPaths.includes("/src/test.local")).toBe(false); // workspace *.local
-  expect(srcPaths.includes("/src/cache.tmp")).toBe(false); // src *.tmp
-  expect(srcPaths.includes("/src/dist")).toBe(false); // src dist rule
-  expect(srcPaths.includes("/src/utils/debug.tmp")).toBe(false); // inherited *.tmp
-  expect(srcPaths.includes("/src/utils/settings.local")).toBe(false); // inherited *.local
+  // Verify src gitignored entries
+  const srcGitignored = srcResult.data.filter((e) => e.metadata?.gitignored).map((e) => e.path);
+  expect(srcGitignored.sort()).toEqual([
+    "/src/cache.tmp",
+    "/src/dist",
+    "/src/test.local",
+    "/src/utils/debug.tmp",
+    "/src/utils/settings.local",
+  ]);
+
+  // Verify dist is not recursed into
+  expect(srcPaths.includes("/src/dist")).toBe(true);
+  expect(srcPaths.some((p) => p.startsWith("/src/dist/"))).toBe(false);
 
   // Test 3: List submodule specifically
   const submoduleResult = await workspaceFS.list("/modules/plugin", { maxDepth: 10 });
@@ -1392,26 +1539,39 @@ test("LocalFS should handle complex gitignore scenarios with root, subdirectorie
   expect(submodulePaths).toMatchInlineSnapshot(`
     [
       "/modules/plugin",
+      "/modules/plugin/.git",
       "/modules/plugin/.gitignore",
       "/modules/plugin/build",
       "/modules/plugin/build/compiled.js",
       "/modules/plugin/config.local",
+      "/modules/plugin/debug.log",
       "/modules/plugin/lib",
       "/modules/plugin/lib/core.js",
+      "/modules/plugin/lib/error.log",
       "/modules/plugin/lib/settings.local",
+      "/modules/plugin/node_modules",
       "/modules/plugin/plugin.js",
     ]
   `);
 
-  // Verify submodule isolation from parent rules
-  expect(submodulePaths.includes("/modules/plugin/config.local")).toBe(true); // NOT ignored
-  expect(submodulePaths.includes("/modules/plugin/build")).toBe(true); // NOT ignored
-  expect(submodulePaths.includes("/modules/plugin/lib/settings.local")).toBe(true); // NOT ignored
+  // Verify submodule gitignored entries (only submodule's own .gitignore applies)
+  const submoduleGitignored = submoduleResult.data
+    .filter((e) => e.metadata?.gitignored)
+    .map((e) => e.path);
+  expect(submoduleGitignored.sort()).toEqual([
+    "/modules/plugin/.git",
+    "/modules/plugin/debug.log",
+    "/modules/plugin/lib/error.log",
+    "/modules/plugin/node_modules",
+  ]);
 
-  // Verify submodule's own rules are applied
-  expect(submodulePaths.includes("/modules/plugin/debug.log")).toBe(false); // *.log
-  expect(submodulePaths.includes("/modules/plugin/lib/error.log")).toBe(false); // *.log in nested
-  expect(submodulePaths.includes("/modules/plugin/node_modules")).toBe(false); // node_modules
+  // Verify submodule isolation: config.local and settings.local are NOT marked as gitignored
+  const pluginConfig = submoduleResult.data.find((e) => e.path === "/modules/plugin/config.local");
+  expect(pluginConfig?.metadata?.gitignored).toBeFalsy();
+  const libSettings = submoduleResult.data.find(
+    (e) => e.path === "/modules/plugin/lib/settings.local",
+  );
+  expect(libSettings?.metadata?.gitignored).toBeFalsy();
 
   // Test 4: List submodule/lib specifically (nested directory within submodule)
   const libResult = await workspaceFS.list("/modules/plugin/lib", { maxDepth: 10 });
@@ -1421,13 +1581,18 @@ test("LocalFS should handle complex gitignore scenarios with root, subdirectorie
     [
       "/modules/plugin/lib",
       "/modules/plugin/lib/core.js",
+      "/modules/plugin/lib/error.log",
       "/modules/plugin/lib/settings.local",
     ]
   `);
 
-  // Verify nested directory inherits submodule's rules, not workspace rules
-  expect(libPaths.includes("/modules/plugin/lib/settings.local")).toBe(true); // NOT ignored
-  expect(libPaths.includes("/modules/plugin/lib/error.log")).toBe(false); // submodule's *.log
+  // Verify nested directory inherits submodule's rules
+  const libGitignored = libResult.data.filter((e) => e.metadata?.gitignored).map((e) => e.path);
+  expect(libGitignored).toEqual(["/modules/plugin/lib/error.log"]); // only *.log
+  expect(
+    libResult.data.find((e) => e.path === "/modules/plugin/lib/settings.local")?.metadata
+      ?.gitignored,
+  ).toBeFalsy();
 
   // Cleanup
   await rm(workspaceDir, { recursive: true, force: true });

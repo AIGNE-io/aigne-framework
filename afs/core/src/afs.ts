@@ -415,6 +415,11 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       metadataParts.push("truncated");
     }
 
+    // Gitignored
+    if (entry?.metadata?.gitignored) {
+      metadataParts.push("gitignored");
+    }
+
     // Executable
     if (entry?.metadata?.execute) {
       metadataParts.push("executable");

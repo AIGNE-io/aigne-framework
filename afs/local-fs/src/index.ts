@@ -116,26 +116,28 @@ export class LocalFS implements AFSModule {
       fullPath: string;
       relativePath: string;
       depth: number;
+      gitignored?: boolean;
     }
 
     const queue: QueueItem[] = [];
 
     // Add root path to queue as starting point
-    queue.push({ fullPath: basePath, relativePath: path || "/", depth: 0 });
+    queue.push({ fullPath: basePath, relativePath: path || "/", depth: 0, gitignored: false });
 
     // Process queue in breadth-first order
     while (true) {
       const item = queue.shift();
       if (!item) break; // Queue is empty
 
-      const { fullPath, relativePath, depth } = item;
+      const { fullPath, relativePath, depth, gitignored } = item;
 
       // Stat and readdir once per item
       const stats = await stat(fullPath);
       const isDirectory = stats.isDirectory();
-      let childItems: string[] | undefined;
+      let childItemsWithStatus: { name: string; gitignored: boolean }[] | undefined;
 
-      if (isDirectory) {
+      // Don't read children of gitignored directories (they won't be recursed into)
+      if (isDirectory && !gitignored) {
         const items = (await readdir(fullPath)).sort();
 
         // Load .gitignore rules for this directory if not disabled
@@ -147,18 +149,17 @@ export class LocalFS implements AFSModule {
           ignoreBase = result?.ignoreBase || mountRoot;
         }
 
-        // Filter items based on gitignore rules
-        childItems = !ig
-          ? items
-          : items.filter((item) => {
-              const itemFullPath = join(fullPath, item);
-              // Calculate path relative to ignoreBase (git root or mountRoot) for gitignore matching
-              const itemRelativePath = relative(ignoreBase, itemFullPath);
-              // Check both the file and directory (with trailing slash) patterns
-              const isIgnored = ig.ignores(itemRelativePath);
-              const isDirIgnored = ig.ignores(`${itemRelativePath}/`);
-              return !isIgnored && !isDirIgnored;
-            });
+        // Mark items with their gitignored status (instead of filtering them out)
+        childItemsWithStatus = items.map((childName) => {
+          if (!ig) return { name: childName, gitignored: false };
+
+          const itemFullPath = join(fullPath, childName);
+          // Calculate path relative to ignoreBase (git root or mountRoot) for gitignore matching
+          const itemRelativePath = relative(ignoreBase, itemFullPath);
+          // Check both the file and directory (with trailing slash) patterns
+          const isIgnored = ig.ignores(itemRelativePath) || ig.ignores(`${itemRelativePath}/`);
+          return { name: childName, gitignored: isIgnored };
+        });
       }
 
       const entry: AFSEntry = {
@@ -167,10 +168,10 @@ export class LocalFS implements AFSModule {
         createdAt: stats.birthtime,
         updatedAt: stats.mtime,
         metadata: {
-          childrenCount: childItems?.length,
+          childrenCount: childItemsWithStatus?.length,
           type: isDirectory ? "directory" : "file",
           size: stats.size,
-          mode: stats.mode,
+          gitignored: gitignored || undefined,
         },
       };
 
@@ -190,22 +191,27 @@ export class LocalFS implements AFSModule {
       }
 
       // If it's a directory and depth allows, add children to queue
-      if (isDirectory && depth < maxDepth && childItems) {
+      if (isDirectory && depth < maxDepth && childItemsWithStatus) {
         // Apply maxChildren limit
         const itemsToProcess =
-          childItems.length > maxChildren ? childItems.slice(0, maxChildren) : childItems;
-        const isTruncated = itemsToProcess.length < childItems.length;
+          childItemsWithStatus.length > maxChildren
+            ? childItemsWithStatus.slice(0, maxChildren)
+            : childItemsWithStatus;
+        const isTruncated = itemsToProcess.length < childItemsWithStatus.length;
 
         // Mark directory as truncated if children were limited by maxChildren
         if (isTruncated && entry.metadata) {
           entry.metadata.childrenTruncated = true;
         }
 
-        for (const item of itemsToProcess) {
+        for (const child of itemsToProcess) {
+          // Add child to queue; gitignored directories won't be recursed into
+          // (they're added to show them, but their children won't be processed)
           queue.push({
-            fullPath: join(fullPath, item),
-            relativePath: join(relativePath, item),
+            fullPath: join(fullPath, child.name),
+            relativePath: join(relativePath, child.name),
             depth: depth + 1,
+            gitignored: child.gitignored,
           });
         }
       }
@@ -237,7 +243,6 @@ export class LocalFS implements AFSModule {
         metadata: {
           type: stats.isDirectory() ? "directory" : "file",
           size: stats.size,
-          mode: stats.mode,
         },
       };
 
@@ -287,7 +292,6 @@ export class LocalFS implements AFSModule {
         ...entry.metadata,
         type: stats.isDirectory() ? "directory" : "file",
         size: stats.size,
-        mode: stats.mode,
       },
       userId: entry.userId,
       sessionId: entry.sessionId,
@@ -380,7 +384,6 @@ export class LocalFS implements AFSModule {
           metadata: {
             type: "file",
             size: stats.size,
-            mode: stats.mode,
           },
         };
 

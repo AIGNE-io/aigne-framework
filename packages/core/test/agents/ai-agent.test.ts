@@ -374,7 +374,12 @@ test("AIAgent with catchToolErrors enabled", async () => {
       {
         "content": [
           {
-            "text": "{"isError":true,"error":{"message":"Invalid input: a or b is zero"}}",
+            "text": 
+    "isError: true
+    error:
+      message: "Invalid input: a or b is zero"
+    "
+    ,
             "type": "text",
           },
         ],
@@ -400,7 +405,10 @@ test("AIAgent with catchToolErrors enabled", async () => {
       {
         "content": [
           {
-            "text": "{"sum":3}",
+            "text": 
+    "sum: 3
+    "
+    ,
             "type": "text",
           },
         ],

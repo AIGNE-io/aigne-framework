@@ -360,7 +360,10 @@ exports[`AIGNE.invoke should respond $metafield with usage metrics with {
         "content": [
           {
             "isAgentSkill": undefined,
-            "text": "{"message":"Hello world"}",
+            "text": 
+"message: Hello world
+"
+,
             "type": "text",
           },
         ],

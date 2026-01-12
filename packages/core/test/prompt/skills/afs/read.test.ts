@@ -220,5 +220,11 @@ test("AFS'skill read formatOutput should return JSON when data is undefined", as
   };
 
   const formatted = await read.formatOutput(output);
-  expect(formatted).toBe(JSON.stringify(output));
+  expect(formatted).toMatchInlineSnapshot(`
+    "status: success
+    tool: afs_read
+    path: /nonexistent.txt
+    data: null
+    "
+  `);
 });

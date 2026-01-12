@@ -9,18 +9,24 @@ import type { UIComponent } from "@aigne/ui";
 const TablePropsSchema = z.object({
   data: z
     .array(z.record(z.union([z.string(), z.number()])))
-    .describe("Array of row objects with column data"),
+    .describe(
+      'Array of row objects where each object represents a row with key-value pairs. ' +
+      'Example: [{"name": "John", "age": 30, "city": "NYC"}, {"name": "Jane", "age": 25, "city": "LA"}]'
+    ),
   columns: z
     .array(z.string())
     .optional()
-    .describe("Column names to display (if not provided, uses all keys from data)"),
-  title: z.string().optional().describe("Optional table title"),
+    .describe(
+      'Optional array of column names to display. If not provided, uses all keys from data. ' +
+      'Example: ["name", "age", "city"]'
+    ),
+  title: z.string().optional().describe("Optional table title displayed above the table"),
   padding: z
     .number()
     .min(0)
     .max(5)
     .default(1)
-    .describe("Cell padding (0-5)"),
+    .describe("Cell padding (0-5, default: 1)"),
 });
 
 type TableProps = z.output<typeof TablePropsSchema>;
@@ -198,13 +204,34 @@ export function TableComponent({
  */
 export const Table: UIComponent<TableProps> = {
   name: "table",
-  description: `Display tabular data in the terminal.
-Supports sorting, highlighting, and custom column formatting.
-Best for displaying structured data with multiple fields.
+  description: `Display tabular data in the terminal with professional box-drawing borders.
+Best for displaying structured data with multiple rows and columns.
 
-Automatically formats columns based on data types.
-If columns are not specified, displays all keys from the data objects.
-Supports both string and numeric values in cells.`,
+IMPORTANT: Each row must be an object with key-value pairs. Keys become column headers.
+
+Example usage:
+{
+  "data": [
+    {"product": "Laptop", "price": 999, "quantity": 5},
+    {"product": "Mouse", "price": 25, "quantity": 50},
+    {"product": "Keyboard", "price": 75, "quantity": 20}
+  ],
+  "title": "Product Inventory"
+}
+
+This will display:
+┌──────────┬───────┬──────────┐
+│ product  │ price │ quantity │
+├──────────┼───────┼──────────┤
+│ Laptop   │ 999   │ 5        │
+├──────────┼───────┼──────────┤
+│ Mouse    │ 25    │ 50       │
+├──────────┼───────┼──────────┤
+│ Keyboard │ 75    │ 20       │
+└──────────┴───────┴──────────┘
+
+Supports both string and numeric values in cells.
+Automatically calculates column widths based on content.`,
 
   propsSchema: TablePropsSchema as any,
 

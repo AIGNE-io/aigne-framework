@@ -10,24 +10,26 @@ import { BarChart, LineGraph, Sparkline } from "@pppp606/ink-chart";
 const ChartPropsSchema = z.object({
   type: z
     .enum(["line", "bar", "sparkline"])
-    .describe("Type of chart to render"),
-  data: z.array(z.number()).describe("Array of numbers to visualize"),
-  title: z.string().optional().describe("Optional chart title"),
+    .describe("Type of chart: 'line' for trends, 'bar' for comparisons, 'sparkline' for compact trends"),
+  data: z
+    .array(z.number())
+    .describe("Array of numeric values to visualize. Example: [5, 10, 15, 20, 18, 25]"),
+  title: z.string().optional().describe("Optional chart title displayed above the chart"),
   height: z
     .number()
     .min(5)
     .max(20)
     .default(10)
-    .describe("Chart height in rows (5-20)"),
+    .describe("Chart height in terminal rows (5-20, default: 10)"),
   color: z
     .enum(["green", "red", "blue", "yellow", "cyan", "magenta"])
     .optional()
     .default("cyan")
-    .describe("Chart color"),
+    .describe("Chart color (default: cyan)"),
   labels: z
     .array(z.string())
     .optional()
-    .describe("Optional labels for data points"),
+    .describe("Optional x-axis labels for data points. Example: ['Jan', 'Feb', 'Mar', 'Apr']"),
 });
 
 type ChartProps = z.output<typeof ChartPropsSchema>;
@@ -72,16 +74,18 @@ export function ChartComponent({
         <LineGraph
           data={lineGraphData}
           xLabels={labels}
+          width="full"
+          height={height}
         />
       )}
 
       {type === "bar" && (
-        <BarChart data={barChartData} />
+        <BarChart data={barChartData} showValue="right" width="full"  />
       )}
 
       {type === "sparkline" && (
         <Box flexDirection="column">
-          <Sparkline data={data} />
+          <Sparkline data={data} width={data.length * 8} />
           <Box marginTop={1}>
             <Text dimColor>
               Min: {Math.min(...data).toFixed(2)}
@@ -102,12 +106,30 @@ export function ChartComponent({
 export const Chart: UIComponent<ChartProps> = {
   name: "chart",
   description: `Render charts in the terminal using Ink components.
-Supports line graphs, bar charts, and sparklines.
-Best for visualizing trends and time-series data.
+Supports line graphs, bar charts, and sparklines for visualizing numeric data.
 
-Use line charts for trends over time with optional axis labels.
-Use bar charts for comparing values side-by-side.
-Use sparklines for compact inline trend visualization with min/max values.`,
+Example usage for a bar chart:
+{
+  "type": "bar",
+  "data": [45, 78, 62, 95, 83],
+  "title": "Sales by Region"
+}
+
+Example usage for a line graph with labels:
+{
+  "type": "line",
+  "data": [10, 15, 12, 18, 20, 25],
+  "title": "Monthly Revenue",
+  "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
+}
+
+Example usage for a sparkline (compact):
+{
+  "type": "sparkline",
+  "data": [5, 8, 3, 12, 7, 15, 9]
+}
+
+Use 'line' for trends over time, 'bar' for comparisons, 'sparkline' for compact inline trends.`,
 
   propsSchema: ChartPropsSchema as any,
 

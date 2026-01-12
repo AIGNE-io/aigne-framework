@@ -100,11 +100,12 @@ export class ComponentRegistry {
         hasEvents: !!output.events,
       });
       // Call onComponentShow callback if provided (for environment-specific rendering)
-      if (onComponentShow) {
+      if (onComponentShow && output.element) {
         await onComponentShow({
           ...output,
           componentId,
         });
+        delete output.element;
       }
 
       // Apply state updates
@@ -139,7 +140,6 @@ export class ComponentRegistry {
       } as any);
       logger.debug(`[ComponentRegistry] AFS history write completed for ${component.name}`);
 
-      // Create result with element stored separately to avoid serialization issues
       // React/Ink elements contain Symbols that can't be JSON-serialized
       const result: any = {
         componentId,
@@ -158,7 +158,6 @@ export class ComponentRegistry {
         componentId: z.string(),
         componentName: z.string(),
         rendered: z.boolean(),
-        element: z.any().optional(),
       }),
       process: processFunction,
     });

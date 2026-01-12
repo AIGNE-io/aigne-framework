@@ -2590,9 +2590,6 @@ importers:
       '@pppp606/ink-chart':
         specifier: ^0.2.4
         version: 0.2.4(ink@6.6.0(@types/react@19.1.13)(react@19.1.1))(react@19.1.1)
-      chalk:
-        specifier: ^5.4.1
-        version: 5.6.2
       ink:
         specifier: ^6.6.0
         version: 6.6.0(@types/react@19.1.13)(react@19.1.1)
@@ -2607,7 +2604,7 @@ importers:
         specifier: ^19.0.0
         version: 19.1.13
       typescript:
-        specifier: ^5.7.3
+        specifier: ^5.9.2
         version: 5.9.2
 
   ui/core:

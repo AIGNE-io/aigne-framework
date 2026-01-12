@@ -1,28 +1,33 @@
 #!/usr/bin/env npx -y bun
 
-import { tmpdir} from 'os';
-import { join } from 'path';
 import { AFS } from "@aigne/afs";
 import { AFSHistory } from "@aigne/afs-history";
 import { loadAIGNEWithCmdOptions, runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
+import { UI_TOOL_NAME_PREFIX, UIAgent } from "@aigne/ui";
 import { Chart, Table } from "@aigne/ui-cli";
-import { UIAgent, UI_TOOL_NAME_PREFIX } from "@aigne/ui";
+import { v7 } from "@aigne/uuid";
 import { render } from "ink";
-import { getSystemMetricsSkill } from "./skills/get-system-metrics.js";
+import { tmpdir } from "os";
+import { join } from "path";
 import { getStockPriceSkill } from "./skills/get-stock-price.js";
+import { getSystemMetricsSkill } from "./skills/get-system-metrics.js";
 import { createGitHubMCPSkill } from "./skills/github-mcp.js";
 
 // Load AIGNE with OpenAI configuration
 const aigne = await loadAIGNEWithCmdOptions();
+
+// Generate a unique session ID for this chat session
+const sessionId = v7();
 
 // Set up AFS with history
 const afs = new AFS().mount(
   new AFSHistory({
     // storage: { url: ":memory:" }, // In-memory for demo
     storage: { url: `file:${join(tmpdir(), "gen-ui-cli-history.sqlite3")}` },
-  })
+  }),
 );
-console.log("afs-history-path:", join(tmpdir(), "gen-ui-cli-history.sqlite3"));
+console.log("📊 Session ID:", sessionId);
+console.log("💾 AFS History Database:", join(tmpdir(), "gen-ui-cli-history.sqlite3"));
 
 // Initialize skills
 const skills = [getSystemMetricsSkill, getStockPriceSkill];
@@ -40,7 +45,30 @@ const skills = [getSystemMetricsSkill, getStockPriceSkill];
 const agent = UIAgent.forCLI({
   name: "GenerativeUIDemo",
   instructions: `You are a friendly assistant that helps the user interact with an application.
-Your goal is to use a combination of tools and UI components to help the user accomplish their goal.`,
+Your goal is to use a combination of tools and UI components to help the user accomplish their goal.
+
+**IMPORTANT - Finding Previously Rendered Components:**
+Your current session ID is: ${sessionId}
+
+When a user asks to "extend", "update", "modify", or reference a previously rendered component (table, chart, etc.):
+
+1. Search for component history: afs_list("/modules/history/by-session/${sessionId}")
+2. Filter the results to find entries where:
+   - metadata.type === "component-render"
+   - metadata.componentName matches the component type (e.g., "table", "chart")
+3. Sort by createdAt to find the most recent one
+4. Read the component's content.component.props to see the original data
+5. Create an updated version with the requested changes
+
+Example workflow:
+User: "Extend the table with gravity data"
+→ You: afs_list("/modules/history/by-session/${sessionId}")
+→ Find the latest entry where metadata.type === "component-render" and metadata.componentName === "table"
+→ Read its content.component.props.data (the table rows)
+→ Add a new "gravity" column to each row
+→ Call show_component_table with the enhanced data
+
+Remember: Components from THIS conversation session are stored at /modules/history/by-session/${sessionId}`,
   inputKey: "message",
 
   afs,
@@ -51,7 +79,7 @@ Your goal is to use a combination of tools and UI components to help the user ac
     onSkillEnd: async (event) => {
       // console.info("onSkillEnd", event);
       // Handle errors
-      if ('error' in event && event.error) {
+      if ("error" in event && event.error) {
         console.error("\n❌ Error:", event.error);
         return;
       }
@@ -66,7 +94,7 @@ Your goal is to use a combination of tools and UI components to help the user ac
         try {
           console.log(); // Empty line for spacing
           const { unmount } = render(result.element);
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, 100));
           unmount();
           console.log(); // Empty line for spacing
         } catch (error) {
@@ -83,6 +111,7 @@ Your goal is to use a combination of tools and UI components to help the user ac
 await runWithAIGNE(agent, {
   aigne,
   chatLoopOptions: {
+    sessionId, // ✅ Provide sessionId so components can be stored and retrieved
     welcome: `🎨 AIGNE Generative UI Demo
 
 I can create charts and tables with real-world data! Try these examples:

@@ -13,6 +13,7 @@ export interface AFSStorageListOptions extends AFSStorageTypeOptions {
     agentId?: string;
     userId?: string;
     sessionId?: string;
+    componentId?: string;
     before?: Date | string;
     after?: Date | string;
   };
@@ -25,6 +26,7 @@ export interface AFSStorageReadOptions extends AFSStorageTypeOptions {
     agentId?: string;
     userId?: string;
     sessionId?: string;
+    componentId?: string;
   };
 }
 
@@ -33,12 +35,13 @@ export interface AFSStorageDeleteOptions extends AFSStorageTypeOptions {
     agentId?: string;
     userId?: string;
     sessionId?: string;
+    componentId?: string;
   };
 }
 
-export type EntryType = "history" | "compact" | "memory";
+export type EntryType = "history" | "compact" | "memory" | "component";
 
-export type Scope = "session" | "user" | "agent";
+export type Scope = "session" | "user" | "agent" | "component";
 
 export interface AFSStorageCreateOptions extends AFSStorageTypeOptions {}
 

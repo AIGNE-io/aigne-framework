@@ -11,9 +11,9 @@ export async function createGitHubMCPSkill() {
 
   if (!githubToken) {
     throw new Error(
-      'GITHUB_PERSONAL_ACCESS_TOKEN environment variable is not set. ' +
-      'Please add it to your .env.local file. ' +
-      'Get your token at: https://github.com/settings/tokens'
+      "GITHUB_PERSONAL_ACCESS_TOKEN environment variable is not set. " +
+        "Please add it to your .env.local file. " +
+        "Get your token at: https://github.com/settings/tokens",
     );
   }
 

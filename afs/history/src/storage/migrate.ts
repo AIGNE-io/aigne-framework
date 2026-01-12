@@ -6,6 +6,7 @@ import { addAgentId } from "./migrations/002-add-agent-id.js";
 import { addCompactTable } from "./migrations/003-add-compact-table.js";
 import { addMemoryTable } from "./migrations/004-add-memory-table.js";
 import { addIndexes } from "./migrations/005-add-indexes.js";
+import { addComponentsTable } from "./migrations/006-add-components-table.js";
 import type { AFSStorageMigrations } from "./type.js";
 
 export async function migrate(db: Awaited<ReturnType<typeof initDatabase>>, module: AFSModule) {
@@ -15,6 +16,7 @@ export async function migrate(db: Awaited<ReturnType<typeof initDatabase>>, modu
     addCompactTable,
     addMemoryTable,
     addIndexes,
+    addComponentsTable,
   ];
 
   const migrationsTable = "__drizzle_migrations";

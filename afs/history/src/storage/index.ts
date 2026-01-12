@@ -2,6 +2,7 @@ import type { AFSEntry, AFSModule } from "@aigne/afs";
 import { and, asc, desc, eq, gt, initDatabase, lt, sql } from "@aigne/sqlite";
 import { migrate } from "./migrate.js";
 import { compactTable } from "./models/compact.js";
+import { componentsTable } from "./models/components.js";
 import { entriesTable } from "./models/entries.js";
 import { memoryTable } from "./models/memory.js";
 import type {
@@ -48,6 +49,7 @@ export class AFSStorageWithModule implements AFSStorage {
     entries: ReturnType<typeof entriesTable>;
     compact: ReturnType<typeof compactTable>;
     memory: ReturnType<typeof memoryTable>;
+    components: ReturnType<typeof componentsTable>;
   }>;
 
   private get tables() {
@@ -58,6 +60,7 @@ export class AFSStorageWithModule implements AFSStorage {
           entries: entriesTable(this.module),
           compact: compactTable(this.module),
           memory: memoryTable(this.module),
+          components: componentsTable(this.module),
         })),
       );
     }
@@ -67,10 +70,17 @@ export class AFSStorageWithModule implements AFSStorage {
   async list(options: AFSStorageListOptions = {}): Promise<{ data: AFSEntry[] }> {
     const { type = "history", scope, filter, limit = DEFAULT_AFS_STORAGE_LIST_LIMIT } = options;
 
-    const { db, entries, compact, memory } = await this.tables;
+    const { db, entries, compact, memory, components } = await this.tables;
 
     // Select table based on type
-    const table = type === "compact" ? compact : type === "memory" ? memory : entries;
+    const table =
+      type === "compact"
+        ? compact
+        : type === "memory"
+          ? memory
+          : type === "component"
+            ? components
+            : entries;
 
     const data = await db
       .select()
@@ -84,6 +94,9 @@ export class AFSStorageWithModule implements AFSStorage {
           filter?.agentId ? eq(table.agentId, filter.agentId) : undefined,
           filter?.userId ? eq(table.userId, filter.userId) : undefined,
           filter?.sessionId ? eq(table.sessionId, filter.sessionId) : undefined,
+          filter?.componentId && type === "component"
+            ? eq((table as any).componentId, filter.componentId)
+            : undefined,
           filter?.before ? lt(table.createdAt, new Date(filter.before)) : undefined,
           filter?.after ? gt(table.createdAt, new Date(filter.after)) : undefined,
         ),
@@ -102,10 +115,17 @@ export class AFSStorageWithModule implements AFSStorage {
   async read(id: string, options?: AFSStorageReadOptions): Promise<AFSEntry | undefined> {
     const { type = "history", scope, filter } = options ?? {};
 
-    const { db, entries, compact, memory } = await this.tables;
+    const { db, entries, compact, memory, components } = await this.tables;
 
     // Select table based on type
-    const table = type === "compact" ? compact : type === "memory" ? memory : entries;
+    const table =
+      type === "compact"
+        ? compact
+        : type === "memory"
+          ? memory
+          : type === "component"
+            ? components
+            : entries;
 
     return db
       .select()
@@ -120,6 +140,9 @@ export class AFSStorageWithModule implements AFSStorage {
           filter?.agentId ? eq(table.agentId, filter.agentId) : undefined,
           filter?.userId ? eq(table.userId, filter.userId) : undefined,
           filter?.sessionId ? eq(table.sessionId, filter.sessionId) : undefined,
+          filter?.componentId && type === "component"
+            ? eq((table as any).componentId, filter.componentId)
+            : undefined,
         ),
       )
       .limit(1)
@@ -133,10 +156,17 @@ export class AFSStorageWithModule implements AFSStorage {
   ): Promise<AFSEntry> {
     const { type = "history", scope } = options ?? {};
 
-    const { db, entries, compact, memory } = await this.tables;
+    const { db, entries, compact, memory, components } = await this.tables;
 
     // Select table based on type
-    const table = type === "compact" ? compact : type === "memory" ? memory : entries;
+    const table =
+      type === "compact"
+        ? compact
+        : type === "memory"
+          ? memory
+          : type === "component"
+            ? components
+            : entries;
 
     // Prepare entry data - only add scope to metadata for compact/memory types
     const entryData = { ...entry, metadata: { ...entry.metadata, scope } };
@@ -163,10 +193,17 @@ export class AFSStorageWithModule implements AFSStorage {
   async delete(id: string, options?: AFSStorageDeleteOptions): Promise<{ deletedCount: number }> {
     const { type = "history", scope, filter } = options ?? {};
 
-    const { db, entries, compact, memory } = await this.tables;
+    const { db, entries, compact, memory, components } = await this.tables;
 
     // Select table based on type
-    const table = type === "compact" ? compact : type === "memory" ? memory : entries;
+    const table =
+      type === "compact"
+        ? compact
+        : type === "memory"
+          ? memory
+          : type === "component"
+            ? components
+            : entries;
 
     const result = await db
       .delete(table)
@@ -180,6 +217,9 @@ export class AFSStorageWithModule implements AFSStorage {
           filter?.agentId ? eq(table.agentId, filter.agentId) : undefined,
           filter?.userId ? eq(table.userId, filter.userId) : undefined,
           filter?.sessionId ? eq(table.sessionId, filter.sessionId) : undefined,
+          filter?.componentId && type === "component"
+            ? eq((table as any).componentId, filter.componentId)
+            : undefined,
         ),
       )
       .returning()

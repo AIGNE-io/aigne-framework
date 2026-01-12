@@ -1,7 +1,7 @@
+import type { UIComponent } from "@aigne/ui";
 import { Box, Text } from "ink";
 import React from "react";
 import { z } from "zod";
-import type { UIComponent } from "@aigne/ui";
 
 /**
  * Props schema for Table component
@@ -11,24 +11,19 @@ const TablePropsSchema = z.object({
   data: z
     .array(z.any())
     .describe(
-      'Array of row objects where each object represents a row with key-value pairs. ' +
-      'Each row MUST be an object with properties. ' +
-      'Example: [{"name": "John", "age": 30, "city": "NYC"}, {"name": "Jane", "age": 25, "city": "LA"}]'
+      "Array of row objects where each object represents a row with key-value pairs. " +
+        "Each row MUST be an object with properties. " +
+        'Example: [{"name": "John", "age": 30, "city": "NYC"}, {"name": "Jane", "age": 25, "city": "LA"}]',
     ),
   columns: z
     .array(z.string())
     .optional()
     .describe(
-      'Optional array of column names to display. If not provided, uses all keys from data. ' +
-      'Example: ["name", "age", "city"]'
+      "Optional array of column names to display. If not provided, uses all keys from data. " +
+        'Example: ["name", "age", "city"]',
     ),
   title: z.string().optional().describe("Optional table title displayed above the table"),
-  padding: z
-    .number()
-    .min(0)
-    .max(5)
-    .default(1)
-    .describe("Cell padding (0-5, default: 1)"),
+  padding: z.number().min(0).max(5).default(1).describe("Cell padding (0-5, default: 1)"),
 });
 
 type TableProps = z.output<typeof TablePropsSchema>;
@@ -46,7 +41,13 @@ function intersperse<T>(separator: string, elements: React.ReactElement[]): Reac
 
   return elements.reduce((acc, element, index) => {
     if (index === 0) return [element];
-    return [...acc, <Text key={`sep-${index}`} bold>{separator}</Text>, element];
+    return [
+      ...acc,
+      <Text key={`sep-${index}`} bold>
+        {separator}
+      </Text>,
+      element,
+    ];
   }, [] as React.ReactElement[]);
 }
 
@@ -91,12 +92,7 @@ function TableRow({
 /**
  * Professional table renderer using box-drawing characters (like ink-table)
  */
-export function TableComponent({
-  data,
-  columns: columnNames,
-  title,
-  padding = 1,
-}: TableProps) {
+export function TableComponent({ data, columns: columnNames, title, padding = 1 }: TableProps) {
   if (data.length === 0) {
     return (
       <Box flexDirection="column" padding={1}>
@@ -116,9 +112,7 @@ export function TableComponent({
   // Calculate column widths
   const columns: Column[] = displayColumnKeys.map((key) => {
     const headerLength = key.length;
-    const maxDataLength = Math.max(
-      ...data.map((row) => String(row[key] ?? "").length)
-    );
+    const maxDataLength = Math.max(...data.map((row) => String(row[key] ?? "").length));
     return {
       key,
       width: Math.max(headerLength, maxDataLength) + padding * 2,
@@ -128,7 +122,7 @@ export function TableComponent({
   // Create headings row data
   const headings = displayColumnKeys.reduce(
     (acc, key) => ({ ...acc, [key]: key }),
-    {} as Record<string, string>
+    {} as Record<string, string>,
   );
 
   return (
@@ -240,7 +234,7 @@ Automatically calculates column widths and formats the table with box-drawing ch
 
   environment: "cli",
 
-  async render(props, context) {
+  async render(props, _context) {
     // Render Ink component
     const element = <TableComponent {...props} />;
 
@@ -254,10 +248,7 @@ Automatically calculates column widths and formats the table with box-drawing ch
     };
   },
 
-  async onMount(props, context) {
-    const cols = props.columns?.length || Object.keys(props.data[0] || {}).length;
-    console.log(
-      `[Table] Mounted table with ${props.data.length} rows and ${cols} columns`
-    );
+  async onMount(_props, _context) {
+    // Do nothing
   },
 };

@@ -119,6 +119,13 @@ export class AFSHistory implements AFSModule {
         scope: "agent",
       },
       "/by-agent/:agentId/:entryId": { action: "read", type: "history", scope: "agent" },
+      "/by-component": { action: "list", type: "component", scope: "component" },
+      "/by-component/:componentId": { action: "list", type: "component", scope: "component" },
+      "/by-component/:componentId/new": {
+        action: "create",
+        type: "component",
+        scope: "component",
+      },
     },
   });
 
@@ -137,6 +144,11 @@ export class AFSHistory implements AFSModule {
       id: "by-agent",
       path: "/by-agent",
       description: "Retrieve history entries by agent ID.",
+    },
+    {
+      id: "by-component",
+      path: "/by-component",
+      description: "Retrieve component entries by component ID.",
     },
   ];
 
@@ -278,6 +290,7 @@ export class AFSHistory implements AFSModule {
       session: entry.sessionId,
       user: entry.userId,
       agent: entry.agentId,
+      component: (entry as any).componentId,
     };
 
     const scopeId = scopeIdMap[scope];
@@ -293,6 +306,9 @@ export class AFSHistory implements AFSModule {
     }
     if (entryType === "memory") {
       return joinURL("/", prefix, scopeId, "@metadata/memory", entry.id);
+    }
+    if (entryType === "component") {
+      return joinURL("/", prefix, scopeId, entry.id);
     }
 
     // Default: history entry

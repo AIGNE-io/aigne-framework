@@ -1,8 +1,8 @@
+import type { UIComponent } from "@aigne/ui";
+import { BarChart, LineGraph, Sparkline } from "@pppp606/ink-chart";
 import { Box, Text, useStdout } from "ink";
 import React from "react";
 import { z } from "zod";
-import type { UIComponent } from "@aigne/ui";
-import { BarChart, LineGraph, Sparkline } from "@pppp606/ink-chart";
 
 /**
  * Props schema for Chart component
@@ -10,7 +10,9 @@ import { BarChart, LineGraph, Sparkline } from "@pppp606/ink-chart";
 const ChartPropsSchema = z.object({
   type: z
     .enum(["line", "bar", "sparkline"])
-    .describe("Type of chart: 'line' for trends, 'bar' for comparisons, 'sparkline' for compact trends"),
+    .describe(
+      "Type of chart: 'line' for trends, 'bar' for comparisons, 'sparkline' for compact trends",
+    ),
   data: z
     .array(z.number())
     .describe("Array of numeric values to visualize. Example: [5, 10, 15, 20, 18, 25]"),
@@ -76,17 +78,10 @@ export function ChartComponent({
       )}
 
       {type === "line" && (
-        <LineGraph
-          data={lineGraphData}
-          xLabels={labels}
-          width={halfWidth}
-          height={height}
-        />
+        <LineGraph data={lineGraphData} xLabels={labels} width={halfWidth} height={height} />
       )}
 
-      {type === "bar" && (
-        <BarChart data={barChartData} showValue="right" width={halfWidth} />
-      )}
+      {type === "bar" && <BarChart data={barChartData} showValue="right" width={halfWidth} />}
 
       {type === "sparkline" && (
         <Box flexDirection="column">
@@ -140,7 +135,7 @@ Use 'line' for trends over time, 'bar' for comparisons, 'sparkline' for compact 
 
   environment: "cli",
 
-  async render(props, context) {
+  async render(props, _context) {
     // Render Ink component
     const element = <ChartComponent {...props} />;
 
@@ -154,9 +149,7 @@ Use 'line' for trends over time, 'bar' for comparisons, 'sparkline' for compact 
     };
   },
 
-  async onMount(props, context) {
-    console.log(
-      `[Chart] Mounted ${props.type} chart with ${props.data.length} data points`
-    );
+  async onMount(_props, _context) {
+    // Do nothing
   },
 };

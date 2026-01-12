@@ -18,8 +18,8 @@ export type ComponentEnvironment = "cli" | "web" | "universal";
  * Provides access to state, AFS, events, and AIGNE context
  */
 export interface ComponentContext {
-  /** Unique instance ID for this component render */
-  instanceId: string;
+  /** Unique component ID for this component render */
+  componentId: string;
 
   /** Component state manager (backed by AFS) */
   state: ComponentState;
@@ -91,11 +91,11 @@ export class ComponentState {
   private schema?: ZodType;
 
   constructor(
-    private instanceId: string,
+    private componentId: string,
     afs: AFS,
     sessionId: string,
     initialState?: Record<string, any>,
-    schema?: ZodType
+    schema?: ZodType,
   ) {
     this.afs = afs;
     this.sessionId = sessionId;
@@ -143,21 +143,26 @@ export class ComponentState {
    * ✅ Uses correct AFSHistory path pattern
    */
   private async persistState(): Promise<void> {
-    const historyPath = `/modules/history/by-session/${this.sessionId}/new`;
+    const historyPath = `/modules/history/by-component/${this.componentId}/new`;
 
     await this.afs.write(historyPath, {
       content: {
         role: "system" as const,
         type: "component-state",
-        componentInstanceId: this.instanceId,
+        componentInstanceId: this.componentId,
         state: this.state,
       },
       metadata: {
-        instanceId: this.instanceId,
+        componentId: this.componentId,
         type: "component-state",
         updatedAt: new Date().toISOString(),
       },
-    });
+      componentId: this.componentId,
+      componentName: "state", // Generic component name for state entries
+      props: {},
+      state: this.state,
+      sessionId: this.sessionId, // ← Add sessionId at top level
+    } as any);
   }
 
   /**
@@ -165,34 +170,35 @@ export class ComponentState {
    * ✅ Uses correct list/filter pattern
    */
   static async load(
-    instanceId: string,
+    componentId: string,
     afs: AFS,
     sessionId: string,
-    schema?: ZodType
+    schema?: ZodType,
   ): Promise<ComponentState> {
     try {
-      // List all entries in session
-      const result = await afs.list(`/modules/history/by-session/${sessionId}`);
+      // List all component entries for this componentId, filtered by componentId
+      const result = await afs.list(`/modules/history/by-component/${componentId}`, {
+        filter: { sessionId },
+      });
 
       // Find latest state entry for this component instance
       const stateEntries = result.data
         .filter(
           (e: any) =>
-            e.metadata?.type === "component-state" &&
-            e.metadata?.instanceId === instanceId
+            e.metadata?.type === "component-state" && e.metadata?.componentId === componentId,
         )
         .sort(
           (a: any, b: any) =>
             new Date(b.metadata?.updatedAt || 0).getTime() -
-            new Date(a.metadata?.updatedAt || 0).getTime()
+            new Date(a.metadata?.updatedAt || 0).getTime(),
         );
 
       const latestState = stateEntries[0]?.content?.state || {};
 
-      return new ComponentState(instanceId, afs, sessionId, latestState, schema);
+      return new ComponentState(componentId, afs, sessionId, latestState, schema);
     } catch (error) {
       // No saved state, return empty
-      return new ComponentState(instanceId, afs, sessionId, {}, schema);
+      return new ComponentState(componentId, afs, sessionId, {}, schema);
     }
   }
 

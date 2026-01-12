@@ -504,6 +504,46 @@ importers:
         specifier: workspace:^
         version: link:../../packages/cli
 
+  examples/generative-ui-cli:
+    dependencies:
+      '@aigne/afs':
+        specifier: workspace:^
+        version: link:../../afs/core
+      '@aigne/afs-history':
+        specifier: workspace:^
+        version: link:../../afs/history
+      '@aigne/cli':
+        specifier: workspace:^
+        version: link:../../packages/cli
+      '@aigne/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@aigne/openai':
+        specifier: workspace:^
+        version: link:../../models/openai
+      '@aigne/ui':
+        specifier: workspace:^
+        version: link:../../ui/core
+      '@aigne/ui-cli':
+        specifier: workspace:^
+        version: link:../../ui/cli
+      ink:
+        specifier: ^6.6.0
+        version: 6.6.0(@types/react@19.1.13)(react@19.1.1)
+      react:
+        specifier: ^19.0.0
+        version: 19.1.1
+      yargs:
+        specifier: ^18.0.0
+        version: 18.0.0
+    devDependencies:
+      '@types/bun':
+        specifier: ^1.2.22
+        version: 1.2.22(@types/react@19.1.13)
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.1.13
+
   examples/mcp-blocklet:
     dependencies:
       '@aigne/agent-library':
@@ -699,46 +739,6 @@ importers:
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
-
-  examples/ui-cli-demo:
-    dependencies:
-      '@aigne/afs':
-        specifier: workspace:^
-        version: link:../../afs/core
-      '@aigne/afs-history':
-        specifier: workspace:^
-        version: link:../../afs/history
-      '@aigne/cli':
-        specifier: workspace:^
-        version: link:../../packages/cli
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../../packages/core
-      '@aigne/openai':
-        specifier: workspace:^
-        version: link:../../models/openai
-      '@aigne/ui':
-        specifier: workspace:^
-        version: link:../../ui/core
-      '@aigne/ui-cli':
-        specifier: workspace:^
-        version: link:../../ui/cli
-      ink:
-        specifier: ^6.6.0
-        version: 6.6.0(@types/react@19.1.13)(react@19.1.1)
-      react:
-        specifier: ^19.0.0
-        version: 19.1.1
-      yargs:
-        specifier: ^18.0.0
-        version: 18.0.0
-    devDependencies:
-      '@types/bun':
-        specifier: ^1.2.22
-        version: 1.2.22(@types/react@19.1.13)
-      '@types/react':
-        specifier: ^19.0.0
-        version: 19.1.13
 
   examples/workflow-code-execution:
     dependencies:

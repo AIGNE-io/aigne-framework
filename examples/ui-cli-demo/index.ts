@@ -4,7 +4,7 @@ import os from 'os';
 import { AFS } from "@aigne/afs";
 import { AFSHistory } from "@aigne/afs-history";
 import { loadAIGNEWithCmdOptions, runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
-import { AIAgentToolChoice } from "@aigne/core";
+import { FunctionAgent } from "@aigne/core";
 import { Chart, Table } from "@aigne/ui-cli";
 import { UIAgent, UI_TOOL_NAME_PREFIX } from "@aigne/ui";
 import { render } from "ink";
@@ -19,6 +19,39 @@ const afs = new AFS().mount(
   })
 );
 
+// Create system metrics skill using FunctionAgent
+const getSystemMetricsSkill = FunctionAgent.from({
+  name: 'get_system_metrics',
+  description: 'Get current system resource usage including CPU count, memory usage, and system uptime',
+  process: async function (input: any) {
+    const cpus = os.cpus();
+    const totalMem = os.totalmem();
+    const freeMem = os.freemem();
+    const usedMem = totalMem - freeMem;
+
+    return {
+      cpu: {
+        count: cpus.length,
+        model: cpus[0]?.model || 'Unknown',
+        usage: Math.round(Math.random() * 100), // Simplified - real CPU usage requires more complex calculation
+      },
+      memory: {
+        total: Math.round(totalMem / 1024 / 1024 / 1024 * 100) / 100, // GB
+        used: Math.round(usedMem / 1024 / 1024 / 1024 * 100) / 100, // GB
+        free: Math.round(freeMem / 1024 / 1024 / 1024 * 100) / 100, // GB
+        usagePercent: Math.round((usedMem / totalMem) * 100 * 100) / 100,
+      },
+      uptime: {
+        seconds: os.uptime(),
+        hours: Math.round(os.uptime() / 3600 * 100) / 100,
+        days: Math.round(os.uptime() / 86400 * 100) / 100,
+      },
+      platform: os.platform(),
+      hostname: os.hostname(),
+    };
+  },
+});
+
 // Create UIAgent with Chart and Table components
 const agent = UIAgent.forCLI({
   name: "GenerativeUIDemo",
@@ -27,6 +60,7 @@ Your goal is to use a combination of tools and UI components to help the user ac
   inputKey: "message",
 
   components: [Chart, Table],
+  skills: [getSystemMetricsSkill],
   afs,
 
   hooks: {
@@ -56,34 +90,6 @@ Your goal is to use a combination of tools and UI components to help the user ac
       }
     },
   },
-
-  // skills: [
-  //   {
-  //     name: 'get_system_metrics',
-  //     description: 'Get current system resource usage',
-  //     inputSchema: z.object({}),
-  //     process: async function (this: any, input: any, options: any) {
-  //       const cpus = os.cpus();
-  //       const totalMem = os.totalmem();
-  //       const freeMem = os.freemem();
-  //       const usedMem = totalMem - freeMem;
-
-  //       return {
-  //         cpu: {
-  //           count: cpus.length,
-  //           usage: Math.random() * 100, // Simplified
-  //         },
-  //         memory: {
-  //           total: totalMem,
-  //           used: usedMem,
-  //           free: freeMem,
-  //           usagePercent: (usedMem / totalMem) * 100,
-  //         },
-  //         uptime: os.uptime(),
-  //       };
-  //     },
-  //   },
-  // ],
 });
 
 // Run the agent
@@ -95,19 +101,25 @@ await runWithAIGNE(agent, {
 I can create charts and tables with real-world data! Try these examples:
 
 📊 Charts:
-  • "Show me a bar chart of G7 countries by GDP (in trillions): USA 25.5, China 17.9, Japan 4.2, Germany 4.1, UK 3.1, France 2.9, Italy 2.0"
-  • "Create a line graph of global population growth: 1950: 2.5B, 1975: 4.1B, 2000: 6.1B, 2025: 8.0B"
-  • "Display a sparkline of average life expectancy over decades: 45, 52, 60, 67, 72, 75, 78"
+  • "Show me a bar chart of G7 countries by GDP (in trillions)"
+  • "Create a line graph of global population growth"
+  • "Display a sparkline of average life expectancy over decades"
 
 📋 Tables:
-  • "Show me a table of top 5 countries by area (Russia, Canada, USA, China, Brazil)"
+  • "Show me a table of top 10 countries by area"
   • "Display a table comparing USA, China, India with their population, GDP, and life expectancy"
   • "Create a table of BRICS nations with their GDP growth rates and population"
+
+💻 System Metrics:
+  • "Show me current system metrics"
+  • "Display memory usage as a chart"
+  • "Get system information and show it in a table"
 
 💡 Combined Examples:
   • "Generate data for top 10 economies and show both a table and GDP comparison chart"
   • "Compare life expectancy across continents in a table, then visualize as a bar chart"
+  • "Get system metrics and create a bar chart of memory usage (total, used, free)"
 
-What global data would you like to visualize?`,
+What data would you like to visualize?`,
   },
 });

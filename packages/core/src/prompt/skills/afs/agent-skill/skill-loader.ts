@@ -1,7 +1,7 @@
-import type { AFS, AFSEntry } from "@aigne/afs";
-import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
-import fm from "front-matter";
-import { AgentSkill } from "./agent-skill.js";
+import type { AFS, AFSEntry } from '@aigne/afs';
+import { nodejs } from '@aigne/platform-helpers/nodejs/index.js';
+import fm from 'front-matter';
+import { AgentSkill } from './agent-skill.js';
 
 export interface Skill {
   path: string;
@@ -22,8 +22,8 @@ function parseSkill(content: string, path: string): Skill {
 }
 
 export async function loadSkill(path: string): Promise<Skill> {
-  const entry = nodejs.path.join(path, "SKILL.md");
-  const skill = await nodejs.fs.readFile(entry, "utf-8");
+  const entry = nodejs.path.join(path, 'SKILL.md');
+  const skill = await nodejs.fs.readFile(entry, 'utf-8');
   return parseSkill(skill, path);
 }
 
@@ -38,29 +38,24 @@ export async function loadSkills(paths: string[]): Promise<Skill[]> {
   return skills;
 }
 
-export async function loadAgentSkillFromAFS({
-  afs,
-}: {
-  afs: AFS;
-}): Promise<AgentSkill | undefined> {
+export async function discoverSkillsFromAFS(afs: AFS): Promise<Skill[]> {
   const modules = await afs.listModules();
   const filtered = modules.filter(
     ({ module: m }) =>
-      "options" in m &&
-      typeof m.options === "object" &&
+      'options' in m &&
+      typeof m.options === 'object' &&
       m.options &&
-      "agentSkills" in m.options &&
-      m.options.agentSkills === true,
+      'agentSkills' in m.options &&
+      m.options.agentSkills === true
   );
-  if (!filtered.length) return;
+  if (!filtered.length) return [];
 
   const skills: Skill[] = [];
-
   for (const module of filtered) {
     const data: AFSEntry[] = (
       await afs
         .list(module.path, {
-          pattern: "**/SKILL.md",
+          pattern: '**/SKILL.md',
           maxDepth: 10,
         })
         .catch(() => ({ data: [] }))
@@ -68,13 +63,18 @@ export async function loadAgentSkillFromAFS({
 
     for (const entry of data) {
       const { data: file } = await afs.read(entry.path);
-      if (typeof file?.content !== "string") continue;
+      if (typeof file?.content !== 'string') continue;
 
       const skill = parseSkill(file.content, nodejs.path.dirname(entry.path));
       skills.push(skill);
     }
   }
 
+  return skills;
+}
+
+export async function loadAgentSkillFromAFS({ afs }: { afs: AFS }): Promise<AgentSkill | undefined> {
+  const skills = await discoverSkillsFromAFS(afs);
   if (!skills.length) return;
 
   return new AgentSkill({

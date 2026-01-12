@@ -176,7 +176,7 @@ export class ComponentState {
     schema?: ZodType,
   ): Promise<ComponentState> {
     try {
-      // List all component entries for this componentId, filtered by componentId
+      // List all component entries for this componentId, filtered by sessionId
       const result = await afs.list(`/modules/history/by-component/${componentId}`, {
         filter: { sessionId },
       });

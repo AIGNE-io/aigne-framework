@@ -1,9 +1,9 @@
 import type { AFS } from "@aigne/afs";
 import { type Agent, FunctionAgent } from "@aigne/core";
-import { logger } from "@aigne/core/utils/logger.js";
 import { z } from "zod";
 import type { ComponentContext, ComponentEnvironment, UIComponent } from "./types.js";
 import { ComponentState, UI_TOOL_NAME_PREFIX } from "./types.js";
+import { logger } from "./utils/logger.js";
 
 /**
  * Component registry
@@ -54,10 +54,7 @@ export class ComponentRegistry {
   private componentToAgent(component: UIComponent, afs: AFS): Agent {
     // Define the process function with proper typing
     const processFunction = async function (this: any, input: any, options: any) {
-      logger.debug(`[ComponentRegistry] processFunction START - component: ${component.name}`, {
-        input,
-        options,
-      });
+      logger.debug(`[ComponentRegistry] processFunction START - component: ${component.name}`, { input });
 
       // Access AIGNE context from options
       const context = options.context;
@@ -76,7 +73,6 @@ export class ComponentRegistry {
       logger.debug(`[ComponentRegistry] Generated componentId: ${componentId}`);
 
       // ✅ CORRECTED: Load state using AFS from closure
-      logger.debug(`[ComponentRegistry] Loading component state for ${componentId}...`);
       const componentState = await ComponentState.load(
         componentId,
         afs, // ✅ From closure parameter
@@ -94,20 +90,14 @@ export class ComponentRegistry {
         aigneContext: context,
         env: {}, // Environment-specific data can be injected by UIAgent
       };
-      logger.debug(
-        `[ComponentRegistry] Component context created for ${component.name}`,
-        componentContext,
-      );
 
       // Call lifecycle hook if defined
       if (component.onMount) {
-        logger.debug(`[ComponentRegistry] Calling onMount hook for ${component.name}...`);
         await component.onMount(input, componentContext);
         logger.debug(`[ComponentRegistry] onMount hook completed for ${component.name}`);
       }
 
       // Render component
-      logger.debug(`[ComponentRegistry] Rendering component ${component.name}...`);
       const output = await component.render(input, componentContext);
       logger.debug(`[ComponentRegistry] Component ${component.name} rendered`, {
         hasElement: !!output.element,
@@ -117,24 +107,16 @@ export class ComponentRegistry {
 
       // Apply state updates
       if (output.stateUpdates) {
-        logger.debug(
-          `[ComponentRegistry] Applying state updates for ${component.name}...`,
-          output.stateUpdates,
-        );
         await componentState.update(output.stateUpdates);
-        logger.debug(`[ComponentRegistry] State updates applied for ${component.name}`);
+        logger.debug(`[ComponentRegistry] State updates applied for ${component.name}`, output.stateUpdates);
       }
 
       // Emit events
       if (output.events) {
-        logger.debug(
-          `[ComponentRegistry] Emitting ${output.events.length} events for ${component.name}...`,
-        );
         for (const event of output.events) {
           logger.debug(`[ComponentRegistry] Emitting event: ${event.type}`, event.data);
           context.events.emit(event.type, event.data);
         }
-        logger.debug(`[ComponentRegistry] All events emitted for ${component.name}`);
       }
 
       // ✅ CORRECTED: Store component message in AFSHistory with proper path
@@ -169,10 +151,6 @@ export class ComponentRegistry {
         rendered: true,
         element: output.element,
       };
-      logger.debug(
-        `[ComponentRegistry] processFunction COMPLETE - component: ${component.name}`,
-        result,
-      );
 
       return result;
     };

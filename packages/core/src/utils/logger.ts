@@ -84,7 +84,28 @@ export class Logger {
   }
 }
 
-export const logger = new Logger({
-  ns: "aigne:core",
-  level: LogLevel.SILENT,
-});
+/**
+ * Create a logger with a specific namespace under the 'aigne:' prefix
+ *
+ * @param ns - Namespace for the logger (e.g., 'ui:core', 'afs:history', 'models:openai')
+ * @param level - Log level (defaults to SILENT, can be overridden via DEBUG env var)
+ * @returns Logger instance with the specified namespace
+ *
+ * @example
+ * // Create a logger for the UI core package
+ * export const logger = createLogger('ui:core');
+ *
+ * @example
+ * // Use with DEBUG environment variable
+ * // DEBUG=aigne:ui:* npm start  (shows all UI logs)
+ * // DEBUG=aigne:ui:core:* npm start  (shows only ui:core logs)
+ */
+export function createLogger(ns: string, level: LogLevel = LogLevel.SILENT): Logger {
+  return new Logger({
+    ns: `aigne:${ns}`,
+    level,
+  });
+}
+
+// Default core logger
+export const logger = createLogger("core");

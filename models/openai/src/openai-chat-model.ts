@@ -15,7 +15,7 @@ import {
   STANDARD_ROLE_MAP,
   safeParseJSON,
 } from "@aigne/core";
-import { logger } from "@aigne/core/utils/logger.js";
+import { logger } from "./utils/logger.js";
 import { mergeUsage } from "@aigne/core/utils/model-utils.js";
 import { getJsonOutputPrompt } from "@aigne/core/utils/prompts.js";
 import { agentResponseStreamToObject } from "@aigne/core/utils/stream-utils.js";

@@ -44,32 +44,9 @@ const skills = [getSystemMetricsSkill, getStockPriceSkill];
 // Create UIAgent with Chart and Table components
 const agent = UIAgent.forCLI({
   name: "GenerativeUIDemo",
-  instructions: `You are a friendly assistant that helps the user interact with an application.
-Your goal is to use a combination of tools and UI components to help the user accomplish their goal.
-
-**IMPORTANT - Finding Previously Rendered Components:**
-Your current session ID is: ${sessionId}
-
-When a user asks to "extend", "update", "modify", or reference a previously rendered component (table, chart, etc.):
-
-1. Search for component history: afs_list("/modules/history/by-session/${sessionId}")
-2. Filter the results to find entries where:
-   - metadata.type === "component-render"
-   - metadata.componentName matches the component type (e.g., "table", "chart")
-3. Sort by createdAt to find the most recent one
-4. Read the component's content.component.props to see the original data
-5. Create an updated version with the requested changes
-
-Example workflow:
-User: "Extend the table with gravity data"
-→ You: afs_list("/modules/history/by-session/${sessionId}")
-→ Find the latest entry where metadata.type === "component-render" and metadata.componentName === "table"
-→ Read its content.component.props.data (the table rows)
-→ Add a new "gravity" column to each row
-→ Call show_component_table with the enhanced data
-
-Remember: Components from THIS conversation session are stored at /modules/history/by-session/${sessionId}`,
   inputKey: "message",
+  instructions: `You are a friendly assistant that helps the user interact with an application.
+Your goal is to use a combination of tools and UI components to help the user accomplish their goal.`,
 
   afs,
 

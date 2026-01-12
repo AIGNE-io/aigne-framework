@@ -13,7 +13,7 @@ import {
   safeParseJSON,
 } from "@aigne/core";
 import { parseJSON } from "@aigne/core/utils/json-schema.js";
-import { logger } from "@aigne/core/utils/logger.js";
+import { logger } from "./utils/logger.js";
 import { mergeUsage } from "@aigne/core/utils/model-utils.js";
 import { agentResponseStreamToObject } from "@aigne/core/utils/stream-utils.js";
 import {

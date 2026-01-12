@@ -6,7 +6,7 @@ import {
   type VideoModelOutput,
   videoModelInputSchema,
 } from "@aigne/core";
-import { logger } from "@aigne/core/utils/logger.js";
+import { logger } from "./utils/logger.js";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import type OpenAI from "openai";
 import type { ClientOptions } from "openai";

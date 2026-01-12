@@ -1,7 +1,7 @@
 import type { AFS } from "@aigne/afs";
 import { FunctionAgent } from "@aigne/core";
-import { logger } from "@aigne/core/utils/logger.js";
 import { z } from "zod";
+import { logger } from "./utils/logger.js";
 
 /**
  * Create component query skills for LLM to access component history

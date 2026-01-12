@@ -3,21 +3,16 @@
 import { AFS } from "@aigne/afs";
 import { AFSHistory } from "@aigne/afs-history";
 import { loadAIGNEWithCmdOptions, runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
-import { UI_TOOL_NAME_PREFIX, UIAgent } from "@aigne/ui";
-import { Chart, Table } from "@aigne/ui-cli";
-import { v7 } from "@aigne/uuid";
-import { render } from "ink";
+import { UIAgent } from "@aigne/ui";
+import { Chart, Table, createCLIRenderer } from "@aigne/ui-cli";
 import { tmpdir } from "os";
 import { join } from "path";
 import { getStockPriceSkill } from "./skills/get-stock-price.js";
 import { getSystemMetricsSkill } from "./skills/get-system-metrics.js";
-import { createGitHubMCPSkill } from "./skills/github-mcp.js";
+// import { createGitHubMCPSkill } from "./skills/github-mcp.js";
 
 // Load AIGNE with OpenAI configuration
 const aigne = await loadAIGNEWithCmdOptions();
-
-// Generate a unique session ID for this chat session
-// const sessionId = v7();
 
 // Set up AFS with history
 const afs = new AFS().mount(
@@ -26,7 +21,6 @@ const afs = new AFS().mount(
     storage: { url: `file:${join(tmpdir(), "gen-ui-cli-history.sqlite3")}` },
   }),
 );
-// console.log("📊 Session ID:", sessionId);
 console.log("💾 AFS History Database:", join(tmpdir(), "gen-ui-cli-history.sqlite3"));
 
 // Initialize skills
@@ -52,43 +46,17 @@ Your goal is to use a combination of tools and UI components to help the user ac
 
   skills,
   components: [Chart, Table],
-  hooks: {
-    onSkillEnd: async (event) => {
-      // console.info("onSkillEnd", event);
-      // Handle errors
-      if ("error" in event && event.error) {
-        console.error("\n❌ Error:", event.error);
-        return;
-      }
 
-      // Only render UI components
-      if (!event.skill.name.startsWith(UI_TOOL_NAME_PREFIX)) {
-        return;
-      }
+  // Use the CLI renderer for automatic rendering
+  onComponentShow: createCLIRenderer(),
 
-      const result = event.output as any;
-      if (result?.element) {
-        try {
-          console.log(); // Empty line for spacing
-          const { unmount } = render(result.element);
-          await new Promise((resolve) => setTimeout(resolve, 100));
-          unmount();
-          console.log(); // Empty line for spacing
-        } catch (error) {
-          console.error("❌ Render error:", error);
-        }
-      }
-    },
-  },
-
-  // catchToolsError: false,
+  catchToolsError: false,
 });
 
 // Run the agent
 await runWithAIGNE(agent, {
   aigne,
   chatLoopOptions: {
-    // sessionId, // ✅ Provide sessionId so components can be stored and retrieved
     welcome: `🎨 AIGNE Generative UI Demo
 
 I can create charts and tables with real-world data! Try these examples:

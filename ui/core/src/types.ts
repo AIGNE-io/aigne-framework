@@ -5,7 +5,6 @@ import { logger } from "./utils/logger.js";
 
 /**
  * UI component tool name prefix
- * Following Tambo's convention for clarity
  */
 export const UI_TOOL_NAME_PREFIX = "show_component_";
 
@@ -13,6 +12,12 @@ export const UI_TOOL_NAME_PREFIX = "show_component_";
  * Environment where the component runs
  */
 export type ComponentEnvironment = "cli" | "web" | "universal";
+
+/**
+ * Callback invoked after a component is rendered
+ * Allows environment-specific rendering logic (e.g., Ink render/unmount for CLI)
+ */
+export type OnComponentShowCallback = (output: ComponentOutput & { componentId: string }) => void | Promise<void>;
 
 /**
  * Component rendering context
@@ -141,21 +146,13 @@ export class ComponentState {
 
   /**
    * Persist state to AFSHistory via AFS
-   * ✅ Uses correct AFSHistory path pattern and stable ID for upsert
    */
   private async persistState(): Promise<void> {
-    const historyPath = `/modules/history/by-component/${this.componentId}/new`;
-
-    await this.afs.write(historyPath, {
+    const afsPath = `/modules/history/by-component/${this.componentId}/new`;
+    await this.afs.write(afsPath, {
       id: this.componentId, // ← Use componentId as stable ID for upsert behavior
-      content: {
-        role: "system" as const,
-        type: "component-state",
-        componentInstanceId: this.componentId,
-        state: this.state,
-      },
+      content: {},
       metadata: {
-        componentId: this.componentId,
         type: "component-state",
         updatedAt: new Date().toISOString(),
       },
@@ -165,11 +162,11 @@ export class ComponentState {
       state: this.state,
       sessionId: this.sessionId, // ← Add sessionId at top level
     } as any);
+    logger.debug(`[ComponentState] State persisted to AFS`, { id: this.componentId, sessionId: this.sessionId });
   }
 
   /**
    * Load state from AFSHistory via AFS
-   * ✅ Simplified to read single record using stable componentId
    */
   static async load(
     componentId: string,

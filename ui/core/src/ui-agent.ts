@@ -2,7 +2,7 @@ import type { AFS } from "@aigne/afs";
 import { type Agent, AIAgent, type AIAgentOptions } from "@aigne/core";
 import { ComponentRegistry } from "./registry.js";
 import { createComponentSkills } from "./skill.js";
-import type { ComponentEnvironment, UIComponent } from "./types.js";
+import type { ComponentEnvironment, OnComponentShowCallback, UIComponent } from "./types.js";
 
 /**
  * UIAgent options
@@ -20,6 +20,9 @@ export interface UIAgentOptions extends AIAgentOptions {
 
   /** Other skills (non-UI) - overrides the skills from AIAgentOptions */
   skills?: Agent[];
+
+  /** Optional callback invoked after components are rendered (for environment-specific rendering) */
+  onComponentShow?: OnComponentShowCallback;
 }
 
 /**
@@ -120,8 +123,8 @@ export class UIAgent extends AIAgent {
       }
     }
 
-    // ✅ Pass AFS to toAgents for component agent creation
-    const uiAgents = componentRegistry.toAgents(afs);
+    // ✅ Pass AFS and onComponentShow callback to toAgents for component agent creation
+    const uiAgents = componentRegistry.toAgents(afs, options.onComponentShow);
 
     // ✅ Create component query tools for LLM to access component history
     const { getComponentSkill, listComponentsSkill } = createComponentSkills(afs);

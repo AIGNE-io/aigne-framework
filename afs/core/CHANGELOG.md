@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.7...afs-v1.4.0-beta.8) (2026-01-12)
+
+
+### Bug Fixes
+
+* **afs:** show gitignored files with marker instead of filtering ([c2bdea1](https://github.com/AIGNE-io/aigne-framework/commit/c2bdea155f47c9420f2fe810cdfed79ef70ef899))
+
 ## [1.4.0-beta.7](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.6...afs-v1.4.0-beta.7) (2026-01-08)
 
 

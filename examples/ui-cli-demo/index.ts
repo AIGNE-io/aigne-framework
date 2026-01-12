@@ -1,5 +1,7 @@
 #!/usr/bin/env npx -y bun
 
+import { tmpdir} from 'os';
+import { join } from 'path';
 import { AFS } from "@aigne/afs";
 import { AFSHistory } from "@aigne/afs-history";
 import { loadAIGNEWithCmdOptions, runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
@@ -8,6 +10,7 @@ import { UIAgent, UI_TOOL_NAME_PREFIX } from "@aigne/ui";
 import { render } from "ink";
 import { getSystemMetricsSkill } from "./skills/get-system-metrics.js";
 import { getStockPriceSkill } from "./skills/get-stock-price.js";
+import { createGitHubMCPSkill } from "./skills/github-mcp.js";
 
 // Load AIGNE with OpenAI configuration
 const aigne = await loadAIGNEWithCmdOptions();
@@ -15,9 +18,23 @@ const aigne = await loadAIGNEWithCmdOptions();
 // Set up AFS with history
 const afs = new AFS().mount(
   new AFSHistory({
-    storage: { url: ":memory:" }, // In-memory for demo
+    // storage: { url: ":memory:" }, // In-memory for demo
+    storage: { url: `file:${join(tmpdir(), "gen-ui-cli-history.sqlite3")}` },
   })
 );
+console.log("afs-history-path:", join(tmpdir(), "gen-ui-cli-history.sqlite3"));
+
+// Initialize skills
+const skills = [getSystemMetricsSkill, getStockPriceSkill];
+
+// Try to add GitHub MCP skill (optional - only if token is configured)
+// try {
+//   const githubSkill = await createGitHubMCPSkill();
+//   skills.push(githubSkill);
+//   console.log("✓ GitHub MCP integration enabled");
+// } catch (error) {
+//   console.log("ℹ GitHub MCP integration disabled (GITHUB_PERSONAL_ACCESS_TOKEN not set)");
+// }
 
 // Create UIAgent with Chart and Table components
 const agent = UIAgent.forCLI({
@@ -26,12 +43,13 @@ const agent = UIAgent.forCLI({
 Your goal is to use a combination of tools and UI components to help the user accomplish their goal.`,
   inputKey: "message",
 
-  components: [Chart, Table],
-  skills: [getSystemMetricsSkill, getStockPriceSkill],
   afs,
 
+  skills,
+  components: [Chart, Table],
   hooks: {
     onSkillEnd: async (event) => {
+      // console.info("onSkillEnd", event);
       // Handle errors
       if ('error' in event && event.error) {
         console.error("\n❌ Error:", event.error);
@@ -57,6 +75,8 @@ Your goal is to use a combination of tools and UI components to help the user ac
       }
     },
   },
+
+  // catchToolsError: false,
 });
 
 // Run the agent
@@ -87,6 +107,12 @@ I can create charts and tables with real-world data! Try these examples:
   • "Show me TSLA stock information"
   • "Compare AAPL, GOOGL, and MSFT prices in a table"
   • "Create a chart showing the day high and low for NVDA"
+
+🐙 GitHub (if configured):
+  • "Search for issues in owner/repo repository"
+  • "Get repository information for owner/repo"
+  • "List pull requests in owner/repo"
+  • "Create an issue in owner/repo with title and description"
 
 💡 Combined Examples:
   • "Generate data for top 10 economies and show both a table and GDP comparison chart"

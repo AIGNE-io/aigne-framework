@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.4.0-beta.18](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.4.0-beta.17...afs-local-fs-v1.4.0-beta.18) (2026-01-12)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.17
+
+## [1.4.0-beta.17](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.4.0-beta.16...afs-local-fs-v1.4.0-beta.17) (2026-01-12)
+
+
+### Bug Fixes
+
+* **afs:** show gitignored files with marker instead of filtering ([c2bdea1](https://github.com/AIGNE-io/aigne-framework/commit/c2bdea155f47c9420f2fe810cdfed79ef70ef899))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.8
+    * @aigne/core bumped to 1.72.0-beta.16
+
 ## [1.4.0-beta.16](https://github.com/AIGNE-io/aigne-framework/compare/afs-local-fs-v1.4.0-beta.15...afs-local-fs-v1.4.0-beta.16) (2026-01-10)
 
 

@@ -774,9 +774,8 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
           yield { delta: { text: { [outputKey]: "\n\n" } } };
         }
 
-        const message: ChatModelInputMessage = { role: "agent", toolCalls };
-        yield <AgentResponseProgress>{ progress: { event: "message", message } };
-        await session.appendCurrentMessages(message, options);
+        const toolCallMessage: ChatModelInputMessage = { role: "agent", toolCalls };
+        yield <AgentResponseProgress>{ progress: { event: "message", message: toolCallMessage } };
 
         const executedToolCalls: {
           call: ChatModelOutputToolCall;
@@ -825,6 +824,8 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
 
         if (error) throw error;
 
+        const toolResultMessages: ChatModelInputMessage[] = [];
+
         // Continue LLM function calling loop if any tools were executed
         if (executedToolCalls.length) {
           for (const { call, tool, output } of executedToolCalls) {
@@ -837,7 +838,7 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
               content: [{ type: "text", text, isAgentSkill }],
             };
             yield <AgentResponseProgress>{ progress: { event: "message", message: message } };
-            await session.appendCurrentMessages(message, options);
+            toolResultMessages.push(message);
           }
 
           const transferOutput = executedToolCalls.find(
@@ -845,6 +846,8 @@ export class AIAgent<I extends Message = any, O extends Message = any> extends A
               isTransferAgentOutput(i.output),
           )?.output;
           if (transferOutput) return transferOutput;
+
+          await session.appendCurrentMessages([toolCallMessage, ...toolResultMessages], options);
 
           continue;
         }

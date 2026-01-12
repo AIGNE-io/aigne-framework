@@ -71,20 +71,30 @@ afterAll(async () => {
   await rm(gitTestDir, { recursive: true, force: true });
 });
 
-test("AFS'skill list should respect gitignore by default", async () => {
+test("AFS'skill list should include gitignored files but not recurse into gitignored directories", async () => {
+  // New behavior: gitignored files are listed but marked, gitignored directories are not recursed into
   expect(
     (await gitAFS.list("/modules/project", { maxDepth: 3, format: "tree" })).data,
   ).toMatchInlineSnapshot(`
     "└── modules
-        └── project [5 items]
+        └── project [10 items]
+            ├── .env [gitignored]
+            ├── .git [gitignored]
             ├── .gitignore
             ├── README.md
+            ├── build [gitignored]
+            ├── debug.log [gitignored]
             ├── index.js
-            ├── src [3 items]
+            ├── node_modules [gitignored]
+            ├── src [6 items]
             │   ├── .gitignore
+            │   ├── data.cache [gitignored]
+            │   ├── debug.log [gitignored]
             │   ├── main.js
-            │   └── utils [1 items]
-            │       └── helper.js
+            │   ├── test.tmp [gitignored]
+            │   └── utils [2 items]
+            │       ├── helper.js
+            │       └── test.tmp [gitignored]
             └── tests [1 items]
                 └── test.spec.js
     "
@@ -95,11 +105,15 @@ test("AFS'skill list should respect gitignore by default", async () => {
   ).toMatchInlineSnapshot(`
     "└── modules
         └── project
-            └── src [3 items]
+            └── src [6 items]
                 ├── .gitignore
+                ├── data.cache [gitignored]
+                ├── debug.log [gitignored]
                 ├── main.js
-                └── utils [1 items]
-                    └── helper.js
+                ├── test.tmp [gitignored]
+                └── utils [2 items]
+                    ├── helper.js
+                    └── test.tmp [gitignored]
     "
   `);
 });
@@ -142,14 +156,19 @@ test("AFS'skill list should show all files when gitignore is disabled", async ()
 test("AFS'skill list should handle nested .gitignore files correctly", async () => {
   const result = await gitAFS.list("/modules/project/src", { maxDepth: 2, format: "tree" });
 
+  // New behavior: all files listed, gitignored ones marked but still shown
   expect(result.data).toMatchInlineSnapshot(`
     "└── modules
         └── project
-            └── src [3 items]
+            └── src [6 items]
                 ├── .gitignore
+                ├── data.cache [gitignored]
+                ├── debug.log [gitignored]
                 ├── main.js
-                └── utils [1 items]
-                    └── helper.js
+                ├── test.tmp [gitignored]
+                └── utils [2 items]
+                    ├── helper.js
+                    └── test.tmp [gitignored]
     "
   `);
 });

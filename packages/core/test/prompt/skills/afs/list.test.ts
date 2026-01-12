@@ -28,6 +28,7 @@ test("AFS'skill list should invoke afs.list", async () => {
       [
         "/foo/bar",
         {
+          "format": "simple-list",
           "maxDepth": 2,
         },
       ],
@@ -48,7 +49,9 @@ test("AFS'skill list should use default maxDepth when not provided", async () =>
   expect(listSpy.mock.calls[0]).toMatchInlineSnapshot(`
     [
       "/foo/bar",
-      undefined,
+      {
+        "format": "simple-list",
+      },
     ]
   `);
 });

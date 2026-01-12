@@ -1,6 +1,7 @@
 import type { AFSEntry } from "@aigne/afs";
 import { z } from "zod";
 import type { AgentInvokeOptions, AgentOptions, Message } from "../../../agents/agent.js";
+import type { PromiseOrValue } from "../../../utils/type-utils.js";
 import { AFSSkillBase } from "./base.js";
 
 const DEFAULT_LINE_LIMIT = 2000;
@@ -16,7 +17,7 @@ export interface AFSReadOutput extends Message {
   status: string;
   tool: string;
   path: string;
-  data?: AFSEntry;
+  data?: AFSEntry | null;
   message?: string;
   totalLines?: number;
   returnedLines?: number;
@@ -75,6 +76,11 @@ Usage:
         offset: z.number().optional(),
       }),
     });
+  }
+
+  override formatOutput(output: AFSReadOutput): PromiseOrValue<string> {
+    if (typeof output.data?.content === "string" && output.data.content) return output.data.content;
+    return super.formatOutput({ ...output, data: output.data || null });
   }
 
   async process(input: AFSReadInput, _options: AgentInvokeOptions): Promise<AFSReadOutput> {

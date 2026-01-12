@@ -389,7 +389,9 @@ ${"```"}
       this.compactionPromise = undefined;
     });
 
-    return this.compactionPromise;
+    const isAsync = this.compactConfig.async ?? DEFAULT_COMPACT_ASYNC;
+
+    if (!isAsync) await this.compactionPromise;
   }
 
   /**
@@ -405,25 +407,19 @@ ${"```"}
     if (historyEntries.length === 0) return;
 
     const maxTokens = this.maxTokens;
-    let keepTokenBudget = this.keepTokenBudget;
 
-    // Calculate tokens for system messages
-    const systemTokens = (this.runtimeState.systemMessages ?? []).reduce((sum, msg) => {
-      const content =
-        typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content ?? "");
-      return sum + estimateTokens(content);
-    }, 0);
-
-    // Calculate tokens for current entry messages
-    const currentTokens = (this.runtimeState.currentEntry?.messages ?? []).reduce((sum, msg) => {
-      const content =
-        typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content ?? "");
-      return sum + estimateTokens(content);
-    }, 0);
-
-    // Subtract system and current tokens from budget
-    // This ensures total tokens (system + current + kept history) stays within ratio budget
-    keepTokenBudget = Math.max(0, keepTokenBudget - systemTokens - currentTokens);
+    // Target to keep only 50% of keepRecentTokens to leave buffer room
+    // This avoids triggering compression again shortly after compaction
+    // Similar to compactCurrentEntry, we compress more aggressively to leave headroom
+    //
+    // Note: We don't subtract systemTokens or currentEntry tokens because:
+    // 1. keepRecentTokens is already a relative ratio (e.g., 50% of maxTokens)
+    // 2. systemTokens overhead is typically small (~1-2k, ~1-2% of maxTokens)
+    // 3. currentEntry is still being constructed (not yet added to history)
+    // 4. In tool use scenarios, currentEntry can be very large (many tool calls)
+    // 5. Subtracting them would complicate logic without significant benefit
+    // 6. Total token limit is enforced by maybeAutoCompact trigger condition
+    const keepRecentTokens = this.keepRecentTokens * 0.5;
 
     // Find split point by iterating backwards from most recent entry
     // The split point divides history into: [compact] | [keep]
@@ -437,7 +433,7 @@ ${"```"}
       const entryTokens = this.estimateMessagesTokens(entry.content?.messages ?? []);
 
       // Check if adding this entry would exceed token budget
-      if (accumulatedTokens + entryTokens > keepTokenBudget) {
+      if (accumulatedTokens + entryTokens > keepRecentTokens) {
         // Would exceed budget, split here (this entry and earlier ones will be compacted)
         splitIndex = i + 1;
         break;
@@ -524,8 +520,9 @@ ${"```"}
 
     if (uncompressedMessages.length === 0) return;
 
-    const keepTokenBudget = this.keepTokenBudget;
-    const singleMessageLimit = this.singleMessageLimit;
+    // Target to keep only 50% of keepTokenBudget to leave buffer room
+    // This avoids frequent small-batch compressions in tool use scenarios
+    const keepTokenBudget = this.keepRecentTokens * 0.5;
 
     let splitIndex = uncompressedMessages.length;
     let accumulatedTokens = 0;
@@ -534,18 +531,14 @@ ${"```"}
       const msg = uncompressedMessages[i];
       if (!msg) continue;
 
-      const content =
-        typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content ?? "");
-      const msgTokens = estimateTokens(content);
+      const msgTokens = this.estimateMessagesTokens([msg]);
 
-      const effectiveTokens = msgTokens > singleMessageLimit ? singleMessageLimit : msgTokens;
-
-      if (accumulatedTokens + effectiveTokens > keepTokenBudget) {
+      if (accumulatedTokens + msgTokens > keepTokenBudget) {
         splitIndex = i + 1;
         break;
       }
 
-      accumulatedTokens += effectiveTokens;
+      accumulatedTokens += msgTokens;
       splitIndex = i;
     }
 
@@ -604,11 +597,8 @@ ${"```"}
     const compressedCount = this.runtimeState.currentEntryCompact?.compressedCount ?? 0;
     const uncompressedMessages = currentEntry.messages.slice(compressedCount);
 
-    const threshold = this.keepTokenBudget;
-    const currentTokens = this.estimateMessagesTokens(
-      uncompressedMessages,
-      this.singleMessageLimit,
-    );
+    const threshold = this.keepRecentTokens;
+    const currentTokens = this.estimateMessagesTokens(uncompressedMessages);
 
     if (currentTokens > threshold) {
       await this.compactCurrentEntry(options);
@@ -617,8 +607,6 @@ ${"```"}
 
   private async maybeAutoCompact(options: AgentInvokeOptions): Promise<void> {
     if (this.compactionPromise) await this.compactionPromise;
-
-    if (!this.compactConfig) return;
 
     const mode = this.compactConfig.mode ?? DEFAULT_COMPACT_MODE;
     if (mode === "disabled") return;
@@ -632,32 +620,56 @@ ${"```"}
     const currentTokens = this.estimateMessagesTokens(messages);
 
     if (currentTokens >= maxTokens) {
-      this.compact(options);
-
-      const isAsync = this.compactConfig.async ?? DEFAULT_COMPACT_ASYNC;
-
-      if (!isAsync) await this.compactionPromise;
+      await this.compact(options);
     }
   }
 
   /**
-   * Estimate token count for an array of messages
+   * Estimate token count for messages
+   * Applies singleMessageLimit to each text block individually
+   * Non-text tokens (images, tool calls) are always counted in full
    */
   private estimateMessagesTokens(
     messages: ChatModelInputMessage[],
-    singleMessageLimit?: number,
+    singleMessageLimit: number = this.singleMessageLimit,
   ): number {
-    return messages.reduce((sum, msg) => {
-      const content =
-        typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content ?? "");
-      const tokens = estimateTokens(content);
+    let totalTokens = 0;
 
-      if (singleMessageLimit && tokens > singleMessageLimit) {
-        return sum + singleMessageLimit;
+    for (const msg of messages) {
+      // 1. Estimate content tokens
+      if (typeof msg.content === "string") {
+        const textTokens = estimateTokens(msg.content);
+        const effectiveTokens = textTokens > singleMessageLimit ? singleMessageLimit : textTokens;
+        totalTokens += effectiveTokens;
+      } else if (Array.isArray(msg.content)) {
+        for (const block of msg.content) {
+          if (block.type === "text" && typeof block.text === "string") {
+            // Text tokens (can be truncated) - apply limit to each block individually
+            const textTokens = estimateTokens(block.text);
+            const effectiveTokens =
+              textTokens > singleMessageLimit ? singleMessageLimit : textTokens;
+            totalTokens += effectiveTokens;
+          } else {
+            // Non-text blocks - always counted in full
+            totalTokens += 1000;
+          }
+        }
       }
 
-      return sum + tokens;
-    }, 0);
+      // 2. Estimate tool calls tokens (cannot be truncated)
+      if (msg.toolCalls && msg.toolCalls.length > 0) {
+        for (const toolCall of msg.toolCalls) {
+          // Function name + arguments + overhead
+          totalTokens += estimateTokens(toolCall.function.name);
+          totalTokens += estimateTokens(
+            stringify(toolCall.function.arguments).replace(/\s+/g, " "),
+          );
+          totalTokens += 10; // Structure overhead
+        }
+      }
+    }
+
+    return totalTokens;
   }
 
   /**
@@ -709,28 +721,64 @@ ${"```"}
     await this.maybeCompactCurrentEntry(options);
   }
 
-  private truncateLargeMessage(msg: ChatModelInputMessage): ChatModelInputMessage {
-    const content = typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content);
-    const tokens = estimateTokens(content);
-    const singleMessageLimit = this.singleMessageLimit;
+  /**
+   * Truncate text content to fit within target token limit
+   * @param text The text to truncate
+   * @param currentTokens Current token count of the text
+   * @param targetTokens Target token count after truncation
+   * @returns Truncated text
+   */
+  private truncateText(text: string, currentTokens: number, targetTokens: number): string {
+    if (currentTokens <= targetTokens) return text;
 
-    if (tokens <= singleMessageLimit) return msg;
-
-    const keepRatio = (singleMessageLimit / tokens) * 0.9;
-    const keepLength = Math.floor(content.length * keepRatio);
-
+    const keepRatio = (targetTokens / currentTokens) * 0.9;
+    const keepLength = Math.floor(text.length * keepRatio);
     const headLength = Math.floor(keepLength * 0.7);
     const tailLength = Math.floor(keepLength * 0.3);
 
-    const truncated =
-      content.slice(0, headLength) +
-      `\n\n[... Content too large, truncated ${tokens - singleMessageLimit} tokens ...]\n\n` +
-      content.slice(-tailLength);
+    return (
+      text.slice(0, headLength) +
+      `\n\n[... truncated ${currentTokens - targetTokens} tokens ...]\n\n` +
+      text.slice(-tailLength)
+    );
+  }
 
+  private truncateLargeMessage(msg: ChatModelInputMessage): ChatModelInputMessage {
+    const singleMessageLimit = this.singleMessageLimit;
+
+    // Handle string content
     if (typeof msg.content === "string") {
+      const tokens = estimateTokens(msg.content);
+      if (tokens <= singleMessageLimit) return msg;
+
+      const truncated = this.truncateText(msg.content, tokens, singleMessageLimit);
       return { ...msg, content: truncated };
     }
 
+    // Handle array content (UnionContent[])
+    if (Array.isArray(msg.content)) {
+      // Truncate each text block individually if it exceeds the limit
+      const truncatedContent = msg.content.map((block) => {
+        // Keep non-text blocks unchanged
+        if (block.type !== "text" || typeof block.text !== "string") {
+          return block;
+        }
+
+        // Check if this text block needs truncation
+        const blockTokens = estimateTokens(block.text);
+        if (blockTokens <= singleMessageLimit) {
+          return block;
+        }
+
+        // Truncate this text block independently
+        const truncatedText = this.truncateText(block.text, blockTokens, singleMessageLimit);
+        return { ...block, text: truncatedText };
+      });
+
+      return { ...msg, content: truncatedContent };
+    }
+
+    // Unknown content type, return as-is
     return msg;
   }
 
@@ -1282,11 +1330,11 @@ ${"```"}
     return this.compactConfig?.keepRecentRatio ?? DEFAULT_KEEP_RECENT_RATIO;
   }
 
-  private get keepTokenBudget(): number {
+  private get keepRecentTokens(): number {
     return Math.floor(this.maxTokens * this.keepRecentRatio);
   }
 
   private get singleMessageLimit(): number {
-    return this.keepTokenBudget * 0.5;
+    return this.keepRecentTokens * 0.5;
   }
 }

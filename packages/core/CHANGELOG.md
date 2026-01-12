@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.72.0-beta.17](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.16...core-v1.72.0-beta.17) (2026-01-12)
+
+
+### Bug Fixes
+
+* **core:** optimize session compaction to reduce compression frequency ([#894](https://github.com/AIGNE-io/aigne-framework/issues/894)) ([bed53dc](https://github.com/AIGNE-io/aigne-framework/commit/bed53dc0311c69acd2c257fe93416d10ac1120e1))
+
+## [1.72.0-beta.16](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.15...core-v1.72.0-beta.16) (2026-01-12)
+
+
+### Bug Fixes
+
+* **afs:** show gitignored files with marker instead of filtering ([c2bdea1](https://github.com/AIGNE-io/aigne-framework/commit/c2bdea155f47c9420f2fe810cdfed79ef70ef899))
+* **core:** afs_read skill return pure text result first ([d42e67c](https://github.com/AIGNE-io/aigne-framework/commit/d42e67c33bb211202e9ba579afec2cf4abacbdb5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.8
+    * @aigne/afs-history bumped to 1.2.0-beta.9
+
 ## [1.72.0-beta.15](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.14...core-v1.72.0-beta.15) (2026-01-10)
 
 

@@ -1,6 +1,7 @@
 import type { AFSListOptions } from "@aigne/afs";
 import { z } from "zod";
 import type { AgentInvokeOptions, AgentOptions, Message } from "../../../agents/agent.js";
+import type { PromiseOrValue } from "../../../utils/type-utils.js";
 import { AFSSkillBase } from "./base.js";
 
 export interface AFSListInput extends Message {
@@ -83,10 +84,18 @@ Usage:
     });
   }
 
+  override formatOutput(output: AFSListOutput): PromiseOrValue<string> {
+    if (typeof output.data === "string") return output.data;
+    return super.formatOutput(output);
+  }
+
   async process(input: AFSListInput, _options: AgentInvokeOptions): Promise<AFSListOutput> {
     if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
-    const { data, message } = await this.afs.list(input.path, input.options);
+    const { data, message } = await this.afs.list(input.path, {
+      ...input.options,
+      format: "simple-list",
+    });
 
     return {
       status: "success",

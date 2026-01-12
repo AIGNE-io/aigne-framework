@@ -171,6 +171,7 @@ export interface AFSEntryMetadata extends Record<string, any> {
   };
   childrenCount?: number;
   childrenTruncated?: boolean;
+  gitignored?: boolean;
 }
 
 export interface AFSEntry<T = any> {

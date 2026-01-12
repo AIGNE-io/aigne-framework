@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.91.0-beta.23](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.22...aigne-framework-v1.91.0-beta.23) (2026-01-12)
+
+
+### Bug Fixes
+
+* **core:** optimize session compaction to reduce compression frequency ([#894](https://github.com/AIGNE-io/aigne-framework/issues/894)) ([bed53dc](https://github.com/AIGNE-io/aigne-framework/commit/bed53dc0311c69acd2c257fe93416d10ac1120e1))
+
+## [1.91.0-beta.22](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.21...aigne-framework-v1.91.0-beta.22) (2026-01-12)
+
+
+### Bug Fixes
+
+* **afs:** show gitignored files with marker instead of filtering ([c2bdea1](https://github.com/AIGNE-io/aigne-framework/commit/c2bdea155f47c9420f2fe810cdfed79ef70ef899))
+* **core:** afs_read skill return pure text result first ([d42e67c](https://github.com/AIGNE-io/aigne-framework/commit/d42e67c33bb211202e9ba579afec2cf4abacbdb5))
+
 ## [1.91.0-beta.21](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.20...aigne-framework-v1.91.0-beta.21) (2026-01-10)
 
 

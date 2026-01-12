@@ -1,13 +1,13 @@
 #!/usr/bin/env npx -y bun
 
-import os from 'os';
 import { AFS } from "@aigne/afs";
 import { AFSHistory } from "@aigne/afs-history";
 import { loadAIGNEWithCmdOptions, runWithAIGNE } from "@aigne/cli/utils/run-with-aigne.js";
-import { FunctionAgent } from "@aigne/core";
 import { Chart, Table } from "@aigne/ui-cli";
 import { UIAgent, UI_TOOL_NAME_PREFIX } from "@aigne/ui";
 import { render } from "ink";
+import { getSystemMetricsSkill } from "./skills/get-system-metrics.js";
+import { getStockPriceSkill } from "./skills/get-stock-price.js";
 
 // Load AIGNE with OpenAI configuration
 const aigne = await loadAIGNEWithCmdOptions();
@@ -19,39 +19,6 @@ const afs = new AFS().mount(
   })
 );
 
-// Create system metrics skill using FunctionAgent
-const getSystemMetricsSkill = FunctionAgent.from({
-  name: 'get_system_metrics',
-  description: 'Get current system resource usage including CPU count, memory usage, and system uptime',
-  process: async function (input: any) {
-    const cpus = os.cpus();
-    const totalMem = os.totalmem();
-    const freeMem = os.freemem();
-    const usedMem = totalMem - freeMem;
-
-    return {
-      cpu: {
-        count: cpus.length,
-        model: cpus[0]?.model || 'Unknown',
-        usage: Math.round(Math.random() * 100), // Simplified - real CPU usage requires more complex calculation
-      },
-      memory: {
-        total: Math.round(totalMem / 1024 / 1024 / 1024 * 100) / 100, // GB
-        used: Math.round(usedMem / 1024 / 1024 / 1024 * 100) / 100, // GB
-        free: Math.round(freeMem / 1024 / 1024 / 1024 * 100) / 100, // GB
-        usagePercent: Math.round((usedMem / totalMem) * 100 * 100) / 100,
-      },
-      uptime: {
-        seconds: os.uptime(),
-        hours: Math.round(os.uptime() / 3600 * 100) / 100,
-        days: Math.round(os.uptime() / 86400 * 100) / 100,
-      },
-      platform: os.platform(),
-      hostname: os.hostname(),
-    };
-  },
-});
-
 // Create UIAgent with Chart and Table components
 const agent = UIAgent.forCLI({
   name: "GenerativeUIDemo",
@@ -60,7 +27,7 @@ Your goal is to use a combination of tools and UI components to help the user ac
   inputKey: "message",
 
   components: [Chart, Table],
-  skills: [getSystemMetricsSkill],
+  skills: [getSystemMetricsSkill, getStockPriceSkill],
   afs,
 
   hooks: {
@@ -115,10 +82,17 @@ I can create charts and tables with real-world data! Try these examples:
   • "Display memory usage as a chart"
   • "Get system information and show it in a table"
 
+📈 Stock Prices:
+  • "Get the current price of Apple stock (AAPL)"
+  • "Show me TSLA stock information"
+  • "Compare AAPL, GOOGL, and MSFT prices in a table"
+  • "Create a chart showing the day high and low for NVDA"
+
 💡 Combined Examples:
   • "Generate data for top 10 economies and show both a table and GDP comparison chart"
   • "Compare life expectancy across continents in a table, then visualize as a bar chart"
   • "Get system metrics and create a bar chart of memory usage (total, used, free)"
+  • "Get AAPL stock price and create a bar chart comparing open, high, low, and current price"
 
 What data would you like to visualize?`,
   },

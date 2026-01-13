@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.19.6-beta.25](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.19.6-beta.24...example-mcp-puppeteer-v1.19.6-beta.25) (2026-01-13)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/cli bumped to 1.59.0-beta.24
+
 ## [1.19.6-beta.24](https://github.com/AIGNE-io/aigne-framework/compare/example-mcp-puppeteer-v1.19.6-beta.23...example-mcp-puppeteer-v1.19.6-beta.24) (2026-01-13)
 
 

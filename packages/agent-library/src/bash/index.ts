@@ -37,6 +37,12 @@ export interface BashAgentOptions extends AgentOptions<BashAgentInput, BashAgent
   timeout?: number; // Optional timeout for script execution in milliseconds
 
   /**
+   * Optional current working directory for script execution
+   * If not specified, inherits the parent process's working directory
+   */
+  cwd?: string;
+
+  /**
    * Optional permissions configuration for command execution control
    * Inspired by Claude Code's permission system
    */
@@ -103,6 +109,7 @@ export class BashAgent extends Agent<BashAgentInput, BashAgentOutput> {
         ),
         inputKey: optionalize(z.string().describe("The input key for the bash script.")),
         timeout: optionalize(z.number().describe("Timeout for script execution in milliseconds.")),
+        cwd: optionalize(z.string().describe("Current working directory for script execution.")),
         permissions: optionalize(
           camelizeSchema(
             z.object({
@@ -242,6 +249,7 @@ export class BashAgent extends Agent<BashAgentInput, BashAgentOutput> {
             ...options,
             stdio: "pipe",
             timeout,
+            cwd: this.options.cwd,
           });
 
           let stderr = "";

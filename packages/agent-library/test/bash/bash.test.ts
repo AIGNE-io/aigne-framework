@@ -1145,3 +1145,19 @@ test("checkPermission: should deny commands with redirection if base command den
 
   expect(await bashAgent.checkPermission("cat /etc/passwd > output.txt")).toBe("deny");
 });
+
+test("BashAgent should support cwd configuration", async () => {
+  const bashAgent = (await BashAgent.load({
+    filepath: "/path/to/agent.yaml",
+    parsed: {
+      sandbox: false,
+      timeout: 30e3,
+      cwd: "/custom/path",
+    },
+  })) as BashAgent;
+
+  expect(bashAgent.options).toMatchObject({
+    timeout: 30000,
+    cwd: "/custom/path",
+  });
+});

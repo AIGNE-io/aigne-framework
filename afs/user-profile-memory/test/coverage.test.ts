@@ -1,5 +1,5 @@
 import { test } from "bun:test";
-import { importAllModules } from "@aigne/test-utils/utils/import-all-modules.js";
+import { importAllModules } from "../../../scripts/test-utils/import-all-modules.ts";
 
 /**
  * This test ensures all source files are imported and tracked by the coverage reporter.
@@ -10,8 +10,5 @@ import { importAllModules } from "@aigne/test-utils/utils/import-all-modules.js"
  * See: https://www.charpeni.com/blog/bun-code-coverage-gap
  */
 test("import all modules for coverage tracking", async () => {
-  await importAllModules({
-    sourceDir: "./src",
-    verbose: false,
-  });
+  await importAllModules("./src");
 });

@@ -10,5 +10,5 @@ import { importAllModules } from "../../../scripts/test-utils/import-all-modules
  * See: https://www.charpeni.com/blog/bun-code-coverage-gap
  */
 test("import all modules for coverage tracking", async () => {
-  await importAllModules("../src");
+  await importAllModules("./src");
 });

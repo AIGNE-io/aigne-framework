@@ -1,6 +1,6 @@
 {
   "name": "@aigne/did-space-memory",
-  "version": "1.4.0-beta.16",
+  "version": "1.4.0-beta.17",
   "description": "DID Spaces memory for AIGNE framework",
   "publishConfig": {
     "access": "public"
@@ -43,8 +43,8 @@
   "dependencies": {
     "@aigne/core": "workspace:^",
     "@aigne/openai": "workspace:^",
-    "@blocklet/did-space-js": "^1.2.9",
-    "@did-space/core": "^1.2.9",
+    "@blocklet/did-space-js": "^1.2.15",
+    "@did-space/core": "^1.2.15",
     "yaml": "^2.8.1",
     "zod": "^3.25.67"
   },

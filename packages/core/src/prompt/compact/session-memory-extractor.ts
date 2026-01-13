@@ -149,6 +149,7 @@ export class AISessionMemoryExtractor extends AIAgent<MemoryExtractorInput, Memo
         ),
       }),
       instructions: EXTRACTOR_INSTRUCTIONS,
+      taskRenderMode: "hide",
       ...omitBy(options ?? {}, (v) => isNil(v)),
       session: {
         mode: "disabled",

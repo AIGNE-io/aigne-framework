@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.14.16-beta.19](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.16-beta.18...anthropic-v0.14.16-beta.19) (2026-01-13)
+
+
+### Bug Fixes
+
+* **anthropic:** simplify structured output with output tool pattern ([#899](https://github.com/AIGNE-io/aigne-framework/issues/899)) ([a6033c8](https://github.com/AIGNE-io/aigne-framework/commit/a6033c8a9ccf5e8ff6bcb14bc68c43a990ce2fa2))
+* **anthropic:** update structured output tool name to generate_json ([897e94d](https://github.com/AIGNE-io/aigne-framework/commit/897e94d82a1bbfa46ae13038a58a65cba6a3b259))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.18
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.18
+
 ## [0.14.16-beta.18](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.16-beta.17...anthropic-v0.14.16-beta.18) (2026-01-12)
 
 

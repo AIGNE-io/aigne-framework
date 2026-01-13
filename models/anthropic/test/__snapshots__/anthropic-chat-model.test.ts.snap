@@ -34,7 +34,7 @@ exports[`AnthropicChatModel.invoke 2`] = `
     "cacheCreationInputTokens": 0,
     "cacheReadInputTokens": 0,
     "inputTokens": 486,
-    "outputTokens": 20,
+    "outputTokens": 30,
   },
 }
 `;

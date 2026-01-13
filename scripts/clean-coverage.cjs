@@ -35,6 +35,7 @@ const EXCLUDE_PATTERNS = [
   /(^|\/)test-agents\//,
   /(^|\/)__tests__\//,
   /(^|\/)__mocks__\//,
+  /(^|\/)scripts\//,
   /\.test\.(ts|tsx|js|jsx|mjs|cjs)$/,
   /\.spec\.(ts|tsx|js|jsx|mjs|cjs)$/,
 

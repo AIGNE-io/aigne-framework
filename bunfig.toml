@@ -22,6 +22,7 @@ coveragePathIgnorePatterns = [
   "**/test-agents/**",
   "**/__tests__/**",
   "**/__mocks__/**",
+  "**/scripts/**",
   "**/*.test.*",
   "**/*.spec.*",
 

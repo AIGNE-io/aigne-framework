@@ -31,7 +31,6 @@ import {
   withAgentInputSchema,
   withRunAgentCommonOptions,
 } from "./yargs.js";
-import { v7 } from "@aigne/uuid";
 
 export async function parseAgentInputByCommander(
   agent: Agent,
@@ -129,7 +128,6 @@ export async function runWithAIGNE(
             ...options,
             outputKey: outputKey || options.outputKey,
             chatLoopOptions,
-            sessionId: chatLoopOptions?.sessionId || v7(),
             input,
             sessionId: chatLoopOptions?.sessionId || v7(),
             userId: DEFAULT_USER_ID,

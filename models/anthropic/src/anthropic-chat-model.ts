@@ -1,21 +1,16 @@
 import {
   type AgentInvokeOptions,
+  type AgentProcessAsyncGenerator,
   type AgentProcessResult,
-  type AgentResponse,
-  type AgentResponseChunk,
   ChatModel,
   type ChatModelInput,
   type ChatModelInputMessageContent,
   type ChatModelOptions,
   type ChatModelOutput,
+  type ChatModelOutputToolCall,
   type ChatModelOutputUsage,
-  type Message,
-  safeParseJSON,
 } from "@aigne/core";
 import { parseJSON } from "@aigne/core/utils/json-schema.js";
-import { logger } from "@aigne/core/utils/logger.js";
-import { mergeUsage } from "@aigne/core/utils/model-utils.js";
-import { agentResponseStreamToObject } from "@aigne/core/utils/stream-utils.js";
 import {
   checkArguments,
   isEmpty,
@@ -34,11 +29,11 @@ import type {
   Tool,
   ToolChoice,
   ToolUnion,
-  ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources/index.js";
 import { z } from "zod";
 
 const CHAT_MODEL_CLAUDE_DEFAULT_MODEL = "claude-3-7-sonnet-latest";
+const OUTPUT_FUNCTION_NAME = "output";
 
 /**
  * Configuration options for Claude Chat Model
@@ -140,6 +135,23 @@ export class AnthropicChatModel extends ChatModel {
     return (await this.client.messages.countTokens(omit(request, "max_tokens"))).input_tokens;
   }
 
+  private async getMessageCreateParams(
+    input: ChatModelInput,
+  ): Promise<Anthropic.Messages.MessageCreateParams> {
+    const { modelOptions = {} } = input;
+    const model = modelOptions.model || this.credential.model;
+    const disableParallelToolUse = modelOptions.parallelToolCalls === false;
+
+    return {
+      model,
+      temperature: modelOptions.temperature,
+      top_p: modelOptions.topP,
+      max_tokens: this.getMaxTokens(model),
+      ...(await convertMessages(input)),
+      ...convertTools({ ...input, disableParallelToolUse }),
+    };
+  }
+
   private getMaxTokens(model: string): number {
     const matchers = [
       [/claude-opus-4-/, 32000],
@@ -165,219 +177,87 @@ export class AnthropicChatModel extends ChatModel {
    */
   override process(
     input: ChatModelInput,
-    options: AgentInvokeOptions,
-  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
-    return this._process(input, options);
-  }
-
-  private async getMessageCreateParams(
-    input: ChatModelInput,
-  ): Promise<Anthropic.Messages.MessageCreateParams> {
-    const { modelOptions = {} } = input;
-    const model = modelOptions.model || this.credential.model;
-
-    const disableParallelToolUse = modelOptions.parallelToolCalls === false;
-
-    const body: Anthropic.Messages.MessageCreateParams = {
-      model,
-      temperature: modelOptions.temperature,
-      top_p: modelOptions.topP,
-      max_tokens: this.getMaxTokens(model),
-      ...(await convertMessages(input)),
-      ...convertTools({ ...input, disableParallelToolUse }),
-    };
-
-    return body;
-  }
-
-  private async _process(
-    input: ChatModelInput,
     _options: AgentInvokeOptions,
-  ): Promise<AgentResponse<ChatModelOutput>> {
+  ): PromiseOrValue<AgentProcessResult<ChatModelOutput>> {
+    return this.processInput(input);
+  }
+
+  private async *processInput(input: ChatModelInput): AgentProcessAsyncGenerator<ChatModelOutput> {
     const body = await this.getMessageCreateParams(input);
+    const stream = this.client.messages.stream({ ...body, stream: true });
 
-    // Claude does not support json_schema response and tool calls in the same request,
-    // so we need to handle the case where tools are not used and responseFormat is json
-    if (!input.tools?.length && input.responseFormat?.type === "json_schema") {
-      return this.requestStructuredOutput(body, input.responseFormat);
+    const toolCalls: (ChatModelOutputToolCall & { args: string })[] = [];
+    let usage: ChatModelOutputUsage | undefined;
+    let json: unknown;
+
+    for await (const chunk of stream) {
+      if (chunk.type === "message_start") {
+        yield { delta: { json: { model: chunk.message.model } } };
+
+        const {
+          input_tokens,
+          output_tokens,
+          cache_creation_input_tokens,
+          cache_read_input_tokens,
+        } = chunk.message.usage;
+        usage = {
+          inputTokens: input_tokens,
+          outputTokens: output_tokens,
+          cacheCreationInputTokens: cache_creation_input_tokens ?? undefined,
+          cacheReadInputTokens: cache_read_input_tokens ?? undefined,
+        };
+      }
+
+      if (chunk.type === "message_delta" && usage) {
+        usage.outputTokens = chunk.usage.output_tokens;
+      }
+
+      if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
+        yield { delta: { text: { text: chunk.delta.text } } };
+      }
+
+      if (chunk.type === "content_block_start" && chunk.content_block.type === "tool_use") {
+        toolCalls[chunk.index] = {
+          type: "function",
+          id: chunk.content_block.id,
+          function: { name: chunk.content_block.name, arguments: {} },
+          args: "",
+        };
+      }
+
+      if (chunk.type === "content_block_delta" && chunk.delta.type === "input_json_delta") {
+        const call = toolCalls[chunk.index];
+        if (!call) throw new Error("Tool call not found");
+        call.args += chunk.delta.partial_json;
+      }
     }
 
-    const stream = this.client.messages.stream({
-      ...body,
-      stream: true,
-    });
-
-    if (input.responseFormat?.type !== "json_schema") {
-      return this.extractResultFromAnthropicStream(stream, true);
-    }
-
-    const result = await this.extractResultFromAnthropicStream(stream);
-    // Just return the result if it has tool calls
-    if (result.toolCalls?.length) return result;
-
-    // Try to parse the text response as JSON
-    // If it matches the json_schema, return it as json
-    const json = safeParseJSON(result.text || "");
-    const validated = this.validateJsonSchema(input.responseFormat.jsonSchema.schema, json, {
-      safe: true,
-    });
-    if (validated.success) {
-      return { ...result, json: validated.data, text: undefined };
-    }
-    logger.warn(
-      `AnthropicChatModel: Text response does not match JSON schema, trying to use tool to extract json `,
-      { text: result.text },
-    );
-
-    // Claude doesn't support json_schema response and tool calls in the same request,
-    // so we need to make a separate request for json_schema response when the tool calls is empty
-    const output = await this.requestStructuredOutput(body, input.responseFormat);
-
-    return {
-      ...output,
-      // merge usage from both requests
-      usage: mergeUsage(result.usage, output.usage),
-    };
-  }
-  private async extractResultFromAnthropicStream(
-    stream: ReturnType<Anthropic["messages"]["stream"]>,
-    streaming?: false,
-  ): Promise<ChatModelOutput>;
-  private async extractResultFromAnthropicStream(
-    stream: ReturnType<Anthropic["messages"]["stream"]>,
-    streaming: true,
-  ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>>>;
-  private async extractResultFromAnthropicStream(
-    stream: ReturnType<Anthropic["messages"]["stream"]>,
-    streaming?: boolean,
-  ): Promise<ReadableStream<AgentResponseChunk<ChatModelOutput>> | ChatModelOutput> {
-    const result = new ReadableStream<AgentResponseChunk<ChatModelOutput>>({
-      async start(controller) {
-        try {
-          const toolCalls: (NonNullable<ChatModelOutput["toolCalls"]>[number] & {
-            args: string;
-          })[] = [];
-          let usage: ChatModelOutputUsage | undefined;
-          let model: string | undefined;
-
-          for await (const chunk of stream) {
-            if (chunk.type === "message_start") {
-              if (!model) {
-                model = chunk.message.model;
-                controller.enqueue({ delta: { json: { model } } });
-              }
-              const {
-                input_tokens,
-                output_tokens,
-                cache_creation_input_tokens,
-                cache_read_input_tokens,
-              } = chunk.message.usage;
-
-              usage = {
-                inputTokens: input_tokens,
-                outputTokens: output_tokens,
-                cacheCreationInputTokens: cache_creation_input_tokens ?? undefined,
-                cacheReadInputTokens: cache_read_input_tokens ?? undefined,
-              };
-            }
-
-            if (chunk.type === "message_delta" && usage) {
-              usage.outputTokens = chunk.usage.output_tokens;
-            }
-
-            // handle streaming text
-            if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
-              controller.enqueue({
-                delta: { text: { text: chunk.delta.text } },
-              });
-            }
-
-            if (chunk.type === "content_block_start" && chunk.content_block.type === "tool_use") {
-              toolCalls[chunk.index] = {
-                type: "function",
-                id: chunk.content_block.id,
-                function: {
-                  name: chunk.content_block.name,
-                  arguments: {},
-                },
-                args: "",
-              };
-            }
-
-            if (chunk.type === "content_block_delta" && chunk.delta.type === "input_json_delta") {
-              const call = toolCalls[chunk.index];
-              if (!call) throw new Error("Tool call not found");
-              call.args += chunk.delta.partial_json;
-            }
-          }
-
-          controller.enqueue({ delta: { json: { usage } } });
-
-          if (toolCalls.length) {
-            controller.enqueue({
-              delta: {
-                json: {
-                  toolCalls: toolCalls
-                    .map(({ args, ...c }) => ({
-                      ...c,
-                      function: {
-                        ...c.function,
-                        // NOTE: claude may return a blank string for empty object (the tool's input schema is a empty object)
-                        arguments: args.trim() ? parseJSON(args) : {},
-                      },
-                    }))
-                    .filter(isNonNullable),
-                },
-              },
-            });
-          }
-          controller.close();
-        } catch (error) {
-          controller.error(error);
-        }
-      },
-    });
-
-    return streaming ? result : await agentResponseStreamToObject(result);
-  }
-
-  private async requestStructuredOutput(
-    body: Anthropic.Messages.MessageCreateParams,
-    responseFormat: ChatModelInput["responseFormat"],
-  ): Promise<ChatModelOutput> {
-    if (responseFormat?.type !== "json_schema") {
-      throw new Error("Expected json_schema response format");
-    }
-
-    const result = await this.client.messages.create({
-      ...body,
-      tools: [
-        {
-          name: "generate_json",
-          description: "Generate a json result by given context",
-          input_schema: responseFormat.jsonSchema.schema as Anthropic.Messages.Tool.InputSchema,
+    // Separate output tool from business tool calls
+    const outputToolCall = toolCalls.find((c) => c.function.name === OUTPUT_FUNCTION_NAME);
+    const businessToolCalls = toolCalls
+      .filter((c) => c.function.name !== OUTPUT_FUNCTION_NAME)
+      .map(({ args, ...c }) => ({
+        ...c,
+        function: {
+          ...c.function,
+          arguments: args.trim() ? parseJSON(args) : {},
         },
-      ],
-      tool_choice: {
-        type: "tool",
-        name: "generate_json",
-        disable_parallel_tool_use: true,
-      },
-      stream: false,
-    });
+      }))
+      .filter(isNonNullable);
 
-    const jsonTool = result.content.find<ToolUseBlockParam>(
-      (i): i is ToolUseBlockParam => i.type === "tool_use" && i.name === "generate_json",
-    );
-    if (!jsonTool) throw new Error("Json tool not found");
-    return {
-      json: jsonTool.input as Message,
-      model: result.model,
-      usage: {
-        inputTokens: result.usage.input_tokens,
-        outputTokens: result.usage.output_tokens,
-      },
-    };
+    if (outputToolCall) {
+      json = outputToolCall.args.trim() ? parseJSON(outputToolCall.args) : {};
+    }
+
+    if (businessToolCalls.length) {
+      yield { delta: { json: { toolCalls: businessToolCalls } } };
+    }
+
+    if (json !== undefined) {
+      yield { delta: { json: { json: json as object } } };
+    }
+
+    yield { delta: { json: { usage } } };
   }
 }
 
@@ -403,12 +283,7 @@ function parseCacheConfig(modelOptions?: ChatModelInput["modelOptions"]) {
   };
 }
 
-async function convertMessages({
-  messages,
-  responseFormat,
-  tools,
-  modelOptions,
-}: ChatModelInput): Promise<{
+async function convertMessages({ messages, modelOptions }: ChatModelInput): Promise<{
   messages: MessageParam[];
   system?: Anthropic.Messages.TextBlockParam[];
 }> {
@@ -474,15 +349,6 @@ async function convertMessages({
         throw new Error("Agent message must have content or toolCalls");
       }
     }
-  }
-
-  // If there are tools and responseFormat is json_schema, we need to add a system message
-  // to inform the model about the expected json schema, then trying to parse the response as json
-  if (tools?.length && responseFormat?.type === "json_schema") {
-    systemBlocks.push({
-      type: "text",
-      text: `You should provide a json response with schema: ${JSON.stringify(responseFormat.jsonSchema.schema)}`,
-    });
   }
 
   // Apply cache_control to the last system block if auto strategy is enabled
@@ -584,63 +450,75 @@ function convertTools({
   toolChoice,
   disableParallelToolUse,
   modelOptions,
+  responseFormat,
 }: ChatModelInput & {
   disableParallelToolUse?: boolean;
 }): { tools?: ToolUnion[]; tool_choice?: ToolChoice } | undefined {
-  let choice: ToolChoice | undefined;
-  if (typeof toolChoice === "object" && "type" in toolChoice && toolChoice.type === "function") {
-    choice = {
-      type: "tool",
-      name: toolChoice.function.name,
-      disable_parallel_tool_use: disableParallelToolUse,
-    };
-  } else if (toolChoice === "required") {
-    choice = { type: "any", disable_parallel_tool_use: disableParallelToolUse };
-  } else if (toolChoice === "auto") {
-    choice = {
-      type: "auto",
-      disable_parallel_tool_use: disableParallelToolUse,
-    };
-  } else if (toolChoice === "none") {
-    choice = { type: "none" };
-  }
-
   // Extract cache configuration with defaults
   const { shouldCache, ttl, strategy, autoBreakpoints } = parseCacheConfig(modelOptions);
   const shouldCacheTools = shouldCache && strategy === "auto" && autoBreakpoints.tools;
 
+  // Convert business tools
+  const convertedTools: Tool[] = (tools ?? []).map((i) => {
+    const tool: Tool = {
+      name: i.function.name,
+      description: i.function.description,
+      input_schema: isEmpty(i.function.parameters)
+        ? { type: "object" }
+        : (i.function.parameters as Anthropic.Messages.Tool.InputSchema),
+    };
+
+    // Manual cache mode: apply tool-specific cacheControl
+    if (shouldCache && strategy === "manual" && i.cacheControl) {
+      tool.cache_control = {
+        type: i.cacheControl.type,
+        ...(i.cacheControl.ttl && { ttl: i.cacheControl.ttl }),
+      };
+    }
+
+    return tool;
+  });
+
+  // Add output tool for structured output
+  if (responseFormat?.type === "json_schema") {
+    convertedTools.push({
+      name: OUTPUT_FUNCTION_NAME,
+      description: "Output the final response as structured JSON",
+      input_schema: responseFormat.jsonSchema.schema as Anthropic.Messages.Tool.InputSchema,
+    });
+  }
+
+  // Auto cache mode: add cache_control to the last tool
+  if (shouldCacheTools && convertedTools.length) {
+    const lastTool = convertedTools[convertedTools.length - 1];
+    if (lastTool) {
+      lastTool.cache_control = { type: "ephemeral", ...(ttl === "1h" && { ttl: "1h" }) };
+    }
+  }
+
+  // Determine tool choice
+  const choice: ToolChoice | undefined =
+    responseFormat?.type === "json_schema"
+      ? // For structured output: force output tool if no business tools, otherwise let model choose
+        tools?.length
+        ? { type: "any", disable_parallel_tool_use: disableParallelToolUse }
+        : { type: "tool", name: OUTPUT_FUNCTION_NAME, disable_parallel_tool_use: true }
+      : typeof toolChoice === "object" && "type" in toolChoice && toolChoice.type === "function"
+        ? {
+            type: "tool",
+            name: toolChoice.function.name,
+            disable_parallel_tool_use: disableParallelToolUse,
+          }
+        : toolChoice === "required"
+          ? { type: "any", disable_parallel_tool_use: disableParallelToolUse }
+          : toolChoice === "auto"
+            ? { type: "auto", disable_parallel_tool_use: disableParallelToolUse }
+            : toolChoice === "none"
+              ? { type: "none" }
+              : undefined;
+
   return {
-    tools: tools?.length
-      ? tools.map<Tool>((i, index, arr) => {
-          const tool: Tool = {
-            name: i.function.name,
-            description: i.function.description,
-            input_schema: isEmpty(i.function.parameters)
-              ? { type: "object" }
-              : (i.function.parameters as Anthropic.Messages.Tool.InputSchema),
-          };
-
-          // Auto mode: add cache_control to the last tool
-          if (shouldCacheTools && index === arr.length - 1) {
-            tool.cache_control = { type: "ephemeral" };
-            if (ttl === "1h") {
-              tool.cache_control = { type: "ephemeral", ttl: "1h" };
-            }
-          }
-          // Manual mode: use tool-specific cacheControl if provided
-          else if (shouldCache && strategy === "manual") {
-            const toolWithCache = i;
-            if (toolWithCache.cacheControl) {
-              tool.cache_control = {
-                type: toolWithCache.cacheControl.type,
-                ...(toolWithCache.cacheControl.ttl && { ttl: toolWithCache.cacheControl.ttl }),
-              };
-            }
-          }
-
-          return tool;
-        })
-      : undefined,
+    tools: convertedTools.length ? convertedTools : undefined,
     tool_choice: choice,
   };
 }

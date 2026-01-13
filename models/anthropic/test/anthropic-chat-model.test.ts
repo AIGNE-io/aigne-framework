@@ -1,5 +1,4 @@
 import { expect, spyOn, test } from "bun:test";
-import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { AnthropicChatModel } from "@aigne/anthropic";
 import { isAgentResponseDelta, textDelta } from "@aigne/core";
@@ -125,7 +124,7 @@ test("AnthropicChatModel.invoke", async () => {
     )
     .mockReturnValueOnce(
       createMockEventStream({
-        path: join(import.meta.dirname, "anthropic-streaming-response-2.txt"),
+        path: join(import.meta.dirname, "anthropic-streaming-response-output-tool.txt"),
       }),
     );
 
@@ -283,15 +282,15 @@ test("AnthropicChatModel.invoke without streaming", async () => {
   expect(result).toMatchSnapshot();
 });
 
-test("AnthropicChatModel should use tool to get json output directly if no tools input", async () => {
+test("AnthropicChatModel should use output tool for json_schema without tools input", async () => {
   const model = new AnthropicChatModel({
     apiKey: "YOUR_API_KEY",
   });
 
-  spyOn(model.client.messages, "create").mockReturnValueOnce(
-    JSON.parse(
-      await readFile(join(import.meta.dirname, "anthropic-structured-response-3.json"), "utf8"),
-    ),
+  spyOn(model.client.messages, "stream").mockReturnValueOnce(
+    createMockEventStream({
+      path: join(import.meta.dirname, "anthropic-streaming-response-output-tool.txt"),
+    }),
   );
 
   const result = await model.invoke({
@@ -337,14 +336,14 @@ What is the weather in New York?
   );
 });
 
-test("AnthropicChatModel should try parse text as json if there are both tools and json response format", async () => {
+test("AnthropicChatModel should use output tool for structured output when tools are present", async () => {
   const model = new AnthropicChatModel({
     apiKey: "YOUR_API_KEY",
   });
 
   spyOn(model.client.messages, "stream").mockReturnValueOnce(
     createMockEventStream({
-      path: join(import.meta.dirname, "anthropic-streaming-response-2.txt"),
+      path: join(import.meta.dirname, "anthropic-streaming-response-output-tool.txt"),
     }),
   );
 

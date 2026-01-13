@@ -71,5 +71,5 @@ function isResourceTemplate(
     | ListResourcesResult["resources"][number]
     | ListResourceTemplatesResult["resourceTemplates"][number],
 ): resource is ListResourceTemplatesResult["resourceTemplates"][number] {
-  return typeof resource.uriTemplate === "string";
+  return "uriTemplate" in resource && typeof resource.uriTemplate === "string";
 }

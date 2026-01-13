@@ -5,6 +5,7 @@ import { joinURL } from "ufo";
 import { stringify } from "yaml";
 import type { AgentInvokeOptions } from "../agents/agent.js";
 import type { ChatModelInputMessage } from "../agents/chat-model.js";
+import { logger } from "../utils/logger.js";
 import { estimateTokens } from "../utils/token-estimator.js";
 import { isNonNullable } from "../utils/type-utils.js";
 import {
@@ -946,35 +947,32 @@ ${"```"}
   async updateSessionMemory(options: AgentInvokeOptions): Promise<void> {
     await this.ensureInitialized();
 
-    // If session memory update is already in progress, wait for it to complete
-    if (this.sessionMemoryUpdatePromise) {
-      return this.sessionMemoryUpdatePromise;
-    }
-
-    // Start new session memory update task
-    this.sessionMemoryUpdatePromise = this.doUpdateSessionMemory(options).finally(() => {
-      this.sessionMemoryUpdatePromise = undefined;
-      // After session memory update completes, potentially trigger user memory consolidation
-      this.maybeAutoUpdateUserMemory(options);
-    });
+    this.sessionMemoryUpdatePromise ??= this.doUpdateSessionMemory(options)
+      .then(() => {
+        // After session memory update succeeds, potentially trigger user memory consolidation
+        this.maybeAutoUpdateUserMemory(options).catch((err) => {
+          logger.error("User memory update failed:", err);
+        });
+      })
+      .finally(() => {
+        this.sessionMemoryUpdatePromise = undefined;
+      });
 
     return this.sessionMemoryUpdatePromise;
   }
 
   private async maybeAutoUpdateSessionMemory(options: AgentInvokeOptions): Promise<void> {
-    if (this.sessionMemoryUpdatePromise) await this.sessionMemoryUpdatePromise;
-
     // Check if memory extraction is enabled (requires AFS history module)
     if (!this.isMemoryEnabled) return;
-
-    if (!this.sessionMemoryConfig) return;
 
     // Check if mode is disabled
     const mode = this.sessionMemoryConfig.mode ?? DEFAULT_SESSION_MEMORY_MODE;
     if (mode === "disabled") return;
 
     // Trigger session memory update
-    this.updateSessionMemory(options);
+    this.updateSessionMemory(options).catch((err) => {
+      logger.error("Session memory update failed:", err);
+    });
 
     const isAsync = this.sessionMemoryConfig.async ?? DEFAULT_SESSION_MEMORY_ASYNC;
 
@@ -982,22 +980,17 @@ ${"```"}
   }
 
   private async maybeAutoUpdateUserMemory(options: AgentInvokeOptions): Promise<void> {
-    if (this.userMemoryUpdatePromise) await this.userMemoryUpdatePromise;
-
     // Check if memory extraction is enabled (requires AFS history module)
-    if (!this.isMemoryEnabled) return;
-
-    if (!this.userMemoryConfig || !this.userId) return;
+    if (!this.isMemoryEnabled || !this.userId) return;
 
     // Check if mode is disabled
     const mode = this.userMemoryConfig.mode ?? DEFAULT_USER_MEMORY_MODE;
     if (mode === "disabled") return;
 
-    // Wait for session memory update to complete first
-    if (this.sessionMemoryUpdatePromise) await this.sessionMemoryUpdatePromise;
-
     // Trigger user memory consolidation
-    this.updateUserMemory(options);
+    this.updateUserMemory(options).catch((err) => {
+      logger.error("User memory update failed:", err);
+    });
 
     const isAsync = this.userMemoryConfig.async ?? DEFAULT_USER_MEMORY_ASYNC;
 
@@ -1127,13 +1120,8 @@ ${"```"}
   async updateUserMemory(options: AgentInvokeOptions): Promise<void> {
     await this.ensureInitialized();
 
-    // If user memory update is already in progress, wait for it to complete
-    if (this.userMemoryUpdatePromise) {
-      return this.userMemoryUpdatePromise;
-    }
-
     // Start new user memory update task
-    this.userMemoryUpdatePromise = this.doUpdateUserMemory(options).finally(() => {
+    this.userMemoryUpdatePromise ??= this.doUpdateUserMemory(options).finally(() => {
       this.userMemoryUpdatePromise = undefined;
     });
 

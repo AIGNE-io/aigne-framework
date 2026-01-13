@@ -13,9 +13,11 @@ import {
 } from "@aigne/core";
 import { logger } from "@aigne/core/utils/logger.js";
 import { isEmpty, isNil, omitBy, type PromiseOrValue, pick } from "@aigne/core/utils/type-utils.js";
+import { v7 } from "@aigne/uuid";
 import chalk from "chalk";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import { DEFAULT_USER_ID } from "../constants.js";
 import { TerminalTracer } from "../tracer/terminal.js";
 import { loadAIGNE } from "./load-aigne.js";
 import {
@@ -127,6 +129,8 @@ export async function runWithAIGNE(
             outputKey: outputKey || options.outputKey,
             chatLoopOptions,
             input,
+            sessionId: chatLoopOptions?.sessionId || v7(),
+            userId: DEFAULT_USER_ID,
           });
         } finally {
           await aigne.shutdown();

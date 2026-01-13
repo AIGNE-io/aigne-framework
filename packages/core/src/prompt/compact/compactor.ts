@@ -45,6 +45,7 @@ export class AISessionCompactor extends AIAgent<CompactorInput, CompactContent> 
         summary: z.string().describe("A comprehensive summary of the conversation history"),
       }),
       instructions: COMPACTOR_INSTRUCTIONS,
+      taskRenderMode: "hide",
       ...omitBy(options ?? {}, (v) => isNil(v)),
       session: {
         mode: "disabled",

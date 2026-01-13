@@ -186,7 +186,7 @@ export class AnthropicChatModel extends ChatModel {
     const body = await this.getMessageCreateParams(input);
     const stream = this.client.messages.stream({ ...body, stream: true });
 
-    const toolCalls: (ChatModelOutputToolCall & { args: string })[] = [];
+    const blocks: ((ChatModelOutputToolCall & { args: string }) | null)[] = [];
     let usage: ChatModelOutputUsage | undefined;
     let json: unknown;
 
@@ -217,7 +217,7 @@ export class AnthropicChatModel extends ChatModel {
       }
 
       if (chunk.type === "content_block_start" && chunk.content_block.type === "tool_use") {
-        toolCalls[chunk.index] = {
+        blocks[chunk.index] = {
           type: "function",
           id: chunk.content_block.id,
           function: { name: chunk.content_block.name, arguments: {} },
@@ -226,11 +226,13 @@ export class AnthropicChatModel extends ChatModel {
       }
 
       if (chunk.type === "content_block_delta" && chunk.delta.type === "input_json_delta") {
-        const call = toolCalls[chunk.index];
+        const call = blocks[chunk.index];
         if (!call) throw new Error("Tool call not found");
         call.args += chunk.delta.partial_json;
       }
     }
+
+    const toolCalls = blocks.filter(isNonNullable);
 
     // Separate output tool from business tool calls
     const outputToolCall = toolCalls.find((c) => c.function.name === OUTPUT_FUNCTION_NAME);

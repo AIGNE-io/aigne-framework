@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.91.0-beta.25](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.24...aigne-framework-v1.91.0-beta.25) (2026-01-13)
+
+
+### Bug Fixes
+
+* **anthropic:** handle null content blocks in streaming responses ([9fefd6f](https://github.com/AIGNE-io/aigne-framework/commit/9fefd6fcca58bb8a59616560f86a04a0015f6aca))
+
 ## [1.91.0-beta.24](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.23...aigne-framework-v1.91.0-beta.24) (2026-01-13)
 
 

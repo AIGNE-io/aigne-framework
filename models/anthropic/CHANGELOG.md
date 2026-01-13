@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.16-beta.20](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.16-beta.19...anthropic-v0.14.16-beta.20) (2026-01-13)
+
+
+### Bug Fixes
+
+* **anthropic:** handle null content blocks in streaming responses ([9fefd6f](https://github.com/AIGNE-io/aigne-framework/commit/9fefd6fcca58bb8a59616560f86a04a0015f6aca))
+
 ## [0.14.16-beta.19](https://github.com/AIGNE-io/aigne-framework/compare/anthropic-v0.14.16-beta.18...anthropic-v0.14.16-beta.19) (2026-01-13)
 
 

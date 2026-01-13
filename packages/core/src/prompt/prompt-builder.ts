@@ -79,9 +79,9 @@ export class PromptBuilder {
           else if (i.content.type === "resource") {
             const { resource } = i.content;
 
-            if (typeof resource.text === "string") {
+            if ("text" in resource && typeof resource.text === "string") {
               content = resource.text;
-            } else if (typeof resource.blob === "string") {
+            } else if ("blob" in resource && typeof resource.blob === "string") {
               content = [{ type: "url", url: resource.blob }];
             }
           } else if (i.content.type === "image") {

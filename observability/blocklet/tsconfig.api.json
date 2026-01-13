@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "api/dist",
     "noEmit": false,
+    "allowImportingTsExtensions": false,
     "noEmitOnError": true
   },
   "exclude": ["node_modules", "lib", "dist"],

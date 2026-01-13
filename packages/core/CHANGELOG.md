@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.72.0-beta.18](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.17...core-v1.72.0-beta.18) (2026-01-13)
+
+
+### Bug Fixes
+
+* bump deps to latest and fix build error ([#897](https://github.com/AIGNE-io/aigne-framework/issues/897)) ([4059e79](https://github.com/AIGNE-io/aigne-framework/commit/4059e790ae63b9e4ebd66487665014b0cd7ce6ec))
+* **core:** make async memory updates non-blocking ([#900](https://github.com/AIGNE-io/aigne-framework/issues/900)) ([314f2c3](https://github.com/AIGNE-io/aigne-framework/commit/314f2c35d8baa88b600cc4de3f5983fef03a804c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.14-beta.3
+
 ## [1.72.0-beta.17](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.16...core-v1.72.0-beta.17) (2026-01-12)
 
 

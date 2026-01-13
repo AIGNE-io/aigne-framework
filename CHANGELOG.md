@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.91.0-beta.24](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.23...aigne-framework-v1.91.0-beta.24) (2026-01-13)
+
+
+### Bug Fixes
+
+* **agent-library:** add cwd option for bash agent ([#901](https://github.com/AIGNE-io/aigne-framework/issues/901)) ([d8a036b](https://github.com/AIGNE-io/aigne-framework/commit/d8a036b84ee97f80de747c141dae15a0d96bf4f5))
+* **anthropic:** simplify structured output with output tool pattern ([#899](https://github.com/AIGNE-io/aigne-framework/issues/899)) ([a6033c8](https://github.com/AIGNE-io/aigne-framework/commit/a6033c8a9ccf5e8ff6bcb14bc68c43a990ce2fa2))
+* **anthropic:** update structured output tool name to generate_json ([897e94d](https://github.com/AIGNE-io/aigne-framework/commit/897e94d82a1bbfa46ae13038a58a65cba6a3b259))
+* bump deps to latest and fix build error ([#897](https://github.com/AIGNE-io/aigne-framework/issues/897)) ([4059e79](https://github.com/AIGNE-io/aigne-framework/commit/4059e790ae63b9e4ebd66487665014b0cd7ce6ec))
+* **core:** make async memory updates non-blocking ([#900](https://github.com/AIGNE-io/aigne-framework/issues/900)) ([314f2c3](https://github.com/AIGNE-io/aigne-framework/commit/314f2c35d8baa88b600cc4de3f5983fef03a804c))
+
 ## [1.91.0-beta.23](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.22...aigne-framework-v1.91.0-beta.23) (2026-01-12)
 
 

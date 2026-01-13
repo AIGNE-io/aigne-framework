@@ -7,6 +7,21 @@
     * @aigne/core bumped to 1.22.0
     * @aigne/openai bumped to 0.3.4
 
+## [1.24.0-beta.20](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.19...agent-library-v1.24.0-beta.20) (2026-01-13)
+
+
+### Bug Fixes
+
+* **agent-library:** add cwd option for bash agent ([#901](https://github.com/AIGNE-io/aigne-framework/issues/901)) ([d8a036b](https://github.com/AIGNE-io/aigne-framework/commit/d8a036b84ee97f80de747c141dae15a0d96bf4f5))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.18
+    * @aigne/openai bumped to 0.16.16-beta.18
+
 ## [1.24.0-beta.19](https://github.com/AIGNE-io/aigne-framework/compare/agent-library-v1.24.0-beta.18...agent-library-v1.24.0-beta.19) (2026-01-12)
 
 

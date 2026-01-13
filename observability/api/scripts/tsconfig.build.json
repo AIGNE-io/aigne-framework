@@ -4,6 +4,7 @@
     "composite": true,
     "rootDir": "../api",
     "noEmit": false,
+    "allowImportingTsExtensions": false,
     "paths": {}
   },
   "include": ["../api/**/*.ts", "../api/**/*.json"],

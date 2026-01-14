@@ -62,7 +62,7 @@ export class AFSHistory implements AFSModule {
   }
 
   static async load({ parsed }: AFSModuleLoadParams) {
-    const valid = await AFSHistory.schema().passthrough().parseAsync(parsed);
+    const valid = await AFSHistory.schema().parseAsync(parsed);
     return new AFSHistory(valid);
   }
 

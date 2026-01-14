@@ -61,7 +61,7 @@ export class UserProfileMemory implements AFSModule {
   }
 
   static async load({ parsed }: AFSModuleLoadParams) {
-    const valid = await UserProfileMemory.schema().passthrough().parseAsync(parsed);
+    const valid = await UserProfileMemory.schema().parseAsync(parsed);
     return new UserProfileMemory(valid);
   }
 

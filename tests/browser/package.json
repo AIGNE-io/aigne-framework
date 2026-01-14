@@ -22,9 +22,9 @@
     "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text"
   },
   "dependencies": {
+    "@aigne/afs-history": "workspace:^",
     "@aigne/agent-library": "workspace:^",
     "@aigne/core": "workspace:^",
-    "@aigne/default-memory": "workspace:^",
     "@aigne/openai": "workspace:^",
     "@aigne/transport": "workspace:^",
     "react": "^19.1.1",

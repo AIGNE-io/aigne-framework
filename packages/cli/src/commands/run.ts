@@ -103,7 +103,7 @@ export function createRunCommand({
 
       if (aigne.cli.chat) {
         subYargs.command({
-          ...agentCommandModule({ aigne, agent: aigne.cli.chat, chat: true }),
+          ...agentCommandModule({ aigne, agent: aigne.cli.chat, interactive: true }),
           command: "$0",
         });
       }
@@ -111,7 +111,7 @@ export function createRunCommand({
       // Allow user to run all of agents in the AIGNE instances
       const allAgents = flat(aigne.agents, aigne.skills, aigne.cli.chat, aigne.mcpServer.agents);
       for (const agent of allAgents) {
-        subYargs.command(agentCommandModule({ aigne, agent, chat: options.interactive }));
+        subYargs.command(agentCommandModule({ aigne, agent, interactive: options.interactive }));
       }
 
       for (const cliAgent of aigne.cli.agents ?? []) {

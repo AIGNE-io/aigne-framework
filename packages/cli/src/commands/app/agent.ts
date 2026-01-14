@@ -50,11 +50,11 @@ export const serveMcpCommandModule = ({
 export const agentCommandModule = ({
   aigne,
   agent,
-  chat,
+  interactive,
 }: {
   aigne: AIGNE;
   agent: Agent;
-  chat?: boolean;
+  interactive?: boolean;
 }): CommandModule<unknown, AgentRunCommonOptions> => {
   return {
     command: agent.name,
@@ -64,7 +64,9 @@ export const agentCommandModule = ({
       return withAgentInputSchema(yargs, {
         inputSchema: agent.inputSchema,
         optionalInputs:
-          chat && "inputKey" in agent && typeof agent.inputKey === "string" ? [agent.inputKey] : [],
+          interactive && "inputKey" in agent && typeof agent.inputKey === "string"
+            ? [agent.inputKey]
+            : [],
       });
     },
     handler: async (options) => {
@@ -73,7 +75,7 @@ export const agentCommandModule = ({
       await invokeAgent({
         aigne,
         agent,
-        input: { ...options, chat: chat ?? options.chat },
+        input: { ...options, interactive: interactive ?? options.interactive },
       });
     },
   };

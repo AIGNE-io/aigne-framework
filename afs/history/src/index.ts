@@ -1,19 +1,26 @@
-import type {
-  AFSDeleteOptions,
-  AFSDeleteResult,
-  AFSEntry,
-  AFSListOptions,
-  AFSListResult,
-  AFSModule,
-  AFSReadOptions,
-  AFSReadResult,
-  AFSRoot,
-  AFSWriteEntryPayload,
-  AFSWriteResult,
+import {
+  type AFSAccessMode,
+  type AFSDeleteOptions,
+  type AFSDeleteResult,
+  type AFSEntry,
+  type AFSListOptions,
+  type AFSListResult,
+  type AFSModule,
+  type AFSModuleClass,
+  type AFSModuleLoadParams,
+  type AFSReadOptions,
+  type AFSReadResult,
+  type AFSRoot,
+  type AFSWriteEntryPayload,
+  type AFSWriteOptions,
+  type AFSWriteResult,
+  accessModeSchema,
 } from "@aigne/afs";
+import { camelizeSchema } from "@aigne/core/loader/schema.js";
 import { v7 } from "@aigne/uuid";
 import { createRouter } from "radix3";
 import { joinURL } from "ufo";
+import { z } from "zod";
 import {
   type AFSStorage,
   type EntryType,
@@ -26,17 +33,47 @@ export * from "./storage/index.js";
 
 export interface AFSHistoryOptions {
   storage?: SharedAFSStorage | SharedAFSStorageOptions;
+  /**
+   * Access mode for this module.
+   * @default "readwrite"
+   */
+  accessMode?: AFSAccessMode;
 }
 
+const sharedAFSStorageOptionsSchema = camelizeSchema(
+  z.object({
+    url: z.string().describe("Database URL for storage").optional(),
+  }),
+);
+
+const afsHistoryOptionsSchema = camelizeSchema(
+  z.object({
+    storage: sharedAFSStorageOptionsSchema.optional(),
+    accessMode: accessModeSchema,
+  }),
+);
+
 export class AFSHistory implements AFSModule {
+  static schema() {
+    return afsHistoryOptionsSchema;
+  }
+
+  static async load({ parsed }: AFSModuleLoadParams) {
+    const valid = await AFSHistory.schema().passthrough().parseAsync(parsed);
+    return new AFSHistory(valid);
+  }
+
   constructor(options?: AFSHistoryOptions) {
     this.storage =
       options?.storage instanceof SharedAFSStorage
         ? options.storage.withModule(this)
         : new SharedAFSStorage(options?.storage).withModule(this);
+    this.accessMode = options?.accessMode ?? "readwrite";
   }
 
   readonly name: string = "history";
+
+  readonly accessMode: AFSAccessMode;
 
   private storage: AFSStorage;
 
@@ -203,7 +240,11 @@ export class AFSHistory implements AFSModule {
     };
   }
 
-  async write(path: string, content: AFSWriteEntryPayload): Promise<AFSWriteResult> {
+  async write(
+    path: string,
+    content: AFSWriteEntryPayload,
+    options: AFSWriteOptions,
+  ): Promise<AFSWriteResult> {
     const id = v7();
     const match = this.router.lookup(path);
 
@@ -234,7 +275,7 @@ export class AFSHistory implements AFSModule {
 
     // Emit event for history entries
     if (type === "history") {
-      this.afs?.emit("historyCreated", { entry });
+      this.afs?.emit("historyCreated", { entry }, options);
     }
 
     return {
@@ -299,3 +340,5 @@ export class AFSHistory implements AFSModule {
     return joinURL("/", prefix, scopeId, entry.id);
   }
 }
+
+const _typeCheck: AFSModuleClass<AFSHistory, AFSHistoryOptions> = AFSHistory;

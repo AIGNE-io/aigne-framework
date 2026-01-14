@@ -1,5 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
-import { AFS, type AFSModule } from "@aigne/afs";
+import { AFS, type AFSModule, AFSReadonlyError } from "@aigne/afs";
 
 test("AFS should mount module correctly", async () => {
   const afs = new AFS().mount({
@@ -196,6 +196,7 @@ test("AFS should read entry correctly", async () => {
 test("AFS should write entry correctly", async () => {
   const module: AFSModule = {
     name: "test-module",
+    accessMode: "readwrite",
     write: async () => ({ data: { id: "foo", path: "/foo" } }),
   };
 
@@ -323,6 +324,7 @@ test("AFS.findModules should match modules correctly", () => {
 test("AFS should delete entry correctly", async () => {
   const module: AFSModule = {
     name: "test-module",
+    accessMode: "readwrite",
     delete: async () => ({ message: "Deleted successfully" }),
   };
 
@@ -365,6 +367,7 @@ test("AFS should delete entry correctly", async () => {
 test("AFS should throw error when deleting without delete support", async () => {
   const module: AFSModule = {
     name: "test-module",
+    accessMode: "readwrite",
   };
 
   const afs = new AFS().mount(module);
@@ -378,6 +381,7 @@ test("AFS should throw error when deleting without delete support", async () => 
 test("AFS should throw error when deleting non-existent path", async () => {
   const module: AFSModule = {
     name: "test-module",
+    accessMode: "readwrite",
     delete: async () => ({}),
   };
 
@@ -392,6 +396,7 @@ test("AFS should throw error when deleting non-existent path", async () => {
 test("AFS should rename entry correctly", async () => {
   const module: AFSModule = {
     name: "test-module",
+    accessMode: "readwrite",
     rename: async () => ({ message: "Renamed successfully" }),
   };
 
@@ -438,11 +443,13 @@ test("AFS should rename entry correctly", async () => {
 test("AFS should throw error when renaming across different modules", async () => {
   const moduleA: AFSModule = {
     name: "module-a",
+    accessMode: "readwrite",
     rename: async () => ({}),
   };
 
   const moduleB: AFSModule = {
     name: "module-b",
+    accessMode: "readwrite",
     rename: async () => ({}),
   };
 
@@ -457,6 +464,7 @@ test("AFS should throw error when renaming across different modules", async () =
 test("AFS should throw error when renaming without rename support", async () => {
   const module: AFSModule = {
     name: "test-module",
+    accessMode: "readwrite",
   };
 
   const afs = new AFS().mount(module);
@@ -470,6 +478,7 @@ test("AFS should throw error when renaming without rename support", async () => 
 test("AFS should throw error when renaming non-existent paths", async () => {
   const module: AFSModule = {
     name: "test-module",
+    accessMode: "readwrite",
     rename: async () => ({}),
   };
 
@@ -484,4 +493,113 @@ test("AFS should throw error when renaming non-existent paths", async () => {
   expect(async () => await afs.rename("/modules/test-module/foo", "/non-existent/bar")).toThrow(
     "Cannot rename across different modules. Both paths must be in the same module.",
   );
+});
+
+// Readonly tests
+test("AFS should block write on readonly module (default)", async () => {
+  const module: AFSModule = {
+    name: "test-module",
+    // accessMode defaults to readonly
+    write: async () => ({ data: { id: "foo", path: "/foo" } }),
+  };
+
+  const afs = new AFS().mount(module);
+
+  // Should throw AFSReadonlyError
+  try {
+    await afs.write("/modules/test-module/foo", { content: "test" });
+    expect.unreachable("Should have thrown AFSReadonlyError");
+  } catch (error) {
+    expect(error).toBeInstanceOf(AFSReadonlyError);
+    expect((error as AFSReadonlyError).code).toBe("AFS_READONLY");
+    expect((error as AFSReadonlyError).message).toBe(
+      "Module 'test-module' is readonly, cannot perform write",
+    );
+  }
+});
+
+test("AFS should block delete on readonly module", async () => {
+  const module: AFSModule = {
+    name: "test-module",
+    accessMode: "readonly",
+    delete: async () => ({ message: "Deleted" }),
+  };
+
+  const afs = new AFS().mount(module);
+
+  try {
+    await afs.delete("/modules/test-module/foo");
+    expect.unreachable("Should have thrown AFSReadonlyError");
+  } catch (error) {
+    expect(error).toBeInstanceOf(AFSReadonlyError);
+    expect((error as AFSReadonlyError).code).toBe("AFS_READONLY");
+    expect((error as AFSReadonlyError).message).toBe(
+      "Module 'test-module' is readonly, cannot perform delete",
+    );
+  }
+});
+
+test("AFS should block rename on readonly module", async () => {
+  const module: AFSModule = {
+    name: "test-module",
+    accessMode: "readonly",
+    rename: async () => ({ message: "Renamed" }),
+  };
+
+  const afs = new AFS().mount(module);
+
+  try {
+    await afs.rename("/modules/test-module/foo", "/modules/test-module/bar");
+    expect.unreachable("Should have thrown AFSReadonlyError");
+  } catch (error) {
+    expect(error).toBeInstanceOf(AFSReadonlyError);
+    expect((error as AFSReadonlyError).code).toBe("AFS_READONLY");
+    expect((error as AFSReadonlyError).message).toBe(
+      "Module 'test-module' is readonly, cannot perform rename",
+    );
+  }
+});
+
+test("AFS should allow read operations on readonly module", async () => {
+  const module: AFSModule = {
+    name: "test-module",
+    accessMode: "readonly",
+    list: async () => ({ data: [{ id: "foo", path: "/foo" }] }),
+    read: async () => ({ data: { id: "foo", path: "/foo", content: "test" } }),
+    search: async () => ({ data: [{ id: "foo", path: "/foo" }] }),
+  };
+
+  const afs = new AFS().mount(module);
+
+  // Read operations should work
+  const listResult = await afs.list("/modules/test-module");
+  expect(listResult.data.length).toBe(1);
+
+  const readResult = await afs.read("/modules/test-module/foo");
+  expect(readResult.data?.content).toBe("test");
+
+  const searchResult = await afs.search("/modules/test-module", "foo");
+  expect(searchResult.data.length).toBe(1);
+});
+
+test("AFS should allow write operations on readwrite module", async () => {
+  const module: AFSModule = {
+    name: "test-module",
+    accessMode: "readwrite",
+    write: async () => ({ data: { id: "foo", path: "/foo" } }),
+    delete: async () => ({ message: "Deleted" }),
+    rename: async () => ({ message: "Renamed" }),
+  };
+
+  const afs = new AFS().mount(module);
+
+  // All operations should work
+  const writeResult = await afs.write("/modules/test-module/foo", { content: "test" });
+  expect(writeResult.data.id).toBe("foo");
+
+  const deleteResult = await afs.delete("/modules/test-module/foo");
+  expect(deleteResult.message).toBe("Deleted");
+
+  const renameResult = await afs.rename("/modules/test-module/foo", "/modules/test-module/bar");
+  expect(renameResult.message).toBe("Renamed");
 });

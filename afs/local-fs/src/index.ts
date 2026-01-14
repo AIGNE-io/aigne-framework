@@ -1,12 +1,15 @@
 import { mkdir, readdir, readFile, rename, rm, stat, symlink, writeFile } from "node:fs/promises";
-import { dirname, isAbsolute, join, relative } from "node:path";
+import { basename, dirname, isAbsolute, join, relative } from "node:path";
 import type {
+  AFSAccessMode,
   AFSDeleteOptions,
   AFSDeleteResult,
   AFSEntry,
   AFSListOptions,
   AFSListResult,
   AFSModule,
+  AFSModuleClass,
+  AFSModuleLoadParams,
   AFSReadOptions,
   AFSReadResult,
   AFSRenameOptions,
@@ -16,7 +19,7 @@ import type {
   AFSWriteOptions,
   AFSWriteResult,
 } from "@aigne/afs";
-import { optionalize } from "@aigne/core/loader/schema.js";
+import { camelizeSchema, optionalize } from "@aigne/core/loader/schema.js";
 import { checkArguments } from "@aigne/core/utils/type-utils.js";
 import ignore from "ignore";
 import { minimatch } from "minimatch";
@@ -30,22 +33,42 @@ export interface LocalFSOptions {
   localPath: string;
   description?: string;
   ignore?: string[];
-  [key: string]: unknown;
+  /**
+   * Access mode for this module.
+   * - "readonly": Only read operations are allowed
+   * - "readwrite": All operations are allowed (default, unless agentSkills is enabled)
+   * @default "readwrite" (or "readonly" when agentSkills is true)
+   */
+  accessMode?: AFSAccessMode;
+  /**
+   * Enable automatic agent skill scanning for this module.
+   * When enabled, defaults accessMode to "readonly" if not explicitly set.
+   * @default false
+   */
+  agentSkills?: boolean;
 }
 
-const localFSOptionsSchema = z.object({
-  name: optionalize(z.string()),
-  localPath: z.string().describe("The path to the local directory to mount"),
-  description: optionalize(z.string().describe("A description of the mounted directory")),
-  ignore: optionalize(z.array(z.string())),
-});
+const localFSOptionsSchema = camelizeSchema(
+  z.object({
+    name: optionalize(z.string()),
+    localPath: z.string().describe("The path to the local directory to mount"),
+    description: optionalize(z.string().describe("A description of the mounted directory")),
+    ignore: optionalize(z.array(z.string())),
+    accessMode: optionalize(
+      z.enum(["readonly", "readwrite"]).describe("Access mode for this module"),
+    ),
+    agentSkills: optionalize(
+      z.boolean().describe("Enable automatic agent skill scanning for this module"),
+    ),
+  }),
+);
 
 export class LocalFS implements AFSModule {
   static schema() {
     return localFSOptionsSchema;
   }
 
-  static async load({ filepath, parsed }: { filepath: string; parsed?: object }) {
+  static async load({ filepath, parsed }: AFSModuleLoadParams) {
     const valid = await LocalFS.schema().passthrough().parseAsync(parsed);
 
     return new LocalFS({ ...valid, cwd: dirname(filepath) });
@@ -56,9 +79,6 @@ export class LocalFS implements AFSModule {
       ...options,
       localPath: options.localPath || (options as any).path, // compatible with 'path' option
     });
-
-    this.name = options.name || "local-fs";
-    this.description = options.description;
 
     let localPath: string;
 
@@ -73,12 +93,21 @@ export class LocalFS implements AFSModule {
       if (!isAbsolute(localPath)) localPath = join(options.cwd || process.cwd(), localPath);
     }
 
+    this.name = options.name || basename(localPath) || "local-fs";
+    this.description = options.description;
+    this.agentSkills = options.agentSkills;
+    // Default to "readwrite", but "readonly" if agentSkills is enabled
+    this.accessMode = options.accessMode ?? (options.agentSkills ? "readonly" : "readwrite");
     this.options.localPath = localPath;
   }
 
   name: string;
 
   description?: string;
+
+  accessMode: AFSAccessMode;
+
+  agentSkills?: boolean;
 
   private get localPathExists() {
     return stat(this.options.localPath)
@@ -512,3 +541,5 @@ export class LocalFS implements AFSModule {
     return { ig, ignoreBase: effectiveStart };
   }
 }
+
+const _typeCheck: AFSModuleClass<LocalFS, LocalFSOptions> = LocalFS;

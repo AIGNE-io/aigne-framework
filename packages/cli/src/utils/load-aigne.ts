@@ -89,8 +89,7 @@ export async function loadAIGNE({
         availableModules: [
           {
             module: "history",
-            load: (options) =>
-              import("@aigne/afs-history").then((m) => new m.AFSHistory(options.parsed)),
+            load: (options) => import("@aigne/afs-history").then((m) => m.AFSHistory.load(options)),
           },
           {
             module: "local-fs",

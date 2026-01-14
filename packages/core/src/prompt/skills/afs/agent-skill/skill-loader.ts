@@ -40,14 +40,7 @@ export async function loadSkills(paths: string[]): Promise<Skill[]> {
 
 export async function discoverSkillsFromAFS(afs: AFS): Promise<Skill[]> {
   const modules = await afs.listModules();
-  const filtered = modules.filter(
-    ({ module: m }) =>
-      "options" in m &&
-      typeof m.options === "object" &&
-      m.options &&
-      "agentSkills" in m.options &&
-      m.options.agentSkills === true,
-  );
+  const filtered = modules.filter(({ module: m }) => m.agentSkills === true);
   if (!filtered.length) return [];
 
   const skills: Skill[] = [];

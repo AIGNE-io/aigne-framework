@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.11.14-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.14-beta.3...observability-api-v0.11.14-beta.4) (2026-01-14)
+
+
+### Bug Fixes
+
+* improve test coverage tracking and reporting ([#903](https://github.com/AIGNE-io/aigne-framework/issues/903)) ([031144e](https://github.com/AIGNE-io/aigne-framework/commit/031144e74f29e882cffe52ffda8f7a18c76ace7f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.9-beta.2
+
 ## [0.11.14-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.14-beta.2...observability-api-v0.11.14-beta.3) (2026-01-13)
 
 

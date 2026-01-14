@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.7-beta.2](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.6.7-beta.1...platform-helpers-v0.6.7-beta.2) (2026-01-14)
+
+
+### Bug Fixes
+
+* improve test coverage tracking and reporting ([#903](https://github.com/AIGNE-io/aigne-framework/issues/903)) ([031144e](https://github.com/AIGNE-io/aigne-framework/commit/031144e74f29e882cffe52ffda8f7a18c76ace7f))
+
 ## [0.6.7-beta.1](https://github.com/AIGNE-io/aigne-framework/compare/platform-helpers-v0.6.7-beta...platform-helpers-v0.6.7-beta.1) (2026-01-08)
 
 

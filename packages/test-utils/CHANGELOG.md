@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.69-beta.19](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.69-beta.18...test-utils-v0.5.69-beta.19) (2026-01-14)
+
+
+### Bug Fixes
+
+* improve test coverage tracking and reporting ([#903](https://github.com/AIGNE-io/aigne-framework/issues/903)) ([031144e](https://github.com/AIGNE-io/aigne-framework/commit/031144e74f29e882cffe52ffda8f7a18c76ace7f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.19
+
 ## [0.5.69-beta.18](https://github.com/AIGNE-io/aigne-framework/compare/test-utils-v0.5.69-beta.17...test-utils-v0.5.69-beta.18) (2026-01-13)
 
 

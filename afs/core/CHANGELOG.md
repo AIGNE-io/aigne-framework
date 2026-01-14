@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.4.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.8...afs-v1.4.0-beta.9) (2026-01-14)
+
+
+### Features
+
+* **afs:** add module access control and schema validation support ([#904](https://github.com/AIGNE-io/aigne-framework/issues/904)) ([d0b279a](https://github.com/AIGNE-io/aigne-framework/commit/d0b279aac07ebe2bcc1fd4148498fc3f6bbcd561))
+
+
+### Bug Fixes
+
+* improve test coverage tracking and reporting ([#903](https://github.com/AIGNE-io/aigne-framework/issues/903)) ([031144e](https://github.com/AIGNE-io/aigne-framework/commit/031144e74f29e882cffe52ffda8f7a18c76ace7f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/platform-helpers bumped to 0.6.7-beta.2
+
 ## [1.4.0-beta.8](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.7...afs-v1.4.0-beta.8) (2026-01-12)
 
 

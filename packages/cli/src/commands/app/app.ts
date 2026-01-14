@@ -63,7 +63,7 @@ export async function runAppCLI({
           ...agentCommandModule({
             aigne,
             agent: aigne.cli.chat,
-            chat: true,
+            interactive: true,
           }),
           command: "$0",
         });

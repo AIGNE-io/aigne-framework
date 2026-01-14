@@ -1,0 +1,36 @@
+{
+  "name": "@aigne/example-afs-sqlite",
+  "version": "1.2.6-beta.26",
+  "description": "Northwind database example using AIGNE Framework with AFS SQLite module",
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/afs-sqlite",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "bin": "index.ts",
+  "files": [
+    ".env.local.example",
+    "*.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "bun run index.ts",
+    "lint": "tsc --noEmit",
+    "test:llm": "bun test index.test.ts"
+  },
+  "dependencies": {
+    "@aigne/afs": "workspace:^",
+    "@aigne/afs-history": "workspace:^",
+    "@aigne/afs-sqlite": "workspace:^",
+    "@aigne/cli": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "@aigne/sqlite": "workspace:^",
+    "yargs": "^18.0.0"
+  },
+  "devDependencies": {
+    "@aigne/test-utils": "workspace:^",
+    "@types/bun": "^1.2.22"
+  }
+}

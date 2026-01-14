@@ -58,11 +58,11 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
    * Check if write operations are allowed for the given module.
    * Throws AFSReadonlyError if not allowed.
    */
-  private checkWritePermission(module: AFSModule, operation: string): void {
+  private checkWritePermission(module: AFSModule, operation: string, path: string): void {
     // Module-level readonly (undefined means readonly by default)
     if (module.accessMode !== "readwrite") {
       throw new AFSReadonlyError(
-        `Module '${module.name}' is readonly, cannot perform ${operation}`,
+        `Module '${module.name}' is readonly, cannot perform ${operation} to ${path}`,
       );
     }
   }
@@ -180,7 +180,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     const module = this.findModules(path, { exactMatch: true })[0];
     if (!module?.module.write) throw new Error(`No module found for path: ${path}`);
 
-    this.checkWritePermission(module.module, "write");
+    this.checkWritePermission(module.module, "write", path);
 
     const res = await module.module.write(module.subpath, content, options);
 
@@ -197,7 +197,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
     const module = this.findModules(path, { exactMatch: true })[0];
     if (!module?.module.delete) throw new Error(`No module found for path: ${path}`);
 
-    this.checkWritePermission(module.module, "delete");
+    this.checkWritePermission(module.module, "delete", path);
 
     return await module.module.delete(module.subpath, options);
   }
@@ -221,7 +221,7 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
       throw new Error(`Module does not support rename operation: ${oldModule.modulePath}`);
     }
 
-    this.checkWritePermission(oldModule.module, "rename");
+    this.checkWritePermission(oldModule.module, "rename", oldPath);
 
     return await oldModule.module.rename(oldModule.subpath, newModule.subpath, options);
   }

@@ -513,7 +513,7 @@ test("AFS should block write on readonly module (default)", async () => {
     expect(error).toBeInstanceOf(AFSReadonlyError);
     expect((error as AFSReadonlyError).code).toBe("AFS_READONLY");
     expect((error as AFSReadonlyError).message).toBe(
-      "Module 'test-module' is readonly, cannot perform write",
+      "Module 'test-module' is readonly, cannot perform write to /modules/test-module/foo",
     );
   }
 });
@@ -534,7 +534,7 @@ test("AFS should block delete on readonly module", async () => {
     expect(error).toBeInstanceOf(AFSReadonlyError);
     expect((error as AFSReadonlyError).code).toBe("AFS_READONLY");
     expect((error as AFSReadonlyError).message).toBe(
-      "Module 'test-module' is readonly, cannot perform delete",
+      "Module 'test-module' is readonly, cannot perform delete to /modules/test-module/foo",
     );
   }
 });
@@ -555,7 +555,7 @@ test("AFS should block rename on readonly module", async () => {
     expect(error).toBeInstanceOf(AFSReadonlyError);
     expect((error as AFSReadonlyError).code).toBe("AFS_READONLY");
     expect((error as AFSReadonlyError).message).toBe(
-      "Module 'test-module' is readonly, cannot perform rename",
+      "Module 'test-module' is readonly, cannot perform rename to /modules/test-module/foo",
     );
   }
 });

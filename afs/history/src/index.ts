@@ -16,11 +16,10 @@ import {
   type AFSWriteResult,
   accessModeSchema,
 } from "@aigne/afs";
-import { camelizeSchema } from "@aigne/core/loader/schema.js";
 import { v7 } from "@aigne/uuid";
 import { createRouter } from "radix3";
 import { joinURL } from "ufo";
-import { z } from "zod";
+import { type ZodType, z } from "zod";
 import {
   type AFSStorage,
   type EntryType,
@@ -40,13 +39,17 @@ export interface AFSHistoryOptions {
   accessMode?: AFSAccessMode;
 }
 
-const sharedAFSStorageOptionsSchema = camelizeSchema(
-  z.object({
-    url: z.string().describe("Database URL for storage").optional(),
-  }),
-);
+const sharedAFSStorageOptionsSchema = z.object({
+  url: z.string().describe("Database URL for storage").optional(),
+});
 
-const afsHistoryOptionsSchema = camelizeSchema(
+const afsHistoryOptionsSchema = preprocessSchema(
+  (v: any) => {
+    if (!v || typeof v !== "object") {
+      return v;
+    }
+    return { ...v, accessMode: v.accessMode || v.access_mode };
+  },
   z.object({
     storage: sharedAFSStorageOptionsSchema.optional(),
     accessMode: accessModeSchema,
@@ -342,3 +345,7 @@ export class AFSHistory implements AFSModule {
 }
 
 const _typeCheck: AFSModuleClass<AFSHistory, AFSHistoryOptions> = AFSHistory;
+
+function preprocessSchema<T extends ZodType>(fn: (data: unknown) => unknown, schema: T): T {
+  return z.preprocess(fn, schema) as unknown as T;
+}

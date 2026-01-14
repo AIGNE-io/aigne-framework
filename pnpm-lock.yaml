@@ -161,6 +161,9 @@ importers:
         specifier: ^3.25.67
         version: 3.25.67
     devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
@@ -198,6 +201,9 @@ importers:
         specifier: ^3.24.6
         version: 3.24.6(zod@3.25.67)
     devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
@@ -918,6 +924,9 @@ importers:
         specifier: ^3.25.67
         version: 3.25.67
     devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
@@ -955,6 +964,9 @@ importers:
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
@@ -989,6 +1001,9 @@ importers:
         specifier: ^3.25.67
         version: 3.25.67
     devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
@@ -1017,6 +1032,9 @@ importers:
         specifier: ^3.25.67
         version: 3.25.67
     devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
@@ -1303,6 +1321,9 @@ importers:
         specifier: 3.25.67
         version: 3.25.67
     devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../../packages/test-utils
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
@@ -1910,6 +1931,9 @@ importers:
         specifier: ^3.24.6
         version: 3.24.6(zod@3.25.67)
     devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../test-utils
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
@@ -2310,6 +2334,9 @@ importers:
         specifier: ^2.8.1
         version: 2.8.1
     devDependencies:
+      '@aigne/test-utils':
+        specifier: workspace:^
+        version: link:../test-utils
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)

@@ -5,6 +5,7 @@
     "composite": true,
     "rootDir": "../src",
     "noEmit": false,
+    "allowImportingTsExtensions": false,
     "paths": {},
     "skipLibCheck": true
   },

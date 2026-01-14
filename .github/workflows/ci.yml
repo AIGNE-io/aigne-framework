@@ -52,6 +52,9 @@ jobs:
       - name: Test
         run: pnpm test:coverage
 
+      - name: Clean coverage reports
+        run: node scripts/clean-coverage.cjs --all
+
       - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

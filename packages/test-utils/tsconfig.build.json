@@ -4,6 +4,7 @@
     "rootDir": "./src",
     "outDir": "./lib",
     "noEmit": false,
+    "allowImportingTsExtensions": false,
     "declaration": true
   },
   "include": ["./src"]

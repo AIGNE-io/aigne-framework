@@ -834,15 +834,16 @@ describe("loadModel", async () => {
   });
 
   test("should load AIGNE Hub model", async () => {
+    const testHost = new URL(url).host;
     const testContent = {
-      "hub.aigne.io": {
+      [testHost]: {
         AIGNE_HUB_API_KEY: "test-key",
-        AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit",
+        AIGNE_HUB_API_URL: url,
       },
     };
     await writeFile(AIGNE_ENV_FILE, stringify(testContent));
 
-    const model = await loadModel({ model: "aignehub:openai/gpt-4" });
+    const model = await loadModel({ model: "aignehub:openai/gpt-4", aigneHubUrl: url });
 
     expect(model).toBeDefined();
     expect(model?.constructor.name).toBe("AIGNEHubChatModel");

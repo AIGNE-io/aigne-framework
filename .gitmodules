@@ -1,0 +1,3 @@
+[submodule "packages/cli/.aigne/doc-smith"]
+	path = packages/cli/.aigne/doc-smith
+	url = git@github.com:AIGNE-io/docs-aigne-cli.git

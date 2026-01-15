@@ -195,6 +195,9 @@ importers:
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
+      drizzle-orm:
+        specifier: ^0.44.2
+        version: 0.44.5(@libsql/client@0.15.15)(@opentelemetry/api@1.9.0)(bun-types@1.2.22(@types/react@19.1.13))(sqlite3@5.1.7)
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.72.0-beta.23](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.22...core-v1.72.0-beta.23) (2026-01-15)
+
+
+### Bug Fixes
+
+* **core:** pin jaison dependency to exact version 2.0.2 ([#916](https://github.com/AIGNE-io/aigne-framework/issues/916)) ([e4ad28b](https://github.com/AIGNE-io/aigne-framework/commit/e4ad28b7fcac977d9d2087e0dceacd320818f0f5))
+
 ## [1.72.0-beta.22](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.21...core-v1.72.0-beta.22) (2026-01-15)
 
 

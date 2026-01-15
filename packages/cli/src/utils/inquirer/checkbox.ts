@@ -276,7 +276,6 @@ export default createPrompt(
           let next = active;
           do {
             next = (next + offset + items.length) % items.length;
-            // biome-ignore lint/style/noNonNullAssertion: we need to access items dynamically
           } while (!isSelectable(items[next]!));
           setActive(next);
         }

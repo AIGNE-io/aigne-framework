@@ -39,6 +39,7 @@
   "examples/afs-local-fs": "1.2.6-beta.30",
   "examples/afs-mcp-server": "1.1.6-beta.30",
   "examples/agent-skill": "1.0.1-beta.13",
+  "examples/afs-json": "0.0.0",
   "memory/agentic": "1.1.6-beta.23",
   "memory/default": "1.4.0-beta.22",
   "memory/did-space": "1.4.0-beta.22",
@@ -52,5 +53,6 @@
   "afs/history": "1.2.0-beta.10",
   "afs/user-profile-memory": "1.3.0-beta.23",
   "afs/local-fs": "1.4.0-beta.24",
-  "afs/sqlite": "1.0.1-beta"
+  "afs/sqlite": "1.0.1-beta",
+  "afs/json": "0.0.0"
 }

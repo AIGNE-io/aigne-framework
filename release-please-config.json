@@ -157,6 +157,9 @@
     "examples/agent-skill": {
       "prerelease-type": "beta"
     },
+    "examples/afs-json": {
+      "prerelease-type": "beta"
+    },
     "blocklets/agent-runtime": {
       "prerelease-type": "beta",
       "package-name": "agent-runtime",
@@ -181,6 +184,9 @@
       "prerelease-type": "beta"
     },
     "afs/sqlite": {
+      "prerelease-type": "beta"
+    },
+    "afs/json": {
       "prerelease-type": "beta"
     }
   },

@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.build.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "outDir": "../lib/dts",
+    "declaration": true,
+    "emitDeclarationOnly": true
+  }
+}

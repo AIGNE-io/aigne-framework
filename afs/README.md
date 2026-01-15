@@ -7,6 +7,7 @@
 AFS acts as a bridge between AI agents and various data sources:
 
 - Access and manipulate files in local directories
+- Access Git repository branches and files
 - Retrieve conversation history across sessions
 - Maintain and query user profile information
 - Navigate JSON and YAML files as virtual file systems
@@ -75,7 +76,34 @@ afs.mount(new LocalFS({
 
 **Documentation:** See [local-fs module documentation](./local-fs/README.md)
 
-### 3. AFSJSON
+### 3. AFSGit
+
+- **Package:** `@aigne/afs-git`
+- **Mount Path:** `/modules/{name}` (default name: repository basename)
+- **Purpose:** Mount Git repository branches as virtual file system
+
+**Features:**
+- Access all branches as top-level directories
+- Read files using efficient git commands
+- Search content using git grep
+- Optional write operations with git worktrees
+- Auto-commit support for modifications
+
+**Usage:**
+```typescript
+import { AFSGit } from "@aigne/afs-git";
+
+afs.mount(new AFSGit({
+  repoPath: '/path/to/repo',
+  accessMode: 'readonly',  // or 'readwrite'
+  branches: ['main', 'develop']  // optional: limit branches
+}));
+// Accessible at /modules/{repo-name}/{branch}/{path}
+```
+
+**Documentation:** See [git module documentation](./git/README.md)
+
+### 4. AFSJSON
 
 - **Package:** `@aigne/afs-json`
 - **Mount Path:** `/modules/{name}` (default name: filename without extension)
@@ -111,7 +139,7 @@ afs.mount(new AFSJSON({
 
 **Documentation:** See [json module documentation](./json/README.md)
 
-### 4. UserProfileMemory
+### 5. UserProfileMemory
 
 - **Package:** `@aigne/afs-user-profile-memory`
 - **Mount Path:** `/modules/user-profile-memory` (default name: `"user-profile-memory"`)
@@ -140,6 +168,7 @@ afs.mount(new UserProfileMemory({
 - [`@aigne/afs`](./core/README.md) - Core AFS implementation
 - [`@aigne/afs-history`](./history/README.md) - Conversation history storage module
 - [`@aigne/afs-local-fs`](./local-fs/README.md) - Local file system access module
+- [`@aigne/afs-git`](./git/README.md) - Git repository access module
 - [`@aigne/afs-json`](./json/README.md) - JSON file virtual filesystem module
 - [`@aigne/afs-user-profile-memory`](./user-profile-memory/README.md) - User profile memory module
 - [`@aigne/afs-sqlite`](./sqlite/README.md) - SQLite storage backend

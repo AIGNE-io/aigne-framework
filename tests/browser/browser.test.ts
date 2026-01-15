@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { join } from "node:path";
-import { AIAgent, AIGNE, type Message } from "@aigne/core";
+import type { AFSHistory } from "@aigne/afs-history";
+import { type AIAgent, AIGNE, type Message } from "@aigne/core";
 import { stringToAgentResponseStream } from "@aigne/core/utils/stream-utils.js";
-import { DefaultMemory } from "@aigne/default-memory";
 import { OpenAIChatModel } from "@aigne/openai";
 import type {
   AIGNEHTTPClient,
@@ -46,7 +46,7 @@ test.each<Readonly<[AIGNEHTTPClientInvokeOptions, keyof typeof browsers]>>(
     const browser = browsers[browserType];
     const page = await browser.newPage();
 
-    spyOn(aigne.model, "process").mockReturnValueOnce(
+    const modelProcessSpy = spyOn(aigne.model, "process").mockReturnValueOnce(
       stringToAgentResponseStream("Hello, How can I help you?"),
     );
 
@@ -63,6 +63,8 @@ test.each<Readonly<[AIGNEHTTPClientInvokeOptions, keyof typeof browsers]>>(
     expect(result).toEqual({
       message: "Hello, How can I help you?",
     });
+
+    expect(modelProcessSpy.mock.lastCall?.[0].messages).toMatchSnapshot();
 
     await server.stop(true);
   },
@@ -89,7 +91,7 @@ test("AIGNE HTTP Client should work with client memory in browser", async () => 
     message: "Hello, How can I help you?",
   });
 
-  const modelProcess = spyOn(aigne.model, "process").mockReturnValueOnce(
+  const modelProcess = spyOn(aigne.model, "process").mockImplementation(() =>
     stringToAgentResponseStream('You just said, "Hello, AIGNE!"'),
   );
   const result2 = await runAgentInBrowser({
@@ -102,7 +104,7 @@ test("AIGNE HTTP Client should work with client memory in browser", async () => 
     message: 'You just said, "Hello, AIGNE!"',
   });
 
-  expect(modelProcess.mock.lastCall).toMatchSnapshot([{}, expect.anything()]);
+  expect(modelProcess.mock.calls.at(2)?.[0].messages).toMatchSnapshot();
 
   await server.stop(true);
 }, 60e3);
@@ -110,16 +112,8 @@ test("AIGNE HTTP Client should work with client memory in browser", async () => 
 async function startServer() {
   const port = await detectPort();
 
-  const agent = AIAgent.from({
-    name: "chatbot",
-    memory: [],
-    inputKey: "message",
-    useMemoriesFromContext: true,
-  });
-
   const aigne = new AIGNE({
     model: new OpenAIChatModel(),
-    agents: [agent],
   });
   assert(aigne.model);
 
@@ -184,21 +178,33 @@ async function runAgentInBrowser({
     }) => {
       const g = globalThis as unknown as typeof import("@aigne/core") & {
         AIGNEHTTPClient: typeof AIGNEHTTPClient;
-        DefaultMemory: typeof DefaultMemory;
+        AFSHistory: typeof AFSHistory;
+        AIAgent: typeof AIAgent;
       };
+
+      const userContext = { sessionId: "test-session-id", userId: "test-user-id" };
 
       const client = new g.AIGNEHTTPClient({ url });
 
-      const agent = await client.getAgent({
-        name: agentName,
-        memory: new DefaultMemory({ storage: { url: "memories.sqlite3" } }),
-      });
+      const agents: { [key: string]: AIAgent } = (globalThis as any).agentsCache || {};
+      (globalThis as any).agentsCache = agents;
+
+      const agent =
+        agents[agentName] ||
+        g.AIAgent.from({
+          name: agentName,
+          inputKey: "message",
+          afs: {
+            modules: [new g.AFSHistory({})],
+          },
+        });
+      agents[agentName] = agent;
 
       if (!streaming) {
-        return await agent.invoke(input);
+        return await client.invoke(agent, input, { userContext });
       }
 
-      const response = await agent.invoke(input, { streaming: true });
+      const response = await client.invoke(agent, input, { streaming: true, userContext });
       const result = {};
 
       for await (const chunk of response) {

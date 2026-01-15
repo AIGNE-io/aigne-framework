@@ -2531,15 +2531,15 @@ importers:
 
   tests/browser:
     dependencies:
+      '@aigne/afs-history':
+        specifier: workspace:^
+        version: link:../../afs/history
       '@aigne/agent-library':
         specifier: workspace:^
         version: link:../../packages/agent-library
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
-      '@aigne/default-memory':
-        specifier: workspace:^
-        version: link:../../memory/default
       '@aigne/openai':
         specifier: workspace:^
         version: link:../../models/openai

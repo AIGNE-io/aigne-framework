@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-agent-skill",
-  "version": "1.0.1-beta.10",
+  "version": "1.0.1-beta.11",
   "description": "A demonstration of using AIGNE Framework to run an agent with custom skills",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/agent-skill",

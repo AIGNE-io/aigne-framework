@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.14-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.14-beta.4...observability-api-v0.11.14-beta.5) (2026-01-15)
+
+
+### Bug Fixes
+
+* **ci:** replace crypto library and simplify credential handling ([#912](https://github.com/AIGNE-io/aigne-framework/issues/912)) ([f3c3e65](https://github.com/AIGNE-io/aigne-framework/commit/f3c3e651c4776a02675e601ffa56c01c144b892d))
+
 ## [0.11.14-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.14-beta.3...observability-api-v0.11.14-beta.4) (2026-01-14)
 
 

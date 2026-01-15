@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-afs-local-fs",
-  "version": "1.2.6-beta.27",
+  "version": "1.2.6-beta.28",
   "description": "A demonstration of using AIGNE Framework with AFS LocalFS module",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/afs-local-fs",

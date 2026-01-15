@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.72.0-beta.20](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.19...core-v1.72.0-beta.20) (2026-01-15)
+
+
+### Bug Fixes
+
+* **core:** remove Node.js dependencies from skill loader ([#910](https://github.com/AIGNE-io/aigne-framework/issues/910)) ([e12ae89](https://github.com/AIGNE-io/aigne-framework/commit/e12ae89dad8e3118fd5b9432a619846667f34ab7))
+
 ## [1.72.0-beta.19](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.18...core-v1.72.0-beta.19) (2026-01-14)
 
 

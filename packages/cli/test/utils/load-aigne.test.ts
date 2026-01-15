@@ -30,229 +30,201 @@ describe("load aigne", () => {
   });
 
   describe("loadAIGNE", () => {
-    test(
-      "should load aigne successfully with default env file",
-      async () => {
-        const { url, close } = await createHonoServer();
-        const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
-        const apiUrl = joinURL(url, "ai-kit");
-        const host = new URL(url).host;
+    test("should load aigne successfully with default env file", async () => {
+      const { url, close } = await createHonoServer();
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
+      const apiUrl = joinURL(url, "ai-kit");
+      const host = new URL(url).host;
 
-        // 写入默认配置时使用正确的API URL，并预先设置host配置以避免连接流程
-        await writeFile(
-          AIGNE_ENV_FILE,
-          stringify({
-            default: { AIGNE_HUB_API_URL: apiUrl },
-            [host]: {
-              AIGNE_HUB_API_KEY: "test",
-              AIGNE_HUB_API_URL: apiUrl,
-            },
-          }),
-        );
+      // 写入默认配置时使用正确的API URL，并预先设置host配置以避免连接流程
+      await writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          default: { AIGNE_HUB_API_URL: apiUrl },
+          [host]: {
+            AIGNE_HUB_API_KEY: "test",
+            AIGNE_HUB_API_URL: apiUrl,
+          },
+        }),
+      );
 
-        const path = join(import.meta.dirname, "../_mocks_");
-        await loadAIGNE({
-          path,
-          modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
-        });
-        const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-        const env = envs[host];
+      const path = join(import.meta.dirname, "../_mocks_");
+      await loadAIGNE({
+        path,
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+      });
+      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      const env = envs[host];
 
-        expect(env).toBeDefined();
-        expect(env.AIGNE_HUB_API_KEY).toBe("test");
-        expect(env.AIGNE_HUB_API_URL).toBe(apiUrl);
-        close();
-      },
-      10000,
-    );
+      expect(env).toBeDefined();
+      expect(env.AIGNE_HUB_API_KEY).toBe("test");
+      expect(env.AIGNE_HUB_API_URL).toBe(apiUrl);
+      close();
+    }, 10000);
 
-    test(
-      "should load aigne successfully with default env file with custom url",
-      async () => {
-        const { url, close } = await createHonoServer();
-        const mockInquirerPrompt: any = mock(async (data) => {
-          if (data.type === "input") {
-            return { customUrl: url };
-          }
-          return { subscribe: "custom" };
-        });
+    test("should load aigne successfully with default env file with custom url", async () => {
+      const { url, close } = await createHonoServer();
+      const mockInquirerPrompt: any = mock(async (data) => {
+        if (data.type === "input") {
+          return { customUrl: url };
+        }
+        return { subscribe: "custom" };
+      });
 
-        await writeFile(AIGNE_ENV_FILE, stringify({ default: { AIGNE_HUB_API_URL: url } }));
+      await writeFile(AIGNE_ENV_FILE, stringify({ default: { AIGNE_HUB_API_URL: url } }));
 
-        const path = join(import.meta.dirname, "../_mocks_");
-        await loadAIGNE({
-          path,
-          modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
-        });
+      const path = join(import.meta.dirname, "../_mocks_");
+      await loadAIGNE({
+        path,
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+      });
 
-        const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-        const env = envs[new URL(url).host];
+      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      const env = envs[new URL(url).host];
 
-        expect(env).toBeDefined();
-        expect(env.AIGNE_HUB_API_KEY).toBe("test");
-        expect(env.AIGNE_HUB_API_URL).toBe(joinURL(url, "ai-kit"));
-        close();
-      },
-      10000,
-    );
+      expect(env).toBeDefined();
+      expect(env.AIGNE_HUB_API_KEY).toBe("test");
+      expect(env.AIGNE_HUB_API_URL).toBe(joinURL(url, "ai-kit"));
+      close();
+    }, 10000);
 
-    test(
-      "should load aigne successfully with no env file",
-      async () => {
-        const { url, close } = await createHonoServer();
-        const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
+    test("should load aigne successfully with no env file", async () => {
+      const { url, close } = await createHonoServer();
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
 
-        process.env.AIGNE_HUB_API_URL = url;
-        const path = join(import.meta.dirname, "../_mocks_");
-        await loadAIGNE({
-          path,
-          modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
-        });
+      process.env.AIGNE_HUB_API_URL = url;
+      const path = join(import.meta.dirname, "../_mocks_");
+      await loadAIGNE({
+        path,
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+      });
 
-        const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-        const env = envs[new URL(url).host];
+      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      const env = envs[new URL(url).host];
 
-        expect(env).toBeDefined();
-        expect(env.AIGNE_HUB_API_KEY).toBe("test");
-        expect(env.AIGNE_HUB_API_URL).toBe(joinURL(url, "ai-kit"));
-        close();
-      },
-      10000,
-    );
+      expect(env).toBeDefined();
+      expect(env.AIGNE_HUB_API_KEY).toBe("test");
+      expect(env.AIGNE_HUB_API_URL).toBe(joinURL(url, "ai-kit"));
+      close();
+    }, 10000);
 
-    test(
-      "should load aigne successfully with empty env file",
-      async () => {
-        const { url, close } = await createHonoServer();
-        const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
+    test("should load aigne successfully with empty env file", async () => {
+      const { url, close } = await createHonoServer();
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
 
-        process.env.AIGNE_HUB_API_URL = url;
-        await writeFile(AIGNE_ENV_FILE, stringify({}));
+      process.env.AIGNE_HUB_API_URL = url;
+      await writeFile(AIGNE_ENV_FILE, stringify({}));
 
-        const path = join(import.meta.dirname, "../_mocks_");
-        await loadAIGNE({
-          path,
-          modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
-        });
+      const path = join(import.meta.dirname, "../_mocks_");
+      await loadAIGNE({
+        path,
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+      });
 
-        const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-        const env = envs[new URL(url).host];
+      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      const env = envs[new URL(url).host];
 
-        expect(env).toBeDefined();
-        expect(env.AIGNE_HUB_API_KEY).toBe("test");
-        expect(env.AIGNE_HUB_API_URL).toBe(joinURL(url, "ai-kit"));
-        close();
-      },
-      10000,
-    );
+      expect(env).toBeDefined();
+      expect(env.AIGNE_HUB_API_KEY).toBe("test");
+      expect(env.AIGNE_HUB_API_URL).toBe(joinURL(url, "ai-kit"));
+      close();
+    }, 10000);
 
-    test(
-      "should load aigne successfully with no host env file",
-      async () => {
-        const { url, close } = await createHonoServer();
-        const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
+    test("should load aigne successfully with no host env file", async () => {
+      const { url, close } = await createHonoServer();
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
 
-        process.env.AIGNE_HUB_API_URL = url;
-        await writeFile(
-          AIGNE_ENV_FILE,
-          stringify({
-            test: {
-              AIGNE_HUB_API_KEY: "123",
-            },
-          }),
-        );
+      process.env.AIGNE_HUB_API_URL = url;
+      await writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          test: {
+            AIGNE_HUB_API_KEY: "123",
+          },
+        }),
+      );
 
-        const path = join(import.meta.dirname, "../_mocks_");
-        await loadAIGNE({
-          path,
-          modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
-        });
+      const path = join(import.meta.dirname, "../_mocks_");
+      await loadAIGNE({
+        path,
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+      });
 
-        const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-        const env = envs[new URL(url).host];
+      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      const env = envs[new URL(url).host];
 
-        expect(env).toBeDefined();
-        expect(env.AIGNE_HUB_API_KEY).toBe("test");
-        expect(env.AIGNE_HUB_API_URL).toBe(joinURL(url, "ai-kit"));
-        close();
-      },
-      10000,
-    );
+      expect(env).toBeDefined();
+      expect(env.AIGNE_HUB_API_KEY).toBe("test");
+      expect(env.AIGNE_HUB_API_URL).toBe(joinURL(url, "ai-kit"));
+      close();
+    }, 10000);
 
-    test(
-      "should load aigne successfully with no host key env file",
-      async () => {
-        const { url, close } = await createHonoServer();
-        const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
+    test("should load aigne successfully with no host key env file", async () => {
+      const { url, close } = await createHonoServer();
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
 
-        process.env.AIGNE_HUB_API_URL = url;
-        await writeFile(
-          AIGNE_ENV_FILE,
-          stringify({
-            [new URL(url).host]: {
-              AIGNE_HUB_API_KEY1: "123",
-            },
-          }),
-        );
+      process.env.AIGNE_HUB_API_URL = url;
+      await writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          [new URL(url).host]: {
+            AIGNE_HUB_API_KEY1: "123",
+          },
+        }),
+      );
 
-        const path = join(import.meta.dirname, "../_mocks_");
-        await loadAIGNE({
-          path,
-          modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
-        });
+      const path = join(import.meta.dirname, "../_mocks_");
+      await loadAIGNE({
+        path,
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+      });
 
-        const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-        const env = envs[new URL(url).host];
+      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      const env = envs[new URL(url).host];
 
-        expect(env).toBeDefined();
-        expect(env.AIGNE_HUB_API_KEY).toBe("test");
-        close();
-      },
-      10000,
-    );
+      expect(env).toBeDefined();
+      expect(env.AIGNE_HUB_API_KEY).toBe("test");
+      close();
+    }, 10000);
 
-    test(
-      "should load aigne successfully with existing host key env file",
-      async () => {
-        const { url, close } = await createHonoServer();
-        const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
+    test("should load aigne successfully with existing host key env file", async () => {
+      const { url, close } = await createHonoServer();
+      const mockInquirerPrompt: any = mock(async () => ({ subscribe: "official" }));
 
-        const apiUrl = joinURL(url, "ai-kit");
-        process.env.AIGNE_HUB_API_URL = apiUrl;
-        const host = new URL(url).host;
-        await writeFile(
-          AIGNE_ENV_FILE,
-          stringify({
-            default: { AIGNE_HUB_API_URL: apiUrl },
-            [host]: {
-              AIGNE_HUB_API_KEY: "123",
-              AIGNE_HUB_API_URL: apiUrl,
-            },
-          }),
-        );
+      const apiUrl = joinURL(url, "ai-kit");
+      process.env.AIGNE_HUB_API_URL = apiUrl;
+      const host = new URL(url).host;
+      await writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          default: { AIGNE_HUB_API_URL: apiUrl },
+          [host]: {
+            AIGNE_HUB_API_KEY: "123",
+            AIGNE_HUB_API_URL: apiUrl,
+          },
+        }),
+      );
 
-        // 验证文件写入成功
-        const beforeEnvs = parse(await readFile(AIGNE_ENV_FILE, "utf8"));
-        expect(beforeEnvs[host]?.AIGNE_HUB_API_KEY).toBe("123");
+      // 验证文件写入成功
+      const beforeEnvs = parse(await readFile(AIGNE_ENV_FILE, "utf8"));
+      expect(beforeEnvs[host]?.AIGNE_HUB_API_KEY).toBe("123");
 
-        const path = join(import.meta.dirname, "../_mocks_");
-        await loadAIGNE({
-          path,
-          modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
-        });
+      const path = join(import.meta.dirname, "../_mocks_");
+      await loadAIGNE({
+        path,
+        modelOptions: { model: "aignehub/openai/gpt-4o", inquirerPromptFn: mockInquirerPrompt },
+      });
 
-        const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
-        const env = envs[host];
+      const envs = parse(await readFile(AIGNE_ENV_FILE, "utf8").catch(() => stringify({})));
+      const env = envs[host];
 
-        expect(env).toBeDefined();
-        // 由于loadAIGNE会验证并可能刷新API key,这里期望的是最终的API key
-        // 根据实际行为,API key会被更新为从mock server获取的"test"
-        expect(env.AIGNE_HUB_API_KEY).toBe("test");
-        expect(env.AIGNE_HUB_API_URL).toBe(apiUrl);
-        close();
-      },
-      10000,
-    );
+      expect(env).toBeDefined();
+      // 由于loadAIGNE会验证并可能刷新API key,这里期望的是最终的API key
+      // 根据实际行为,API key会被更新为从mock server获取的"test"
+      expect(env.AIGNE_HUB_API_KEY).toBe("test");
+      expect(env.AIGNE_HUB_API_URL).toBe(apiUrl);
+      close();
+    }, 10000);
 
     afterEach(async () => {
       await rm(AIGNE_ENV_FILE, { force: true });

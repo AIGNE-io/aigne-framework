@@ -1,22 +1,27 @@
 import crypto from "node:crypto";
-import CryptoJS from "crypto-js";
+import AES from "crypto-js/aes.js";
+import encBase64 from "crypto-js/enc-base64.js";
+import encHex from "crypto-js/enc-hex.js";
+import encLatin1 from "crypto-js/enc-latin1.js";
+import encUtf8 from "crypto-js/enc-utf8.js";
+import encUtf16 from "crypto-js/enc-utf16.js";
 
-const encoders: { [index: string]: typeof CryptoJS.enc.Latin1 } = {
-  latin1: CryptoJS.enc.Latin1,
-  utf8: CryptoJS.enc.Utf8,
-  hex: CryptoJS.enc.Hex,
-  utf16: CryptoJS.enc.Utf16,
-  base64: CryptoJS.enc.Base64,
+const encoders: { [index: string]: typeof encLatin1 } = {
+  latin1: encLatin1,
+  utf8: encUtf8,
+  hex: encHex,
+  utf16: encUtf16,
+  base64: encBase64,
 };
 
 class AesCrypter {
   encrypt(message: string | object, secret: string) {
     const text = typeof message === "string" ? message : JSON.stringify(message);
-    return CryptoJS.AES.encrypt(text, secret).toString();
+    return AES.encrypt(text, secret).toString();
   }
 
   decrypt(cipher: string, secret: string, outputEncoding = "utf8") {
-    return CryptoJS.AES.decrypt(cipher, secret).toString(encoders[outputEncoding]);
+    return AES.decrypt(cipher, secret).toString(encoders[outputEncoding]);
   }
 }
 

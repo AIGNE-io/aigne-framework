@@ -14,8 +14,8 @@ export class AIGNEObserver {
   public tracer = trace.getTracer("aigne-tracer");
   public processor: SimpleSpanProcessor | undefined;
   public exporter: HttpExporter | undefined;
-  private sdk: NodeSDK | undefined;
   private sdkServerStarted: Promise<void> | undefined;
+  sdk: NodeSDK | undefined;
 
   static exportFn?: (spans: TraceFormatSpans[]) => Promise<void>;
   static setExportFn(exportFn: (spans: TraceFormatSpans[]) => Promise<void>) {
@@ -64,14 +64,10 @@ export class AIGNEObserver {
 
   async close(contextIds: string[] = []): Promise<void> {
     try {
-      // Shutdown exporter
       await this.exporter?.shutdown(contextIds);
-
-      // Shutdown processor
-      await this.processor?.shutdown();
-
-      // Shutdown SDK
-      await this.sdk?.shutdown();
+      this.processor = undefined;
+      this.sdk = undefined;
+      this.sdkServerStarted = undefined;
     } catch (error) {
       console.error("[Observability] Error during shutdown:", error);
     }

@@ -3,7 +3,6 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { AIGNE_HUB_BLOCKLET_DID, AIGNE_HUB_URL, getAIGNEHubMountPoint } from "@aigne/aigne-hub";
 import { fetch } from "@aigne/core/utils/fetch.js";
-import { logger } from "@aigne/core/utils/logger.js";
 import inquirer from "inquirer";
 import open from "open";
 import pWaitFor from "p-wait-for";
@@ -59,7 +58,7 @@ export const fetchConfigs = async ({
 };
 
 function baseWrapSpinner(_: string, waiting: () => Promise<FetchResult>) {
-  return Promise.resolve(waiting());
+  return waiting();
 }
 
 export async function createConnect({
@@ -109,30 +108,25 @@ export async function connectToAIGNEHub(url: string) {
   const connectUrl = joinURL(origin, WELLKNOWN_SERVICE_PATH_PREFIX);
   const apiUrl = await getAIGNEHubMountPoint(url, AIGNE_HUB_BLOCKLET_DID);
 
-  try {
-    const openFn = isTest ? () => {} : open;
-    const result = await createConnect({
-      connectUrl: connectUrl,
-      connectAction: "gen-simple-access-key",
-      source: `@aigne/cli connect to AIGNE hub`,
-      closeOnSuccess: true,
-      openPage: (pageUrl) => openFn(pageUrl),
-    });
+  const openFn = isTest ? () => {} : open;
+  const result = await createConnect({
+    connectUrl: connectUrl,
+    connectAction: "gen-simple-access-key",
+    source: `@aigne/cli connect to AIGNE hub`,
+    closeOnSuccess: true,
+    openPage: (pageUrl) => openFn(pageUrl),
+  });
 
-    const accessKeyOptions = {
-      apiKey: result.accessKeySecret,
-      url: apiUrl,
-    };
+  const accessKeyOptions = {
+    apiKey: result.accessKeySecret,
+    url: apiUrl,
+  };
 
-    const secretStore = await getSecretStore();
-    await secretStore.setKey(accessKeyOptions.url, accessKeyOptions.apiKey);
-    await secretStore.setDefault(accessKeyOptions.url);
+  const secretStore = await getSecretStore();
+  await secretStore.setKey(accessKeyOptions.url, accessKeyOptions.apiKey);
+  await secretStore.setDefault(accessKeyOptions.url);
 
-    return accessKeyOptions;
-  } catch (error) {
-    logger.error("Failed to connect to AIGNE Hub", error.message);
-    return { apiKey: undefined, url: undefined };
-  }
+  return accessKeyOptions;
 }
 
 export const checkConnectionStatus = async (host: string) => {

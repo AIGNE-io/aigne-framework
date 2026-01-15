@@ -161,6 +161,7 @@ export const updateStatusByIds = async (
   status: { code: number; message?: string },
 ) => {
   if (!ids.length) return;
+  if (!db) return;
 
   await db
     .update(Trace)

@@ -1,7 +1,27 @@
 import crypto from "node:crypto";
-import { AesCrypter } from "@ocap/mcrypto/lib/crypter/aes-legacy.js";
+import CryptoJS from "crypto-js";
+
+const encoders: { [index: string]: typeof CryptoJS.enc.Latin1 } = {
+  latin1: CryptoJS.enc.Latin1,
+  utf8: CryptoJS.enc.Utf8,
+  hex: CryptoJS.enc.Hex,
+  utf16: CryptoJS.enc.Utf16,
+  base64: CryptoJS.enc.Base64,
+};
+
+class AesCrypter {
+  encrypt(message: string | object, secret: string) {
+    const text = typeof message === "string" ? message : JSON.stringify(message);
+    return CryptoJS.AES.encrypt(text, secret).toString();
+  }
+
+  decrypt(cipher: string, secret: string, outputEncoding = "utf8") {
+    return CryptoJS.AES.decrypt(cipher, secret).toString(encoders[outputEncoding]);
+  }
+}
 
 const aes = new AesCrypter();
+
 export const decrypt = (m: string, s: string, i: string) =>
   aes.decrypt(m, crypto.pbkdf2Sync(i, s, 256, 32, "sha512").toString("hex"));
 export const encrypt = (m: string, s: string, i: string) =>

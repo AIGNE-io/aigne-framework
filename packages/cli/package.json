@@ -1,6 +1,6 @@
 {
   "name": "@aigne/cli",
-  "version": "1.59.0-beta.25",
+  "version": "1.59.0-beta.27",
   "description": "Your command center for agent development",
   "publishConfig": {
     "access": "public"
@@ -79,13 +79,13 @@
     "@inquirer/type": "^3.0.8",
     "@listr2/prompt-adapter-inquirer": "^3.0.4",
     "@modelcontextprotocol/sdk": "^1.18.0",
-    "@ocap/mcrypto": "^1.28.5",
     "@smithy/node-http-handler": "^4.2.1",
     "ansi-escapes": "^7.1.0",
     "ansi-regex": "^6.2.2",
     "boxen": "^8.0.1",
     "chalk": "^5.6.2",
     "cli-table3": "^0.6.5",
+    "crypto-js": "^4.2.0",
     "detect-port": "^2.1.0",
     "dotenv-flow": "^4.1.0",
     "express": "^5.1.0",
@@ -119,6 +119,7 @@
     "@inquirer/testing": "^2.1.50",
     "@types/archiver": "^6.0.3",
     "@types/bun": "^1.2.22",
+    "@types/crypto-js": "^4.2.2",
     "@types/express": "^5.0.3",
     "@types/gradient-string": "^1.1.6",
     "@types/node": "^24.5.1",

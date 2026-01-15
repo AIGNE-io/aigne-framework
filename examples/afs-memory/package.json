@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-afs-memory",
-  "version": "0.10.79-beta.26",
+  "version": "0.10.79-beta.28",
   "description": "A demonstration of using AIGNE Framework with memory-based AFS modules",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/afs-memory",

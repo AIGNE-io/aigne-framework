@@ -1,6 +1,6 @@
 {
   "name": "@aigne/open-router",
-  "version": "0.7.62-beta.19",
+  "version": "0.7.62-beta.21",
   "description": "AIGNE OpenRouter SDK for accessing multiple AI models through a unified API",
   "publishConfig": {
     "access": "public"

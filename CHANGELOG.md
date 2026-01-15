@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.91.0-beta.29](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.28...aigne-framework-v1.91.0-beta.29) (2026-01-15)
+
+
+### Features
+
+* **afs:** add generic AFS adapter for sqlite databases ([#908](https://github.com/AIGNE-io/aigne-framework/issues/908)) ([b9b5a8f](https://github.com/AIGNE-io/aigne-framework/commit/b9b5a8fc2680e8e3ae7f28dd720b0089520981b9))
+
+
+### Bug Fixes
+
+* fix data corruption when using AIGNE multiple ([#914](https://github.com/AIGNE-io/aigne-framework/issues/914)) ([c713736](https://github.com/AIGNE-io/aigne-framework/commit/c713736b17502ffac6b1fdf67e453aba2f37aab3))
+* update @aigne/afs-sqlite release config ([464a6c6](https://github.com/AIGNE-io/aigne-framework/commit/464a6c62a0594797f260f9908a3e95f97fe73d42))
+* update @aigne/afs-sqlite release config ([ef0f254](https://github.com/AIGNE-io/aigne-framework/commit/ef0f2547920e0e95545c57c7dd55ff059b5a2e7a))
+
 ## [1.91.0-beta.28](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.27...aigne-framework-v1.91.0-beta.28) (2026-01-15)
 
 

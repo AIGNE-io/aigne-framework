@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.14-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.14-beta.5...observability-api-v0.11.14-beta.6) (2026-01-15)
+
+
+### Bug Fixes
+
+* fix data corruption when using AIGNE multiple ([#914](https://github.com/AIGNE-io/aigne-framework/issues/914)) ([c713736](https://github.com/AIGNE-io/aigne-framework/commit/c713736b17502ffac6b1fdf67e453aba2f37aab3))
+
 ## [0.11.14-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.14-beta.4...observability-api-v0.11.14-beta.5) (2026-01-15)
 
 

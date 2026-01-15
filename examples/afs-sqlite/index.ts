@@ -24,15 +24,13 @@ const aigne = await loadAIGNEWithCmdOptions();
 const dbUrl = argv.db === ":memory:" ? "file::memory:?cache=shared" : `file:${argv.db}`;
 await seedDatabase(dbUrl);
 
-const afs = new AFS()
-  .mount(new AFSHistory({ storage: { url: ":memory:" } }))
-  .mount(
-    new SQLiteAFS({
-      url: dbUrl,
-      name: "northwind",
-      description: "Northwind sample database - customers, orders, products, employees",
-    })
-  );
+const afs = new AFS().mount(new AFSHistory({ storage: { url: ":memory:" } })).mount(
+  new SQLiteAFS({
+    url: dbUrl,
+    name: "northwind",
+    description: "Northwind sample database - customers, orders, products, employees",
+  }),
+);
 
 const agent = AIAgent.from({
   instructions: `You are a business analyst assistant with access to the Northwind database.

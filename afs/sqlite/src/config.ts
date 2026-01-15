@@ -1,5 +1,5 @@
+import { type AFSAccessMode, accessModeSchema } from "@aigne/afs";
 import { z } from "zod";
-import { accessModeSchema, type AFSAccessMode } from "@aigne/afs";
 
 /**
  * FTS (Full-Text Search) configuration schema
@@ -19,20 +19,14 @@ export const ftsConfigSchema = z
  */
 export const sqliteAFSConfigSchema = z.object({
   url: z.string().describe("SQLite database URL (file:./path or :memory:)"),
-  name: z
-    .string()
-    .optional()
-    .describe("Module name, defaults to 'sqlite-afs'"),
+  name: z.string().optional().describe("Module name, defaults to 'sqlite-afs'"),
   description: z.string().optional().describe("Description of this module"),
   accessMode: accessModeSchema,
   tables: z
     .array(z.string())
     .optional()
     .describe("Whitelist of tables to expose (if not specified, all tables are exposed)"),
-  excludeTables: z
-    .array(z.string())
-    .optional()
-    .describe("Tables to exclude from exposure"),
+  excludeTables: z.array(z.string()).optional().describe("Tables to exclude from exposure"),
   fts: ftsConfigSchema,
   wal: z.boolean().optional().default(true).describe("Enable WAL mode for better concurrency"),
 });

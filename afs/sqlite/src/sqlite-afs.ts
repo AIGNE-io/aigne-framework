@@ -1,37 +1,36 @@
-import {
-  type AFSAccessMode,
-  type AFSDeleteOptions,
-  type AFSDeleteResult,
-  type AFSEntry,
-  type AFSExecOptions,
-  type AFSExecResult,
-  type AFSListOptions,
-  type AFSListResult,
-  type AFSModule,
-  type AFSModuleClass,
-  type AFSModuleLoadParams,
-  type AFSReadOptions,
-  type AFSReadResult,
-  type AFSRoot,
-  type AFSSearchOptions,
-  type AFSSearchResult,
-  type AFSWriteEntryPayload,
-  type AFSWriteOptions,
-  type AFSWriteResult,
+import type {
+  AFSAccessMode,
+  AFSDeleteOptions,
+  AFSDeleteResult,
+  AFSExecOptions,
+  AFSExecResult,
+  AFSListOptions,
+  AFSListResult,
+  AFSModule,
+  AFSModuleClass,
+  AFSModuleLoadParams,
+  AFSReadOptions,
+  AFSReadResult,
+  AFSRoot,
+  AFSSearchOptions,
+  AFSSearchResult,
+  AFSWriteEntryPayload,
+  AFSWriteOptions,
+  AFSWriteResult,
 } from "@aigne/afs";
 import { initDatabase } from "@aigne/sqlite";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
-import { type RadixRouter, createRouter } from "radix3";
-import { sqliteAFSConfigSchema, type SQLiteAFSOptions } from "./config.js";
+import type { RadixRouter } from "radix3";
+import { registerBuiltInActions } from "./actions/built-in.js";
+import { ActionsRegistry } from "./actions/registry.js";
+import type { ActionContext } from "./actions/types.js";
+import { type SQLiteAFSOptions, sqliteAFSConfigSchema } from "./config.js";
+import { buildActionsListEntry } from "./node/builder.js";
+import { CRUDOperations } from "./operations/crud.js";
+import { createFTSConfig, type FTSConfig, FTSSearch } from "./operations/search.js";
+import { createPathRouter, matchPath, type RouteData } from "./router/path-router.js";
 import { SchemaIntrospector } from "./schema/introspector.js";
 import type { TableSchema } from "./schema/types.js";
-import { createPathRouter, matchPath, type RouteData } from "./router/path-router.js";
-import { CRUDOperations } from "./operations/crud.js";
-import { createFTSConfig, FTSSearch, type FTSConfig } from "./operations/search.js";
-import { ActionsRegistry } from "./actions/registry.js";
-import { registerBuiltInActions } from "./actions/built-in.js";
-import type { ActionContext } from "./actions/types.js";
-import { buildActionsListEntry } from "./node/builder.js";
 
 /**
  * SQLite AFS Module
@@ -51,7 +50,6 @@ export class SQLiteAFS implements AFSModule {
   private ftsSearch!: FTSSearch;
   private actions: ActionsRegistry;
   private ftsConfig: FTSConfig;
-  private afs?: AFSRoot;
   private initialized = false;
 
   constructor(private options: SQLiteAFSOptions) {
@@ -81,8 +79,7 @@ export class SQLiteAFS implements AFSModule {
   /**
    * Called when the module is mounted to AFS
    */
-  async onMount(afs: AFSRoot): Promise<void> {
-    this.afs = afs;
+  async onMount(_afs: AFSRoot): Promise<void> {
     await this.initialize();
   }
 
@@ -160,7 +157,7 @@ export class SQLiteAFS implements AFSModule {
   /**
    * Reads an entry at a path
    */
-  async read(path: string, options?: AFSReadOptions): Promise<AFSReadResult> {
+  async read(path: string, _options?: AFSReadOptions): Promise<AFSReadResult> {
     await this.ensureInitialized();
 
     const match = matchPath(this.router, path);
@@ -196,7 +193,7 @@ export class SQLiteAFS implements AFSModule {
   async write(
     path: string,
     content: AFSWriteEntryPayload,
-    options?: AFSWriteOptions
+    _options?: AFSWriteOptions,
   ): Promise<AFSWriteResult> {
     await this.ensureInitialized();
 
@@ -230,7 +227,7 @@ export class SQLiteAFS implements AFSModule {
           match.params.table,
           match.params.pk,
           match.params.action,
-          content.content ?? content
+          content.content ?? content,
         );
 
       default:
@@ -241,7 +238,7 @@ export class SQLiteAFS implements AFSModule {
   /**
    * Deletes an entry at a path
    */
-  async delete(path: string, options?: AFSDeleteOptions): Promise<AFSDeleteResult> {
+  async delete(path: string, _options?: AFSDeleteOptions): Promise<AFSDeleteResult> {
     await this.ensureInitialized();
 
     if (this.accessMode === "readonly") {
@@ -263,11 +260,7 @@ export class SQLiteAFS implements AFSModule {
   /**
    * Searches for entries matching a query
    */
-  async search(
-    path: string,
-    query: string,
-    options?: AFSSearchOptions
-  ): Promise<AFSSearchResult> {
+  async search(path: string, query: string, options?: AFSSearchOptions): Promise<AFSSearchResult> {
     await this.ensureInitialized();
 
     // If path specifies a table, search only that table
@@ -286,7 +279,7 @@ export class SQLiteAFS implements AFSModule {
   async exec(
     path: string,
     args: Record<string, unknown>,
-    options: AFSExecOptions
+    _options: AFSExecOptions,
   ): Promise<AFSExecResult> {
     await this.ensureInitialized();
 
@@ -296,7 +289,7 @@ export class SQLiteAFS implements AFSModule {
         match.params.table,
         match.params.pk,
         match.params.action,
-        args
+        args,
       );
       return { data: result.data as unknown as Record<string, unknown> };
     }
@@ -321,7 +314,7 @@ export class SQLiteAFS implements AFSModule {
     table: string,
     pk: string | undefined,
     actionName: string,
-    params: Record<string, unknown>
+    params: Record<string, unknown>,
   ): Promise<AFSWriteResult> {
     const schema = this.schemas.get(table);
     if (!schema) {
@@ -356,9 +349,7 @@ export class SQLiteAFS implements AFSModule {
     return {
       data: {
         id: `${table}:${pk ?? ""}:@actions:${actionName}`,
-        path: pk
-          ? `/${table}/${pk}/@actions/${actionName}`
-          : `/${table}/@actions/${actionName}`,
+        path: pk ? `/${table}/${pk}/@actions/${actionName}` : `/${table}/@actions/${actionName}`,
         content: result.data,
       },
     };
@@ -420,7 +411,7 @@ export class SQLiteAFS implements AFSModule {
       description?: string;
       tableLevel?: boolean;
       rowLevel?: boolean;
-    }
+    },
   ): void {
     this.actions.registerSimple(
       name,
@@ -428,7 +419,7 @@ export class SQLiteAFS implements AFSModule {
         success: true,
         data: await handler(ctx, params),
       }),
-      options
+      options,
     );
   }
 

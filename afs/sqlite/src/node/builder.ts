@@ -1,4 +1,4 @@
-import type { AFSEntry, AFSEntryMetadata } from "@aigne/afs";
+import type { AFSEntry } from "@aigne/afs";
 import type { TableSchema } from "../schema/types.js";
 
 /**
@@ -16,7 +16,7 @@ export function buildRowEntry(
   table: string,
   schema: TableSchema,
   row: Record<string, unknown>,
-  options?: BuildEntryOptions
+  options?: BuildEntryOptions,
 ): AFSEntry {
   const pkColumn = schema.primaryKey[0] ?? "rowid";
   const pk = String(row[pkColumn] ?? row.rowid);
@@ -42,7 +42,7 @@ export function buildRowEntry(
 export function buildTableEntry(
   table: string,
   schema: TableSchema,
-  options?: BuildEntryOptions & { rowCount?: number }
+  options?: BuildEntryOptions & { rowCount?: number },
 ): AFSEntry {
   const basePath = options?.basePath ?? "";
 
@@ -65,7 +65,7 @@ export function buildTableEntry(
 export function buildSchemaEntry(
   table: string,
   schema: TableSchema,
-  options?: BuildEntryOptions
+  options?: BuildEntryOptions,
 ): AFSEntry {
   const basePath = options?.basePath ?? "";
 
@@ -113,7 +113,7 @@ export function buildAttributeEntry(
   pk: string,
   column: string,
   value: unknown,
-  options?: BuildEntryOptions
+  options?: BuildEntryOptions,
 ): AFSEntry {
   const basePath = options?.basePath ?? "";
 
@@ -138,7 +138,7 @@ export function buildAttributeListEntry(
   schema: TableSchema,
   pk: string,
   row: Record<string, unknown>,
-  options?: BuildEntryOptions
+  options?: BuildEntryOptions,
 ): AFSEntry[] {
   const basePath = options?.basePath ?? "";
 
@@ -163,7 +163,7 @@ export function buildMetaEntry(
   schema: TableSchema,
   pk: string,
   row: Record<string, unknown>,
-  options?: BuildEntryOptions
+  options?: BuildEntryOptions,
 ): AFSEntry {
   const basePath = options?.basePath ?? "";
 
@@ -178,9 +178,7 @@ export function buildMetaEntry(
         columns: schema.columns.map((c) => c.name),
         types: Object.fromEntries(schema.columns.map((c) => [c.name, c.type])),
       },
-      foreignKeys: schema.foreignKeys.filter((fk) =>
-        Object.keys(row).includes(fk.from)
-      ),
+      foreignKeys: schema.foreignKeys.filter((fk) => Object.keys(row).includes(fk.from)),
       rowid: row.rowid,
     },
     metadata: {
@@ -197,7 +195,7 @@ export function buildActionsListEntry(
   table: string,
   pk: string,
   actions: string[],
-  options?: BuildEntryOptions
+  options?: BuildEntryOptions,
 ): AFSEntry[] {
   const basePath = options?.basePath ?? "";
 
@@ -222,7 +220,7 @@ export function buildSearchEntry(
   schema: TableSchema,
   row: Record<string, unknown>,
   snippet?: string,
-  options?: BuildEntryOptions
+  options?: BuildEntryOptions,
 ): AFSEntry {
   const entry = buildRowEntry(table, schema, row, options);
 

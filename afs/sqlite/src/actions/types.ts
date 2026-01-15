@@ -27,7 +27,7 @@ export interface ActionContext {
  */
 export type ActionHandler = (
   ctx: ActionContext,
-  params: Record<string, unknown>
+  params: Record<string, unknown>,
 ) => Promise<ActionResult>;
 
 /**

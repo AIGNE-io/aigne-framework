@@ -1,8 +1,8 @@
 import type { AFSEntry, AFSSearchOptions, AFSSearchResult } from "@aigne/afs";
 import { sql } from "@aigne/sqlite";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
+import { type BuildEntryOptions, buildSearchEntry } from "../node/builder.js";
 import type { TableSchema } from "../schema/types.js";
-import { buildSearchEntry, type BuildEntryOptions } from "../node/builder.js";
 
 /**
  * Executes a raw SQL query and returns all rows
@@ -39,7 +39,7 @@ export class FTSSearch {
     private db: LibSQLDatabase,
     private schemas: Map<string, TableSchema>,
     private config: FTSConfig,
-    private basePath: string = ""
+    private basePath: string = "",
   ) {}
 
   /**
@@ -50,7 +50,7 @@ export class FTSSearch {
     options?: AFSSearchOptions & {
       /** Specific tables to search (defaults to all FTS-enabled tables) */
       tables?: string[];
-    }
+    },
   ): Promise<AFSSearchResult> {
     if (!this.config.enabled) {
       return { data: [], message: "Full-text search is not enabled" };
@@ -94,13 +94,19 @@ export class FTSSearch {
             JOIN "${tableName}" t ON fts.rowid = t.rowid
             WHERE "${ftsTableName}" MATCH '${ftsQuery}'
             LIMIT ${Math.ceil(limit / tablesToSearch.length)}
-          `
+          `,
         );
 
         for (const row of rows) {
           const { snippet, ...rowData } = row;
           results.push(
-            buildSearchEntry(tableName, schema, rowData, snippet as string | undefined, buildOptions)
+            buildSearchEntry(
+              tableName,
+              schema,
+              rowData,
+              snippet as string | undefined,
+              buildOptions,
+            ),
           );
         }
       } catch (error) {
@@ -124,7 +130,7 @@ export class FTSSearch {
   async searchTable(
     tableName: string,
     query: string,
-    options?: AFSSearchOptions
+    options?: AFSSearchOptions,
   ): Promise<AFSSearchResult> {
     return this.search(query, { ...options, tables: [tableName] });
   }
@@ -149,7 +155,7 @@ export class FTSSearch {
   private async ftsTableExists(ftsTableName: string): Promise<boolean> {
     const result = await execAll<{ name: string }>(
       this.db,
-      `SELECT name FROM sqlite_master WHERE type = 'table' AND name = '${ftsTableName}'`
+      `SELECT name FROM sqlite_master WHERE type = 'table' AND name = '${ftsTableName}'`,
     );
     return result.length > 0;
   }
@@ -158,7 +164,7 @@ export class FTSSearch {
    * Prepares a query string for FTS5
    * Handles special characters and case sensitivity
    */
-  private prepareFTSQuery(query: string, caseSensitive?: boolean): string {
+  private prepareFTSQuery(query: string, _caseSensitive?: boolean): string {
     // Escape special FTS5 characters
     let prepared = query
       .replace(/"/g, '""') // Escape double quotes
@@ -190,7 +196,7 @@ export class FTSSearch {
     tableName: string,
     query: string,
     columns: string[],
-    options?: AFSSearchOptions
+    options?: AFSSearchOptions,
   ): Promise<AFSSearchResult> {
     const schema = this.schemas.get(tableName);
     if (!schema) {
@@ -213,7 +219,7 @@ export class FTSSearch {
 
     const rows = await execAll<Record<string, unknown>>(
       this.db,
-      `SELECT * FROM "${tableName}" WHERE ${conditions} LIMIT ${limit}`
+      `SELECT * FROM "${tableName}" WHERE ${conditions} LIMIT ${limit}`,
     );
 
     return {
@@ -225,12 +231,10 @@ export class FTSSearch {
 /**
  * Creates FTS configuration from options
  */
-export function createFTSConfig(
-  options?: {
-    enabled?: boolean;
-    tables?: Record<string, string[]>;
-  }
-): FTSConfig {
+export function createFTSConfig(options?: {
+  enabled?: boolean;
+  tables?: Record<string, string[]>;
+}): FTSConfig {
   const config: FTSConfig = {
     enabled: options?.enabled ?? false,
     tables: new Map(),

@@ -71,7 +71,7 @@ export function registerBuiltInActions(registry: ActionsRegistry): void {
     handler: async (ctx: ActionContext): Promise<ActionResult> => {
       const result = await execAll<{ count: number }>(
         ctx.db,
-        `SELECT COUNT(*) as count FROM "${ctx.table}"`
+        `SELECT COUNT(*) as count FROM "${ctx.table}"`,
       );
       return {
         success: true,
@@ -108,13 +108,13 @@ export function registerBuiltInActions(registry: ActionsRegistry): void {
 
       await execRun(
         ctx.db,
-        `INSERT INTO "${ctx.table}" (${columns.map((c) => `"${c}"`).join(", ")}) VALUES (${values.join(", ")})`
+        `INSERT INTO "${ctx.table}" (${columns.map((c) => `"${c}"`).join(", ")}) VALUES (${values.join(", ")})`,
       );
 
       // Get the new row's ID
       const lastIdResult = await execAll<{ id: number }>(
         ctx.db,
-        "SELECT last_insert_rowid() as id"
+        "SELECT last_insert_rowid() as id",
       );
 
       return {
@@ -156,11 +156,11 @@ export function registerBuiltInActions(registry: ActionsRegistry): void {
         if (value !== null && value !== undefined) {
           const refResult = await execAll<{ count: number }>(
             ctx.db,
-            `SELECT COUNT(*) as count FROM "${fk.table}" WHERE "${fk.to}" = '${String(value).replace(/'/g, "''")}'`
+            `SELECT COUNT(*) as count FROM "${fk.table}" WHERE "${fk.to}" = '${String(value).replace(/'/g, "''")}'`,
           );
           if (refResult[0]?.count === 0) {
             errors.push(
-              `Foreign key violation: ${fk.from} references non-existent ${fk.table}.${fk.to}`
+              `Foreign key violation: ${fk.from} references non-existent ${fk.table}.${fk.to}`,
             );
           }
         }

@@ -84,18 +84,21 @@ export class SchemaIntrospector {
       tables?: string[];
       /** Tables to exclude */
       excludeTables?: string[];
-    }
+    },
   ): Promise<Map<string, TableSchema>> {
     const schemas = new Map<string, TableSchema>();
 
     // Get all user tables (exclude system tables and FTS tables)
-    const tablesResult = await execAll<{ name: string }>(db, `
+    const tablesResult = await execAll<{ name: string }>(
+      db,
+      `
       SELECT name FROM sqlite_master
       WHERE type = 'table'
       AND name NOT LIKE 'sqlite_%'
       AND name NOT LIKE '%_fts%'
       ORDER BY name
-    `);
+    `,
+    );
 
     for (const { name } of tablesResult) {
       // Skip system tables
@@ -130,7 +133,7 @@ export class SchemaIntrospector {
     // Get column information
     const columnsResult = await execAll<PragmaTableInfoRow>(
       db,
-      `PRAGMA table_info("${tableName}")`
+      `PRAGMA table_info("${tableName}")`,
     );
     const columns = columnsResult.map(mapColumn);
 
@@ -140,14 +143,14 @@ export class SchemaIntrospector {
     // Get foreign keys
     const fksResult = await execAll<PragmaForeignKeyRow>(
       db,
-      `PRAGMA foreign_key_list("${tableName}")`
+      `PRAGMA foreign_key_list("${tableName}")`,
     );
     const foreignKeys = fksResult.map(mapForeignKey);
 
     // Get indexes
     const indexesResult = await execAll<PragmaIndexListRow>(
       db,
-      `PRAGMA index_list("${tableName}")`
+      `PRAGMA index_list("${tableName}")`,
     );
     const indexes = indexesResult.map(mapIndex);
 
@@ -177,11 +180,14 @@ export class SchemaIntrospector {
    */
   async hasFTS(db: LibSQLDatabase, tableName: string): Promise<boolean> {
     const ftsTableName = `${tableName}_fts`;
-    const result = await execAll<{ name: string }>(db, `
+    const result = await execAll<{ name: string }>(
+      db,
+      `
       SELECT name FROM sqlite_master
       WHERE type = 'table'
       AND name = '${ftsTableName}'
-    `);
+    `,
+    );
     return result.length > 0;
   }
 
@@ -197,7 +203,7 @@ export class SchemaIntrospector {
       contentTable?: string;
       /** Content rowid column (defaults to 'rowid') */
       contentRowid?: string;
-    }
+    },
   ): Promise<void> {
     const ftsTableName = `${tableName}_fts`;
     const contentTable = options?.contentTable ?? tableName;
@@ -205,33 +211,45 @@ export class SchemaIntrospector {
     const columnList = columns.join(", ");
 
     // Create FTS5 virtual table
-    await execRun(db, `
+    await execRun(
+      db,
+      `
       CREATE VIRTUAL TABLE IF NOT EXISTS "${ftsTableName}" USING fts5(
         ${columnList},
         content="${contentTable}",
         content_rowid="${contentRowid}"
       )
-    `);
+    `,
+    );
 
     // Create triggers to keep FTS in sync
-    await execRun(db, `
+    await execRun(
+      db,
+      `
       CREATE TRIGGER IF NOT EXISTS "${tableName}_ai" AFTER INSERT ON "${tableName}" BEGIN
         INSERT INTO "${ftsTableName}"(rowid, ${columnList}) VALUES (new.${contentRowid}, ${columns.map((c) => `new."${c}"`).join(", ")});
       END
-    `);
+    `,
+    );
 
-    await execRun(db, `
+    await execRun(
+      db,
+      `
       CREATE TRIGGER IF NOT EXISTS "${tableName}_ad" AFTER DELETE ON "${tableName}" BEGIN
         INSERT INTO "${ftsTableName}"("${ftsTableName}", rowid, ${columnList}) VALUES ('delete', old.${contentRowid}, ${columns.map((c) => `old."${c}"`).join(", ")});
       END
-    `);
+    `,
+    );
 
-    await execRun(db, `
+    await execRun(
+      db,
+      `
       CREATE TRIGGER IF NOT EXISTS "${tableName}_au" AFTER UPDATE ON "${tableName}" BEGIN
         INSERT INTO "${ftsTableName}"("${ftsTableName}", rowid, ${columnList}) VALUES ('delete', old.${contentRowid}, ${columns.map((c) => `old."${c}"`).join(", ")});
         INSERT INTO "${ftsTableName}"(rowid, ${columnList}) VALUES (new.${contentRowid}, ${columns.map((c) => `new."${c}"`).join(", ")});
       END
-    `);
+    `,
+    );
   }
 
   /**

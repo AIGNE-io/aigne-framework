@@ -1,5 +1,5 @@
 import { createRouter, type RadixRouter } from "radix3";
-import type { RouteAction, RouteData, RouteMatch, RouteParams } from "./types.js";
+import type { RouteData, RouteMatch, RouteParams } from "./types.js";
 
 export type { RouteData };
 
@@ -46,10 +46,7 @@ export function createPathRouter(): RadixRouter<RouteData> {
  * @param path - The path to match
  * @returns RouteMatch if matched, undefined otherwise
  */
-export function matchPath(
-  router: RadixRouter<RouteData>,
-  path: string
-): RouteMatch | undefined {
+export function matchPath(router: RadixRouter<RouteData>, path: string): RouteMatch | undefined {
   const result = router.lookup(path);
   if (!result) return undefined;
 
@@ -62,11 +59,7 @@ export function matchPath(
 /**
  * Builds a path from components
  */
-export function buildPath(
-  table?: string,
-  pk?: string,
-  suffix?: string
-): string {
+export function buildPath(table?: string, pk?: string, suffix?: string): string {
   const parts = ["/"];
   if (table) parts.push(table);
   if (pk) parts.push(pk);
@@ -84,9 +77,7 @@ export function isVirtualPath(segment: string): boolean {
 /**
  * Gets the type of virtual path
  */
-export function getVirtualPathType(
-  segment: string
-): "attr" | "meta" | "actions" | "schema" | null {
+export function getVirtualPathType(segment: string): "attr" | "meta" | "actions" | "schema" | null {
   if (segment === "@attr") return "attr";
   if (segment === "@meta") return "meta";
   if (segment === "@actions") return "actions";

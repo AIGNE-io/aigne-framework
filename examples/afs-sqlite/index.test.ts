@@ -7,5 +7,5 @@ test(
     const { status } = await runExampleTest();
     expect(status).toBe(0);
   },
-  { timeout: 600000 }
+  { timeout: 600000 },
 );

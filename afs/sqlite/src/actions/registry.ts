@@ -23,7 +23,7 @@ export class ActionsRegistry {
       description?: string;
       tableLevel?: boolean;
       rowLevel?: boolean;
-    }
+    },
   ): void {
     this.register({
       name,
@@ -85,7 +85,7 @@ export class ActionsRegistry {
   async execute(
     name: string,
     ctx: ActionContext,
-    params: Record<string, unknown> = {}
+    params: Record<string, unknown> = {},
   ): Promise<ActionResult> {
     const definition = this.handlers.get(name);
 

@@ -1,23 +1,30 @@
-import type { AFSEntry, AFSListOptions, AFSListResult, AFSReadResult, AFSWriteResult, AFSDeleteResult } from "@aigne/afs";
+import type {
+  AFSDeleteResult,
+  AFSEntry,
+  AFSListOptions,
+  AFSListResult,
+  AFSReadResult,
+  AFSWriteResult,
+} from "@aigne/afs";
 import { sql } from "@aigne/sqlite";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
-import type { TableSchema } from "../schema/types.js";
 import {
-  buildRowEntry,
-  buildTableEntry,
-  buildSchemaEntry,
+  type BuildEntryOptions,
   buildAttributeEntry,
   buildAttributeListEntry,
   buildMetaEntry,
-  type BuildEntryOptions,
+  buildRowEntry,
+  buildSchemaEntry,
+  buildTableEntry,
 } from "../node/builder.js";
+import type { TableSchema } from "../schema/types.js";
 import {
-  buildSelectByPK,
-  buildSelectAll,
-  buildInsert,
-  buildUpdate,
   buildDelete,
   buildGetLastRowId,
+  buildInsert,
+  buildSelectAll,
+  buildSelectByPK,
+  buildUpdate,
 } from "./query-builder.js";
 
 /**
@@ -41,7 +48,7 @@ export class CRUDOperations {
   constructor(
     private db: LibSQLDatabase,
     private schemas: Map<string, TableSchema>,
-    private basePath: string = ""
+    private basePath: string = "",
   ) {}
 
   /**
@@ -55,7 +62,7 @@ export class CRUDOperations {
       // Get row count for each table
       const countResult = await execAll<{ count: number }>(
         this.db,
-        `SELECT COUNT(*) as count FROM "${name}"`
+        `SELECT COUNT(*) as count FROM "${name}"`,
       );
       const rowCount = countResult[0]?.count ?? 0;
 
@@ -101,14 +108,15 @@ export class CRUDOperations {
 
     const rows = await execAll<Record<string, unknown>>(
       this.db,
-      buildSelectByPK(table, schema, pk)
+      buildSelectByPK(table, schema, pk),
     );
 
-    if (rows.length === 0) {
+    const row = rows[0];
+    if (!row) {
       return { message: `Row with pk '${pk}' not found in table '${table}'` };
     }
 
-    return { data: buildRowEntry(table, schema, rows[0]!, buildOptions) };
+    return { data: buildRowEntry(table, schema, row, buildOptions) };
   }
 
   /**
@@ -137,14 +145,15 @@ export class CRUDOperations {
 
     const rows = await execAll<Record<string, unknown>>(
       this.db,
-      buildSelectByPK(table, schema, pk)
+      buildSelectByPK(table, schema, pk),
     );
 
-    if (rows.length === 0) {
+    const row = rows[0];
+    if (!row) {
       return { data: [], message: `Row with pk '${pk}' not found` };
     }
 
-    return { data: buildAttributeListEntry(table, schema, pk, rows[0]!, buildOptions) };
+    return { data: buildAttributeListEntry(table, schema, pk, row, buildOptions) };
   }
 
   /**
@@ -166,7 +175,7 @@ export class CRUDOperations {
 
     const rows = await execAll<Record<string, unknown>>(
       this.db,
-      buildSelectByPK(table, schema, pk)
+      buildSelectByPK(table, schema, pk),
     );
 
     if (rows.length === 0) {
@@ -174,7 +183,7 @@ export class CRUDOperations {
     }
 
     return {
-      data: buildAttributeEntry(table, pk, column, rows[0]![column], buildOptions),
+      data: buildAttributeEntry(table, pk, column, rows[0]?.[column], buildOptions),
     };
   }
 
@@ -191,23 +200,21 @@ export class CRUDOperations {
 
     const rows = await execAll<Record<string, unknown>>(
       this.db,
-      buildSelectByPK(table, schema, pk)
+      buildSelectByPK(table, schema, pk),
     );
 
-    if (rows.length === 0) {
+    const row = rows[0];
+    if (!row) {
       return { message: `Row with pk '${pk}' not found` };
     }
 
-    return { data: buildMetaEntry(table, schema, pk, rows[0]!, buildOptions) };
+    return { data: buildMetaEntry(table, schema, pk, row, buildOptions) };
   }
 
   /**
    * Creates a new row in a table
    */
-  async createRow(
-    table: string,
-    content: Record<string, unknown>
-  ): Promise<AFSWriteResult> {
+  async createRow(table: string, content: Record<string, unknown>): Promise<AFSWriteResult> {
     const schema = this.schemas.get(table);
     if (!schema) {
       throw new Error(`Table '${table}' not found`);
@@ -232,14 +239,15 @@ export class CRUDOperations {
 
     const rows = await execAll<Record<string, unknown>>(
       this.db,
-      buildSelectByPK(table, schema, pk)
+      buildSelectByPK(table, schema, pk),
     );
 
-    if (rows.length === 0) {
+    const row = rows[0];
+    if (!row) {
       throw new Error("Failed to fetch inserted row");
     }
 
-    return { data: buildRowEntry(table, schema, rows[0]!, buildOptions) };
+    return { data: buildRowEntry(table, schema, row, buildOptions) };
   }
 
   /**
@@ -248,7 +256,7 @@ export class CRUDOperations {
   async updateRow(
     table: string,
     pk: string,
-    content: Record<string, unknown>
+    content: Record<string, unknown>,
   ): Promise<AFSWriteResult> {
     const schema = this.schemas.get(table);
     if (!schema) {
@@ -263,14 +271,15 @@ export class CRUDOperations {
     // Fetch the updated row
     const rows = await execAll<Record<string, unknown>>(
       this.db,
-      buildSelectByPK(table, schema, pk)
+      buildSelectByPK(table, schema, pk),
     );
 
-    if (rows.length === 0) {
+    const row = rows[0];
+    if (!row) {
       throw new Error(`Row with pk '${pk}' not found after update`);
     }
 
-    return { data: buildRowEntry(table, schema, rows[0]!, buildOptions) };
+    return { data: buildRowEntry(table, schema, row, buildOptions) };
   }
 
   /**
@@ -285,7 +294,7 @@ export class CRUDOperations {
     // Check if row exists first
     const existing = await execAll<Record<string, unknown>>(
       this.db,
-      buildSelectByPK(table, schema, pk)
+      buildSelectByPK(table, schema, pk),
     );
 
     if (existing.length === 0) {

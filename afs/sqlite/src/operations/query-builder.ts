@@ -3,11 +3,7 @@ import type { TableSchema } from "../schema/types.js";
 /**
  * Builds a SELECT query string for a single row by primary key
  */
-export function buildSelectByPK(
-  tableName: string,
-  schema: TableSchema,
-  pk: string
-): string {
+export function buildSelectByPK(tableName: string, schema: TableSchema, pk: string): string {
   const pkColumn = schema.primaryKey[0] ?? "rowid";
   return `SELECT * FROM "${tableName}" WHERE "${pkColumn}" = '${escapeSQLString(pk)}'`;
 }
@@ -21,14 +17,12 @@ export function buildSelectAll(
     limit?: number;
     offset?: number;
     orderBy?: [string, "asc" | "desc"][];
-  }
+  },
 ): string {
   let query = `SELECT * FROM "${tableName}"`;
 
   if (options?.orderBy?.length) {
-    const orderClauses = options.orderBy.map(
-      ([col, dir]) => `"${col}" ${dir.toUpperCase()}`
-    );
+    const orderClauses = options.orderBy.map(([col, dir]) => `"${col}" ${dir.toUpperCase()}`);
     query += ` ORDER BY ${orderClauses.join(", ")}`;
   }
 
@@ -49,7 +43,7 @@ export function buildSelectAll(
 export function buildInsert(
   tableName: string,
   schema: TableSchema,
-  content: Record<string, unknown>
+  content: Record<string, unknown>,
 ): string {
   // Filter to only valid columns
   const validColumns = new Set(schema.columns.map((c) => c.name));
@@ -72,23 +66,21 @@ export function buildUpdate(
   tableName: string,
   schema: TableSchema,
   pk: string,
-  content: Record<string, unknown>
+  content: Record<string, unknown>,
 ): string {
   const pkColumn = schema.primaryKey[0] ?? "rowid";
 
   // Filter to only valid columns, excluding PK
   const validColumns = new Set(schema.columns.map((c) => c.name));
   const entries = Object.entries(content).filter(
-    ([key]) => validColumns.has(key) && key !== pkColumn
+    ([key]) => validColumns.has(key) && key !== pkColumn,
   );
 
   if (entries.length === 0) {
     throw new Error(`No valid columns provided for UPDATE on ${tableName}`);
   }
 
-  const setClauses = entries
-    .map(([key, value]) => `"${key}" = ${formatValue(value)}`)
-    .join(", ");
+  const setClauses = entries.map(([key, value]) => `"${key}" = ${formatValue(value)}`).join(", ");
 
   return `UPDATE "${tableName}" SET ${setClauses} WHERE "${pkColumn}" = '${escapeSQLString(pk)}'`;
 }
@@ -96,11 +88,7 @@ export function buildUpdate(
 /**
  * Builds a DELETE query string by primary key
  */
-export function buildDelete(
-  tableName: string,
-  schema: TableSchema,
-  pk: string
-): string {
+export function buildDelete(tableName: string, schema: TableSchema, pk: string): string {
   const pkColumn = schema.primaryKey[0] ?? "rowid";
   return `DELETE FROM "${tableName}" WHERE "${pkColumn}" = '${escapeSQLString(pk)}'`;
 }

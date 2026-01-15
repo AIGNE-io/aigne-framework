@@ -1,53 +1,55 @@
-import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { beforeAll, describe, expect, test } from "bun:test";
 import { initDatabase, sql } from "@aigne/sqlite";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
-import { SQLiteAFS } from "../src/sqlite-afs.js";
-import { SchemaIntrospector } from "../src/schema/introspector.js";
-import { createPathRouter, matchPath } from "../src/router/path-router.js";
 import { ActionsRegistry } from "../src/actions/registry.js";
-import { CRUDOperations } from "../src/operations/crud.js";
-import { FTSSearch, createFTSConfig } from "../src/operations/search.js";
+import { sqliteAFSConfigSchema } from "../src/config.js";
 import {
-  buildSelectByPK,
-  buildSelectAll,
-  buildInsert,
-  buildUpdate,
-  buildDelete,
-  formatValue,
-  escapeSQLString,
-  buildGetLastRowId,
-} from "../src/operations/query-builder.js";
-import {
-  buildRowEntry,
-  buildTableEntry,
-  buildSchemaEntry,
+  buildActionsListEntry,
   buildAttributeEntry,
   buildAttributeListEntry,
   buildMetaEntry,
-  buildActionsListEntry,
+  buildRowEntry,
+  buildSchemaEntry,
   buildSearchEntry,
+  buildTableEntry,
 } from "../src/node/builder.js";
-import { sqliteAFSConfigSchema } from "../src/config.js";
+import { CRUDOperations } from "../src/operations/crud.js";
+import {
+  buildDelete,
+  buildGetLastRowId,
+  buildInsert,
+  buildSelectAll,
+  buildSelectByPK,
+  buildUpdate,
+  escapeSQLString,
+  formatValue,
+} from "../src/operations/query-builder.js";
+import { createFTSConfig, FTSSearch } from "../src/operations/search.js";
+import { createPathRouter, matchPath } from "../src/router/path-router.js";
+import { SchemaIntrospector } from "../src/schema/introspector.js";
 import type { TableSchema } from "../src/schema/types.js";
+import { SQLiteAFS } from "../src/sqlite-afs.js";
 
 let db: LibSQLDatabase;
-let sqliteAFS: SQLiteAFS;
 
 beforeAll(async () => {
   // Create in-memory database
-  db = await initDatabase({ url: ":memory:" });
+  db = (await initDatabase({ url: ":memory:" })) as unknown as LibSQLDatabase;
 
   // Create test tables
-  await db.run(sql.raw(`
+  await db.run(
+    sql.raw(`
     CREATE TABLE users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       email TEXT UNIQUE,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
-  `));
+  `),
+  );
 
-  await db.run(sql.raw(`
+  await db.run(
+    sql.raw(`
     CREATE TABLE posts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
@@ -55,16 +57,20 @@ beforeAll(async () => {
       content TEXT,
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
-  `));
+  `),
+  );
 
   // Insert test data
   await db.run(sql.raw(`INSERT INTO users (name, email) VALUES ('Alice', 'alice@test.com')`));
   await db.run(sql.raw(`INSERT INTO users (name, email) VALUES ('Bob', 'bob@test.com')`));
-  await db.run(sql.raw(`INSERT INTO posts (user_id, title, content) VALUES (1, 'First Post', 'Hello World')`));
-  await db.run(sql.raw(`INSERT INTO posts (user_id, title, content) VALUES (1, 'Second Post', 'More content')`));
-
-  // Initialize SQLiteAFS with the same database URL
-  sqliteAFS = new SQLiteAFS({ url: ":memory:" });
+  await db.run(
+    sql.raw(`INSERT INTO posts (user_id, title, content) VALUES (1, 'First Post', 'Hello World')`),
+  );
+  await db.run(
+    sql.raw(
+      `INSERT INTO posts (user_id, title, content) VALUES (1, 'Second Post', 'More content')`,
+    ),
+  );
 });
 
 describe("SchemaIntrospector", () => {
@@ -81,14 +87,15 @@ describe("SchemaIntrospector", () => {
     const introspector = new SchemaIntrospector();
     const schemas = await introspector.introspect(db);
 
-    const usersSchema = schemas.get("users")!;
-    expect(usersSchema.columns.length).toBe(4);
+    const usersSchema = schemas.get("users");
+    expect(usersSchema).toBeDefined();
+    expect(usersSchema?.columns.length).toBe(4);
 
-    const idCol = usersSchema.columns.find((c) => c.name === "id");
+    const idCol = usersSchema?.columns.find((c) => c.name === "id");
     expect(idCol?.pk).toBe(1);
     expect(idCol?.type).toBe("INTEGER");
 
-    const nameCol = usersSchema.columns.find((c) => c.name === "name");
+    const nameCol = usersSchema?.columns.find((c) => c.name === "name");
     expect(nameCol?.notnull).toBe(true);
   });
 
@@ -96,19 +103,21 @@ describe("SchemaIntrospector", () => {
     const introspector = new SchemaIntrospector();
     const schemas = await introspector.introspect(db);
 
-    const usersSchema = schemas.get("users")!;
-    expect(usersSchema.primaryKey).toEqual(["id"]);
+    const usersSchema = schemas.get("users");
+    expect(usersSchema).toBeDefined();
+    expect(usersSchema?.primaryKey).toEqual(["id"]);
   });
 
   test("should extract foreign keys", async () => {
     const introspector = new SchemaIntrospector();
     const schemas = await introspector.introspect(db);
 
-    const postsSchema = schemas.get("posts")!;
-    expect(postsSchema.foreignKeys.length).toBe(1);
-    expect(postsSchema.foreignKeys[0].from).toBe("user_id");
-    expect(postsSchema.foreignKeys[0].table).toBe("users");
-    expect(postsSchema.foreignKeys[0].to).toBe("id");
+    const postsSchema = schemas.get("posts");
+    expect(postsSchema).toBeDefined();
+    expect(postsSchema?.foreignKeys.length).toBe(1);
+    expect(postsSchema?.foreignKeys[0]?.from).toBe("user_id");
+    expect(postsSchema?.foreignKeys[0]?.table).toBe("users");
+    expect(postsSchema?.foreignKeys[0]?.to).toBe("id");
   });
 
   test("should respect table whitelist", async () => {
@@ -336,14 +345,18 @@ describe("SQLiteAFS Module", () => {
 
     // Set up test data in this instance's database
     const testDb = afs.getDatabase();
-    await testDb.run(sql.raw(`
+    await testDb.run(
+      sql.raw(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         email TEXT UNIQUE
       )
-    `));
-    await testDb.run(sql.raw(`INSERT OR IGNORE INTO users (name, email) VALUES ('Test', 'test@example.com')`));
+    `),
+    );
+    await testDb.run(
+      sql.raw(`INSERT OR IGNORE INTO users (name, email) VALUES ('Test', 'test@example.com')`),
+    );
 
     // Refresh schema after creating tables
     await afs.refreshSchema();
@@ -361,7 +374,7 @@ describe("SQLiteAFS Module", () => {
     const result = await afs.list("/users");
 
     expect(result.data.length).toBeGreaterThan(0);
-    expect(result.data[0].content).toHaveProperty("name");
+    expect(result.data[0]?.content).toHaveProperty("name");
   });
 
   test("should read a row by pk", async () => {
@@ -497,20 +510,22 @@ describe("SQLiteAFS Readonly Mode", () => {
     await readonlyAfs.onMount({} as any);
 
     const testDb = readonlyAfs.getDatabase();
-    await testDb.run(sql.raw(`
+    await testDb.run(
+      sql.raw(`
       CREATE TABLE IF NOT EXISTS items (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL
       )
-    `));
+    `),
+    );
     await testDb.run(sql.raw(`INSERT INTO items (name) VALUES ('Item1')`));
     await readonlyAfs.refreshSchema();
   });
 
   test("should throw on write in readonly mode", async () => {
-    await expect(
-      readonlyAfs.write("/items/new", { content: { name: "NewItem" } })
-    ).rejects.toThrow("readonly");
+    await expect(readonlyAfs.write("/items/new", { content: { name: "NewItem" } })).rejects.toThrow(
+      "readonly",
+    );
   });
 
   test("should throw on delete in readonly mode", async () => {
@@ -537,14 +552,20 @@ describe("SQLiteAFS Search", () => {
     await searchAfs.onMount({} as any);
 
     const testDb = searchAfs.getDatabase();
-    await testDb.run(sql.raw(`
+    await testDb.run(
+      sql.raw(`
       CREATE TABLE IF NOT EXISTS articles (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         content TEXT
       )
-    `));
-    await testDb.run(sql.raw(`INSERT INTO articles (title, content) VALUES ('Test Article', 'This is test content')`));
+    `),
+    );
+    await testDb.run(
+      sql.raw(
+        `INSERT INTO articles (title, content) VALUES ('Test Article', 'This is test content')`,
+      ),
+    );
     await searchAfs.refreshSchema();
   });
 
@@ -568,12 +589,14 @@ describe("SQLiteAFS Exec", () => {
     await execAfs.onMount({} as any);
 
     const testDb = execAfs.getDatabase();
-    await testDb.run(sql.raw(`
+    await testDb.run(
+      sql.raw(`
       CREATE TABLE IF NOT EXISTS tasks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL
       )
-    `));
+    `),
+    );
     await testDb.run(sql.raw(`INSERT INTO tasks (name) VALUES ('Task1')`));
     await execAfs.refreshSchema();
   });
@@ -596,13 +619,15 @@ describe("SQLiteAFS Custom Actions", () => {
     await actionAfs.onMount({} as any);
 
     const testDb = actionAfs.getDatabase();
-    await testDb.run(sql.raw(`
+    await testDb.run(
+      sql.raw(`
       CREATE TABLE IF NOT EXISTS products (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         price REAL
       )
-    `));
+    `),
+    );
     await testDb.run(sql.raw(`INSERT INTO products (name, price) VALUES ('Product1', 9.99)`));
     await actionAfs.refreshSchema();
   });
@@ -610,10 +635,10 @@ describe("SQLiteAFS Custom Actions", () => {
   test("should register custom action", async () => {
     actionAfs.registerAction(
       "customAction",
-      async (ctx, params) => {
+      async (ctx, _params) => {
         return { custom: true, table: ctx.table };
       },
-      { rowLevel: true }
+      { rowLevel: true },
     );
 
     const actions = await actionAfs.list("/products/1/@actions");
@@ -630,13 +655,15 @@ describe("SQLiteAFS Export Table", () => {
     await exportAfs.onMount({} as any);
 
     const testDb = exportAfs.getDatabase();
-    await testDb.run(sql.raw(`
+    await testDb.run(
+      sql.raw(`
       CREATE TABLE IF NOT EXISTS customers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         city TEXT
       )
-    `));
+    `),
+    );
     await testDb.run(sql.raw(`INSERT INTO customers (name, city) VALUES ('John', 'NYC')`));
     await testDb.run(sql.raw(`INSERT INTO customers (name, city) VALUES ('Jane', 'LA')`));
     await exportAfs.refreshSchema();
@@ -667,7 +694,9 @@ describe("SQLiteAFS Export Table", () => {
 
   test("should export CSV with special characters", async () => {
     const testDb = exportAfs.getDatabase();
-    await testDb.run(sql.raw(`INSERT INTO customers (name, city) VALUES ('Test, User', 'New York, NY')`));
+    await testDb.run(
+      sql.raw(`INSERT INTO customers (name, city) VALUES ('Test, User', 'New York, NY')`),
+    );
     await exportAfs.refreshSchema();
 
     const result = await (exportAfs as any).exportTable("customers", "csv");
@@ -696,7 +725,10 @@ describe("Query Builder", () => {
 
   test("buildSelectAll with orderBy", () => {
     const query = buildSelectAll("test", {
-      orderBy: [["name", "asc"], ["id", "desc"]],
+      orderBy: [
+        ["name", "asc"],
+        ["id", "desc"],
+      ],
     });
     expect(query).toContain("ORDER BY");
     expect(query).toContain('"name" ASC');
@@ -726,14 +758,14 @@ describe("Query Builder", () => {
 
   test("buildUpdate should exclude PK column", () => {
     const query = buildUpdate("test", mockSchema, "1", { id: 999, name: "Updated" });
-    expect(query).not.toContain("SET \"id\"");
+    expect(query).not.toContain('SET "id"');
     expect(query).toContain('"name" =');
   });
 
   test("buildDelete", () => {
     const query = buildDelete("test", mockSchema, "1");
     expect(query).toContain("DELETE FROM");
-    expect(query).toContain('"id" = \'1\'');
+    expect(query).toContain("\"id\" = '1'");
   });
 
   test("formatValue with various types", () => {
@@ -770,14 +802,16 @@ describe("CRUDOperations", () => {
   let crud: CRUDOperations;
 
   beforeAll(async () => {
-    crudDb = await initDatabase({ url: ":memory:" });
-    await crudDb.run(sql.raw(`
+    crudDb = (await initDatabase({ url: ":memory:" })) as unknown as LibSQLDatabase;
+    await crudDb.run(
+      sql.raw(`
       CREATE TABLE items (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         quantity INTEGER DEFAULT 0
       )
-    `));
+    `),
+    );
     await crudDb.run(sql.raw(`INSERT INTO items (name, quantity) VALUES ('Item1', 10)`));
 
     const introspector = new SchemaIntrospector();
@@ -890,18 +924,22 @@ describe("CRUDOperations", () => {
 describe("FTSSearch", () => {
   let ftsDb: LibSQLDatabase;
   let schemas: Map<string, TableSchema>;
-  let ftsSearch: FTSSearch;
+  let _ftsSearch: FTSSearch;
 
   beforeAll(async () => {
-    ftsDb = await initDatabase({ url: ":memory:" });
-    await ftsDb.run(sql.raw(`
+    ftsDb = (await initDatabase({ url: ":memory:" })) as unknown as LibSQLDatabase;
+    await ftsDb.run(
+      sql.raw(`
       CREATE TABLE docs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
         body TEXT
       )
-    `));
-    await ftsDb.run(sql.raw(`INSERT INTO docs (title, body) VALUES ('Hello World', 'This is a test document')`));
+    `),
+    );
+    await ftsDb.run(
+      sql.raw(`INSERT INTO docs (title, body) VALUES ('Hello World', 'This is a test document')`),
+    );
 
     const introspector = new SchemaIntrospector();
     schemas = await introspector.introspect(ftsDb);
@@ -1020,8 +1058,19 @@ describe("Node Builder", () => {
       { name: "created_at", type: "DATETIME", notnull: false, dfltValue: null, pk: 0 },
     ],
     primaryKey: ["id"],
-    foreignKeys: [{ from: "user_id", table: "users", to: "id", onUpdate: "CASCADE", onDelete: "CASCADE" }],
-    indexes: [{ name: "idx_name", unique: true, origin: "c" }],
+    foreignKeys: [
+      {
+        id: 0,
+        seq: 0,
+        from: "user_id",
+        table: "users",
+        to: "id",
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+        match: "NONE",
+      },
+    ],
+    indexes: [{ seq: 0, name: "idx_name", unique: true, origin: "c", partial: false }],
   };
 
   test("buildRowEntry creates correct entry", () => {
@@ -1165,7 +1214,8 @@ describe("Built-in Actions Integration", () => {
     await afs.onMount({} as any);
 
     actionDb = afs.getDatabase();
-    await actionDb.run(sql.raw(`
+    await actionDb.run(
+      sql.raw(`
       CREATE TABLE products (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -1173,15 +1223,20 @@ describe("Built-in Actions Integration", () => {
         category_id INTEGER,
         FOREIGN KEY (category_id) REFERENCES categories(id)
       )
-    `));
-    await actionDb.run(sql.raw(`
+    `),
+    );
+    await actionDb.run(
+      sql.raw(`
       CREATE TABLE categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL
       )
-    `));
+    `),
+    );
     await actionDb.run(sql.raw(`INSERT INTO categories (name) VALUES ('Electronics')`));
-    await actionDb.run(sql.raw(`INSERT INTO products (name, price, category_id) VALUES ('Laptop', 999.99, 1)`));
+    await actionDb.run(
+      sql.raw(`INSERT INTO products (name, price, category_id) VALUES ('Laptop', 999.99, 1)`),
+    );
     await afs.refreshSchema();
   });
 
@@ -1197,7 +1252,9 @@ describe("Built-in Actions Integration", () => {
 
   test("validate action with foreign key check", async () => {
     // Insert product with valid foreign key
-    await actionDb.run(sql.raw(`INSERT INTO products (name, price, category_id) VALUES ('Phone', 599.99, 1)`));
+    await actionDb.run(
+      sql.raw(`INSERT INTO products (name, price, category_id) VALUES ('Phone', 599.99, 1)`),
+    );
     await afs.refreshSchema();
 
     // Get the new product id
@@ -1221,14 +1278,16 @@ describe("Built-in Actions - Row Level Actions", () => {
     await afs.onMount({} as any);
 
     db = afs.getDatabase();
-    await db.run(sql.raw(`
+    await db.run(
+      sql.raw(`
       CREATE TABLE orders (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         customer TEXT NOT NULL,
         total REAL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
-    `));
+    `),
+    );
     await db.run(sql.raw(`INSERT INTO orders (customer, total) VALUES ('Alice', 100.00)`));
     await db.run(sql.raw(`INSERT INTO orders (customer, total) VALUES ('Bob', 200.00)`));
     await db.run(sql.raw(`INSERT INTO orders (customer, total) VALUES ('Charlie', 300.00)`));
@@ -1238,7 +1297,7 @@ describe("Built-in Actions - Row Level Actions", () => {
   test("refresh action is not available at row level", async () => {
     // refresh is table-level only, should throw at row level
     await expect(afs.write("/orders/1/@actions/refresh", { content: {} })).rejects.toThrow(
-      "Action 'refresh' is not available at row level"
+      "Action 'refresh' is not available at row level",
     );
   });
 
@@ -1263,7 +1322,7 @@ describe("Built-in Actions - Row Level Actions", () => {
 
     const csvData = await afs.exportTable("orders", "csv");
     expect(typeof csvData).toBe("string");
-    expect((csvData as string)).toContain("id,customer,total");
+    expect(csvData as string).toContain("id,customer,total");
   });
 });
 
@@ -1276,14 +1335,16 @@ describe("Validate Action Edge Cases", () => {
     await afs.onMount({} as any);
 
     db = afs.getDatabase();
-    await db.run(sql.raw(`
+    await db.run(
+      sql.raw(`
       CREATE TABLE items (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         parent_id INTEGER,
         FOREIGN KEY (parent_id) REFERENCES items(id)
       )
-    `));
+    `),
+    );
     await db.run(sql.raw(`INSERT INTO items (name) VALUES ('Root')`));
     await db.run(sql.raw(`INSERT INTO items (name, parent_id) VALUES ('Child', 1)`));
     await afs.refreshSchema();
@@ -1302,9 +1363,9 @@ describe("Validate Action Edge Cases", () => {
     if (orphan) {
       const pkValue = (orphan.content as any).id;
       // Validate action throws when validation fails (success: false causes throw)
-      await expect(afs.write(`/items/${pkValue}/@actions/validate`, { content: {} })).rejects.toThrow(
-        "Foreign key violation"
-      );
+      await expect(
+        afs.write(`/items/${pkValue}/@actions/validate`, { content: {} }),
+      ).rejects.toThrow("Foreign key violation");
     }
   });
 });
@@ -1340,14 +1401,16 @@ describe("Schema Introspector - Indexes", () => {
   let db: LibSQLDatabase;
 
   beforeAll(async () => {
-    db = await initDatabase({ url: ":memory:" });
-    await db.run(sql.raw(`
+    db = (await initDatabase({ url: ":memory:" })) as unknown as LibSQLDatabase;
+    await db.run(
+      sql.raw(`
       CREATE TABLE indexed_table (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         email TEXT UNIQUE
       )
-    `));
+    `),
+    );
     await db.run(sql.raw(`CREATE INDEX idx_name ON indexed_table(name)`));
   });
 
@@ -1357,9 +1420,9 @@ describe("Schema Introspector - Indexes", () => {
 
     const schema = schemas.get("indexed_table");
     expect(schema).toBeDefined();
-    expect(schema!.indexes.length).toBeGreaterThan(0);
+    expect(schema?.indexes.length).toBeGreaterThan(0);
 
-    const nameIndex = schema!.indexes.find((idx) => idx.name === "idx_name");
+    const nameIndex = schema?.indexes.find((idx) => idx.name === "idx_name");
     expect(nameIndex).toBeDefined();
   });
 });
@@ -1373,13 +1436,15 @@ describe("Built-in Actions - Direct Registry Tests", () => {
     await afs.onMount({} as any);
 
     db = afs.getDatabase();
-    await db.run(sql.raw(`
+    await db.run(
+      sql.raw(`
       CREATE TABLE registry_test (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         value INTEGER
       )
-    `));
+    `),
+    );
     await db.run(sql.raw(`INSERT INTO registry_test (name, value) VALUES ('Test', 123)`));
     await afs.refreshSchema();
   });
@@ -1387,16 +1452,16 @@ describe("Built-in Actions - Direct Registry Tests", () => {
   test("duplicate action returns error when row data is not available", async () => {
     // Test by calling exec with a path that doesn't fetch row data
     // Since this goes through write() which fetches row data, we test via a non-existent row
-    await expect(afs.write("/registry_test/9999/@actions/duplicate", { content: {} })).rejects.toThrow(
-      "Row data not available"
-    );
+    await expect(
+      afs.write("/registry_test/9999/@actions/duplicate", { content: {} }),
+    ).rejects.toThrow("Row data not available");
   });
 
   test("validate action returns error when row data is not available", async () => {
     // Test with a non-existent row
-    await expect(afs.write("/registry_test/9999/@actions/validate", { content: {} })).rejects.toThrow(
-      "Row data not available"
-    );
+    await expect(
+      afs.write("/registry_test/9999/@actions/validate", { content: {} }),
+    ).rejects.toThrow("Row data not available");
   });
 
   test("validate action succeeds for valid row", async () => {
@@ -1416,7 +1481,8 @@ describe("formatValueForSQL Coverage", () => {
     await afs.onMount({} as any);
 
     db = afs.getDatabase();
-    await db.run(sql.raw(`
+    await db.run(
+      sql.raw(`
       CREATE TABLE format_test (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
@@ -1425,14 +1491,21 @@ describe("formatValueForSQL Coverage", () => {
         created_at TEXT,
         metadata TEXT
       )
-    `));
-    await db.run(sql.raw(`INSERT INTO format_test (name, count, is_active, created_at, metadata) VALUES ('Test', 1, 1, '2024-01-01', '{}')`));
+    `),
+    );
+    await db.run(
+      sql.raw(
+        `INSERT INTO format_test (name, count, is_active, created_at, metadata) VALUES ('Test', 1, 1, '2024-01-01', '{}')`,
+      ),
+    );
     await afs.refreshSchema();
   });
 
   test("duplicate handles boolean values", async () => {
     // Insert a row with boolean-like value
-    await db.run(sql.raw(`INSERT INTO format_test (name, count, is_active) VALUES ('Boolean Test', 42, 0)`));
+    await db.run(
+      sql.raw(`INSERT INTO format_test (name, count, is_active) VALUES ('Boolean Test', 42, 0)`),
+    );
     await afs.refreshSchema();
 
     const listResult = await afs.list("/format_test");
@@ -1447,7 +1520,11 @@ describe("formatValueForSQL Coverage", () => {
 
   test("duplicate handles Date values", async () => {
     // The duplicate action will process Date values when duplicating
-    await db.run(sql.raw(`INSERT INTO format_test (name, created_at) VALUES ('Date Test', '2024-06-15T12:00:00.000Z')`));
+    await db.run(
+      sql.raw(
+        `INSERT INTO format_test (name, created_at) VALUES ('Date Test', '2024-06-15T12:00:00.000Z')`,
+      ),
+    );
     await afs.refreshSchema();
 
     const listResult = await afs.list("/format_test");
@@ -1461,7 +1538,9 @@ describe("formatValueForSQL Coverage", () => {
   });
 
   test("duplicate handles object/JSON values", async () => {
-    await db.run(sql.raw(`INSERT INTO format_test (name, metadata) VALUES ('JSON Test', '{"key": "value"}')`));
+    await db.run(
+      sql.raw(`INSERT INTO format_test (name, metadata) VALUES ('JSON Test', '{"key": "value"}')`),
+    );
     await afs.refreshSchema();
 
     const listResult = await afs.list("/format_test");
@@ -1475,7 +1554,11 @@ describe("formatValueForSQL Coverage", () => {
   });
 
   test("duplicate handles null values", async () => {
-    await db.run(sql.raw(`INSERT INTO format_test (name, count, is_active, created_at, metadata) VALUES ('Null Test', NULL, NULL, NULL, NULL)`));
+    await db.run(
+      sql.raw(
+        `INSERT INTO format_test (name, count, is_active, created_at, metadata) VALUES ('Null Test', NULL, NULL, NULL, NULL)`,
+      ),
+    );
     await afs.refreshSchema();
 
     const listResult = await afs.list("/format_test");

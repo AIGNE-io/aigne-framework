@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.59.0-beta.28](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.27...cli-v1.59.0-beta.28) (2026-01-15)
+
+
+### Bug Fixes
+
+* fix data corruption when using AIGNE multiple ([#914](https://github.com/AIGNE-io/aigne-framework/issues/914)) ([c713736](https://github.com/AIGNE-io/aigne-framework/commit/c713736b17502ffac6b1fdf67e453aba2f37aab3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.23
+    * @aigne/agent-library bumped to 1.24.0-beta.24
+    * @aigne/agentic-memory bumped to 1.1.6-beta.22
+    * @aigne/aigne-hub bumped to 0.10.16-beta.28
+    * @aigne/core bumped to 1.72.0-beta.22
+    * @aigne/default-memory bumped to 1.4.0-beta.21
+    * @aigne/observability-api bumped to 0.11.14-beta.6
+    * @aigne/openai bumped to 0.16.16-beta.22
+    * @aigne/secrets bumped to 0.1.6-beta.22
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.22
+
 ## [1.59.0-beta.27](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.26...cli-v1.59.0-beta.27) (2026-01-15)
 
 

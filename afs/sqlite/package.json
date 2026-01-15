@@ -1,6 +1,6 @@
 {
   "name": "@aigne/afs-sqlite",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "AIGNE AFS module for SQLite database storage with schema introspection",
   "publishConfig": {
     "access": "public"

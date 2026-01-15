@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.15.89-beta.29](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.15.89-beta.28...example-workflow-reflection-v1.15.89-beta.29) (2026-01-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/agent-library bumped to 1.24.0-beta.24
+    * @aigne/cli bumped to 1.59.0-beta.28
+    * @aigne/core bumped to 1.72.0-beta.22
+    * @aigne/openai bumped to 0.16.16-beta.22
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.22
+
 ## [1.15.89-beta.28](https://github.com/AIGNE-io/aigne-framework/compare/example-workflow-reflection-v1.15.89-beta.27...example-workflow-reflection-v1.15.89-beta.28) (2026-01-15)
 
 

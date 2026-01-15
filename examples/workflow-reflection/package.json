@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-workflow-reflection",
-  "version": "1.15.89-beta.28",
+  "version": "1.15.89-beta.29",
   "description": "A demonstration of using AIGNE Framework to build a reflection workflow",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/workflow-reflection",

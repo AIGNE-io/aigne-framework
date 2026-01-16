@@ -68,13 +68,12 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
   }
 
   mount(module: AFSModule): this {
-    let path = joinURL("/", module.name);
-
-    if (!/^\/[^/]+$/.test(path)) {
-      throw new Error(`Invalid mount path: ${path}. Must start with '/' and contain no other '/'`);
+    // Validate module name (should not contain '/')
+    if (module.name.includes("/")) {
+      throw new Error(`Invalid module name: ${module.name}. Module name must not contain '/'`);
     }
 
-    path = joinURL(MODULES_ROOT_DIR, path);
+    const path = joinURL(MODULES_ROOT_DIR, module.name);
 
     if (this.modules.has(path)) {
       throw new Error(`Module already mounted at path: ${path}`);
@@ -112,16 +111,43 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
   private async _list(path: string, options: AFSRootListOptions = {}): Promise<AFSListResult> {
     const results: AFSEntry[] = [];
 
+    // Special case: listing root "/" should return /modules directory
+    if (path === "/" && this.modules.size > 0) {
+      const maxDepth = options?.maxDepth ?? DEFAULT_MAX_DEPTH;
+
+      // Always include /modules directory first
+      results.push({
+        id: "modules",
+        path: MODULES_ROOT_DIR,
+        summary: "All mounted modules",
+      });
+
+      if (maxDepth === 1) {
+        // Only show /modules directory
+        return { data: results };
+      }
+
+      // For maxDepth > 1, also get children of /modules with reduced depth
+      const childrenResult = await this._list(MODULES_ROOT_DIR, {
+        ...options,
+        maxDepth: maxDepth - 1,
+      });
+      results.push(...childrenResult.data);
+
+      return { data: results };
+    }
+
     const matches = this.findModules(path, options);
 
     for (const matched of matches) {
-      const moduleEntry = {
-        id: matched.module.name,
-        path: matched.remainedModulePath,
-        summary: matched.module.description,
-      };
-
       if (matched.maxDepth === 0) {
+        // When maxDepth is 0, show the module entry
+        const moduleEntry = {
+          id: matched.module.name,
+          path: matched.modulePath,
+          summary: matched.module.description,
+        };
+
         results.push(moduleEntry);
         continue;
       }
@@ -134,16 +160,14 @@ export class AFS extends Emitter<AFSRootEvents> implements AFSRoot {
           maxDepth: matched.maxDepth,
         });
 
-        if (data.length) {
-          results.push(
-            ...data.map((entry) => ({
-              ...entry,
-              path: joinURL(matched.modulePath, entry.path),
-            })),
-          );
-        } else {
-          results.push(moduleEntry);
-        }
+        const children = data.map((entry) => ({
+          ...entry,
+          path: joinURL(matched.modulePath, entry.path),
+        }));
+
+        // Always include all nodes (including the current path itself)
+        // This ensures consistent behavior across all listing scenarios
+        results.push(...children);
       } catch (error) {
         throw new Error(`Error listing from module at ${matched.modulePath}: ${error.message}`);
       }

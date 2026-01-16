@@ -1,38 +1,16 @@
 import { beforeEach, expect, spyOn, test } from "bun:test";
-import { AFS, type AFSContextPreset } from "@aigne/afs";
+import { AFS, type AFSContextPreset, type AFSModule } from "@aigne/afs";
 import { JSONModule } from "./mocks/json-module.js";
 
 let afs: AFS;
 let preset: Required<AFSContextPreset>;
 
 beforeEach(() => {
-  const module = new JSONModule({
-    name: "test-module",
-    data: {
-      children: {
-        foo: {
-          content: "This is foo",
-          children: {
-            nested: {
-              content: "Nested content",
-            },
-          },
-        },
-        bar: {
-          content: "This is bar",
-        },
-        baz: {
-          content: "This is baz",
-        },
-      },
-    },
-  });
-
   preset = {
     view: "test-view",
     select: {
       invoke: async () => {
-        return { data: ["/modules/test-module/foo", "/modules/test-module/bar"] };
+        return { data: ["/modules/module-a/fileA/content", "/modules/module-b/fileC/content"] };
       },
     },
     per: {
@@ -58,6 +36,23 @@ beforeEach(() => {
     format: "default",
   };
 
+  const moduleA = new JSONModule({
+    name: "module-a",
+    description: "Module A",
+    data: {
+      fileA: { content: "Content A" },
+      fileB: { content: "Content B" },
+    },
+  });
+
+  const moduleB = new JSONModule({
+    name: "module-b",
+    description: "Module B",
+    data: {
+      fileC: { content: "Content C" },
+    },
+  });
+
   afs = new AFS({
     context: {
       search: {
@@ -66,7 +61,9 @@ beforeEach(() => {
         },
       },
     },
-  }).mount(module);
+  })
+    .mount(moduleA)
+    .mount(moduleB);
 });
 
 test("AFS search with preset should produce correct results", async () => {
@@ -79,11 +76,11 @@ test("AFS search with preset should produce correct results", async () => {
   expect(await afs.search("/", "", { ...options, preset: "test-preset" })).toMatchInlineSnapshot(`
     {
       "data": 
-    "Content of /modules/test-module/foo
-    This is foo
+    "Content of /modules/module-a/fileA/content
+    Content A
 
-    Content of /modules/test-module/bar
-    This is bar"
+    Content of /modules/module-b/fileC/content
+    Content C"
     ,
     }
   `);
@@ -91,4 +88,58 @@ test("AFS search with preset should produce correct results", async () => {
   expect(selectSpy.mock.lastCall?.[1]).toEqual(expect.objectContaining(options));
   expect(perSpy.mock.lastCall?.[1]).toEqual(expect.objectContaining(options));
   expect(dedupeSpy.mock.lastCall?.[1]).toEqual(expect.objectContaining(options));
+});
+
+test("AFS should search entries correctly", async () => {
+  const module: AFSModule = {
+    name: "test-module",
+    search: async () => ({ data: [] }),
+  };
+
+  const afs = new AFS().mount(module);
+
+  const searchSpy = spyOn(module, "search").mockResolvedValue({
+    data: [
+      { id: "foo", path: "/foo" },
+      { id: "bar", path: "/bar" },
+    ],
+  });
+
+  expect(await afs.search("/bar", "foo")).toMatchInlineSnapshot(`
+    {
+      "data": [],
+    }
+  `);
+
+  expect(await afs.search("/", "foo")).toMatchInlineSnapshot(`
+    {
+      "data": [
+        {
+          "id": "foo",
+          "path": "/modules/test-module/foo",
+        },
+        {
+          "id": "bar",
+          "path": "/modules/test-module/bar",
+        },
+      ],
+    }
+  `);
+
+  expect(searchSpy.mock.lastCall).toMatchInlineSnapshot(`
+    [
+      "/",
+      "foo",
+      {},
+    ]
+  `);
+
+  searchSpy.mockClear();
+  expect(await afs.search("/foo/test-module/bar", "foo")).toMatchInlineSnapshot(`
+    {
+      "data": [],
+    }
+  `);
+
+  expect(searchSpy.mock.lastCall).toMatchInlineSnapshot(`undefined`);
 });

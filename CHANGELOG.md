@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.91.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.32...aigne-framework-v1.91.0) (2026-01-16)
+
+## [1.91.0-beta.32](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.31...aigne-framework-v1.91.0-beta.32) (2026-01-16)
+
+
+### Bug Fixes
+
+* **afs:** improve explorer server with SPA routing and global error handler ([865c160](https://github.com/AIGNE-io/aigne-framework/commit/865c1601e2a0d9e481f260d150cb3210aef622fb))
+
+## [1.91.0-beta.31](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.30...aigne-framework-v1.91.0-beta.31) (2026-01-16)
+
+
+### Features
+
+* **afs:** add AFSGit module support mount a git repo to AFS ([e1e030c](https://github.com/AIGNE-io/aigne-framework/commit/e1e030c181860d06c1c945b4acdcf67d9d708662))
+* **afs:** add AFSJSON module support mount a JSON/yaml file to AFS ([6adedc6](https://github.com/AIGNE-io/aigne-framework/commit/6adedc624bedb1bc741da8534f2fbb41e1bc6623))
+* **afs:** add explorer for AFS ([97ebe2d](https://github.com/AIGNE-io/aigne-framework/commit/97ebe2de59fb4ac4a5e5dea51b027a02ee69638d))
+* **afs:** improve list behavior to always include current path ([cb91f80](https://github.com/AIGNE-io/aigne-framework/commit/cb91f80c6ea3aa6e93dde26b6feeea8689fceb48))
+* **cli:** start AFS explorer when agent running ([d532ff6](https://github.com/AIGNE-io/aigne-framework/commit/d532ff65d08fb295b3b68390f303f23cd9c266db))
+
+
+### Bug Fixes
+
+* **afs:** support read binary file as base64 string ([3480f9f](https://github.com/AIGNE-io/aigne-framework/commit/3480f9fe90647eba3bf2ff37e22c334599b72e35))
+
 ## [1.91.0-beta.30](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.29...aigne-framework-v1.91.0-beta.30) (2026-01-15)
 
 

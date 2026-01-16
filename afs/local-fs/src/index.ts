@@ -115,6 +115,62 @@ export class LocalFS implements AFSModule {
       .catch(() => false);
   }
 
+  /**
+   * Detect MIME type based on file extension
+   */
+  private getMimeType(filePath: string): string {
+    const ext = basename(filePath).split(".").pop()?.toLowerCase();
+    const mimeTypes: Record<string, string> = {
+      // Images
+      png: "image/png",
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      gif: "image/gif",
+      bmp: "image/bmp",
+      webp: "image/webp",
+      svg: "image/svg+xml",
+      ico: "image/x-icon",
+      // Documents
+      pdf: "application/pdf",
+      txt: "text/plain",
+      md: "text/markdown",
+      // Code
+      js: "text/javascript",
+      ts: "text/typescript",
+      json: "application/json",
+      html: "text/html",
+      css: "text/css",
+      xml: "text/xml",
+    };
+    return mimeTypes[ext || ""] || "application/octet-stream";
+  }
+
+  /**
+   * Check if file is likely binary based on extension
+   */
+  private isBinaryFile(filePath: string): boolean {
+    const ext = basename(filePath).split(".").pop()?.toLowerCase();
+    const binaryExtensions = [
+      "png",
+      "jpg",
+      "jpeg",
+      "gif",
+      "bmp",
+      "webp",
+      "ico",
+      "pdf",
+      "zip",
+      "tar",
+      "gz",
+      "exe",
+      "dll",
+      "so",
+      "dylib",
+      "wasm",
+    ];
+    return binaryExtensions.includes(ext || "");
+  }
+
   async symlinkToPhysical(path: string): Promise<void> {
     if (await this.localPathExists) {
       await symlink(this.options.localPath, path);
@@ -191,17 +247,24 @@ export class LocalFS implements AFSModule {
         });
       }
 
+      const metadata: Record<string, any> = {
+        childrenCount: childItemsWithStatus?.length,
+        type: isDirectory ? "directory" : "file",
+        size: stats.size,
+        gitignored: gitignored || undefined,
+      };
+
+      // Add mimeType for files
+      if (!isDirectory) {
+        metadata.mimeType = this.getMimeType(fullPath);
+      }
+
       const entry: AFSEntry = {
         id: relativePath,
         path: relativePath,
         createdAt: stats.birthtime,
         updatedAt: stats.mtime,
-        metadata: {
-          childrenCount: childItemsWithStatus?.length,
-          type: isDirectory ? "directory" : "file",
-          size: stats.size,
-          gitignored: gitignored || undefined,
-        },
+        metadata,
       };
 
       // Apply pattern filter if specified
@@ -258,9 +321,27 @@ export class LocalFS implements AFSModule {
       const stats = await stat(fullPath);
 
       let content: string | undefined;
+      const metadata: Record<string, any> = {
+        type: stats.isDirectory() ? "directory" : "file",
+        size: stats.size,
+      };
+
       if (stats.isFile()) {
-        const fileContent = await readFile(fullPath, "utf8");
-        content = fileContent;
+        // Determine mimeType based on file extension
+        const mimeType = this.getMimeType(fullPath);
+        const isBinary = this.isBinaryFile(fullPath);
+        metadata.mimeType = mimeType;
+
+        if (isBinary) {
+          // For binary files, read as buffer and convert to base64
+          const buffer = await readFile(fullPath);
+          content = buffer.toString("base64");
+          // Mark content as base64 in metadata
+          metadata.contentType = "base64";
+        } else {
+          // For text files, read as utf8
+          content = await readFile(fullPath, "utf8");
+        }
       }
 
       const entry: AFSEntry = {
@@ -269,10 +350,7 @@ export class LocalFS implements AFSModule {
         createdAt: stats.birthtime,
         updatedAt: stats.mtime,
         content,
-        metadata: {
-          type: stats.isDirectory() ? "directory" : "file",
-          size: stats.size,
-        },
+        metadata,
       };
 
       return { data: entry };

@@ -572,12 +572,9 @@ describe("Virtual Path Support", () => {
       },
     });
 
-    // Invalid path returns empty array (module returns empty, AFS wraps with module entry)
     const entries: AFSEntry[] = (await afs.list(`${historyPath}/invalid/path`)).data;
 
-    // AFS returns the module entry itself when subpath returns empty
-    expect(entries).toHaveLength(1);
-    expect(entries[0]?.id).toBe("history");
+    expect(entries).toMatchInlineSnapshot(`[]`);
   });
 
   test("should auto-generate UUID path when writing to /new", async () => {

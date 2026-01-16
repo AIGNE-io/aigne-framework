@@ -194,6 +194,9 @@
     },
     "afs/git": {
       "prerelease-type": "beta"
+    },
+    "afs/explorer": {
+      "prerelease-type": "beta"
     }
   },
   "plugins": [

@@ -1,4 +1,4 @@
-import { beforeEach, expect, test } from "bun:test";
+import { beforeEach, describe, expect, test } from "bun:test";
 import { AFS, type AFSContextPreset } from "@aigne/afs";
 import { JSONModule } from "./mocks/json-module.js";
 
@@ -6,33 +6,11 @@ let afs: AFS;
 let testPreset: Required<AFSContextPreset>;
 
 beforeEach(() => {
-  const module = new JSONModule({
-    name: "test-module",
-    data: {
-      children: {
-        foo: {
-          content: "This is foo",
-          children: {
-            nested: {
-              content: "Nested content",
-            },
-          },
-        },
-        bar: {
-          content: "This is bar",
-        },
-        baz: {
-          content: "This is baz",
-        },
-      },
-    },
-  });
-
   testPreset = {
     view: "test-view",
     select: {
       invoke: async () => {
-        return { data: ["/modules/test-module/foo", "/modules/test-module/bar"] };
+        return { data: ["/modules/module-a/fileA/content", "/modules/module-b/fileC/content"] };
       },
     },
     per: {
@@ -58,6 +36,23 @@ beforeEach(() => {
     format: "default",
   };
 
+  const moduleA = new JSONModule({
+    name: "module-a",
+    description: "Module A",
+    data: {
+      fileA: { content: "Content A" },
+      fileB: { content: "Content B" },
+    },
+  });
+
+  const moduleB = new JSONModule({
+    name: "module-b",
+    description: "Module B",
+    data: {
+      fileC: { content: "Content C" },
+    },
+  });
+
   afs = new AFS({
     context: {
       list: {
@@ -66,186 +61,477 @@ beforeEach(() => {
         },
       },
     },
-  }).mount(module);
+  })
+    .mount(moduleA)
+    .mount(moduleB);
 });
 
-test("AFS list should return correct structure with default format", async () => {
-  expect((await afs.list("/modules/test-module", {})).data).toMatchInlineSnapshot(`
-    [
-      {
-        "content": undefined,
-        "description": undefined,
-        "id": "/",
-        "metadata": {
-          "childrenCount": 3,
-          "type": "directory",
-        },
-        "path": "/modules/test-module",
-        "summary": undefined,
-      },
-      {
-        "content": "This is foo",
-        "description": undefined,
-        "id": "/foo",
-        "metadata": {
-          "childrenCount": 1,
-          "type": "directory",
-        },
-        "path": "/modules/test-module/foo",
-        "summary": undefined,
-      },
-      {
-        "content": "This is bar",
-        "description": undefined,
-        "id": "/bar",
-        "metadata": {
-          "childrenCount": undefined,
-          "type": "file",
-        },
-        "path": "/modules/test-module/bar",
-        "summary": undefined,
-      },
-      {
-        "content": "This is baz",
-        "description": undefined,
-        "id": "/baz",
-        "metadata": {
-          "childrenCount": undefined,
-          "type": "file",
-        },
-        "path": "/modules/test-module/baz",
-        "summary": undefined,
-      },
-    ]
-  `);
+describe("list root path '/'", () => {
+  test("with default maxDepth=1", async () => {
+    const result = await afs.list("/");
 
-  expect((await afs.list("/", { maxDepth: 10 })).data).toMatchInlineSnapshot(`
-    [
+    expect(result).toMatchInlineSnapshot(`
       {
-        "content": undefined,
-        "description": undefined,
-        "id": "/",
-        "metadata": {
-          "childrenCount": 3,
-          "type": "directory",
-        },
-        "path": "/modules/test-module",
-        "summary": undefined,
-      },
-      {
-        "content": "This is foo",
-        "description": undefined,
-        "id": "/foo",
-        "metadata": {
-          "childrenCount": 1,
-          "type": "directory",
-        },
-        "path": "/modules/test-module/foo",
-        "summary": undefined,
-      },
-      {
-        "content": "This is bar",
-        "description": undefined,
-        "id": "/bar",
-        "metadata": {
-          "childrenCount": undefined,
-          "type": "file",
-        },
-        "path": "/modules/test-module/bar",
-        "summary": undefined,
-      },
-      {
-        "content": "This is baz",
-        "description": undefined,
-        "id": "/baz",
-        "metadata": {
-          "childrenCount": undefined,
-          "type": "file",
-        },
-        "path": "/modules/test-module/baz",
-        "summary": undefined,
-      },
-      {
-        "content": "Nested content",
-        "description": undefined,
-        "id": "/foo/nested",
-        "metadata": {
-          "childrenCount": undefined,
-          "type": "file",
-        },
-        "path": "/modules/test-module/foo/nested",
-        "summary": undefined,
-      },
-    ]
-  `);
-});
-
-test("AFS list should return correct tree structure", async () => {
-  expect((await afs.list("/modules/test-module", { format: "tree" })).data).toMatchInlineSnapshot(
-    `
-      "└── modules
-          └── test-module [3 items]
-              ├── foo [1 items]
-              ├── bar
-              └── baz
-      "
-    `,
-  );
-
-  expect((await afs.list("/", { format: "tree", maxDepth: 10 })).data).toMatchInlineSnapshot(`
-    "└── modules
-        └── test-module [3 items]
-            ├── foo [1 items]
-            │   └── nested
-            ├── bar
-            └── baz
-    "
-  `);
-});
-
-test("AFS list should return correct simple-list structure", async () => {
-  expect(
-    (await afs.list("/modules/test-module", { format: "simple-list" })).data,
-  ).toMatchInlineSnapshot(`
-    [
-      "/modules/test-module [3 items]",
-      "/modules/test-module/foo [1 items]",
-      "/modules/test-module/bar",
-      "/modules/test-module/baz",
-    ]
-  `);
-
-  expect(
-    (await afs.list("/", { format: "simple-list", maxDepth: 10 })).data,
-  ).toMatchInlineSnapshot(`
-    [
-      "/modules/test-module [3 items]",
-      "/modules/test-module/foo [1 items]",
-      "/modules/test-module/bar",
-      "/modules/test-module/baz",
-      "/modules/test-module/foo/nested",
-    ]
-  `);
-});
-
-test("AFS list should apply preset correctly", async () => {
-  expect(await afs.list("/modules/test-module", { preset: "test-preset" })).toMatchInlineSnapshot(`
-    {
-      "data": 
-    "Content of /modules/test-module/foo
-    This is foo
-
-    Content of /modules/test-module/bar
-    This is bar"
-    ,
-    }
+        "data": [
+          {
+            "id": "modules",
+            "path": "/modules",
+            "summary": "All mounted modules",
+          },
+        ],
+      }
     `);
+  });
+
+  test("with maxDepth=2", async () => {
+    const result = await afs.list("/", { maxDepth: 2 });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": [
+          {
+            "id": "modules",
+            "path": "/modules",
+            "summary": "All mounted modules",
+          },
+          {
+            "id": "module-a",
+            "path": "/modules/module-a",
+            "summary": "Module A",
+          },
+          {
+            "id": "module-b",
+            "path": "/modules/module-b",
+            "summary": "Module B",
+          },
+        ],
+      }
+    `);
+  });
+
+  test("with maxDepth=3", async () => {
+    const result = await afs.list("/", { maxDepth: 3 });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": [
+          {
+            "id": "modules",
+            "path": "/modules",
+            "summary": "All mounted modules",
+          },
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/",
+            "metadata": {
+              "childrenCount": 2,
+              "type": "directory",
+            },
+            "path": "/modules/module-a",
+            "updatedAt": undefined,
+          },
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/fileA",
+            "metadata": {
+              "childrenCount": 1,
+              "type": "directory",
+            },
+            "path": "/modules/module-a/fileA",
+            "updatedAt": undefined,
+          },
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/fileB",
+            "metadata": {
+              "childrenCount": 1,
+              "type": "directory",
+            },
+            "path": "/modules/module-a/fileB",
+            "updatedAt": undefined,
+          },
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/",
+            "metadata": {
+              "childrenCount": 1,
+              "type": "directory",
+            },
+            "path": "/modules/module-b",
+            "updatedAt": undefined,
+          },
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/fileC",
+            "metadata": {
+              "childrenCount": 1,
+              "type": "directory",
+            },
+            "path": "/modules/module-b/fileC",
+            "updatedAt": undefined,
+          },
+        ],
+      }
+    `);
+  });
+
+  test("with maxDepth=4", async () => {
+    const result = await afs.list("/", { maxDepth: 4 });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": [
+          {
+            "id": "modules",
+            "path": "/modules",
+            "summary": "All mounted modules",
+          },
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/",
+            "metadata": {
+              "childrenCount": 2,
+              "type": "directory",
+            },
+            "path": "/modules/module-a",
+            "updatedAt": undefined,
+          },
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/fileA",
+            "metadata": {
+              "childrenCount": 1,
+              "type": "directory",
+            },
+            "path": "/modules/module-a/fileA",
+            "updatedAt": undefined,
+          },
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/fileB",
+            "metadata": {
+              "childrenCount": 1,
+              "type": "directory",
+            },
+            "path": "/modules/module-a/fileB",
+            "updatedAt": undefined,
+          },
+          {
+            "content": "Content A",
+            "createdAt": undefined,
+            "id": "/fileA/content",
+            "metadata": {
+              "childrenCount": undefined,
+              "type": "file",
+            },
+            "path": "/modules/module-a/fileA/content",
+            "updatedAt": undefined,
+          },
+          {
+            "content": "Content B",
+            "createdAt": undefined,
+            "id": "/fileB/content",
+            "metadata": {
+              "childrenCount": undefined,
+              "type": "file",
+            },
+            "path": "/modules/module-a/fileB/content",
+            "updatedAt": undefined,
+          },
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/",
+            "metadata": {
+              "childrenCount": 1,
+              "type": "directory",
+            },
+            "path": "/modules/module-b",
+            "updatedAt": undefined,
+          },
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/fileC",
+            "metadata": {
+              "childrenCount": 1,
+              "type": "directory",
+            },
+            "path": "/modules/module-b/fileC",
+            "updatedAt": undefined,
+          },
+          {
+            "content": "Content C",
+            "createdAt": undefined,
+            "id": "/fileC/content",
+            "metadata": {
+              "childrenCount": undefined,
+              "type": "file",
+            },
+            "path": "/modules/module-b/fileC/content",
+            "updatedAt": undefined,
+          },
+        ],
+      }
+    `);
+  });
+
+  test("with tree format", async () => {
+    const result = await afs.list("/", { format: "tree" });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": 
+      "└── modules
+      "
+      ,
+      }
+    `);
+  });
+
+  test("with tree format and maxDepth=2", async () => {
+    const result = await afs.list("/", { format: "tree", maxDepth: 2 });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": 
+      "└── modules
+          ├── module-a
+          └── module-b
+      "
+      ,
+      }
+    `);
+  });
+
+  test("with tree format and maxDepth=3", async () => {
+    const result = await afs.list("/", { format: "tree", maxDepth: 3 });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": 
+      "└── modules
+          ├── module-a [2 items]
+          │   ├── fileA [1 items]
+          │   └── fileB [1 items]
+          └── module-b [1 items]
+              └── fileC [1 items]
+      "
+      ,
+      }
+    `);
+  });
+
+  test("with tree format and maxDepth=4", async () => {
+    const result = await afs.list("/", { format: "tree", maxDepth: 4 });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": 
+      "└── modules
+          ├── module-a [2 items]
+          │   ├── fileA [1 items]
+          │   │   └── content
+          │   └── fileB [1 items]
+          │       └── content
+          └── module-b [1 items]
+              └── fileC [1 items]
+                  └── content
+      "
+      ,
+      }
+    `);
+  });
+
+  test("with simple-list format", async () => {
+    const result = await afs.list("/", { format: "simple-list" });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": [
+          "/modules",
+        ],
+      }
+    `);
+  });
+
+  test("with simple-list format and maxDepth=2", async () => {
+    const result = await afs.list("/", { format: "simple-list", maxDepth: 2 });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": [
+          "/modules",
+          "/modules/module-a",
+          "/modules/module-b",
+        ],
+      }
+    `);
+  });
+
+  test("with simple-list format and maxDepth=3", async () => {
+    const result = await afs.list("/", { format: "simple-list", maxDepth: 3 });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": [
+          "/modules",
+          "/modules/module-a [2 items]",
+          "/modules/module-a/fileA [1 items]",
+          "/modules/module-a/fileB [1 items]",
+          "/modules/module-b [1 items]",
+          "/modules/module-b/fileC [1 items]",
+        ],
+      }
+    `);
+  });
+
+  test("with simple-list format and maxDepth=4", async () => {
+    const result = await afs.list("/", { format: "simple-list", maxDepth: 4 });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": [
+          "/modules",
+          "/modules/module-a [2 items]",
+          "/modules/module-a/fileA [1 items]",
+          "/modules/module-a/fileB [1 items]",
+          "/modules/module-a/fileA/content",
+          "/modules/module-a/fileB/content",
+          "/modules/module-b [1 items]",
+          "/modules/module-b/fileC [1 items]",
+          "/modules/module-b/fileC/content",
+        ],
+      }
+    `);
+  });
 });
 
-test("AFS list should apply preset correctly", async () => {
-  expect(
-    afs.list("/modules/test-module", { preset: "test-preset", format: "tree" }),
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"Tree format requires entries to be AFSEntry objects"`,
-  );
+describe("list '/modules'", () => {
+  test("should return all mounted modules", async () => {
+    const result = await afs.list("/modules");
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": [
+          {
+            "id": "module-a",
+            "path": "/modules/module-a",
+            "summary": "Module A",
+          },
+          {
+            "id": "module-b",
+            "path": "/modules/module-b",
+            "summary": "Module B",
+          },
+        ],
+      }
+    `);
+  });
+});
+
+describe("list specific module '/modules/xxx'", () => {
+  test("with default format", async () => {
+    const result = await afs.list("/modules/module-a");
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": [
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/",
+            "metadata": {
+              "childrenCount": 2,
+              "type": "directory",
+            },
+            "path": "/modules/module-a",
+            "updatedAt": undefined,
+          },
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/fileA",
+            "metadata": {
+              "childrenCount": 1,
+              "type": "directory",
+            },
+            "path": "/modules/module-a/fileA",
+            "updatedAt": undefined,
+          },
+          {
+            "content": undefined,
+            "createdAt": undefined,
+            "id": "/fileB",
+            "metadata": {
+              "childrenCount": 1,
+              "type": "directory",
+            },
+            "path": "/modules/module-a/fileB",
+            "updatedAt": undefined,
+          },
+        ],
+      }
+    `);
+  });
+
+  test("with tree format", async () => {
+    const result = await afs.list("/modules/module-a", { format: "tree" });
+
+    expect(result.data).toMatchInlineSnapshot(
+      `
+        "└── modules
+            └── module-a [2 items]
+                ├── fileA [1 items]
+                └── fileB [1 items]
+        "
+      `,
+    );
+  });
+
+  test("with simple-list format", async () => {
+    const result = await afs.list("/modules/module-a", { format: "simple-list" });
+
+    expect(result.data).toMatchInlineSnapshot(`
+      [
+        "/modules/module-a [2 items]",
+        "/modules/module-a/fileA [1 items]",
+        "/modules/module-a/fileB [1 items]",
+      ]
+    `);
+  });
+});
+
+describe("list with presets", () => {
+  test("should apply preset correctly", async () => {
+    const result = await afs.list("/modules", { preset: "test-preset" });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": 
+      "Content of /modules/module-a/fileA/content
+      Content A
+
+      Content of /modules/module-b/fileC/content
+      Content C"
+      ,
+      }
+    `);
+  });
+
+  test("should reject preset with tree format", async () => {
+    await expect(
+      afs.list("/modules", { preset: "test-preset", format: "tree" }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Tree format requires entries to be AFSEntry objects"`,
+    );
+  });
 });

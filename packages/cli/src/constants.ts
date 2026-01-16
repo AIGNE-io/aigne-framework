@@ -24,3 +24,5 @@ export const CHAT_MODEL_OPTIONS = [
 ];
 
 export const DEFAULT_USER_ID = "cli-user";
+
+export const DEFAULT_AFS_EXPLORER_PORT = 9670;

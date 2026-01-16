@@ -2247,6 +2247,9 @@ importers:
       '@aigne/afs':
         specifier: workspace:^
         version: link:../../afs/core
+      '@aigne/afs-explorer':
+        specifier: workspace:^
+        version: link:../../afs/explorer
       '@aigne/afs-history':
         specifier: workspace:^
         version: link:../../afs/history

@@ -26,8 +26,6 @@ export async function runChatLoopInTerminal(
 ) {
   const { initialCall } = options;
 
-  if (options?.welcome) console.log(options.welcome);
-
   if (initialCall) {
     await callAgent(userAgent, initialCall, options);
     if (options.input && options.inputFileKey) {

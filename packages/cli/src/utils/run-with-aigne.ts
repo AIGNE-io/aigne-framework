@@ -1,6 +1,8 @@
 import { mkdir, stat, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, join } from "node:path";
 import { isatty } from "node:tty";
+import { fileURLToPath } from "node:url";
+import { type ExplorerServer, startExplorer } from "@aigne/afs-explorer";
 import { exists } from "@aigne/agent-library/utils/fs.js";
 import {
   type Agent,
@@ -15,11 +17,12 @@ import { logger } from "@aigne/core/utils/logger.js";
 import { isEmpty, isNil, omitBy, type PromiseOrValue, pick } from "@aigne/core/utils/type-utils.js";
 import { v7 } from "@aigne/uuid";
 import chalk from "chalk";
+import { detect } from "detect-port";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { DEFAULT_USER_ID } from "../constants.js";
+import { DEFAULT_AFS_EXPLORER_PORT, DEFAULT_USER_ID } from "../constants.js";
 import { TerminalTracer } from "../tracer/terminal.js";
-import { loadAIGNE } from "./load-aigne.js";
+import { loadAIGNE, printChatModelInfoBox } from "./load-aigne.js";
 import {
   type ChatLoopOptions,
   DEFAULT_CHAT_INPUT_KEY,
@@ -114,6 +117,9 @@ export async function runWithAIGNE(
           },
         });
 
+        let explorerServer: ExplorerServer | undefined;
+        let explorerServerURL: string | undefined;
+
         try {
           const agent =
             typeof agentCreator === "function" ? await agentCreator(aigne) : agentCreator;
@@ -124,6 +130,29 @@ export async function runWithAIGNE(
             defaultInput: chatLoopOptions?.initialCall || chatLoopOptions?.defaultQuestion,
           });
 
+          if (agent.afs) {
+            const port = await detect(DEFAULT_AFS_EXPLORER_PORT);
+            explorerServer = await startExplorer(agent.afs, {
+              port,
+              distPath: dirname(
+                fileURLToPath(import.meta.resolve("@aigne/afs-explorer/index.html")),
+              ),
+            });
+            explorerServerURL = `http://localhost:${port}`;
+          }
+
+          if (aigne.model) {
+            const lines: string[] = [];
+
+            if (explorerServerURL) {
+              lines.push(`${chalk.cyan("AFS Explorer")}: ${chalk.green(explorerServerURL)}`);
+            }
+
+            await printChatModelInfoBox(aigne.model, lines);
+          }
+
+          if (chatLoopOptions?.welcome) console.log(chatLoopOptions.welcome);
+
           await runAgentWithAIGNE(aigne, agent, {
             ...options,
             outputKey: outputKey || options.outputKey,
@@ -133,6 +162,7 @@ export async function runWithAIGNE(
             userId: DEFAULT_USER_ID,
           });
         } finally {
+          await explorerServer?.stop();
           await aigne.shutdown();
         }
       },

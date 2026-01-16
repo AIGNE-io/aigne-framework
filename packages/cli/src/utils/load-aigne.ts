@@ -22,9 +22,11 @@ export interface RunOptions extends AgentRunCommonOptions {
   aigneHubUrl?: string;
 }
 
-let printed = false;
+export async function printChatModelInfoBox(model: ChatModel, otherLines?: string[]) {
+  console.log(
+    `${chalk.grey("TIPS:")} run ${chalk.cyan("aigne observe")} to start the observability server.\n`,
+  );
 
-async function printChatModelInfoBox(model: ChatModel) {
   const credential = await model.credential;
 
   const lines = [`${chalk.cyan("Provider")}: ${chalk.green(model.name.replace("ChatModel", ""))}`];
@@ -40,6 +42,8 @@ async function printChatModelInfoBox(model: ChatModel) {
   if (credential?.apiKey) {
     lines.push(`${chalk.cyan("API Key")}: ${chalk.green(maskApiKey(credential?.apiKey))}`);
   }
+
+  if (otherLines?.length) lines.push(...otherLines);
 
   console.log(boxen(lines.join("\n"), { padding: 1, borderStyle: "classic", borderColor: "cyan" }));
   console.log("");
@@ -106,18 +110,6 @@ export async function loadAIGNE({
       model: chatModel,
       metadata: { ...metadata, cliVersion: AIGNE_CLI_VERSION },
     });
-  }
-
-  if (!skipModelLoading && !printed) {
-    printed = true;
-
-    console.log(
-      `${chalk.grey("TIPS:")} run ${chalk.cyan("aigne observe")} to start the observability server.\n`,
-    );
-
-    if (aigne.model) {
-      await printChatModelInfoBox(aigne.model);
-    }
   }
 
   return aigne;

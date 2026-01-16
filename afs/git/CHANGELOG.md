@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/AIGNE-io/aigne-framework/compare/afs-git-v1.1.0-beta...afs-git-v1.1.0) (2026-01-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0
+    * @aigne/core bumped to 1.72.0
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69
+
 ## [1.1.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-git-v1.0.0...afs-git-v1.1.0-beta) (2026-01-16)
 
 

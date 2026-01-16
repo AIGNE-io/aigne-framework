@@ -1,6 +1,6 @@
 {
   "name": "@aigne/afs-git",
-  "version": "1.1.0-beta",
+  "version": "1.1.0",
   "description": "AIGNE AFS module for git storage",
   "publishConfig": {
     "access": "public"

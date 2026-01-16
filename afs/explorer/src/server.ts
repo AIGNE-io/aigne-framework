@@ -34,55 +34,48 @@ export class ExplorerServer {
   private setupRoutes() {
     // API Routes
     this.app.get("/api/list", async (req, res) => {
-      try {
-        const path = (req.query.path as string) || "/";
-        const maxDepth = req.query.maxDepth ? Number.parseInt(req.query.maxDepth as string, 10) : 1;
-        const result = await this.afs.list(path, { maxDepth });
-        res.json(result);
-      } catch (error) {
-        res.status(500).json({ error: String(error) });
-      }
+      const path = (req.query.path as string) || "/";
+      const maxDepth = req.query.maxDepth ? Number.parseInt(req.query.maxDepth as string, 10) : 1;
+      const result = await this.afs.list(path, { maxDepth });
+      res.json(result);
     });
 
     this.app.get("/api/read", async (req, res) => {
-      try {
-        const path = req.query.path as string;
-        if (!path) {
-          res.status(400).json({ error: "Path is required" });
-          return;
-        }
-        const result = await this.afs.read(path);
-        res.json(result);
-      } catch (error) {
-        res.status(500).json({ error: String(error) });
+      const path = req.query.path as string;
+      if (!path) {
+        res.status(400).json({ error: "Path is required" });
+        return;
       }
+      const result = await this.afs.read(path);
+      res.json(result);
     });
 
     this.app.get("/api/search", async (req, res) => {
-      try {
-        const path = (req.query.path as string) || "/";
-        const query = req.query.query as string;
-        if (!query) {
-          res.status(400).json({ error: "Query is required" });
-          return;
-        }
-        const result = await this.afs.search(path, query);
-        res.json(result);
-      } catch (error) {
-        res.status(500).json({ error: String(error) });
+      const path = (req.query.path as string) || "/";
+      const query = req.query.query as string;
+      if (!query) {
+        res.status(400).json({ error: "Query is required" });
+        return;
       }
+      const result = await this.afs.search(path, query);
+      res.json(result);
     });
 
     // Serve static files from the dist directory (if provided)
     if (this.options.distPath) {
       const distPath = path.resolve(this.options.distPath);
       this.app.use(express.static(distPath));
-
-      // Serve index.html for all other routes (SPA fallback)
-      this.app.use((_req, res) => {
-        res.sendFile(path.join(distPath, "index.html"));
+      this.app.get("/{*splat}", (_req, res) => {
+        res.sendFile("index.html", { root: distPath });
       });
     }
+
+    // Global error handler
+    this.app.use(
+      (err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+        res.status(500).json({ error: err.message || String(err) });
+      },
+    );
   }
 
   async start(): Promise<void> {

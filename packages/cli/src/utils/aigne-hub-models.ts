@@ -72,6 +72,10 @@ export async function checkModelAvailability(options: {
     },
   );
 
+  if (!response.ok) {
+    throw new Error(`Failed to check model availability (HTTP ${response.status})`);
+  }
+
   const data = (await response.json()) as StatusResponse;
 
   return {
@@ -106,6 +110,10 @@ export async function fetchHubModels(options: {
       headers: { Authorization: `Bearer ${apiKey}` },
     },
   );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch models (HTTP ${response.status})`);
+  }
 
   const data = (await response.json()) as ModelRatesResponse;
 

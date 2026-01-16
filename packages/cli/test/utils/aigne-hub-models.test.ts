@@ -19,6 +19,7 @@ describe("aigne-hub-models", () => {
   describe("checkModelAvailability", () => {
     test("should return available=true when model is available", async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => ({ available: true }),
       });
 
@@ -37,6 +38,7 @@ describe("aigne-hub-models", () => {
 
     test("should return available=false when model is not available", async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => ({
           available: false,
           error: "No providers available",
@@ -59,6 +61,7 @@ describe("aigne-hub-models", () => {
 
     test("should convert http to https", async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => ({ available: true }),
       });
 
@@ -76,6 +79,7 @@ describe("aigne-hub-models", () => {
 
     test("should encode model name in URL", async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => ({ available: true }),
       });
 
@@ -89,6 +93,21 @@ describe("aigne-hub-models", () => {
         expect.stringContaining("model=openai%2Fgpt-4o"),
         expect.any(Object),
       );
+    });
+
+    test("should throw error on non-2xx response", async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 401,
+      });
+
+      await expect(
+        checkModelAvailability({
+          baseUrl: "https://hub.aigne.io",
+          apiKey: "invalid-key",
+          model: "openai/gpt-4o",
+        }),
+      ).rejects.toThrow("Failed to check model availability (HTTP 401)");
     });
   });
 
@@ -137,6 +156,7 @@ describe("aigne-hub-models", () => {
 
     test("should fetch and return available models", async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => mockModelRatesResponse,
       });
 
@@ -158,6 +178,7 @@ describe("aigne-hub-models", () => {
 
     test("should filter by type", async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => mockModelRatesResponse,
       });
 
@@ -174,6 +195,7 @@ describe("aigne-hub-models", () => {
 
     test("should filter by type=image", async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => mockModelRatesResponse,
       });
 
@@ -189,6 +211,7 @@ describe("aigne-hub-models", () => {
 
     test("should pass search keyword to API as model param", async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => ({
           count: 2,
           list: [
@@ -228,6 +251,7 @@ describe("aigne-hub-models", () => {
 
     test("should not include model param when no search provided", async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => mockModelRatesResponse,
       });
 
@@ -243,6 +267,7 @@ describe("aigne-hub-models", () => {
 
     test("should apply limit", async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => mockModelRatesResponse,
       });
 
@@ -258,6 +283,7 @@ describe("aigne-hub-models", () => {
     test("should combine type and search filters", async () => {
       // API returns filtered results by search, then we filter by type locally
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => ({
           count: 1,
           list: [
@@ -291,6 +317,7 @@ describe("aigne-hub-models", () => {
     test("should return empty array when no models match", async () => {
       // API returns empty list when search doesn't match
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => ({
           count: 0,
           list: [],
@@ -309,6 +336,7 @@ describe("aigne-hub-models", () => {
 
     test("should include models with null status as available", async () => {
       mockFetch.mockResolvedValue({
+        ok: true,
         json: async () => ({
           count: 2,
           list: [
@@ -339,6 +367,20 @@ describe("aigne-hub-models", () => {
       // Both models should be included (null status is treated as available)
       expect(result).toHaveLength(2);
       expect(result.map((m) => m.model)).toEqual(["gpt-4o", "gpt-null-status"]);
+    });
+
+    test("should throw error on non-2xx response", async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+      });
+
+      await expect(
+        fetchHubModels({
+          baseUrl: "https://hub.aigne.io",
+          apiKey: "test-key",
+        }),
+      ).rejects.toThrow("Failed to fetch models (HTTP 500)");
     });
   });
 });

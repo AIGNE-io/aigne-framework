@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.11...afs-v1.4.0) (2026-01-16)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/platform-helpers bumped to 0.6.7
+
 ## [1.4.0-beta.11](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.10...afs-v1.4.0-beta.11) (2026-01-16)
 
 

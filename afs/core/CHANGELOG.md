@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0-beta.10](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.9...afs-v1.4.0-beta.10) (2026-01-16)
+
+
+### Features
+
+* **afs:** improve list behavior to always include current path ([cb91f80](https://github.com/AIGNE-io/aigne-framework/commit/cb91f80c6ea3aa6e93dde26b6feeea8689fceb48))
+
 ## [1.4.0-beta.9](https://github.com/AIGNE-io/aigne-framework/compare/afs-v1.4.0-beta.8...afs-v1.4.0-beta.9) (2026-01-14)
 
 

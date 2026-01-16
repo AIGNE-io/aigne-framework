@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.72.0-beta.24](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.23...core-v1.72.0-beta.24) (2026-01-16)
+
+
+### Features
+
+* **afs:** add AFSJSON module support mount a JSON/yaml file to AFS ([6adedc6](https://github.com/AIGNE-io/aigne-framework/commit/6adedc624bedb1bc741da8534f2fbb41e1bc6623))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.10
+    * @aigne/afs-history bumped to 1.2.0-beta.11
+
 ## [1.72.0-beta.23](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.22...core-v1.72.0-beta.23) (2026-01-15)
 
 

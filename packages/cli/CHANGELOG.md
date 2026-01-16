@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.59.0-beta.30](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.29...cli-v1.59.0-beta.30) (2026-01-16)
+
+
+### Features
+
+* **afs:** add AFSJSON module support mount a JSON/yaml file to AFS ([6adedc6](https://github.com/AIGNE-io/aigne-framework/commit/6adedc624bedb1bc741da8534f2fbb41e1bc6623))
+* **cli:** start AFS explorer when agent running ([d532ff6](https://github.com/AIGNE-io/aigne-framework/commit/d532ff65d08fb295b3b68390f303f23cd9c266db))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.10
+    * @aigne/afs-explorer bumped to 1.0.0
+    * @aigne/afs-history bumped to 1.2.0-beta.11
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.25
+    * @aigne/agent-library bumped to 1.24.0-beta.26
+    * @aigne/agentic-memory bumped to 1.1.6-beta.24
+    * @aigne/aigne-hub bumped to 0.10.16-beta.30
+    * @aigne/core bumped to 1.72.0-beta.24
+    * @aigne/default-memory bumped to 1.4.0-beta.23
+    * @aigne/openai bumped to 0.16.16-beta.24
+    * @aigne/secrets bumped to 0.1.6-beta.24
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.24
+
 ## [1.59.0-beta.29](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.28...cli-v1.59.0-beta.29) (2026-01-15)
 
 

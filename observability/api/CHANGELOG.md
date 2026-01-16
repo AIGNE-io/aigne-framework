@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.11.14-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.14-beta.5...observability-api-v0.11.14-beta.6) (2026-01-15)
+
+
+### Bug Fixes
+
+* fix data corruption when using AIGNE multiple ([#914](https://github.com/AIGNE-io/aigne-framework/issues/914)) ([c713736](https://github.com/AIGNE-io/aigne-framework/commit/c713736b17502ffac6b1fdf67e453aba2f37aab3))
+
+## [0.11.14-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.14-beta.4...observability-api-v0.11.14-beta.5) (2026-01-15)
+
+
+### Bug Fixes
+
+* **ci:** replace crypto library and simplify credential handling ([#912](https://github.com/AIGNE-io/aigne-framework/issues/912)) ([f3c3e65](https://github.com/AIGNE-io/aigne-framework/commit/f3c3e651c4776a02675e601ffa56c01c144b892d))
+
+## [0.11.14-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.14-beta.3...observability-api-v0.11.14-beta.4) (2026-01-14)
+
+
+### Bug Fixes
+
+* improve test coverage tracking and reporting ([#903](https://github.com/AIGNE-io/aigne-framework/issues/903)) ([031144e](https://github.com/AIGNE-io/aigne-framework/commit/031144e74f29e882cffe52ffda8f7a18c76ace7f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/sqlite bumped to 0.4.9-beta.2
+
 ## [0.11.14-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/observability-api-v0.11.14-beta.2...observability-api-v0.11.14-beta.3) (2026-01-13)
 
 

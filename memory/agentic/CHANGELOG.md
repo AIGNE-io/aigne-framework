@@ -1,5 +1,75 @@
 # Changelog
 
+## [1.1.6-beta.23](https://github.com/AIGNE-io/aigne-framework/compare/agentic-memory-v1.1.6-beta.22...agentic-memory-v1.1.6-beta.23) (2026-01-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.23
+    * @aigne/default-memory bumped to 1.4.0-beta.22
+    * @aigne/openai bumped to 0.16.16-beta.23
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.23
+
+## [1.1.6-beta.22](https://github.com/AIGNE-io/aigne-framework/compare/agentic-memory-v1.1.6-beta.21...agentic-memory-v1.1.6-beta.22) (2026-01-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.22
+    * @aigne/default-memory bumped to 1.4.0-beta.21
+    * @aigne/openai bumped to 0.16.16-beta.22
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.22
+
+## [1.1.6-beta.21](https://github.com/AIGNE-io/aigne-framework/compare/agentic-memory-v1.1.6-beta.20...agentic-memory-v1.1.6-beta.21) (2026-01-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.21
+    * @aigne/default-memory bumped to 1.4.0-beta.20
+    * @aigne/openai bumped to 0.16.16-beta.21
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.21
+
+## [1.1.6-beta.20](https://github.com/AIGNE-io/aigne-framework/compare/agentic-memory-v1.1.6-beta.19...agentic-memory-v1.1.6-beta.20) (2026-01-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.20
+    * @aigne/default-memory bumped to 1.4.0-beta.19
+    * @aigne/openai bumped to 0.16.16-beta.20
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.20
+
+## [1.1.6-beta.19](https://github.com/AIGNE-io/aigne-framework/compare/agentic-memory-v1.1.6-beta.18...agentic-memory-v1.1.6-beta.19) (2026-01-14)
+
+
+### Bug Fixes
+
+* improve test coverage tracking and reporting ([#903](https://github.com/AIGNE-io/aigne-framework/issues/903)) ([031144e](https://github.com/AIGNE-io/aigne-framework/commit/031144e74f29e882cffe52ffda8f7a18c76ace7f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.0-beta.19
+    * @aigne/default-memory bumped to 1.4.0-beta.18
+    * @aigne/openai bumped to 0.16.16-beta.19
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.19
+
 ## [1.1.6-beta.18](https://github.com/AIGNE-io/aigne-framework/compare/agentic-memory-v1.1.6-beta.17...agentic-memory-v1.1.6-beta.18) (2026-01-13)
 
 

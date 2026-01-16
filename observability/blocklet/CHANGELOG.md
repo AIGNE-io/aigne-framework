@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.16.5-beta.6](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.16.5-beta.5...blocklet-observability-v1.16.5-beta.6) (2026-01-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.14-beta.6
+
+## [1.16.5-beta.5](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.16.5-beta.4...blocklet-observability-v1.16.5-beta.5) (2026-01-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.14-beta.5
+
+## [1.16.5-beta.4](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.16.5-beta.3...blocklet-observability-v1.16.5-beta.4) (2026-01-14)
+
+
+### Bug Fixes
+
+* improve test coverage tracking and reporting ([#903](https://github.com/AIGNE-io/aigne-framework/issues/903)) ([031144e](https://github.com/AIGNE-io/aigne-framework/commit/031144e74f29e882cffe52ffda8f7a18c76ace7f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/observability-api bumped to 0.11.14-beta.4
+    * @aigne/sqlite bumped to 0.4.9-beta.2
+
 ## [1.16.5-beta.3](https://github.com/AIGNE-io/aigne-framework/compare/blocklet-observability-v1.16.5-beta.2...blocklet-observability-v1.16.5-beta.3) (2026-01-13)
 
 

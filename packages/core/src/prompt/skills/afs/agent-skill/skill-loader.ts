@@ -1,7 +1,7 @@
-import type { AFS, AFSEntry } from '@aigne/afs';
-import { nodejs } from '@aigne/platform-helpers/nodejs/index.js';
-import fm from 'front-matter';
-import { AgentSkill } from './agent-skill.js';
+import type { AFS, AFSEntry } from "@aigne/afs";
+import { nodejs } from "@aigne/platform-helpers/nodejs/index.js";
+import fm from "front-matter";
+import { AgentSkill } from "./agent-skill.js";
 
 export interface Skill {
   path: string;
@@ -22,8 +22,8 @@ function parseSkill(content: string, path: string): Skill {
 }
 
 export async function loadSkill(path: string): Promise<Skill> {
-  const entry = nodejs.path.join(path, 'SKILL.md');
-  const skill = await nodejs.fs.readFile(entry, 'utf-8');
+  const entry = nodejs.path.join(path, "SKILL.md");
+  const skill = await nodejs.fs.readFile(entry, "utf-8");
   return parseSkill(skill, path);
 }
 
@@ -40,14 +40,7 @@ export async function loadSkills(paths: string[]): Promise<Skill[]> {
 
 export async function discoverSkillsFromAFS(afs: AFS): Promise<Skill[]> {
   const modules = await afs.listModules();
-  const filtered = modules.filter(
-    ({ module: m }) =>
-      'options' in m &&
-      typeof m.options === 'object' &&
-      m.options &&
-      'agentSkills' in m.options &&
-      m.options.agentSkills === true
-  );
+  const filtered = modules.filter(({ module: m }) => m.agentSkills === true);
   if (!filtered.length) return [];
 
   const skills: Skill[] = [];
@@ -65,7 +58,9 @@ export async function discoverSkillsFromAFS(afs: AFS): Promise<Skill[]> {
       const { data: file } = await afs.read(entry.path);
       if (typeof file?.content !== 'string') continue;
 
-      const skill = parseSkill(file.content, nodejs.path.dirname(entry.path));
+      const dirname = entry.path.split("/").slice(0, -1).join("/");
+
+      const skill = parseSkill(file.content, dirname);
       skills.push(skill);
     }
   }

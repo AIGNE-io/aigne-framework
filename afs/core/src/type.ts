@@ -1,7 +1,27 @@
 import type { Emitter } from "strict-event-emitter";
 import { type ZodType, z } from "zod";
 
-export interface AFSListOptions {
+/**
+ * Access mode for AFS modules and root.
+ * - "readonly": Only read operations are allowed (list, read, search)
+ * - "readwrite": All operations are allowed
+ */
+export type AFSAccessMode = "readonly" | "readwrite";
+
+/**
+ * Zod schema for access mode validation.
+ * Can be reused across modules that support access mode configuration.
+ */
+export const accessModeSchema = z
+  .enum(["readonly", "readwrite"])
+  .describe("Access mode for this module")
+  .optional();
+
+export interface AFSOperationOptions {
+  context?: any;
+}
+
+export interface AFSListOptions extends AFSOperationOptions {
   filter?: {
     agentId?: string;
     userId?: string;
@@ -24,19 +44,16 @@ export interface AFSListOptions {
    * Examples: "*.ts", "**\/*.js", "src/**\/*.{ts,tsx}"
    */
   pattern?: string;
-  context?: any;
 }
 
 export interface AFSListResult {
   data: AFSEntry[];
   message?: string;
-  context?: any;
 }
 
-export interface AFSSearchOptions {
+export interface AFSSearchOptions extends AFSOperationOptions {
   limit?: number;
   caseSensitive?: boolean;
-  context?: any;
 }
 
 export interface AFSSearchResult {
@@ -44,9 +61,8 @@ export interface AFSSearchResult {
   message?: string;
 }
 
-export interface AFSReadOptions {
+export interface AFSReadOptions extends AFSOperationOptions {
   filter?: AFSListOptions["filter"];
-  context?: any;
 }
 
 export interface AFSReadResult {
@@ -54,27 +70,24 @@ export interface AFSReadResult {
   message?: string;
 }
 
-export interface AFSDeleteOptions {
+export interface AFSDeleteOptions extends AFSOperationOptions {
   recursive?: boolean;
-  context?: any;
 }
 
 export interface AFSDeleteResult {
   message?: string;
 }
 
-export interface AFSRenameOptions {
+export interface AFSRenameOptions extends AFSOperationOptions {
   overwrite?: boolean;
-  context?: any;
 }
 
 export interface AFSRenameResult {
   message?: string;
 }
 
-export interface AFSWriteOptions {
+export interface AFSWriteOptions extends AFSOperationOptions {
   append?: boolean;
-  context?: any;
 }
 
 export interface AFSWriteResult {
@@ -85,9 +98,7 @@ export interface AFSWriteResult {
 
 export interface AFSWriteEntryPayload extends Omit<AFSEntry, "id" | "path"> {}
 
-export interface AFSExecOptions {
-  context: any;
-}
+export interface AFSExecOptions extends AFSOperationOptions {}
 
 export interface AFSExecResult {
   data: Record<string, any>;
@@ -97,6 +108,21 @@ export interface AFSModule {
   readonly name: string;
 
   readonly description?: string;
+
+  /**
+   * Access mode for this module.
+   * - "readonly": Only read operations are allowed
+   * - "readwrite": All operations are allowed
+   * Default behavior is implementation-specific.
+   */
+  readonly accessMode?: AFSAccessMode;
+
+  /**
+   * Enable automatic agent skill scanning for this module.
+   * When set to true, the system will scan this module for agent skills.
+   * @default false
+   */
+  readonly agentSkills?: boolean;
 
   onMount?(root: AFSRoot): void;
 
@@ -122,6 +148,43 @@ export interface AFSModule {
   exec?(path: string, args: Record<string, any>, options: AFSExecOptions): Promise<AFSExecResult>;
 }
 
+/**
+ * Parameters for loading a module from configuration.
+ */
+export interface AFSModuleLoadParams {
+  /** Path to the configuration file */
+  filepath: string;
+  /** Parsed configuration object */
+  parsed?: object;
+}
+
+/**
+ * Interface for module classes that support schema validation and loading from configuration.
+ * This describes the static part of a module class.
+ *
+ * @example
+ * ```typescript
+ * class MyModule implements AFSModule {
+ *   static schema() { return mySchema; }
+ *   static async load(params: AFSModuleLoadParams) { ... }
+ *   // ...
+ * }
+ *
+ * // Type check
+ * const _check: AFSModuleClass<MyModule, MyModuleOptions> = MyModule;
+ * ```
+ */
+export interface AFSModuleClass<T extends AFSModule = AFSModule, O extends object = object> {
+  /** Returns the Zod schema for validating module configuration */
+  schema(): ZodType<O>;
+
+  /** Loads a module instance from configuration file path and parsed config */
+  load(params: AFSModuleLoadParams): Promise<T>;
+
+  /** Constructor */
+  new (options: O): T;
+}
+
 export type AFSRootEvents = {
   agentSucceed: [
     {
@@ -133,7 +196,7 @@ export type AFSRootEvents = {
       messages?: object[];
     },
   ];
-  historyCreated: [{ entry: AFSEntry }];
+  historyCreated: [{ entry: AFSEntry }, options: AFSOperationOptions];
 };
 
 export interface AFSRootListOptions extends AFSListOptions, AFSContextPreset {

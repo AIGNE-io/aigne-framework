@@ -1,43 +1,97 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
+exports[`AIGNE HTTP Client should work in browser with {
+  streaming: false,
+} webkit 1`] = `
+[
+  {
+    "content": [
+      {
+        "text": "Hello, AIGNE!",
+        "type": "text",
+      },
+    ],
+    "role": "user",
+  },
+]
+`;
+
+exports[`AIGNE HTTP Client should work in browser with {
+  streaming: false,
+} chromium 1`] = `
+[
+  {
+    "content": [
+      {
+        "text": "Hello, AIGNE!",
+        "type": "text",
+      },
+    ],
+    "role": "user",
+  },
+]
+`;
+
+exports[`AIGNE HTTP Client should work in browser with {
+  streaming: true,
+} webkit 1`] = `
+[
+  {
+    "content": [
+      {
+        "text": "Hello, AIGNE!",
+        "type": "text",
+      },
+    ],
+    "role": "user",
+  },
+]
+`;
+
+exports[`AIGNE HTTP Client should work in browser with {
+  streaming: true,
+} chromium 1`] = `
+[
+  {
+    "content": [
+      {
+        "text": "Hello, AIGNE!",
+        "type": "text",
+      },
+    ],
+    "role": "user",
+  },
+]
+`;
+
 exports[`AIGNE HTTP Client should work with client memory in browser 1`] = `
 [
   {
-    "messages": [
+    "content": [
       {
-        "content": [
-          {
-            "text": "Hello, AIGNE!",
-            "type": "text",
-          },
-          {
-            "text": "Hello, How can I help you?",
-            "type": "text",
-          },
-        ],
-        "role": "system",
-      },
-      {
-        "content": [
-          {
-            "text": "What did I just say?",
-            "type": "text",
-          },
-        ],
-        "role": "user",
+        "text": "Hello, AIGNE!",
+        "type": "text",
       },
     ],
-    "modelOptions": {
-      "cacheConfig": {
-        "autoBreakpoints": {
-          "lastMessage": true,
-        },
-      },
-    },
-    "responseFormat": undefined,
-    "toolChoice": undefined,
-    "tools": undefined,
+    "role": "user",
   },
-  Anything,
+  {
+    "content": [
+      {
+        "text": "Hello, How can I help you?",
+        "type": "text",
+      },
+    ],
+    "role": "agent",
+  },
+  {
+    "content": [
+      {
+        "text": "What did I just say?",
+        "type": "text",
+      },
+    ],
+    "role": "user",
+  },
 ]
 `;

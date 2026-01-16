@@ -1,5 +1,53 @@
 # Changelog
 
+## [1.91.0-beta.30](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.29...aigne-framework-v1.91.0-beta.30) (2026-01-15)
+
+
+### Bug Fixes
+
+* **core:** pin jaison dependency to exact version 2.0.2 ([#916](https://github.com/AIGNE-io/aigne-framework/issues/916)) ([e4ad28b](https://github.com/AIGNE-io/aigne-framework/commit/e4ad28b7fcac977d9d2087e0dceacd320818f0f5))
+
+## [1.91.0-beta.29](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.28...aigne-framework-v1.91.0-beta.29) (2026-01-15)
+
+
+### Features
+
+* **afs:** add generic AFS adapter for sqlite databases ([#908](https://github.com/AIGNE-io/aigne-framework/issues/908)) ([b9b5a8f](https://github.com/AIGNE-io/aigne-framework/commit/b9b5a8fc2680e8e3ae7f28dd720b0089520981b9))
+
+
+### Bug Fixes
+
+* fix data corruption when using AIGNE multiple ([#914](https://github.com/AIGNE-io/aigne-framework/issues/914)) ([c713736](https://github.com/AIGNE-io/aigne-framework/commit/c713736b17502ffac6b1fdf67e453aba2f37aab3))
+* update @aigne/afs-sqlite release config ([464a6c6](https://github.com/AIGNE-io/aigne-framework/commit/464a6c62a0594797f260f9908a3e95f97fe73d42))
+* update @aigne/afs-sqlite release config ([ef0f254](https://github.com/AIGNE-io/aigne-framework/commit/ef0f2547920e0e95545c57c7dd55ff059b5a2e7a))
+
+## [1.91.0-beta.28](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.27...aigne-framework-v1.91.0-beta.28) (2026-01-15)
+
+
+### Bug Fixes
+
+* **ci:** replace crypto library and simplify credential handling ([#912](https://github.com/AIGNE-io/aigne-framework/issues/912)) ([f3c3e65](https://github.com/AIGNE-io/aigne-framework/commit/f3c3e651c4776a02675e601ffa56c01c144b892d))
+
+## [1.91.0-beta.27](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.26...aigne-framework-v1.91.0-beta.27) (2026-01-15)
+
+
+### Bug Fixes
+
+* **core:** remove Node.js dependencies from skill loader ([#910](https://github.com/AIGNE-io/aigne-framework/issues/910)) ([e12ae89](https://github.com/AIGNE-io/aigne-framework/commit/e12ae89dad8e3118fd5b9432a619846667f34ab7))
+
+## [1.91.0-beta.26](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.25...aigne-framework-v1.91.0-beta.26) (2026-01-14)
+
+
+### Features
+
+* **afs:** add module access control and schema validation support ([#904](https://github.com/AIGNE-io/aigne-framework/issues/904)) ([d0b279a](https://github.com/AIGNE-io/aigne-framework/commit/d0b279aac07ebe2bcc1fd4148498fc3f6bbcd561))
+
+
+### Bug Fixes
+
+* **cli:** default enter interactive mode ([#906](https://github.com/AIGNE-io/aigne-framework/issues/906)) ([0791040](https://github.com/AIGNE-io/aigne-framework/commit/0791040557dd135c8feb4ceb8eab66d0578382b2))
+* improve test coverage tracking and reporting ([#903](https://github.com/AIGNE-io/aigne-framework/issues/903)) ([031144e](https://github.com/AIGNE-io/aigne-framework/commit/031144e74f29e882cffe52ffda8f7a18c76ace7f))
+
 ## [1.91.0-beta.25](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.24...aigne-framework-v1.91.0-beta.25) (2026-01-13)
 
 

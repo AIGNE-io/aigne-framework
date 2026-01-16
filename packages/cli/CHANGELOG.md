@@ -1,5 +1,121 @@
 # Changelog
 
+## [1.59.0-beta.29](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.28...cli-v1.59.0-beta.29) (2026-01-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.24
+    * @aigne/agent-library bumped to 1.24.0-beta.25
+    * @aigne/agentic-memory bumped to 1.1.6-beta.23
+    * @aigne/aigne-hub bumped to 0.10.16-beta.29
+    * @aigne/core bumped to 1.72.0-beta.23
+    * @aigne/default-memory bumped to 1.4.0-beta.22
+    * @aigne/openai bumped to 0.16.16-beta.23
+    * @aigne/secrets bumped to 0.1.6-beta.23
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.23
+
+## [1.59.0-beta.28](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.27...cli-v1.59.0-beta.28) (2026-01-15)
+
+
+### Bug Fixes
+
+* fix data corruption when using AIGNE multiple ([#914](https://github.com/AIGNE-io/aigne-framework/issues/914)) ([c713736](https://github.com/AIGNE-io/aigne-framework/commit/c713736b17502ffac6b1fdf67e453aba2f37aab3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.23
+    * @aigne/agent-library bumped to 1.24.0-beta.24
+    * @aigne/agentic-memory bumped to 1.1.6-beta.22
+    * @aigne/aigne-hub bumped to 0.10.16-beta.28
+    * @aigne/core bumped to 1.72.0-beta.22
+    * @aigne/default-memory bumped to 1.4.0-beta.21
+    * @aigne/observability-api bumped to 0.11.14-beta.6
+    * @aigne/openai bumped to 0.16.16-beta.22
+    * @aigne/secrets bumped to 0.1.6-beta.22
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.22
+
+## [1.59.0-beta.27](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.26...cli-v1.59.0-beta.27) (2026-01-15)
+
+
+### Bug Fixes
+
+* **ci:** replace crypto library and simplify credential handling ([#912](https://github.com/AIGNE-io/aigne-framework/issues/912)) ([f3c3e65](https://github.com/AIGNE-io/aigne-framework/commit/f3c3e651c4776a02675e601ffa56c01c144b892d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.22
+    * @aigne/agent-library bumped to 1.24.0-beta.23
+    * @aigne/agentic-memory bumped to 1.1.6-beta.21
+    * @aigne/aigne-hub bumped to 0.10.16-beta.27
+    * @aigne/core bumped to 1.72.0-beta.21
+    * @aigne/default-memory bumped to 1.4.0-beta.20
+    * @aigne/observability-api bumped to 0.11.14-beta.5
+    * @aigne/openai bumped to 0.16.16-beta.21
+    * @aigne/secrets bumped to 0.1.6-beta.21
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.21
+
+## [1.59.0-beta.26](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.25...cli-v1.59.0-beta.26) (2026-01-15)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.21
+    * @aigne/agent-library bumped to 1.24.0-beta.22
+    * @aigne/agentic-memory bumped to 1.1.6-beta.20
+    * @aigne/aigne-hub bumped to 0.10.16-beta.26
+    * @aigne/core bumped to 1.72.0-beta.20
+    * @aigne/default-memory bumped to 1.4.0-beta.19
+    * @aigne/openai bumped to 0.16.16-beta.20
+    * @aigne/secrets bumped to 0.1.6-beta.20
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.20
+
+## [1.59.0-beta.25](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.24...cli-v1.59.0-beta.25) (2026-01-14)
+
+
+### Features
+
+* **afs:** add module access control and schema validation support ([#904](https://github.com/AIGNE-io/aigne-framework/issues/904)) ([d0b279a](https://github.com/AIGNE-io/aigne-framework/commit/d0b279aac07ebe2bcc1fd4148498fc3f6bbcd561))
+
+
+### Bug Fixes
+
+* **cli:** default enter interactive mode ([#906](https://github.com/AIGNE-io/aigne-framework/issues/906)) ([0791040](https://github.com/AIGNE-io/aigne-framework/commit/0791040557dd135c8feb4ceb8eab66d0578382b2))
+* improve test coverage tracking and reporting ([#903](https://github.com/AIGNE-io/aigne-framework/issues/903)) ([031144e](https://github.com/AIGNE-io/aigne-framework/commit/031144e74f29e882cffe52ffda8f7a18c76ace7f))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs bumped to 1.4.0-beta.9
+    * @aigne/afs-history bumped to 1.2.0-beta.10
+    * @aigne/afs-local-fs bumped to 1.4.0-beta.20
+    * @aigne/agent-library bumped to 1.24.0-beta.21
+    * @aigne/agentic-memory bumped to 1.1.6-beta.19
+    * @aigne/aigne-hub bumped to 0.10.16-beta.25
+    * @aigne/core bumped to 1.72.0-beta.19
+    * @aigne/default-memory bumped to 1.4.0-beta.18
+    * @aigne/observability-api bumped to 0.11.14-beta.4
+    * @aigne/openai bumped to 0.16.16-beta.19
+    * @aigne/secrets bumped to 0.1.6-beta.19
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.69-beta.19
+
 ## [1.59.0-beta.24](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.23...cli-v1.59.0-beta.24) (2026-01-13)
 
 

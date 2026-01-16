@@ -48,6 +48,7 @@
     "zod": "3.25.67"
   },
   "devDependencies": {
+    "@aigne/test-utils": "workspace:^",
     "@types/bun": "^1.2.22",
     "@types/node": "^24.5.1",
     "detect-port": "^2.1.0",
@@ -56,5 +57,5 @@
     "rimraf": "^6.0.1",
     "typescript": "^5.9.2"
   },
-  "version": "0.4.16-beta.18"
+  "version": "0.4.16-beta.23"
 }

@@ -4,149 +4,19 @@
 
 ## Overview
 
-AFS acts as a bridge between AI agents and various data sources, allowing agents to:
+AFS acts as a bridge between AI agents and various data sources:
 
 - Access and manipulate files in local directories
+- Access Git repository branches and files
 - Retrieve conversation history across sessions
 - Maintain and query user profile information
+- Navigate JSON and YAML files as virtual file systems
 - Store and search structured data
 - Integrate custom storage backends
 
 Think of AFS as a virtual file system where different "modules" can be mounted at specific paths, similar to how operating systems mount different drives and network locations.
 
-## Key Concepts
-
-### 1. Virtual File System
-
-AFS uses a hierarchical path-based structure similar to Unix file systems:
-
-```
-/                                    # Root
-└── modules/                         # All modules mounted here
-    ├── history/                     # Conversation history
-    │   ├── <uuid-1>
-    │   └── <uuid-2>
-    ├── local-fs/                    # Local file system mount
-    │   ├── README.md
-    │   └── src/
-    └── user-profile-memory/         # User profile data
-        └── profile.json
-```
-
-### 2. Modules
-
-Modules are pluggable components that implement specific storage backends. Each module:
-- Is mounted automatically under `/modules/{module-name}` (e.g., `/modules/history`, `/modules/local-fs`)
-- Implements one or more operations (`list`, `read`, `write`, `search`, `exec`)
-- Receives only the subpath within its mount point
-- Can listen to and emit events through the AFS root
-
-### 3. AFSEntry
-
-All data in AFS is represented as `AFSEntry` objects, which provide a consistent structure:
-
-```typescript
-interface AFSEntry {
-  id: string;                      // Unique identifier
-  path: string;                    // Full path in AFS
-  content?: any;                   // File/data content
-  summary?: string;                // Optional summary
-  metadata?: Record<string, any>;  // Custom metadata
-  createdAt?: Date;                // Creation timestamp
-  updatedAt?: Date;                // Last update timestamp
-  userId?: string;                 // Associated user
-  sessionId?: string;              // Associated session
-  linkTo?: string;                 // Link to another entry
-}
-```
-
-## Core API
-
-### Creating an AFS Instance
-
-```typescript
-import { AFS } from "@aigne/afs";
-import { AFSHistory } from "@aigne/afs-history";
-import { LocalFS } from "@aigne/afs-local-fs";
-import { UserProfileMemory } from "@aigne/afs-user-profile-memory";
-
-// Create AFS instance
-const afs = new AFS();
-
-// Mount modules
-afs.mount(new AFSHistory({
-  storage: { url: "file:./memory.sqlite3" }
-}));
-// Accessible at /modules/history
-
-afs.mount(new LocalFS({
-  localPath: '/path/to/documentation',
-  description: 'Project documentation'
-}));
-// Accessible at /modules/local-fs
-
-afs.mount(new UserProfileMemory({
-  context: aigne.newContext()
-}));
-// Accessible at /modules/user-profile-memory
-```
-
-### Operations
-
-#### list(path, options?)
-
-List entries in a directory:
-
-```typescript
-// List all modules
-const { list } = await afs.list('/modules');
-
-// List entries in a specific module
-const { list } = await afs.list('/modules/local-fs', {
-  maxDepth: 2  // Recursive depth
-});
-```
-
-#### read(path)
-
-Read a specific entry:
-
-```typescript
-const { result } = await afs.read('/modules/local-fs/README.md');
-console.log(result.content);  // File contents
-console.log(result.metadata); // File metadata
-```
-
-#### write(path, content)
-
-Write or update an entry:
-
-```typescript
-const { result } = await afs.write('/modules/local-fs/notes.txt', {
-  content: 'My notes',
-  summary: 'Personal notes',
-  metadata: { category: 'personal' }
-});
-```
-
-#### search(path, query, options?)
-
-Search for content:
-
-```typescript
-const { list } = await afs.search('/modules/local-fs', 'authentication');
-```
-
-#### listModules()
-
-Get all mounted modules:
-
-```typescript
-const modules = await afs.listModules();
-// Returns: [{ name, path, description, module }]
-```
-
-## Built-in Modules
+## Available Modules
 
 ### 1. AFSHistory
 
@@ -177,9 +47,7 @@ const { list } = await afs.list('/modules/history');
 **Configuration:**
 - `storage`: Storage configuration (e.g., `{ url: "file:./memory.sqlite3" }`) or a SharedAFSStorage instance
 
-**Note:** History must be manually mounted. It is NOT automatically enabled.
-
-**Example:** See [history module documentation](./history/README.md)
+**Documentation:** See [history module documentation](./history/README.md)
 
 ### 2. LocalFS
 
@@ -206,9 +74,72 @@ afs.mount(new LocalFS({
 // Accessible at /modules/local-fs
 ```
 
-**Example:** See [examples/afs-local-fs](../examples/afs-local-fs)
+**Documentation:** See [local-fs module documentation](./local-fs/README.md)
 
-### 3. UserProfileMemory
+### 3. AFSGit
+
+- **Package:** `@aigne/afs-git`
+- **Mount Path:** `/modules/{name}` (default name: repository basename)
+- **Purpose:** Mount Git repository branches as virtual file system
+
+**Features:**
+- Access all branches as top-level directories
+- Read files using efficient git commands
+- Search content using git grep
+- Optional write operations with git worktrees
+- Auto-commit support for modifications
+
+**Usage:**
+```typescript
+import { AFSGit } from "@aigne/afs-git";
+
+afs.mount(new AFSGit({
+  repoPath: '/path/to/repo',
+  accessMode: 'readonly',  // or 'readwrite'
+  branches: ['main', 'develop']  // optional: limit branches
+}));
+// Accessible at /modules/{repo-name}/{branch}/{path}
+```
+
+**Documentation:** See [git module documentation](./git/README.md)
+
+### 4. AFSJSON
+
+- **Package:** `@aigne/afs-json`
+- **Mount Path:** `/modules/{name}` (default name: filename without extension)
+- **Purpose:** Mount JSON and YAML files as virtual file systems
+
+**Features:**
+- Navigate JSON/YAML structure as directories and files (objects/arrays as directories, values as files)
+- Path-based access to nested JSON/YAML properties
+- Support for arrays of objects
+- Read-only and read-write modes
+- Automatic file persistence in original format
+- Automatic format detection (.json, .yaml, .yml)
+
+**Usage:**
+```typescript
+import { AFSJSON } from "@aigne/afs-json";
+
+// Mount JSON file
+afs.mount(new AFSJSON({
+  jsonPath: './config.json',
+  name: 'config',
+  accessMode: 'readonly'  // optional, default: "readwrite"
+}));
+
+// Mount YAML file
+afs.mount(new AFSJSON({
+  jsonPath: './settings.yaml',
+  name: 'settings',
+  accessMode: 'readwrite'
+}));
+// Accessible at /modules/config and /modules/settings
+```
+
+**Documentation:** See [json module documentation](./json/README.md)
+
+### 5. UserProfileMemory
 
 - **Package:** `@aigne/afs-user-profile-memory`
 - **Mount Path:** `/modules/user-profile-memory` (default name: `"user-profile-memory"`)
@@ -230,142 +161,17 @@ afs.mount(new UserProfileMemory({
 // Accessible at /modules/user-profile-memory
 ```
 
-**Example:** See [examples/afs-memory](../examples/afs-memory)
-
-## Integration with AI Agents
-
-### Automatic Tool Registration
-
-When an agent has AFS configured, these tools are automatically available:
-
-1. **afs_list** - Browse directory contents
-   ```typescript
-   afs_list({ path: "/modules/local-fs" })
-   ```
-
-2. **afs_search** - Search for content
-   ```typescript
-   afs_search({ path: "/modules/local-fs", query: "authentication" })
-   ```
-
-3. **afs_read** - Read file contents
-   ```typescript
-   afs_read({ path: "/modules/local-fs/README.md" })
-   ```
-
-4. **afs_write** - Write/create files
-   ```typescript
-   afs_write({ path: "/modules/local-fs/notes.txt", content: { content: "My notes" } })
-   ```
-
-5. **afs_exec** - Execute module operations
-   ```typescript
-   afs_exec({ path: "/modules/my-module/action", args: { param: "value" } })
-   ```
-
-### Complete Example
-
-```typescript
-import { AIAgent, AIGNE } from "@aigne/core";
-import { AFS } from "@aigne/afs";
-import { AFSHistory } from "@aigne/afs-history";
-import { LocalFS } from "@aigne/afs-local-fs";
-import { UserProfileMemory } from "@aigne/afs-user-profile-memory";
-import { OpenAIChatModel } from "@aigne/openai";
-
-// Create AIGNE instance
-const aigne = new AIGNE({
-  model: new OpenAIChatModel({ apiKey: process.env.OPENAI_API_KEY })
-});
-
-// Create and configure AFS
-const afs = new AFS();
-
-// Mount history module
-afs.mount(new AFSHistory({
-  storage: { url: "file:./memory.sqlite3" }
-}));
-
-// Mount file system
-afs.mount(new LocalFS({
-  localPath: './documentation',
-  description: 'Project documentation'
-}));
-
-// Mount user profile memory
-afs.mount(new UserProfileMemory({
-  context: aigne.newContext()
-}));
-
-// Create agent with AFS
-const agent = AIAgent.from({
-  name: "assistant",
-  instructions: "You are a helpful assistant with access to documentation and memory",
-  afs
-});
-
-// Use the agent
-const userAgent = aigne.invoke(agent);
-const result = await userAgent.invoke({
-  message: "What files are in the documentation?"
-});
-```
-
-## Creating Custom Modules
-
-You can create custom AFS modules by implementing the `AFSModule` interface:
-
-```typescript
-import { AFSModule, AFSEntry, AFSListOptions } from "@aigne/afs";
-
-export class CustomModule implements AFSModule {
-  readonly name = "custom-module";
-  readonly description = "My custom module";
-
-  async list(path: string, options?: AFSListOptions) {
-    // path is the subpath within your module
-    // e.g., if accessed at /modules/custom-module/foo, path will be "/foo"
-    return { list: [] };
-  }
-
-  async read(path: string) {
-    // Implement read logic
-    return { result: undefined };
-  }
-
-  async write(path: string, content: AFSWriteEntryPayload) {
-    // Implement write logic
-    const entry: AFSEntry = { id: 'id', path, ...content };
-    return { result: entry };
-  }
-
-  async search(path: string, query: string, options?: AFSSearchOptions) {
-    // Implement search logic
-    return { list: [] };
-  }
-
-  onMount(root: AFSRoot) {
-    // Optional: initialize when mounted
-    console.log(`${this.name} mounted`);
-
-    // Listen to events
-    root.on('agentSucceed', (data) => {
-      // Handle event
-    });
-  }
-}
-
-// Mount the module
-afs.mount(new CustomModule());
-// Accessible at /modules/custom-module
-```
+**Documentation:** See [user-profile-memory module documentation](./user-profile-memory/README.md)
 
 ## Packages
 
 - [`@aigne/afs`](./core/README.md) - Core AFS implementation
-- [`@aigne/afs-history`](./history/README.md) - History tracking module
-- [`@aigne/afs-local-fs`](./local-fs/README.md) - Local file system module
+- [`@aigne/afs-history`](./history/README.md) - Conversation history storage module
+- [`@aigne/afs-local-fs`](./local-fs/README.md) - Local file system access module
+- [`@aigne/afs-git`](./git/README.md) - Git repository access module
+- [`@aigne/afs-json`](./json/README.md) - JSON file virtual filesystem module
 - [`@aigne/afs-user-profile-memory`](./user-profile-memory/README.md) - User profile memory module
+- [`@aigne/afs-sqlite`](./sqlite/README.md) - SQLite storage backend
 
 ## Examples
 

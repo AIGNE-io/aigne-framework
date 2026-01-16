@@ -21,13 +21,12 @@ export async function createHonoServer() {
     const requestCount = parseInt(c.req.header("X-Request-Count") || "0", 10);
     if (requestCount === 0) {
       return c.json({});
-    } else {
-      return c.json({
-        challenge: "test",
-        accessKeyId: "test",
-        accessKeySecret: encrypt("test", "test", "test"),
-      });
     }
+    return c.json({
+      challenge: "test",
+      accessKeyId: "test",
+      accessKeySecret: encrypt("test", "test", "test"),
+    });
   });
 
   honoApp.delete("/api/access-key/session", async (c) => {

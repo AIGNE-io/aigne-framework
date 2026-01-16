@@ -1,0 +1,31 @@
+[test]
+# Exclude test files from coverage report
+coverageSkipTestFiles = true
+
+# Exclude patterns from coverage tracking
+# See: https://bun.sh/docs/test/code-coverage
+coveragePathIgnorePatterns = [
+  # Build artifacts from all packages (with explicit parent directory patterns)
+  "**/lib/**",
+  "../../**/lib/**",
+  "../**/lib/**",
+  "**/dist/**",
+  "**/build/**",
+  "**/node_modules/**",
+
+  # Test infrastructure (both underscore and non-underscore variants)
+  "**/_mocks/**",
+  "**/_utils/**",
+  "**/test/mocks/**",
+  "**/test/utils/**",
+  "test/mocks/**",
+  "**/test-agents/**",
+  "**/__tests__/**",
+  "**/__mocks__/**",
+  "**/scripts/**",
+  "**/*.test.*",
+  "**/*.spec.*",
+
+  # Type definitions
+  "**/*.d.ts",
+]

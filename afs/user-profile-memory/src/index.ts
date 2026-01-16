@@ -1,8 +1,11 @@
 import type {
+  AFSAccessMode,
   AFSEntry,
   AFSListOptions,
   AFSListResult,
   AFSModule,
+  AFSModuleLoadParams,
+  AFSOperationOptions,
   AFSReadResult,
   AFSRoot,
   AFSSearchOptions,
@@ -16,18 +19,23 @@ import {
   type SharedAFSStorageOptions,
 } from "@aigne/afs-history";
 import { AIAgent, type Context } from "@aigne/core";
+import { camelizeSchema, optionalize } from "@aigne/core/loader/schema.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { v7 } from "@aigne/uuid";
 import { applyPatch, type Operation } from "fast-json-patch";
-import type { z } from "zod";
+import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { USER_PROFILE_MEMORY_EXTRACTOR_PROMPT } from "./prompt.js";
 import { userProfileJsonPathSchema, userProfileSchema } from "./schema.js";
 
 export interface UserProfileMemoryOptions {
-  context: Context;
   storage?: SharedAFSStorage | SharedAFSStorageOptions;
   description?: string;
+  /**
+   * Access mode for this module.
+   * @default "readwrite"
+   */
+  accessMode?: AFSAccessMode;
 }
 
 const DEFAULT_DESCRIPTION = `\
@@ -38,7 +46,25 @@ Use this memory to personalize responses and maintain context about the user acr
 The profile is continuously updated as new information is learned.
 `;
 
+const userProfileMemoryOptionsSchema = camelizeSchema(
+  z.object({
+    description: optionalize(z.string().describe("Description of the user profile memory")),
+    accessMode: optionalize(
+      z.enum(["readonly", "readwrite"]).describe("Access mode for this module"),
+    ),
+  }),
+);
+
 export class UserProfileMemory implements AFSModule {
+  static schema() {
+    return userProfileMemoryOptionsSchema;
+  }
+
+  static async load({ parsed }: AFSModuleLoadParams) {
+    const valid = await UserProfileMemory.schema().parseAsync(parsed);
+    return new UserProfileMemory(valid);
+  }
+
   constructor(public options: UserProfileMemoryOptions) {
     this.storage =
       options?.storage instanceof SharedAFSStorage
@@ -46,11 +72,14 @@ export class UserProfileMemory implements AFSModule {
         : new SharedAFSStorage(options?.storage).withModule(this);
 
     this.description = options.description || DEFAULT_DESCRIPTION;
+    this.accessMode = options.accessMode ?? "readwrite";
   }
 
   private storage: AFSStorage;
 
   readonly name: string = "user-profile-memory";
+
+  readonly accessMode: AFSAccessMode;
 
   description?: string | undefined;
 
@@ -63,23 +92,29 @@ export class UserProfileMemory implements AFSModule {
   });
 
   onMount(afs: AFSRoot): void {
-    afs.on("historyCreated", async ({ entry }) => {
+    afs.on("historyCreated", async ({ entry }, options) => {
       try {
-        await this.updateProfile(entry);
+        await this.updateProfile(entry, options);
       } catch (error) {
         logger.error("Failed to update user profile memory", error);
       }
     });
   }
 
-  async updateProfile(entry: AFSEntry) {
+  async updateProfile(entry: AFSEntry, options?: AFSOperationOptions) {
     const { data: previous } = await this.read("/");
 
-    const { ops } = await this.options.context.newContext({ reset: true }).invoke(this.extractor, {
-      schema: zodToJsonSchema(userProfileSchema),
-      profile: previous?.content,
-      entry,
-    });
+    if (typeof (options?.context as Context)?.newContext !== "function") {
+      throw new Error("Context is not valid for user profile extraction");
+    }
+
+    const { ops } = await (options?.context as Context)
+      .newContext({ reset: true })
+      .invoke(this.extractor, {
+        schema: zodToJsonSchema(userProfileSchema),
+        profile: previous?.content,
+        entry,
+      });
 
     const profile = applyPatch(
       previous?.content || {},

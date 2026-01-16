@@ -74,7 +74,6 @@ try {
               const metadata = await fetch(oauthUrl.href).then((res) => res.json());
               tokens = await refreshAuthorization(appUrl.href, {
                 metadata,
-                // biome-ignore lint/style/noNonNullAssertion: non-null assertion
                 clientInformation: (await provider.clientInformation())!,
                 refreshToken: tokens.refresh_token,
               });

@@ -11,7 +11,6 @@ const aigne = await loadAIGNEWithCmdOptions();
 const afs = new AFS().mount(new AFSHistory({ storage: { url: "file:./history.sqlite3" } })).mount(
   new UserProfileMemory({
     storage: { url: "file:./user_profile.sqlite3" },
-    context: aigne.newContext(),
   }),
 );
 

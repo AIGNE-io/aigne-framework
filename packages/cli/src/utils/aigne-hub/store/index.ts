@@ -45,4 +45,8 @@ const getSecretStore = async () => {
   return cachedSecretStore;
 };
 
+export const resetSecretStoreCache = () => {
+  cachedSecretStore = undefined;
+};
+
 export default getSecretStore;

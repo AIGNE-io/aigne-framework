@@ -1,6 +1,6 @@
 {
   "name": "@aigne/afs-explorer",
-  "version": "1.0.0",
+  "version": "1.1.0-beta",
   "description": "Explore and manage AFS file systems",
   "publishConfig": {
     "access": "public"

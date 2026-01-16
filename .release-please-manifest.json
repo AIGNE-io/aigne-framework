@@ -56,5 +56,6 @@
   "afs/local-fs": "1.4.0-beta.24",
   "afs/sqlite": "1.0.1-beta",
   "afs/json": "0.0.0",
-  "afs/git": "0.0.0"
+  "afs/git": "0.0.0",
+  "afs/explorer": "0.0.0"
 }

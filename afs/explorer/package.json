@@ -1,0 +1,103 @@
+{
+  "name": "@aigne/afs-explorer",
+  "version": "0.0.0",
+  "description": "Explore and manage AFS file systems",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
+  "homepage": "https://www.aigne.io/framework",
+  "license": "Elastic-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIGNE-io/aigne-framework"
+  },
+  "bugs": {
+    "url": "https://github.com/AIGNE-io/aigne-framework/issues"
+  },
+  "files": [
+    "lib/cjs",
+    "lib/dts",
+    "lib/esm",
+    "dist",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "type": "module",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/dts/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/dts/index.d.ts",
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    },
+    "./index.html": "./dist/index.html",
+    "./*": {
+      "types": "./lib/dts/*",
+      "import": "./lib/esm/*",
+      "require": "./lib/cjs/*"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./lib/dts/index.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "tsc --noEmit",
+    "build": "run-s build:web build:lib",
+    "build:lib": "tsc --build scripts/tsconfig.build.json",
+    "build:web": "vite build",
+    "dev": "vite",
+    "clean": "rimraf lib test/coverage dist",
+    "prepublishOnly": "run-s clean build",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage --coverage-reporter=lcov --coverage-reporter=text",
+    "postbuild": "node ../../scripts/post-build-lib.mjs"
+  },
+  "dependencies": {
+    "@aigne/afs": "workspace:^",
+    "@aigne/core": "workspace:^",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "yaml": "^2.8.1",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@aigne/afs-git": "workspace:^",
+    "@aigne/afs-history": "workspace:^",
+    "@aigne/afs-json": "workspace:^",
+    "@aigne/afs-local-fs": "workspace:^",
+    "@aigne/test-utils": "workspace:^",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.3.2",
+    "@mui/material": "^7.3.2",
+    "@mui/x-data-grid": "^8.11.3",
+    "@mui/x-tree-view": "^8.25.0",
+    "@types/bun": "^1.2.22",
+    "@types/cors": "^2.8.18",
+    "@types/express": "^5.0.0",
+    "@types/react": "^19.0.6",
+    "@types/react-dom": "^19.0.3",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@vitejs/plugin-react": "^4.3.4",
+    "npm-run-all": "^4.1.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.9.1",
+    "react-syntax-highlighter": "^16.1.0",
+    "remark-gfm": "^4.0.1",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5",
+    "vite-plugin-svgr": "^4.3.0"
+  }
+}

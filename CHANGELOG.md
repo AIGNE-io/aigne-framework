@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.91.0-beta.32](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.31...aigne-framework-v1.91.0-beta.32) (2026-01-16)
+
+
+### Bug Fixes
+
+* **afs:** improve explorer server with SPA routing and global error handler ([865c160](https://github.com/AIGNE-io/aigne-framework/commit/865c1601e2a0d9e481f260d150cb3210aef622fb))
+
 ## [1.91.0-beta.31](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.30...aigne-framework-v1.91.0-beta.31) (2026-01-16)
 
 

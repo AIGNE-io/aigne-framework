@@ -147,3 +147,23 @@ This removes entries for `lib/`, `dist/`, `node_modules/`, test infrastructure, 
 - `bunfig.toml` - Bun test coverage ignore patterns
 - `codecov.yml` - Codecov reporting configuration
 - `scripts/clean-coverage.cjs` - lcov post-processor
+
+## Planning Directory
+
+`planning/` 目录用于收集项目演进相关的文档：
+
+```
+planning/
+├── ideas/      # 想法收集，未成型的概念
+├── intents/    # 明确的意图规格，准备实现
+├── roadmap/    # 路线图与里程碑
+└── changelog/  # 重大升级与变更记录
+```
+
+**工作约定**：所有探索、分析形成的报告都应保存到 `planning/` 对应子目录，便于后续思考和追溯。
+
+文件命名：
+- Ideas: `YYYY-MM-DD-<slug>.md`
+- Intents: `<feature-name>.md`
+- Roadmap: `YYYY-Q<N>.md` 或 `v<version>.md`
+- Changelog: `YYYY-MM-DD-<title>.md`

@@ -258,7 +258,7 @@ export class AFSHistory implements AFSModule {
   async write(
     path: string,
     content: AFSWriteEntryPayload,
-    options?: AFSWriteOptions,
+    options: AFSWriteOptions,
   ): Promise<AFSWriteResult> {
     // Use provided id for updates, or generate new one for creates
     const id = (content as any).id || v7();

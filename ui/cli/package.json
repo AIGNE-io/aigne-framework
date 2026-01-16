@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build scripts/tsconfig.build.json",
     "clean": "rm -rf lib"
   },
   "dependencies": {

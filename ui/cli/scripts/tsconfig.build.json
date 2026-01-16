@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "../src",
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "jsx": "react",
+    "paths": {}
+  },
+  "include": ["../src"],
+  "references": [{ "path": "./tsconfig.build.esm.json" }, { "path": "./tsconfig.build.dts.json" }]
+}

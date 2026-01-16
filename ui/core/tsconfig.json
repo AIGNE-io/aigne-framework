@@ -1,12 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./lib",
-    "rootDir": "./src",
-    "declaration": true,
-    "declarationMap": true,
-    "noEmit": false
+    "paths": {
+      "@aigne/ui": ["./src"],
+      "@aigne/ui/*": ["./src/*"]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "lib", "**/*.test.ts"]
+  "exclude": ["node_modules", "lib"],
+  "include": ["src", "test"]
 }

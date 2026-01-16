@@ -1,7 +1,12 @@
+import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdir, rename, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, dirname, isAbsolute, join } from "node:path";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
+
 import type {
   AFSAccessMode,
   AFSDeleteOptions,
@@ -118,9 +123,11 @@ export class AFSGit implements AFSModule {
 
   /**
    * Parse AFS path into branch and file path
+   * Branch names may contain slashes and are encoded with ~ in paths
    * Examples:
    *   "/" -> { branch: undefined, filePath: "" }
    *   "/main" -> { branch: "main", filePath: "" }
+   *   "/feature~new-feature" -> { branch: "feature/new-feature", filePath: "" }
    *   "/main/src/index.ts" -> { branch: "main", filePath: "src/index.ts" }
    */
   private parsePath(path: string): { branch?: string; filePath: string } {
@@ -131,10 +138,67 @@ export class AFSGit implements AFSModule {
       return { branch: undefined, filePath: "" };
     }
 
-    const branch = segments[0];
+    // Decode branch name (first segment): replace ~ with /
+    const branch = segments[0]!.replace(/~/g, "/");
     const filePath = segments.slice(1).join("/");
 
     return { branch, filePath };
+  }
+
+  /**
+   * Detect MIME type based on file extension
+   */
+  private getMimeType(filePath: string): string {
+    const ext = filePath.split(".").pop()?.toLowerCase();
+    const mimeTypes: Record<string, string> = {
+      // Images
+      png: "image/png",
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      gif: "image/gif",
+      bmp: "image/bmp",
+      webp: "image/webp",
+      svg: "image/svg+xml",
+      ico: "image/x-icon",
+      // Documents
+      pdf: "application/pdf",
+      txt: "text/plain",
+      md: "text/markdown",
+      // Code
+      js: "text/javascript",
+      ts: "text/typescript",
+      json: "application/json",
+      html: "text/html",
+      css: "text/css",
+      xml: "text/xml",
+    };
+    return mimeTypes[ext || ""] || "application/octet-stream";
+  }
+
+  /**
+   * Check if file is likely binary based on extension
+   */
+  private isBinaryFile(filePath: string): boolean {
+    const ext = filePath.split(".").pop()?.toLowerCase();
+    const binaryExtensions = [
+      "png",
+      "jpg",
+      "jpeg",
+      "gif",
+      "bmp",
+      "webp",
+      "ico",
+      "pdf",
+      "zip",
+      "tar",
+      "gz",
+      "exe",
+      "dll",
+      "so",
+      "dylib",
+      "wasm",
+    ];
+    return binaryExtensions.includes(ext || "");
   }
 
   /**
@@ -217,9 +281,10 @@ export class AFSGit implements AFSModule {
           .raw(["cat-file", "-s", treeish])
           .then((s) => Number.parseInt(s.trim(), 10));
 
+        const afsPath = this.buildPath(branch, path);
         entries.push({
-          id: join("/", branch, path),
-          path: join("/", branch, path),
+          id: afsPath,
+          path: afsPath,
           metadata: {
             type: "file",
             size,
@@ -264,7 +329,7 @@ export class AFSGit implements AFSModule {
           const size = sizeStr === "-" ? undefined : Number.parseInt(sizeStr, 10);
 
           const fullPath = itemPath ? `${itemPath}/${name}` : name;
-          const afsPath = join("/", branch, fullPath);
+          const afsPath = this.buildPath(branch, fullPath);
 
           entries.push({
             id: afsPath,
@@ -293,6 +358,21 @@ export class AFSGit implements AFSModule {
     }
   }
 
+  /**
+   * Build AFS path with encoded branch name
+   * Branch names with slashes are encoded by replacing / with ~
+   * @param branch Branch name (may contain slashes)
+   * @param filePath File path within branch
+   */
+  private buildPath(branch: string, filePath?: string): string {
+    // Replace / with ~ in branch name
+    const encodedBranch = branch.replace(/\//g, "~");
+    if (!filePath) {
+      return `/${encodedBranch}`;
+    }
+    return `/${encodedBranch}/${filePath}`;
+  }
+
   async list(path: string, options?: AFSListOptions): Promise<AFSListResult> {
     const { branch, filePath } = this.parsePath(path);
 
@@ -300,13 +380,16 @@ export class AFSGit implements AFSModule {
     if (!branch) {
       const branches = await this.getBranches();
       return {
-        data: branches.map((name) => ({
-          id: `/${name}`,
-          path: `/${name}`,
-          metadata: {
-            type: "directory",
-          },
-        })),
+        data: branches.map((name) => {
+          const encodedPath = this.buildPath(name);
+          return {
+            id: encodedPath,
+            path: encodedPath,
+            metadata: {
+              type: "directory",
+            },
+          };
+        }),
       };
     }
 
@@ -328,10 +411,11 @@ export class AFSGit implements AFSModule {
     }
 
     if (!filePath) {
+      const branchPath = this.buildPath(branch);
       return {
         data: {
-          id: `/${branch}`,
-          path: `/${branch}`,
+          id: branchPath,
+          path: branchPath,
           metadata: { type: "directory" },
         },
       };
@@ -345,10 +429,11 @@ export class AFSGit implements AFSModule {
 
       if (objectType === "tree") {
         // It's a directory
+        const afsPath = this.buildPath(branch, filePath);
         return {
           data: {
-            id: path,
-            path,
+            id: afsPath,
+            path: afsPath,
             metadata: {
               type: "directory",
             },
@@ -357,20 +442,44 @@ export class AFSGit implements AFSModule {
       }
 
       // It's a file, get content
-      const content = await this.git.show([`${branch}:${filePath}`]);
       const size = await this.git
         .raw(["cat-file", "-s", `${branch}:${filePath}`])
         .then((s) => Number.parseInt(s.trim(), 10));
 
+      // Determine mimeType based on file extension
+      const mimeType = this.getMimeType(filePath);
+      const isBinary = this.isBinaryFile(filePath);
+
+      let content: string;
+      const metadata: Record<string, any> = {
+        type: "file",
+        size,
+        mimeType,
+      };
+
+      if (isBinary) {
+        // For binary files, use execFileAsync to get raw buffer
+        const { stdout } = await execFileAsync("git", ["cat-file", "-p", `${branch}:${filePath}`], {
+          cwd: this.options.repoPath,
+          encoding: "buffer",
+          maxBuffer: 10 * 1024 * 1024, // 10MB max
+        });
+        // Store only base64 string without data URL prefix
+        content = (stdout as Buffer).toString("base64");
+        // Mark content as base64 in metadata
+        metadata.contentType = "base64";
+      } else {
+        // For text files, use git.show
+        content = await this.git.show([`${branch}:${filePath}`]);
+      }
+
+      const afsPath = this.buildPath(branch, filePath);
       return {
         data: {
-          id: path,
-          path,
+          id: afsPath,
+          path: afsPath,
           content,
-          metadata: {
-            type: "file",
-            size,
-          },
+          metadata,
         },
       };
     } catch (error) {
@@ -438,9 +547,10 @@ export class AFSGit implements AFSModule {
     // Get file stats
     const stats = await stat(fullPath);
 
+    const afsPath = this.buildPath(branch, filePath);
     const writtenEntry: AFSEntry = {
-      id: path,
-      path: path,
+      id: afsPath,
+      path: afsPath,
       content: entry.content,
       summary: entry.summary,
       createdAt: stats.birthtime,
@@ -633,7 +743,7 @@ export class AFSGit implements AFSModule {
           content = matchNoBranch[3]!;
         }
 
-        const afsPath = join("/", branch, matchPath);
+        const afsPath = this.buildPath(branch, matchPath);
 
         if (processedFiles.has(afsPath)) continue;
         processedFiles.add(afsPath);

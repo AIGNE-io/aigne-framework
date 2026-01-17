@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.10.17-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.16...aigne-hub-v0.10.17-beta) (2026-01-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/xai bumped to 0.7.63-beta
+
 ## [0.10.16](https://github.com/AIGNE-io/aigne-framework/compare/aigne-hub-v0.10.16-beta.31...aigne-hub-v0.10.16) (2026-01-16)
 
 

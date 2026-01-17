@@ -37,22 +37,43 @@
 
 ### Phase 1: 准备 (Day 1)
 
-**1.1 创建新 Repos**
-```bash
-# 私有 repos
-gh repo create ArcBlock/afs --private
-gh repo create ArcBlock/aigne --private
+**1.1 Repo 迁移策略**
 
-# 公开 repos (artifact)
-gh repo create ArcBlock/afs-oss --public
-gh repo create ArcBlock/aigne-framework-oss --public
+```bash
+# Step 1: Rename 旧 repo (保留历史)
+gh repo rename AIGNE-io/aigne-framework aigne-framework-legacy
+
+# Step 2: 创建新公开 repos (占原名)
+gh repo create AIGNE-io/aigne-framework --public
+gh repo create AIGNE-io/afs --public
+
+# Step 3: 创建私有主 repo
+gh repo create ArcBlock/arcblock-ai --private
+
+# Step 4: Legacy repo README 指向新 repo
+# Step 5: 迁移完成后 archive legacy
+```
+
+**1.2 npm scope 准备**
+```bash
+# 注册新 scope (如果用独立 scope)
+npm login --scope=@afs
+
+# 或保持 @aigne scope:
+# @aigne/afs-core, @aigne/afs-daemon, @aigne/afs-cli
 ```
 
 **1.2 确定边界**
 
-| 当前位置 | 目标 Repo | 公开/私有 |
-|---------|----------|----------|
-| afs/* | afs/ | Core+Drivers 公开 |
+> 判断标准："这是世界的一部分，还是世界之上的服务？"
+
+| 当前位置 | 目标 Repo | 公开/私有 | 理由 |
+|---------|----------|----------|------|
+| afs/core | afs/ | ✅ 公开 | 世界接口 |
+| afs/drivers | afs/ | ✅ 公开 | 世界接口 |
+| afs/daemon (新) | afs/ | ✅ 公开 | reference world host |
+| afs/cli (新) | afs/ | ✅ 公开 | reference UI |
+| afs/runtime | afs/ | ❌ 私有 | 托管服务 |
 | packages/core | aigne/framework/ | 公开 |
 | packages/cli | aigne/framework/ | 公开 |
 | packages/agent-library | aigne/framework/ | 公开 |
@@ -264,3 +285,90 @@ gh repo rename ArcBlock/aigne-framework aigne-framework-legacy
 - [ ] 归档 aigne-framework (旧 repo)
 - [ ] 更新所有文档链接
 - [ ] 通知团队切换
+
+---
+
+## Phase 2: 测试体系建设 (Day 8-14)
+
+### AFS Repo 测试
+- [ ] 建立 @afs/test-utils
+- [ ] AI 生成工具函数测试
+- [ ] 确保 core 和 drivers 测试覆盖 >0.8
+
+### AIGNE Repo 测试
+- [ ] 迁移现有测试
+- [ ] 补充 platform-helpers 测试 (当前 0.02)
+- [ ] 补充 memory/* 测试 (当前 0.23-0.25)
+- [ ] AI 生成无测试工具函数测试:
+  - json-utils.ts (41 行)
+  - model-utils.ts (13 行)
+  - promise.ts (17 行)
+  - role-utils.ts (39 行)
+  - stream-polyfill.ts (35 行)
+  - typed-event-emitter.ts (15 行)
+- [ ] 创建 Model 测试模板，应用到 13 个模型包
+- [ ] 移除 coverage.test.ts 模式 (32 个文件)
+
+**预期产出**: 800-1,400 行自动生成测试
+
+---
+
+## Phase 3: 发布与同步体系 (Day 15+)
+
+### 同步策略
+
+```
+arcblock-ai (私有)          公开 repos (artifact)
+├── afs/
+│   ├── core/       ──────→  afs/core
+│   ├── drivers/    ──────→  afs/drivers
+│   ├── daemon/     ──────→  afs/daemon
+│   ├── cli/        ──────→  afs/cli
+│   └── runtime/    ✗ 不同步
+└── aigne/
+    ├── framework/  ──────→  aigne-framework/
+    └── runtime/    ✗ 不同步
+```
+
+**触发时机**: 版本发布时，不是每次 commit
+
+### 版本策略
+
+**一个 Repo = 一个版本号**
+
+| Repo | 版本 | 包 |
+|------|------|---|
+| afs | v1.x.x | 所有 @afs/* 同版本 |
+| aigne-framework | v1.x.x | 所有 @aigne/* 同版本 |
+
+### 发布流程
+
+```
+私有 repo 开发完成
+      ↓
+更新版本号 (统一)
+      ↓
+私有 repo 打 tag
+      ↓
+触发同步脚本 (清理、翻译、推送)
+      ↓
+公开 repo CI 自动:
+  - 运行测试
+  - 发布 npm
+  - 创建 GitHub Release
+```
+
+### 行动项
+- [ ] 开发同步脚本 (sync-to-public.sh)
+- [ ] 开发敏感内容清理脚本
+- [ ] 配置公开 repo CI/CD (npm publish + GitHub Release)
+- [ ] 配置版本号统一更新脚本
+
+**详细方案**: [release-and-sync-strategy.md](./release-and-sync-strategy.md)
+
+---
+
+## Phase 4: 工程优化
+
+- [ ] 各 repo 配置 Turborepo
+- [ ] 统一 TypeScript 配置模板

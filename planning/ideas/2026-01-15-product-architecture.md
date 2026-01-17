@@ -83,19 +83,108 @@ afs-runtime/        # 接近 OS 级别的运行时
 
 ## 开源策略总结
 
-| 组件 | 开源 | Repo |
-|------|------|------|
-| **AFS** | | |
-| - Core + Drivers | ✅ | afs |
-| - Runtime | ❌ | afs (或独立) |
-| **AIGNE** | | |
-| - Framework | ✅ | aigne-framework |
-| - Runtime | ❌ | aigne-framework (或独立) |
-| - Observability | ❌ | 独立 repo |
-| **AINE** | | |
-| - Platform | ❌ | 独立 repo (已存在) |
+### 判断标准
 
-**原则**: 开源基础设施核心（Framework），闭源运行时（Runtime）和应用层。
+> **"这是世界的一部分，还是世界之上的服务？"**
+> - 世界的一部分 → 必须开源
+> - 世界之上的服务 → 你决定
+
+### 三层开源策略
+
+#### 🟢 第一层：AFS（世界接口）— 完全开源
+
+| 组件 | 开源 | 说明 |
+|------|------|------|
+| AFS Core | ✅ | path model, artifact model |
+| AFS Drivers | ✅ | 存储驱动 |
+| afsd (reference) | ✅ | reference world host |
+| afs-cli | ✅ | reference UI = spec 的可执行版本 |
+
+**License**: Apache 2.0 / MIT
+
+**理由**: 基础设施级原语，不开源 = 不可信 = 系统失败
+
+#### 🟡 第二层：AIGNE（Agent 框架）— 开源
+
+| 组件 | 开源 | 说明 |
+|------|------|------|
+| Framework | ✅ | Agent 编排、多模型支持 |
+| Runtime (reference) | ✅ | 参考实现 |
+
+#### 🔴 第三层：商业服务 — 可闭源
+
+**内核一致，能力分层**：
+
+| 组件 | 开源 | 说明 |
+|------|------|------|
+| AFS Runtime | ❌ | 高性能、权限管理、Auditing、DID 集成 |
+| Hosted afsd | ❌ | 托管世界（多租户、高可用、安全隔离） |
+| 高级 Providers | ❌ | Browser、Enterprise storage、Secure execution |
+| Observability | ❌ | 监控平台 |
+| AINE Platform | ❌ | 完整工程平台 |
+| Agent-level services | ❌ | semantic memory、site profiles、shared knowledge |
+
+**开源 vs 商业版界限**：
+
+| 开源 (reference) | 商业版 (runtime) |
+|-----------------|------------------|
+| 核心协议实现 | 高性能优化 |
+| 基本 persistence | 企业级存储 |
+| 基本 concurrency | 分布式一致性 |
+| 单实例运行 | 水平扩展 / 高可用 |
+| 无权限管理 | 权限管理 / ACL |
+| 无审计 | Auditing / 合规 |
+| 独立运行 | DID 集成 / 身份验证 |
+
+**原则**：内核和开源是一样的，商业版是能力增强。
+
+### 商业价值来源
+
+```
+商业价值不在代码本身，而在：
+
+1. 托管世界（Hosted afsd）
+   - 多租户、高可用、安全隔离、合规
+   - "我们跑 afsd，你只用 AFS"
+
+2. 高级 Provider
+   - Browser provider
+   - Enterprise storage provider
+   - Secure execution provider
+   - Compliance / audit provider
+
+3. Agent-level services
+   - semantic memory
+   - site profiles
+   - shared knowledge
+   - optimization layers
+```
+
+### README 声明（建议）
+
+```
+AFS, afsd, and afs-cli are open-source by design.
+They define a shared world interface that must remain inspectable and verifiable.
+Commercial value is built on top of this world—not hidden beneath it.
+```
+
+**原则**: 协议与世界是公共的，托管与规模化是你的优势。
+
+---
+
+## 版本管理原则
+
+**一个 Repo = 一个版本号**
+
+- 需要独立版本号 → 应该独立 Repo
+- Monorepo 内所有包统一版本
+- 简化 tag 管理（1 tag/release，而非 60+）
+
+| Repo | 版本策略 |
+|------|---------|
+| afs | 统一版本 @afs/* v1.x.x |
+| aigne | 统一版本 @aigne/* v1.x.x |
+| aine | 统一版本 |
 
 ---
 

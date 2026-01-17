@@ -185,18 +185,30 @@ afs/, aigne-framework/          # 公开 repo (artifact)
 ```
 arcblock-ai/                    # 私有主 repo
 ├── afs/
-│   ├── core/                   # 标记: public
-│   ├── drivers/                # 标记: public
-│   └── runtime/                # 标记: private
+│   ├── core/                   # public (世界的一部分)
+│   ├── drivers/                # public (世界的一部分)
+│   ├── daemon/                 # public (reference afsd)
+│   ├── cli/                    # public (reference UI)
+│   └── runtime/                # private (production 托管)
 ├── aigne/
-│   ├── framework/              # 标记: public
-│   ├── runtime/                # 标记: private
-│   └── observability/          # 标记: private
-├── aine/                       # 标记: private
+│   ├── framework/              # public
+│   ├── runtime/                # private (production)
+│   └── observability/          # private
+├── aine/                       # private
+├── providers/                  # private (高级 providers)
+│   ├── browser/
+│   ├── enterprise-storage/
+│   └── secure-execution/
 ├── pnpm-workspace.yaml
 └── scripts/
     └── publish-opensource.sh   # 发布到公开 repo
 ```
+
+### 开源判断标准
+
+> **"这是世界的一部分，还是世界之上的服务？"**
+> - 世界的一部分 → 必须开源
+> - 世界之上的服务 → 你决定
 
 ### 发布脚本 (publish-opensource.sh)
 ```bash

@@ -97,10 +97,35 @@ No dynamic control plane is required.
 
 | 做 | 不做 |
 |----|------|
-| 提供加密通道 | peer discovery |
-| 静态 peer 配置 | NAT 穿透 |
+| 提供加密通道 | 互联网级 peer discovery |
+| 静态 peer 配置 | NAT 穿透服务 |
 | identity anchor (如 pubkey) | 网络级 ACL |
-| 连接建立 | 重连逻辑 / 生命周期管理 |
+| 连接建立 | 复杂重连逻辑 |
+| **本地网络自动发现** | 中心化协调服务 |
+
+### 本地网络发现（LAN Discovery）
+
+**目的**：便于用户管理自己的设备，自动发现同一网络内的 afsd 实例。
+
+**实现方式**：mDNS / Bonjour（成熟、无中心、零配置）
+
+```
+# afsd 启动时广播
+_afsd._tcp.local.
+  name: "robert-macbook"
+  port: 7654
+  txt: "id=did:abt:xxx" "version=0.1"
+
+# 其他 afsd 自动发现
+$ afs discover
+robert-macbook.local:7654  did:abt:xxx
+robert-nas.local:7654      did:abt:yyy
+```
+
+**边界**：
+- ✅ 本地网络（同一 LAN / subnet）
+- ✅ 自己的设备
+- ❌ 跨互联网发现（需要显式配置或 WireGuard）
 
 ### 抽象接口
 
@@ -233,6 +258,7 @@ afs/
 - [ ] 实现并发控制（lock/version）
 - [ ] 实现 Transport Layer 抽象接口
 - [ ] 实现 Local IPC transport
+- [ ] 实现 LAN Discovery（mDNS/Bonjour）
 - [ ] 测试：多实例、crash recovery、冲突处理
 
 **Roadmap**：

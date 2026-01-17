@@ -232,76 +232,47 @@ Laptop afsd                   Gateway afsd                  NAS afsd
 
 ## 7. Identity：did:afs
 
+> 详细规格见 [did-afs-spec.md](did-afs-spec.md)（独立开源 repo）
+
 ### 核心决策
 
 ```
-AFS 必须定义自己的 did:afs，
-可以桥接/承认 did:abt，
-不能反过来。
+did:afs 与 did:abt 在结构上几乎同构，
+但在"语义主权"和"生命周期"上刻意分离；
+AFS 生态原生支持二者互通，但不混用。
 ```
 
-**这是分层问题，不是阵营问题。**
-
-### 两个不同的问题
-
-| 问题 | 正确归属 |
-|------|---------|
-| 谁在 AFS 世界里行动？ | did:afs |
-| 谁是现实世界/经济世界的主体？ | did:abt |
-
-### did:afs vs did:abt
+### 快速对照
 
 | 维度 | did:afs | did:abt |
 |------|---------|---------|
 | **定位** | 世界内名牌 | 世界外护照 |
-| **生命周期** | 秒级 / session 级 | 年级 / 合规级 |
-| **主体** | agent, daemon, device, job | 人, 账户, 经济主体 |
-| **上链** | ❌ 不上链 | ✅ 上链 |
-| **解析** | AFSD 本地验证 | 全局解析 |
-| **用途** | exec, mount, audit | token, wallet, governance |
+| **生命周期** | 秒～长期 | 长期、稳定 |
+| **主体** | 人 / agent / device / daemon | 人 / 组织 / 账户 |
+| **上链** | ❌ | ✅ |
+| **解析** | AFSD 本地 | 全局 |
 
-### AFS 的 identity 远多于"账户/人"
+### 示例
 
 ```
-did:afs:agent/code-reviewer      ← AI agent
-did:afs:afsd/home-gateway        ← daemon
-did:afs:device/fridge            ← IoT 设备
-did:afs:job/tmp-20260116         ← 临时任务
-did:afs:alice                    ← 人
+did:afs:alice                    # 人
+did:afs:agent/code-reviewer      # AI agent
+did:afs:afsd/home-gateway        # daemon
+did:afs:device/fridge            # IoT 设备
 ```
 
-这些 **不应该** 上链、绑定 token、进入经济身份系统。
+### 桥接（互通但不混用）
 
-### 桥接关系（推荐模型）
-
-```json
-{
-  "id": "did:afs:alice",
-  "verificationMethod": [...],
-  "alsoKnownAs": [
-    "did:abt:z8ia..."
-  ]
-}
+```
+did:afs:alice
+  └── alsoKnownAs: did:abt:z8ia...
 ```
 
-**关键**：
-- AFS 以 did:afs 为主语
-- 可选声明外部锚点（did:abt）
-- AFS 的 ACL / exec / mount **永远只看 did:afs**
-
-### 权限模型写法
-
+ACL 永远只看 did:afs：
 ```
 ✅ ALLOW did:afs:alice EXEC /team/deploy
-❌ ALLOW did:abt:z8ia... EXEC /team/deploy
+❌ ALLOW did:abt:... EXEC /team/deploy
 ```
-
-### 红线判断
-
-> "这个 identity 是为了在 AFS 世界里行动，还是为了在现实世界里被承认？"
->
-> - 前者 → did:afs
-> - 后者 → did:abt
 
 ---
 

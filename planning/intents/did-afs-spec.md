@@ -214,11 +214,226 @@ expires: 2026-01-17T00:00:00Z
 
 ---
 
-## 9. 安全考虑
+## 9. Key Material 分层
+
+### Identity Stack（三层）
+
+```
+Layer 0: Key Material（怎么来的）
+         ├── Passkey / WebAuthn（人类推荐）
+         ├── BIP-39 mnemonic（可选）
+         ├── Random seed
+         ├── Hardware key
+         └── Derived subkey
+
+Layer 1: DID（世界内名）
+         did:afs:<opaque-id>
+         - 可签名、可验证、唯一
+         - 不关心 mnemonic / 人类可读性
+
+Layer 2: Linking / Ownership（可选）
+         - derivedFrom bip39:m/44'/999'/0'
+         - alsoKnownAs did:abt:...
+```
+
+### BIP-39 支持原则
+
+```
+AFS identities MAY be derived from BIP-39,
+but BIP-39 is not required for an AFS DID.
+```
+
+**适用场景**：
+- ✅ 人类长期主身份（did:afs:alice）
+- ✅ 跨设备恢复
+- ✅ 需要和 ABT / wallet 对齐
+
+**不适用场景**：
+- ❌ agent identity（did:afs:agent/*）
+- ❌ daemon identity（did:afs:afsd/*）
+- ❌ device identity（did:afs:device/*）
+- ❌ ephemeral job / task
+
+---
+
+## 10. Passkey 原生支持
+
+### 设计定位
+
+```
+Passkey 是"人类进入 AFS 世界的最佳钥匙"，
+但 AFS 仍然是"以 DID 为主语的世界"。
+```
+
+Passkey 作为 **verificationMethod 的一种实现**，不是 DID 本身。
+
+### DID Document 示例（含 Passkey）
+
+```json
+{
+  "id": "did:afs:alice",
+  "verificationMethod": [
+    {
+      "id": "did:afs:alice#passkey-1",
+      "type": "WebAuthn",
+      "controller": "did:afs:alice",
+      "publicKeyJwk": { "kty": "EC", "crv": "P-256", ... }
+    },
+    {
+      "id": "did:afs:alice#recovery-key",
+      "type": "Ed25519VerificationKey2020",
+      "controller": "did:afs:alice",
+      "publicKeyMultibase": "z6Mkf..."
+    }
+  ],
+  "authentication": ["did:afs:alice#passkey-1"],
+  "recovery": ["did:afs:alice#recovery-key"]
+}
+```
+
+### AFSD 原生支持范围
+
+1. **注册 / 绑定 Passkey**
+   - 创建 did:afs
+   - 记录 WebAuthn credential 公钥
+
+2. **挑战-响应签名**
+   - AFSD 生成 challenge
+   - 客户端用 Passkey 签名（FaceID/TouchID）
+   - AFSD 验证签名
+
+3. **会话 Capability 下发**
+   - 认证成功后下发短期 capability
+   - 后续操作用 capability，不需要每次弹生物识别
+
+### Passkey vs 其他 signer
+
+| 身份类型 | 推荐 signer |
+|---------|------------|
+| 人类（did:afs:alice） | Passkey |
+| Agent（did:afs:agent/*） | Ed25519 keypair |
+| Daemon（did:afs:afsd/*） | Node key |
+| Device（did:afs:device/*） | Hardware key / TPM |
+
+---
+
+## 11. Node Key Binding（设备密钥绑定）
+
+### 目标
+
+用 Passkey 的**稳定唯一标识**作为 identity anchor，
+但**不从 Passkey 派生节点私钥**。
+
+### 安全原则（红线）
+
+```
+Passkeys MUST NOT be used as key material for other cryptographic purposes.
+They MAY be used to attest ownership or binding of independently generated keys.
+```
+
+### 正确做法
+
+```
+Human (passkey)
+  ↓ proves control
+Stable Identity Anchor (credential_id, public, verifiable)
+  ↓ used as context
+Node / Agent Keys (independent, rotatable)
+```
+
+**Identity Anchor 计算**：
+```
+passkey_anchor = SHA256(credential_id || rp_id)
+```
+这是 seed / salt，**不是 secret**。
+
+**Node Key 独立生成**：
+```
+node_keypair = Ed25519.generate()  // 可轮换、可撤销
+```
+
+### Binding Attestation
+
+```json
+{
+  "node": "did:afs:afsd/home",
+  "nodeKey": "ed25519:z6Mkf...",
+  "boundTo": {
+    "type": "passkey-anchor",
+    "value": "hash:abcd..."
+  },
+  "attestedBy": "did:afs:alice",
+  "attestation": {
+    "type": "webauthn-signature",
+    "created": "2026-01-16T10:00:00Z",
+    "proofValue": "..."
+  }
+}
+```
+
+**语义**："这个节点 key 是由 Alice 用她的 Passkey 确认归属的。"
+
+### 优势
+
+- ✅ Passkey 私钥永不离开 authenticator
+- ✅ Node key 泄露 ≠ 人类身份泄露
+- ✅ Node 可以换 key，Passkey 不受影响
+- ✅ 审计可解释：谁、用什么、确认了哪个节点
+
+---
+
+## 12. 无钱包设计
+
+### 核心决策
+
+```
+摆脱钱包依赖是正确的。
+钱包不是"身份"的最佳载体，它只是"资产"的工具。
+```
+
+### 钱包模型的问题
+
+钱包体系隐含的假设：
+1. 身份 = 账户
+2. 账户 = 私钥
+3. 私钥 = 人工备份（助记词）
+4. 备份失败 = 永久丢失
+5. 每次操作都是"高风险金融操作"
+
+**这套模型不适合**：日常工作、多设备、agent/daemon、世界级协作、高频动作。
+
+### AFS 的"去钱包化拆分"
+
+| 维度 | 钱包体系 | AFS 体系 |
+|------|---------|---------|
+| **身份载体** | 私钥 | Passkey |
+| **备份** | 助记词（人工） | 系统级同步 |
+| **日常操作** | 高风险 | 低摩擦 |
+| **多设备** | 痛苦 | 天然支持 |
+| **Agent** | 不友好 | 一等公民 |
+| **丢设备** | 灾难 | 无感重建 |
+| **权限** | 全有或全无 | 细粒度 capability |
+
+### 三个拆分
+
+1. **身份连续性** → Passkey（无助记词、系统级同步、生物识别）
+2. **世界内权限** → did:afs + capability（谁、在哪、能做什么）
+3. **节点签名** → 可丢弃 node key（丢了就换，不影响人类身份）
+
+### 对外解释
+
+> "我们不依赖钱包，是因为钱包不是为世界协作设计的。"
+
+这不是反 crypto，是把 crypto 放回它擅长的位置。
+
+---
+
+## 13. 安全考虑
 
 ### 密钥管理
 
-- 私钥存储在本地（AFSD 管理）
+- 人类身份：Passkey（推荐）或 BIP-39 派生
+- Agent/Daemon：独立生成的 Ed25519 keypair
 - 支持多 key（rotation）
 - 支持 ephemeral key（短期任务）
 
@@ -231,10 +446,17 @@ expires: 2026-01-17T00:00:00Z
 
 - did:afs 撤销是本地操作，立即生效
 - 不需要上链确认
+- Node key 可独立轮换，不影响人类 DID
+
+### 恢复
+
+- Passkey：OS 级同步（iCloud/Google）
+- 多 verificationMethod：允许恢复 key
+- 不依赖助记词人工备份
 
 ---
 
-## 10. AI-Native 优势
+## 14. AI-Native 优势
 
 ```
 如果两个 DID method 不同，但 Document 结构同构，
@@ -249,7 +471,7 @@ LLM / agent 会自然学会它们的映射关系。
 
 ---
 
-## 11. 对外解释
+## 15. 对外解释
 
 当有人问"你们怎么又定义了一个 DID？"：
 
@@ -260,7 +482,7 @@ LLM / agent 会自然学会它们的映射关系。
 
 ---
 
-## 12. 设计原则
+## 16. 设计原则
 
 ```
 did:afs 与 did:abt 同构、互认、各司其职。
@@ -283,11 +505,23 @@ AFS 世界的主权，永远在 AFS 内部。
 
 ---
 
-## 13. Roadmap
+## 17. Roadmap
 
+**v0.1**：
 - [ ] did:afs method spec 完善
 - [ ] 独立开源 repo
 - [ ] AFSD 集成 did:afs 解析
+- [ ] Ed25519 verificationMethod 实现
 - [ ] Capability 委托规范
-- [ ] did:afs ↔ did:abt linking spec
 - [ ] 参考实现（TypeScript）
+
+**v0.2**：
+- [ ] Passkey / WebAuthn verificationMethod 实现
+- [ ] Node key binding flow
+- [ ] 多 verificationMethod 支持
+- [ ] Key rotation
+
+**Roadmap**：
+- [ ] did:afs ↔ did:abt linking spec
+- [ ] BIP-39 派生支持（可选）
+- [ ] Hardware key 支持

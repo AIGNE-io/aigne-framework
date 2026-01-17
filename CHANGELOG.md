@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.91.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0...aigne-framework-v1.91.1-beta) (2026-01-17)
+
+
+### Bug Fixes
+
+* **models:** update default model to grok-4-latest for xai model ([1c9f69a](https://github.com/AIGNE-io/aigne-framework/commit/1c9f69a04cd245e6251f1946e3ad82eb830c6074))
+
 ## [1.91.0](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.32...aigne-framework-v1.91.0) (2026-01-16)
 
 ## [1.91.0-beta.32](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0-beta.31...aigne-framework-v1.91.0-beta.32) (2026-01-16)

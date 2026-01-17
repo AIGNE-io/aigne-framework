@@ -220,39 +220,47 @@ expires: 2026-01-17T00:00:00Z
 
 ```
 Layer 0: Key Material（怎么来的）
-         ├── Passkey / WebAuthn（人类推荐）
-         ├── BIP-39 mnemonic（可选）
-         ├── Random seed
-         ├── Hardware key
-         └── Derived subkey
+         ├── BIP-39 mnemonic（default，与 did:abt 一致）
+         ├── Passkey / WebAuthn（人类交互层）
+         ├── Derived subkey（从 BIP-39 派生）
+         ├── Random seed（ephemeral）
+         └── Hardware key
 
 Layer 1: DID（世界内名）
          did:afs:<opaque-id>
          - 可签名、可验证、唯一
-         - 不关心 mnemonic / 人类可读性
+         - 支持从 BIP-39 派生路径
 
 Layer 2: Linking / Ownership（可选）
          - derivedFrom bip39:m/44'/999'/0'
          - alsoKnownAs did:abt:...
 ```
 
-### BIP-39 支持原则
+### BIP-39 Default 支持
 
 ```
-AFS identities MAY be derived from BIP-39,
-but BIP-39 is not required for an AFS DID.
+did:afs default 支持 BIP-39 派生，与 did:abt 保持一致。
+这对多设备、多 node 场景至关重要。
 ```
 
-**适用场景**：
-- ✅ 人类长期主身份（did:afs:alice）
-- ✅ 跨设备恢复
-- ✅ 需要和 ABT / wallet 对齐
+**为什么 default 支持 BIP-39**：
+- ✅ 与 did:abt 密钥体系统一
+- ✅ 多设备从同一 seed 派生
+- ✅ 多 node 可管理、可恢复
+- ✅ 提供可靠的恢复路径
 
-**不适用场景**：
-- ❌ agent identity（did:afs:agent/*）
-- ❌ daemon identity（did:afs:afsd/*）
-- ❌ device identity（did:afs:device/*）
-- ❌ ephemeral job / task
+**派生路径示例**：
+```
+m/44'/999'/0'           → did:afs:alice（人类主身份）
+m/44'/999'/0'/0         → did:afs:afsd/home（home daemon）
+m/44'/999'/0'/1         → did:afs:afsd/office（office daemon）
+m/44'/999'/0'/2/0       → did:afs:device/laptop
+m/44'/999'/0'/2/1       → did:afs:device/phone
+```
+
+**例外（不从 BIP-39 派生）**：
+- ❌ ephemeral job / task（随机生成）
+- ❌ 临时 session（随机生成）
 
 ---
 
@@ -628,6 +636,7 @@ AFS 世界的主权，永远在 AFS 内部。
 - [ ] did:afs method spec 完善
 - [ ] 独立开源 repo
 - [ ] AFSD 集成 did:afs 解析
+- [ ] BIP-39 派生支持（default）
 - [ ] Ed25519 verificationMethod 实现
 - [ ] Capability 委托规范
 - [ ] 参考实现（TypeScript）
@@ -642,5 +651,4 @@ AFS 世界的主权，永远在 AFS 内部。
 - [ ] did:afs ↔ did:abt linking spec
 - [ ] PaymentRouting service type spec
 - [ ] Payment VC schema 定义
-- [ ] BIP-39 派生支持（可选）
 - [ ] Hardware key 支持

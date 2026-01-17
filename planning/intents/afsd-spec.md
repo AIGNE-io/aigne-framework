@@ -196,6 +196,38 @@ transport:
 - **没有中心控制节点**
 - 世界通过 mount 关系组合，而不是 global coordinator
 
+### 边缘 afsd 模式（Edge Pattern）
+
+**核心原则**：Driver 在边缘处理，其他设备只看 AFS 抽象。
+
+```
+Laptop afsd                   Gateway afsd                  NAS afsd
+┌──────────────┐             ┌──────────────┐            ┌──────────────┐
+│ /local/*     │             │ /home/*      │            │ /storage/*   │
+│ /home/*  ────│── mount ───→│ ├── lights/  │←zigbee     │ ├── photos/  │
+│ /nas/*   ────│── mount ───────────────────────────────→│ └── videos/  │
+└──────────────┘             └──────────────┘            └──────────────┘
+                                   │
+                             Driver 在这里
+                             其他设备不需要关心
+```
+
+**典型场景**：
+
+| 边缘 afsd | 处理的 driver | 暴露的 AFS 路径 |
+|----------|--------------|----------------|
+| Smart Home 网关 | Zigbee, HomeKit, Matter | `/home/lights/*`, `/home/sensors/*` |
+| NAS | 存储、RAID、备份 | `/storage/photos/*`, `/storage/backups/*` |
+| 媒体服务器 | 转码、流媒体 | `/media/movies/*`, `/media/music/*` |
+| 开发服务器 | GPU、模型推理 | `/compute/models/*`, `/compute/jobs/*` |
+
+**优势**：
+- ✅ 本地设备不需要安装各种 driver/SDK
+- ✅ 统一的 AFS 路径访问所有资源
+- ✅ 边缘设备专注做好一件事
+- ✅ 通过 mount 灵活组合
+- ✅ LAN Discovery 自动发现可用的边缘 afsd
+
 ---
 
 ## 7. 成功标准

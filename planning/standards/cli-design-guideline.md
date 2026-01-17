@@ -261,6 +261,14 @@ SIDE EFFECTS
 
 ## 自动检测与降级
 
+### 检测能力总览
+
+| 检测目标 | 可行性 | 方法 |
+|---------|--------|------|
+| **Pipe/重定向** | ✅ 可靠 | `stdout.isTTY` |
+| **交互能力** | ✅ 可靠 | `stdin.isTTY` |
+| **LLM/Agent** | 🟡 需约定 | 环境变量 / flag |
+
 ### TTY 检测
 
 ```bash
@@ -273,16 +281,98 @@ $ mycli list | grep active
 [自动降级到 default 格式]
 ```
 
-### 实现建议
+### Agent 检测约定
+
+CLI 无法自动知道调用者是 LLM 还是人类，需要约定机制:
+
+**方案 1: 环境变量约定 (推荐)**
+
+```bash
+# Agent runtime 设置
+export ARCBLOCK_AGENT=1
+export ARCBLOCK_AGENT_NAME=claude-code
+
+# CLI 检测并自动切换到 llm view
+```
+
+**方案 2: 显式 Flag**
+
+```bash
+# Agent 总是传 --agent flag
+mycli list --agent
+```
+
+**方案 3: 启发式检测 (备用)**
 
 ```typescript
-function getDefaultView(): View {
-  if (process.stdout.isTTY && config.defaultView === 'human') {
-    return 'human';
-  }
-  return 'default'; // machine truth
+function isLikelyAgent(): boolean {
+  return (
+    !process.stdout.isTTY &&
+    !process.stdin.isTTY &&
+    (process.env.TERM === 'dumb' || !process.env.TERM)
+  );
 }
 ```
+
+### 完整检测逻辑
+
+```typescript
+type View = 'default' | 'json' | 'llm' | 'human';
+
+function detectView(args: Args, config: Config): View {
+  // 1. 显式 flag 最高优先级
+  if (args.view) return args.view;
+  if (args.json) return 'json';
+  if (args.agent) return 'llm';
+
+  // 2. 环境变量约定 (Agent runtime 设置)
+  if (process.env.ARCBLOCK_AGENT) return 'llm';
+
+  // 3. Pipe 检测 → 强制 machine truth
+  if (!process.stdout.isTTY) return 'default';
+
+  // 4. 用户配置 (终端场景)
+  if (config.defaultView) return config.defaultView;
+
+  // 5. 最终默认
+  return 'default';
+}
+
+function canInteract(): boolean {
+  return process.stdin.isTTY && process.stdout.isTTY;
+}
+```
+
+### 优先级顺序
+
+```
+1. 显式 flag (--view=xxx, --json, --agent)
+      ↓
+2. 环境变量 (ARCBLOCK_AGENT)
+      ↓
+3. TTY 检测 (非 TTY → default)
+      ↓
+4. 用户配置 (~/.config/arcblock/cli.yaml)
+      ↓
+5. 默认值 (default)
+```
+
+### Agent-Native 最佳实践
+
+最优雅的方案是**让 Agent 自己学习和选择**:
+
+```bash
+# 1. Agent 首次使用，调用 explain 学习
+$ mycli explain mycli list
+...
+OUTPUT --view=llm: token-efficient semantic facts
+...
+
+# 2. Agent 根据任务自己选择视图
+$ mycli list --view=llm
+```
+
+这是最 agent-native 的方式 — 不猜测，让 agent 显式选择。
 
 ---
 

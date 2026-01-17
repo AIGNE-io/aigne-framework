@@ -1,10 +1,11 @@
-# ASF v0.1 规格
+# Team AFS v0.1 规格
 
-> 基于 ASF Vision，拆解最小可用版本
+> 基于 Team AFS Vision，拆解最小可用版本
+> 核心: Append-mostly 数据 repo + AI Agent 处理 + AFS-UI 投影
 
 ---
 
-## 1. /team/* 最小目录规范
+## 1. /team/* 目录规范
 
 ```
 /team/
@@ -13,40 +14,52 @@
 │   ├── members/             # 成员列表 (DID)
 │   └── permissions/         # 权限规则
 │
-├── discussions/              # 讨论区 (替代 forum)
+│ ─── 人类写入 (原始数据) ───
+│
+├── discussions/              # 讨论区
 │   ├── general/
-│   │   ├── 2026-01-16-topic-title.md
-│   │   └── ...
 │   ├── engineering/
 │   └── product/
 │
-├── docs/                     # 文档 (替代 docs 站点)
+├── docs/                     # 文档
 │   ├── guides/
 │   ├── specs/
-│   ├── decisions/           # ADR (Architecture Decision Records)
+│   ├── decisions/           # ADR
 │   └── onboarding/
 │
-├── tasks/                    # 任务 (替代任务系统)
+├── tasks/                    # 任务
 │   ├── backlog/
 │   ├── in-progress/
-│   ├── done/
-│   └── .schema.yaml         # 任务元数据 schema
+│   └── done/
 │
 ├── projects/                 # 项目空间
 │   ├── afs/
 │   ├── aigne/
 │   └── aine/
 │
-├── people/                   # 人员空间 (可选)
-│   ├── robert/
-│   └── ...
+│ ─── AI 生成 (衍生数据) ───
 │
-├── sites/                    # 可发布站点
-│   ├── blog/
-│   └── website/
+├── reports/                  # AI 生成的报告
+│   ├── daily/               # 每日摘要
+│   └── weekly/              # 周报
+│
+├── indexes/                  # AI 生成的索引
+│   ├── tasks-by-status.md
+│   ├── docs-by-topic.md
+│   └── recent-activity.md
+│
+├── views/                    # AI 生成的视图 (供 UI 渲染)
+│   ├── dashboard.md
+│   ├── kanban.md
+│   └── active-tasks.md
+│
+├── insights/                 # AI 提取的洞察
+│   └── patterns.md
+│
+│ ─── 系统管理 ───
 │
 └── history/                  # 自动历史 (afsd 管理)
-    └── (由 afsd 自动维护)
+    └── (append-only 历史记录)
 ```
 
 ### 命名约定
@@ -87,13 +100,13 @@ labels: [afs, core]
 
 ---
 
-## 2. ASF 与 afsd / afs-cli 的接口边界
+## 2. Team AFS 与 afsd / afs-cli 的接口边界
 
 ### 架构关系
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  ASF (Team World Host)                                  │
+│  Team AFS (afsd instance hosting /team/*)               │
 │  ┌───────────────────────────────────────────────────┐ │
 │  │  afsd instance                                     │ │
 │  │  - 托管 /team/* 世界                               │ │
@@ -120,7 +133,7 @@ labels: [afs, core]
 
 ### 接口定义
 
-**ASF 暴露的 API (基于 afsd 协议)**:
+**Team AFS 暴露的 API (基于 afsd 协议)**:
 
 ```
 # 基本操作
@@ -152,17 +165,17 @@ afs write /mnt/team/tasks/TASK-002.md < task.md
 
 ---
 
-## 3. 绝对不进入 ASF 的功能
+## 3. 绝对不进入 Team AFS 的功能
 
 ### 红线列表
 
-| 功能 | 为什么不进 ASF | 应该在哪 |
-|------|---------------|---------|
+| 功能 | 为什么不进 Team AFS | 应该在哪 |
+|------|---------------------|---------|
 | **通知系统** | 这是 UI/UX 层面的事 | 各 UI 自己实现 |
 | **搜索引擎** | 这是索引服务，不是世界状态 | 独立搜索服务 |
 | **评论系统** | 评论就是 artifact，不需要特殊处理 | 作为子文件存在 |
-| **工作流引擎** | ASF 托管状态，不编排流程 | Agent / 外部系统 |
-| **权限 UI** | 权限数据在 ASF，UI 不在 | 各 UI 实现 |
+| **工作流引擎** | AFS 托管状态，不编排流程 | Agent / 外部系统 |
+| **权限 UI** | 权限数据在 AFS，UI 不在 | 各 UI 实现 |
 | **用户管理** | DID 是外部身份系统 | DID 系统 |
 | **富文本编辑** | 纯 UI 功能 | Web UI |
 | **实时协作** | OT/CRDT 是 UI 层 | Web UI |
@@ -171,7 +184,7 @@ afs write /mnt/team/tasks/TASK-002.md < task.md
 
 ### 判断原则
 
-> **如果它是"对世界的解释"而不是"世界本身"，就不应该在 ASF。**
+> **如果它是"对世界的解释"而不是"世界本身"，就不应该在 Team AFS。**
 
 ---
 
@@ -207,7 +220,7 @@ afs write /mnt/team/tasks/TASK-002.md < task.md
 ### v0.1 用户旅程
 
 ```
-1. 用户通过 DID 登录 ASF
+1. 用户通过 DID 登录 Team AFS
 
 2. 本地挂载 team world
    $ afs mount https://asf.arcblock.io/team ~/team
@@ -232,45 +245,45 @@ afs write /mnt/team/tasks/TASK-002.md < task.md
 ### Phase 1: 并行运行
 
 ```
-现有系统        ASF
-   │             │
-   │  ←──同步──→  │
-   │             │
-   ▼             ▼
+现有系统        Team AFS
+   │               │
+   │  ←──同步──→   │
+   │               │
+   ▼               ▼
 用户可选择使用哪个
 ```
 
 - 保持现有系统运行
-- ASF 作为"另一种访问方式"
-- 数据双向同步（或单向从 ASF 到旧系统）
+- Team AFS 作为"另一种访问方式"
+- 数据双向同步（或单向从 Team AFS 到旧系统）
 
-### Phase 2: ASF 为主
+### Phase 2: Team AFS 为主
 
 ```
-现有系统        ASF
-   │             │
-   │  ←──只读──  │
-   │             │
-   ▼             ▼
-旧系统变成 ASF 的 UI 投影
+现有系统        Team AFS
+   │               │
+   │  ←──只读──    │
+   │               │
+   ▼               ▼
+旧系统变成 Team AFS 的 UI 投影
 ```
 
-- 写操作全部走 ASF
+- 写操作全部走 Team AFS
 - 旧系统变成只读视图
-- 验证 ASF 稳定性
+- 验证 Team AFS 稳定性
 
 ### Phase 3: 关闭旧系统
 
 ```
-ASF
- │
- ├── Web UI (新)
- ├── afs-cli
- └── Agent
+Team AFS
+   │
+   ├── Web UI (新)
+   ├── afs-cli
+   └── Agent
 ```
 
 - 旧系统下线
-- 数据完全在 ASF
+- 数据完全在 Team AFS
 - 多种 UI 并存
 
 ---
@@ -310,7 +323,7 @@ ASF
 ```
 1. afsd 基本功能 (Week 3-4)
 2. afs-cli 基本命令 (Week 4-5)
-3. ASF HTTP 层 (Week 5-6)
+3. Team AFS HTTP 层 (Week 5-6)
 4. DID 认证集成 (Week 6)
 5. 简易 Web UI (Week 7-8)
 6. 团队试用 (Week 8+)
@@ -320,5 +333,5 @@ ASF
 
 ## Vision Anchor
 
-> **ASF v0.1 的目标是验证一个假设：
+> **Team AFS v0.1 的目标是验证一个假设：
 > 团队协作的本质是共享一个世界，而不是使用一组工具。**

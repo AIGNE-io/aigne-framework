@@ -12,23 +12,74 @@
 
 ---
 
+## GitHub Org 策略
+
+> 决策日期: 2026-01-16
+> 状态: 已决定
+
+### 核心原则
+
+```
+开发集中，发布分散
+```
+
+### Org 分工
+
+| Org | 用途 | 可见性 | 付费 |
+|-----|------|--------|------|
+| **arcblock** | 主开发 org | private 为主 | ✅ 付费账户 |
+| **aigne** | 开源发布 | public only | ❌ 免费 |
+| **blocklet** | 开源发布 | public only | ❌ 免费 |
+
+### 选择理由
+
+1. **成本控制** — 只需为 arcblock org 购买付费账户
+2. **权限集中** — 只在一个 org 管理团队权限
+3. **品牌清晰** — 外部用户只看到干净的开源 org
+4. **安全边界** — 不可能意外推闭源代码到开源 org
+
+### 同步方向
+
+```
+arcblock/arcblock-ai (私有开发)
+        │
+        │ 版本发布时单向同步
+        ▼
+aigne/aigne-framework (公开 artifact)
+aigne/afs (公开 artifact)
+blocklet/* (公开 artifact)
+```
+
+**关键约束**:
+- 单向同步，不反向
+- 外部 PR 在公开 org 接收，review 后 cherry-pick 回私有 repo
+- 公开 repo 是只读镜像，不直接开发
+
+---
+
 ## 目标结构
 
 ```
-私有 Repos (开发主战场):
-├── afs/                    # AFS 全部 (1人负责)
-│   ├── core/
-│   ├── drivers/
-│   └── runtime/
-├── aigne/                  # AIGNE 全部 (1人负责)
-│   ├── framework/
-│   ├── runtime/
-│   └── observability/
-└── aine/                   # AINE (已独立)
+arcblock org (私有，付费):
+└── arcblock-ai/            # 主开发 monorepo
+    ├── afs/                # AFS 全部
+    │   ├── core/
+    │   ├── drivers/
+    │   ├── daemon/
+    │   ├── cli/
+    │   └── runtime/        # 私有，不同步
+    ├── aigne/              # AIGNE 全部
+    │   ├── framework/
+    │   ├── runtime/        # 私有，不同步
+    │   └── observability/  # 私有，不同步
+    └── aine/               # AINE (或独立 repo)
 
-公开 Repos (artifact, 版本发布时同步):
-├── afs-oss/                # AFS Core + Drivers
-└── aigne-framework-oss/    # AIGNE Framework
+aigne org (公开，免费):
+├── aigne-framework/        # AIGNE Framework 公开部分
+└── afs/                    # AFS 公开部分
+
+blocklet org (公开，免费):
+└── ...                     # Blocklet 相关
 ```
 
 ---
@@ -40,19 +91,23 @@
 **1.1 Repo 迁移策略**
 
 ```bash
-# Step 1: Rename 旧 repo (保留历史)
-gh repo rename AIGNE-io/aigne-framework aigne-framework-legacy
+# Step 1: 创建私有主开发 repo (arcblock org)
+gh repo create arcblock/arcblock-ai --private
 
-# Step 2: 创建新公开 repos (占原名)
-gh repo create AIGNE-io/aigne-framework --public
-gh repo create AIGNE-io/afs --public
+# Step 2: 创建公开发布 repos (aigne org, 免费)
+gh repo create aigne/aigne-framework --public
+gh repo create aigne/afs --public
 
-# Step 3: 创建私有主 repo
-gh repo create ArcBlock/arcblock-ai --private
+# Step 3: Rename 旧 repo (保留历史)
+gh repo rename aigne/aigne-framework aigne-framework-legacy
+# 注: 先 rename，再用 Step 2 占原名
 
 # Step 4: Legacy repo README 指向新 repo
 # Step 5: 迁移完成后 archive legacy
+gh repo archive aigne/aigne-framework-legacy
 ```
+
+**注意**: 只有 arcblock org 需要付费账户，aigne/blocklet org 只有 public repo，免费。
 
 **1.2 npm scope 准备**
 ```bash
@@ -215,11 +270,8 @@ cd /tmp/aigne-framework-oss && git push origin main
 
 **5.2 归档旧 repo**
 ```bash
-# 标记为 archived
-gh repo archive ArcBlock/aigne-framework
-
-# 或重命名
-gh repo rename ArcBlock/aigne-framework aigne-framework-legacy
+# 归档 legacy repo (在 aigne org)
+gh repo archive aigne/aigne-framework-legacy
 ```
 
 ---
@@ -318,19 +370,21 @@ gh repo rename ArcBlock/aigne-framework aigne-framework-legacy
 ### 同步策略
 
 ```
-arcblock-ai (私有)          公开 repos (artifact)
+arcblock/arcblock-ai (私有)     aigne org (公开)
 ├── afs/
-│   ├── core/       ──────→  afs/core
-│   ├── drivers/    ──────→  afs/drivers
-│   ├── daemon/     ──────→  afs/daemon
-│   ├── cli/        ──────→  afs/cli
+│   ├── core/       ──────────→  aigne/afs
+│   ├── drivers/    ──────────→  aigne/afs
+│   ├── daemon/     ──────────→  aigne/afs
+│   ├── cli/        ──────────→  aigne/afs
 │   └── runtime/    ✗ 不同步
 └── aigne/
-    ├── framework/  ──────→  aigne-framework/
-    └── runtime/    ✗ 不同步
+    ├── framework/  ──────────→  aigne/aigne-framework
+    ├── runtime/    ✗ 不同步
+    └── observability/ ✗ 不同步
 ```
 
 **触发时机**: 版本发布时，不是每次 commit
+**同步方向**: 单向，arcblock → aigne，不反向
 
 ### 版本策略
 

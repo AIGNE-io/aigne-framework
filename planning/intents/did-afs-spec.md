@@ -471,7 +471,118 @@ LLM / agent 会自然学会它们的映射关系。
 
 ---
 
-## 15. 对外解释
+## 15. Payment Routing（支付路由）
+
+### 核心原则
+
+```
+AFS 不处理资产，也不管理钱包；
+AFS 只验证由 did:abt 出具的"已支付" VC。
+
+AFS 关心的是"是否发生过一笔被认可的支付事实"，
+而不是"钱是怎么付的"。
+```
+
+### 设计定位
+
+- did:afs 可以是 **支付路由地址**
+- did:afs **不应该** 是资产托管地址
+- 价值流动通过 PaymentRouting service 定义
+
+### DID Document 示例
+
+```json
+{
+  "id": "did:afs:alice",
+  "service": [{
+    "id": "did:afs:alice#payment",
+    "type": "PaymentRouting",
+    "serviceEndpoint": {
+      "chain": "ABT",
+      "target": "did:abt:alice",
+      "policy": "default"
+    }
+  }]
+}
+```
+
+**语义**："给 did:afs:alice 的钱，实际路由到 did:abt:alice 的钱包。"
+
+### 支付闭环
+
+```
+1. 用户向 did:afs:alice 付款
+2. PaymentRouting → 落到 did:abt:alice
+3. did:abt:alice 出具 Payment VC
+4. Payment VC 提交给 AFS
+5. AFS 验证 VC（issuer、signature、schema）
+6. AFS 基于 VC 赋予世界内 capability
+```
+
+**AFS 永远不参与第 1–3 步的资产动作。**
+
+### Payment VC 示例
+
+```yaml
+type: PaymentReceipt
+issuer: did:abt:merchant
+subject: did:afs:alice
+amount: 100
+currency: ABT
+purpose: "team subscription"
+txHash: 0xabc...
+```
+
+### AFS Policy 示例
+
+```
+IF valid(PaymentReceipt)
+AND amount >= 100
+AND purpose == "team subscription"
+THEN
+  GRANT did:afs:alice MOUNT /team
+  FOR 30 days
+```
+
+### 为什么 VC 而不是查余额
+
+| 维度 | 查链/余额 | VC 验证 |
+|------|---------|--------|
+| **耦合** | 需要 RPC、链同步 | 只需 VC 验证器 |
+| **可解释** | 难审计 | "因为这张 VC" |
+| **可组合** | 单链 | 多来源统一表达 |
+| **扩展** | 链相关 | fiat/invoice 都能进 |
+
+### 角色分离
+
+| 角色 | did:afs | did:abt |
+|------|---------|---------|
+| **定位** | 世界内行动者 | 经济身份 |
+| **职责** | 路由、权限、exec | 钱包、资产、结算 |
+| **支付** | endpoint | custody |
+| **VC** | consumer | issuer |
+
+### 设计原则
+
+```
+AFS identity 可以"参与价值流"，
+但不应该"承担价值存储"。
+
+AFS evaluates claims, not balances.
+Value enters the AFS world only as verifiable facts.
+```
+
+### 演进路径
+
+- **今天**：did:afs → did:abt
+- **明天**：did:afs → payment proxy / escrow
+- **后天**：did:afs → native on-chain account（如果需要）
+
+每一步都不需要推翻前面的设计，只是 serviceEndpoint 的变化。
+
+---
+
+## 16. 对外解释
 
 当有人问"你们怎么又定义了一个 DID？"：
 
@@ -480,9 +591,15 @@ LLM / agent 会自然学会它们的映射关系。
 > 用于描述在 AFS 世界中的行动者。
 > 它和 did:abt 在结构上完全兼容，并且可以互相链接。
 
+当有人问"AFS 能处理支付吗？"：
+
+> AFS identity 可以作为支付路由地址，
+> 但资产托管由 did:abt 的钱包负责。
+> AFS 只验证"已支付"的 VC，不处理资产本身。
+
 ---
 
-## 16. 设计原则
+## 17. 设计原则
 
 ```
 did:afs 与 did:abt 同构、互认、各司其职。
@@ -505,7 +622,7 @@ AFS 世界的主权，永远在 AFS 内部。
 
 ---
 
-## 17. Roadmap
+## 18. Roadmap
 
 **v0.1**：
 - [ ] did:afs method spec 完善
@@ -523,5 +640,7 @@ AFS 世界的主权，永远在 AFS 内部。
 
 **Roadmap**：
 - [ ] did:afs ↔ did:abt linking spec
+- [ ] PaymentRouting service type spec
+- [ ] Payment VC schema 定义
 - [ ] BIP-39 派生支持（可选）
 - [ ] Hardware key 支持

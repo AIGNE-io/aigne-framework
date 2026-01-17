@@ -83,7 +83,89 @@ EXPLAIN <path|command>
 
 ---
 
-## 5. 架构约束
+## 5. Transport Layer（抽象）
+
+### 设计原则
+
+```
+AFSD assumes a secure transport.
+Transport is an abstraction — implementations are pluggable.
+No dynamic control plane is required.
+```
+
+### Transport Layer 职责
+
+| 做 | 不做 |
+|----|------|
+| 提供加密通道 | peer discovery |
+| 静态 peer 配置 | NAT 穿透 |
+| identity anchor (如 pubkey) | 网络级 ACL |
+| 连接建立 | 重连逻辑 / 生命周期管理 |
+
+### 抽象接口
+
+```typescript
+interface AFSTransport {
+  // 建立到 peer 的连接
+  connect(peer: PeerConfig): Connection;
+
+  // 从 transport identity 映射到 AFS identity
+  resolveIdentity(transportId: string): AFSIdentity;
+}
+
+interface PeerConfig {
+  endpoint: string;           // 如何连接
+  transportId: string;        // transport 层的 identity
+  afsIdentity?: AFSIdentity;  // 映射到 AFS identity
+}
+```
+
+### 实现选项
+
+| 实现 | 适用场景 | 状态 |
+|------|---------|------|
+| **Local IPC** | 单机多进程 | v0.1 必须 |
+| **TCP/TLS** | 简单远程 | v0.1 可选 |
+| **WireGuard** | 安全点对点，无中心依赖 | Roadmap |
+| **WebSocket** | Web 客户端 | Roadmap |
+
+### WireGuard 实现说明（Roadmap）
+
+**定位**：Secure Transport，不是 VPN 产品。
+
+```
+WireGuard 协议    ≠    WireGuard 控制器
+静态 peer 配置    ≠    动态 mesh 网络
+```
+
+**只用 WireGuard 的最小子集**：
+- ✅ 加密隧道
+- ✅ 静态 peer 定义（手工配置）
+- ✅ WG pubkey → AFS identity 映射
+- ❌ 动态 peer discovery
+- ❌ NAT 打洞服务
+- ❌ 网络 UI
+
+**配置示例**（静态模式）：
+```yaml
+# afsd transport config
+transport:
+  type: wireguard
+  privateKey: <local-private-key>
+  peers:
+    - publicKey: <peer-pubkey>
+      endpoint: 192.168.1.100:51820
+      afsIdentity: did:abt:robert
+```
+
+**防失控检测**（一旦出现就越界）：
+- ❌ 需要"重连逻辑"
+- ❌ 需要"peer 生命周期管理"
+- ❌ 需要"网络 UI"
+
+---
+
+## 6. 架构约束
 
 - afsd 必须允许**多实例**
 - **没有中心控制节点**
@@ -91,7 +173,7 @@ EXPLAIN <path|command>
 
 ---
 
-## 6. 成功标准
+## 7. 成功标准
 
 > 用户几乎感觉不到它的存在，但所有世界状态都离不开它。
 
@@ -133,15 +215,27 @@ afs/
     │   ├── path-resolver.ts
     │   ├── operations.ts   # read/write/exec/explain
     │   ├── persistence.ts  # 状态持久化
-    │   └── concurrency.ts  # 并发控制
+    │   ├── concurrency.ts  # 并发控制
+    │   └── transport/      # Transport Layer 抽象
+    │       ├── interface.ts    # AFSTransport 接口
+    │       ├── local-ipc.ts    # 本地 IPC 实现
+    │       └── tcp-tls.ts      # TCP/TLS 实现
     └── test/
 ```
 
 ### 行动项
+
+**v0.1 必须**：
 - [ ] 设计 mount table 数据结构
 - [ ] 实现 path resolution
 - [ ] 实现 4 个核心操作
 - [ ] 实现持久化层
 - [ ] 实现并发控制（lock/version）
-- [ ] 实现协议层（本地 IPC / 远程）
+- [ ] 实现 Transport Layer 抽象接口
+- [ ] 实现 Local IPC transport
 - [ ] 测试：多实例、crash recovery、冲突处理
+
+**Roadmap**：
+- [ ] 实现 TCP/TLS transport
+- [ ] 实现 WireGuard transport（静态模式）
+- [ ] 实现 WebSocket transport

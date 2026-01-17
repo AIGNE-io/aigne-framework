@@ -230,7 +230,82 @@ Laptop afsd                   Gateway afsd                  NAS afsd
 
 ---
 
-## 7. 成功标准
+## 7. Identity：did:afs
+
+### 核心决策
+
+```
+AFS 必须定义自己的 did:afs，
+可以桥接/承认 did:abt，
+不能反过来。
+```
+
+**这是分层问题，不是阵营问题。**
+
+### 两个不同的问题
+
+| 问题 | 正确归属 |
+|------|---------|
+| 谁在 AFS 世界里行动？ | did:afs |
+| 谁是现实世界/经济世界的主体？ | did:abt |
+
+### did:afs vs did:abt
+
+| 维度 | did:afs | did:abt |
+|------|---------|---------|
+| **定位** | 世界内名牌 | 世界外护照 |
+| **生命周期** | 秒级 / session 级 | 年级 / 合规级 |
+| **主体** | agent, daemon, device, job | 人, 账户, 经济主体 |
+| **上链** | ❌ 不上链 | ✅ 上链 |
+| **解析** | AFSD 本地验证 | 全局解析 |
+| **用途** | exec, mount, audit | token, wallet, governance |
+
+### AFS 的 identity 远多于"账户/人"
+
+```
+did:afs:agent/code-reviewer      ← AI agent
+did:afs:afsd/home-gateway        ← daemon
+did:afs:device/fridge            ← IoT 设备
+did:afs:job/tmp-20260116         ← 临时任务
+did:afs:alice                    ← 人
+```
+
+这些 **不应该** 上链、绑定 token、进入经济身份系统。
+
+### 桥接关系（推荐模型）
+
+```json
+{
+  "id": "did:afs:alice",
+  "verificationMethod": [...],
+  "alsoKnownAs": [
+    "did:abt:z8ia..."
+  ]
+}
+```
+
+**关键**：
+- AFS 以 did:afs 为主语
+- 可选声明外部锚点（did:abt）
+- AFS 的 ACL / exec / mount **永远只看 did:afs**
+
+### 权限模型写法
+
+```
+✅ ALLOW did:afs:alice EXEC /team/deploy
+❌ ALLOW did:abt:z8ia... EXEC /team/deploy
+```
+
+### 红线判断
+
+> "这个 identity 是为了在 AFS 世界里行动，还是为了在现实世界里被承认？"
+>
+> - 前者 → did:afs
+> - 后者 → did:abt
+
+---
+
+## 8. 成功标准
 
 > 用户几乎感觉不到它的存在，但所有世界状态都离不开它。
 

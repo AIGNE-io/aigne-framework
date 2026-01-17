@@ -182,6 +182,6 @@ test("XAIChatModel should initialize with default options", () => {
   expect(customModel.options).toEqual({
     apiKey: "YOUR_API_KEY",
     baseURL: "https://api.x.ai/v1",
-    model: "grok-2-latest",
+    model: "grok-4-latest",
   });
 });

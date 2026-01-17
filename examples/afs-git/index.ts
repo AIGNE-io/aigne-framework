@@ -11,7 +11,10 @@ const argv = yargs()
   .option("path", {
     type: "string",
     describe: "Path to the git repo to mount",
-    default: ".",
+  })
+  .option("url", {
+    type: "string",
+    describe: "URL of the remote git repository",
   })
   .option("description", {
     type: "string",
@@ -29,9 +32,11 @@ const argv = yargs()
     default: false,
     describe: "Automatically commit changes to the mounted repo",
   })
-  .demandOption("path")
   .strict(false)
   .parseSync(process.argv);
+
+// Default to current directory if neither path nor url is provided
+const repoPath = argv.path || (argv.url ? undefined : ".");
 
 const aigne = await loadAIGNEWithCmdOptions();
 
@@ -39,7 +44,8 @@ const afs = new AFS()
   .mount(new AFSHistory({ storage: { url: ":memory:" } })) // In-memory history for this example
   .mount(
     new AFSGit({
-      repoPath: argv.path,
+      repoPath: argv.url ? undefined : repoPath,
+      remoteUrl: argv.url,
       description: argv.description,
       accessMode: argv.accessMode as AFSAccessMode,
       autoCommit: argv.autoCommit,

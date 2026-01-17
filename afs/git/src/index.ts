@@ -5,8 +5,6 @@ import { tmpdir } from "node:os";
 import { basename, dirname, isAbsolute, join } from "node:path";
 import { promisify } from "node:util";
 
-const execFileAsync = promisify(execFile);
-
 import type {
   AFSAccessMode,
   AFSDeleteOptions,
@@ -33,10 +31,32 @@ import { z } from "zod";
 
 const LIST_MAX_LIMIT = 1000;
 
+const execFileAsync = promisify(execFile);
+
 export interface AFSGitOptions {
   name?: string;
-  repoPath: string;
+  /**
+   * Local path to git repository.
+   * If remoteUrl is provided and repoPath doesn't exist, will clone to this path.
+   * If remoteUrl is provided and repoPath is not specified, clones to temp directory.
+   */
+  repoPath?: string;
+  /**
+   * Remote repository URL (https or git protocol).
+   * If provided, will clone the repository if repoPath doesn't exist.
+   * Examples:
+   * - https://github.com/user/repo.git
+   * - git@github.com:user/repo.git
+   */
+  remoteUrl?: string;
   description?: string;
+  /**
+   * List of branches to expose/access.
+   * Also used for clone optimization when cloning from remoteUrl:
+   * - Single branch (e.g., ['main']): Uses --single-branch for faster clone
+   * - Multiple branches: Clones all branches, filters access to specified ones
+   * - Not specified: All branches are accessible
+   */
   branches?: string[];
   /**
    * Access mode for this module.
@@ -57,27 +77,69 @@ export interface AFSGitOptions {
     name: string;
     email: string;
   };
+  /**
+   * Clone depth for shallow clone (only used when cloning from remoteUrl)
+   * @default 1
+   */
+  depth?: number;
+  /**
+   * Automatically clean up cloned repository on cleanup()
+   * Only applies when repository was auto-cloned to temp directory
+   * @default true
+   */
+  autoCleanup?: boolean;
+  /**
+   * Git clone options (only used when cloning from remoteUrl)
+   */
+  cloneOptions?: {
+    /**
+     * Authentication credentials for private repositories
+     */
+    auth?: {
+      username?: string;
+      password?: string;
+    };
+  };
 }
 
 const afsGitOptionsSchema = camelizeSchema(
-  z.object({
-    name: optionalize(z.string()),
-    repoPath: z.string().describe("The path to the git repository"),
-    description: optionalize(z.string().describe("A description of the repository")),
-    branches: optionalize(z.array(z.string()).describe("List of branches to expose")),
-    accessMode: optionalize(
-      z.enum(["readonly", "readwrite"]).describe("Access mode for this module"),
-    ),
-    autoCommit: optionalize(
-      z.boolean().describe("Automatically commit changes after write operations"),
-    ),
-    commitAuthor: optionalize(
-      z.object({
-        name: z.string(),
-        email: z.string(),
-      }),
-    ),
-  }),
+  z
+    .object({
+      name: optionalize(z.string()),
+      repoPath: optionalize(z.string().describe("The path to the git repository")),
+      remoteUrl: optionalize(z.string().describe("Remote repository URL (https or git protocol)")),
+      description: optionalize(z.string().describe("A description of the repository")),
+      branches: optionalize(z.array(z.string()).describe("List of branches to expose")),
+      accessMode: optionalize(
+        z.enum(["readonly", "readwrite"]).describe("Access mode for this module"),
+      ),
+      autoCommit: optionalize(
+        z.boolean().describe("Automatically commit changes after write operations"),
+      ),
+      commitAuthor: optionalize(
+        z.object({
+          name: z.string(),
+          email: z.string(),
+        }),
+      ),
+      depth: optionalize(z.number().describe("Clone depth for shallow clone")),
+      autoCleanup: optionalize(
+        z.boolean().describe("Automatically clean up cloned repository on cleanup()"),
+      ),
+      cloneOptions: optionalize(
+        z.object({
+          auth: optionalize(
+            z.object({
+              username: optionalize(z.string()),
+              password: optionalize(z.string()),
+            }),
+          ),
+        }),
+      ),
+    })
+    .refine((data) => data.repoPath || data.remoteUrl, {
+      message: "Either repoPath or remoteUrl must be provided",
+    }),
 );
 
 export class AFSGit implements AFSModule {
@@ -87,34 +149,160 @@ export class AFSGit implements AFSModule {
 
   static async load({ filepath, parsed }: AFSModuleLoadParams) {
     const valid = await AFSGit.schema().parseAsync(parsed);
-    return new AFSGit({ ...valid, cwd: dirname(filepath) });
+    const instance = new AFSGit({ ...valid, cwd: dirname(filepath) });
+    await instance.ready();
+    return instance;
   }
 
+  private initPromise: Promise<void>;
   private git: SimpleGit;
   private tempBase: string;
   private worktrees: Map<string, string> = new Map();
   private repoHash: string;
+  private isAutoCloned = false;
+  private clonedPath?: string;
+  private repoPath: string;
 
   constructor(public options: AFSGitOptions & { cwd?: string }) {
     checkArguments("AFSGit", afsGitOptionsSchema, options);
 
+    // Synchronously determine repoPath to initialize name
     let repoPath: string;
-    if (isAbsolute(options.repoPath)) {
-      repoPath = options.repoPath;
+    let repoName: string;
+
+    if (options.repoPath) {
+      // Use provided repoPath
+      repoPath = isAbsolute(options.repoPath)
+        ? options.repoPath
+        : join(options.cwd || process.cwd(), options.repoPath);
+      repoName = basename(repoPath);
+    } else if (options.remoteUrl) {
+      // Extract repo name from URL for temporary name
+      const urlParts = options.remoteUrl.split("/");
+      const lastPart = urlParts[urlParts.length - 1];
+      repoName = lastPart?.replace(/\.git$/, "") || "git";
+
+      // Will be updated during async init, use temp path for now
+      const repoHash = createHash("md5").update(options.remoteUrl).digest("hex").substring(0, 8);
+      repoPath = join(tmpdir(), `afs-git-remote-${repoHash}`);
     } else {
-      repoPath = join(options.cwd || process.cwd(), options.repoPath);
+      // This should never happen due to schema validation
+      throw new Error("Either repoPath or remoteUrl must be provided");
     }
 
-    this.options.repoPath = repoPath;
-    this.name = options.name || basename(repoPath) || "git";
+    // Initialize basic properties immediately
+    this.repoPath = repoPath;
+    this.name = options.name || repoName;
     this.description = options.description;
     this.accessMode = options.accessMode ?? "readonly";
 
-    this.git = simpleGit(repoPath);
-
-    // Create a hash of the repo path for unique temp directory
+    // Calculate hash for temp directories
     this.repoHash = createHash("md5").update(repoPath).digest("hex").substring(0, 8);
     this.tempBase = join(tmpdir(), `afs-git-${this.repoHash}`);
+
+    // Note: git and other properties will be initialized in initialize() after cloning
+    // We need to delay simpleGit() initialization until the directory exists
+    this.git = null as any; // Will be set in initialize()
+
+    // Start async initialization (cloning if needed)
+    this.initPromise = this.initialize();
+  }
+
+  /**
+   * Wait for async initialization to complete
+   */
+  async ready(): Promise<void> {
+    await this.initPromise;
+  }
+
+  /**
+   * Async initialization logic (runs in constructor)
+   * Handles cloning remote repositories if needed
+   */
+  private async initialize(): Promise<void> {
+    const options = this.options;
+
+    // If remoteUrl is provided, handle cloning
+    if (options.remoteUrl) {
+      const targetPath = options.repoPath
+        ? isAbsolute(options.repoPath)
+          ? options.repoPath
+          : join(options.cwd || process.cwd(), options.repoPath)
+        : this.repoPath; // Use temp path set in constructor
+
+      // Mark as auto-cloned if we're using temp directory
+      if (!options.repoPath) {
+        this.isAutoCloned = true;
+      }
+
+      // Check if repoPath exists, if not, clone to it
+      const exists = await stat(targetPath)
+        .then(() => true)
+        .catch(() => false);
+
+      if (!exists) {
+        // Determine if single-branch optimization should be used
+        const singleBranch = options.branches?.length === 1 ? options.branches[0] : undefined;
+
+        await AFSGit.cloneRepository(options.remoteUrl, targetPath, {
+          depth: options.depth ?? 1,
+          branch: singleBranch,
+          auth: options.cloneOptions?.auth,
+        });
+      }
+
+      // Update properties if targetPath differs from constructor initialization
+      if (targetPath !== this.repoPath) {
+        this.repoPath = targetPath;
+        this.repoHash = createHash("md5").update(targetPath).digest("hex").substring(0, 8);
+        this.tempBase = join(tmpdir(), `afs-git-${this.repoHash}`);
+      }
+
+      this.clonedPath = this.isAutoCloned ? targetPath : undefined;
+    }
+
+    // Now that the directory exists (either it was there or we cloned it), initialize git
+    this.git = simpleGit(this.repoPath);
+  }
+
+  /**
+   * Clone a remote repository to local path
+   */
+  private static async cloneRepository(
+    remoteUrl: string,
+    targetPath: string,
+    options: {
+      depth?: number;
+      branch?: string;
+      auth?: { username?: string; password?: string };
+    } = {},
+  ): Promise<void> {
+    const git = simpleGit();
+
+    // Build clone options
+    const cloneArgs: string[] = [];
+
+    if (options.depth) {
+      cloneArgs.push("--depth", options.depth.toString());
+    }
+
+    if (options.branch) {
+      cloneArgs.push("--branch", options.branch, "--single-branch");
+    }
+
+    // Handle authentication in URL if provided
+    let cloneUrl = remoteUrl;
+    if (options.auth?.username && options.auth?.password) {
+      // Insert credentials into HTTPS URL
+      if (remoteUrl.startsWith("https://")) {
+        const url = new URL(remoteUrl);
+        url.username = encodeURIComponent(options.auth.username);
+        url.password = encodeURIComponent(options.auth.password);
+        cloneUrl = url.toString();
+      }
+    }
+
+    await git.clone(cloneUrl, targetPath, cloneArgs);
   }
 
   name: string;
@@ -228,8 +416,8 @@ export class AFSGit implements AFSModule {
     const currentBranch = await this.git.revparse(["--abbrev-ref", "HEAD"]);
     if (currentBranch.trim() === branch) {
       // Use the main repo path for the current branch
-      this.worktrees.set(branch, this.options.repoPath);
-      return this.options.repoPath;
+      this.worktrees.set(branch, this.repoPath);
+      return this.repoPath;
     }
 
     const worktreePath = join(this.tempBase, branch);
@@ -374,6 +562,7 @@ export class AFSGit implements AFSModule {
   }
 
   async list(path: string, options?: AFSListOptions): Promise<AFSListResult> {
+    await this.ready();
     const { branch, filePath } = this.parsePath(path);
 
     // Root path - list branches
@@ -398,6 +587,7 @@ export class AFSGit implements AFSModule {
   }
 
   async read(path: string, _options?: AFSReadOptions): Promise<AFSReadResult> {
+    await this.ready();
     const { branch, filePath } = this.parsePath(path);
 
     if (!branch) {
@@ -495,6 +685,7 @@ export class AFSGit implements AFSModule {
     entry: AFSWriteEntryPayload,
     options?: AFSWriteOptions,
   ): Promise<AFSWriteResult> {
+    await this.ready();
     const { branch, filePath } = this.parsePath(path);
 
     if (!branch || !filePath) {
@@ -569,6 +760,7 @@ export class AFSGit implements AFSModule {
   }
 
   async delete(path: string, options?: AFSDeleteOptions): Promise<AFSDeleteResult> {
+    await this.ready();
     const { branch, filePath } = this.parsePath(path);
 
     if (!branch || !filePath) {
@@ -621,6 +813,7 @@ export class AFSGit implements AFSModule {
     newPath: string,
     options?: AFSRenameOptions,
   ): Promise<{ message?: string }> {
+    await this.ready();
     const { branch: oldBranch, filePath: oldFilePath } = this.parsePath(oldPath);
     const { branch: newBranch, filePath: newFilePath } = this.parsePath(newPath);
 
@@ -693,6 +886,7 @@ export class AFSGit implements AFSModule {
   }
 
   async search(path: string, query: string, options?: AFSSearchOptions): Promise<AFSSearchResult> {
+    await this.ready();
     const { branch, filePath } = this.parsePath(path);
 
     if (!branch) {
@@ -776,9 +970,38 @@ export class AFSGit implements AFSModule {
   }
 
   /**
+   * Fetch latest changes from remote
+   */
+  async fetch(): Promise<void> {
+    await this.ready();
+    await this.git.fetch();
+  }
+
+  /**
+   * Pull latest changes from remote for current branch
+   */
+  async pull(): Promise<void> {
+    await this.ready();
+    await this.git.pull();
+  }
+
+  /**
+   * Push local changes to remote
+   */
+  async push(branch?: string): Promise<void> {
+    await this.ready();
+    if (branch) {
+      await this.git.push("origin", branch);
+    } else {
+      await this.git.push();
+    }
+  }
+
+  /**
    * Cleanup all worktrees (useful when unmounting)
    */
   async cleanup(): Promise<void> {
+    await this.ready();
     for (const [_branch, worktreePath] of this.worktrees) {
       try {
         await this.git.raw(["worktree", "remove", worktreePath, "--force"]);
@@ -793,6 +1016,16 @@ export class AFSGit implements AFSModule {
       await rm(this.tempBase, { recursive: true, force: true });
     } catch {
       // Ignore errors
+    }
+
+    // Cleanup cloned repository if auto-cloned and autoCleanup enabled
+    const autoCleanup = this.options.autoCleanup ?? true;
+    if (this.isAutoCloned && autoCleanup && this.clonedPath) {
+      try {
+        await rm(this.clonedPath, { recursive: true, force: true });
+      } catch {
+        // Ignore cleanup errors
+      }
     }
   }
 }

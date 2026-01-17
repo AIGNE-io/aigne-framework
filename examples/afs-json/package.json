@@ -1,6 +1,6 @@
 {
   "name": "@aigne/example-afs-git",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A demonstration of using AIGNE Framework with AFS json module",
   "author": "Arcblock <blocklet@arcblock.io> https://github.com/blocklet",
   "homepage": "https://github.com/AIGNE-io/aigne-framework/tree/main/examples/afs-json",

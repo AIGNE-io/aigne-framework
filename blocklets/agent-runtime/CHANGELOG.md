@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.12-beta](https://github.com/AIGNE-io/aigne-framework/compare/agent-runtime-v1.6.11...agent-runtime-v1.6.12-beta) (2026-01-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.17-beta
+
 ## [1.6.11](https://github.com/AIGNE-io/aigne-framework/compare/agent-runtime-v1.6.11-beta.31...agent-runtime-v1.6.11) (2026-01-16)
 
 

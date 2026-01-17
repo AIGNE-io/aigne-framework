@@ -37,6 +37,11 @@
 │   ├── aigne/
 │   └── aine/
 │
+├── logs/                     # 工作日志 (Agent 自动写入)
+│   ├── robert/
+│   ├── dev-a/
+│   └── agents/              # AI Agent 的操作日志
+│
 │ ─── AI 生成 (衍生数据) ───
 │
 ├── reports/                  # AI 生成的报告
@@ -165,7 +170,104 @@ afs write /mnt/team/tasks/TASK-002.md < task.md
 
 ---
 
-## 3. 绝对不进入 Team AFS 的功能
+## 3. 运行模式：本地 afsd + Mount
+
+### 架构
+
+```
+开发者本地环境
+┌─────────────────────────────────────────────────────┐
+│  Local afsd                                         │
+│  ├── /local/*           (私有数据)                  │
+│  ├── /team/*            (mount: Team AFS)           │
+│  │     └── 权限在 mount 时确定，之后无需每次检查     │
+│  └── /projects/aigne/*  (mount: 项目 repo)          │
+│                                                     │
+│  Code Agent (Claude Code, Cursor, etc.)             │
+│  └── 直接操作本地 AFS 路径                          │
+│      - 自动写工作日志                               │
+│      - 自动更新任务状态                             │
+└─────────────────────────────────────────────────────┘
+              │
+              │ mount 协议 (sync)
+              ▼
+┌─────────────────────────────────────────────────────┐
+│  Team AFS (远程 afsd)                               │
+│  └── /team/*                                        │
+└─────────────────────────────────────────────────────┘
+```
+
+### 关键设计
+
+| 传统模式 | 本地 afsd + mount |
+|---------|------------------|
+| 每次操作检查权限 | mount 时一次性确定 |
+| Agent 需要 API token | Agent 直接操作本地路径 |
+| 网络依赖 | 本地优先，sync 可异步 |
+| 手动记录工作 | Agent 自动写日志 |
+
+### Agent 自动化示例
+
+```bash
+# Code Agent 工作时自动执行
+afs write /team/logs/robert/2026-01-16.md << EOF
+## Session: afs-cli 开发
+- 完成 explain 命令实现
+- 修复 3 个测试用例
+EOF
+
+# 任务状态自动更新
+afs exec /team/tasks/TASK-042/mark-progress \
+  --checkpoint "explain 命令完成"
+```
+
+---
+
+## 4. 三视图架构：CLI / API / Web
+
+### 一份数据，三种投影
+
+```
+/team/* (Append-mostly 数据)
+        │
+        ├─────────────────┼─────────────────┐
+        │                 │                 │
+        ▼                 ▼                 ▼
+     afs-cli           afs API          afs-ui
+        │                 │                 │
+        ▼                 ▼                 ▼
+      LLM            脚本/自动化          人类
+   Code Agent       CI/CD, Webhook     阅读/导航
+```
+
+### 各视图设计目标
+
+| 视图 | 主要用户 | 优化目标 |
+|------|---------|---------|
+| **afs-cli** | LLM / Code Agent | Token 效率、结构化输出、explain |
+| **afs API** | 脚本、自动化、LLM | 稳定接口、批量操作、webhook |
+| **afs-ui** | 人类 | 可视化导航、搜索、富文本渲染 |
+
+### 设计原则
+
+```
+❌ Web 是"主界面"，CLI 是"辅助"
+✅ 三者都是数据的等价投影，针对不同受众优化
+```
+
+### 典型工作流
+
+```
+1. Code Agent (via cli) 写入工作日志
+2. CI/CD (via API) 自动更新构建状态
+3. 团队成员 (via Web) 浏览今日进展
+4. AI Agent (via API) 生成周报到 /team/reports/
+5. 老板 (via Web) 阅读周报
+```
+
+---
+
+## 5. 绝对不进入 Team AFS 的功能
 
 ### 红线列表
 
@@ -188,7 +290,7 @@ afs write /mnt/team/tasks/TASK-002.md < task.md
 
 ---
 
-## 4. v0.1 最小上线形态
+## 6. v0.1 最小上线形态
 
 ### 必须有 (Must Have)
 
@@ -240,7 +342,7 @@ afs write /mnt/team/tasks/TASK-002.md < task.md
 
 ---
 
-## 5. 迁移策略
+## 7. 迁移策略
 
 ### Phase 1: 并行运行
 
@@ -288,7 +390,7 @@ Team AFS
 
 ---
 
-## 6. 成功标准
+## 8. 成功标准
 
 ### Dogfood 验证点
 
@@ -309,7 +411,7 @@ Team AFS
 
 ---
 
-## 7. 技术依赖
+## 9. 技术依赖
 
 | 依赖 | 状态 | 说明 |
 |------|------|------|

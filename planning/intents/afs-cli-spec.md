@@ -257,35 +257,183 @@ METADATA
 
 ## 6. 输出视图（Views）
 
-afs-cli 只允许三种 view：
+### 设计原则
 
-### 6.1 default（默认）
+> **AFS CLI = stable machine truth + selectable views**
+>
+> 不要试图做"一个输出格式同时讨好所有人"
+> 要做"单一真相 + 多投影（projection）"
+
+三类读者的需求矛盾：
+- **LLM**: 稳定、可解析、语义明确
+- **人类**: 好看、易读、视觉层级
+- **Unix 工具链**: grep/pipe/jq/xargs 友好
+
+👉 **解决方案**: 分离视图，各自优化
+
+---
+
+### 6.1 default（默认）— 机器真相层
+
+**目标**: Ultra-boring, LLM-safe, pipe-safe
+
+**规则**:
 - 一行一条
 - 无 emoji / 无颜色
-- 字段顺序固定
+- 无对齐空格
+- 无装饰
+- 字段固定顺序
+- 绝不换行嵌套
+- grep/jq/awk 可直接用
 - stdout = 数据
 - stderr = 诊断
 
+**示例 (afs ls)**:
 ```
-/aine/status exec 128 2026-01-16T07:32:11Z sha256:abcd
+/aine/status exec 128 2026-01-16T07:32:11Z sha256:abcd1234
+/aine/config file 256 2026-01-15T10:00:00Z sha256:efgh5678
+/aine/logs dir 0 2026-01-16T08:00:00Z -
 ```
 
-### 6.2 --view=llm
-- 全大写 key
+**示例 (afs stat)**:
+```
+PATH=/aine/status
+TYPE=exec
+SIZE=128
+MODIFIED=2026-01-16T07:32:11Z
+HASH=sha256:abcd1234
+PROVIDER=memory
+```
+
+**为什么这样设计**:
+- Claude / Codex 对这种格式理解极好
+- 比"好看 JSON"还稳定
+- 可直接 pipe 到其他工具
+
+---
+
+### 6.2 --json — 结构化真相
+
+**目标**: 给 agent / contract / replay 用
+
+**规则**:
+- JSON 必须 schema-stable
+- 不为"好看"牺牲字段冗余
+- 不嵌入任何 UI 语义（no emoji / no color）
+
+**示例 (afs ls --json)**:
+```json
+{
+  "path": "/aine",
+  "type": "dir",
+  "entries": [
+    {
+      "path": "/aine/status",
+      "type": "exec",
+      "size": 128,
+      "modified": "2026-01-16T07:32:11Z",
+      "hash": "sha256:abcd1234"
+    },
+    {
+      "path": "/aine/config",
+      "type": "file",
+      "size": 256,
+      "modified": "2026-01-15T10:00:00Z",
+      "hash": "sha256:efgh5678"
+    }
+  ]
+}
+```
+
+**示例 (afs stat --json)**:
+```json
+{
+  "path": "/aine/status",
+  "type": "exec",
+  "size": 128,
+  "modified": "2026-01-16T07:32:11Z",
+  "hash": "sha256:abcd1234",
+  "provider": "memory",
+  "permissions": ["read", "exec"],
+  "metadata": {
+    "description": "System status endpoint"
+  }
+}
+```
+
+---
+
+### 6.3 --view=llm — LLM 语义层
+
+**目标**: Token cheap, 语义明确, 无 UI 噪音
+
+**这是 AFS CLI 的灵魂点** — "给 LLM 的 DSL"
+
+**规则**:
+- 全大写 key（LLM 极易识别）
 - 每行一个事实
 - 无 JSON 嵌套
-- token cheap
+- 可被 Claude Code 直接 copy into reasoning
+- 比 JSON 少 token
+- 比 raw 多语义
 
+**示例 (afs stat --view=llm)**:
 ```
-PATH /aine/status
+FILE /aine/status
 TYPE EXEC
+SIZE 128
+HASH sha256:abcd1234
+STATE READY
+UPDATED 2026-01-16T07:32:11Z
 SIDE_EFFECT NONE
 ```
 
-### 6.3 --view=human
-- 允许 emoji / tree
-- 只做视觉增强
+**示例 (afs ls --view=llm)**:
+```
+DIR /aine
+ENTRY /aine/status TYPE=exec SIZE=128 STATE=ready
+ENTRY /aine/config TYPE=file SIZE=256 STATE=ready
+ENTRY /aine/logs TYPE=dir CHILDREN=5
+TOTAL 3
+```
+
+---
+
+### 6.4 --view=human — 人类可视化层
+
+**目标**: 给人类看的投影
+
+**允许**:
+- emoji
+- 对齐
+- 缩进
+- 颜色
+- 树形结构
+- 时间友好格式
+
+**示例 (afs ls --view=human)**:
+```
+📁 /aine
+ ├─ 🟢 status        128B   updated 2m ago
+ ├─ 📄 config       256B   updated yesterday
+ └─ 📂 logs/         5 items
+```
+
+**⚠️ 关键约束**:
 - **不得引入新语义**
+- **human view 永远不应该被 LLM 默认消费**
+- 否则引入不稳定解析灾难
+
+---
+
+### 6.5 视图对照表
+
+| 命令 | default | --view=llm | --view=human |
+|------|---------|------------|--------------|
+| ls | 一行一条目 | ENTRY 格式 | emoji tree |
+| stat | KEY=VALUE | 全大写 KEY | 格式化表格 |
+| read | 原始内容 | 带 CONTENT header | 语法高亮 |
+| explain | 结构化文本 | 同 default | 带示例 |
 
 ---
 

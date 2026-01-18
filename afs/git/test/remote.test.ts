@@ -207,7 +207,7 @@ describe("AFSGit - Error Handling", () => {
     expect(() => {
       new AFSGit({});
     }).toThrowErrorMatchingInlineSnapshot(
-      `"AFSGit check arguments error: : Either repoPath or remoteUrl must be provided"`,
+      `"Validation error: Either repoPath or remoteUrl must be provided"`,
     );
   });
 });

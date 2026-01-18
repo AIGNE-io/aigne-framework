@@ -57,9 +57,8 @@
   },
   "dependencies": {
     "@aigne/afs": "workspace:^",
-    "@aigne/core": "workspace:^",
+    "@aigne/afs-utils": "workspace:^",
     "@vscode/ripgrep": "^1.15.14",
-    "glob": "^11.0.3",
     "ignore": "^7.0.5",
     "minimatch": "^10.1.1",
     "zod": "^3.25.67"

@@ -52,4 +52,15 @@ export interface AFSStorage {
   delete(id: string, options?: AFSStorageDeleteOptions): Promise<{ deletedCount: number }>;
 }
 
+export function isAFSStorage(value: any): value is AFSStorage {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    typeof value.create === "function" &&
+    typeof value.list === "function" &&
+    typeof value.read === "function" &&
+    typeof value.delete === "function"
+  );
+}
+
 export type AFSStorageMigrations = { hash: string; sql: (module: AFSModule) => SQL[] };

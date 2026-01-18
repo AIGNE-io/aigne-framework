@@ -19,8 +19,7 @@ import type {
   AFSWriteOptions,
   AFSWriteResult,
 } from "@aigne/afs";
-import { camelizeSchema, optionalize } from "@aigne/core/loader/schema.js";
-import { checkArguments } from "@aigne/core/utils/type-utils.js";
+import { camelize, optionalize, zodParse } from "@aigne/afs-utils/zod/index.js";
 import ignore from "ignore";
 import { minimatch } from "minimatch";
 import { z } from "zod";
@@ -48,7 +47,7 @@ export interface LocalFSOptions {
   agentSkills?: boolean;
 }
 
-const localFSOptionsSchema = camelizeSchema(
+const localFSOptionsSchema = camelize(
   z.object({
     name: optionalize(z.string()),
     localPath: z.string().describe("The path to the local directory to mount"),
@@ -75,10 +74,7 @@ export class LocalFS implements AFSModule {
   }
 
   constructor(public options: LocalFSOptions & { cwd?: string }) {
-    checkArguments("LocalFS", localFSOptionsSchema, {
-      ...options,
-      localPath: options.localPath || (options as any).path, // compatible with 'path' option
-    });
+    zodParse(localFSOptionsSchema, options);
 
     let localPath: string;
 

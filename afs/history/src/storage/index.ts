@@ -17,30 +17,14 @@ export * from "./type.js";
 
 const DEFAULT_AFS_STORAGE_LIST_LIMIT = 10;
 
-export interface SharedAFSStorageOptions {
+export interface AFSStorageSQLiteOptions {
   url?: string;
 }
 
-export class SharedAFSStorage {
-  constructor(public options?: SharedAFSStorageOptions) {}
-
-  private _db: ReturnType<typeof initDatabase> | undefined;
-
-  get db() {
-    this._db ??= initDatabase({ url: this.options?.url });
-
-    return this._db;
-  }
-
-  withModule(module: AFSModule): AFSStorage {
-    return new AFSStorageWithModule(this.db, module);
-  }
-}
-
-export class AFSStorageWithModule implements AFSStorage {
+export class AFSStorageSQLite implements AFSStorage {
   constructor(
-    private db: ReturnType<typeof initDatabase>,
-    private module: AFSModule,
+    public module: AFSModule,
+    public options?: AFSStorageSQLiteOptions,
   ) {}
 
   private _tables?: Promise<{
@@ -52,7 +36,7 @@ export class AFSStorageWithModule implements AFSStorage {
 
   private get tables() {
     if (!this._tables) {
-      this._tables = this.db.then((db) =>
+      this._tables = initDatabase({ url: this.options?.url }).then((db) =>
         migrate(db, this.module).then(() => ({
           db,
           entries: entriesTable(this.module),

@@ -62,11 +62,8 @@
   },
   "dependencies": {
     "@aigne/afs": "workspace:^",
-    "@aigne/core": "workspace:^",
     "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "yaml": "^2.8.1",
-    "zod": "^3.25.67"
+    "express": "^5.1.0"
   },
   "devDependencies": {
     "@aigne/afs-git": "workspace:^",

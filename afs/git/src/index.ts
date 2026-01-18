@@ -26,8 +26,7 @@ import type {
   AFSWriteOptions,
   AFSWriteResult,
 } from "@aigne/afs";
-import { camelizeSchema, optionalize } from "@aigne/core/loader/schema.js";
-import { checkArguments } from "@aigne/core/utils/type-utils.js";
+import { camelize, optionalize, zodParse } from "@aigne/afs-utils/zod/index.js";
 import { type SimpleGit, simpleGit } from "simple-git";
 import { z } from "zod";
 
@@ -59,7 +58,7 @@ export interface AFSGitOptions {
   };
 }
 
-const afsGitOptionsSchema = camelizeSchema(
+const afsGitOptionsSchema = camelize(
   z.object({
     name: optionalize(z.string()),
     repoPath: z.string().describe("The path to the git repository"),
@@ -96,7 +95,7 @@ export class AFSGit implements AFSModule {
   private repoHash: string;
 
   constructor(public options: AFSGitOptions & { cwd?: string }) {
-    checkArguments("AFSGit", afsGitOptionsSchema, options);
+    zodParse(afsGitOptionsSchema, options);
 
     let repoPath: string;
     if (isAbsolute(options.repoPath)) {

@@ -16,22 +16,24 @@ import {
   type AFSWriteResult,
   accessModeSchema,
 } from "@aigne/afs";
+import { camelize, optionalize, zodParse } from "@aigne/afs-utils/zod/index.js";
 import { v7 } from "@aigne/uuid";
 import { createRouter } from "radix3";
 import { joinURL } from "ufo";
-import { type ZodType, z } from "zod";
+import { z } from "zod";
 import {
   type AFSStorage,
+  AFSStorageSQLite,
+  type AFSStorageSQLiteOptions,
   type EntryType,
+  isAFSStorage,
   type Scope,
-  SharedAFSStorage,
-  type SharedAFSStorageOptions,
 } from "./storage/index.js";
 
 export * from "./storage/index.js";
 
 export interface AFSHistoryOptions {
-  storage?: SharedAFSStorage | SharedAFSStorageOptions;
+  storage?: AFSStorage | AFSStorageSQLiteOptions;
   /**
    * Access mode for this module.
    * @default "readwrite"
@@ -39,19 +41,15 @@ export interface AFSHistoryOptions {
   accessMode?: AFSAccessMode;
 }
 
-const sharedAFSStorageOptionsSchema = z.object({
-  url: z.string().describe("Database URL for storage").optional(),
-});
-
-const afsHistoryOptionsSchema = preprocessSchema(
-  (v: any) => {
-    if (!v || typeof v !== "object") {
-      return v;
-    }
-    return { ...v, accessMode: v.accessMode || v.access_mode };
-  },
+const afsStorageOptionsSchema = camelize(
   z.object({
-    storage: sharedAFSStorageOptionsSchema.optional(),
+    url: optionalize(z.string().describe("Database URL for storage")),
+  }),
+);
+
+const afsHistoryOptionsSchema = camelize(
+  z.object({
+    storage: optionalize(z.union([z.custom((v) => isAFSStorage(v)), afsStorageOptionsSchema])),
     accessMode: accessModeSchema,
   }),
 );
@@ -67,10 +65,11 @@ export class AFSHistory implements AFSModule {
   }
 
   constructor(options?: AFSHistoryOptions) {
-    this.storage =
-      options?.storage instanceof SharedAFSStorage
-        ? options.storage.withModule(this)
-        : new SharedAFSStorage(options?.storage).withModule(this);
+    zodParse(optionalize(afsHistoryOptionsSchema), options);
+
+    this.storage = isAFSStorage(options?.storage)
+      ? options.storage
+      : new AFSStorageSQLite(this, options?.storage);
     this.accessMode = options?.accessMode ?? "readwrite";
   }
 
@@ -345,7 +344,3 @@ export class AFSHistory implements AFSModule {
 }
 
 const _typeCheck: AFSModuleClass<AFSHistory, AFSHistoryOptions> = AFSHistory;
-
-function preprocessSchema<T extends ZodType>(fn: (data: unknown) => unknown, schema: T): T {
-  return z.preprocess(fn, schema) as unknown as T;
-}

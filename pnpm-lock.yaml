@@ -108,21 +108,12 @@ importers:
       '@aigne/afs':
         specifier: workspace:^
         version: link:../core
-      '@aigne/core':
-        specifier: workspace:^
-        version: link:../../packages/core
       cors:
         specifier: ^2.8.5
         version: 2.8.5
       express:
         specifier: ^5.1.0
         version: 5.1.0
-      yaml:
-        specifier: ^2.8.1
-        version: 2.8.1
-      zod:
-        specifier: ^3.25.67
-        version: 3.25.67
     devDependencies:
       '@aigne/afs-git':
         specifier: workspace:^
@@ -220,9 +211,9 @@ importers:
       '@aigne/afs':
         specifier: workspace:^
         version: link:../core
-      '@aigne/core':
+      '@aigne/afs-utils':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../utils
       simple-git:
         specifier: ^3.27.0
         version: 3.30.0
@@ -251,6 +242,9 @@ importers:
       '@aigne/afs':
         specifier: workspace:^
         version: link:../core
+      '@aigne/afs-utils':
+        specifier: workspace:^
+        version: link:../utils
       '@aigne/sqlite':
         specifier: workspace:^
         version: link:../../packages/sqlite
@@ -285,9 +279,9 @@ importers:
       '@aigne/afs':
         specifier: workspace:^
         version: link:../core
-      '@aigne/core':
+      '@aigne/afs-utils':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../utils
       yaml:
         specifier: ^2.8.1
         version: 2.8.1
@@ -316,15 +310,12 @@ importers:
       '@aigne/afs':
         specifier: workspace:^
         version: link:../core
-      '@aigne/core':
+      '@aigne/afs-utils':
         specifier: workspace:^
-        version: link:../../packages/core
+        version: link:../utils
       '@vscode/ripgrep':
         specifier: ^1.15.14
         version: 1.15.14
-      glob:
-        specifier: ^11.0.3
-        version: 11.0.3
       ignore:
         specifier: ^7.0.5
         version: 7.0.5
@@ -393,6 +384,9 @@ importers:
       '@aigne/afs-history':
         specifier: workspace:^
         version: link:../history
+      '@aigne/afs-utils':
+        specifier: workspace:^
+        version: link:../utils
       '@aigne/core':
         specifier: workspace:^
         version: link:../../packages/core
@@ -412,6 +406,28 @@ importers:
       '@aigne/test-utils':
         specifier: workspace:^
         version: link:../../packages/test-utils
+      '@types/bun':
+        specifier: ^1.2.22
+        version: 1.2.22(@types/react@19.1.13)
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
+  afs/utils:
+    dependencies:
+      zod:
+        specifier: ^3.25.67
+        version: 3.25.67
+      zod-validation-error:
+        specifier: ^3.5.4
+        version: 3.5.4(zod@3.25.67)
+    devDependencies:
       '@types/bun':
         specifier: ^1.2.22
         version: 1.2.22(@types/react@19.1.13)
@@ -447,7 +463,7 @@ importers:
         version: 13.0.1
       '@arcblock/did-connect-react':
         specifier: ^3.4.7
-        version: 3.4.7(af74acdb56a11b7a065af97d2fa1ae51)
+        version: 3.4.7(@arcblock/ux@3.4.7(f817d3be148b587f81e890d67408cbb8))(@blocklet/js-sdk@1.17.7)(@blocklet/theme@3.4.7)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@arcblock/ux':
         specifier: ^3.4.7
         version: 3.4.7(f817d3be148b587f81e890d67408cbb8)
@@ -1958,7 +1974,7 @@ importers:
         version: 13.0.1
       '@arcblock/did-connect-react':
         specifier: ^3.4.7
-        version: 3.4.7(af74acdb56a11b7a065af97d2fa1ae51)
+        version: 3.4.7(@arcblock/ux@3.4.7(f817d3be148b587f81e890d67408cbb8))(@blocklet/js-sdk@1.17.7)(@blocklet/theme@3.4.7)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@arcblock/ux':
         specifier: ^3.4.7
         version: 3.4.7(f817d3be148b587f81e890d67408cbb8)
@@ -13076,6 +13092,12 @@ packages:
     peerDependencies:
       zod: ^3.24.1
 
+  zod-validation-error@3.5.4:
+    resolution: {integrity: sha512-+hEiRIiPobgyuFlEojnqjJnhFvg4r/i3cqgcm67eehZf/WBaK3g6cD02YU9mtdVxZjv8CzCA9n/Rhrs3yAAvAw==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      zod: ^3.24.4
+
   zod@3.25.67:
     resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==}
 
@@ -13423,7 +13445,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@arcblock/did-connect-react@3.4.7(af74acdb56a11b7a065af97d2fa1ae51)':
+  '@arcblock/did-connect-react@3.4.7(@arcblock/ux@3.4.7(f817d3be148b587f81e890d67408cbb8))(@blocklet/js-sdk@1.17.7)(@blocklet/theme@3.4.7)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@arcblock/bridge': 3.4.7
       '@arcblock/did': 1.28.5
@@ -14893,10 +14915,10 @@ snapshots:
       - tedious
       - utf-8-validate
 
-  '@blocklet/did-space-react@1.2.15(36edbd27fa0b642e84bf58ac70a575e8)':
+  '@blocklet/did-space-react@1.2.15(@arcblock/did-connect-react@3.4.7(@arcblock/ux@3.4.7(f817d3be148b587f81e890d67408cbb8))(@blocklet/js-sdk@1.17.7)(@blocklet/theme@3.4.7)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@arcblock/ux@3.4.7(f817d3be148b587f81e890d67408cbb8))(@blocklet/js-sdk@1.17.7)(@blocklet/sdk@1.17.7)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@arcblock/did': 1.28.5
-      '@arcblock/did-connect-react': 3.4.7(af74acdb56a11b7a065af97d2fa1ae51)
+      '@arcblock/did-connect-react': 3.4.7(@arcblock/ux@3.4.7(f817d3be148b587f81e890d67408cbb8))(@blocklet/js-sdk@1.17.7)(@blocklet/theme@3.4.7)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@arcblock/ux': 3.4.7(f817d3be148b587f81e890d67408cbb8)
       '@blocklet/js-sdk': 1.17.7
       '@blocklet/sdk': 1.17.7
@@ -15194,12 +15216,12 @@ snapshots:
       '@abtnode/constant': 1.17.7
       '@abtnode/util': 1.17.7
       '@arcblock/bridge': 3.4.7
-      '@arcblock/did-connect-react': 3.4.7(af74acdb56a11b7a065af97d2fa1ae51)
+      '@arcblock/did-connect-react': 3.4.7(@arcblock/ux@3.4.7(f817d3be148b587f81e890d67408cbb8))(@blocklet/js-sdk@1.17.7)(@blocklet/theme@3.4.7)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@arcblock/icons': 3.4.7(react@19.1.1)
       '@arcblock/react-hooks': 3.4.7
       '@arcblock/ux': 3.4.7(f817d3be148b587f81e890d67408cbb8)
       '@arcblock/ws': 1.28.5
-      '@blocklet/did-space-react': 1.2.15(36edbd27fa0b642e84bf58ac70a575e8)
+      '@blocklet/did-space-react': 1.2.15(@arcblock/did-connect-react@3.4.7(@arcblock/ux@3.4.7(f817d3be148b587f81e890d67408cbb8))(@blocklet/js-sdk@1.17.7)(@blocklet/theme@3.4.7)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@mui/material@7.3.2(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@arcblock/ux@3.4.7(f817d3be148b587f81e890d67408cbb8))(@blocklet/js-sdk@1.17.7)(@blocklet/sdk@1.17.7)(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@blocklet/js-sdk': 1.17.7
       '@emotion/react': 11.14.0(@types/react@19.1.13)(react@19.1.1)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.1.13)(react@19.1.1))(@types/react@19.1.13)(react@19.1.1)
@@ -26876,6 +26898,10 @@ snapshots:
       zod: 3.25.67
 
   zod-to-json-schema@3.24.6(zod@3.25.67):
+    dependencies:
+      zod: 3.25.67
+
+  zod-validation-error@3.5.4(zod@3.25.67):
     dependencies:
       zod: 3.25.67
 

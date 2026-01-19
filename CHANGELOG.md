@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.92.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.1-beta...aigne-framework-v1.92.0-beta) (2026-01-19)
+
+
+### Features
+
+* **afs-git:** support mount remote repo to AFS ([#926](https://github.com/AIGNE-io/aigne-framework/issues/926)) ([e4c78aa](https://github.com/AIGNE-io/aigne-framework/commit/e4c78aa207d76a8f15874931375f4b30b4c9af7f))
+* **afs:** add @aigne/afs-utils package ([#927](https://github.com/AIGNE-io/aigne-framework/issues/927)) ([3922635](https://github.com/AIGNE-io/aigne-framework/commit/3922635981aab4578607c5bf1fb882c8e45725ce))
+
 ## [1.91.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/aigne-framework-v1.91.0...aigne-framework-v1.91.1-beta) (2026-01-17)
 
 

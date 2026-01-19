@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, expect, mock, spyOn, test } from "bun:test";
+import { afterEach, beforeEach, expect, spyOn, test } from "bun:test";
 import { randomUUID } from "node:crypto";
 import { stat } from "node:fs/promises";
 import { homedir } from "node:os";
@@ -9,22 +9,6 @@ import yargs from "yargs";
 import { mockAIGNEPackage, mockAIGNEV1Package } from "../_mocks_/mock-aigne-package.js";
 
 let originalEnv: NodeJS.ProcessEnv;
-
-// Save the original fetch to restore later
-const originalFetch = globalThis.fetch;
-
-// Create our mock
-const mockFetch = mock(() => Promise.resolve(new Response("{}")));
-
-beforeAll(() => {
-  // Replace global fetch with our mock before any tests run
-  globalThis.fetch = mockFetch as unknown as typeof fetch;
-});
-
-afterAll(() => {
-  // Restore original fetch after all tests complete
-  globalThis.fetch = originalFetch;
-});
 
 beforeEach(() => {
   originalEnv = {
@@ -38,15 +22,10 @@ beforeEach(() => {
   process.env.IMAGE_MODEL = "openai:gpt-image-1";
   process.env.OPENAI_API_KEY = "test-openai-api-key";
   process.env.XAI_API_KEY = "test-xai-api-key";
-
-  mockFetch.mockClear();
 });
 
 afterEach(() => {
   Object.assign(process.env, originalEnv);
-  // Reset to default implementation after each test
-  mockFetch.mockReset();
-  mockFetch.mockImplementation(() => Promise.resolve(new Response("{}")));
 });
 
 test("run command should call run chat loop correctly", async () => {
@@ -98,7 +77,9 @@ test("run command should download package and run correctly", async () => {
   const runAIGNEInChildProcessSpy = spyOn(runAgent, "invokeAgent").mockResolvedValue(
     undefined as any,
   );
-  mockFetch.mockReturnValueOnce(Promise.resolve(new Response(await mockAIGNEPackage())));
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
+    Promise.resolve(new Response(await mockAIGNEPackage())),
+  );
 
   const command = yargs().version(false).command(createRunCommand());
 
@@ -120,10 +101,13 @@ test("run command should download package and run correctly", async () => {
 
   exit.mockRestore();
   runAIGNEInChildProcessSpy.mockRestore();
+  fetchSpy.mockRestore();
 });
 
 test("run command should convert package from v1 and run correctly", async () => {
-  mockFetch.mockReturnValueOnce(Promise.resolve(new Response(await mockAIGNEV1Package())));
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
+    Promise.resolve(new Response(await mockAIGNEV1Package())),
+  );
   const exit = spyOn(process, "exit").mockImplementation((() => {}) as any);
   const runAIGNEInChildProcessSpy = spyOn(runAgent, "invokeAgent").mockResolvedValue(
     undefined as any,
@@ -146,6 +130,7 @@ test("run command should convert package from v1 and run correctly", async () =>
 
   exit.mockRestore();
   runAIGNEInChildProcessSpy.mockRestore();
+  fetchSpy.mockRestore();
 });
 
 test("run command should parse model options correctly", async () => {

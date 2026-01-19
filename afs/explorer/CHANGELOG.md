@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.2.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-explorer-v1.1.0...afs-explorer-v1.2.0-beta) (2026-01-19)
+
+
+### Features
+
+* **afs:** add @aigne/afs-utils package ([#927](https://github.com/AIGNE-io/aigne-framework/issues/927)) ([3922635](https://github.com/AIGNE-io/aigne-framework/commit/3922635981aab4578607c5bf1fb882c8e45725ce))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/afs-git bumped to 1.2.0-beta
+    * @aigne/afs-history bumped to 1.3.0-beta
+    * @aigne/afs-json bumped to 1.2.0-beta
+    * @aigne/afs-local-fs bumped to 1.5.0-beta
+    * @aigne/test-utils bumped to 0.5.70-beta
+
 ## [1.1.0](https://github.com/AIGNE-io/aigne-framework/compare/afs-explorer-v1.1.0-beta...afs-explorer-v1.1.0) (2026-01-16)
 
 

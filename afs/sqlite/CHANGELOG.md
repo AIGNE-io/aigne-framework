@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/afs-sqlite-v1.1.0...afs-sqlite-v1.1.1-beta) (2026-01-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.70-beta
+
 ## [1.1.0](https://github.com/AIGNE-io/aigne-framework/compare/afs-sqlite-v1.1.0-beta.1...afs-sqlite-v1.1.0) (2026-01-16)
 
 

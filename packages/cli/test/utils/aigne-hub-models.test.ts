@@ -1,27 +1,20 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
+import { afterEach, beforeEach, describe, expect, type Mock, spyOn, test } from "bun:test";
 import { checkModelAvailability, fetchHubModels } from "../../src/utils/aigne-hub-models.js";
 
-const mockFetch = mock(() => {}) as any;
-
 describe("aigne-hub-models", () => {
+  let fetchSpy: Mock<typeof fetch>;
+
   beforeEach(() => {
-    mockFetch.mockClear();
+    fetchSpy = spyOn(globalThis, "fetch");
   });
 
   afterEach(() => {
-    mockFetch.mockClear();
+    fetchSpy.mockRestore();
   });
-
-  mock.module("@aigne/core/utils/fetch.js", () => ({
-    fetch: mockFetch,
-  }));
 
   describe("checkModelAvailability", () => {
     test("should return available=true when model is available", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({ available: true }),
-      });
+      fetchSpy.mockResolvedValueOnce(new Response(JSON.stringify({ available: true })));
 
       const result = await checkModelAvailability({
         baseUrl: "https://hub.aigne.io",
@@ -37,14 +30,15 @@ describe("aigne-hub-models", () => {
     });
 
     test("should return available=false when model is not available", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          available: false,
-          error: "No providers available",
-          code: 503,
-        }),
-      });
+      fetchSpy.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            available: false,
+            error: "No providers available",
+            code: 503,
+          }),
+        ),
+      );
 
       const result = await checkModelAvailability({
         baseUrl: "https://hub.aigne.io",
@@ -60,10 +54,7 @@ describe("aigne-hub-models", () => {
     });
 
     test("should convert http to https", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({ available: true }),
-      });
+      fetchSpy.mockResolvedValueOnce(new Response(JSON.stringify({ available: true })));
 
       await checkModelAvailability({
         baseUrl: "http://hub.aigne.io",
@@ -71,17 +62,14 @@ describe("aigne-hub-models", () => {
         model: "openai/gpt-4o",
       });
 
-      expect(mockFetch).toHaveBeenCalledWith(
+      expect(fetchSpy).toHaveBeenCalledWith(
         expect.stringContaining("https://hub.aigne.io"),
         expect.any(Object),
       );
     });
 
     test("should encode model name in URL", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({ available: true }),
-      });
+      fetchSpy.mockResolvedValueOnce(new Response(JSON.stringify({ available: true })));
 
       await checkModelAvailability({
         baseUrl: "https://hub.aigne.io",
@@ -89,17 +77,16 @@ describe("aigne-hub-models", () => {
         model: "openai/gpt-4o",
       });
 
-      expect(mockFetch).toHaveBeenCalledWith(
+      expect(fetchSpy).toHaveBeenCalledWith(
         expect.stringContaining("model=openai%2Fgpt-4o"),
         expect.any(Object),
       );
     });
 
     test("should throw error on non-2xx response", async () => {
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 401,
-      });
+      fetchSpy.mockResolvedValueOnce(
+        new Response("Unauthorized", { status: 401, statusText: "Unauthorized" }),
+      );
 
       await expect(
         checkModelAvailability({
@@ -107,7 +94,7 @@ describe("aigne-hub-models", () => {
           apiKey: "invalid-key",
           model: "openai/gpt-4o",
         }),
-      ).rejects.toThrow("Failed to check model availability (HTTP 401)");
+      ).rejects.toThrow("401");
     });
   });
 
@@ -155,10 +142,7 @@ describe("aigne-hub-models", () => {
     };
 
     test("should fetch and return available models", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => mockModelRatesResponse,
-      });
+      fetchSpy.mockResolvedValueOnce(new Response(JSON.stringify(mockModelRatesResponse)));
 
       const result = await fetchHubModels({
         baseUrl: "https://hub.aigne.io",
@@ -177,10 +161,7 @@ describe("aigne-hub-models", () => {
     });
 
     test("should filter by type", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => mockModelRatesResponse,
-      });
+      fetchSpy.mockResolvedValueOnce(new Response(JSON.stringify(mockModelRatesResponse)));
 
       const result = await fetchHubModels({
         baseUrl: "https://hub.aigne.io",
@@ -194,10 +175,7 @@ describe("aigne-hub-models", () => {
     });
 
     test("should filter by type=image", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => mockModelRatesResponse,
-      });
+      fetchSpy.mockResolvedValueOnce(new Response(JSON.stringify(mockModelRatesResponse)));
 
       const result = await fetchHubModels({
         baseUrl: "https://hub.aigne.io",
@@ -210,29 +188,30 @@ describe("aigne-hub-models", () => {
     });
 
     test("should pass search keyword to API as model param", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          count: 2,
-          list: [
-            {
-              model: "gpt-4o",
-              modelDisplay: "GPT-4o",
-              type: "chatCompletion",
-              provider: { name: "openai", displayName: "OpenAI" },
-              status: { available: true },
-            },
-            {
-              model: "gpt-4o-mini",
-              modelDisplay: "GPT-4o Mini",
-              type: "chatCompletion",
-              provider: { name: "openai", displayName: "OpenAI" },
-              status: { available: true },
-            },
-          ],
-          paging: { page: 1, pageSize: 200 },
-        }),
-      });
+      fetchSpy.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            count: 2,
+            list: [
+              {
+                model: "gpt-4o",
+                modelDisplay: "GPT-4o",
+                type: "chatCompletion",
+                provider: { name: "openai", displayName: "OpenAI" },
+                status: { available: true },
+              },
+              {
+                model: "gpt-4o-mini",
+                modelDisplay: "GPT-4o Mini",
+                type: "chatCompletion",
+                provider: { name: "openai", displayName: "OpenAI" },
+                status: { available: true },
+              },
+            ],
+            paging: { page: 1, pageSize: 200 },
+          }),
+        ),
+      );
 
       const result = await fetchHubModels({
         baseUrl: "https://hub.aigne.io",
@@ -241,7 +220,7 @@ describe("aigne-hub-models", () => {
       });
 
       // Verify API was called with model param
-      expect(mockFetch).toHaveBeenCalledWith(
+      expect(fetchSpy).toHaveBeenCalledWith(
         expect.stringContaining("model=gpt-4"),
         expect.any(Object),
       );
@@ -250,10 +229,7 @@ describe("aigne-hub-models", () => {
     });
 
     test("should not include model param when no search provided", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => mockModelRatesResponse,
-      });
+      fetchSpy.mockResolvedValueOnce(new Response(JSON.stringify(mockModelRatesResponse)));
 
       await fetchHubModels({
         baseUrl: "https://hub.aigne.io",
@@ -261,15 +237,12 @@ describe("aigne-hub-models", () => {
       });
 
       // Verify API was called without model param
-      const callUrl = mockFetch.mock.calls[0][0] as string;
+      const callUrl = fetchSpy.mock.calls[0]?.[0] as string;
       expect(callUrl).not.toContain("model=");
     });
 
     test("should apply limit", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => mockModelRatesResponse,
-      });
+      fetchSpy.mockResolvedValueOnce(new Response(JSON.stringify(mockModelRatesResponse)));
 
       const result = await fetchHubModels({
         baseUrl: "https://hub.aigne.io",
@@ -282,22 +255,23 @@ describe("aigne-hub-models", () => {
 
     test("should combine type and search filters", async () => {
       // API returns filtered results by search, then we filter by type locally
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          count: 1,
-          list: [
-            {
-              model: "claude-3-5-sonnet",
-              modelDisplay: "Claude 3.5 Sonnet",
-              type: "chatCompletion",
-              provider: { name: "anthropic", displayName: "Anthropic" },
-              status: { available: true },
-            },
-          ],
-          paging: { page: 1, pageSize: 200 },
-        }),
-      });
+      fetchSpy.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            count: 1,
+            list: [
+              {
+                model: "claude-3-5-sonnet",
+                modelDisplay: "Claude 3.5 Sonnet",
+                type: "chatCompletion",
+                provider: { name: "anthropic", displayName: "Anthropic" },
+                status: { available: true },
+              },
+            ],
+            paging: { page: 1, pageSize: 200 },
+          }),
+        ),
+      );
 
       const result = await fetchHubModels({
         baseUrl: "https://hub.aigne.io",
@@ -306,7 +280,7 @@ describe("aigne-hub-models", () => {
         search: "claude",
       });
 
-      expect(mockFetch).toHaveBeenCalledWith(
+      expect(fetchSpy).toHaveBeenCalledWith(
         expect.stringContaining("model=claude"),
         expect.any(Object),
       );
@@ -316,14 +290,15 @@ describe("aigne-hub-models", () => {
 
     test("should return empty array when no models match", async () => {
       // API returns empty list when search doesn't match
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          count: 0,
-          list: [],
-          paging: { page: 1, pageSize: 200 },
-        }),
-      });
+      fetchSpy.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            count: 0,
+            list: [],
+            paging: { page: 1, pageSize: 200 },
+          }),
+        ),
+      );
 
       const result = await fetchHubModels({
         baseUrl: "https://hub.aigne.io",
@@ -335,29 +310,30 @@ describe("aigne-hub-models", () => {
     });
 
     test("should include models with null status as available", async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          count: 2,
-          list: [
-            {
-              model: "gpt-4o",
-              modelDisplay: "GPT-4o",
-              type: "chatCompletion",
-              provider: { name: "openai", displayName: "OpenAI" },
-              status: { available: true },
-            },
-            {
-              model: "gpt-null-status",
-              modelDisplay: "GPT Null Status",
-              type: "chatCompletion",
-              provider: { name: "openai", displayName: "OpenAI" },
-              status: null,
-            },
-          ],
-          paging: { page: 1, pageSize: 200 },
-        }),
-      });
+      fetchSpy.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            count: 2,
+            list: [
+              {
+                model: "gpt-4o",
+                modelDisplay: "GPT-4o",
+                type: "chatCompletion",
+                provider: { name: "openai", displayName: "OpenAI" },
+                status: { available: true },
+              },
+              {
+                model: "gpt-null-status",
+                modelDisplay: "GPT Null Status",
+                type: "chatCompletion",
+                provider: { name: "openai", displayName: "OpenAI" },
+                status: null,
+              },
+            ],
+            paging: { page: 1, pageSize: 200 },
+          }),
+        ),
+      );
 
       const result = await fetchHubModels({
         baseUrl: "https://hub.aigne.io",
@@ -370,17 +346,16 @@ describe("aigne-hub-models", () => {
     });
 
     test("should throw error on non-2xx response", async () => {
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 500,
-      });
+      fetchSpy.mockResolvedValueOnce(
+        new Response("Internal Server Error", { status: 500, statusText: "Internal Server Error" }),
+      );
 
       await expect(
         fetchHubModels({
           baseUrl: "https://hub.aigne.io",
           apiKey: "test-key",
         }),
-      ).rejects.toThrow("Failed to fetch models (HTTP 500)");
+      ).rejects.toThrow("500");
     });
   });
 });

@@ -140,12 +140,25 @@ export async function invokeAgent(options: {
   try {
     const input = await parseAgentInput(options.input, agent);
 
+    const sessionId = options.input.sessionId || v7();
+    const userId = DEFAULT_USER_ID;
+
+    if (aigne.cli.init) {
+      await runAgentWithAIGNE(aigne, aigne.cli.init, {
+        ...options.input,
+        input,
+        interactive: false,
+        sessionId,
+        userId,
+      });
+    }
+
     await runAgentWithAIGNE(aigne, agent, {
       ...options.input,
       input,
       interactive: options.input.interactive,
-      sessionId: options.input.sessionId || v7(),
-      userId: DEFAULT_USER_ID,
+      sessionId,
+      userId,
     });
   } finally {
     await aigne.shutdown();

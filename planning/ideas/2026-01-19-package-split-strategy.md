@@ -12,7 +12,7 @@
 
 **核心改动**:
 - **Repo**: 1 个 → 4 个 (2 个 monorepos + 2 个独立 repos)
-- **AFS**: 保持 `@aigne/afs-*` (7 个 npm 包: 5 个 library + explorer + cli)
+- **AFS**: 保持 `@aigne/afs-*` (7 个 npm 包: 1 核心 + 4 providers + explorer + cli)
 - **AIGNE**: 保持 `@aigne/core` 单包 (~20 个包，含 history/user-profile-memory)
 - **observability**: 独立 repo，可观测性框架
 - **afsd**: 独立 repo，daemon 参考实现
@@ -37,12 +37,13 @@
 afs/                                (AFS Monorepo)
 ├── packages/
 │   ├── core/           → @aigne/afs
+│   ├── explorer/       → @aigne/afs-explorer (Web UI 包)
+│   └── cli/            → @aigne/afs-cli (CLI 工具，可使用 explorer)
+├── providers/
 │   ├── local-fs/       → @aigne/afs-local-fs
 │   ├── git/            → @aigne/afs-git
 │   ├── sqlite/         → @aigne/afs-sqlite
-│   ├── json/           → @aigne/afs-json
-│   ├── explorer/       → @aigne/afs-explorer (Web UI 包)
-│   └── cli/            → @aigne/afs-cli (CLI 工具，可使用 explorer)
+│   └── json/           → @aigne/afs-json
 └── pnpm-workspace.yaml
 ```
 
@@ -89,13 +90,13 @@ afsd/
 
 | Git Repo | npm 包 | 类型 | 说明 |
 |---------|--------|------|------|
-| **afs** | 7 个 `@aigne/afs-*` | Monorepo | 5 个 library + explorer + cli |
+| **afs** | 7 个 `@aigne/afs-*` | Monorepo | 1 核心 + 4 providers + explorer + cli |
 | **aigne** | ~20 个 `@aigne/*` | Monorepo | 纯 library |
 | **observability** | 2 个 npm 包 + 1 个 blocklet | Monorepo | 可观测性 |
 | **afsd** | 1 个 (daemon) | 独立 Repo | daemon 服务 |
 
 **说明**:
-- ✅ AFS monorepo: 包含 5 个纯 library 包 + Web UI (explorer) + CLI 工具
+- ✅ AFS monorepo: 核心包 (core) + 4 个 providers (local-fs, git, sqlite, json) + Web UI (explorer) + CLI 工具
 - ✅ AIGNE monorepo: 包含 ~20 个纯 library 包 (含 history/user-profile-memory)
 - ✅ AIGNE core 为单一统一包，包含 types + agents + prompt + utils + AIGNE + loader
 - ✅ Observability 独立 repo: API (含服务端) + UI 组件 + Blocklet 应用
@@ -109,18 +110,16 @@ afsd/
 ### 2.1 包列表 (7 个 npm 包)
 
 ```
-核心:
+packages/ (核心 + 工具):
 @aigne/afs              # 核心 + utils (~1,000 行)
+@aigne/afs-explorer     # Web UI 包 (~2,000 行)
+@aigne/afs-cli          # CLI 工具 (~1,500 行，可选依赖 explorer)
 
-Providers (按需):
+providers/ (存储驱动，按需安装):
 @aigne/afs-local-fs     # 本地文件系统 (~549 行)
 @aigne/afs-git          # Git 仓库 (~586 行)
 @aigne/afs-sqlite       # SQLite 数据库 (~1,648 行)
 @aigne/afs-json         # JSON/YAML 文件 (~444 行)
-
-UI & 工具:
-@aigne/afs-explorer     # Web UI 包 (~2,000 行)
-@aigne/afs-cli          # CLI 工具 (~1,500 行，可选依赖 explorer)
 ```
 
 ### 2.2 关键改动

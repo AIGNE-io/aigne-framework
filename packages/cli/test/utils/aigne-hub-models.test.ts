@@ -1,5 +1,5 @@
 import { expect, spyOn, test } from "bun:test";
-import { checkModelAvailability, fetchHubModels } from "../../src/utils/aigne-hub-models.js";
+import { checkModelAvailability, fetchHubModels } from "@aigne/cli/utils/aigne-hub-models.js";
 
 const mockModelRatesResponse = {
   count: 5,
@@ -359,7 +359,10 @@ test("fetchHubModels should include models with null status as available", async
 test("fetchHubModels should throw error on non-2xx response", async () => {
   spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(
-      new Response("Internal Server Error", { status: 500, statusText: "Internal Server Error" }),
+      new Response("Internal Server Error", {
+        status: 500,
+        statusText: "Internal Server Error",
+      }),
     ),
   );
 

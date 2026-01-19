@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.4.0...did-space-memory-v1.4.1-beta) (2026-01-19)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/core bumped to 1.72.1-beta
+    * @aigne/openai bumped to 0.16.17-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.70-beta
+
 ## [1.4.0](https://github.com/AIGNE-io/aigne-framework/compare/did-space-memory-v1.4.0-beta.24...did-space-memory-v1.4.0) (2026-01-16)
 
 

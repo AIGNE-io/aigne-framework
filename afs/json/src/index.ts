@@ -20,8 +20,7 @@ import type {
   AFSWriteOptions,
   AFSWriteResult,
 } from "@aigne/afs";
-import { camelizeSchema, optionalize } from "@aigne/core/loader/schema.js";
-import { checkArguments } from "@aigne/core/utils/type-utils.js";
+import { camelize, optionalize, zodParse } from "@aigne/afs-utils/zod/index.js";
 import { parse as parseYAML, stringify as stringifyYAML } from "yaml";
 import { z } from "zod";
 
@@ -46,7 +45,7 @@ export interface AFSJSONOptions {
   agentSkills?: boolean;
 }
 
-const afsJSONOptionsSchema = camelizeSchema(
+const afsJSONOptionsSchema = camelize(
   z.object({
     name: optionalize(z.string()),
     jsonPath: z.string().describe("The path to the JSON/YAML file to mount"),
@@ -84,7 +83,7 @@ export class AFSJSON implements AFSModule {
   private fileFormat: "json" | "yaml" = "json";
 
   constructor(public options: AFSJSONOptions & { cwd?: string }) {
-    checkArguments("AFSJSON", afsJSONOptionsSchema, options);
+    zodParse(afsJSONOptionsSchema, options);
 
     let jsonPath: string;
 

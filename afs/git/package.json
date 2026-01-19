@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@aigne/afs": "workspace:^",
-    "@aigne/core": "workspace:^",
+    "@aigne/afs-utils": "workspace:^",
     "simple-git": "^3.27.0",
     "zod": "^3.25.67"
   },

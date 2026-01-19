@@ -15,11 +15,12 @@ import type {
 } from "@aigne/afs";
 import {
   type AFSStorage,
-  SharedAFSStorage,
-  type SharedAFSStorageOptions,
+  AFSStorageSQLite,
+  type AFSStorageSQLiteOptions,
+  isAFSStorage,
 } from "@aigne/afs-history";
+import { camelize, optionalize } from "@aigne/afs-utils/zod/index.js";
 import { AIAgent, type Context } from "@aigne/core";
-import { camelizeSchema, optionalize } from "@aigne/core/loader/schema.js";
 import { logger } from "@aigne/core/utils/logger.js";
 import { v7 } from "@aigne/uuid";
 import { applyPatch, type Operation } from "fast-json-patch";
@@ -29,7 +30,7 @@ import { USER_PROFILE_MEMORY_EXTRACTOR_PROMPT } from "./prompt.js";
 import { userProfileJsonPathSchema, userProfileSchema } from "./schema.js";
 
 export interface UserProfileMemoryOptions {
-  storage?: SharedAFSStorage | SharedAFSStorageOptions;
+  storage?: AFSStorage | AFSStorageSQLiteOptions;
   description?: string;
   /**
    * Access mode for this module.
@@ -46,7 +47,7 @@ Use this memory to personalize responses and maintain context about the user acr
 The profile is continuously updated as new information is learned.
 `;
 
-const userProfileMemoryOptionsSchema = camelizeSchema(
+const userProfileMemoryOptionsSchema = camelize(
   z.object({
     description: optionalize(z.string().describe("Description of the user profile memory")),
     accessMode: optionalize(
@@ -66,10 +67,9 @@ export class UserProfileMemory implements AFSModule {
   }
 
   constructor(public options: UserProfileMemoryOptions) {
-    this.storage =
-      options?.storage instanceof SharedAFSStorage
-        ? options.storage.withModule(this)
-        : new SharedAFSStorage(options?.storage).withModule(this);
+    this.storage = isAFSStorage(options?.storage)
+      ? options.storage
+      : new AFSStorageSQLite(this, options?.storage);
 
     this.description = options.description || DEFAULT_DESCRIPTION;
     this.accessMode = options.accessMode ?? "readwrite";

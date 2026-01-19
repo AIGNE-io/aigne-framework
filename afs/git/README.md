@@ -20,6 +20,73 @@ npm install @aigne/afs-git
 
 ## Usage
 
+### Remote Repository
+
+Mount a remote Git repository by cloning it to a temporary directory or a specified path:
+
+```typescript
+import { AFS } from "@aigne/afs";
+import { AFSGit } from "@aigne/afs-git";
+
+const afs = new AFS();
+
+// Clone and mount a remote repository (clones to temp directory)
+const gitRemote = new AFSGit({
+  remoteUrl: 'https://github.com/user/repo.git',
+  depth: 1,              // Shallow clone
+  branches: ['main'],    // Single branch = --single-branch optimization
+  accessMode: 'readonly'
+});
+
+afs.mount(gitRemote);
+
+// Access files from remote repository
+const content = await afs.read('/modules/git/main/README.md');
+
+// Cleanup when done (removes cloned temp directory)
+await gitRemote.cleanup();
+```
+
+#### Private Repository with Authentication
+
+```typescript
+const gitRemote = new AFSGit({
+  remoteUrl: 'https://github.com/user/private-repo.git',
+  depth: 1,
+  cloneOptions: {
+    auth: {
+      username: 'your-username',
+      password: process.env.GITHUB_TOKEN  // Use personal access token
+    }
+  }
+});
+```
+
+#### Use Existing or Custom Clone Path
+
+If you already have a local clone or want to specify where to clone:
+
+```typescript
+const gitRemote = new AFSGit({
+  remoteUrl: 'https://github.com/user/repo.git',
+  repoPath: '/path/to/clone',  // Clone to this path if doesn't exist
+  autoCleanup: false            // Don't delete on cleanup()
+});
+```
+
+#### Remote Operations
+
+```typescript
+// Fetch latest changes from remote
+await gitRemote.fetch();
+
+// Pull latest changes for current branch
+await gitRemote.pull();
+
+// Push local changes (if accessMode is 'readwrite')
+await gitRemote.push();
+```
+
 ### Basic Setup (Read-Only)
 
 ```typescript
@@ -28,11 +95,13 @@ import { AFSGit } from "@aigne/afs-git";
 
 const afs = new AFS();
 
-// Mount a git repository in read-only mode
-afs.mount(new AFSGit({
+// Mount a local git repository in read-only mode
+const git = new AFSGit({
   repoPath: '/path/to/repo',
   accessMode: 'readonly'  // default
-}));
+});
+
+afs.mount(git);
 ```
 
 ### Path Structure
@@ -112,6 +181,7 @@ await afs.rename('/modules/git/main/old.txt', '/modules/git/main/new.txt');
 ### Advanced Configuration
 
 ```typescript
+// Local repository with advanced options
 const afsGit = new AFSGit({
   repoPath: '/path/to/repo',
   name: 'my-repo',
@@ -133,6 +203,35 @@ const afsGit = new AFSGit({
 
 // Cleanup worktrees when done
 await afsGit.cleanup();
+```
+
+```typescript
+// Remote repository with all options
+const afsGit = new AFSGit({
+  remoteUrl: 'https://github.com/user/repo.git',
+  repoPath: '/custom/clone/path',  // Optional: specify clone location
+  name: 'my-remote-repo',
+  description: 'Remote repository',
+
+  // Clone options
+  depth: 1,                         // Shallow clone
+  branches: ['main'],               // Single branch = --single-branch optimization
+                                    // Multiple: ['main', 'develop'] = clone all, filter access
+
+  // Access control
+  accessMode: 'readonly',
+
+  // Auto cleanup
+  autoCleanup: true,                // Remove clone on cleanup()
+
+  // Authentication for private repos
+  cloneOptions: {
+    auth: {
+      username: 'user',
+      password: process.env.GIT_TOKEN
+    }
+  }
+});
 ```
 
 ## How It Works
@@ -180,6 +279,50 @@ interface AFSGitOptions {
 }
 ```
 
+### Remote Repository Options
+
+When using `remoteUrl`, additional options are available:
+
+```typescript
+interface AFSGitOptions {
+  // Either repoPath or remoteUrl is required
+  repoPath?: string;             // Local repository path
+  remoteUrl?: string;            // Remote repository URL (https or git)
+
+  // Basic options
+  name?: string;                 // Module name (default: repo basename)
+  description?: string;          // Module description
+  branches?: string[];           // Branch access control & clone optimization
+                                 // Single: ['main'] = --single-branch clone
+                                 // Multiple: ['main', 'dev'] = clone all, filter access
+  accessMode?: 'readonly' | 'readwrite';  // Default: 'readonly'
+
+  // Commit options
+  autoCommit?: boolean;          // Auto-commit changes (default: false)
+  commitAuthor?: {               // Author for commits
+    name: string;
+    email: string;
+  };
+
+  // Remote clone options (only used with remoteUrl)
+  depth?: number;                // Clone depth for shallow clone (default: 1)
+  autoCleanup?: boolean;         // Auto cleanup cloned repo (default: true)
+  cloneOptions?: {
+    auth?: {                     // Authentication for private repos
+      username?: string;
+      password?: string;         // Use personal access token
+    };
+  };
+}
+```
+
+**Note:** When `remoteUrl` is provided:
+- If `repoPath` is not specified, clones to a temporary directory
+- If `repoPath` is specified and doesn't exist, clones to that path
+- If `repoPath` exists, uses the existing clone
+- `autoCleanup` only applies when repository was auto-cloned to temp directory
+- `branches` with single element uses `--single-branch` for faster clone
+
 ## Performance
 
 - **Read operations**: Very fast, uses direct git commands
@@ -196,16 +339,19 @@ interface AFSGitOptions {
 
 ## Example: AI Agent Code Review
 
+### Review Local Repository
+
 ```typescript
 import { AIGNE } from "@aigne/core";
 import { AFS } from "@aigne/afs";
 import { AFSGit } from "@aigne/afs-git";
 
 const afs = new AFS();
-afs.mount(new AFSGit({
+const git = new AFSGit({
   repoPath: process.cwd(),
   accessMode: 'readonly'
-}));
+});
+afs.mount(git);
 
 const aigne = new AIGNE({});
 
@@ -220,6 +366,39 @@ const agent = AIAgent.from({
 await aigne.invoke(agent, {
   message: "Review the authentication code in src/auth/"
 });
+```
+
+### Review Remote Repository
+
+```typescript
+import { AIGNE } from "@aigne/core";
+import { AFS } from "@aigne/afs";
+import { AFSGit } from "@aigne/afs-git";
+
+const afs = new AFS();
+
+// Clone and mount remote repository
+const git = new AFSGit({
+  remoteUrl: 'https://github.com/user/project.git',
+  depth: 1,
+  branches: ['main']
+});
+afs.mount(git);
+
+const aigne = new AIGNE({});
+
+const agent = AIAgent.from({
+  name: "CodeReviewer",
+  instructions: "Review open source code and provide feedback",
+  afs
+});
+
+await aigne.invoke(agent, {
+  message: "Analyze the security of the authentication implementation"
+});
+
+// Cleanup cloned repository
+await git.cleanup();
 ```
 
 ## License

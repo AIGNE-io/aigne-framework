@@ -43,8 +43,11 @@ export OPENAI_API_KEY=YOUR_OPENAI_API_KEY
 # Mount current Git repository (read-only by default)
 npx -y @aigne/example-afs-git --interactive
 
-# Mount a specific repository
+# Mount a specific local repository
 npx -y @aigne/example-afs-git --path /path/to/repo --interactive
+
+# Mount a remote Git repository
+npx -y @aigne/example-afs-git --url https://github.com/user/repo.git --interactive
 
 # Ask a specific question
 npx -y @aigne/example-afs-git --input "What files changed in the last commit on main?"
@@ -139,8 +142,11 @@ pnpm install
 # Run with current repository (read-only by default)
 pnpm start
 
-# Run with a specific repository
+# Run with a specific local repository
 pnpm start --path /path/to/repo
+
+# Run with a remote repository
+pnpm start --url https://github.com/user/repo.git
 
 # Run in interactive chat mode
 pnpm start --interactive
@@ -159,12 +165,15 @@ pnpm start --access-mode readwrite --interactive
 
 | Option | Description | Default | Example |
 |--------|-------------|---------|---------|
-| `--path` | Path to the git repository | Current directory | `--path /path/to/repo` |
+| `--path` | Path to the local git repository | Current directory | `--path /path/to/repo` |
+| `--url` | URL of remote git repository (clones automatically) | - | `--url https://github.com/user/repo.git` |
 | `--branches` | Comma-separated list of branches to access | All branches | `--branches main,develop` |
 | `--access-mode` | Access mode: `readonly` or `readwrite` | `readonly` | `--access-mode readwrite` |
 | `--auto-commit` | Automatically commit changes (requires `readwrite` mode) | `false` | `--auto-commit` |
 | `--interactive` | Run in interactive chat mode | `false` | `--interactive` |
 | `--input` | Single question to ask | - | `--input "What branches exist?"` |
+
+**Note:** Either `--path` or `--url` must be provided. When using `--url`, the repository is cloned to a temporary directory automatically.
 
 ## How It Works: 3 Simple Steps
 
@@ -173,10 +182,18 @@ pnpm start --access-mode readwrite --interactive
 ```typescript
 import { AFSGit } from "@aigne/afs-git";
 
+// Option 1: Mount a local repository
 const afsGit = new AFSGit({
   repoPath: process.cwd(),
   accessMode: 'readonly',  // or 'readwrite' for modifications
   branches: ['main', 'develop']  // optional: limit branches
+});
+
+// Option 2: Clone and mount a remote repository
+const afsGitRemote = new AFSGit({
+  remoteUrl: 'https://github.com/user/repo.git',
+  branches: ['main'],  // single branch = optimized clone
+  depth: 1,  // shallow clone (faster)
 });
 ```
 
@@ -234,6 +251,9 @@ npx -y @aigne/example-afs-git --input "Find all TODO comments in the main branch
 # Code review
 npx -y @aigne/example-afs-git --input "Review the authentication code in src/auth/"
 
+# Explore a remote repository
+npx -y @aigne/example-afs-git --url https://github.com/octocat/Hello-World.git --input "What's in this repository?"
+
 # Interactive mode - ask follow-up questions
 npx -y @aigne/example-afs-git --interactive
 ```
@@ -247,6 +267,18 @@ npx -y @aigne/example-afs-git --interactive
 - "What TypeScript files changed recently?"
 
 ## Use Cases
+
+### Explore Remote Repositories
+Analyze any public GitHub repository without cloning manually:
+```typescript
+const afs = new AFS()
+  .mount(new AFSGit({
+    remoteUrl: 'https://github.com/octocat/Hello-World.git',
+    branches: ['master'],  // single branch for fast clone
+    depth: 1  // shallow clone
+  }));
+// Ask: "What's the structure of this repository?"
+```
 
 ### Code Review Assistance
 Let AI help review code across branches:
@@ -323,6 +355,18 @@ const afs = new AFS()
 ```
 
 ## Advanced Features
+
+### Remote Repository Cloning
+Automatically clone and mount remote repositories:
+```typescript
+const afsGit = new AFSGit({
+  remoteUrl: 'https://github.com/user/repo.git',
+  branches: ['main'],  // Single branch = --single-branch optimization
+  depth: 1,  // Shallow clone for faster setup
+  repoPath: './cache/repo'  // Optional: specify clone location
+});
+// Without repoPath, clones to temp directory automatically
+```
 
 ### Branch Filtering
 Only expose specific branches:

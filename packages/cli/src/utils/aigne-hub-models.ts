@@ -1,10 +1,5 @@
-import { fetch as coreFetch } from "@aigne/core/utils/fetch.js";
+import { fetch } from "@aigne/core/utils/fetch.js";
 import { joinURL } from "ufo";
-
-// Exported for testing - allows spyOn to mock the fetch function without affecting other tests
-export const hubModelsFetcher = {
-  fetch: coreFetch,
-};
 
 export interface HubModel {
   id: string; // provider/model format
@@ -70,7 +65,7 @@ export async function checkModelAvailability(options: {
   const { baseUrl, apiKey, model } = options;
   const secureBaseUrl = baseUrl.replace(/^http:/, "https:");
 
-  const response = await hubModelsFetcher.fetch(
+  const response = await fetch(
     joinURL(secureBaseUrl, `/api/v2/status?model=${encodeURIComponent(model)}`),
     {
       headers: { Authorization: `Bearer ${apiKey}` },
@@ -109,7 +104,7 @@ export async function fetchHubModels(options: {
     params.set("model", search);
   }
 
-  const response = await hubModelsFetcher.fetch(
+  const response = await fetch(
     joinURL(secureBaseUrl, `/api/ai-providers/model-rates?${params.toString()}`),
     {
       headers: { Authorization: `Bearer ${apiKey}` },

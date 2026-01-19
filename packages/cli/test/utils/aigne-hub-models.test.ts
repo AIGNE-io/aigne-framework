@@ -1,5 +1,19 @@
-import { expect, spyOn, test } from "bun:test";
+import { afterEach, beforeEach, expect, spyOn, test } from "bun:test";
 import { checkModelAvailability, fetchHubModels } from "@aigne/cli/utils/aigne-hub-models.js";
+
+let fetchMock: ReturnType<typeof spyOn<typeof globalThis, "fetch">> | undefined;
+
+beforeEach(() => {
+  // Restore any previous mock before creating a new one
+  fetchMock?.mockRestore();
+  fetchMock = undefined;
+});
+
+afterEach(() => {
+  // Restore fetch mock after each test
+  fetchMock?.mockRestore();
+  fetchMock = undefined;
+});
 
 const mockModelRatesResponse = {
   count: 5,
@@ -44,7 +58,7 @@ const mockModelRatesResponse = {
 };
 
 test("checkModelAvailability should return available=true when model is available", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify({ available: true }))),
   );
 
@@ -62,7 +76,7 @@ test("checkModelAvailability should return available=true when model is availabl
 });
 
 test("checkModelAvailability should return available=false when model is not available", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(
       new Response(
         JSON.stringify({
@@ -88,7 +102,7 @@ test("checkModelAvailability should return available=false when model is not ava
 });
 
 test("checkModelAvailability should convert http to https", async () => {
-  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify({ available: true }))),
   );
 
@@ -98,14 +112,14 @@ test("checkModelAvailability should convert http to https", async () => {
     model: "openai/gpt-4o",
   });
 
-  expect(fetchSpy).toHaveBeenCalledWith(
+  expect(fetchMock).toHaveBeenCalledWith(
     expect.stringContaining("https://hub.aigne.io"),
     expect.any(Object),
   );
 });
 
 test("checkModelAvailability should encode model name in URL", async () => {
-  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify({ available: true }))),
   );
 
@@ -115,14 +129,14 @@ test("checkModelAvailability should encode model name in URL", async () => {
     model: "openai/gpt-4o",
   });
 
-  expect(fetchSpy).toHaveBeenCalledWith(
+  expect(fetchMock).toHaveBeenCalledWith(
     expect.stringContaining("model=openai%2Fgpt-4o"),
     expect.any(Object),
   );
 });
 
 test("checkModelAvailability should throw error on non-2xx response", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response("Unauthorized", { status: 401, statusText: "Unauthorized" })),
   );
 
@@ -136,7 +150,7 @@ test("checkModelAvailability should throw error on non-2xx response", async () =
 });
 
 test("fetchHubModels should fetch and return available models", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify(mockModelRatesResponse))),
   );
 
@@ -157,7 +171,7 @@ test("fetchHubModels should fetch and return available models", async () => {
 });
 
 test("fetchHubModels should filter by type", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify(mockModelRatesResponse))),
   );
 
@@ -173,7 +187,7 @@ test("fetchHubModels should filter by type", async () => {
 });
 
 test("fetchHubModels should filter by type=image", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify(mockModelRatesResponse))),
   );
 
@@ -188,7 +202,7 @@ test("fetchHubModels should filter by type=image", async () => {
 });
 
 test("fetchHubModels should pass search keyword to API as model param", async () => {
-  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(
       new Response(
         JSON.stringify({
@@ -222,13 +236,16 @@ test("fetchHubModels should pass search keyword to API as model param", async ()
   });
 
   // Verify API was called with model param
-  expect(fetchSpy).toHaveBeenCalledWith(expect.stringContaining("model=gpt-4"), expect.any(Object));
+  expect(fetchMock).toHaveBeenCalledWith(
+    expect.stringContaining("model=gpt-4"),
+    expect.any(Object),
+  );
   expect(result).toHaveLength(2);
   expect(result.map((m) => m.model)).toEqual(["gpt-4o", "gpt-4o-mini"]);
 });
 
 test("fetchHubModels should not include model param when no search provided", async () => {
-  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify(mockModelRatesResponse))),
   );
 
@@ -238,14 +255,14 @@ test("fetchHubModels should not include model param when no search provided", as
   });
 
   // Verify API was called without model param - check the last call
-  const lastCallIndex = fetchSpy.mock.calls.length - 1;
-  const callUrl = fetchSpy.mock.calls[lastCallIndex]?.[0] as string;
+  const lastCallIndex = fetchMock.mock.calls.length - 1;
+  const callUrl = fetchMock.mock.calls[lastCallIndex]?.[0] as string;
   expect(callUrl).toContain("/api/ai-providers/model-rates");
   expect(callUrl).not.toContain("model=");
 });
 
 test("fetchHubModels should apply limit", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify(mockModelRatesResponse))),
   );
 
@@ -260,7 +277,7 @@ test("fetchHubModels should apply limit", async () => {
 
 test("fetchHubModels should combine type and search filters", async () => {
   // API returns filtered results by search, then we filter by type locally
-  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(
       new Response(
         JSON.stringify({
@@ -287,7 +304,7 @@ test("fetchHubModels should combine type and search filters", async () => {
     search: "claude",
   });
 
-  expect(fetchSpy).toHaveBeenCalledWith(
+  expect(fetchMock).toHaveBeenCalledWith(
     expect.stringContaining("model=claude"),
     expect.any(Object),
   );
@@ -297,7 +314,7 @@ test("fetchHubModels should combine type and search filters", async () => {
 
 test("fetchHubModels should return empty array when no models match", async () => {
   // API returns empty list when search doesn't match
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(
       new Response(
         JSON.stringify({
@@ -319,7 +336,7 @@ test("fetchHubModels should return empty array when no models match", async () =
 });
 
 test("fetchHubModels should include models with null status as available", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(
       new Response(
         JSON.stringify({
@@ -357,7 +374,7 @@ test("fetchHubModels should include models with null status as available", async
 });
 
 test("fetchHubModels should throw error on non-2xx response", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  fetchMock = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(
       new Response("Internal Server Error", {
         status: 500,

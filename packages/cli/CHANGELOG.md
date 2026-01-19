@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.59.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0...cli-v1.59.1-beta) (2026-01-17)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/aigne-hub bumped to 0.10.17-beta
+
 ## [1.59.0](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0-beta.31...cli-v1.59.0) (2026-01-16)
 
 

@@ -1,6 +1,6 @@
 import { OpenAIChatModel, type OpenAIChatModelOptions } from "@aigne/openai";
 
-const XAI_DEFAULT_CHAT_MODEL = "grok-2-latest";
+const XAI_DEFAULT_CHAT_MODEL = "grok-4-latest";
 const XAI_BASE_URL = "https://api.x.ai/v1";
 
 /**

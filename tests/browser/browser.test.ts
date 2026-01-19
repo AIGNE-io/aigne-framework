@@ -64,7 +64,7 @@ test.each<Readonly<[AIGNEHTTPClientInvokeOptions, keyof typeof browsers]>>(
       message: "Hello, How can I help you?",
     });
 
-    expect(modelProcessSpy.mock.lastCall?.[0].messages).toMatchSnapshot();
+    expect(modelProcessSpy.mock.calls.at(0)?.[0].messages).toMatchSnapshot();
 
     await server.stop(true);
   },

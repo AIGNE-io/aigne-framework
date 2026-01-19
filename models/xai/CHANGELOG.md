@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.63-beta](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.62...xai-v0.7.63-beta) (2026-01-17)
+
+
+### Bug Fixes
+
+* **models:** update default model to grok-4-latest for xai model ([1c9f69a](https://github.com/AIGNE-io/aigne-framework/commit/1c9f69a04cd245e6251f1946e3ad82eb830c6074))
+
 ## [0.7.62](https://github.com/AIGNE-io/aigne-framework/compare/xai-v0.7.62-beta.25...xai-v0.7.62) (2026-01-16)
 
 

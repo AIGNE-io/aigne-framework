@@ -67,7 +67,7 @@ test("checkModelAvailability should return available=true when model is availabl
   mockFetch.mockReturnValueOnce(Promise.resolve(new Response(JSON.stringify({ available: true }))));
 
   const result = await checkModelAvailability({
-    baseUrl: "https://hub.aigne.io",
+    baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
     model: "openai/gpt-4o",
   });
@@ -93,7 +93,7 @@ test("checkModelAvailability should return available=false when model is not ava
   );
 
   const result = await checkModelAvailability({
-    baseUrl: "https://hub.aigne.io",
+    baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
     model: "openai/gpt-99",
   });
@@ -109,13 +109,13 @@ test("checkModelAvailability should convert http to https", async () => {
   mockFetch.mockReturnValueOnce(Promise.resolve(new Response(JSON.stringify({ available: true }))));
 
   await checkModelAvailability({
-    baseUrl: "http://hub.aigne.io",
+    baseUrl: "http://hub.mock.aigne.io",
     apiKey: "test-key",
     model: "openai/gpt-4o",
   });
 
   expect(mockFetch).toHaveBeenCalledWith(
-    expect.stringContaining("https://hub.aigne.io"),
+    expect.stringContaining("https://hub.mock.aigne.io"),
     expect.any(Object),
   );
 });
@@ -124,7 +124,7 @@ test("checkModelAvailability should encode model name in URL", async () => {
   mockFetch.mockReturnValueOnce(Promise.resolve(new Response(JSON.stringify({ available: true }))));
 
   await checkModelAvailability({
-    baseUrl: "https://hub.aigne.io",
+    baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
     model: "openai/gpt-4o",
   });
@@ -142,7 +142,7 @@ test("checkModelAvailability should throw error on non-2xx response", async () =
 
   expect(
     checkModelAvailability({
-      baseUrl: "https://hub.aigne.io",
+      baseUrl: "https://hub.mock.aigne.io",
       apiKey: "invalid-key",
       model: "openai/gpt-4o",
     }),
@@ -155,7 +155,7 @@ test("fetchHubModels should fetch and return available models", async () => {
   );
 
   const result = await fetchHubModels({
-    baseUrl: "https://hub.aigne.io",
+    baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
   });
 
@@ -176,7 +176,7 @@ test("fetchHubModels should filter by type", async () => {
   );
 
   const result = await fetchHubModels({
-    baseUrl: "https://hub.aigne.io",
+    baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
     type: "chat",
   });
@@ -192,7 +192,7 @@ test("fetchHubModels should filter by type=image", async () => {
   );
 
   const result = await fetchHubModels({
-    baseUrl: "https://hub.aigne.io",
+    baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
     type: "image",
   });
@@ -230,7 +230,7 @@ test("fetchHubModels should pass search keyword to API as model param", async ()
   );
 
   const result = await fetchHubModels({
-    baseUrl: "https://hub.aigne.io",
+    baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
     search: "gpt-4",
   });
@@ -250,7 +250,7 @@ test("fetchHubModels should not include model param when no search provided", as
   );
 
   await fetchHubModels({
-    baseUrl: "https://hub.aigne.io",
+    baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
   });
 
@@ -267,7 +267,7 @@ test("fetchHubModels should apply limit", async () => {
   );
 
   const result = await fetchHubModels({
-    baseUrl: "https://hub.aigne.io",
+    baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
     limit: 2,
   });
@@ -298,7 +298,7 @@ test("fetchHubModels should combine type and search filters", async () => {
   );
 
   const result = await fetchHubModels({
-    baseUrl: "https://hub.aigne.io",
+    baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
     type: "chat",
     search: "claude",
@@ -327,7 +327,7 @@ test("fetchHubModels should return empty array when no models match", async () =
   );
 
   const result = await fetchHubModels({
-    baseUrl: "https://hub.aigne.io",
+    baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
     search: "nonexistent",
   });
@@ -364,7 +364,7 @@ test("fetchHubModels should include models with null status as available", async
   );
 
   const result = await fetchHubModels({
-    baseUrl: "https://hub.aigne.io",
+    baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
   });
 
@@ -385,7 +385,7 @@ test("fetchHubModels should throw error on non-2xx response", async () => {
 
   expect(
     fetchHubModels({
-      baseUrl: "https://hub.aigne.io",
+      baseUrl: "https://hub.mock.aigne.io",
       apiKey: "test-key",
     }),
   ).rejects.toThrow("500");

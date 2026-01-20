@@ -61,11 +61,12 @@ Usage:
     });
   }
 
-  async process(input: AFSRenameInput, _options: AgentInvokeOptions): Promise<AFSRenameOutput> {
+  async process(input: AFSRenameInput, options: AgentInvokeOptions): Promise<AFSRenameOutput> {
     if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
     const result = await this.afs.rename(input.oldPath, input.newPath, {
       overwrite: input.overwrite ?? false,
+      context: options.context,
     });
 
     return {

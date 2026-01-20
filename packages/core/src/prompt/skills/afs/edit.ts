@@ -67,7 +67,7 @@ Usage:
     });
   }
 
-  async process(input: AFSEditInput, _options: AgentInvokeOptions): Promise<AFSEditOutput> {
+  async process(input: AFSEditInput, options: AgentInvokeOptions): Promise<AFSEditOutput> {
     if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
     const { path, oldString, newString, replaceAll = false } = input;
@@ -76,7 +76,7 @@ Usage:
       throw new Error("oldString and newString must be different");
     }
 
-    const readResult = await this.afs.read(path);
+    const readResult = await this.afs.read(path, { context: options.context });
     if (!readResult.data?.content || typeof readResult.data.content !== "string") {
       throw new Error(`Cannot read file content from: ${path}`);
     }
@@ -103,9 +103,7 @@ Usage:
       ? originalContent.split(oldString).join(newString)
       : originalContent.replace(oldString, newString);
 
-    await this.afs.write(path, {
-      content: updatedContent,
-    });
+    await this.afs.write(path, { content: updatedContent }, { context: options.context });
 
     // Generate snippet around the edit location
     const snippet = this.extractSnippet(updatedContent, firstOccurrenceIndex, newString.length);

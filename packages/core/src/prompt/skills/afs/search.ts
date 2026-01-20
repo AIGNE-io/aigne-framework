@@ -79,10 +79,13 @@ Usage:
     });
   }
 
-  async process(input: AFSSearchInput, _options: AgentInvokeOptions): Promise<AFSSearchOutput> {
+  async process(input: AFSSearchInput, options: AgentInvokeOptions): Promise<AFSSearchOutput> {
     if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
-    const result = await this.afs.search(input.path, input.query, input.options);
+    const result = await this.afs.search(input.path, input.query, {
+      ...input.options,
+      context: options.context,
+    });
 
     return {
       status: "success",

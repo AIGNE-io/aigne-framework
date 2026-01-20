@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AFS } from "@aigne/afs";
-import { getAFSSkills } from "@aigne/core/prompt/skills/afs";
+import { getAFSSkills } from "@aigne/core/prompt/skills/afs/index.js";
 
 test("AFS'skill delete should invoke afs.delete", async () => {
   const afs = new AFS();
@@ -22,16 +22,12 @@ test("AFS'skill delete should invoke afs.delete", async () => {
     }
   `);
 
-  expect(deleteSpy.mock.calls).toMatchInlineSnapshot(`
-    [
-      [
-        "/foo/bar",
-        {
-          "recursive": false,
-        },
-      ],
-    ]
-  `);
+  expect(deleteSpy.mock.calls.length).toBe(1);
+  expect(deleteSpy.mock.calls[0]?.[0]).toBe("/foo/bar");
+  expect(deleteSpy.mock.calls[0]?.[1]?.recursive).toBe(false);
+  expect(deleteSpy.mock.calls[0]?.[1]?.context).toBeDefined();
+  expect(deleteSpy.mock.calls[0]?.[1]?.context?.id).toMatch(/^[0-9a-f-]+$/);
+  expect(deleteSpy.mock.calls[0]?.[1]?.context?.internal?.userContext).toBeDefined();
 });
 
 test("AFS'skill delete should handle recursive option", async () => {
@@ -46,14 +42,11 @@ test("AFS'skill delete should handle recursive option", async () => {
   assert(deleteSkill);
   await deleteSkill.invoke({ path: "/foo/bar", recursive: true });
 
-  expect(deleteSpy.mock.lastCall).toMatchInlineSnapshot(`
-    [
-      "/foo/bar",
-      {
-        "recursive": true,
-      },
-    ]
-  `);
+  expect(deleteSpy.mock.lastCall?.[0]).toBe("/foo/bar");
+  expect(deleteSpy.mock.lastCall?.[1]?.recursive).toBe(true);
+  expect(deleteSpy.mock.lastCall?.[1]?.context).toBeDefined();
+  expect(deleteSpy.mock.lastCall?.[1]?.context?.id).toMatch(/^[0-9a-f-]+$/);
+  expect(deleteSpy.mock.lastCall?.[1]?.context?.internal?.userContext).toBeDefined();
 });
 
 test("AFS'skill delete should delete file by default (non-recursive)", async () => {

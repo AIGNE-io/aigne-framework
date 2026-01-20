@@ -63,7 +63,7 @@ Usage:
     });
   }
 
-  async process(input: AFSWriteInput, _options: AgentInvokeOptions): Promise<AFSWriteOutput> {
+  async process(input: AFSWriteInput, options: AgentInvokeOptions): Promise<AFSWriteOutput> {
     if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
     const _result = await this.afs.write(
@@ -73,6 +73,7 @@ Usage:
       },
       {
         append: input.append ?? false,
+        context: options.context,
       },
     );
 

@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AFS } from "@aigne/afs";
-import { getAFSSkills } from "@aigne/core/prompt/skills/afs";
+import { getAFSSkills } from "@aigne/core/prompt/skills/afs/index.js";
 
 test("AFS'skill read should invoke afs.read", async () => {
   const afs = new AFS();
@@ -30,13 +30,11 @@ test("AFS'skill read should invoke afs.read", async () => {
     }
   `);
 
-  expect(readSpy.mock.calls).toMatchInlineSnapshot(`
-    [
-      [
-        "/foo",
-      ],
-    ]
-  `);
+  expect(readSpy.mock.calls.length).toBe(1);
+  expect(readSpy.mock.calls[0]?.[0]).toBe("/foo");
+  expect(readSpy.mock.calls[0]?.[1]?.context).toBeDefined();
+  expect(readSpy.mock.calls[0]?.[1]?.context?.id).toMatch(/^[0-9a-f-]+$/);
+  expect(readSpy.mock.calls[0]?.[1]?.context?.internal?.userContext).toBeDefined();
 });
 
 test("AFS'skill read should handle file not found", async () => {

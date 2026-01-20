@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AFS } from "@aigne/afs";
-import { getAFSSkills } from "@aigne/core/prompt/skills/afs";
+import { getAFSSkills } from "@aigne/core/prompt/skills/afs/index.js";
 
 test("AFS'skill exec should invoke afs.exec", async () => {
   const afs = new AFS();

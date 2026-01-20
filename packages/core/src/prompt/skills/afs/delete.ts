@@ -55,11 +55,12 @@ Usage:
     });
   }
 
-  async process(input: AFSDeleteInput, _options: AgentInvokeOptions): Promise<AFSDeleteOutput> {
+  async process(input: AFSDeleteInput, options: AgentInvokeOptions): Promise<AFSDeleteOutput> {
     if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
     const result = await this.afs.delete(input.path, {
       recursive: input.recursive ?? false,
+      context: options.context,
     });
 
     return {

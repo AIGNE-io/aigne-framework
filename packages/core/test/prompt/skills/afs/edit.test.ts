@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AFS } from "@aigne/afs";
-import { getAFSSkills } from "@aigne/core/prompt/skills/afs";
+import { getAFSSkills } from "@aigne/core/prompt/skills/afs/index.js";
 
 test("AFS edit should replace oldString with newString", async () => {
   const afs = new AFS();
@@ -38,13 +38,11 @@ test("AFS edit should replace oldString with newString", async () => {
        4| line 4"
   `);
 
-  expect(readSpy.mock.calls).toMatchInlineSnapshot(`
-    [
-      [
-        "/foo/test.txt",
-      ],
-    ]
-  `);
+  expect(readSpy.mock.calls.length).toBe(1);
+  expect(readSpy.mock.calls[0]?.[0]).toBe("/foo/test.txt");
+  expect(readSpy.mock.calls[0]?.[1]?.context).toBeDefined();
+  expect(readSpy.mock.calls[0]?.[1]?.context?.id).toMatch(/^[0-9a-f-]+$/);
+  expect(readSpy.mock.calls[0]?.[1]?.context?.internal?.userContext).toBeDefined();
 
   expect(writeSpy.mock.calls[0]?.[0]).toBe("/foo/test.txt");
   expect(writeSpy.mock.calls[0]?.[1]).toMatchObject({

@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AFS, type AFSEntry } from "@aigne/afs";
-import { getAFSSkills } from "@aigne/core/prompt/skills/afs";
+import { getAFSSkills } from "@aigne/core/prompt/skills/afs/index.js";
 
 test("AFS'skill search should invoke afs.search", async () => {
   const afs = new AFS();
@@ -37,15 +37,12 @@ test("AFS'skill search should invoke afs.search", async () => {
     }
   `);
 
-  expect(searchSpy.mock.calls).toMatchInlineSnapshot(`
-    [
-      [
-        "/foo/bar",
-        "test",
-        undefined,
-      ],
-    ]
-  `);
+  expect(searchSpy.mock.calls.length).toBe(1);
+  expect(searchSpy.mock.calls[0]?.[0]).toBe("/foo/bar");
+  expect(searchSpy.mock.calls[0]?.[1]).toBe("test");
+  expect(searchSpy.mock.calls[0]?.[2]?.context).toBeDefined();
+  expect(searchSpy.mock.calls[0]?.[2]?.context?.id).toMatch(/^[0-9a-f-]+$/);
+  expect(searchSpy.mock.calls[0]?.[2]?.context?.internal?.userContext).toBeDefined();
 });
 
 test("AFS'skill search should handle case-sensitive option", async () => {

@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AFS, type AFSEntry } from "@aigne/afs";
-import { getAFSSkills } from "@aigne/core/prompt/skills/afs";
+import { getAFSSkills } from "@aigne/core/prompt/skills/afs/index.js";
 
 test("AFS'skill list should invoke afs.list", async () => {
   const afs = new AFS();
@@ -23,17 +23,13 @@ test("AFS'skill list should invoke afs.list", async () => {
     }
   `);
 
-  expect(listSpy.mock.calls).toMatchInlineSnapshot(`
-    [
-      [
-        "/foo/bar",
-        {
-          "format": "simple-list",
-          "maxDepth": 2,
-        },
-      ],
-    ]
-  `);
+  expect(listSpy.mock.calls.length).toBe(1);
+  expect(listSpy.mock.calls[0]?.[0]).toBe("/foo/bar");
+  expect(listSpy.mock.calls[0]?.[1]?.format).toBe("simple-list");
+  expect(listSpy.mock.calls[0]?.[1]?.maxDepth).toBe(2);
+  expect(listSpy.mock.calls[0]?.[1]?.context).toBeDefined();
+  expect(listSpy.mock.calls[0]?.[1]?.context?.id).toMatch(/^[0-9a-f-]+$/);
+  expect(listSpy.mock.calls[0]?.[1]?.context?.internal?.userContext).toBeDefined();
 });
 
 test("AFS'skill list should use default maxDepth when not provided", async () => {
@@ -46,14 +42,11 @@ test("AFS'skill list should use default maxDepth when not provided", async () =>
   assert(list);
   await list.invoke({ path: "/foo/bar" });
 
-  expect(listSpy.mock.calls[0]).toMatchInlineSnapshot(`
-    [
-      "/foo/bar",
-      {
-        "format": "simple-list",
-      },
-    ]
-  `);
+  expect(listSpy.mock.calls[0]?.[0]).toBe("/foo/bar");
+  expect(listSpy.mock.calls[0]?.[1]?.format).toBe("simple-list");
+  expect(listSpy.mock.calls[0]?.[1]?.context).toBeDefined();
+  expect(listSpy.mock.calls[0]?.[1]?.context?.id).toMatch(/^[0-9a-f-]+$/);
+  expect(listSpy.mock.calls[0]?.[1]?.context?.internal?.userContext).toBeDefined();
 });
 
 test("AFS'skill list should return formatted tree structure", async () => {

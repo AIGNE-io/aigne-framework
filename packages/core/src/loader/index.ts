@@ -73,6 +73,7 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
       aigne.agents,
       aigne.skills,
       aigne.mcpServer?.agents,
+      aigne.cli?.init,
       aigne.cli?.chat,
       aigne.cli?.agents?.flatMap((i) => (typeof i === "string" ? i : flatCliAgents(i))),
     ).map((i) => nodejs.path.join(rootDir, i)),
@@ -115,6 +116,7 @@ export async function load(path: string, options: LoadOptions = {}): Promise<AIG
       agents: pickAgents(aigne.mcpServer?.agents ?? []),
     },
     cli: {
+      init: aigne.cli?.init ? pickAgents([aigne.cli.init])[0] : undefined,
       chat: aigne.cli?.chat ? pickAgents([aigne.cli.chat])[0] : undefined,
       agents: aigne.cli?.agents?.map(mapCliAgents),
     },
@@ -388,6 +390,7 @@ const aigneFileSchema = camelizeSchema(
     ),
     cli: optionalize(
       z.object({
+        init: optionalize(z.string()),
         chat: optionalize(z.string()),
         agents: optionalize(z.array(cliAgentSchema)),
       }),

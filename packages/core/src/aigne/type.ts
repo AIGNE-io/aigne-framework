@@ -1,6 +1,8 @@
 import type { Agent } from "../agents/agent.ts";
 
 export interface AIGNECLIAgents {
+  init?: Agent;
+
   chat?: Agent;
 
   agents?: AIGNECLIAgent[];

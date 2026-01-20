@@ -44,7 +44,7 @@ const mockModelRatesResponse = {
 };
 
 test("checkModelAvailability should return available=true when model is available", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify({ available: true }))),
   );
 
@@ -59,10 +59,12 @@ test("checkModelAvailability should return available=true when model is availabl
     available: true,
     error: undefined,
   });
+
+  fetchSpy.mockRestore();
 });
 
 test("checkModelAvailability should return available=false when model is not available", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(
       new Response(
         JSON.stringify({
@@ -85,6 +87,8 @@ test("checkModelAvailability should return available=false when model is not ava
     available: false,
     error: "No providers available",
   });
+
+  fetchSpy.mockRestore();
 });
 
 test("checkModelAvailability should convert http to https", async () => {
@@ -102,6 +106,8 @@ test("checkModelAvailability should convert http to https", async () => {
     expect.stringContaining("https://hub.mock.aigne.io"),
     expect.any(Object),
   );
+
+  fetchSpy.mockRestore();
 });
 
 test("checkModelAvailability should encode model name in URL", async () => {
@@ -119,24 +125,28 @@ test("checkModelAvailability should encode model name in URL", async () => {
     expect.stringContaining("model=openai%2Fgpt-4o"),
     expect.any(Object),
   );
+
+  fetchSpy.mockRestore();
 });
 
 test("checkModelAvailability should throw error on non-2xx response", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response("Unauthorized", { status: 401, statusText: "Unauthorized" })),
   );
 
-  expect(
+  await expect(
     checkModelAvailability({
       baseUrl: "https://hub.mock.aigne.io",
       apiKey: "invalid-key",
       model: "openai/gpt-4o",
     }),
   ).rejects.toThrow("401");
+
+  fetchSpy.mockRestore();
 });
 
 test("fetchHubModels should fetch and return available models", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify(mockModelRatesResponse))),
   );
 
@@ -154,10 +164,12 @@ test("fetchHubModels should fetch and return available models", async () => {
     type: "chat",
     available: true,
   });
+
+  fetchSpy.mockRestore();
 });
 
 test("fetchHubModels should filter by type", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify(mockModelRatesResponse))),
   );
 
@@ -170,10 +182,12 @@ test("fetchHubModels should filter by type", async () => {
   // Should only return chat models (excluding unavailable)
   expect(result).toHaveLength(3);
   expect(result.every((m) => m.type === "chat")).toBe(true);
+
+  fetchSpy.mockRestore();
 });
 
 test("fetchHubModels should filter by type=image", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify(mockModelRatesResponse))),
   );
 
@@ -185,6 +199,8 @@ test("fetchHubModels should filter by type=image", async () => {
 
   expect(result).toHaveLength(1);
   expect(result[0]?.id).toBe("openai/dall-e-3");
+
+  fetchSpy.mockRestore();
 });
 
 test("fetchHubModels should pass search keyword to API as model param", async () => {
@@ -225,6 +241,8 @@ test("fetchHubModels should pass search keyword to API as model param", async ()
   expect(fetchSpy).toHaveBeenCalledWith(expect.stringContaining("model=gpt-4"), expect.any(Object));
   expect(result).toHaveLength(2);
   expect(result.map((m) => m.model)).toEqual(["gpt-4o", "gpt-4o-mini"]);
+
+  fetchSpy.mockRestore();
 });
 
 test("fetchHubModels should not include model param when no search provided", async () => {
@@ -242,10 +260,12 @@ test("fetchHubModels should not include model param when no search provided", as
   const callUrl = fetchSpy.mock.calls[lastCallIndex]?.[0] as string;
   expect(callUrl).toContain("/api/ai-providers/model-rates");
   expect(callUrl).not.toContain("model=");
+
+  fetchSpy.mockRestore();
 });
 
 test("fetchHubModels should apply limit", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(new Response(JSON.stringify(mockModelRatesResponse))),
   );
 
@@ -256,6 +276,8 @@ test("fetchHubModels should apply limit", async () => {
   });
 
   expect(result).toHaveLength(2);
+
+  fetchSpy.mockRestore();
 });
 
 test("fetchHubModels should combine type and search filters", async () => {
@@ -293,11 +315,13 @@ test("fetchHubModels should combine type and search filters", async () => {
   );
   expect(result).toHaveLength(1);
   expect(result[0]?.id).toBe("anthropic/claude-3-5-sonnet");
+
+  fetchSpy.mockRestore();
 });
 
 test("fetchHubModels should return empty array when no models match", async () => {
   // API returns empty list when search doesn't match
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(
       new Response(
         JSON.stringify({
@@ -316,10 +340,12 @@ test("fetchHubModels should return empty array when no models match", async () =
   });
 
   expect(result).toHaveLength(0);
+
+  fetchSpy.mockRestore();
 });
 
 test("fetchHubModels should include models with null status as available", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(
       new Response(
         JSON.stringify({
@@ -354,10 +380,12 @@ test("fetchHubModels should include models with null status as available", async
   // Both models should be included (null status is treated as available)
   expect(result).toHaveLength(2);
   expect(result.map((m) => m.model)).toEqual(["gpt-4o", "gpt-null-status"]);
+
+  fetchSpy.mockRestore();
 });
 
 test("fetchHubModels should throw error on non-2xx response", async () => {
-  spyOn(globalThis, "fetch").mockReturnValueOnce(
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
     Promise.resolve(
       new Response("Internal Server Error", {
         status: 500,
@@ -366,10 +394,12 @@ test("fetchHubModels should throw error on non-2xx response", async () => {
     ),
   );
 
-  expect(
+  await expect(
     fetchHubModels({
       baseUrl: "https://hub.mock.aigne.io",
       apiKey: "test-key",
     }),
   ).rejects.toThrow("500");
+
+  fetchSpy.mockRestore();
 });

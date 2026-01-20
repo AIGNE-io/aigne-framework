@@ -1,6 +1,6 @@
 {
   "name": "@aigne/afs-json",
-  "version": "1.1.0",
+  "version": "1.2.0-beta",
   "description": "AIGNE AFS module for JSON and YAML file storage",
   "publishConfig": {
     "access": "public"

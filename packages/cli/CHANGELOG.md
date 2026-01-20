@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.60.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.1-beta...cli-v1.60.0-beta) (2026-01-20)
+
+
+### Features
+
+* **cli:** add init agent support for aigne.yaml#cli ([#929](https://github.com/AIGNE-io/aigne-framework/issues/929)) ([32249b3](https://github.com/AIGNE-io/aigne-framework/commit/32249b3f59b4c9b0cbece8c169c3c34529034ebc))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-explorer bumped to 1.2.0-beta
+    * @aigne/afs-history bumped to 1.3.0-beta
+    * @aigne/afs-local-fs bumped to 1.5.0-beta
+    * @aigne/agent-library bumped to 1.24.1-beta
+    * @aigne/agentic-memory bumped to 1.1.7-beta
+    * @aigne/aigne-hub bumped to 0.10.17-beta.1
+    * @aigne/core bumped to 1.73.0-beta
+    * @aigne/default-memory bumped to 1.4.1-beta
+    * @aigne/openai bumped to 0.16.17-beta
+    * @aigne/secrets bumped to 0.1.7-beta
+  * devDependencies
+    * @aigne/test-utils bumped to 0.5.70-beta
+
 ## [1.59.1-beta](https://github.com/AIGNE-io/aigne-framework/compare/cli-v1.59.0...cli-v1.59.1-beta) (2026-01-17)
 
 

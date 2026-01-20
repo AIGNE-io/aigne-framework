@@ -1,6 +1,6 @@
 {
   "name": "@aigne/afs-utils",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Utility functions for AIGNE AFS modules",
   "publishConfig": {
     "access": "public"

@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.73.0-beta](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0...core-v1.73.0-beta) (2026-01-20)
+
+
+### Features
+
+* **cli:** add init agent support for aigne.yaml#cli ([#929](https://github.com/AIGNE-io/aigne-framework/issues/929)) ([32249b3](https://github.com/AIGNE-io/aigne-framework/commit/32249b3f59b4c9b0cbece8c169c3c34529034ebc))
+
+
+### Bug Fixes
+
+* **core:** invoke afs methods with aigne context ([#930](https://github.com/AIGNE-io/aigne-framework/issues/930)) ([9cd7107](https://github.com/AIGNE-io/aigne-framework/commit/9cd7107e773112a625e6ca340ef862c7589c784e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @aigne/afs-history bumped to 1.3.0-beta
+
 ## [1.72.0](https://github.com/AIGNE-io/aigne-framework/compare/core-v1.72.0-beta.25...core-v1.72.0) (2026-01-16)
 
 

@@ -1,7 +1,7 @@
 import { expect, spyOn, test } from "bun:test";
 import assert from "node:assert";
 import { AFS } from "@aigne/afs";
-import { getAFSSkills } from "@aigne/core/prompt/skills/afs";
+import { getAFSSkills } from "@aigne/core/prompt/skills/afs/index.js";
 
 test("AFS'skill rename should invoke afs.rename", async () => {
   const afs = new AFS();
@@ -25,17 +25,13 @@ test("AFS'skill rename should invoke afs.rename", async () => {
     }
   `);
 
-  expect(renameSpy.mock.calls).toMatchInlineSnapshot(`
-    [
-      [
-        "/foo/old.txt",
-        "/foo/new.txt",
-        {
-          "overwrite": false,
-        },
-      ],
-    ]
-  `);
+  expect(renameSpy.mock.calls.length).toBe(1);
+  expect(renameSpy.mock.calls[0]?.[0]).toBe("/foo/old.txt");
+  expect(renameSpy.mock.calls[0]?.[1]).toBe("/foo/new.txt");
+  expect(renameSpy.mock.calls[0]?.[2]?.overwrite).toBe(false);
+  expect(renameSpy.mock.calls[0]?.[2]?.context).toBeDefined();
+  expect(renameSpy.mock.calls[0]?.[2]?.context?.id).toMatch(/^[0-9a-f-]+$/);
+  expect(renameSpy.mock.calls[0]?.[2]?.context?.internal?.userContext).toBeDefined();
 });
 
 test("AFS'skill rename should handle overwrite option", async () => {
@@ -54,15 +50,12 @@ test("AFS'skill rename should handle overwrite option", async () => {
     overwrite: true,
   });
 
-  expect(renameSpy.mock.lastCall).toMatchInlineSnapshot(`
-    [
-      "/foo/old.txt",
-      "/foo/new.txt",
-      {
-        "overwrite": true,
-      },
-    ]
-  `);
+  expect(renameSpy.mock.lastCall?.[0]).toBe("/foo/old.txt");
+  expect(renameSpy.mock.lastCall?.[1]).toBe("/foo/new.txt");
+  expect(renameSpy.mock.lastCall?.[2]?.overwrite).toBe(true);
+  expect(renameSpy.mock.lastCall?.[2]?.context).toBeDefined();
+  expect(renameSpy.mock.lastCall?.[2]?.context?.id).toMatch(/^[0-9a-f-]+$/);
+  expect(renameSpy.mock.lastCall?.[2]?.context?.internal?.userContext).toBeDefined();
 });
 
 test("AFS'skill rename should not overwrite by default", async () => {

@@ -89,12 +89,13 @@ Usage:
     return super.formatOutput(output);
   }
 
-  async process(input: AFSListInput, _options: AgentInvokeOptions): Promise<AFSListOutput> {
+  async process(input: AFSListInput, options: AgentInvokeOptions): Promise<AFSListOutput> {
     if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
     const { data, message } = await this.afs.list(input.path, {
       ...input.options,
       format: "simple-list",
+      context: options.context,
     });
 
     return {

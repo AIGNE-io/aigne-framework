@@ -83,10 +83,10 @@ Usage:
     return super.formatOutput({ ...output, data: output.data || null });
   }
 
-  async process(input: AFSReadInput, _options: AgentInvokeOptions): Promise<AFSReadOutput> {
+  async process(input: AFSReadInput, options: AgentInvokeOptions): Promise<AFSReadOutput> {
     if (!this.afs) throw new Error("AFS is not configured for this agent.");
 
-    const result = await this.afs.read(input.path);
+    const result = await this.afs.read(input.path, { context: options.context });
 
     if (!result.data?.content || typeof result.data.content !== "string") {
       return {

@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { AFS } from "@aigne/afs";
 import { AFSHistory } from "@aigne/afs-history";
-import { getAFSSystemPrompt } from "@aigne/core/prompt/prompts/afs-builtin-prompt";
+import { getAFSSystemPrompt } from "@aigne/core/prompt/prompts/afs-builtin-prompt.js";
 
 test("getAFSSystemPrompt should inject afs modules to the system prompt", async () => {
   const afs = new AFS({}).mount(new AFSHistory());

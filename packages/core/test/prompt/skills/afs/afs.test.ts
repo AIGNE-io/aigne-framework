@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { AFS } from "@aigne/afs";
-import { getAFSSkills } from "@aigne/core/prompt/skills/afs";
+import { getAFSSkills } from "@aigne/core/prompt/skills/afs/index.js";
 import zodToJsonSchema from "zod-to-json-schema";
 
 test("getAFSSkills should return all AFS skills", async () => {

@@ -54,6 +54,10 @@ test("checkModelAvailability should return available=true when model is availabl
     model: "openai/gpt-4o",
   });
 
+  console.log("[TEST 1] checkModelAvailability result:", JSON.stringify(result));
+  console.log("[TEST 1] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
+  console.log("[TEST 1] fetchSpy.mock.calls[0]:", fetchSpy.mock.calls[0]?.[0]);
+
   expect(result).toEqual({
     model: "openai/gpt-4o",
     available: true,
@@ -82,6 +86,10 @@ test("checkModelAvailability should return available=false when model is not ava
     model: "openai/gpt-99",
   });
 
+  console.log("[TEST 2] checkModelAvailability result:", JSON.stringify(result));
+  console.log("[TEST 2] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
+  console.log("[TEST 2] fetchSpy.mock.calls[0]:", fetchSpy.mock.calls[0]?.[0]);
+
   expect(result).toEqual({
     model: "openai/gpt-99",
     available: false,
@@ -102,6 +110,9 @@ test("checkModelAvailability should convert http to https", async () => {
     model: "openai/gpt-4o",
   });
 
+  console.log("[TEST 3] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
+  console.log("[TEST 3] fetchSpy.mock.calls[0]:", fetchSpy.mock.calls[0]?.[0]);
+
   expect(fetchSpy).toHaveBeenCalledWith(
     expect.stringContaining("https://hub.mock.aigne.io"),
     expect.any(Object),
@@ -121,6 +132,9 @@ test("checkModelAvailability should encode model name in URL", async () => {
     model: "openai/gpt-4o",
   });
 
+  console.log("[TEST 4] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
+  console.log("[TEST 4] fetchSpy.mock.calls[0]:", fetchSpy.mock.calls[0]?.[0]);
+
   expect(fetchSpy).toHaveBeenCalledWith(
     expect.stringContaining("model=openai%2Fgpt-4o"),
     expect.any(Object),
@@ -134,6 +148,11 @@ test("checkModelAvailability should throw error on non-2xx response", async () =
     Promise.resolve(new Response("Unauthorized", { status: 401, statusText: "Unauthorized" })),
   );
 
+  console.log(
+    "[TEST 5] Before checkModelAvailability, fetchSpy.mock.calls.length:",
+    fetchSpy.mock.calls.length,
+  );
+
   await expect(
     checkModelAvailability({
       baseUrl: "https://hub.mock.aigne.io",
@@ -141,6 +160,9 @@ test("checkModelAvailability should throw error on non-2xx response", async () =
       model: "openai/gpt-4o",
     }),
   ).rejects.toThrow("401");
+
+  console.log("[TEST 5] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
+  console.log("[TEST 5] fetchSpy.mock.calls[0]:", fetchSpy.mock.calls[0]?.[0]);
 
   fetchSpy.mockRestore();
 });
@@ -154,6 +176,10 @@ test("fetchHubModels should fetch and return available models", async () => {
     baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
   });
+
+  console.log("[TEST 6] fetchHubModels result length:", result.length);
+  console.log("[TEST 6] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
+  console.log("[TEST 6] fetchSpy.mock.calls[0]:", fetchSpy.mock.calls[0]?.[0]);
 
   // Should exclude unavailable models
   expect(result).toHaveLength(4);
@@ -179,6 +205,9 @@ test("fetchHubModels should filter by type", async () => {
     type: "chat",
   });
 
+  console.log("[TEST 7] fetchHubModels result length:", result.length);
+  console.log("[TEST 7] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
+
   // Should only return chat models (excluding unavailable)
   expect(result).toHaveLength(3);
   expect(result.every((m) => m.type === "chat")).toBe(true);
@@ -196,6 +225,9 @@ test("fetchHubModels should filter by type=image", async () => {
     apiKey: "test-key",
     type: "image",
   });
+
+  console.log("[TEST 8] fetchHubModels result length:", result.length);
+  console.log("[TEST 8] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
 
   expect(result).toHaveLength(1);
   expect(result[0]?.id).toBe("openai/dall-e-3");
@@ -237,6 +269,13 @@ test("fetchHubModels should pass search keyword to API as model param", async ()
     search: "gpt-4",
   });
 
+  console.log(
+    "[TEST 9] fetchHubModels result:",
+    result.map((m) => m.model),
+  );
+  console.log("[TEST 9] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
+  console.log("[TEST 9] fetchSpy.mock.calls[0]:", fetchSpy.mock.calls[0]?.[0]);
+
   // Verify API was called with model param
   expect(fetchSpy).toHaveBeenCalledWith(expect.stringContaining("model=gpt-4"), expect.any(Object));
   expect(result).toHaveLength(2);
@@ -254,6 +293,12 @@ test("fetchHubModels should not include model param when no search provided", as
     baseUrl: "https://hub.mock.aigne.io",
     apiKey: "test-key",
   });
+
+  console.log("[TEST 10] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
+  console.log(
+    "[TEST 10] All calls:",
+    fetchSpy.mock.calls.map((c) => c[0]),
+  );
 
   // Verify API was called without model param - check the last call
   const lastCallIndex = fetchSpy.mock.calls.length - 1;
@@ -274,6 +319,9 @@ test("fetchHubModels should apply limit", async () => {
     apiKey: "test-key",
     limit: 2,
   });
+
+  console.log("[TEST 11] fetchHubModels result length:", result.length);
+  console.log("[TEST 11] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
 
   expect(result).toHaveLength(2);
 
@@ -309,6 +357,10 @@ test("fetchHubModels should combine type and search filters", async () => {
     search: "claude",
   });
 
+  console.log("[TEST 12] fetchHubModels result:", result);
+  console.log("[TEST 12] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
+  console.log("[TEST 12] fetchSpy.mock.calls[0]:", fetchSpy.mock.calls[0]?.[0]);
+
   expect(fetchSpy).toHaveBeenCalledWith(
     expect.stringContaining("model=claude"),
     expect.any(Object),
@@ -338,6 +390,9 @@ test("fetchHubModels should return empty array when no models match", async () =
     apiKey: "test-key",
     search: "nonexistent",
   });
+
+  console.log("[TEST 13] fetchHubModels result length:", result.length);
+  console.log("[TEST 13] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
 
   expect(result).toHaveLength(0);
 
@@ -377,6 +432,12 @@ test("fetchHubModels should include models with null status as available", async
     apiKey: "test-key",
   });
 
+  console.log(
+    "[TEST 14] fetchHubModels result:",
+    result.map((m) => m.model),
+  );
+  console.log("[TEST 14] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
+
   // Both models should be included (null status is treated as available)
   expect(result).toHaveLength(2);
   expect(result.map((m) => m.model)).toEqual(["gpt-4o", "gpt-null-status"]);
@@ -394,12 +455,20 @@ test("fetchHubModels should throw error on non-2xx response", async () => {
     ),
   );
 
+  console.log(
+    "[TEST 15] Before fetchHubModels, fetchSpy.mock.calls.length:",
+    fetchSpy.mock.calls.length,
+  );
+
   await expect(
     fetchHubModels({
       baseUrl: "https://hub.mock.aigne.io",
       apiKey: "test-key",
     }),
   ).rejects.toThrow("500");
+
+  console.log("[TEST 15] fetchSpy.mock.calls.length:", fetchSpy.mock.calls.length);
+  console.log("[TEST 15] fetchSpy.mock.calls[0]:", fetchSpy.mock.calls[0]?.[0]);
 
   fetchSpy.mockRestore();
 });

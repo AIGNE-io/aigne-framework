@@ -6,6 +6,7 @@ import type { CommandModule } from "yargs";
 import { isTest } from "../utils/aigne-hub/constants.js";
 import { connectToAIGNEHub } from "../utils/aigne-hub/credential.js";
 import getSecretStore from "../utils/aigne-hub/store/index.js";
+import { checkModelAvailability, fetchHubModels } from "../utils/aigne-hub-models.js";
 import { getUserInfo } from "../utils/aigne-hub-user.js";
 import { getUrlOrigin } from "../utils/get-url-origin.js";
 
@@ -177,6 +178,54 @@ export function createHubCommand(): CommandModule {
         .command("use", "Switch to a different AIGNE Hub", useHub)
         .command(["status", "st"], "Show details of a connected hub", showInfo)
         .command(["remove", "rm"], "Remove a connected hub", removeHub)
+        .command({
+          command: "models <command>",
+          describe: "Query available models on the connected AIGNE Hub",
+          builder: (yargs) =>
+            yargs
+              .command({
+                command: "check <model>",
+                describe: "Check if a specific model is available",
+                builder: (yargs) =>
+                  yargs.positional("model", {
+                    type: "string",
+                    describe: "Model ID (format: provider/model-name)",
+                    demandOption: true,
+                  }),
+                handler: (args) => checkModel(args.model as string),
+              })
+              .command({
+                command: "list",
+                describe: "List available models with optional filters",
+                builder: (yargs) =>
+                  yargs
+                    .option("type", {
+                      alias: "t",
+                      type: "string",
+                      choices: ["chat", "image", "video", "embedding"] as const,
+                      describe: "Filter by model type",
+                    })
+                    .option("search", {
+                      alias: "s",
+                      type: "string",
+                      describe: "Search by model name keyword",
+                    })
+                    .option("limit", {
+                      alias: "l",
+                      type: "number",
+                      default: 20,
+                      describe: "Limit number of results",
+                    }),
+                handler: (args) =>
+                  listModels({
+                    type: args.type as string | undefined,
+                    search: args.search as string | undefined,
+                    limit: args.limit as number | undefined,
+                  }),
+              })
+              .demandCommand(1, "Please specify a models command: check or list"),
+          handler: () => {},
+        })
         .demandCommand(1, "Please provide a valid hub command"),
     handler: () => {},
   };
@@ -376,6 +425,72 @@ async function deleteHub(url: string) {
     console.log(chalk.green(`✓ Hub ${getUrlOrigin(url)} removed`));
   } catch {
     console.error(chalk.red("✗ Failed to delete hub"));
+  }
+}
+
+async function checkModel(model: string) {
+  const secretStore = await getSecretStore();
+  const defaultHost = await secretStore.getDefault();
+
+  if (!defaultHost?.AIGNE_HUB_API_URL || !defaultHost?.AIGNE_HUB_API_KEY) {
+    console.log(chalk.yellow("No AIGNE Hub connected."));
+    console.log("Use 'aigne hub connect' to connect to a hub.");
+    process.exitCode = 2;
+    return;
+  }
+
+  try {
+    const result = await checkModelAvailability({
+      baseUrl: defaultHost.AIGNE_HUB_API_URL,
+      apiKey: defaultHost.AIGNE_HUB_API_KEY,
+      model,
+    });
+
+    if (result.available) {
+      console.log(chalk.green(`✓ ${model} is available`));
+      process.exitCode = 0;
+    } else {
+      console.log(chalk.red(`✗ ${model} is not available`));
+      process.exitCode = 1;
+    }
+  } catch (error: any) {
+    console.error(chalk.red("✗ Failed to check model:"), error.message);
+    process.exitCode = 2;
+  }
+}
+
+async function listModels(args: { type?: string; search?: string; limit?: number }) {
+  const secretStore = await getSecretStore();
+  const defaultHost = await secretStore.getDefault();
+
+  if (!defaultHost?.AIGNE_HUB_API_URL || !defaultHost?.AIGNE_HUB_API_KEY) {
+    console.log(chalk.yellow("No AIGNE Hub connected."));
+    console.log("Use 'aigne hub connect' to connect to a hub.");
+    process.exitCode = 2;
+    return;
+  }
+
+  try {
+    const models = await fetchHubModels({
+      baseUrl: defaultHost.AIGNE_HUB_API_URL,
+      apiKey: defaultHost.AIGNE_HUB_API_KEY,
+      type: args.type,
+      search: args.search,
+      limit: args.limit,
+    });
+
+    if (models.length === 0) {
+      console.log(chalk.yellow("No models found matching the criteria."));
+      return;
+    }
+
+    for (const model of models) {
+      console.log(`${model.id} (${model.type})`);
+    }
+    console.log(`(${models.length} models)`);
+  } catch (error: any) {
+    console.error(chalk.red("✗ Failed to list models:"), error.message);
+    process.exitCode = 2;
   }
 }
 

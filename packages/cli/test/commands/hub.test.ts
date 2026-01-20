@@ -8,10 +8,14 @@ import { createHonoServer } from "../_mocks_/server.js";
 
 const mockOpen = mock(() => {});
 const mockInquirerPrompt = mock(() => {}) as any;
+const mockCheckModelAvailability = mock(() => {}) as any;
+const mockFetchHubModels = mock(() => {}) as any;
 
 describe("hub command", () => {
   afterEach(async () => {
     mockInquirerPrompt.mockClear();
+    mockCheckModelAvailability.mockClear();
+    mockFetchHubModels.mockClear();
   });
 
   mock.module("open", () => ({ default: mockOpen }));
@@ -28,6 +32,10 @@ describe("hub command", () => {
       profileLink: "https://test.com/profile",
       enableCredit: true,
     }),
+  }));
+  mock.module("../../src/utils/aigne-hub-models.ts", () => ({
+    checkModelAvailability: mockCheckModelAvailability,
+    fetchHubModels: mockFetchHubModels,
   }));
 
   describe("createHubCommand", () => {
@@ -206,6 +214,101 @@ describe("hub command", () => {
 
       const command = yargs().command(createHubCommand());
       await command.parseAsync(["hub", "status"]);
+    });
+  });
+
+  describe("hub models command", () => {
+    beforeEach(async () => {
+      await writeFile(
+        AIGNE_ENV_FILE,
+        stringify({
+          "hub.aigne.io": {
+            AIGNE_HUB_API_KEY: "test-key",
+            AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit",
+          },
+          default: {
+            AIGNE_HUB_API_URL: "https://hub.aigne.io/ai-kit",
+          },
+        }),
+      );
+    });
+
+    test("should handle models check command", async () => {
+      mockCheckModelAvailability.mockResolvedValue({
+        model: "openai/gpt-4o",
+        available: true,
+      });
+
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "models", "check", "openai/gpt-4o"]);
+
+      expect(mockCheckModelAvailability).toHaveBeenCalled();
+    });
+
+    test("should handle models list command", async () => {
+      mockFetchHubModels.mockResolvedValue([
+        {
+          id: "openai/gpt-4o",
+          provider: "openai",
+          model: "gpt-4o",
+          type: "chat",
+          available: true,
+        },
+      ]);
+
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "models", "list"]);
+
+      expect(mockFetchHubModels).toHaveBeenCalled();
+    });
+
+    test("should handle models list with type filter", async () => {
+      mockFetchHubModels.mockResolvedValue([]);
+
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "models", "list", "--type", "chat"]);
+
+      expect(mockFetchHubModels).toHaveBeenCalledWith(expect.objectContaining({ type: "chat" }));
+    });
+
+    test("should handle models list with search filter", async () => {
+      mockFetchHubModels.mockResolvedValue([]);
+
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "models", "list", "--search", "gpt"]);
+
+      expect(mockFetchHubModels).toHaveBeenCalledWith(expect.objectContaining({ search: "gpt" }));
+    });
+
+    test("should handle models list with limit", async () => {
+      mockFetchHubModels.mockResolvedValue([]);
+
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "models", "list", "--limit", "10"]);
+
+      expect(mockFetchHubModels).toHaveBeenCalledWith(expect.objectContaining({ limit: 10 }));
+    });
+  });
+
+  describe("hub models command without configuration", () => {
+    beforeEach(async () => {
+      await writeFile(AIGNE_ENV_FILE, stringify({}));
+    });
+
+    test("should show warning when no hub connected for check", async () => {
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "models", "check", "openai/gpt-4o"]);
+
+      // Should not call the API
+      expect(mockCheckModelAvailability).not.toHaveBeenCalled();
+    });
+
+    test("should show warning when no hub connected for list", async () => {
+      const command = yargs().command(createHubCommand());
+      await command.parseAsync(["hub", "models", "list"]);
+
+      // Should not call the API
+      expect(mockFetchHubModels).not.toHaveBeenCalled();
     });
   });
 });

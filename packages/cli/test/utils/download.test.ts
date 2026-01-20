@@ -11,16 +11,17 @@ test("downloadPackage should work", async () => {
   const dir = join(tmpdir(), randomUUID());
   await mkdir(dir, { recursive: true });
 
-  try {
-    spyOn(globalThis, "fetch").mockReturnValueOnce(
-      Promise.resolve(new Response(await mockAIGNEPackage())),
-    );
+  const fetchSpy = spyOn(globalThis, "fetch").mockReturnValueOnce(
+    Promise.resolve(new Response(await mockAIGNEPackage())),
+  );
 
+  try {
     await downloadAndExtract(url, dir);
 
     expect((await stat(join(dir, "aigne.yaml"))).isFile()).toBeTrue();
   } finally {
     await rm(dir, { recursive: true, force: true });
+    fetchSpy.mockRestore();
   }
 });
 
@@ -29,14 +30,16 @@ test("downloadPackage should raise error with custom message", async () => {
   const dir = join(tmpdir(), randomUUID());
   await mkdir(dir, { recursive: true });
 
+  const fetchSpy = spyOn(globalThis, "fetch");
+
   try {
-    spyOn(globalThis, "fetch").mockReturnValueOnce(Promise.reject(new Error("Network error")));
+    fetchSpy.mockReturnValueOnce(Promise.reject(new Error("Network error")));
 
     expect(downloadAndExtract(url, dir)).rejects.toMatchInlineSnapshot(
       `[Error: Fetch https://www.aigne.io/projects/xxx/test-package.tgz error: Network error]`,
     );
 
-    spyOn(globalThis, "fetch").mockReturnValueOnce(
+    fetchSpy.mockReturnValueOnce(
       Promise.resolve(new Response(null, { status: 404, statusText: "Not Found" })),
     );
 
@@ -44,20 +47,19 @@ test("downloadPackage should raise error with custom message", async () => {
       `[Error: Fetch https://www.aigne.io/projects/xxx/test-package.tgz error: 404 Not Found ]`,
     );
 
-    spyOn(globalThis, "fetch").mockReturnValueOnce(Promise.resolve(new Response(null)));
+    fetchSpy.mockReturnValueOnce(Promise.resolve(new Response(null)));
 
     expect(downloadAndExtract(url, dir)).rejects.toMatchInlineSnapshot(
       `[Error: Failed to download package from https://www.aigne.io/projects/xxx/test-package.tgz: Unexpected to get empty response]`,
     );
 
-    spyOn(globalThis, "fetch").mockReturnValueOnce(
-      Promise.resolve(new Response("invalid tgz file content")),
-    );
+    fetchSpy.mockReturnValueOnce(Promise.resolve(new Response("invalid tgz file content")));
 
     expect(downloadAndExtract(url, dir)).rejects.toMatchInlineSnapshot(
       `[Error: Failed to extract package from https://www.aigne.io/projects/xxx/test-package.tgz: TAR_BAD_ARCHIVE: Unrecognized archive format]`,
     );
   } finally {
     await rm(dir, { recursive: true, force: true });
+    fetchSpy.mockRestore();
   }
 });

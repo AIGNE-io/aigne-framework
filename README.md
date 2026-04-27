@@ -387,3 +387,44 @@ AIGNE Framework has a vibrant developer community offering various support chann
 
 * [Documentation Center](https://www.arcblock.io/docs/aigne-framework): Comprehensive official documentation to help developers get started quickly.
 * [Technical Forum](https://community.arcblock.io/discussions/boards/aigne): Exchange experiences with global developers and solve technical problems.
+
+## FAQ
+
+### General
+
+**What is AIGNE Framework?**
+AIGNE (pronounced "ay-jen") is a functional, composable, and TypeScript-first AI Agent framework. It provides AI Genesis Native Engineering — an open engineering paradigm for systems born with AI-native rules and brought to life through autonomous agents.
+
+**How do I install AIGNE?**
+```bash
+npm install @aigne/core
+```
+See the [Documentation Center](https://www.arcblock.io/docs/aigne-framework) for complete setup instructions.
+
+**What Node.js version is required?**
+Node.js 18+ is recommended for full ESM and top-level await support.
+
+### Architecture
+
+**What makes AIGNE different from other agent frameworks?**
+AIGNE uses a functional, composable architecture where agents are built from small, reusable primitives. Unlike imperative frameworks, AIGNE emphasizes:
+- Functional composition over class inheritance
+- TypeScript-first type safety
+- Modular design with clear separation of concerns
+
+**What is the "AI Genesis Native Engineering" paradigm?**
+AIGNE = AI Genesis Native Engineering — an approach where systems are designed from the ground up for AI-native rules, rather than retrofitting AI onto traditional architectures.
+
+### Development
+
+**How do I create a custom agent?**
+Extend the base agent class and implement the required methods. See the [contributing guidelines](./CONTRIBUTING.md) for the development workflow.
+
+**Can I use AIGNE with Python or other languages?**
+AIGNE is TypeScript-first, but you can interact with it via HTTP APIs or gRPC from any language that supports those protocols.
+
+**Where can I get help?**
+- [Documentation Center](https://www.arcblock.io/docs/aigne-framework)
+- [Technical Forum](https://community.arcblock.io/discussions/boards/aigne)
+- [GitHub Issues](https://github.com/AIGNE-io/aigne-framework/issues)
+

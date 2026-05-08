@@ -8,7 +8,7 @@
 
 [![GitHub star chart](https://img.shields.io/github/stars/AIGNE-io/aigne-framework?style=flat-square)](https://star-history.com/#AIGNE-io/aigne-framework)
 [![Open Issues](https://img.shields.io/github/issues-raw/AIGNE-io/aigne-framework?style=flat-square)](https://github.com/AIGNE-io/aigne-framework/issues)
-[![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graph/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
+[![codecov](https://codecov.io/gh/AIGNE-io/aigne-framework/graphs/badge.svg?token=DO07834RQL)](https://codecov.io/gh/AIGNE-io/aigne-framework)
 [![NPM Version](https://img.shields.io/npm/v/@aigne/core)](https://www.npmjs.com/package/@aigne/core)
 [![Elastic-2.0 licensed](https://img.shields.io/npm/l/@aigne/core)](https://github.com/AIGNE-io/aigne-framework/blob/main/LICENSE.md)
 
@@ -110,6 +110,85 @@ console.log(result2);
   <source srcset="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/assets/aigne.png" media="(prefers-color-scheme: light)">
   <img src="https://raw.githubusercontent.com/AIGNE-io/aigne-framework/main/aigne.png" alt="AIGNE Arch" />
 </picture>
+
+## ❓ FAQ
+
+### What does "AIGNE" mean and how do I pronounce it?
+
+AIGNE \[ ˈei dʒən ] is pronounced like "agent" without the "t". It comes from a medieval village in southern France, and in Old Irish it means "spirit" — a metaphor for agents that think and act.
+
+### How does AIGNE differ from other agent frameworks?
+
+AIGNE is **functional and composable** — unlike LangChain's chain-based approach or CrewAI's role orchestration:
+- Functional programming patterns with `AIAgent.from()` factory
+- Workflow operators: sequential, concurrent, routing, handoff, reflection
+- Built-in Agentic File System (AFS) for unified storage access
+- Deep MCP integration for external tools
+- Blocklet ecosystem for deployment
+
+### Which AI models are supported?
+
+AIGNE supports multiple providers through dedicated packages:
+- **OpenAI**: `@aigne/openai` - GPT-4, GPT-3.5
+- **Anthropic**: `@aigne/anthropic` - Claude 3.5 Sonnet, Claude 3 Opus
+- **Gemini**: `@aigne/gemini` - Google's Gemini models
+- **DeepSeek**: `@aigne/deepseek` - DeepSeek models
+- **Ollama**: `@aigne/ollama` - Local models via Ollama
+- **OpenRouter**: `@aigne/open-router` - Multi-provider gateway
+
+### What workflow patterns are available?
+
+7 built-in patterns for different scenarios:
+- **Sequential**: Step-by-step pipelines (content generation)
+- **Concurrency**: Parallel task processing (multi-dimensional analysis)
+- **Router**: Intelligent routing based on content type (customer service)
+- **Handoff**: Agent-to-agent transfer (expert collaboration)
+- **Reflection**: Self-improvement loops (code review)
+- **Code Execution**: Sandbox for dynamic code (data analysis)
+- **Group Chat**: Multi-agent message sharing
+
+### What is Agentic File System (AFS)?
+
+AFS is a virtual file system abstraction that gives agents unified access to:
+- **Local files**: Mount directories for file operations
+- **Conversation history**: Built-in memory tracking
+- **User profiles**: Personalization data storage
+- **MCP servers**: External services as file modules
+
+Agents use standard file APIs — no special code needed.
+
+### How do I integrate MCP tools?
+
+AIGNE has built-in MCP support:
+1. **Run MCP Server**: Build your own MCP server with AIGNE CLI
+2. **Connect MCP Servers**: Use external servers (Puppeteer, SQLite, GitHub)
+3. **Mount as AFS**: Mount MCP servers as file modules
+
+See [MCP Server Example](./examples/mcp-server/README.md) and [MCP Puppeteer Example](./examples/mcp-puppeteer/README.md).
+
+### Can agents execute code safely?
+
+Yes! The **Code Execution workflow** runs dynamically generated code in a secure sandbox:
+- Isolated execution environment
+- Automatic result extraction
+- Error handling and retry logic
+
+See [Code Execution Example](./examples/workflow-code-execution/README.md).
+
+### How do I deploy AIGNE applications?
+
+AIGNE integrates with **Blocklet ecosystem**:
+- Deploy via Blocklet platform
+- One-stop development and deployment solution
+- Automatic scaling and monitoring
+
+Alternatively, self-host in any Node.js environment.
+
+### Where can I get help?
+
+- **Documentation**: [AIGNE Framework Docs](https://www.arcblock.io/docs/aigne-framework)
+- **Community Forum**: [ArcBlock Community](https://community.arcblock.io/discussions/boards/aigne)
+- **Examples**: [examples/](./examples/README.md) directory
 
 ## Simplifying Agentic Workflows
 

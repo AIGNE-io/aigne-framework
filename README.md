@@ -387,3 +387,122 @@ AIGNE Framework has a vibrant developer community offering various support chann
 
 * [Documentation Center](https://www.arcblock.io/docs/aigne-framework): Comprehensive official documentation to help developers get started quickly.
 * [Technical Forum](https://community.arcblock.io/discussions/boards/aigne): Exchange experiences with global developers and solve technical problems.
+## FAQ
+
+### What is AIGNE Framework?
+
+AIGNE Framework [ˈei dʒən] is a **functional, composable, and TypeScript-first AI Agent framework** designed to simplify building modern AI applications. It combines functional programming, multiple AI model support, and modular design to help developers create scalable solutions. It's deeply integrated with ArcBlock's Blocklet ecosystem.
+
+### How does AIGNE compare to other frameworks?
+
+| Feature | AIGNE | LangGraph | CrewAI | LangChain |
+|:--------|:-----:|:---------:|:------:|:---------:|
+| TypeScript-first | ✅ | ❌ | ❌ | ❌ |
+| Functional composition | ✅ | ❌ | ❌ | ❌ |
+| Workflow patterns (8+) | ✅ | ✅ | ❌ | ✅ |
+| Multi-model support | ✅ | ✅ | ✅ | ✅ |
+| MCP integration | ✅ | ✅ | ❌ | ✅ |
+| Agentic File System | ✅ | ❌ | ❌ | ❌ |
+| Code execution sandbox | ✅ | ✅ | ❌ | ❌ |
+| Blocklet ecosystem | ✅ | ❌ | ❌ | ❌ |
+
+### What workflow patterns does AIGNE support?
+
+AIGNE provides **8 built-in workflow patterns** for different scenarios:
+
+1. **Router** — Intelligent routing based on content type
+2. **Sequential** — Step-by-step processing pipelines
+3. **Concurrency** — Parallel task execution
+4. **Handoff** — Seamless agent transitions
+5. **Reflection** — Self-improvement through evaluation
+6. **Orchestration** — Multi-agent coordination
+7. **Code Execution** — Dynamic code in sandbox
+8. **Group Chat** — Multi-agent messaging
+
+### What LLM providers does AIGNE support?
+
+AIGNE supports **multiple AI models** via built-in integrations:
+
+- **OpenAI** — GPT-4o, GPT-4-turbo, GPT-3.5-turbo
+- **Anthropic** — Claude 3.5 Sonnet, Claude 3 Opus
+- **Google** — Gemini 1.5 Pro, Gemini 1.5 Flash
+- **Amazon** — Nova models
+- **Custom** — Any OpenAI-compatible API
+
+Each model is configured via `OpenAIChatModel`, `GeminiChatModel`, `ClaudeChatModel`, etc.
+
+### How do I get started?
+
+**Prerequisites:** Node.js 20+
+
+```bash
+# Install
+npm install @aigne/core
+
+# Or with yarn/pnpm
+yarn add @aigne/core
+pnpm add @aigne/core
+```
+
+**Basic usage:**
+
+```typescript
+import { AIAgent, AIGNE } from "@aigne/core";
+import { OpenAIChatModel } from "@aigne/openai";
+
+const model = new OpenAIChatModel({ apiKey: process.env.OPENAI_API_KEY });
+
+const agent = AIAgent.from({
+  name: "MyAgent",
+  instructions: "You are a helpful assistant.",
+});
+
+const aigne = new AIGNE({ model });
+const result = await aigne.invoke(agent).invoke({ message: "Hello!" });
+```
+
+### What is Agentic File System (AFS)?
+
+AFS is a **virtual file system abstraction** that provides AI agents unified access to various storage backends:
+
+- **Local files** — Read/write project files
+- **Conversation history** — Persist chat context
+- **User profiles** — Store user preferences
+- **Custom backends** — Extend via AFS interface
+
+See [AFS Documentation](./afs/README.md) for details.
+
+### How does MCP integration work?
+
+AIGNE seamlessly integrates with **Model Context Protocol (MCP)** for external tools and services:
+
+```typescript
+// MCP tools surface in agent's tool list automatically
+const agent = AIAgent.from({
+  name: "MCPAgent",
+  instructions: "Use available tools to help users.",
+  skills: [mcpToolConnection], // Connect MCP server
+});
+```
+
+### What is the Blocklet ecosystem integration?
+
+AIGNE is closely integrated with **ArcBlock's Blocklet ecosystem**, providing:
+
+- **One-stop deployment** — Blocklet marketplace distribution
+- **Identity management** — DID-based authentication
+- **Cross-platform support** — Web, mobile, desktop
+- **Service discovery** — Blocklet registry integration
+
+### What license does AIGNE use?
+
+AIGNE Framework uses **Elastic-2.0 License** — allows commercial use with restrictions on competitive SaaS offerings. See [LICENSE.md](LICENSE.md) for details.
+
+### Where can I get help?
+
+- **Documentation** — [GitHub README](https://github.com/AIGNE-io/aigne-framework)
+- **Examples** — `examples/` directory with workflow patterns
+- **Issues** — [GitHub Issues](https://github.com/AIGNE-io/aigne-framework/issues)
+- **NPM Packages** — `@aigne/core`, `@aigne/openai`, etc.
+
+---

@@ -387,161 +387,122 @@ AIGNE Framework has a vibrant developer community offering various support chann
 
 * [Documentation Center](https://www.arcblock.io/docs/aigne-framework): Comprehensive official documentation to help developers get started quickly.
 * [Technical Forum](https://community.arcblock.io/discussions/boards/aigne): Exchange experiences with global developers and solve technical problems.
-## ❓ FAQ
+## FAQ
 
 ### What is AIGNE Framework?
 
-AIGNE Framework is a **functional, composable, TypeScript-first AI Agent framework** designed to simplify and accelerate building modern AI applications. It combines functional programming features, powerful AI capabilities, and modular design principles. The name comes from a medieval village in southern France, and in Old Irish, *aigne* means "spirit" — a metaphor for agents that think and act.
+AIGNE Framework [ˈei dʒən] is a **functional, composable, and TypeScript-first AI Agent framework** designed to simplify building modern AI applications. It combines functional programming, multiple AI model support, and modular design to help developers create scalable solutions. It's deeply integrated with ArcBlock's Blocklet ecosystem.
 
-### How does AIGNE compare to other AI agent frameworks?
+### How does AIGNE compare to other frameworks?
 
-| Feature | AIGNE | LangChain | CrewAI |
-|---------|-------|-----------|--------|
-| **Design Philosophy** | Functional, composable | Chain-based | Role-playing |
-| **Primary Language** | TypeScript-first | Python-first | Python-only |
-| **Workflow Patterns** | Sequential, Concurrent, Router, Handoff, Reflection, Orchestration, Code Execution, Group Chat | Sequential chains | Role-based teams |
-| **File System** | Agentic File System (AFS) | None built-in | None built-in |
-| **MCP Integration** | Built-in MCP server + client support | Limited | Limited |
-| **Code Execution** | Secure sandbox execution | None built-in | None built-in |
-| **Ecosystem Integration** | Blocklet ecosystem (ArcBlock) | General AI apps | Team automation |
+| Feature | AIGNE | LangGraph | CrewAI | LangChain |
+|:--------|:-----:|:---------:|:------:|:---------:|
+| TypeScript-first | ✅ | ❌ | ❌ | ❌ |
+| Functional composition | ✅ | ❌ | ❌ | ❌ |
+| Workflow patterns (8+) | ✅ | ✅ | ❌ | ✅ |
+| Multi-model support | ✅ | ✅ | ✅ | ✅ |
+| MCP integration | ✅ | ✅ | ❌ | ✅ |
+| Agentic File System | ✅ | ❌ | ❌ | ❌ |
+| Code execution sandbox | ✅ | ✅ | ❌ | ❌ |
+| Blocklet ecosystem | ✅ | ❌ | ❌ | ❌ |
 
-### How do I get started with AIGNE?
+### What workflow patterns does AIGNE support?
 
-**Prerequisites**: Node.js 20.0 or higher
+AIGNE provides **8 built-in workflow patterns** for different scenarios:
 
-**Installation**:
+1. **Router** — Intelligent routing based on content type
+2. **Sequential** — Step-by-step processing pipelines
+3. **Concurrency** — Parallel task execution
+4. **Handoff** — Seamless agent transitions
+5. **Reflection** — Self-improvement through evaluation
+6. **Orchestration** — Multi-agent coordination
+7. **Code Execution** — Dynamic code in sandbox
+8. **Group Chat** — Multi-agent messaging
+
+### What LLM providers does AIGNE support?
+
+AIGNE supports **multiple AI models** via built-in integrations:
+
+- **OpenAI** — GPT-4o, GPT-4-turbo, GPT-3.5-turbo
+- **Anthropic** — Claude 3.5 Sonnet, Claude 3 Opus
+- **Google** — Gemini 1.5 Pro, Gemini 1.5 Flash
+- **Amazon** — Nova models
+- **Custom** — Any OpenAI-compatible API
+
+Each model is configured via `OpenAIChatModel`, `GeminiChatModel`, `ClaudeChatModel`, etc.
+
+### How do I get started?
+
+**Prerequisites:** Node.js 20+
+
 ```bash
+# Install
 npm install @aigne/core
-# or
+
+# Or with yarn/pnpm
 yarn add @aigne/core
-# or
 pnpm add @aigne/core
 ```
 
-**Quick Example**:
-```ts
+**Basic usage:**
+
+```typescript
 import { AIAgent, AIGNE } from "@aigne/core";
 import { OpenAIChatModel } from "@aigne/openai";
 
 const model = new OpenAIChatModel({ apiKey: process.env.OPENAI_API_KEY });
-const agentA = AIAgent.from({ name: "AgentA", instructions: "You are a helpful agent." });
+
+const agent = AIAgent.from({
+  name: "MyAgent",
+  instructions: "You are a helpful assistant.",
+});
+
 const aigne = new AIGNE({ model });
-const result = await aigne.invoke(agentA).invoke({ message: "Hello!" });
+const result = await aigne.invoke(agent).invoke({ message: "Hello!" });
 ```
 
-### What LLM providers does AIGNE support?
+### What is Agentic File System (AFS)?
 
-AIGNE supports multiple AI model providers with built-in integrations:
+AFS is a **virtual file system abstraction** that provides AI agents unified access to various storage backends:
 
-| Provider | Package | Features |
-|----------|---------|----------|
-| **OpenAI** | `@aigne/openai` | GPT-4, GPT-3.5, function calling |
-| **Anthropic** | `@aigne/anthropic` | Claude models, function calling |
-| **Gemini** | `@aigne/gemini` | Google Gemini, function calling |
-| **Bedrock** | `@aigne/bedrock` | AWS Bedrock models |
-| **DeepSeek** | `@aigne/deepseek` | DeepSeek models |
-| **Ollama** | `@aigne/ollama` | Local model support |
-| **OpenRouter** | `@aigne/open-router` | Multi-provider gateway |
-| **XAI** | `@aigne/xai` | XAI (Grok) models |
+- **Local files** — Read/write project files
+- **Conversation history** — Persist chat context
+- **User profiles** — Store user preferences
+- **Custom backends** — Extend via AFS interface
 
-### What workflow patterns are available?
-
-AIGNE provides **8 workflow patterns** for different scenarios:
-
-1. **Sequential**: Step-by-step processing pipelines (e.g., content generation)
-2. **Concurrency**: Parallel task execution (e.g., multi-dimensional analysis)
-3. **Router**: Intelligent routing based on input (e.g., customer service triage)
-4. **Handoff**: Agent-to-agent transfer (e.g., expert collaboration)
-5. **Reflection**: Self-improvement loops (e.g., code review)
-6. **Orchestration**: Multi-agent coordination
-7. **Code Execution**: Dynamic code in sandbox (e.g., data analysis)
-8. **Group Chat**: Multi-agent messaging
-
-### What is the Agentic File System (AFS)?
-
-**AFS** is a virtual file system abstraction that gives AI agents unified access to various storage backends:
-
-- **Local Files**: Mount local file systems for agent access
-- **Conversation Memory**: Built-in history tracking
-- **User Profiles**: Persistent user profile management
-- **MCP Servers**: Mount MCP servers as file system modules
-
-AFS provides path-based access to diverse data sources with automatic tool registration for AI agents.
+See [AFS Documentation](./afs/README.md) for details.
 
 ### How does MCP integration work?
 
-AIGNE has **built-in MCP support**:
+AIGNE seamlessly integrates with **Model Context Protocol (MCP)** for external tools and services:
 
-- **MCP Server**: Build your own MCP server using AIGNE CLI
-- **MCP Client**: Connect to external MCP servers (e.g., Puppeteer, SQLite, GitHub)
-
-Examples:
-- [MCP Server Example](./examples/mcp-server/README.md)
-- [Puppeteer MCP Example](./examples/mcp-puppeteer/README.md)
-- [SQLite MCP Example](./examples/mcp-sqlite/README.md)
-- [GitHub MCP Example](./examples/mcp-github/README.md)
-
-### How do I run local models?
-
-Use **Ollama** package for local model support:
-
-```bash
-npm install @aigne/ollama
-```
-
-```ts
-import { OllamaChatModel } from "@aigne/ollama";
-
-const model = new OllamaChatModel({
-  baseURL: "http://localhost:11434",
-  model: "llama3",
+```typescript
+// MCP tools surface in agent's tool list automatically
+const agent = AIAgent.from({
+  name: "MCPAgent",
+  instructions: "Use available tools to help users.",
+  skills: [mcpToolConnection], // Connect MCP server
 });
 ```
 
-### How do I create custom agents?
+### What is the Blocklet ecosystem integration?
 
-Use `AIAgent.from()` to create custom agents:
+AIGNE is closely integrated with **ArcBlock's Blocklet ecosystem**, providing:
 
-```ts
-import { AIAgent } from "@aigne/core";
+- **One-stop deployment** — Blocklet marketplace distribution
+- **Identity management** — DID-based authentication
+- **Cross-platform support** — Web, mobile, desktop
+- **Service discovery** — Blocklet registry integration
 
-const myAgent = AIAgent.from({
-  name: "MyAgent",
-  instructions: "Your agent instructions",
-  skills: [customSkill1, customSkill2], // Optional: add skills
-  inputKey: "message", // Input parameter name
-  outputKey: "result", // Output parameter name
-});
-```
+### What license does AIGNE use?
 
-### How do I handle errors?
+AIGNE Framework uses **Elastic-2.0 License** — allows commercial use with restrictions on competitive SaaS offerings. See [LICENSE.md](LICENSE.md) for details.
 
-AIGNE uses TypeScript for type safety. Handle errors with try-catch:
+### Where can I get help?
 
-```ts
-try {
-  const result = await aigne.invoke(agentA).invoke({ message: "Hello" });
-} catch (error) {
-  console.error("Agent error:", error);
-  // Handle error gracefully
-}
-```
-
-### How do I contribute to AIGNE?
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for contribution guidelines:
-- Fork the repository
-- Create a feature branch
-- Submit a pull request
-- Follow the code style guidelines
-
-### Where can I find more resources?
-
-- **Documentation**: [AIGNE Framework Docs](https://www.arcblock.io/docs/aigne-framework)
-- **Examples**: [examples/](./examples/README.md) directory
-- **Community Forum**: [ArcBlock Community](https://community.arcblock.io/discussions/boards/aigne)
-- **GitHub Issues**: [Issue Tracker](https://github.com/AIGNE-io/aigne-framework/issues)
+- **Documentation** — [GitHub README](https://github.com/AIGNE-io/aigne-framework)
+- **Examples** — `examples/` directory with workflow patterns
+- **Issues** — [GitHub Issues](https://github.com/AIGNE-io/aigne-framework/issues)
+- **NPM Packages** — `@aigne/core`, `@aigne/openai`, etc.
 
 ---
-
-**Happy Agent Building!** 🤖

@@ -11,6 +11,7 @@ The AIGNE framework currently supports integration with the following model prov
 * [Google Gemini](#google-gemini) - Gemini series models
 * [AWS Bedrock](#aws-bedrock) - AWS various foundation models
 * [Ollama](#ollama) - Local self-hosted open source models
+* [Tuning Engines](#tuning-engines-openai-compatible-gateway) - Governed OpenAI-compatible endpoint
 * [OpenRouter](#openrouter) - Unified API access to multiple models
 * [DeepSeek](#deepseek) - DeepSeek models
 * [XAI](#xai) - X.AI's Grok models
@@ -44,6 +45,28 @@ import { OpenAIChatModel } from "@aigne/openai";
 const model = new OpenAIChatModel({
   apiKey: process.env.OPENAI_API_KEY,
   model: "gpt-4o-mini",
+});
+```
+
+***
+
+## Tuning Engines (OpenAI-compatible gateway)
+
+**Introduction**
+
+[Tuning Engines](https://app.tuningengines.com/docs/inference-api) exposes an OpenAI-compatible endpoint for teams that want AIGNE agents and workflows to run through a governed AI control plane. AIGNE keeps ownership of agents, skills, workflows, and runtime behavior, while Tuning Engines can centralize model access, policy checks, audit logs, traces, and usage/cost reporting.
+
+You can use the existing `@aigne/openai` integration by providing a Tuning Engines inference key and base URL.
+
+**Basic Usage**
+
+```ts
+import { OpenAIChatModel } from "@aigne/openai";
+
+const model = new OpenAIChatModel({
+  apiKey: process.env.TUNING_ENGINES_API_KEY,
+  baseURL: "https://api.tuningengines.com/v1",
+  model: "gpt-4o",
 });
 ```
 
